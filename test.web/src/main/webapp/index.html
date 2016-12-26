@@ -1,0 +1,81 @@
+<html lang="zh">
+<head>
+    <title>concreteTest</title>
+    <script type="text/javascript" rel="script"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="jquery-concrete.js"></script>
+    <script>
+        $(document).ready(function () {
+            concrete.configure({
+                "root": "/s"
+            });
+
+            var module = concrete.module("cc.coodex.practice.jaxrs.api.ServiceExample");
+
+            $("#all").click(function () {
+                module.all().done(function () {
+                    console.log(arguments);
+                })
+            });
+
+            $("#update").click(function () {
+                module.update(0, {
+                    author: "davidoff",
+                    price: 10000,
+                    bookName: "concrete"
+                }).done(function () {
+                    console.log(arguments);
+                })
+            });
+
+            $("#checkRole").click(function () {
+                module.checkRole().success(function () {
+                    console.log(arguments);
+                })
+            })
+
+            $("#get1").click(function () {
+                module.get(1).success(function () {
+                    console.log(arguments);
+                })
+            })
+
+            $("#get2").click(function () {
+                module.get("沈/海/南", 1000).success(function () {
+                    console.log(arguments);
+                })
+            })
+
+            $("#delete").click(function () {
+                module.delete(1).success(function () {
+                    console.log(arguments);
+                })
+            })
+
+            $("#setTokenId").click(function () {
+                module.tokenId().success(function (tokenId) {
+                    $("#fileTest").attr("action", "/s/attachments/upload/byform/test/" + tokenId)
+                })
+            })
+
+        });
+    </script>
+</head>
+<body>
+
+<button id="all">all()</button>
+<button id="update">update</button>
+<button id="checkRole">checkRole</button>
+<button id="get1">get(id)</button>
+<button id="get2">get(author, price)</button>
+<button id="delete">delete(1)</button>
+<button id="setTokenId">setTokenId</button>
+
+<form id="fileTest"  method="POST" enctype="multipart/form-data">
+    <input type="file" name="toUpload">
+    <input type="file" name="toUpload">
+    <button type="submit">submit</button>
+</form>
+
+</body>
+</html>
