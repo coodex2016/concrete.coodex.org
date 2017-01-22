@@ -9,6 +9,12 @@
     <version>0.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <scm>
+        <connection>scm:git:https://github.com/coodex2016/concrete.git</connection>
+        <developerConnection>scm:git:https://github.com/coodex2016/concrete.git</developerConnection>
+        <url>https://github.com/coodex2016/concrete.git</url>
+    </scm>
+
     <modules>
         <module>00.coodex.utilities</module>
         <module>00.coodex.utilities.servlet</module>
@@ -42,7 +48,7 @@
 
         <module>plugins.concrete-formatters-freemarker</module>
 
-        <module>test.web</module>
+        <!--<module>test.web</module>-->
 
     </modules>
 
@@ -76,6 +82,17 @@
 
 
     </properties>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>oss</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>oss</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <build>
         <plugins>
@@ -119,6 +136,18 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>oss</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
             </plugin>
         </plugins>
     </build>

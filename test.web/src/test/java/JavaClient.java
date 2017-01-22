@@ -19,9 +19,9 @@ public class JavaClient {
             serviceExample.get("沈海南", 1005);
             serviceExample.delete(54321);
 
-            serviceExample = Client.getBean(ServiceExample.class, "http://172.168.1.18:8080/s");
-
-            System.out.println(serviceExample.delete(12345l));
+//            serviceExample = Client.getBean(ServiceExample.class, "http://localhost:8080");
+//
+//            System.out.println(serviceExample.delete(12345l));
         }finally {
             ExecutorsHelper.shutdownAllNOW();
         }
