@@ -1,6 +1,6 @@
 import cc.coodex.concrete.apitools.API;
 import cc.coodex.concrete.apitools.jaxrs.jquery.JQueryDocRender;
-import cc.coodex.concrete.apitools.jaxrs.jquery.JQueryPromissCodeRender;
+import cc.coodex.concrete.apitools.jaxrs.jquery.JQueryPromisesCodeRender;
 import cc.coodex.concrete.apitools.jaxrs.service.ServiceDocRender;
 import cc.coodex.concurrent.ExecutorsHelper;
 import cc.coodex.practice.jaxrs.api.ServiceExample;
@@ -14,7 +14,7 @@ public class APIGen {
 
     public static void main(String[] args) throws IOException {
         try {
-            API.generate(JQueryPromissCodeRender.RENDER_NAME,
+            API.generate(JQueryPromisesCodeRender.RENDER_NAME,
                     "/concrete-demo/jquery.code",
                     ServiceExample.class.getPackage().getName());
 

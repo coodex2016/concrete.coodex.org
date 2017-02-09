@@ -19,6 +19,11 @@ public abstract class AbstractRender implements ConcreteAPIRender {
     protected static final String FS = Common.FILE_SEPARATOR;
     private Configuration configuration;
     private String rootToWrite;
+    private String desc;
+
+    protected String getRenderDesc() {
+        return desc;
+    }
 
     @Override
     public void setRoot(String rootPath) {
@@ -39,7 +44,10 @@ public abstract class AbstractRender implements ConcreteAPIRender {
 
     @Override
     public boolean isAccept(String desc) {
-        return desc != null && desc.equalsIgnoreCase(getRenderName());
+        this.desc = desc;
+        String renderName = getRenderName();
+        renderName = renderName == null ? null : renderName.toLowerCase();
+        return desc != null && desc.toLowerCase().startsWith(renderName);
     }
 
     private Template getTemplate(String templateName) throws IOException {
@@ -79,7 +87,7 @@ public abstract class AbstractRender implements ConcreteAPIRender {
     protected void copyTo(String resourceName, String path) throws IOException {
         InputStream inputStream = this.getClass().getClassLoader()
                 .getResourceAsStream(getTemplatePath() + resourceName);
-        if(inputStream == null){
+        if (inputStream == null) {
             throw new IOException("not found: " + getTemplatePath() + resourceName);
         }
         try {

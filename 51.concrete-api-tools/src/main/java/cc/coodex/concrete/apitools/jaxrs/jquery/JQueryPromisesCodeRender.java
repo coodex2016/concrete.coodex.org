@@ -6,6 +6,7 @@ import cc.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import cc.coodex.concrete.jaxrs.struct.Module;
 import cc.coodex.concrete.jaxrs.struct.Param;
 import cc.coodex.concrete.jaxrs.struct.Unit;
+import cc.coodex.util.Common;
 
 import java.io.IOException;
 import java.util.*;
@@ -13,7 +14,7 @@ import java.util.*;
 /**
  * Created by davidoff shen on 2016-12-04.
  */
-public class JQueryPromissCodeRender extends AbstractRender {
+public class JQueryPromisesCodeRender extends AbstractRender {
 
     public static final String RENDER_NAME =
             JaxRSModuleMaker.JAX_RS_PREV + ".code.jquery.js.v1";
@@ -99,6 +100,11 @@ public class JQueryPromissCodeRender extends AbstractRender {
                     .append("});");
             modules.add(builder.toString());
         }
-        writeTo("jquery-concrete.js", "jquery-concrete.js.ftl", "modules", modules);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("modules", modules);
+        String moduleName = getRenderDesc().substring(RENDER_NAME.length());
+        moduleName = Common.isBlank(moduleName) ? "concrete" : moduleName.substring(1);
+        map.put("moduleName", moduleName);
+        writeTo("jquery-concrete.js", "jquery-concrete.js.ftl", map);
     }
 }

@@ -53,6 +53,7 @@
         <module>99.concrete-bom</module>
 
         <module>plugins.concrete-formatters-freemarker</module>
+        <module>00.coodex.utilities.sec.tools</module>
 
         <!--<module>test.web</module>-->
 

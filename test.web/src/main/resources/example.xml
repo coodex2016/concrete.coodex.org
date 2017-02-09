@@ -12,7 +12,7 @@
 
     <context:component-scan base-package="cc.coodex.practice.jaxrs.impl"></context:component-scan>
 
-    <!--<bean class="cc.coodex.concrete.spring.aspects.ServiceTimingAspect"></bean>-->
+    <bean class="cc.coodex.concrete.spring.aspects.ServiceTimingAspect"></bean>
     <!--<bean class="cc.coodex.concrete.spring.aspects.RBAC_Aspect"></bean>-->
 
     <bean class="cc.coodex.concrete.attachments.repo.FastDFSRepository"></bean>

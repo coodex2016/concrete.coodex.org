@@ -16,16 +16,17 @@ public class API {
         if (RENDERS.getAllInstances().size() == 0)
             throw new RuntimeException("NONE render found.");
         for (ConcreteAPIRender render : RENDERS.getAllInstances()) {
-            if (render.isAccept(desc)) {
-                render.setRoot(path);
-                render.writeTo( packages);
-                return;
+            synchronized (render) {
+                if (render.isAccept(desc)) {
+                    render.setRoot(path);
+                    render.writeTo(packages);
+                    return;
+                }
             }
         }
 
         throw new RuntimeException("NONE render for " + desc + " found.");
     }
-
 
 
 }

@@ -164,9 +164,10 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
 
         if (newToken) {
             URI root = uriInfo.getBaseUri();
+            String cookiePath = ConcreteHelper.getProfile().getString("jaxrs.token.cookie.path");
             builder = builder.cookie(new NewCookie(new Cookie(
                     TOKEN_ID_IN_COOKIE, token.getTokenId(),
-                    root.getPath(), null)));
+                    Common.isBlank(cookiePath) ? root.getPath() : cookiePath, null)));
         }
 
         if (result != null) builder = builder.entity(result);

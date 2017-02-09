@@ -175,8 +175,9 @@
     ${m}
 
 </#list>
-    if(self)
-        self.concrete = concrete;
+    if(self){
+        self.${moduleName} = concrete;
+    }
     return concrete;
 
 }));
