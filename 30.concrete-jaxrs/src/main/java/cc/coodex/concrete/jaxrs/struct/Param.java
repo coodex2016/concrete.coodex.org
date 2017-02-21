@@ -2,6 +2,7 @@ package cc.coodex.concrete.jaxrs.struct;
 
 import cc.coodex.concrete.api.Description;
 import cc.coodex.concrete.common.struct.AbstractParam;
+import cc.coodex.util.Common;
 import cc.coodex.util.ReflectHelper;
 
 import java.lang.annotation.Annotation;
@@ -54,10 +55,12 @@ public class Param extends AbstractParam {
     }
 
     public String getLabel() {
-        return description == null ? "　" : description.name();
+        String s = description == null ? "" : description.name();
+        return Common.isBlank(s) ? "　" : s;
     }
 
     public String getDescription() {
-        return description == null ? "　" : description.description();
+        String s = description == null ? "　" : description.description();
+        return Common.isBlank(s) ? "　" : s;
     }
 }

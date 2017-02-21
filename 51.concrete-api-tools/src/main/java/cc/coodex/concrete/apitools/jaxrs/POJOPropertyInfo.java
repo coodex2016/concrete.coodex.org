@@ -1,6 +1,7 @@
 package cc.coodex.concrete.apitools.jaxrs;
 
 import cc.coodex.concrete.api.Description;
+import cc.coodex.util.Common;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -43,11 +44,13 @@ public class POJOPropertyInfo {
     }
 
     public String getLabel() {
-        return description == null ? "　" : description.name();
+        String s= description == null ? "" : description.name();
+        return Common.isBlank(s) ? "　" : s;
     }
 
     public String getDescription() {
-        return description == null ? "　" : description.description();
+        String s = description == null ? "" : description.description();
+        return Common.isBlank(s) ? "　" : s;
     }
 
 //    public String getTypeString(){
