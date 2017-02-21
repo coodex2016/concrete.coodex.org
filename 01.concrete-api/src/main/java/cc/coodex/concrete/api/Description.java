@@ -4,9 +4,11 @@ import java.lang.annotation.*;
 
 /**
  * 业务描述注解，与ConcreteService一起使用
+ * <p>
+ * 2017-02-21 可以装饰pojo属性和parameter。pojo属性指public field和getXXX isXXX(boolean)
  * Created by davidoff shen on 2016-08-31.
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD, ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Description {

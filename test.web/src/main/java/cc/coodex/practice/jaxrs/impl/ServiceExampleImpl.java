@@ -5,6 +5,7 @@ import cc.coodex.concrete.common.ConcreteException;
 import cc.coodex.concrete.common.ErrorCodes;
 import cc.coodex.concrete.common.Token;
 import cc.coodex.concrete.core.token.TokenWrapper;
+import cc.coodex.practice.jaxrs.api.Calc;
 import cc.coodex.practice.jaxrs.api.ServiceExample;
 import cc.coodex.practice.jaxrs.pojo.Book;
 import cc.coodex.practice.jaxrs.pojo.BookInfo;
@@ -19,7 +20,7 @@ import java.util.List;
  * Created by davidoff shen on 2016-11-28.
  */
 @Named
-public class ServiceExampleImpl implements ServiceExample {
+public class ServiceExampleImpl implements ServiceExample, Calc {
 
     private final static Logger log = LoggerFactory.getLogger(ServiceExampleImpl.class);
 
@@ -100,5 +101,10 @@ public class ServiceExampleImpl implements ServiceExample {
     public String tokenId() {
         ClientServiceImpl.allowWrite();
         return token.getTokenId();
+    }
+
+    @Override
+    public int add(int x, int y) {
+        return x + y;
     }
 }

@@ -25,8 +25,8 @@ ${insName}.${unit.method.name}(${tool.mockParameters(unit, module)}).success(fun
 * **return:** ${tool.formatTypeStr(unit.genericReturnType, module.interfaceClass)}
 * **params:** <#if (paramCount > 0)>
 
-| paramName | Type                  |
-| --------- | --------------------- |<#list unit.parameters as param>
-| ${param.name} | ${tool.formatTypeStr(param.genericType, module.interfaceClass)} |</#list><#else>NONE</#if>
+| paramName | label | Type                  | description |
+| --------- |---- | --------------------- | ------------ |<#list unit.parameters as param>
+| ${param.name} | ${param.label} | ${tool.formatTypeStr(param.genericType, module.interfaceClass)} | ${param.description} |</#list><#else>NONE</#if>
 </#escape>
 </#list>

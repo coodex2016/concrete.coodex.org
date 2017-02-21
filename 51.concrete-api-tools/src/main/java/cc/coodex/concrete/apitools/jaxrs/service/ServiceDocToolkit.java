@@ -38,6 +38,8 @@ public class ServiceDocToolkit extends DocToolkit {
     private String build(Class<?> clz) throws IOException {
         if (!pojoTypes.contains(clz)) {
             List<POJOPropertyInfo> pojoPropertyInfos = new ArrayList<POJOPropertyInfo>();
+
+
             for (Method method : clz.getMethods()) {
                 if (isProperty(method))
                     pojoPropertyInfos.add(new POJOPropertyInfo(clz, method));
@@ -47,6 +49,8 @@ public class ServiceDocToolkit extends DocToolkit {
                 if (isProperty(field))
                     pojoPropertyInfos.add(new POJOPropertyInfo(clz, field));
             }
+
+
             pojoTypes.add(canonicalName(clz.getName()));
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("properties", pojoPropertyInfos);

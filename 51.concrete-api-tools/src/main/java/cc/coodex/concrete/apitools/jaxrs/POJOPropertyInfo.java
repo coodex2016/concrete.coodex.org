@@ -1,5 +1,7 @@
 package cc.coodex.concrete.apitools.jaxrs;
 
+import cc.coodex.concrete.api.Description;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -14,17 +16,20 @@ public class POJOPropertyInfo {
         String methodName = method.getName();
         int startIndex = methodName.startsWith("is") && method.getReturnType() == boolean.class ? 2 : 3;
         name = lowerFirstChar(method.getName().substring(startIndex));
-        pojoTypeInfo = new POJOTypeInfo(contextType,method.getGenericReturnType());
+        pojoTypeInfo = new POJOTypeInfo(contextType, method.getGenericReturnType());
+        description = method.getAnnotation(Description.class);
 //        type = method.getGenericReturnType();
     }
 
     public POJOPropertyInfo(Class<?> contextType, Field field) {
         name = field.getName();
+        description = field.getAnnotation(Description.class);
         pojoTypeInfo = new POJOTypeInfo(contextType, field.getGenericType());
 //        type = field.getGenericType();
     }
 
     private final String name;
+    private final Description description;
     private POJOTypeInfo pojoTypeInfo;
 
 //    private final Type type;
@@ -35,6 +40,14 @@ public class POJOPropertyInfo {
 
     public POJOTypeInfo getType() {
         return pojoTypeInfo;
+    }
+
+    public String getLabel() {
+        return description == null ? "　" : description.name();
+    }
+
+    public String getDescription() {
+        return description == null ? "　" : description.description();
     }
 
 //    public String getTypeString(){

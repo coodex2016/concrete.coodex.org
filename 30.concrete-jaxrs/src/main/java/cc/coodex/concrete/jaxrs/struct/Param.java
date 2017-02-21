@@ -1,5 +1,6 @@
 package cc.coodex.concrete.jaxrs.struct;
 
+import cc.coodex.concrete.api.Description;
 import cc.coodex.concrete.common.struct.AbstractParam;
 import cc.coodex.util.ReflectHelper;
 
@@ -15,9 +16,11 @@ import static cc.coodex.concrete.jaxrs.JaxRSHelper.camelCase;
 public class Param extends AbstractParam {
 
     private final ReflectHelper.MethodParameter parameter;
+    private final Description description;
 
     public Param(Method method, int index) {
         this.parameter = new ReflectHelper.MethodParameter(method, index);
+        this.description = getAnnotation(Description.class);
     }
 
     @Override
@@ -48,5 +51,13 @@ public class Param extends AbstractParam {
     @Override
     public Annotation[] getAnnotations() {
         return parameter.getAnnotations();
+    }
+
+    public String getLabel() {
+        return description == null ? "　" : description.name();
+    }
+
+    public String getDescription() {
+        return description == null ? "　" : description.description();
     }
 }

@@ -1,5 +1,7 @@
 package cc.coodex.practice.jaxrs.pojo;
 
+import cc.coodex.concrete.api.Description;
+
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -8,6 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Book extends BookInfo {
 
     private final static AtomicLong ID_SEQUENCE = new AtomicLong(1);
+
 
     private final long id = ID_SEQUENCE.getAndIncrement();
 
@@ -20,6 +23,7 @@ public class Book extends BookInfo {
         super(bookName, author, price);
     }
 
+    @Description(name = "书本ID", description = "主键，唯一标识")
     public long getId() {
         return id;
     }
