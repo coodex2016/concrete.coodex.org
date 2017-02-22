@@ -82,9 +82,10 @@ public class Unit extends AbstractUnit<Param, Module> {
         for (Param parameter : getParameters()) {
             String pathParamValue = getPathParam(parameter);
             if (pathParamValue != null) {
-                String restfulNode = "/{" + pathParamValue + "}";
+                String restfulNode = "{" + pathParamValue + "}";
+
                 if (methodName == null || methodName.indexOf(restfulNode) < 0) {
-                    buffer.append("/{").append(pathParamValue).append("}");
+                    buffer.append("/").append(restfulNode);
                 }
             }
         }
