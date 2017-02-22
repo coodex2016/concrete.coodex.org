@@ -1,5 +1,6 @@
 package cc.coodex.concrete.apitools.jaxrs;
 
+import cc.coodex.concrete.api.Description;
 import cc.coodex.concrete.jaxrs.JaxRSHelper;
 import cc.coodex.util.Common;
 
@@ -81,5 +82,17 @@ public abstract class DocToolkit {
 
     public String camelCase(String str){
         return JaxRSHelper.camelCase(str);
+    }
+
+    public String tableSafe(String str){
+        return Common.isBlank(str) ? "　" : str;
+    }
+
+    public String tableSafeDesc(Description description){
+        return description == null ? "　" : tableSafe(description.description());
+    }
+
+    public String tableSafeLabel(Description description){
+        return description == null ? "　" : tableSafe(description.name());
     }
 }

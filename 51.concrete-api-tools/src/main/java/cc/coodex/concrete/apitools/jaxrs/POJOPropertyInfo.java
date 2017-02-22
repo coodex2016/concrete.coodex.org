@@ -44,13 +44,13 @@ public class POJOPropertyInfo {
     }
 
     public String getLabel() {
-        String s= description == null ? "" : description.name();
-        return Common.isBlank(s) ? "　" : s;
+        return description == null ? "" : description.name();
+//        return Common.isBlank(s) ? "　" : s;
     }
 
     public String getDescription() {
-        String s = description == null ? "" : description.description();
-        return Common.isBlank(s) ? "　" : s;
+        return description == null ? "" : description.description();
+//        return Common.isBlank(s) ? "　" : s;
     }
 
 //    public String getTypeString(){

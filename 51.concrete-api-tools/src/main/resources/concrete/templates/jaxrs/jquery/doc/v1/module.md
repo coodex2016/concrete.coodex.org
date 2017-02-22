@@ -27,6 +27,6 @@ ${insName}.${unit.method.name}(${tool.mockParameters(unit, module)}).success(fun
 
 | paramName | label | Type                  | description |
 | --------- |---- | --------------------- | ------------ |<#list unit.parameters as param>
-| ${param.name} | ${param.label} | ${tool.formatTypeStr(param.genericType, module.interfaceClass)} | ${param.description} |</#list><#else>NONE</#if>
+| ${param.name} | ${param.label} | ${tool.formatTypeStr(param.genericType, module.interfaceClass)} | ${tool.tableSafe(param.description)} |</#list><#else>NONE</#if>
 </#escape>
 </#list>

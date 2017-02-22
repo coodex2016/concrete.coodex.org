@@ -23,7 +23,7 @@ ${unit.description!""}
 
 | paramName | label | Type                  | Description |
 | --------- |---- | --------------------- | ------------ |<#list unit.parameters as param>
-| ${param.name} | ${param.label} | ${tool.formatTypeStr(param.genericType, module.interfaceClass)} | ${param.description} |</#list><#else>NONE</#if>
+| ${param.name} | ${param.label} | ${tool.formatTypeStr(param.genericType, module.interfaceClass)} | ${tool.tableSafe(param.description)} |</#list><#else>NONE</#if>
 
 </#list>
 </#escape>
