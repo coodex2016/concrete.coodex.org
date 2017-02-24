@@ -3,7 +3,7 @@
 * [项目摘要](README.md)
 * [A. 模块清单](moduleList.md)
 <#list modules as m>  * [${m_index+1}. ${m.label}](modules/${tool.canonicalName(m.name)}.md)
-<#list m.units as unit>    * [${m_index+1}.#{unit_index+1}. <#if unit.label?length == 0>根接口<#else>${unit.label}</#if>](modules/${tool.canonicalName(m.name)}.md#m${unit_index+1})
+<#list m.units?sort_by("label") as unit>    * [${m_index+1}.#{unit_index+1}. <#if unit.label?length == 0>根接口<#else>${unit.label}</#if>](modules/${tool.canonicalName(m.name)}.md#m${unit_index+1})
 </#list>
 </#list>
 * [B. 错误号信息](errorInfo.md)

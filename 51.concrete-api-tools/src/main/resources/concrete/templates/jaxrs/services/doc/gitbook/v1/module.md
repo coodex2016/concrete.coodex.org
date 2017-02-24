@@ -8,7 +8,7 @@
 ${module.description!""}
 
 ## 接口
-<#list module.units as unit>
+<#list module.units?sort_by("label") as unit>
 ### <span id="m${unit_index+1}"><#if unit.label?length == 0>根接口<#else>${unit.label}</#if></span>
 
 ${unit.description!""}
