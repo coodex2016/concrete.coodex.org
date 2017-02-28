@@ -16,12 +16,12 @@ public class JavaClient {
             }
 
 
-            serviceExample.get("沈海南", 1005);
-            serviceExample.delete(54321);
+            serviceExample.get("沈海南是个大逗比", 1005);
+            System.out.println(serviceExample.delete(54321));
 
-//            serviceExample = Client.getBean(ServiceExample.class, "http://localhost:8080");
-//
-//            System.out.println(serviceExample.delete(12345l));
+            serviceExample = Client.getBean(ServiceExample.class, "http://localhost:8080/s");
+
+            System.out.println(serviceExample.delete(12345l));
         }finally {
             ExecutorsHelper.shutdownAllNOW();
         }

@@ -5,6 +5,7 @@ import cc.coodex.util.Common;
 import cc.coodex.util.Profile;
 
 import javax.ws.rs.HttpMethod;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ import static cc.coodex.concrete.jaxrs.JaxRSHelper.lowerFirstChar;
  */
 public class Predicates {
 
-    private static Profile getProfile(){
+    private static Profile getProfile() {
         return Profile.getProfile("jaxrs.predicates.properties");
     }
 
@@ -106,9 +107,9 @@ public class Predicates {
      */
     public static String getHttpMethod(Method method) {
         String methodName = ConcreteToolkit.getMethodName(method);
-        String [] paths = paths(methodName);
+        String[] paths = paths(methodName);
         int index = getLastNodeIndex(paths);
-        if(index >= 0) {
+        if (index >= 0) {
             String last = paths[index];
             for (int i = 0; i < PREDICATES.length; i++) {
                 for (int j = 0; j < PREDICATES[i].length; j++) {
@@ -117,30 +118,40 @@ public class Predicates {
                 }
             }
         }
+        Annotation[][] annotations = method.getParameterAnnotations();
+        for (int i = 0, j = method.getParameterTypes().length; i < j; i++) {
+//        for(Class<?> paramType: method.getParameterTypes()){
+            Class<?> paramType = method.getParameterTypes()[i];
 
-        for(Class<?> paramType: method.getParameterTypes()){
-            if(!isPrimitive(paramType)) return HttpMethod.POST;
+            if (!isPrimitive(paramType)) return HttpMethod.POST;
+            if (annotations != null && annotations[i] != null) {
+                for (Annotation annotation : annotations[i]) {
+                    if (BigString.class.isAssignableFrom(annotation.getClass())) {
+                        return HttpMethod.POST;
+                    }
+                }
+            }
         }
 
         return HttpMethod.GET;
     }
 
-    private static String[] paths(String methodName){
+    private static String[] paths(String methodName) {
         StringTokenizer st = new StringTokenizer(methodName, "/\\");
         List<String> cache = new ArrayList<String>();
-        while(st.hasMoreElements()){
+        while (st.hasMoreElements()) {
             String s = st.nextToken().trim();
-            if(Common.isBlank(s)) continue;
+            if (Common.isBlank(s)) continue;
             cache.add(s);
         }
         return cache.toArray(new String[0]);
     }
 
-    private static String buildPath(String [] paths){
+    private static String buildPath(String[] paths) {
         StringBuilder builder = new StringBuilder();
-        for(String s : paths){
-            if(!Common.isBlank(s)){
-                if(builder.length() > 0) builder.append('/');
+        for (String s : paths) {
+            if (!Common.isBlank(s)) {
+                if (builder.length() > 0) builder.append('/');
                 builder.append(s);
             }
         }
@@ -156,9 +167,9 @@ public class Predicates {
     public static final String getRESTFulPath(Method method) {
         String methodName = ConcreteToolkit.getMethodName(method);
 
-        String [] paths = paths(methodName);
+        String[] paths = paths(methodName);
         int index = getLastNodeIndex(paths);
-        if(index >= 0) {
+        if (index >= 0) {
             String lastNode = paths[index];
             foreign:
             for (String[] predicates : PREDICATES) {
@@ -178,9 +189,9 @@ public class Predicates {
 
     private static int getLastNodeIndex(String[] paths) {
         int index = -1;
-        for(int i = paths.length - 1; i >=0; i --){
-            String s  = paths[i].trim();
-            if(!(s.startsWith("{") && s.endsWith("}"))){
+        for (int i = paths.length - 1; i >= 0; i--) {
+            String s = paths[i].trim();
+            if (!(s.startsWith("{") && s.endsWith("}"))) {
                 index = i;
                 break;
             }
