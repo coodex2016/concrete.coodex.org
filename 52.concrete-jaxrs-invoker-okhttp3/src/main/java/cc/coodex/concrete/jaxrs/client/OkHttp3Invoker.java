@@ -8,7 +8,9 @@ import okhttp3.internal.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 
@@ -26,9 +28,17 @@ public class OkHttp3Invoker extends AbstractInvoker {
     public OkHttp3Invoker(String domain, SSLContext sslContext, X509TrustManager trustManager) {
         super(domain);
         OkHttpClient.Builder builder = new OkHttpClient.Builder().cookieJar(new CookieManager());
+
         if (sslContext != null) {
             builder.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+            builder.hostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String s, SSLSession sslSession) {
+                    return true;
+                }
+            });
         }
+
         client = builder.build();
     }
 

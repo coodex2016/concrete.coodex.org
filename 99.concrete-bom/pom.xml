@@ -114,6 +114,12 @@
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-jaxrs</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-support-jsr311</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>

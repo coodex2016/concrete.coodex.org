@@ -4,10 +4,9 @@ import cc.coodex.util.Common;
 import cc.coodex.util.Profile;
 
 import javax.net.ssl.*;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,14 +51,23 @@ public class OkHttp3InvokerFactory implements InvokerFactory {
 
     private Invoker newInvoker(String domain) {
         String key = getDomainRule(domain);
-        if (key != null) {
+
+        if (domain.toLowerCase().startsWith("https://")) {
             try {
-                if (!Common.isBlank(PROFILE.getString(key + ".ssl")))
-                    return getSSLInvoker(domain, key);
+                return getSSLInvoker(domain, key);
             } catch (Throwable th) {
                 throw new RuntimeException(th);
             }
         }
+
+//        if (key != null) {
+//            try {
+//                if (!Common.isBlank(PROFILE.getString(key + ".ssl")))
+//                    return getSSLInvoker(domain, key);
+//            } catch (Throwable th) {
+//                throw new RuntimeException(th);
+//            }
+//        }
         return new OkHttp3Invoker(domain, null, null);
     }
 
@@ -67,18 +75,40 @@ public class OkHttp3InvokerFactory implements InvokerFactory {
     private Invoker getSSLInvoker(String domain, String key)
             throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
 
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
-                TrustManagerFactory.getDefaultAlgorithm());
-        trustManagerFactory.init((KeyStore) null);
-        TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
-        if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager)) {
-            throw new IllegalStateException("Unexpected default trust managers:"
-                    + Arrays.toString(trustManagers));
-        }
-        X509TrustManager trustManager = (X509TrustManager) trustManagers[0];
+        X509TrustManager trustManager = new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                // don't check
+            }
 
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(null, new TrustManager[]{trustManager}, null);
-        return new OkHttp3Invoker(domain, sslContext, trustManager);
+            @Override
+            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                // don't check
+            }
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+        };
+
+        TrustManager[] trustAllCerts = new TrustManager[]{trustManager};
+        SSLContext ctx = SSLContext.getInstance("TLS");
+        ctx.init(null, trustAllCerts, new SecureRandom());
+        return new OkHttp3Invoker(domain, ctx, trustManager);
+
+//        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
+//                TrustManagerFactory.getDefaultAlgorithm());
+//        trustManagerFactory.init((KeyStore) null);
+//        TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+//        if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager)) {
+//            throw new IllegalStateException("Unexpected default trust managers:"
+//                    + Arrays.toString(trustManagers));
+//        }
+//        X509TrustManager trustManager = (X509TrustManager) trustManagers[0];
+//
+//        SSLContext sslContext = SSLContext.getInstance("TLS");
+//        sslContext.init(null, new TrustManager[]{trustManager}, new SecureRandom());
+//        return new OkHttp3Invoker(domain, sslContext, trustManager);
     }
 }
