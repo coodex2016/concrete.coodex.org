@@ -19,7 +19,7 @@ import static cc.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 /**
  * Created by davidoff shen on 2016-12-07.
  */
-public class OkHttp3Invoker extends AbstractInvoker {
+public class OkHttp3Invoker extends AbstractRemoteInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(OkHttp3Invoker.class);
 

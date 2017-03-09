@@ -14,7 +14,7 @@ public class RBACInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    protected void before(RuntimeContext context, MethodInvocation joinPoint) {
+    public void before(RuntimeContext context, MethodInvocation joinPoint) {
         RBAC.before(context, joinPoint);
     }
 }

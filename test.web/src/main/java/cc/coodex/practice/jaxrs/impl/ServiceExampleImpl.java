@@ -5,6 +5,7 @@ import cc.coodex.concrete.common.ConcreteException;
 import cc.coodex.concrete.common.ErrorCodes;
 import cc.coodex.concrete.common.Token;
 import cc.coodex.concrete.core.token.TokenWrapper;
+import cc.coodex.concrete.jaxrs.BigString;
 import cc.coodex.practice.jaxrs.api.Calc;
 import cc.coodex.practice.jaxrs.api.ServiceExample;
 import cc.coodex.practice.jaxrs.pojo.Book;
@@ -72,6 +73,12 @@ public class ServiceExampleImpl implements ServiceExample, Calc {
             }
         }
         return null;
+    }
+
+    @Override
+    public String bigStringTest(String pathParam, @BigString String toPost) {
+        log.debug("pathParam: {}, toPost: {}", pathParam, toPost);
+        return toPost;
     }
 
     @Override

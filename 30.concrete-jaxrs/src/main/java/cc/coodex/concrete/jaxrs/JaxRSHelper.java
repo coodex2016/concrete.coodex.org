@@ -1,7 +1,12 @@
 package cc.coodex.concrete.jaxrs;
 
+import cc.coodex.concrete.api.ConcreteService;
+import cc.coodex.concrete.jaxrs.struct.Module;
+import cc.coodex.concrete.jaxrs.struct.Param;
 import cc.coodex.util.Common;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 
@@ -10,7 +15,7 @@ import java.util.StringTokenizer;
  */
 public class JaxRSHelper {
 
-//    public static final String KEY_ERROR_CODE = "code";
+    //    public static final String KEY_ERROR_CODE = "code";
 //    public static final String KEY_ERROR_MESSAGE = "msg";
     public static final String HEADER_ERROR_OCCURRED = "CONCRETE-ERROR-OCCURRED";
 
@@ -40,9 +45,10 @@ public class JaxRSHelper {
         return Common.inArray(c, PRIMITIVE_CLASSESS);
     }
 
-
-
-
+    public static boolean isBigString(Param param) {
+        return String.class.isAssignableFrom(param.getType())
+                && param.getAnnotation(BigString.class) != null;
+    }
 
 
     private static final int TO_LOWER = 'a' - 'A';
@@ -109,6 +115,19 @@ public class JaxRSHelper {
         }
         return builder.toString();
     }
+
+
+    private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<Class<?>, Module>();
+
+    public static final synchronized Module getModule(Class<? extends ConcreteService> type) {
+        Module module = MODULE_CACHE.get(type);
+        if (module == null) {
+            module = new Module(type);
+            MODULE_CACHE.put(type, module);
+        }
+        return module;
+    }
+
 
 
 

@@ -1,6 +1,7 @@
 package cc.coodex.practice.jaxrs.api;
 
 import cc.coodex.concrete.api.*;
+import cc.coodex.concrete.jaxrs.BigString;
 import cc.coodex.practice.jaxrs.pojo.Book;
 import cc.coodex.practice.jaxrs.pojo.BookInfo;
 
@@ -16,6 +17,8 @@ public interface ServiceA extends ConcreteService {
 
     @ServiceTiming("rule1")
     Book get(long bookId);
+
+    String bigStringTest(String pathParam, @BigString String toPost);
 
     Book get(String author, long price);
 

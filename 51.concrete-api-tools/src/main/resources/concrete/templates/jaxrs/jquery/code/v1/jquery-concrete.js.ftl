@@ -64,8 +64,9 @@
 
             var data = {};
             if (Object.keys(param).length > 0) {
+                var obj = param[Object.keys(param)[0]];
                 data = {
-                    data: JSON.stringify(param[Object.keys(param)[0]])
+                    data: typeof(obj) === 'string' ? obj : JSON.stringify(obj)
                 }
             }
 

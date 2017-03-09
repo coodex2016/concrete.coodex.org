@@ -17,12 +17,12 @@ public class ServiceTimingAspect extends AbstractConcreteAspect {
     }
 
     @Override
-    protected boolean accept(RuntimeContext context) {
+    public boolean accept(RuntimeContext context) {
         return super.accept(context) && ServiceTimingValidation.isTimingLimitService(context);
     }
 
     @Override
-    protected void before(RuntimeContext context, MethodInvocation joinPoint) {
+    public void before(RuntimeContext context, MethodInvocation joinPoint) {
         ServiceTimingValidation.before(context, joinPoint);
     }
 }

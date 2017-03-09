@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by davidoff shen on 2016-09-07.
  */
-public abstract class AbstractInterceptor implements MethodInterceptor, InterceptOrdered {
+public abstract class AbstractInterceptor implements ConcreteInterceptor {
 
 //    private final static ThreadLocal<Object> atom = new ThreadLocal<>();
 
@@ -60,22 +60,27 @@ public abstract class AbstractInterceptor implements MethodInterceptor, Intercep
         }
     }
 
-    protected boolean accept(RuntimeContext context) {
+    @Override
+    public boolean accept(RuntimeContext context) {
         return true;
     }
 
+    @Override
     public Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
-    protected void before(RuntimeContext context, MethodInvocation joinPoint) {
+    @Override
+    public void before(RuntimeContext context, MethodInvocation joinPoint) {
     }
 
-    protected Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+    @Override
+    public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
         return result;
     }
 
-    protected Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
+    @Override
+    public Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
         return th;
     }
 }

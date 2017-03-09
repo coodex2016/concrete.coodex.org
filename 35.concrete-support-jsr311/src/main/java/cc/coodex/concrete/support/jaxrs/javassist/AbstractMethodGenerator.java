@@ -1,5 +1,6 @@
 package cc.coodex.concrete.support.jaxrs.javassist;
 
+import cc.coodex.concrete.jaxrs.JaxRSHelper;
 import cc.coodex.concrete.jaxrs.PathParam;
 import cc.coodex.concrete.jaxrs.struct.Param;
 import cc.coodex.concrete.jaxrs.struct.Unit;
@@ -284,7 +285,8 @@ public abstract class AbstractMethodGenerator {
         if (pathParam != null) return pathParam.value();
         javax.ws.rs.PathParam pathParam1 = parameter.getAnnotation(javax.ws.rs.PathParam.class);
         return pathParam1 == null ?
-                (CGContext.isPrimitive(parameter.getType()) ? parameter.getName() : null) :
+                ((CGContext.isPrimitive(parameter.getType()) && !JaxRSHelper.isBigString(parameter)) ?
+                        parameter.getName() : null) :
                 pathParam1.value();
     }
 

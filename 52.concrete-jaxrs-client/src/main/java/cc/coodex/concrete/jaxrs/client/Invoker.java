@@ -15,6 +15,6 @@ public interface Invoker {
      * @return
      * @throws Throwable
      */
-    Object invoke(/*String domain,*/ Unit unit, Object[] args) throws Throwable;
+    Object invoke(/*String domain,*/ Unit unit, Object[] args, Object instance) throws Throwable;
 
 }

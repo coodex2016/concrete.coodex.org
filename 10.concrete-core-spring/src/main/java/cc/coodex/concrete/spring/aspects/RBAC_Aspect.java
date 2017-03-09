@@ -13,12 +13,12 @@ import org.aspectj.lang.annotation.Aspect;
 public class RBAC_Aspect extends AbstractConcreteAspect {
 
     @Override
-    protected boolean accept(RuntimeContext context) {
+    public boolean accept(RuntimeContext context) {
         return context != null;
     }
 
     @Override
-    protected void before(RuntimeContext context, MethodInvocation joinPoint) {
+    public void before(RuntimeContext context, MethodInvocation joinPoint) {
         RBAC.before(context, joinPoint);
     }
 

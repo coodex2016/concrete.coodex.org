@@ -64,8 +64,9 @@
 
             var data = {};
             if (Object.keys(param).length > 0) {
+                var obj = param[Object.keys(param)[0]];
                 data = {
-                    data: JSON.stringify(param[Object.keys(param)[0]])
+                    data: typeof(obj) === 'string' ? obj : JSON.stringify(obj)
                 }
             }
 
@@ -81,12 +82,12 @@
             })).error(function (jx) {
                 if (configuration.onError) {
                     var e = jx.responseJSON;
-                    if (typeof e === "object") {
-                        configuration.onError(e.code, e.msg);
+                    if(typeof e === "object"){
+                        configuration.onError(e.code,e.msg);
                     } else {
                         configuration.onError(jx.status, jx.responseText);
                     }
-                    // configuration.onError(this, arguments);
+                                        // configuration.onError(this, arguments);
                 }
             });
         } else {
@@ -170,48 +171,13 @@
         modules[moduleName][packageName] = module;
     };
 
-    register("ServiceExample", "cc.coodex.practice.jaxrs.api", {
-        "all": function () {
-            return invoke({"path": "/A/ServiceB/Book/all", "param": {}, "method": "GET"});
-        }, "tokenId": function () {
-            return invoke({"path": "/A/ServiceB/Book/tokenId", "param": {}, "method": "GET"});
-        }, "get": overload("get", {
-            "2": function (author, price) {
-                return invoke({
-                    "path": "/A/ServiceB/Book/{author}/{price}",
-                    "param": {"author": author, "price": price},
-                    "method": "GET"
-                });
-            }, "1": function (bookId) {
-                return invoke({"path": "/A/ServiceB/Book/{bookId}", "param": {"bookId": bookId}, "method": "GET"});
-            }
-        }), "update": function (bookId, book) {
-            return invoke({
-                "path": "/A/ServiceB/Book/{bookId}",
-                "param": {"bookId": bookId, "book": book},
-                "method": "PUT"
-            });
-        }, "findByAuthorLike": function (author) {
-            return invoke({
-                "path": "/A/ServiceB/Book/authorLike/{author}",
-                "param": {"author": author},
-                "method": "GET"
-            });
-        }, "delete": function (bookId) {
-            return invoke({"path": "/A/ServiceB/Book/{bookId}", "param": {"bookId": bookId}, "method": "DELETE"});
-        }, "checkRole": function () {
-            return invoke({"path": "/A/ServiceB/Book/checkRole", "param": {}, "method": "GET"});
-        }, "findByPriceLessThen": function (price) {
-            return invoke({
-                "path": "/A/ServiceB/Book/priceLessThen/{price}",
-                "param": {"price": price},
-                "method": "GET"
-            });
-        }
-    });
+    register("Calc", "cc.coodex.practice.jaxrs.api", { "add": function (x, y) {return invoke({"path": "/Calc/add/{x}/{y}","param": {"x": x, "y": y},"method": "GET" });}});
 
-    if (self)
+    register("ServiceExample", "cc.coodex.practice.jaxrs.api", { "all": function () {return invoke({"path": "/A/ServiceB/Book/all","param": {},"method": "GET" });}, "bigStringTest": function (pathParam, toPost) {return invoke({"path": "/A/ServiceB/Book/bigStringTest/{pathParam}","param": {"pathParam": pathParam, "toPost": toPost},"method": "POST" });}, "tokenId": function () {return invoke({"path": "/A/ServiceB/Book/tokenId","param": {},"method": "GET" });}, "get": overload("get", {"2": function (author, price) {return invoke({"path": "/A/ServiceB/Book/{author}/{price}","param": {"author": author, "price": price},"method": "GET" });}, "1": function (bookId) {return invoke({"path": "/A/ServiceB/Book/{bookId}","param": {"bookId": bookId},"method": "GET" });}}), "update": function (bookId, book) {return invoke({"path": "/A/ServiceB/Book/{bookId}","param": {"bookId": bookId, "book": book},"method": "PUT" });}, "findByAuthorLike": function (author) {return invoke({"path": "/A/ServiceB/Book/authorLike/{author}","param": {"author": author},"method": "GET" });}, "delete": function (bookId) {return invoke({"path": "/A/ServiceB/Book/{bookId}","param": {"bookId": bookId},"method": "DELETE" });}, "checkRole": function () {return invoke({"path": "/A/ServiceB/Book/checkRole","param": {},"method": "GET" });}, "findByPriceLessThen": function (price) {return invoke({"path": "/A/ServiceB/Book/priceLessThen/{price}","param": {"price": price},"method": "GET" });}});
+
+    if(self){
         self.concrete = concrete;
+    }
     return concrete;
 
 }));

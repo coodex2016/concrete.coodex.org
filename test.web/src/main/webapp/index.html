@@ -58,6 +58,12 @@
                 })
             })
 
+            $("#bigStringTest").click(function () {
+                module.bigStringTest("abcd", "okokokokokkokoko中文测试").success(function (result) {
+                    alert(result);
+                })
+            })
+
         });
     </script>
 </head>
@@ -70,6 +76,7 @@
 <button id="get2">get(author, price)</button>
 <button id="delete">delete(1)</button>
 <button id="setTokenId">setTokenId</button>
+<button id="bigStringTest">bigStringTest</button>
 
 <form id="fileTest"  method="POST" enctype="multipart/form-data">
     <input type="file" name="toUpload">

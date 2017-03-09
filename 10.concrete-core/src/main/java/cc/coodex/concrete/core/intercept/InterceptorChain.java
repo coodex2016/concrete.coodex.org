@@ -9,14 +9,14 @@ import java.util.*;
 /**
  * Created by davidoff shen on 2016-09-07.
  */
-public class InterceptorChain extends AbstractInterceptor implements Set<AbstractInterceptor> {
+public class InterceptorChain extends AbstractInterceptor implements Set<ConcreteInterceptor> {
 
     private static class MethodInvocationChain implements MethodInvocation {
 
-        private Queue<AbstractInterceptor> queue;
+        private Queue<ConcreteInterceptor> queue;
         private MethodInvocation invocation;
 
-        public MethodInvocationChain(Queue<AbstractInterceptor> queue, MethodInvocation invocation) {
+        public MethodInvocationChain(Queue<ConcreteInterceptor> queue, MethodInvocation invocation) {
             this.queue = queue;
             this.invocation = invocation;
         }
@@ -35,7 +35,7 @@ public class InterceptorChain extends AbstractInterceptor implements Set<Abstrac
         public Object proceed() throws Throwable {
             if (queue.isEmpty())
                 return invocation.proceed();
-            AbstractInterceptor interceptor = queue.poll();
+            ConcreteInterceptor interceptor = queue.poll();
             return interceptor.invoke(new MethodInvocationChain(queue, invocation));
         }
 
@@ -50,9 +50,9 @@ public class InterceptorChain extends AbstractInterceptor implements Set<Abstrac
         }
     }
 
-    private static Comparator<AbstractInterceptor> comparator = new Comparator<AbstractInterceptor>() {
+    private static Comparator<ConcreteInterceptor> comparator = new Comparator<ConcreteInterceptor>() {
         @Override
-        public int compare(AbstractInterceptor o1, AbstractInterceptor o2) {
+        public int compare(ConcreteInterceptor o1, ConcreteInterceptor o2) {
             if (o1 == o2) return 0;
             if (o1 == null) return -1;
             if (o2 == null) return 1;
@@ -65,12 +65,12 @@ public class InterceptorChain extends AbstractInterceptor implements Set<Abstrac
         return -1;
     }
 
-    private Set<AbstractInterceptor> interceptors = new HashSet<AbstractInterceptor>();
+    private Set<ConcreteInterceptor> interceptors = new HashSet<ConcreteInterceptor>();
 
     public InterceptorChain() {
     }
 
-    public InterceptorChain(List<AbstractInterceptor> interceptors) {
+    public InterceptorChain(List<ConcreteInterceptor> interceptors) {
         this.interceptors.addAll(interceptors);
     }
 
@@ -80,12 +80,12 @@ public class InterceptorChain extends AbstractInterceptor implements Set<Abstrac
         return super.invoke(new MethodInvocationChain(createQueue(), invocation));
     }
 
-    private Queue<AbstractInterceptor> createQueue() {
-        Queue<AbstractInterceptor> queue = new LinkedList<AbstractInterceptor>();
-        AbstractInterceptor[] interceptors = this.interceptors.toArray(new AbstractInterceptor[0]);
+    private Queue<ConcreteInterceptor> createQueue() {
+        Queue<ConcreteInterceptor> queue = new LinkedList<ConcreteInterceptor>();
+        ConcreteInterceptor[] interceptors = this.interceptors.toArray(new ConcreteInterceptor[0]);
         Arrays.sort(interceptors, comparator);
 
-        for (AbstractInterceptor interceptor : interceptors) {
+        for (ConcreteInterceptor interceptor : interceptors) {
             if (interceptor != null && !(interceptor instanceof InterceptorChain))
                 queue.add(interceptor);
         }
@@ -111,7 +111,7 @@ public class InterceptorChain extends AbstractInterceptor implements Set<Abstrac
     }
 
     @Override
-    public Iterator<AbstractInterceptor> iterator() {
+    public Iterator<ConcreteInterceptor> iterator() {
         return interceptors.iterator();
     }
 
@@ -126,8 +126,8 @@ public class InterceptorChain extends AbstractInterceptor implements Set<Abstrac
     }
 
     @Override
-    public boolean add(AbstractInterceptor abstractInterceptor) {
-        return interceptors.add(abstractInterceptor);
+    public boolean add(ConcreteInterceptor concreteInterceptor) {
+        return interceptors.add(concreteInterceptor);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class InterceptorChain extends AbstractInterceptor implements Set<Abstrac
     }
 
     @Override
-    public boolean addAll(Collection<? extends AbstractInterceptor> c) {
+    public boolean addAll(Collection<? extends ConcreteInterceptor> c) {
         return interceptors.addAll(c);
     }
 

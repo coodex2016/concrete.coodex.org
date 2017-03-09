@@ -1,7 +1,7 @@
 package cc.coodex.concrete.spring.aspects;
 
 import cc.coodex.concrete.common.ConcreteHelper;
-import cc.coodex.concrete.core.intercept.AbstractInterceptor;
+import cc.coodex.concrete.core.intercept.ConcreteInterceptor;
 import cc.coodex.concrete.core.intercept.InterceptorChain;
 import cc.coodex.util.Profile;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -21,7 +21,7 @@ public class ConcreteAOPChain extends InterceptorChain implements Ordered {
 
     protected static final String ASPECT_POINT = AbstractConcreteAspect.ASPECT_POINT;
 
-    public ConcreteAOPChain(List<AbstractInterceptor> interceptors) {
+    public ConcreteAOPChain(List<ConcreteInterceptor> interceptors) {
         super(interceptors);
     }
 

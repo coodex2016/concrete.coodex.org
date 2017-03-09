@@ -25,7 +25,7 @@ public class AttachmentInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    protected Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+    public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
         try {
             Set<String> attachments = new HashSet<String>();
             grant(result, attachments, null, false);

@@ -3,12 +3,17 @@ package cc.coodex.concrete.jaxrs;
 import cc.coodex.concrete.api.ConcreteService;
 import cc.coodex.concrete.common.ConcreteToolkit;
 import cc.coodex.concrete.common.ConcreteSPIFacade;
+import cc.coodex.concrete.common.DefinitionContext;
 import cc.coodex.concrete.jaxrs.client.ClientInstanceFactory;
 import cc.coodex.concrete.jaxrs.client.Invoker;
 import cc.coodex.concrete.jaxrs.client.InvokerFactory;
 import cc.coodex.concrete.jaxrs.client.impl.JavaProxyClientInstanceFactory;
+import cc.coodex.concrete.jaxrs.struct.Module;
+import cc.coodex.concrete.jaxrs.struct.Unit;
 import cc.coodex.util.SPIFacade;
+import org.aopalliance.intercept.MethodInvocation;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,6 +95,21 @@ public final class Client {
         }
         throw new RuntimeException("unable found "
                 + InvokerFactory.class.getName() + " service for [" + domain + "]");
+    }
+
+
+    // ------------
+    public static final Unit getUnitFromContext(DefinitionContext context, MethodInvocation invocation) {
+        Module module = JaxRSHelper.getModule(context.getDeclaringClass());
+        Method method = context.getDeclaringMethod();
+        int count = invocation.getArguments() == null ? 0 : invocation.getArguments().length;
+        for (Unit unit : module.getUnits()) {
+            if (method.getName().equals(unit.getMethod().getName())
+                    && count == unit.getParameters().length) {
+                return unit;
+            }
+        }
+        return null;
     }
 
 }

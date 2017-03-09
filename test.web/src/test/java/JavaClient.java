@@ -22,6 +22,7 @@ public class JavaClient {
             serviceExample = Client.getBean(ServiceExample.class, "http://localhost:8080/s");
 
             System.out.println(serviceExample.delete(12345l));
+            System.out.println(serviceExample.bigStringTest("中华", "七七八八"));
         }finally {
             ExecutorsHelper.shutdownAllNOW();
         }

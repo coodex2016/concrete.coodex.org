@@ -14,12 +14,12 @@ public class BeanValidationInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    protected boolean accept(RuntimeContext context) {
+    public boolean accept(RuntimeContext context) {
         return BeanValidation.accept(context);
     }
 
     @Override
-    protected void before(RuntimeContext context, MethodInvocation joinPoint) {
+    public void before(RuntimeContext context, MethodInvocation joinPoint) {
         BeanValidation.before(context, joinPoint);
     }
 }
