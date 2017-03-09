@@ -5,7 +5,7 @@ package cc.coodex.util;
  */
 public abstract class AcceptableServiceSPIFacade<Param_Type, T extends AcceptableService<Param_Type>> extends SPIFacade<T> {
 
-    T getServiceInstance(Param_Type param) {
+    public T getServiceInstance(Param_Type param) {
         for (T instance : getAllInstances()) {
             if (instance.accept(param))
                 return instance;
