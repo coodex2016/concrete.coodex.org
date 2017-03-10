@@ -35,9 +35,11 @@ public final class Assert {
      * @param o
      * @param code
      * @param objects
+     * @return
      */
-    public static final void isNull(Object o, int code, Object... objects) {
+    public static final <T> T isNull(T o, int code, Object... objects) {
         is(o == null, code, objects);
+        return o;
     }
 
     /**
