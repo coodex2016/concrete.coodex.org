@@ -1,10 +1,14 @@
 package cc.coodex.concrete.jaxrs;
 
 import cc.coodex.concrete.api.ConcreteService;
+import cc.coodex.concrete.common.DefinitionContext;
 import cc.coodex.concrete.jaxrs.struct.Module;
 import cc.coodex.concrete.jaxrs.struct.Param;
+import cc.coodex.concrete.jaxrs.struct.Unit;
 import cc.coodex.util.Common;
+import org.aopalliance.intercept.MethodInvocation;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -126,6 +130,19 @@ public class JaxRSHelper {
             MODULE_CACHE.put(type, module);
         }
         return module;
+    }
+
+    public static final Unit getUnitFromContext(DefinitionContext context, MethodInvocation invocation) {
+        Module module = JaxRSHelper.getModule(context.getDeclaringClass());
+        Method method = context.getDeclaringMethod();
+        int count = invocation.getArguments() == null ? 0 : invocation.getArguments().length;
+        for (Unit unit : module.getUnits()) {
+            if (method.getName().equals(unit.getMethod().getName())
+                    && count == unit.getParameters().length) {
+                return unit;
+            }
+        }
+        return null;
     }
 
 

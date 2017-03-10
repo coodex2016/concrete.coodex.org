@@ -100,16 +100,7 @@ public final class Client {
 
     // ------------
     public static final Unit getUnitFromContext(DefinitionContext context, MethodInvocation invocation) {
-        Module module = JaxRSHelper.getModule(context.getDeclaringClass());
-        Method method = context.getDeclaringMethod();
-        int count = invocation.getArguments() == null ? 0 : invocation.getArguments().length;
-        for (Unit unit : module.getUnits()) {
-            if (method.getName().equals(unit.getMethod().getName())
-                    && count == unit.getParameters().length) {
-                return unit;
-            }
-        }
-        return null;
+        return JaxRSHelper.getUnitFromContext(context, invocation);
     }
 
 }

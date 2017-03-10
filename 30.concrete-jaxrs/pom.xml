@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-api</artifactId>
+            <artifactId>concrete-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
