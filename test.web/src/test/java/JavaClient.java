@@ -1,7 +1,7 @@
-import cc.coodex.concrete.jaxrs.Client;
-import cc.coodex.concurrent.ExecutorsHelper;
-import cc.coodex.practice.jaxrs.api.ServiceExample;
-import cc.coodex.practice.jaxrs.pojo.Book;
+import org.coodex.concrete.jaxrs.Client;
+import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.practice.jaxrs.api.ServiceExample;
+import org.coodex.practice.jaxrs.pojo.Book;
 
 /**
  * Created by davidoff shen on 2016-12-07.

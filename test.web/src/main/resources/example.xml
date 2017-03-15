@@ -7,16 +7,16 @@
 
     <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
 
-    <bean class="cc.coodex.concrete.spring.SpringBeanProvider"></bean>
-    <bean class="cc.coodex.concrete.core.token.local.LocalTokenManager"></bean>
+    <bean class="org.coodex.concrete.spring.SpringBeanProvider"></bean>
+    <bean class="org.coodex.concrete.core.token.local.LocalTokenManager"></bean>
 
-    <context:component-scan base-package="cc.coodex.practice.jaxrs.impl"></context:component-scan>
+    <context:component-scan base-package="org.coodex.practice.jaxrs.impl"></context:component-scan>
 
-    <bean class="cc.coodex.concrete.spring.aspects.ServiceTimingAspect"></bean>
-    <!--<bean class="cc.coodex.concrete.spring.aspects.RBAC_Aspect"></bean>-->
+    <bean class="org.coodex.concrete.spring.aspects.ServiceTimingAspect"></bean>
+    <!--<bean class="RBAC_Aspect"></bean>-->
 
-    <bean class="cc.coodex.concrete.attachments.repo.FastDFSRepository"></bean>
-    <bean class="cc.coodex.concrete.attachments.client.ClientServiceImpl"></bean>
-    <bean class="cc.coodex.concrete.attachments.server.AttachmentInfoServiceImpl"></bean>
+    <bean class="org.coodex.concrete.attachments.repo.FastDFSRepository"></bean>
+    <bean class="org.coodex.concrete.attachments.client.ClientServiceImpl"></bean>
+    <bean class="org.coodex.concrete.attachments.server.AttachmentInfoServiceImpl"></bean>
 
 </beans>

@@ -1,9 +1,9 @@
-import cc.coodex.concrete.apitools.API;
-import cc.coodex.concrete.apitools.jaxrs.jquery.JQueryDocRender;
-import cc.coodex.concrete.apitools.jaxrs.jquery.JQueryPromisesCodeRender;
-import cc.coodex.concrete.apitools.jaxrs.service.ServiceDocRender;
-import cc.coodex.concurrent.ExecutorsHelper;
-import cc.coodex.practice.jaxrs.api.ServiceExample;
+import org.coodex.concrete.apitools.API;
+import org.coodex.concrete.apitools.jaxrs.jquery.JQueryDocRender;
+import org.coodex.concrete.apitools.jaxrs.jquery.JQueryPromisesCodeRender;
+import org.coodex.concrete.apitools.jaxrs.service.ServiceDocRender;
+import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.practice.jaxrs.api.ServiceExample;
 
 import java.io.IOException;
 

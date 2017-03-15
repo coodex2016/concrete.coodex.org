@@ -1,0 +1,3 @@
+org.coodex.concrete.apitools.jaxrs.service.ServiceDocRender
+org.coodex.concrete.apitools.jaxrs.jquery.JQueryPromisesCodeRender
+org.coodex.concrete.apitools.jaxrs.jquery.JQueryDocRender
