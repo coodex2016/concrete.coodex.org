@@ -9,7 +9,7 @@ import org.springframework.core.Ordered;
  * Created by davidoff shen on 2016-09-01.
  */
 public abstract class AbstractConcreteAspect extends AbstractInterceptor implements Ordered {
-    public static final String ASPECT_POINT = "target(ConcreteService) && execution(public * *(..))";
+    public static final String ASPECT_POINT = "target(org.coodex.concrete.api.ConcreteService) && execution(public * *(..))";
 
 
     @Around(ASPECT_POINT)

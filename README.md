@@ -1,6 +1,6 @@
 # Concrete
 
-[book.concrete.coodex.cc](https://book.concrete.coodex.cc)
+[book.concrete.coodex.org](https://book.concrete.coodex.cc)
 
 ## 什么鬼？
 
