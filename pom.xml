@@ -114,24 +114,24 @@
     <distributionManagement>
         <!-- oss -->
 
-        <!--<snapshotRepository>-->
-            <!--<id>oss</id>-->
-            <!--<url>https://oss.sonatype.org/content/repositories/snapshots</url>-->
-        <!--</snapshotRepository>-->
-        <!--<repository>-->
-            <!--<id>oss</id>-->
-            <!--<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
-        <!--</repository>-->
-
-        <!-- local repository -->
         <snapshotRepository>
-            <id>private</id>
-            <url>http://10.10.43.163:8081/repository/maven-snapshots/</url>
+            <id>oss</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
         <repository>
-            <id>private</id>
-            <url>http://10.10.43.163:8081/repository/maven-public/</url>
+            <id>oss</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
+
+        <!-- local repository -->
+        <!--<snapshotRepository>-->
+            <!--<id>private</id>-->
+            <!--<url>http://10.10.43.163:8081/repository/maven-snapshots/</url>-->
+        <!--</snapshotRepository>-->
+        <!--<repository>-->
+            <!--<id>private</id>-->
+            <!--<url>http://10.10.43.163:8081/repository/maven-public/</url>-->
+        <!--</repository>-->
     </distributionManagement>
 
     <build>
