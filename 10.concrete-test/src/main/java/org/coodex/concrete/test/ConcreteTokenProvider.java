@@ -41,7 +41,7 @@ public class ConcreteTokenProvider {
         try {
             return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
         } catch (Throwable throwable) {
-            log.warn("{}", throwable.getLocalizedMessage(), throwable);
+//            log.warn("{}", throwable.getLocalizedMessage(), throwable);
             return new LocalTokenManager();
         }
     }

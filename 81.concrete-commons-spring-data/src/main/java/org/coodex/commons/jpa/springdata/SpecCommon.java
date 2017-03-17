@@ -92,9 +92,26 @@ public class SpecCommon {
     }
 
     public static <ATTR, ENTITY> Specification<ENTITY> spec(
-            Operators.Logical logical, String attributeName, ATTR... attributes) {
+            Class<ENTITY> entityClass,
+            Operators.Logical logical,
+            String attributeName,
+            ATTR... attributes) {
 
         return new Spec<ATTR, ENTITY>(logical, attributeName, attributes);
+    }
+
+    public static <ATTR, ENTITY> Specification<ENTITY> spec(
+            Operators.Logical logical,
+            String attributeName,
+            ATTR... attributes) {
+
+        return new Spec<ATTR, ENTITY>(logical, attributeName, attributes);
+    }
+
+    public static <ATTR, ENTITY> Specification<ENTITY> memberOf(
+            Class<ENTITY> entityClass, String attributeName, ATTR attr) {
+
+        return new MemberOfSpec<ATTR, ENTITY>(attributeName, attr);
     }
 
     public static <ATTR, ENTITY> Specification<ENTITY> memberOf(String attributeName, ATTR attr) {
@@ -103,7 +120,6 @@ public class SpecCommon {
     }
 
     static class MemberOfSpec<ATTR, ENTITY> implements Specification<ENTITY> {
-
         private final ATTR attr;
         private final String attributeName;
 
