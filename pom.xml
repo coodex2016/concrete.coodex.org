@@ -2,17 +2,17 @@
 <!--
   ~ Copyright (c) 2017 coodex.org (jujus.shen@126.com)
   ~
-  ~  Licensed under the Apache License, Version 2.0 (the "License");
-  ~  you may not use this file except in compliance with the License.
-  ~  You may obtain a copy of the License at
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
   ~
-  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~ http://www.apache.org/licenses/LICENSE-2.0
   ~
-  ~  Unless required by applicable law or agreed to in writing, software
-  ~  distributed under the License is distributed on an "AS IS" BASIS,
-  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~  See the License for the specific language governing permissions and
-  ~  limitations under the License.
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -70,6 +70,7 @@
 
         <module>plugins.concrete-formatters-freemarker</module>
         <module>00.coodex.utilities.sec.tools</module>
+        <module>81.concrete-commons-spring-data</module>
 
         <!--<module>test.web</module>-->
 
@@ -90,7 +91,11 @@
 
         <slf4j.version>1.7.24</slf4j.version>
         <aspectj.version>${default.version}</aspectj.version>
-        <spring.framework.version>4.3.7.RELEASE</spring.framework.version>
+
+        <!-- 维持spring.data跟framework的一致 -->
+        <spring.framework.version>4.3.6.RELEASE</spring.framework.version>
+        <spring.data.version>Ingalls-RELEASE</spring.data.version>
+
         <jersey.version>2.25.1</jersey.version>
         <junit.version>${default.version}</junit.version>
         <freemarker.version>2.3.23</freemarker.version>
@@ -258,6 +263,14 @@
                 <version>${spring.framework.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-releasetrain</artifactId>
+                <version>${spring.data.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
             </dependency>
 
             <!-- guice IoC -->
