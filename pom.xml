@@ -72,7 +72,7 @@
         <module>00.coodex.utilities.sec.tools</module>
         <module>81.concrete-commons-spring-data</module>
 
-        <!--<module>test.web</module>-->
+        <module>test.web</module>
 
     </modules>
 
@@ -112,13 +112,25 @@
     </properties>
 
     <distributionManagement>
+        <!-- oss -->
+
+        <!--<snapshotRepository>-->
+            <!--<id>oss</id>-->
+            <!--<url>https://oss.sonatype.org/content/repositories/snapshots</url>-->
+        <!--</snapshotRepository>-->
+        <!--<repository>-->
+            <!--<id>oss</id>-->
+            <!--<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
+        <!--</repository>-->
+
+        <!-- local repository -->
         <snapshotRepository>
-            <id>oss</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>private</id>
+            <url>http://10.10.43.163:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
         <repository>
-            <id>oss</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>private</id>
+            <url>http://10.10.43.163:8081/repository/maven-public/</url>
         </repository>
     </distributionManagement>
 
