@@ -129,8 +129,8 @@
         <druid.version>1.0.29</druid.version>
 
         <!-- coodex utilities 版本，它并不需要随着concrete变化，待第一次正式发布后规划其版本 -->
-        <coodex.utilities.version>${project.version}</coodex.utilities.version>
-        <coodex.shared.cache.version>${project.version}</coodex.shared.cache.version>
+        <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>
+        <coodex.shared.cache.version>${project.parent.version}</coodex.shared.cache.version>
 
 
     </properties>
