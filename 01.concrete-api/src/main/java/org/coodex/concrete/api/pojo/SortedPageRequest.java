@@ -18,13 +18,14 @@ package org.coodex.concrete.api.pojo;
 
 import org.coodex.concrete.api.Description;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by davidoff shen on 2017-03-21.
  */
 public class SortedPageRequest<T> extends PageRequest<T> {
-    private List<Sorted> sort;
+    private List<Sorted> sort = new ArrayList<Sorted>();
 
     @Description(name = "排序信息")
     public List<Sorted> getSort() {
