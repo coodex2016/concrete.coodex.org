@@ -36,6 +36,11 @@ public class ConcreteException extends RuntimeException {
     public ConcreteException(int code, Object... objects) {
         this.code = code;
         this.o = objects;
+        if(this.o != null && this.o.length > 0){
+            if(this.o[o.length - 1] instanceof Throwable){
+                this.initCause((Throwable) this.o[o.length - 1]);
+            }
+        }
     }
 
 
