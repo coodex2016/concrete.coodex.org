@@ -16,10 +16,7 @@
 
 package test.org.coodex.concrete.entities;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -32,6 +29,7 @@ public class TestEntity implements Serializable {
     @Id
     private String id;
 
+    @Column(name = "col1", length = 20)
     private String strAttr;
 
     private Integer intAttr;

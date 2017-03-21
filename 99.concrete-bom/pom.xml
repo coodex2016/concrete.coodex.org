@@ -78,6 +78,33 @@
                 <version>${slf4j.version}</version>
             </dependency>
 
+            <!-- hibernate validator -->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate.validator.version}</version>
+            </dependency>
+
+
+            <!-- hibernate -->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+
+            <!-- druid -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
 
             <!-- coodex -->
             <dependency>
@@ -193,6 +220,13 @@
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-attachments-repo-fastdfs</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-commons-spring-data</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 

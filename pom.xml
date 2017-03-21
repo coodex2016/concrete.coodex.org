@@ -25,11 +25,11 @@
     <version>0.2.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
+    <!--<parent>-->
+        <!--<groupId>org.sonatype.oss</groupId>-->
+        <!--<artifactId>oss-parent</artifactId>-->
+        <!--<version>7</version>-->
+    <!--</parent>-->
 
     <scm>
         <connection>scm:git:https://github.com/coodex2016/concrete.coodex.org.git</connection>
@@ -50,6 +50,9 @@
             <id>shenhainan</id>
             <name>Shen Hainan</name>
             <url>http://coodex.org</url>
+            <email>jujus.shen@126.com</email>
+            <organization>coodex.org</organization>
+            <organizationUrl>http://coodex.org</organizationUrl>
         </developer>
     </developers>
 
@@ -105,8 +108,8 @@
         <jsr-311.version>1.1.1</jsr-311.version>
         <jsr-339.version>1.0.0.Final</jsr-339.version>
 
-        <slf4j.version>1.7.24</slf4j.version>
-        <aspectj.version>${default.version}</aspectj.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <aspectj.version>1.8.10</aspectj.version>
 
         <!-- 维持spring.data跟framework的一致 -->
         <spring.framework.version>4.3.6.RELEASE</spring.framework.version>
@@ -120,34 +123,41 @@
 
         <thrift.version>${default.version}</thrift.version>
 
+        <hibernate.version>5.2.8.Final</hibernate.version>
+        <hibernate.validator.version>5.4.0.Final</hibernate.validator.version>
+
+        <druid.version>1.0.29</druid.version>
+
         <!-- coodex utilities 版本，它并不需要随着concrete变化，待第一次正式发布后规划其版本 -->
-        <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>
-        <coodex.shared.cache.version>${project.parent.version}</coodex.shared.cache.version>
+        <coodex.utilities.version>${project.version}</coodex.utilities.version>
+        <coodex.shared.cache.version>${project.version}</coodex.shared.cache.version>
 
 
     </properties>
 
     <distributionManagement>
+
         <!-- oss -->
 
-        <snapshotRepository>
-            <id>oss</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>oss</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-
-        <!-- local repository -->
         <!--<snapshotRepository>-->
-            <!--<id>private</id>-->
-            <!--<url>http://10.10.43.163:8081/repository/maven-snapshots/</url>-->
+            <!--<id>oss</id>-->
+            <!--<url>https://oss.sonatype.org/content/repositories/snapshots</url>-->
         <!--</snapshotRepository>-->
         <!--<repository>-->
-            <!--<id>private</id>-->
-            <!--<url>http://10.10.43.163:8081/repository/maven-public/</url>-->
+            <!--<id>oss</id>-->
+            <!--<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
         <!--</repository>-->
+
+        <!-- local repository -->
+        <snapshotRepository>
+            <id>private</id>
+            <url>http://10.10.43.163:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>private</id>
+            <url>http://10.10.43.163:8081/repository/maven-public/</url>
+        </repository>
+
     </distributionManagement>
 
     <build>
@@ -159,6 +169,7 @@
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
+                    <encoding>UTF-8</encoding>
                     <compilerArgs>
                         <arg>-parameters</arg>
                     </compilerArgs>
@@ -171,7 +182,7 @@
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
-                        <phase>install</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -391,6 +402,18 @@
             <!--<artifactId>hibernate-validator</artifactId>-->
             <!--<version>5.2.4.Final</version>-->
             <!--</dependency>-->
+
+
+
+
+
+            <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.10</version>
+            </dependency>
+
 
 
             <!-- 高性能连接池 -->

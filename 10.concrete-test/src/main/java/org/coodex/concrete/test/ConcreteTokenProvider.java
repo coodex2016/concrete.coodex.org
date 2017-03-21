@@ -17,6 +17,7 @@
 package org.coodex.concrete.test;
 
 import org.coodex.concrete.common.BeanProviderFacade;
+import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concrete.core.token.local.LocalTokenManager;
@@ -40,8 +41,8 @@ public class ConcreteTokenProvider {
     private static TokenManager getInstance() {
         try {
             return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
-        } catch (Throwable throwable) {
-//            log.warn("{}", throwable.getLocalizedMessage(), throwable);
+        } catch (ConcreteException ex) {
+            log.warn("error occurred: {}. Using LocalTokenManager", ex.getLocalizedMessage());
             return new LocalTokenManager();
         }
     }
