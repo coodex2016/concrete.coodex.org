@@ -18,18 +18,20 @@ package org.coodex.concrete.api.pojo;
 
 import org.coodex.concrete.api.Description;
 
+import java.util.List;
+
 /**
  * Created by davidoff shen on 2017-03-21.
  */
-public class SortablePageRequest<T, S> extends PageRequest<T> {
-    private S sort;
+public class SortedPageRequest<T> extends PageRequest<T> {
+    private List<Sorted> sort;
 
     @Description(name = "排序信息")
-    public S getSort() {
+    public List<Sorted> getSort() {
         return sort;
     }
 
-    public void setSort(S sort) {
+    public void setSort(List<Sorted> sort) {
         this.sort = sort;
     }
 }
