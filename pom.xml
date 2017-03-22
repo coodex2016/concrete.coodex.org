@@ -26,9 +26,9 @@
     <packaging>pom</packaging>
 
     <!--<parent>-->
-        <!--<groupId>org.sonatype.oss</groupId>-->
-        <!--<artifactId>oss-parent</artifactId>-->
-        <!--<version>7</version>-->
+    <!--<groupId>org.sonatype.oss</groupId>-->
+    <!--<artifactId>oss-parent</artifactId>-->
+    <!--<version>7</version>-->
     <!--</parent>-->
 
     <scm>
@@ -75,6 +75,7 @@
         <module>35.concrete-support-jaxrs</module>
         <module>35.concrete-support-jsr311</module>
         <module>35.concrete-support-jsr339</module>
+        <module>36.concrete-support-jaxrs-saas-reverse-proxy</module>
 
         <module>51.concrete-api-tools</module>
         <module>52.concrete-jaxrs-client</module>
@@ -91,6 +92,7 @@
         <module>00.coodex.utilities.sec.tools</module>
         <module>81.concrete-commons-spring-data</module>
 
+        <!--<module>test.reverse.proxy</module>-->
         <!--<module>test.web</module>-->
 
     </modules>
@@ -140,12 +142,12 @@
         <!-- oss -->
 
         <!--<snapshotRepository>-->
-            <!--<id>oss</id>-->
-            <!--<url>https://oss.sonatype.org/content/repositories/snapshots</url>-->
+        <!--<id>oss</id>-->
+        <!--<url>https://oss.sonatype.org/content/repositories/snapshots</url>-->
         <!--</snapshotRepository>-->
         <!--<repository>-->
-            <!--<id>oss</id>-->
-            <!--<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
+        <!--<id>oss</id>-->
+        <!--<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
         <!--</repository>-->
 
         <!-- local repository -->
@@ -385,7 +387,6 @@
             </dependency>
 
 
-
             <!-- providers -->
             <!-- jersey -->
             <dependency>
@@ -404,16 +405,12 @@
             <!--</dependency>-->
 
 
-
-
-
             <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>1.10</version>
             </dependency>
-
 
 
             <!-- 高性能连接池 -->

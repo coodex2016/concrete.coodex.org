@@ -32,7 +32,7 @@ public abstract class AbstractCopier<SRC, TARGET> implements Copier<SRC, TARGET>
         try {
             return clz.newInstance();
         } catch (Throwable th) {
-            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th);
+            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }
     }
 

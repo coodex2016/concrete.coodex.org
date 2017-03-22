@@ -38,7 +38,7 @@ import java.util.zip.ZipFile;
  */
 public class ReflectHelper {
 
-    public interface Processer {
+    public interface Processor {
         void process(Class<?> serviceClass);
     }
 
@@ -327,7 +327,7 @@ public class ReflectHelper {
         }
     }
 
-    public static void foreachClass(Processer processor, ClassFilter filter, String... packages) {
+    public static void foreachClass(Processor processor, ClassFilter filter, String... packages) {
         if (processor == null) return;
         Set<Class> submittedClasses = new HashSet<Class>();
         try {

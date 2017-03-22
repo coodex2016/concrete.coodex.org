@@ -71,7 +71,7 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
     }
 
     @SuppressWarnings("unchecked")
-    private Class<T> getInterfaceClass() {
+    protected Class<T> getInterfaceClass() {
         return (Class<T>) TypeHelper.findActualClassFrom(AbstractJAXRSResource.class.getTypeParameters()[0], getClass());
     }
 
@@ -96,8 +96,7 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
             else
                 return convert(POJOMocker.mock(method.getGenericReturnType(), getInterfaceClass()));
         } catch (Throwable th) {
-            th.printStackTrace();
-            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage());
+            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }
     }
 
@@ -176,16 +175,22 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         Response.ResponseBuilder builder = result == null ? Response.noContent() : Response.ok();
 
         if (newToken) {
-            URI root = uriInfo.getBaseUri();
-            String cookiePath = ConcreteHelper.getProfile().getString("jaxrs.token.cookie.path");
-            builder = builder.cookie(new NewCookie(new Cookie(
-                    TOKEN_ID_IN_COOKIE, token.getTokenId(),
-                    Common.isBlank(cookiePath) ? root.getPath() : cookiePath, null)));
+            builder = setCookie(token, builder);
         }
 
         if (result != null) builder = builder.entity(result);
 
         return builder.build();
+    }
+
+
+    protected Response.ResponseBuilder setCookie(Token token, Response.ResponseBuilder builder) {
+        URI root = uriInfo.getBaseUri();
+        String cookiePath = ConcreteHelper.getProfile().getString("jaxrs.token.cookie.path");
+        builder = builder.cookie(new NewCookie(new Cookie(
+                TOKEN_ID_IN_COOKIE, token.getTokenId(),
+                Common.isBlank(cookiePath) ? root.getPath() : cookiePath, null)));
+        return builder;
     }
 
 

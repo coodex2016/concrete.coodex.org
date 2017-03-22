@@ -16,7 +16,10 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.AbstractErrorCodes;
+import org.coodex.concrete.common.ConcreteSPIFacade;
+import org.coodex.concrete.common.ConcreteToolkit;
+import org.coodex.concrete.common.ErrorMessageFacade;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.util.ClassFilter;
 import org.coodex.util.ReflectHelper;
@@ -40,7 +43,6 @@ public class JaxRSServiceHelper {
         }
         throw new RuntimeException("no class generator found for " + desc + ".");
     }
-
 
 
     public static Set<Class<?>> generate(String desc, String... packages) {
@@ -72,21 +74,23 @@ public class JaxRSServiceHelper {
     };
 
 
-    public static void foreachErrorClass(ReflectHelper.Processer processor, String... packages) {
+    public static void foreachErrorClass(ReflectHelper.Processor processor, String... packages) {
         foreachClass(processor, CONCRETE_ERROR, packages);
     }
 
     @SuppressWarnings("unchecked")
     private static void registErrorCodes(String[] packages) {
-        ErrorMessageFacade.register(AbstractErrorCodes.class, ErrorCodes.class);
-
-        foreachErrorClass(new ReflectHelper.Processer() {
+//        ErrorMessageFacade.register(AbstractErrorCodes.class, ErrorCodes.class);
+        ReflectHelper.Processor processor = new ReflectHelper.Processor() {
             @Override
             public void process(Class<?> serviceClass) {
                 if (AbstractErrorCodes.class.isAssignableFrom(serviceClass))
                     ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) serviceClass);
             }
-        }, packages);
+        };
+
+        foreachErrorClass(processor, AbstractErrorCodes.class.getPackage().getName());
+        foreachErrorClass(processor, packages);
     }
 
 

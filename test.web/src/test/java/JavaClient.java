@@ -1,5 +1,6 @@
 import org.coodex.concrete.jaxrs.Client;
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.practice.jaxrs.api.SaaSExample;
 import org.coodex.practice.jaxrs.api.ServiceExample;
 import org.coodex.practice.jaxrs.pojo.Book;
 
@@ -23,6 +24,9 @@ public class JavaClient {
 
             System.out.println(serviceExample.delete(12345l));
             System.out.println(serviceExample.bigStringTest("中华", "七七八八"));
+
+            SaaSExample saaSExample = Client.getBean(SaaSExample.class);
+            saaSExample.exampleForSaaS("123456", "OKOKOK");
         }finally {
             ExecutorsHelper.shutdownAllNOW();
         }

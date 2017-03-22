@@ -46,7 +46,7 @@ public abstract class AbstractJSR339Resource<T extends ConcreteService> extends 
     /**
      * @return
      */
-    private static Executor getExecutor() {
+    protected static Executor getExecutor() {
         return EXECUTOR;
     }
 

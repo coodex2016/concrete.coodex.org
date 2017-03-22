@@ -23,15 +23,19 @@
     <script>
         $(document).ready(function () {
             concrete.configure({
-                "root": "/s"
+                "root": "/proxy/s"
             });
 
             var module = concrete.module("org.coodex.practice.jaxrs.api.ServiceExample");
+            var saasExample = concrete.module("SaaSExample");
 
             $("#all").click(function () {
-                module.all().done(function () {
+                saasExample.exampleForSaaS("54321", "ddd").done(function () {
                     console.log(arguments);
                 })
+//                module.all().done(function () {
+//                    console.log(arguments);
+//                })
             });
 
             $("#update").click(function () {

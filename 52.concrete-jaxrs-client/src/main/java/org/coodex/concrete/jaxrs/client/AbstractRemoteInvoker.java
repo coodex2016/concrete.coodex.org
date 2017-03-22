@@ -57,8 +57,10 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
                     return POJOMocker.mock(unit.getGenericReturnType(), unit.getDeclaringModule().getInterfaceClass());
                 } else {
 
-                    String path = domain + unit.getDeclaringModule().getName();
-                    StringTokenizer stringTokenizer = new StringTokenizer(unit.getName(), "/");
+                    String path = domain;
+                    //+ unit.getDeclaringModule().getName();
+                    StringTokenizer stringTokenizer = new StringTokenizer(
+                            unit.getDeclaringModule().getName() + "/" + unit.getName(), "/");
                     StringBuilder builder = new StringBuilder();
 
                     while (stringTokenizer.hasMoreElements()) {
@@ -94,12 +96,6 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
                                 break;
                             }
                         }
-//                for (Object o : args) {
-//                    if (o != null && !JaxRSHelper.isPrimitive(o.getClass())) {
-//                        toSubmit = o;
-//                        break;
-//                    }
-//                }
                     }
                     return invoke(path, unit, toSubmit);
                 }

@@ -172,7 +172,7 @@ public class ConcreteToolkit {
 //    }
 
 
-    public static void foreachIntf(ReflectHelper.Processer processor, String... packages) {
+    public static void foreachIntf(ReflectHelper.Processor processor, String... packages) {
         ReflectHelper.foreachClass(processor, CONCRETE_SERVICE_INTERFACE_FILTER, packages);
     }
 
@@ -201,7 +201,7 @@ public class ConcreteToolkit {
             final ModuleMaker<MODULE> maker, String... packages) {
 
         final Map<String, MODULE> moduleMap = new HashMap<String, MODULE>();
-        foreachIntf(new ReflectHelper.Processer() {
+        foreachIntf(new ReflectHelper.Processor() {
             @Override
             public void process(Class<?> serviceClass) {
                 MODULE module = maker.make(serviceClass);

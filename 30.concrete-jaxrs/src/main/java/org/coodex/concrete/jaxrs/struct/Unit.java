@@ -95,12 +95,15 @@ public class Unit extends AbstractUnit<Param, Module> {
         if (methodName != null)
             buffer.append("/").append(methodName);
 
+        String toTest = "/" + getDeclaringModule().getName()
+                + (methodName == null ? "" : ("/" + methodName));
+
         for (Param parameter : getParameters()) {
             String pathParamValue = getPathParam(parameter);
             if (pathParamValue != null) {
                 String restfulNode = "{" + pathParamValue + "}";
 
-                if (methodName == null || methodName.indexOf(restfulNode) < 0) {
+                if (toTest == null || toTest.indexOf(restfulNode) < 0) {
                     buffer.append("/").append(restfulNode);
                 }
             }

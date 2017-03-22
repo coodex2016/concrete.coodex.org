@@ -88,8 +88,10 @@ public class OkHttp3Invoker extends AbstractRemoteInvoker {
             log.debug("request:{} {}", unit.getInvokeType(), path);
             Response response = client.newCall(build(unit.getInvokeType(), builder, body)).execute();
             if (response.isSuccessful()) {
-                return getJSONSerializer().parse(response.body().string(),
-                        TypeHelper.toTypeReference(unit.getGenericReturnType(), unit.getDeclaringModule().getInterfaceClass()));
+
+                return void.class.equals(unit.getReturnType()) ? null :
+                        getJSONSerializer().parse(response.body().string(),
+                                TypeHelper.toTypeReference(unit.getGenericReturnType(), unit.getDeclaringModule().getInterfaceClass()));
             } else {
                 if (response.header(HEADER_ERROR_OCCURRED) != null) {
                     ErrorInfo errorInfo = getJSONSerializer().parse(response.body().string(), ErrorInfo.class);

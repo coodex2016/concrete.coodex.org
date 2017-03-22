@@ -27,7 +27,6 @@
 
     <!--<groupId>org.coodex.concrete</groupId>-->
     <artifactId>test.web</artifactId>
-    <packaging>war</packaging>
 
 
     <dependencyManagement>

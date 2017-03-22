@@ -90,9 +90,9 @@ public abstract class RBAC /*extends AbstractInterceptor*/ {
             //用户未登录
             Assert.isNull(currentAccount, ErrorCodes.NONE_ACCOUNT, token);
             //用户已失效
-            Assert.is(!currentAccount.isValid(), ErrorCodes.ACCOUNT_INVALIDATE);
+            Assert.not(currentAccount.isValid(), ErrorCodes.ACCOUNT_INVALIDATE);
             //用户不可信
-            Assert.is(!token.isAccountCredible(), ErrorCodes.UNTRUSTED_ACCOUNT);
+            Assert.not(token.isAccountCredible(), ErrorCodes.UNTRUSTED_ACCOUNT);
 
             //从用户角色中过滤出匹配domain的角色
             Set<String> accountDomainRoles = getAccountDomainRoles(domain, currentAccount);

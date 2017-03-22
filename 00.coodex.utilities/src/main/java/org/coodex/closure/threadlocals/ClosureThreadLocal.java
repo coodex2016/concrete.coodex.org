@@ -40,5 +40,4 @@ public abstract class ClosureThreadLocal<VariantType> {
         }
     }
 
-
 }

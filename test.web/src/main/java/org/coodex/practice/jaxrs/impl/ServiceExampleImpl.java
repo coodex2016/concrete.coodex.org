@@ -23,6 +23,7 @@ import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.concrete.jaxrs.BigString;
 import org.coodex.practice.jaxrs.api.Calc;
+import org.coodex.practice.jaxrs.api.SaaSExample;
 import org.coodex.practice.jaxrs.api.ServiceExample;
 import org.coodex.practice.jaxrs.pojo.Book;
 import org.coodex.practice.jaxrs.pojo.BookInfo;
@@ -37,7 +38,7 @@ import java.util.List;
  * Created by davidoff shen on 2016-11-28.
  */
 @Named
-public class ServiceExampleImpl implements ServiceExample, Calc {
+public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
 
     private final static Logger log = LoggerFactory.getLogger(ServiceExampleImpl.class);
 
@@ -129,5 +130,11 @@ public class ServiceExampleImpl implements ServiceExample, Calc {
     @Override
     public int add(int x, int y) {
         return x + y;
+    }
+
+    @Override
+    public String exampleForSaaS(String tenantId, String ok) {
+        log.debug("tenantId: {}", tenantId);
+        return ok;
     }
 }

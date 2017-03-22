@@ -147,8 +147,7 @@ public class ConcreteHelper {
     public final static ConcreteException getException(Throwable th) {
         ConcreteException concreteException = findException(th);
         if (concreteException == null) {
-            concreteException = new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage());
-            concreteException.initCause(th);
+            concreteException = new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }
         return concreteException;
     }
