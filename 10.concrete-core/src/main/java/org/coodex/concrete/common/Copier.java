@@ -16,6 +16,8 @@
 
 package org.coodex.concrete.common;
 
+import java.util.Collection;
+
 /**
  * 定义复制PO(持久化对象)/VO(视图对象)的标准
  * <p>
@@ -57,5 +59,24 @@ public interface Copier<SRC, TARGET> {
      * @return 复制一个新的目标实例
      */
     TARGET copy(SRC src);
+
+
+    /**
+     * 复制集合
+     *
+     * @param srcCollection
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    <T extends Collection<TARGET>> T copy(Collection<SRC> srcCollection, Class<T> clazz);
+
+
+    /**
+     *
+     * @param srcCollection
+     * @return
+     */
+    Collection<TARGET> copy(Collection<SRC> srcCollection);
 
 }
