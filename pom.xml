@@ -116,6 +116,7 @@
         <!-- 维持spring.data跟framework的一致 -->
         <spring.framework.version>4.3.6.RELEASE</spring.framework.version>
         <spring.data.version>Ingalls-RELEASE</spring.data.version>
+        <spring.boot.version>1.5.2.RELEASE</spring.boot.version>
 
         <jersey.version>2.25.1</jersey.version>
         <junit.version>${default.version}</junit.version>
@@ -137,30 +138,37 @@
 
     </properties>
 
-    <distributionManagement>
+    <profiles>
+        <profile>
+            <id>private.distribution</id>
+            <distributionManagement>
+                <!-- local repository -->
+                <snapshotRepository>
+                    <id>private</id>
+                    <url>http://10.10.43.163:8081/repository/maven-snapshots/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>private</id>
+                    <url>http://10.10.43.163:8081/repository/maven-public/</url>
+                </repository>
 
-        <!-- oss -->
-
-        <!--<snapshotRepository>-->
-        <!--<id>oss</id>-->
-        <!--<url>https://oss.sonatype.org/content/repositories/snapshots</url>-->
-        <!--</snapshotRepository>-->
-        <!--<repository>-->
-        <!--<id>oss</id>-->
-        <!--<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
-        <!--</repository>-->
-
-        <!-- local repository -->
-        <snapshotRepository>
-            <id>private</id>
-            <url>http://10.10.43.163:8081/repository/maven-snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>private</id>
-            <url>http://10.10.43.163:8081/repository/maven-public/</url>
-        </repository>
-
-    </distributionManagement>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>oss.distribution</id>
+            <distributionManagement>
+                <!-- oss -->
+                <snapshotRepository>
+                    <id>oss</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>oss</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
