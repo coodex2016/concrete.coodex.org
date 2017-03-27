@@ -42,15 +42,6 @@ public class LocalInvokerFactory implements InvokerFactory {
                 }
             };
         }
-//            implements Invoker {
-//
-//        @Override
-//        public Object invoke(Unit unit, Object[] args, Object instance) throws Throwable {
-//            return unit.getMethod().invoke(
-//                    BeanProviderFacade.getBeanProvider().getBean(
-//                            unit.getDeclaringModule().getInterfaceClass()),
-//                    args);
-//        }
     }
 
 

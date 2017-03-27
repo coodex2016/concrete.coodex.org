@@ -18,6 +18,7 @@ package org.coodex.concrete.jaxrs.client;
 
 import okhttp3.*;
 import okhttp3.internal.Util;
+import okhttp3.internal.platform.Platform;
 import org.coodex.concrete.jaxrs.ErrorInfo;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.TypeHelper;
@@ -27,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
@@ -41,12 +41,13 @@ public class OkHttp3Invoker extends AbstractRemoteInvoker {
 
     private final OkHttpClient client;
 
-    public OkHttp3Invoker(String domain, SSLContext sslContext, X509TrustManager trustManager) {
+    public OkHttp3Invoker(String domain, SSLContext sslContext) {
         super(domain);
         OkHttpClient.Builder builder = new OkHttpClient.Builder().cookieJar(new CookieManager());
 
         if (sslContext != null) {
-            builder.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+            builder.sslSocketFactory(sslContext.getSocketFactory(),
+                    Platform.get().trustManager(sslContext.getSocketFactory()));
             builder.hostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String s, SSLSession sslSession) {

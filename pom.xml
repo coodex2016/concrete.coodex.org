@@ -122,7 +122,7 @@
         <junit.version>${default.version}</junit.version>
         <freemarker.version>2.3.23</freemarker.version>
         <fastjson.version>1.2.29</fastjson.version>
-        <guice.version>${default.version}</guice.version>
+        <guice.version>4.1.0</guice.version>
 
         <thrift.version>${default.version}</thrift.version>
 
@@ -156,6 +156,7 @@
         </profile>
         <profile>
             <id>oss.distribution</id>
+
             <distributionManagement>
                 <!-- oss -->
                 <snapshotRepository>
@@ -185,6 +186,8 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -192,7 +195,7 @@
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
-                        <phase>compile</phase>
+                        <phase>deploy</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -241,7 +244,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>compile</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>

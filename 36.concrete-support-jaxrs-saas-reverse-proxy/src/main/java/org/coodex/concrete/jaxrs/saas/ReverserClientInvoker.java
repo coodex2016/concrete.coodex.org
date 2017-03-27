@@ -21,6 +21,9 @@ import org.coodex.concrete.jaxrs.struct.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -38,10 +41,23 @@ public class ReverserClientInvoker extends AbstractRemoteInvoker {
     private final static Logger log = LoggerFactory.getLogger(ReverserClientInvoker.class);
 
 
-    private static final Client CLIENT = ClientBuilder.newClient();
+    private static final ClientBuilder CLIENT_BUILDER = ClientBuilder.newBuilder();
+
+    private final Client client;
+
+    public ReverserClientInvoker(String domain, SSLContext context) {
+        super(domain);
+        client = CLIENT_BUILDER.sslContext(context).hostnameVerifier(new HostnameVerifier() {
+            @Override
+            public boolean verify(String s, SSLSession sslSession) {
+                return true;
+            }
+        }).build();
+    }
 
     public ReverserClientInvoker(String domain) {
         super(domain);
+        client = CLIENT_BUILDER.build();
     }
 
 
@@ -52,7 +68,7 @@ public class ReverserClientInvoker extends AbstractRemoteInvoker {
     @Override
     protected Object invoke(String path, Unit unit, Object toSubmit) {
         log.debug("invoke: domain[{}] path[{}]", domain, path);
-        Invocation.Builder builder = CLIENT.target(path).request();
+        Invocation.Builder builder = client.target(path).request();
         builder = setHeaders(builder);
         return delivery(execute(builder, unit, toSubmit));
     }

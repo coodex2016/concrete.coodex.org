@@ -20,12 +20,12 @@ public class JavaClient {
             serviceExample.get("沈海南是个大逗比", 1005);
             System.out.println(serviceExample.delete(54321));
 
-            serviceExample = Client.getBean(ServiceExample.class, "http://localhost:8080/s");
+            serviceExample = Client.getBean(ServiceExample.class, "http://localhost:8080/test/s");
 
             System.out.println(serviceExample.delete(12345l));
             System.out.println(serviceExample.bigStringTest("中华", "七七八八"));
 
-            SaaSExample saaSExample = Client.getBean(SaaSExample.class);
+            SaaSExample saaSExample = Client.getBean(SaaSExample.class, "http://localhost:8080/proxy/s");
             saaSExample.exampleForSaaS("123456", "OKOKOK");
         }finally {
             ExecutorsHelper.shutdownAllNOW();

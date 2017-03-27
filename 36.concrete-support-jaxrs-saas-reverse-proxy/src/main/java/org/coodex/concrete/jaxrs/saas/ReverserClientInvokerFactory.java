@@ -16,20 +16,31 @@
 
 package org.coodex.concrete.jaxrs.saas;
 
-import org.coodex.concrete.jaxrs.client.Invoker;
-import org.coodex.concrete.jaxrs.client.InvokerFactory;
+import org.coodex.concrete.jaxrs.client.AbstractInvokerFactory;
+
+import javax.net.ssl.SSLContext;
 
 /**
  * Created by davidoff shen on 2017-03-22.
  */
-public class ReverserClientInvokerFactory implements InvokerFactory {
+public class ReverserClientInvokerFactory extends AbstractInvokerFactory<ReverserClientInvoker> /*implements InvokerFactory */ {
     @Override
     public boolean accept(String domain) {
         return DeliveryContext.getContext() != null;
     }
 
+//    @Override
+//    public Invoker getInvoker(String domain) {
+//        return new ReverserClientInvoker(domain);
+//    }
+
     @Override
-    public Invoker getInvoker(String domain) {
+    protected ReverserClientInvoker getHttpInvoker(String domain) {
         return new ReverserClientInvoker(domain);
+    }
+
+    @Override
+    protected ReverserClientInvoker getSSLInvoker(String domain, SSLContext context) {
+        return new ReverserClientInvoker(domain, context);
     }
 }
