@@ -29,11 +29,17 @@ import java.util.*;
  */
 public abstract class AbstractCopier<SRC, TARGET> implements Copier<SRC, TARGET> {
 
+    private Class<TARGET> targetClass;
+
     public TARGET newTargetObject() {
+        synchronized (this) {
+            if (targetClass == null)
+                targetClass = (Class<TARGET>) TypeHelper.findActualClassFrom(AbstractCopier.class.getTypeParameters()[1], getClass());
+        }
         // 根据第二个泛型参数创建实例
-        Class<TARGET> clz = (Class<TARGET>) TypeHelper.findActualClassFrom(AbstractCopier.class.getTypeParameters()[1], getClass());
+//        Class<TARGET> clz = (Class<TARGET>) TypeHelper.findActualClassFrom(AbstractCopier.class.getTypeParameters()[1], getClass());
         try {
-            return clz.newInstance();
+            return targetClass.newInstance();
         } catch (Throwable th) {
             throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }

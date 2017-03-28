@@ -145,11 +145,11 @@
                 <!-- local repository -->
                 <snapshotRepository>
                     <id>private</id>
-                    <url>http://10.10.43.163:8081/repository/maven-snapshots/</url>
+                    <url>http://10.10.50.54:8081/repository/maven-snapshots/</url>
                 </snapshotRepository>
                 <repository>
                     <id>private</id>
-                    <url>http://10.10.43.163:8081/repository/maven-public/</url>
+                    <url>http://10.10.50.54:8081/repository/maven-public/</url>
                 </repository>
 
             </distributionManagement>
