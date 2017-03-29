@@ -22,7 +22,7 @@ package org.coodex.concrete.common;
  */
 public class AttachmentInfoErrorCodes extends AbstractErrorCodes {
 
-    protected final static int ATTACHMENT_INFO_SERVICE_BASE = CONCRETE_CORE + 1000;
+    protected final static int ATTACHMENT_INFO_SERVICE_BASE = ATTACHMENT_ERROR_CODE;
 
     public final static int HMAC_ERROR = ATTACHMENT_INFO_SERVICE_BASE + 1;
     public final static int VERIFY_FAILED = ATTACHMENT_INFO_SERVICE_BASE + 2;

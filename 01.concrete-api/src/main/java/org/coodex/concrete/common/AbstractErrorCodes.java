@@ -28,4 +28,8 @@ public abstract class AbstractErrorCodes {
 
 
     protected static final int CONCRETE_CORE = 1000;
+
+    protected static final int ATTACHMENT_ERROR_CODE = CONCRETE_CORE + 1000;
+
+    protected static final int REVERSE_PROXY_ERROR_CODE = CONCRETE_CORE + 2000;
 }

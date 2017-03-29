@@ -81,7 +81,7 @@ public class ErrorMessageFacade {
                     int code = f.getInt(null);
                     if (errorCodes.containsKey(code)) {
                         Field field = errorCodes.get(code);
-                        if (field != f) {
+                        if (!field.equals(f)) {
                             log.warn("errorCode duplicate {}.{} and {}.{}",
                                     field.getDeclaringClass().getCanonicalName(), field.getName(),
                                     f.getDeclaringClass().getCanonicalName(), f.getName());

@@ -28,13 +28,13 @@ public class ExampleReverser implements Reverser {
 
     @Override
     public boolean accept(String param) {
-        log.debug("accept: {}", param);
+        log.info("accept: {}", param);
         return true;
     }
 
     @Override
     public String resolve(String routeBy) {
-        log.debug("resolve by: {}", routeBy);
-        return "http://localhost:8080/test/s";
+        log.info("resolve by: {}", routeBy);
+        return "http://127.0.0.1:8080";
     }
 }

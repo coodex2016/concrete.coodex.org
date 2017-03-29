@@ -21,7 +21,7 @@ package org.coodex.concrete.common;
  */
 public class ReverseProxyErrorCodes extends AbstractErrorCodes {
 
-    private final static int BASE = CONCRETE_CORE + 1000;
+    private final static int BASE = REVERSE_PROXY_ERROR_CODE;
 
     public static final int REVERSER_NOT_FOUND = BASE + 1;
     public static final int ROUTE_BY_NOT_FOUND = BASE + 2;

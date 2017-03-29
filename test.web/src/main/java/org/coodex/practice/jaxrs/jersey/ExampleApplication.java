@@ -48,7 +48,7 @@ public class ExampleApplication extends ResourceConfig {
         Set<Class<?>> classes = JaxRSServiceHelper.generate(GENERATOR_NAME, "org.coodex.practice.jaxrs.api", "org.coodex.concrete.attachments");
 //        registerClasses(JaxRSHelper.generate(GENERATOR_NAME, "org.coodex.practice.jaxrs.api"));
 
-        log.debug("{} classes created.", classes.size());
+        log.info("{} classes created.", classes.size());
         for (Class<?> clz : classes) {
             log.debug("class: {}, Annotation:{}", clz, Arrays.deepToString(clz.getAnnotations()));
             for (Method method : clz.getDeclaredMethods()) {

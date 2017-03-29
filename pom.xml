@@ -92,8 +92,8 @@
         <module>00.coodex.utilities.sec.tools</module>
         <module>81.concrete-commons-spring-data</module>
 
-        <!--<module>test.reverse.proxy</module>-->
-        <!--<module>test.web</module>-->
+        <module>test.reverse.proxy</module>
+        <module>test.web</module>
 
     </modules>
 
