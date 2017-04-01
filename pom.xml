@@ -114,7 +114,7 @@
         <aspectj.version>1.8.10</aspectj.version>
 
         <!-- 维持spring.data跟framework的一致 -->
-        <spring.framework.version>4.3.6.RELEASE</spring.framework.version>
+        <spring.framework.version>4.3.7.RELEASE</spring.framework.version>
         <spring.data.version>Ingalls-RELEASE</spring.data.version>
         <spring.boot.version>1.5.2.RELEASE</spring.boot.version>
 
@@ -154,8 +154,63 @@
 
             </distributionManagement>
         </profile>
+
+        <profile>
+            <id>dcsoft.distribution</id>
+            <distributionManagement>
+                <!-- local repository -->
+                <snapshotRepository>
+                    <id>dcsoft</id>
+                    <url>http://172.168.2.160/content/repositories/snapshots/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>dcsoft</id>
+                    <url>http://172.168.2.160/content/repositories/releases/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+
         <profile>
             <id>oss.distribution</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.10.3</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                            <charset>UTF-8</charset>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
 
             <distributionManagement>
                 <!-- oss -->
@@ -187,41 +242,6 @@
                 </configuration>
             </plugin>
 
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.3</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                    <charset>UTF-8</charset>
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -360,13 +380,13 @@
             </dependency>
 
             <!-- guice IoC -->
-            <dependency>
-                <groupId>com.google.inject</groupId>
-                <artifactId>guice-bom</artifactId>
-                <version>${guice.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+            <!--<dependency>-->
+            <!--<groupId>com.google.inject</groupId>-->
+            <!--<artifactId>guice-bom</artifactId>-->
+            <!--<version>${guice.version}</version>-->
+            <!--<type>pom</type>-->
+            <!--<scope>import</scope>-->
+            <!--</dependency>-->
 
             <!-- https://mvnrepository.com/artifact/aopalliance/aopalliance -->
             <dependency>
@@ -391,11 +411,11 @@
 
 
             <!-- https://mvnrepository.com/artifact/org.apache.thrift/libthrift -->
-            <dependency>
-                <groupId>org.apache.thrift</groupId>
-                <artifactId>libthrift</artifactId>
-                <version>${thrift.version}</version>
-            </dependency>
+            <!--<dependency>-->
+            <!--<groupId>org.apache.thrift</groupId>-->
+            <!--<artifactId>libthrift</artifactId>-->
+            <!--<version>${thrift.version}</version>-->
+            <!--</dependency>-->
 
 
             <!-- providers -->
