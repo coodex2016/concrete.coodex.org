@@ -27,12 +27,12 @@ package org.coodex.servlet.cors;
  */
 public interface CORSSetting {
 
-   public static final String ALLOW_ORIGIN = "Access-Control-Allow-Origin";
-   public static final String ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
-   public static final String EXPOSE_HEADERS = "Access-Control-Expose-Headers";
-   public static final String MAX_AGE = "Access-Control-Max-Age";
-   public static final String ALLOW_METHOD = "Access-Control-Allow-Method";
-   public static final String ALLOW_HEADERS = "Access-Control-Allow-Headers";
+   String ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+   String ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+   String EXPOSE_HEADERS = "Access-Control-Expose-Headers";
+   String MAX_AGE = "Access-Control-Max-Age";
+   String ALLOW_METHOD = "Access-Control-Allow-Methods";
+   String ALLOW_HEADERS = "Access-Control-Allow-Headers";
 
    /**
     * 空格或逗号分隔，为null表示不需要设置
