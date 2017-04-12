@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Observable';
 
 export abstract class AbstractConcreteService {
 
-    protected $$getServiceRoot(): string{
+    protected $$getServiceRoot(): string {
         return ConcreteCommon.getServiceRoot(this.$$belong());
     }
 
@@ -31,7 +31,7 @@ export abstract class AbstractConcreteService {
         return result;
     }
 
-    protected handleError (error: Response | any){
+    protected handleError (error: Response | any) {
         const errorInfo = error.json() || {};
         return Observable.throw(ConcreteCommon.onError(
                 errorInfo.code || error.status,
@@ -42,7 +42,7 @@ export abstract class AbstractConcreteService {
 class ConcreteCommon {
 
     // TODO: change it
-    static defaultServiceRoot: string = "http://localhost:8080";
+    static defaultServiceRoot = 'http://localhost:8080';
 
     static serviceRootMap = {
         // TODO: change it
@@ -58,7 +58,7 @@ class ConcreteCommon {
     }
 
     public static onError(code: number, message: String): ErrorInfo {
-        const errorInfo : ErrorInfo = new ErrorInfo(code, message);
+        const errorInfo: ErrorInfo = new ErrorInfo(code, message);
         // TODO: change it
         console.log(errorInfo.toString());
         return errorInfo;
