@@ -140,7 +140,7 @@ public class Unit extends AbstractUnit<Param, Module> {
 
     @Override
     public String getInvokeType() {
-        return getHttpMethod(getMethod());
+        return getHttpMethod(this);
     }
 
     @Override

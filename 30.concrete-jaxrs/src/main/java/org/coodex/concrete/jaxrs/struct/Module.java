@@ -81,7 +81,7 @@ public class Module extends AbstractModule<Unit> {
 
             Unit unit = new Unit(method, this);
 
-            String serviceKey = Predicates.getHttpMethod(method) + "$" + unit.getName();
+            String serviceKey = Predicates.getHttpMethod(unit) + "$" + unit.getName();
             Method exists = serviceAtoms.get(serviceKey);
             if (sameMethod(method, exists)) {
                 continue;

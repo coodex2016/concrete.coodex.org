@@ -1,4 +1,5 @@
 import org.coodex.concrete.apitools.API;
+import org.coodex.concrete.apitools.jaxrs.angular.AngularCodeRender;
 import org.coodex.concrete.apitools.jaxrs.jquery.JQueryDocRender;
 import org.coodex.concrete.apitools.jaxrs.jquery.JQueryPromisesCodeRender;
 import org.coodex.concrete.apitools.jaxrs.service.ServiceDocRender;
@@ -24,6 +25,10 @@ public class APIGen {
 
             API.generate(ServiceDocRender.RENDER_NAME,
                     "/concrete-demo/restful.api",
+                    ServiceExample.class.getPackage().getName());
+
+            API.generate(AngularCodeRender.RENDER_NAME,
+                    "D:\\Projects\\front_ends\\ng2\\hello-angular\\src",
                     ServiceExample.class.getPackage().getName());
         } finally {
             ExecutorsHelper.shutdownAllNOW();

@@ -37,15 +37,15 @@ public class DigestHelper {
     /**
      * 获取信息摘要
      *
-     * @param buf 内容
-     * @param al  摘要类型
+     * @param buf       内容
+     * @param algorithm 摘要算法
      * @return 信息摘要
      * @since 1.1.0[2011-9-15]
      */
-    private static String digest(byte[] buf, String al) {
+    public static String digest(byte[] buf, String algorithm) {
         MessageDigest md = null;
         try {
-            md = MessageDigest.getInstance(al);
+            md = MessageDigest.getInstance(algorithm);
         } catch (NoSuchAlgorithmException e) {
         }
         return Common.byte2hex(md.digest(buf));
@@ -54,6 +54,14 @@ public class DigestHelper {
     public static String sha1(byte[] content) {
 
         return digest(content, "sha1");
+    }
+
+    public static String sha256(byte[] content) {
+        return digest(content, "sha-256");
+    }
+
+    public static String md5(byte[] content) {
+        return digest(content, "md5");
     }
 
     public static byte[] hmac(byte[] content, byte[] key, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
@@ -106,5 +114,11 @@ public class DigestHelper {
 //                key.getBytes(DEFAULT_ENCODING)));
 
     }
+
+//    public static void main(String [] args){
+//        System.out.println(sha1("1".getBytes()));
+//        System.out.println(sha256("1".getBytes()));
+//        System.out.println(md5("1".getBytes()));
+//    }
 
 }

@@ -14,36 +14,31 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.core.intercept;
+package org.coodex.concrete.apitools.jaxrs.angular.meta;
 
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Created by davidoff shen on 2016-09-01.
+ * Created by davidoff shen on 2017-04-11.
  */
-public class InterceptOrders {
+public class TSImport {
+    private String packageName;
+    private Set<String> classes = new HashSet<String>();
 
-    /**
-     * 审计切片
-     */
-    public static final int SYSTEM_AUDIT = 100;
+    public String getPackageName() {
+        return packageName;
+    }
 
-    /**
-     * 系统服务时间
-     */
-    public static final int SERVICE_TIMING = 200;
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
 
-    public static final int LIMITING = 300;
+    public Set<String> getClasses() {
+        return classes;
+    }
 
-    /**
-     * Bean有效性验证切片
-     */
-    public static final int BEAN_VALIDATION = 1000;
-
-    /**
-     * RBAC切片
-     */
-    public static final int RBAC = 9000;
-
-
-    public static final int OTHER = 9001;
+    public void setClasses(Set<String> classes) {
+        this.classes = classes;
+    }
 }

@@ -14,36 +14,28 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.core.intercept;
-
+package org.coodex.concrete.apitools.jaxrs.angular.meta;
 
 /**
- * Created by davidoff shen on 2016-09-01.
+ * Created by davidoff shen on 2017-04-11.
  */
-public class InterceptOrders {
+public class TSField {
+    private String name;
+    private String type;
 
-    /**
-     * 审计切片
-     */
-    public static final int SYSTEM_AUDIT = 100;
+    public String getName() {
+        return name;
+    }
 
-    /**
-     * 系统服务时间
-     */
-    public static final int SERVICE_TIMING = 200;
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public static final int LIMITING = 300;
+    public String getType() {
+        return type;
+    }
 
-    /**
-     * Bean有效性验证切片
-     */
-    public static final int BEAN_VALIDATION = 1000;
-
-    /**
-     * RBAC切片
-     */
-    public static final int RBAC = 9000;
-
-
-    public static final int OTHER = 9001;
+    public void setType(String type) {
+        this.type = type;
+    }
 }

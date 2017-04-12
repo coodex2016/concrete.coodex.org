@@ -17,14 +17,21 @@
 package org.coodex.practice.jaxrs.starter;
 
 import org.coodex.practice.jaxrs.jersey.ExampleApplication;
+import org.coodex.servlet.cors.CorsFilter;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+
+import java.util.Arrays;
+//import org.springframework.web.servlet.config.annotation.CorsRegistry;
+//import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+//import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
  * Created by davidoff shen on 2017-03-29.
@@ -35,13 +42,38 @@ import org.springframework.context.annotation.ImportResource;
 public class Starter {
     @Bean
     public ServletRegistrationBean testServlet() {
+        ServletContainer container = new ServletContainer();
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(
-                new ServletContainer(), "/*");
+                container, "/*");
+//        registrationBean.ad
         registrationBean.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
                 ExampleApplication.class.getName());
         registrationBean.setName("test");
+        registrationBean.setAsyncSupported(true);
         return registrationBean;
     }
+
+    @Bean
+    public FilterRegistrationBean corsFilter() {
+        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+        filterRegistrationBean.setFilter(new CorsFilter());
+        filterRegistrationBean.setAsyncSupported(true);
+        filterRegistrationBean.setUrlPatterns(Arrays.asList("/*"));
+        return filterRegistrationBean;
+    }
+
+//    @Bean
+//    public WebMvcConfigurer corsConfigurer() {
+//        return new WebMvcConfigurerAdapter() {
+//            @Override
+//            public void addCorsMappings(CorsRegistry registry) {
+//                registry.addMapping("/**")
+//                        .allowedHeaders("*")
+//                        .allowedMethods("*")
+//                        .allowedOrigins("http://localhost:4200/");
+//            }
+//        };
+//    }
 
     public static void main(String[] args) {
         SpringApplication.run(Starter.class, args);

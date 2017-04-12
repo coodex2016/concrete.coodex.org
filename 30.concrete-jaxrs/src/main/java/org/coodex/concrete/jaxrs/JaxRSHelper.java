@@ -167,4 +167,17 @@ public class JaxRSHelper {
     }
 
 
+    public static Param getSubmitBody(Unit unit) {
+        Param toSubmit = null;
+        for (int i = 0; i < unit.getParameters().length; i++) {
+            Param param = unit.getParameters()[i];
+            if (!JaxRSHelper.isPrimitive(param.getType()) || JaxRSHelper.isBigString(param)) {
+                toSubmit = param;
+                break;
+            }
+        }
+        return toSubmit;
+    }
+
+
 }

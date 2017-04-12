@@ -57,6 +57,8 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
             case ErrorCodes.UNTRUSTED_ACCOUNT:
             case ErrorCodes.NO_AUTHORIZATION:
                 return Response.Status.FORBIDDEN;
+            case ErrorCodes.OVERRUN:
+                return Response.Status.SERVICE_UNAVAILABLE;
             default:
                 return Response.Status.BAD_REQUEST;
         }

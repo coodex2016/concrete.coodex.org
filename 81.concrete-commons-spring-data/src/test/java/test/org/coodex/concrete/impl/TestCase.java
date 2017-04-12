@@ -44,56 +44,56 @@ public class TestCase extends ConcreteTestCase {
     public void testIntSpec() {
         // =
         testRepo.findAll(
-                SpecCommon.spec(TestEntity.class, Logical.EQUAL, "intAttr", 1));
+                SpecCommon.<TestEntity,Integer>spec(Logical.EQUAL, "intAttr", 1));
 
         // <
         testRepo.findAll(
-                SpecCommon.spec(TestEntity.class, Logical.LESS, "intAttr", 1));
+                SpecCommon.<TestEntity,Integer>spec(Logical.LESS, "intAttr", 1));
 
         // <=
         testRepo.findAll(
-                SpecCommon.spec(TestEntity.class, Logical.LESS_EQUAL, "intAttr", 1));
+                SpecCommon.<TestEntity,Integer>spec(Logical.LESS_EQUAL, "intAttr", 1));
 
         // >
         testRepo.findAll(
-                SpecCommon.spec(TestEntity.class, Logical.GREATER, "intAttr", 1));
+                SpecCommon.<TestEntity,Integer>spec(Logical.GREATER, "intAttr", 1));
 
         // >=
         testRepo.findAll(
-                SpecCommon.spec(TestEntity.class, Logical.GREATER_EQUAL, "intAttr", 1));
+                SpecCommon.<TestEntity,Integer>spec(Logical.GREATER_EQUAL, "intAttr", 1));
 
         // not
         testRepo.findAll(
-                SpecCommon.spec(TestEntity.class, Logical.NOT_EQUAL, "intAttr", 1));
+                SpecCommon.<TestEntity,Integer>spec( Logical.NOT_EQUAL, "intAttr", 1));
 
         // in
         testRepo.findAll(
-                SpecCommon.spec(TestEntity.class, Logical.IN, "intAttr", 1));
+                SpecCommon.<TestEntity,Integer>spec(Logical.IN, "intAttr", 1));
 
         // between
         testRepo.findAll(
-                SpecCommon.spec(TestEntity.class, Logical.BETWEEN, "intAttr", 1, 2));
+                SpecCommon.<TestEntity,Integer>spec( Logical.BETWEEN, "intAttr", 1, 2));
     }
 
     @Test
     public void testStr() {
         testRepo.findAll(
-                SpecCommon.spec(TestEntity.class, Logical.EQUAL, "strAttr", "%"));
+                SpecCommon.<TestEntity,String>spec( Logical.EQUAL, "strAttr", "%"));
 
         testRepo.findAll(
-                SpecCommon.spec(TestEntity.class, Logical.LESS_EQUAL, "strAttr", "%"));
+                SpecCommon.<TestEntity,String>spec(Logical.LESS_EQUAL, "strAttr", "%"));
 
         testRepo.findAll(
-                SpecCommon.spec(TestEntity.class, Logical.IN, "strAttr", "%", "33"));
+                SpecCommon.<TestEntity,String>spec(Logical.IN, "strAttr", "%", "33"));
 
         testRepo.findAll(
-                SpecCommon.spec(TestEntity.class, Logical.LIKE, "strAttr", "adsf"));
+                SpecCommon.<TestEntity,String>spec(Logical.LIKE, "strAttr", "adsf"));
 
     }
 
     @Test
     public void testMemberOf() {
         Specification<TestEntity> specification = SpecCommon.memberOf(TestEntity.class, "colAttr", "x");
-        testRepo.findAll(specification);
+        testRepo.findAll(SpecCommon.<TestEntity,String>memberOf("colAttr", "x"));
     }
 }

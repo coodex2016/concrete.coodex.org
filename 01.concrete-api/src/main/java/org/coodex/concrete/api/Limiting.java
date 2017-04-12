@@ -14,36 +14,21 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.core.intercept;
+package org.coodex.concrete.api;
 
+import java.lang.annotation.*;
 
 /**
- * Created by davidoff shen on 2016-09-01.
+ * 限流策略定义
+ * Created by davidoff shen on 2017-04-06.
  */
-public class InterceptOrders {
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Limiting {
 
     /**
-     * 审计切片
+     * @return 策略名
      */
-    public static final int SYSTEM_AUDIT = 100;
-
-    /**
-     * 系统服务时间
-     */
-    public static final int SERVICE_TIMING = 200;
-
-    public static final int LIMITING = 300;
-
-    /**
-     * Bean有效性验证切片
-     */
-    public static final int BEAN_VALIDATION = 1000;
-
-    /**
-     * RBAC切片
-     */
-    public static final int RBAC = 9000;
-
-
-    public static final int OTHER = 9001;
+    String strategy() default "";
 }

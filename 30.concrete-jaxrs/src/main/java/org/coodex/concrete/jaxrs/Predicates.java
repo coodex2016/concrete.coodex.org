@@ -17,17 +17,17 @@
 package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.common.ConcreteToolkit;
+import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
 
 import javax.ws.rs.HttpMethod;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import static org.coodex.concrete.jaxrs.JaxRSHelper.isPrimitive;
+import static org.coodex.concrete.jaxrs.JaxRSHelper.getSubmitBody;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.lowerFirstChar;
 
 
@@ -107,7 +107,7 @@ public class Predicates {
             HttpMethod.PUT, HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST};
 
     /**
-     * <pre>已明确的谓词：
+     * <pre>默认的谓词：
      * update(更新)/set(更新部分)开头，使用PUT
      * new(获取初始值)/get(根据id获取)/find(查询)开头，使用GET
      * del，使用DELETE
@@ -115,14 +115,17 @@ public class Predicates {
      *
      * 其它：
      * 无参数时用GET
-     * 其余POST</pre>
+     * 其余POST
      *
-     * @param method
+     * 可通过jaxrs.predicates.properties重载
+     * </pre>
+     *
+     * @param unit
      * @return
      * @see #PREDICATES
      */
-    public static String getHttpMethod(Method method) {
-        String methodName = ConcreteToolkit.getMethodName(method);
+    public static String getHttpMethod(Unit unit) {
+        String methodName = ConcreteToolkit.getMethodName(unit.getMethod());
         String[] paths = paths(methodName);
         int index = getLastNodeIndex(paths);
         if (index >= 0) {
@@ -134,22 +137,23 @@ public class Predicates {
                 }
             }
         }
-        Annotation[][] annotations = method.getParameterAnnotations();
-        for (int i = 0, j = method.getParameterTypes().length; i < j; i++) {
-//        for(Class<?> paramType: method.getParameterTypes()){
-            Class<?> paramType = method.getParameterTypes()[i];
-
-            if (!isPrimitive(paramType)) return HttpMethod.POST;
-            if (annotations != null && annotations[i] != null) {
-                for (Annotation annotation : annotations[i]) {
-                    if (BigString.class.isAssignableFrom(annotation.getClass())) {
-                        return HttpMethod.POST;
-                    }
-                }
-            }
-        }
-
-        return HttpMethod.GET;
+//        Annotation[][] annotations = method.getParameterAnnotations();
+//        for (int i = 0, j = method.getParameterTypes().length; i < j; i++) {
+////        for(Class<?> paramType: method.getParameterTypes()){
+//            Class<?> paramType = method.getParameterTypes()[i];
+//
+//            if (!isPrimitive(paramType)) return HttpMethod.POST;
+//            if (annotations != null && annotations[i] != null) {
+//                for (Annotation annotation : annotations[i]) {
+//                    if (BigString.class.isAssignableFrom(annotation.getClass())) {
+//                        return HttpMethod.POST;
+//                    }
+//                }
+//            }
+//        }
+//
+//        return HttpMethod.GET;
+        return getSubmitBody(unit) == null ? HttpMethod.GET : HttpMethod.POST;
     }
 
     private static String[] paths(String methodName) {

@@ -91,30 +91,32 @@ public class SpecCommon {
         return specs;
     }
 
-    public static <ATTR, ENTITY> Specification<ENTITY> spec(
+    @Deprecated
+    public static <ENTITY, ATTR> Specification<ENTITY> spec(
             Class<ENTITY> entityClass,
             Operators.Logical logical,
             String attributeName,
             ATTR... attributes) {
 
-        return new Spec<ATTR, ENTITY>(logical, attributeName, attributes);
+        return spec(logical, attributeName, attributes);
     }
 
-    public static <ATTR, ENTITY> Specification<ENTITY> spec(
+    public static <ENTITY, ATTR> Specification<ENTITY> spec(
             Operators.Logical logical,
             String attributeName,
             ATTR... attributes) {
 
-        return new Spec<ATTR, ENTITY>(logical, attributeName, attributes);
+        return new Spec<ENTITY, ATTR>(logical, attributeName, attributes);
     }
 
-    public static <ATTR, ENTITY> Specification<ENTITY> memberOf(
+    @Deprecated
+    public static <ENTITY, ATTR> Specification<ENTITY> memberOf(
             Class<ENTITY> entityClass, String attributeName, ATTR attr) {
 
-        return new MemberOfSpec<ATTR, ENTITY>(attributeName, attr);
+        return memberOf(attributeName, attr);
     }
 
-    public static <ATTR, ENTITY> Specification<ENTITY> memberOf(String attributeName, ATTR attr) {
+    public static <ENTITY, ATTR> Specification<ENTITY> memberOf(String attributeName, ATTR attr) {
 
         return new MemberOfSpec<ATTR, ENTITY>(attributeName, attr);
     }
@@ -141,7 +143,7 @@ public class SpecCommon {
      * <p>
      * Created by davidoff shen on 2017-03-17.
      */
-    static class Spec<ATTR, ENTITY> implements Specification<ENTITY> {
+    static class Spec<ENTITY, ATTR> implements Specification<ENTITY> {
 
         private final Operators.Logical logical;
         private final ATTR[] attributes;
