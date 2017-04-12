@@ -2,6 +2,7 @@
 
 import { Response, RequestOptions, ResponseContentType, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/throw';
 
 export abstract class AbstractConcreteService {
 

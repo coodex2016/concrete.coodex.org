@@ -1,7 +1,7 @@
 <#macro paramList params><#list params as param>${param.name}: ${param.type}<#if param_has_next>, </#if></#list></#macro>
 <#macro importsList classes><#list classes?sort as clz>${clz}<#if clz_has_next>, </#if></#list></#macro>
 <#if includeServices??>
-import { Http, Response, RequestOptions } from '@angular/http';
+import { Http, RequestOptions } from '@angular/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
