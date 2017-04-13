@@ -20,12 +20,13 @@ import org.coodex.concrete.api.Description;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.Common;
 
+import java.io.IOException;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Map;
+import java.lang.reflect.TypeVariable;
 import java.util.StringTokenizer;
 
-import static org.coodex.concrete.jaxrs.JaxRSHelper.isPrimitive;
 
 /**
  * Created by davidoff shen on 2016-12-04.
@@ -34,12 +35,12 @@ public abstract class DocToolkit {
 
     private AbstractRender render;
 
-    public static boolean isPojo(Class<?> type) {
-        return !(isPrimitive(type) ||
-                type.isArray() ||
-                Collection.class.isAssignableFrom(type) ||
-                Map.class.isAssignableFrom(type));
-    }
+//    public static boolean isPojo(Class<?> type) {
+//        return !(isPrimitive(type) ||
+//                type.isArray() ||
+//                Collection.class.isAssignableFrom(type) ||
+//                Map.class.isAssignableFrom(type));
+//    }
 
     public DocToolkit(AbstractRender render) {
         this.render = render;
@@ -61,55 +62,87 @@ public abstract class DocToolkit {
         return builder.toString();
     }
 
-    public String formatTypeStr(Type t, Class<?> contextClass) {
-        return formatPOJOTypeInfo(new POJOTypeInfo(contextClass, t));
+    public String formatTypeStr(Type t) throws IOException {
+        return formatTypeStr(t,null);
     }
 
-    public String formatPOJOTypeInfo(POJOTypeInfo info) {
-        if(info.getType() == null){
-            return info.getGenericType().toString();
-        }
+    public String formatTypeStr(Type t, Class<?> contextClass) throws IOException {
+        if (t instanceof ParameterizedType) {
 
-        if (info.getType().isArray()) {
-            return formatPOJOTypeInfo(info.getArrayElement()) + "[]";
-        } else {
-            StringBuilder builder = new StringBuilder(getTypeName(info.getType(), info.getContextType()));
-//            StringBuilder builder = new StringBuilder(getTypeName(info.getType()));
-            if (info.getGenericParameters().size() > 0) {
-                builder.append("<");
-                boolean isFirst = true;
-                for (POJOTypeInfo param : info.getGenericParameters()) {
-                    if (!isFirst) builder.append(", ");
-                    builder.append(formatPOJOTypeInfo(param));
-                    if (isFirst) {
-                        isFirst = false;
-                    }
-                }
-                builder.append(">");
+            ParameterizedType pt = (ParameterizedType) t;
+            StringBuilder builder = new StringBuilder();
+            builder.append(getClassLabel((Class<?>) pt.getRawType())).append('<');
+            boolean isFirst = true;
+            for (Type type : pt.getActualTypeArguments()) {
+                if (!isFirst)
+                    builder.append(", ");
+                builder.append(formatTypeStr(type, contextClass));
+                isFirst = false;
             }
+            builder.append('>');
             return builder.toString();
+        } else if(t instanceof TypeVariable){
+
+            return ((TypeVariable) t).getName();
+        } else if(t instanceof GenericArrayType){
+
+            return formatTypeStr(((GenericArrayType) t).getGenericComponentType(), contextClass) + "[]";
+        } else if(t instanceof Class){
+
+            return getClassLabel((Class<?>) t);
         }
+        return null;
     }
 
-    protected abstract String getTypeName(Class<?> clz, Class<?> contextClass);
+    protected abstract String getClassLabel(Class<?> clz) throws IOException;
+
+//    public String formatPOJOTypeInfo(POJOTypeInfo info) {
+//        if(info.getType() == null){
+//            return info.getGenericType().toString();
+//        }
+//
+//        if (info.getType().isArray()) {
+//            return formatPOJOTypeInfo(info.getArrayElement()) + "[]";
+//        } else {
+//            StringBuilder builder = new StringBuilder(getTypeName(info.getType(), info.getContextType()));
+////            StringBuilder builder = new StringBuilder(getTypeName(info.getType()));
+//            if (info.getGenericParameters().size() > 0) {
+//                builder.append("<");
+//                boolean isFirst = true;
+//                for (POJOTypeInfo param : info.getGenericParameters()) {
+//                    if (!isFirst) builder.append(", ");
+//                    builder.append(formatPOJOTypeInfo(param));
+//                    if (isFirst) {
+//                        isFirst = false;
+//                    }
+//                }
+//                builder.append(">");
+//            }
+//            return builder.toString();
+//        }
+//    }
+
+//    protected abstract String getTypeName(Class<?> clz, Class<?> contextClass);
 
     public AbstractRender getRender() {
         return render;
     }
 
-    public String camelCase(String str){
+    public String camelCase(String str) {
         return JaxRSHelper.camelCase(str);
     }
 
-    public String tableSafe(String str){
+    public String tableSafe(String str) {
         return Common.isBlank(str) ? "　" : str;
     }
 
-    public String tableSafeDesc(Description description){
+    public String tableSafeDesc(Description description) {
         return description == null ? "　" : tableSafe(description.description());
     }
 
-    public String tableSafeLabel(Description description){
+    public String tableSafeLabel(Description description) {
         return description == null ? "　" : tableSafe(description.name());
     }
+
+
 }

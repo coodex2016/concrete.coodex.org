@@ -18,9 +18,7 @@ package org.coodex.practice.jaxrs.api;
 
 import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.api.ServiceTiming;
-import org.coodex.practice.jaxrs.pojo.Book;
-import org.coodex.practice.jaxrs.pojo.BookInfo;
-import org.coodex.practice.jaxrs.pojo.GenericPojo;
+import org.coodex.practice.jaxrs.pojo.*;
 
 import java.util.List;
 import java.util.Map;
@@ -30,7 +28,7 @@ import java.util.Map;
  */
 @MicroService("book")
 
-public interface ServiceExample extends ServiceB, GenericService<GenericPojo<BookInfo>> {
+public interface ServiceExample extends ServiceB, GenericService<D, D> {
     @ServiceTiming("rule2")
     String tokenId();
 
@@ -43,5 +41,9 @@ public interface ServiceExample extends ServiceB, GenericService<GenericPojo<Boo
     GenericPojo<Book> genericTest4(GenericPojo<BookInfo> gp);
 
     GenericPojo<Book> genericTest5(List<GenericPojo<BookInfo>> gp);
+
+    G2<GenericPojo<String>, GenericPojo<Integer>> g5(G2<GenericPojo<String>, GenericPojo<Integer>> xx);
+
+    GenericPojo<GenericPojo<Book>> g6(GenericPojo<GenericPojo<Book>> gp);
 
 }

@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-package org.coodex.practice.jaxrs.api;
-
-import org.coodex.concrete.api.ConcreteService;
-import org.coodex.practice.jaxrs.pojo.GenericPojo;
-
-import java.util.List;
+package org.coodex.practice.jaxrs.pojo;
 
 /**
  * Created by davidoff shen on 2017-04-13.
  */
-public interface GenericService<P extends GenericPojo, X extends GenericPojo> extends ConcreteService {
-
-    P genericTest1001(P x);
-
-    List<P> genericTest1002(List<X> x);
+public class D extends GenericPojo<Book> {
 }

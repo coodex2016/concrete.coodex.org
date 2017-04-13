@@ -25,9 +25,7 @@ import org.coodex.concrete.jaxrs.BigString;
 import org.coodex.practice.jaxrs.api.Calc;
 import org.coodex.practice.jaxrs.api.SaaSExample;
 import org.coodex.practice.jaxrs.api.ServiceExample;
-import org.coodex.practice.jaxrs.pojo.Book;
-import org.coodex.practice.jaxrs.pojo.BookInfo;
-import org.coodex.practice.jaxrs.pojo.GenericPojo;
+import org.coodex.practice.jaxrs.pojo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,6 +153,16 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
     }
 
     @Override
+    public GenericPojo<GenericPojo<Book>> g6(GenericPojo<GenericPojo<Book>> gp) {
+        return null;
+    }
+
+//    @Override
+    public G2<GenericPojo<String>, GenericPojo<Integer>> g5(G2<GenericPojo<String>, GenericPojo<Integer>> xx) {
+        return null;
+    }
+
+    @Override
     public int add(int x, int y) {
         return x + y;
     }
@@ -165,8 +173,18 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
         return ok;
     }
 
+//    @Override
+//    public GenericPojo<BookInfo> genericTest1001(GenericPojo<BookInfo> x) {
+//        return null;
+//    }
+
     @Override
-    public GenericPojo<BookInfo> genericTest1001(GenericPojo<BookInfo> x) {
+    public D genericTest1001(D x) {
+        return null;
+    }
+
+    @Override
+    public List<D> genericTest1002(List<D> x) {
         return null;
     }
 }

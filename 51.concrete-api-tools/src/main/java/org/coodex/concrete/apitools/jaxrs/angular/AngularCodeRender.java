@@ -208,7 +208,7 @@ public class AngularCodeRender extends AbstractRender {
         if (type instanceof Class) {
             return getClassType((Class) type, clz);
         } else if (type instanceof ParameterizedType) {
-            return getParameterizedType(clz, (ParameterizedType) type);
+            return getParameterizedType(clz, (ParameterizedType) type, contextClass);
         } else if (type instanceof GenericArrayType) {
             return getClassType(((GenericArrayType) type).getGenericComponentType(), clz, contextClass) + "[]";
         } else if (type instanceof TypeVariable) {
@@ -221,14 +221,14 @@ public class AngularCodeRender extends AbstractRender {
         }
     }
 
-    private String getParameterizedType(TSClass clz, ParameterizedType pt) {
+    private String getParameterizedType(TSClass clz, ParameterizedType pt, Class contextClass) {
         Class rawType = (Class) pt.getRawType();
         if (Collection.class.isAssignableFrom(rawType)) {
-            return getClassType(pt.getActualTypeArguments()[0], clz, null) + "[]";
+            return getClassType(pt.getActualTypeArguments()[0], clz, contextClass) + "[]";
         } else if (Map.class.isAssignableFrom(rawType)) {
             return String.format("Map<%s, %s>",
-                    getClassType(pt.getActualTypeArguments()[0], clz, null),
-                    getClassType(pt.getActualTypeArguments()[1], clz, null));
+                    getClassType(pt.getActualTypeArguments()[0], clz, contextClass),
+                    getClassType(pt.getActualTypeArguments()[1], clz, contextClass));
         } else {
             StringBuilder builder = new StringBuilder();
             builder.append(getClassType(rawType, clz))
@@ -236,7 +236,7 @@ public class AngularCodeRender extends AbstractRender {
             boolean isFirst = true;
             for (Type t : pt.getActualTypeArguments()) {
                 if (!isFirst) builder.append(", ");
-                builder.append(getClassType(t, clz, null));
+                builder.append(getClassType(t, clz, contextClass));
                 isFirst = false;
             }
             builder.append(">");

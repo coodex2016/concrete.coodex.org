@@ -19,6 +19,7 @@ package org.coodex.concrete.apitools.jaxrs.service;
 import org.coodex.concrete.apitools.jaxrs.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
 import org.coodex.concrete.apitools.jaxrs.POJOPropertyInfo;
+import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.ReflectHelper;
 
 import java.io.IOException;
@@ -36,29 +37,28 @@ public class ServiceDocToolkit extends DocToolkit {
         super(render);
     }
 
-    private Set<String> pojoTypes = new HashSet<String>();
-
-    public Set<String> getPojos() {
-        return pojoTypes;
-    }
-
     @Override
-    protected String getTypeName(Class<?> clz, Class<?> contextClass) {
-        try {
-            return isPojo(clz) ? build(clz,contextClass) : clz.getSimpleName();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    protected String getClassLabel(Class<?> clz) throws IOException {
+        if (JaxRSHelper.isPrimitive(clz) || clz.getPackage().getName().startsWith("java"))
+            return clz.getSimpleName();
+        else {
+            buildPojo(clz);
+            StringBuilder builder = new StringBuilder("[");
+            builder.append(clz.getSimpleName()).append("](../pojos/")
+                    .append(canonicalName(clz.getName()))
+                    .append(".md)");
+            return builder.toString();
         }
     }
 
-    private String build(Class<?> clz, Class<?> contextClass) throws IOException {
+    private void buildPojo(Class<?> clz) throws IOException {
         if (!pojoTypes.contains(clz)) {
             List<POJOPropertyInfo> pojoPropertyInfos = new ArrayList<POJOPropertyInfo>();
 
 
             for (Method method : clz.getMethods()) {
                 if (isProperty(method))
-                    pojoPropertyInfos.add(new POJOPropertyInfo(contextClass, method));
+                    pojoPropertyInfos.add(new POJOPropertyInfo(clz, method));
             }
 
             for (Field field : ReflectHelper.getAllDeclaredFields(clz)) {
@@ -75,10 +75,51 @@ public class ServiceDocToolkit extends DocToolkit {
 
             getRender().writeTo("pojos/" + canonicalName(clz.getName()) + ".md", "pojo.md", map);
         }
-        StringBuilder builder = new StringBuilder("[");
-        builder.append(clz.getSimpleName()).append("](../pojos/").append(canonicalName(clz.getName())).append(".md)");
-        return builder.toString();
     }
+
+    private Set<String> pojoTypes = new HashSet<String>();
+
+    public Set<String> getPojos() {
+        return pojoTypes;
+    }
+
+//    @Override
+//    protected String getTypeName(Class<?> clz, Class<?> contextClass) {
+//        try {
+//            return isPojo(clz) ? build(clz,contextClass) : clz.getSimpleName();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
+//    private String build(Class<?> clz, Class<?> contextClass) throws IOException {
+//        if (!pojoTypes.contains(clz)) {
+//            List<POJOPropertyInfo> pojoPropertyInfos = new ArrayList<POJOPropertyInfo>();
+//
+//
+//            for (Method method : clz.getMethods()) {
+//                if (isProperty(method))
+//                    pojoPropertyInfos.add(new POJOPropertyInfo(contextClass, method));
+//            }
+//
+//            for (Field field : ReflectHelper.getAllDeclaredFields(clz)) {
+//                if (isProperty(field))
+//                    pojoPropertyInfos.add(new POJOPropertyInfo(contextClass, field));
+//            }
+//
+//
+//            pojoTypes.add(canonicalName(clz.getName()));
+//            Map<String, Object> map = new HashMap<String, Object>();
+//            map.put("properties", pojoPropertyInfos);
+//            map.put("type", clz.getName());
+//            map.put("tool", this);
+//
+//            getRender().writeTo("pojos/" + canonicalName(clz.getName()) + ".md", "pojo.md", map);
+//        }
+//        StringBuilder builder = new StringBuilder("[");
+//        builder.append(clz.getSimpleName()).append("](../pojos/").append(canonicalName(clz.getName())).append(".md)");
+//        return builder.toString();
+//    }
 
     private boolean isProperty(Field field) {
         int mod = field.getModifiers();

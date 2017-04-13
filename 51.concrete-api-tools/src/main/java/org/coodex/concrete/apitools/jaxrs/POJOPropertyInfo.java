@@ -20,8 +20,7 @@ import org.coodex.concrete.api.Description;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
-import static org.coodex.concrete.jaxrs.JaxRSHelper.lowerFirstChar;
+import java.lang.reflect.Type;
 
 /**
  * Created by davidoff shen on 2016-12-04.
@@ -32,31 +31,47 @@ public class POJOPropertyInfo {
         String methodName = method.getName();
         int startIndex = methodName.startsWith("is") && method.getReturnType() == boolean.class ? 2 : 3;
         name = lowerFirstChar(method.getName().substring(startIndex));
-        pojoTypeInfo = new POJOTypeInfo(contextType, method.getGenericReturnType());
+//        pojoTypeInfo = new POJOTypeInfo(contextType, method.getGenericReturnType());
         description = method.getAnnotation(Description.class);
-//        type = method.getGenericReturnType();
+        type = method.getGenericReturnType();
     }
 
     public POJOPropertyInfo(Class<?> contextType, Field field) {
         name = field.getName();
         description = field.getAnnotation(Description.class);
-        pojoTypeInfo = new POJOTypeInfo(contextType, field.getGenericType());
-//        type = field.getGenericType();
+//        pojoTypeInfo = new POJOTypeInfo(contextType, field.getGenericType());
+        type = field.getGenericType();
+    }
+
+    private static final int TO_LOWER = 'a' - 'A';
+
+    static String lowerFirstChar(String string) {
+        if (string == null) return string;
+        char[] charSeq = string.toCharArray();
+        if (charSeq[0] >= 'A' && charSeq[0] <= 'Z') {
+            charSeq[0] = (char) (charSeq[0] + TO_LOWER);
+            return new String(charSeq);
+        }
+        return string;
     }
 
     private final String name;
     private final Description description;
-    private POJOTypeInfo pojoTypeInfo;
+//    private POJOTypeInfo pojoTypeInfo;
 
-//    private final Type type;
+    private final Type type;
 
     public String getName() {
         return name;
     }
 
-    public POJOTypeInfo getType() {
-        return pojoTypeInfo;
+    public Type getType() {
+        return type;
     }
+
+    //    public POJOTypeInfo getType() {
+//        return pojoTypeInfo;
+//    }
 
     public String getLabel() {
         return description == null ? "" : description.name();
