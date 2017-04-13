@@ -46,12 +46,16 @@ public class AngularCodeRender extends AbstractRender {
 
     private static final ThreadLocal<Map<String, Map<Class, TSClass>>> CLASSES = new ThreadLocal<Map<String, Map<Class, TSClass>>>();
 
+    private String getModuleName(String moduleName) {
+        return moduleName.charAt(0) == '@' ? moduleName : ("@" + moduleName);
+    }
+
     @Override
     public void writeTo(String... packages) throws IOException {
         String moduleName = getRenderDesc().substring(RENDER_NAME.length());
         moduleName = Common.isBlank(moduleName) ? null : moduleName.substring(1);
         List<Module> jaxrsModules = ConcreteToolkit.loadModules(RENDER_NAME, packages);
-        String contextPath = Common.isBlank(moduleName) ? "@concrete/" : (moduleName + "/");
+        String contextPath = Common.isBlank(moduleName) ? "@concrete/" : (getModuleName(moduleName) + "/");
 
         // 按包归类
         CLASSES.set(new HashMap<String, Map<Class, TSClass>>());

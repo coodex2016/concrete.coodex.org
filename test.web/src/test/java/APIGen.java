@@ -44,6 +44,10 @@ public class APIGen {
             API.generate(AngularCodeRender.RENDER_NAME,
                     "/concrete-demo/angular.code",
                     ServiceExample.class.getPackage().getName());
+
+            API.generate(AngularCodeRender.RENDER_NAME + ".example",
+                    "/concrete-demo/angular.code",
+                    ServiceExample.class.getPackage().getName());
         } finally {
             ExecutorsHelper.shutdownAllNOW();
         }

@@ -26,9 +26,9 @@ export class ${module.className} extends AbstractConcreteService {
         super();
     }
 
-    protected $$belong(): string {
-        return <#if module.belong??>'${module.belong}'<#else >null</#if>;
-    }
+    <#--protected $$belong(): string {-->
+        <#--return <#if module.belong??>'${module.belong}'<#else >null</#if>;-->
+    <#--}-->
 
 <#list module.methods?sort_by("name") as method>
     public ${method.name}(<@paramList params=method.params/>): Observable<${method.returnType}> {

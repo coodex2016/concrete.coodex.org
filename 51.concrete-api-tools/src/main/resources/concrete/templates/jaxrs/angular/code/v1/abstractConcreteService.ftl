@@ -7,10 +7,9 @@ import 'rxjs/add/observable/throw';
 export abstract class AbstractConcreteService {
 
     protected $$getServiceRoot(): string {
-        return ConcreteCommon.getServiceRoot(this.$$belong());
+        // TODO change it
+        return 'http://localhost:8080';
     }
-
-    protected abstract $$belong(): string;
 
     protected defaultRequestOptions(httpMethod: string): RequestOptions {
         return new RequestOptions({
@@ -26,43 +25,21 @@ export abstract class AbstractConcreteService {
     }
 
     protected extractData(res: Response){
-        const result = res.json() || {};
-        // if(type of result === 'string')
-        //    result =
-        return result;
+        return res.json() || null;
     }
 
-    protected handleError (error: Response | any) {
-        const errorInfo = error.json() || {};
-        return Observable.throw(ConcreteCommon.onError(
-                errorInfo.code || error.status,
-                errorInfo.msg || error.statusText ));
-    }
-}
-
-class ConcreteCommon {
-
-    // TODO: change it
-    static defaultServiceRoot = 'http://localhost:8080';
-
-    static serviceRootMap = {
-        // TODO: change it
-        'serverName1': 'serviceRoot',
-        'serverName2': 'serviceRoot'
-    };
-
-    public static getServiceRoot(name: string): string {
-        if (name === null)
-            return ConcreteCommon.defaultServiceRoot;
-        else
-            return ConcreteCommon.serviceRootMap[name];
-    }
-
-    public static onError(code: number, message: String): ErrorInfo {
+    private static onError(code: number, message: String): ErrorInfo {
         const errorInfo: ErrorInfo = new ErrorInfo(code, message);
         // TODO: change it
         console.log(errorInfo.toString());
         return errorInfo;
+    }
+
+    protected handleError (error: Response | any) {
+        const errorInfo = error.json() || {};
+        return Observable.throw(AbstractConcreteService.onError(
+                errorInfo.code || error.status,
+                errorInfo.msg || error.statusText ));
     }
 }
 
