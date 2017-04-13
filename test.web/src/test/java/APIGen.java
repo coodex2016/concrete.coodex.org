@@ -42,7 +42,7 @@ public class APIGen {
                     ServiceExample.class.getPackage().getName());
 //
             API.generate(AngularCodeRender.RENDER_NAME,
-                    "D:\\Projects\\front_ends\\ng2\\hello-angular\\src",
+                    "/concrete-demo/angular.code",
                     ServiceExample.class.getPackage().getName());
         } finally {
             ExecutorsHelper.shutdownAllNOW();
