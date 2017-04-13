@@ -40,7 +40,7 @@ public class AngularCodeRender extends AbstractRender {
     //    static String [] keyWords = {"number", "new", "public", "private", "protected", "static", "string", };
 
     public static final String RENDER_NAME =
-            JaxRSModuleMaker.JAX_RS_PREV + ".code.jquery.js.v1";
+            JaxRSModuleMaker.JAX_RS_PREV + ".code.angular.ts.v1";
     private static final String RESOURCE_PACKAGE = "concrete/templates/jaxrs/angular/code/v1/";
 
     private static final ThreadLocal<Map<String, Map<Class, TSClass>>> CLASSES = new ThreadLocal<Map<String, Map<Class, TSClass>>>();
