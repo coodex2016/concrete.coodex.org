@@ -25,6 +25,7 @@ import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.Common;
+import org.coodex.util.TypeHelper;
 
 import java.io.IOException;
 import java.lang.reflect.*;
@@ -139,7 +140,7 @@ public class AngularCodeRender extends AbstractRender {
 
             method.setName(getMethodName(unit.getMethod().getName(), methods));
             method.setHttpMethod(unit.getInvokeType());
-            method.setReturnType(getClassType(unit.getGenericReturnType(), tsModule));
+            method.setReturnType(getClassType(unit.getGenericReturnType(), tsModule, clz));
             method.setMethodPath(
                     (module.getName() + unit.getName()).replace("{", "${"));
 
@@ -174,17 +175,18 @@ public class AngularCodeRender extends AbstractRender {
         return CLASSES.get();
     }
 
-    private List<TSField> getParams(Unit unit, TSClass clz) {
-        List<TSField> fieldList = new ArrayList<TSField>();
+    private List<TSParam> getParams(Unit unit, TSClass clz) {
+        List<TSParam> fieldList = new ArrayList<TSParam>();
         for (int i = 0; i < unit.getParameters().length; i++) {
             Param param = unit.getParameters()[i];
-            TSField field = new TSField();
+            TSParam field = new TSParam();
             field.setName(param.getName());
-            field.setType(getClassType(param.getGenericType(), clz));
+            field.setType(getClassType(param.getGenericType(), clz, unit.getDeclaringModule().getInterfaceClass()));
             fieldList.add(field);
         }
         return fieldList;
     }
+
 
     private Map<Class, TSClass> getTSClassMap(Class<?> clz) {
         Map<String, Map<Class, TSClass>> classes = getClasses();
@@ -202,15 +204,18 @@ public class AngularCodeRender extends AbstractRender {
             byte.class, int.class, short.class, long.class, float.class, double.class
     };
 
-    private String getClassType(Type type, TSClass clz) {
+    private String getClassType(Type type, TSClass clz, Class contextClass) {
         if (type instanceof Class) {
             return getClassType((Class) type, clz);
         } else if (type instanceof ParameterizedType) {
             return getParameterizedType(clz, (ParameterizedType) type);
         } else if (type instanceof GenericArrayType) {
-            return getClassType(((GenericArrayType) type).getGenericComponentType(), clz) + "[]";
+            return getClassType(((GenericArrayType) type).getGenericComponentType(), clz, contextClass) + "[]";
         } else if (type instanceof TypeVariable) {
-            return ((TypeVariable) type).getName();
+            if (contextClass != null) {
+                return getClassType(TypeHelper.findActualClassFrom((TypeVariable) type, contextClass), clz, null);
+            } else
+                return ((TypeVariable) type).getName();
         } else {
             throw new RuntimeException("unknown type: " + type);
         }
@@ -219,9 +224,11 @@ public class AngularCodeRender extends AbstractRender {
     private String getParameterizedType(TSClass clz, ParameterizedType pt) {
         Class rawType = (Class) pt.getRawType();
         if (Collection.class.isAssignableFrom(rawType)) {
-            return getClassType(pt.getActualTypeArguments()[0], clz) + "[]";
+            return getClassType(pt.getActualTypeArguments()[0], clz, null) + "[]";
         } else if (Map.class.isAssignableFrom(rawType)) {
-            return String.format("Map<%s, %s>", getClassType(pt.getActualTypeArguments()[0], clz), getClassType(pt.getActualTypeArguments()[1], clz));
+            return String.format("Map<%s, %s>",
+                    getClassType(pt.getActualTypeArguments()[0], clz, null),
+                    getClassType(pt.getActualTypeArguments()[1], clz, null));
         } else {
             StringBuilder builder = new StringBuilder();
             builder.append(getClassType(rawType, clz))
@@ -229,7 +236,7 @@ public class AngularCodeRender extends AbstractRender {
             boolean isFirst = true;
             for (Type t : pt.getActualTypeArguments()) {
                 if (!isFirst) builder.append(", ");
-                builder.append(getClassType(t, clz));
+                builder.append(getClassType(t, clz, null));
                 isFirst = false;
             }
             builder.append(">");
@@ -238,13 +245,13 @@ public class AngularCodeRender extends AbstractRender {
     }
 
     private String getClassType(Class c, TSClass clz) {
-        if (c == void.class) {
+        if (void.class.equals(c) || Void.class.equals(c)) {
             return "void";
-        } else if (boolean.class == c || Boolean.class == c) {
+        } else if (boolean.class.equals(c) || Boolean.class.equals(c)) {
             return "boolean";
         } else if (Common.inArray(c, NUMBERS) || Number.class.isAssignableFrom(c)) {
             return "number";
-        } else if (char.class == c || Character.class == c || CharSequence.class.isAssignableFrom(c)) {
+        } else if (char.class.equals(c) || Character.class.equals(c) || CharSequence.class.isAssignableFrom(c)) {
             return "string";
         } else if (Collection.class.isAssignableFrom(c)) {
             return "any[]";
@@ -266,14 +273,14 @@ public class AngularCodeRender extends AbstractRender {
         map.put(c, pojo);
 
         if (!Object.class.equals(c.getGenericSuperclass()))
-            pojo.setSuperClass(getClassType(c.getGenericSuperclass(), pojo));
+            pojo.setSuperClass(getClassType(c.getGenericSuperclass(), pojo, null));
 
         for (Field field : c.getDeclaredFields()) {
             int mod = field.getModifiers();
             if (!Modifier.isStatic(mod) && !Modifier.isTransient(mod)) {
                 TSField tsField = new TSField();
                 tsField.setName(field.getName());
-                tsField.setType(getClassType(field.getGenericType(), pojo));
+                tsField.setType(getClassType(field.getGenericType(), pojo, null));
                 pojo.getFields().add(tsField);
             }
         }

@@ -16,7 +16,10 @@
 
 package org.coodex.concrete.apitools.jaxrs.angular.meta;
 
+import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,12 +32,16 @@ public abstract class TSClass {
     private final int classType;
     private final String packageName;
     private final String className;
+    private List<String> genericParams = new ArrayList<String>();
     private Set<Class> imports = new HashSet<Class>();
 
     public TSClass(int classType, Class clz) {
         this.classType = classType;
         this.packageName = clz.getPackage().getName();
         this.className = clz.getSimpleName();
+        for(TypeVariable t : clz.getTypeParameters()){
+            genericParams.add(t.getName());
+        }
     }
 
     public String getPackageName() {
@@ -55,5 +62,13 @@ public abstract class TSClass {
 
     public int getClassType() {
         return classType;
+    }
+
+    public List<String> getGenericParams() {
+        return genericParams;
+    }
+
+    public void setGenericParams(List<String> genericParams) {
+        this.genericParams = genericParams;
     }
 }

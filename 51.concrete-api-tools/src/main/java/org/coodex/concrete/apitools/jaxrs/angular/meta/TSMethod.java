@@ -25,7 +25,7 @@ import java.util.List;
 public class TSMethod {
     private String name;
 
-    private List<TSField> params = new ArrayList<TSField>();
+    private List<TSParam> params = new ArrayList<TSParam>();
 
     private String returnType;
 
@@ -43,11 +43,11 @@ public class TSMethod {
         this.name = name;
     }
 
-    public List<TSField> getParams() {
+    public List<TSParam> getParams() {
         return params;
     }
 
-    public void setParams(List<TSField> params) {
+    public void setParams(List<TSParam> params) {
         this.params = params;
     }
 

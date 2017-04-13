@@ -43,22 +43,22 @@ public class ServiceDocToolkit extends DocToolkit {
     }
 
     @Override
-    protected String getTypeName(Class<?> clz) {
+    protected String getTypeName(Class<?> clz, Class<?> contextClass) {
         try {
-            return isPojo(clz) ? build(clz) : clz.getSimpleName();
+            return isPojo(clz) ? build(clz,contextClass) : clz.getSimpleName();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private String build(Class<?> clz) throws IOException {
+    private String build(Class<?> clz, Class<?> contextClass) throws IOException {
         if (!pojoTypes.contains(clz)) {
             List<POJOPropertyInfo> pojoPropertyInfos = new ArrayList<POJOPropertyInfo>();
 
 
             for (Method method : clz.getMethods()) {
                 if (isProperty(method))
-                    pojoPropertyInfos.add(new POJOPropertyInfo(clz, method));
+                    pojoPropertyInfos.add(new POJOPropertyInfo(contextClass, method));
             }
 
             for (Field field : ReflectHelper.getAllDeclaredFields(clz)) {

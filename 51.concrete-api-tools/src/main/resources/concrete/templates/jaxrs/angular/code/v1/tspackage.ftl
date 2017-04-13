@@ -1,5 +1,6 @@
 <#macro paramList params><#list params as param>${param.name}: ${param.type}<#if param_has_next>, </#if></#list></#macro>
 <#macro importsList classes><#list classes?sort as clz>${clz}<#if clz_has_next>, </#if></#list></#macro>
+<#macro genericList typeVariable><#list typeVariable as clz>${clz}<#if clz_has_next>, </#if></#list></#macro>
 <#if includeServices??>
 import { Http, RequestOptions } from '@angular/http';
 import { Injectable } from '@angular/core';
@@ -46,7 +47,7 @@ export class ${module.className} extends AbstractConcreteService {
 <#else >
 <#assign pojo = clz/>
 
-export class ${pojo.className} <#if pojo.superClass??> extends ${pojo.superClass}</#if>{
+export class ${pojo.className}<#if pojo.genericParams?size != 0><<@genericList typeVariable=pojo.genericParams/>></#if><#if pojo.superClass??> extends ${pojo.superClass}</#if> {
     <#list pojo.fields?sort_by("name") as field>
     ${field.name}: ${field.type};
     </#list>

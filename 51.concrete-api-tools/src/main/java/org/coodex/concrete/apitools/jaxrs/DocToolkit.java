@@ -73,7 +73,8 @@ public abstract class DocToolkit {
         if (info.getType().isArray()) {
             return formatPOJOTypeInfo(info.getArrayElement()) + "[]";
         } else {
-            StringBuilder builder = new StringBuilder(getTypeName(info.getType()));
+            StringBuilder builder = new StringBuilder(getTypeName(info.getType(), info.getContextType()));
+//            StringBuilder builder = new StringBuilder(getTypeName(info.getType()));
             if (info.getGenericParameters().size() > 0) {
                 builder.append("<");
                 boolean isFirst = true;
@@ -90,7 +91,7 @@ public abstract class DocToolkit {
         }
     }
 
-    protected abstract String getTypeName(Class<?> clz);
+    protected abstract String getTypeName(Class<?> clz, Class<?> contextClass);
 
     public AbstractRender getRender() {
         return render;

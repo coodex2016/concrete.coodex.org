@@ -27,12 +27,14 @@ import org.coodex.practice.jaxrs.api.SaaSExample;
 import org.coodex.practice.jaxrs.api.ServiceExample;
 import org.coodex.practice.jaxrs.pojo.Book;
 import org.coodex.practice.jaxrs.pojo.BookInfo;
+import org.coodex.practice.jaxrs.pojo.GenericPojo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by davidoff shen on 2016-11-28.
@@ -128,6 +130,31 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
     }
 
     @Override
+    public List<String> genericTest(List<Integer> x) {
+        return null;
+    }
+
+    @Override
+    public Map<String, BookInfo> genericTest2(Map<String, Book> y) {
+        return null;
+    }
+
+    @Override
+    public List<List<BookInfo>> genericTest3(List<List<BookInfo>> z) {
+        return null;
+    }
+
+    @Override
+    public GenericPojo<Book> genericTest4(GenericPojo<BookInfo> gp) {
+        return null;
+    }
+
+    @Override
+    public GenericPojo<Book> genericTest5(List<GenericPojo<BookInfo>> gp) {
+        return null;
+    }
+
+    @Override
     public int add(int x, int y) {
         return x + y;
     }
@@ -136,5 +163,10 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
     public String exampleForSaaS(String tenantId, String ok) {
         log.debug("tenantId: {}", tenantId);
         return ok;
+    }
+
+    @Override
+    public GenericPojo<BookInfo> genericTest1001(GenericPojo<BookInfo> x) {
+        return null;
     }
 }

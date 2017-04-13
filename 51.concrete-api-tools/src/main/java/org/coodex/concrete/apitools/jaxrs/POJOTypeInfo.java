@@ -47,9 +47,17 @@ public class POJOTypeInfo {
         this.type = loadClass();
     }
 
+    public Class<?> getContextType() {
+        return contextType;
+    }
+
     private List<POJOTypeInfo> genericParameters = new ArrayList<POJOTypeInfo>();
 
     private Class<?> loadClass() {
+        return $loadClass(genericType);
+    }
+
+    private Class<?> $loadClass(Type genericType) {
         if (genericType instanceof GenericArrayType) {
             arrayElement = new POJOTypeInfo(contextType, ((GenericArrayType) genericType).getGenericComponentType());
             return ARRAY_CLASS;
@@ -59,16 +67,17 @@ public class POJOTypeInfo {
                 genericParameters.add(new POJOTypeInfo(contextType, t));
             }
             return clz;
-        } else if (genericType instanceof TypeVariable) {
-            return (Class<?>) TypeHelper.findActualClassFrom((TypeVariable) genericType, contextType);
         } else if (genericType instanceof Class) {
-            if(((Class) genericType).isArray()){
+            if (((Class) genericType).isArray()) {
                 arrayElement = new POJOTypeInfo(contextType, ((Class) genericType).getComponentType());
                 return ARRAY_CLASS;
             }
             return (Class<?>) genericType;
+        } else if (genericType instanceof TypeVariable) {
+            return $loadClass(TypeHelper.findActualClassFrom((TypeVariable) genericType, contextType));
         }
-        throw new RuntimeException("unknown Type: " + genericType);
+        throw new RuntimeException("unknown Type: " + genericType + ". genericType: " + this.genericType
+                + ": instanceClass:" + contextType);
     }
 
     public Type getGenericType() {

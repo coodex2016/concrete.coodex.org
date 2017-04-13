@@ -18,13 +18,30 @@ package org.coodex.practice.jaxrs.api;
 
 import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.api.ServiceTiming;
+import org.coodex.practice.jaxrs.pojo.Book;
+import org.coodex.practice.jaxrs.pojo.BookInfo;
+import org.coodex.practice.jaxrs.pojo.GenericPojo;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by davidoff shen on 2016-11-28.
  */
 @MicroService("book")
 
-public interface ServiceExample extends ServiceB {
+public interface ServiceExample extends ServiceB, GenericService<GenericPojo<BookInfo>> {
     @ServiceTiming("rule2")
     String tokenId();
+
+    List<String> genericTest(List<Integer> x);
+
+    Map<String, BookInfo> genericTest2(Map<String, Book> y);
+
+    List<List<BookInfo>> genericTest3(List<List<BookInfo>> z);
+
+    GenericPojo<Book> genericTest4(GenericPojo<BookInfo> gp);
+
+    GenericPojo<Book> genericTest5(List<GenericPojo<BookInfo>> gp);
+
 }
