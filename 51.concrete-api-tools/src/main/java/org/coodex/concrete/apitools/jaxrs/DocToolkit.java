@@ -63,7 +63,7 @@ public abstract class DocToolkit {
     }
 
     public String formatTypeStr(Type t) throws IOException {
-        return formatTypeStr(t,null);
+        return formatTypeStr(t, null);
     }
 
     public String formatTypeStr(Type t, Class<?> contextClass) throws IOException {
@@ -81,15 +81,18 @@ public abstract class DocToolkit {
             }
             builder.append('>');
             return builder.toString();
-        } else if(t instanceof TypeVariable){
+        } else if (t instanceof TypeVariable) {
 
             return ((TypeVariable) t).getName();
-        } else if(t instanceof GenericArrayType){
+        } else if (t instanceof GenericArrayType) {
 
             return formatTypeStr(((GenericArrayType) t).getGenericComponentType(), contextClass) + "[]";
-        } else if(t instanceof Class){
-
-            return getClassLabel((Class<?>) t);
+        } else if (t instanceof Class) {
+            if (((Class) t).isArray()) {
+                return formatTypeStr(((Class) t).getComponentType(), contextClass) + "[]";
+            } else {
+                return getClassLabel((Class<?>) t);
+            }
         }
         return null;
     }

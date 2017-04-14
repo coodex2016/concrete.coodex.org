@@ -38,22 +38,22 @@ public class JSR311MethodGenerator extends AbstractMethodGenerator {
 
 
     @Override
-    protected CtClass[] getParameterTypes() {
+    protected CtClass[] getParameterTypes(Class pojoClass) {
         // 增加String tokenId
-        return getParameterTypesWith(CGContext.CLASS_POOL.getOrNull(String.class.getName()));
+        return getParameterTypesWith(pojoClass, CGContext.CLASS_POOL.getOrNull(String.class.getName()));
     }
 
     @Override
-    protected SignatureAttribute.Type[] getSignatureTypes() {
+    protected SignatureAttribute.Type[] getSignatureTypes(Class pojoClass) {
         // 增加String tokenId
-        return getSignatureTypesWith(JavassistHelper.classType(String.class, getContext().getServiceClass()));
+        return getSignatureTypesWith(pojoClass, JavassistHelper.classType(String.class, getContext().getServiceClass()));
     }
 
 
     @Override
-    protected String getMethodBody() {
+    protected String getMethodBody(Class pojoClass) {
 //        String paramListSrc = getParamListSrc(1);
-        String paramListSrc = getParamListSrc(2);
+        String paramListSrc = getParamListSrc(pojoClass, 2);
         return "{return ($r)execute(\"" + getUnit().getFunctionName() + "\", $1"
                 + (paramListSrc.length() == 0 ? ", null" : (", new java.lang.Object[]{" + paramListSrc + "}")) + ");}";
     }

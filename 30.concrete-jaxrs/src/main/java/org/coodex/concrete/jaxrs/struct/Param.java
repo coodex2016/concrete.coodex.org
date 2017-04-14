@@ -33,6 +33,7 @@ public class Param extends AbstractParam {
 
     private final ReflectHelper.MethodParameter parameter;
     private final Description description;
+    private boolean pathParam = true;
 
     public Param(Method method, int index) {
         this.parameter = new ReflectHelper.MethodParameter(method, index);
@@ -77,5 +78,13 @@ public class Param extends AbstractParam {
     public String getDescription() {
         return description == null ? "" : description.description();
 //        return Common.isBlank(s) ? "　" : s;
+    }
+
+    public boolean isPathParam() {
+        return pathParam;
+    }
+
+    public void setPathParam(boolean pathParam) {
+        this.pathParam = pathParam;
     }
 }

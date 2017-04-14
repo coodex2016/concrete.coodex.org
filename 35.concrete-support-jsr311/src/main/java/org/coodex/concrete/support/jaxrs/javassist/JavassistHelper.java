@@ -28,6 +28,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by davidoff shen on 2016-11-24.
@@ -69,8 +71,37 @@ public class JavassistHelper {
         return c.getName();
     }
 
+    public static String getSignature(SignatureAttribute.Type type) {
+        if (type instanceof SignatureAttribute.ObjectType) {
+            return fixJavassist(((SignatureAttribute.ObjectType) type).encode());
+        }
+        return null;
+    }
+
+    private static final Map<String, String> PRIMITIVE_CONVERTER = new HashMap<String, String>();
+
+    static {
+        PRIMITIVE_CONVERTER.put(boolean.class.getName(), "Z");
+        PRIMITIVE_CONVERTER.put(byte.class.getName(), "B");
+        PRIMITIVE_CONVERTER.put(char.class.getName(), "C");
+        PRIMITIVE_CONVERTER.put(short.class.getName(), "S");
+        PRIMITIVE_CONVERTER.put(int.class.getName(), "I");
+        PRIMITIVE_CONVERTER.put(long.class.getName(), "J");
+        PRIMITIVE_CONVERTER.put(float.class.getName(), "F");
+        PRIMITIVE_CONVERTER.put(double.class.getName(), "D");
+    }
+
+
+    private static String fixJavassist(String encode) {
+        if (encode == null) return null;
+        for (String key : PRIMITIVE_CONVERTER.keySet()) {
+            encode = encode.replaceAll("L" + key + ";", PRIMITIVE_CONVERTER.get(key));
+        }
+        return encode;
+    }
+
     public static SignatureAttribute.Type classType(java.lang.reflect.Type t,
-                                                          Class<?> contextClass) {
+                                                    Class<?> contextClass) {
         if (t instanceof Class) {
             Class<?> c = (Class<?>) t;
             if (c.isArray()) {

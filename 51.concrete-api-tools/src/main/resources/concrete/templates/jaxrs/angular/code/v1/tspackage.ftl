@@ -32,13 +32,7 @@ export class ${module.className} extends AbstractConcreteService {
 
 <#list module.methods?sort_by("name") as method>
     public ${method.name}(<@paramList params=method.params/>): Observable<${method.returnType}> {
-        let requestOptions: RequestOptions = this.defaultRequestOptions('${method.httpMethod}');
-        <#if method.body??>
-        requestOptions = requestOptions.merge(new RequestOptions({
-            body: ${method.body}
-        }));
-        </#if>
-        return this.http.request(this.$$getServiceRoot() + `${method.methodPath}`, requestOptions)
+        return this.http.request(this.$$getServiceRoot() + `${method.methodPath}`, this.defaultRequestOptions('${method.httpMethod}')<#if method.body??>.merge(new RequestOptions({ body: ${method.body} }))</#if>)
                 .map(this.extractData)
                 .catch(this.handleError);
     }

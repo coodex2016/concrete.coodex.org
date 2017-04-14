@@ -52,9 +52,9 @@ public class ExampleApplication extends ResourceConfig {
         for (Class<?> clz : classes) {
             log.debug("class: {}, Annotation:{}", clz, Arrays.deepToString(clz.getAnnotations()));
             for (Method method : clz.getDeclaredMethods()) {
-                log.debug("method: {}, Annotations:{}\nparam: {}", method,
-                        Arrays.deepToString(method.getAnnotations()),
-                        Arrays.deepToString(method.getParameterAnnotations()));
+                log.debug("method: {}", method);
+                log.debug("Method Annotations: {}", Arrays.deepToString(method.getAnnotations()));
+                log.debug("Method param: {}", Arrays.deepToString(method.getParameterAnnotations()));
             }
         }
         registerClasses(classes);

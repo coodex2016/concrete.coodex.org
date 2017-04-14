@@ -31,8 +31,6 @@ import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.*;
 
-import static org.coodex.concrete.jaxrs.JaxRSHelper.getSubmitBody;
-
 /**
  * Created by davidoff shen on 2017-04-10.
  */
@@ -148,9 +146,10 @@ public class AngularCodeRender extends AbstractRender {
             method.setMethodPath(
                     (module.getName() + unit.getName()).replace("{", "${"));
 
-            Param toSubmit = getSubmitBody(unit);
-            if (toSubmit != null)
-                method.setBody(toSubmit.getName());
+
+//            Param toSubmit = getSubmitBody(unit);
+//            if (toSubmit != null)
+            method.setBody(getBody(unit));
 //            JaxRSHelper.isBigString(toSubmit) ?
 //                    // TODO: 待验证，不确定
 //                    String.format("{ %s }", toSubmit.getName()) : toSubmit.getName()
@@ -161,6 +160,24 @@ public class AngularCodeRender extends AbstractRender {
             tsModule.getMethods().add(method);
         }
         moduleMap.put(clz, tsModule);
+    }
+
+    private String getBody(Unit unit) {
+        Param[] pojoParams = unit.getPojo();
+        switch (unit.getPojoCount()) {
+            case 1:
+                return pojoParams[0].getName();
+            case 0:
+                return null;
+            default:
+                StringBuilder builder = new StringBuilder("{ ");
+                for (int i = 0; i < pojoParams.length; i++) {
+                    if (i > 0) builder.append(", ");
+                    builder.append(pojoParams[i].getName()).append(": ").append(pojoParams[i].getName());
+                }
+                builder.append(" }");
+                return builder.toString();
+        }
     }
 
 
@@ -210,7 +227,11 @@ public class AngularCodeRender extends AbstractRender {
 
     private String getClassType(Type type, TSClass clz, Class contextClass) {
         if (type instanceof Class) {
-            return getClassType((Class) type, clz);
+            Class c = (Class) type;
+            if (c.isArray()) {
+                return getClassType(c.getComponentType(), clz, contextClass) + "[]";
+            } else
+                return getClassType((Class) type, clz);
         } else if (type instanceof ParameterizedType) {
             return getParameterizedType(clz, (ParameterizedType) type, contextClass);
         } else if (type instanceof GenericArrayType) {

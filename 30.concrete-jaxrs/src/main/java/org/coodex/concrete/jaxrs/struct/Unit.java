@@ -22,6 +22,8 @@ import org.coodex.concrete.jaxrs.PathParam;
 
 import javax.ws.rs.HttpMethod;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.coodex.concrete.jaxrs.JaxRSHelper.isPrimitive;
 import static org.coodex.concrete.jaxrs.Predicates.getHttpMethod;
@@ -34,6 +36,7 @@ public class Unit extends AbstractUnit<Param, Module> {
 
 
     private Param[] parameters;
+    private List<Param> pojo = new ArrayList<Param>();
     private String name;
 
     public Unit(Method method, Module module) {
@@ -42,26 +45,34 @@ public class Unit extends AbstractUnit<Param, Module> {
         parameters = new Param[paramCount];
         for (int i = 0; i < paramCount; i++) {
             parameters[i] = new Param(method, i);
+            Param param = parameters[i];
+            if (!isPrimitive(param.getType()) ||
+                    (param.getType() == String.class
+                            && param.getAnnotation(BigString.class) != null)) {
+
+                pojo.add(param);
+                param.setPathParam(false);
+            }
         }
         name = getNameOnInit();
         validation();
     }
 
     private void validation() {
-        int pojoCount = 0;
-        for (Param param : parameters) {
-            if (!isPrimitive(param.getType()) ||
-                    (param.getType() == String.class && param.getAnnotation(BigString.class) != null))
-                pojoCount++;
-
-        }
+        int pojoCount = pojo.size();
+//        for (Param param : parameters) {
+//            if (!isPrimitive(param.getType()) ||
+//                    (param.getType() == String.class && param.getAnnotation(BigString.class) != null))
+//                pojoCount++;
+//        }
 
         String httpMethod = getInvokeType();
         int pojoLimited = 0;
         if (httpMethod.equalsIgnoreCase(HttpMethod.POST)
                 || httpMethod.equalsIgnoreCase(HttpMethod.PUT)
                 || httpMethod.equalsIgnoreCase(HttpMethod.DELETE)) {
-            pojoLimited = 1;
+//            pojoLimited = 1;
+            pojoLimited = Integer.MAX_VALUE;
         }
 //
 //        switch (httpMethod) {
@@ -154,5 +165,13 @@ public class Unit extends AbstractUnit<Param, Module> {
         if (v == 0)
             v = getName().compareTo(o.getName());
         return v == 0 ? getInvokeType().compareTo(o.getInvokeType()) : v;
+    }
+
+    public int getPojoCount() {
+        return pojo.size();
+    }
+
+    public Param[] getPojo() {
+        return pojo.toArray(new Param[0]);
     }
 }

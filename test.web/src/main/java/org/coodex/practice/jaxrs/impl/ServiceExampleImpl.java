@@ -16,6 +16,7 @@
 
 package org.coodex.practice.jaxrs.impl;
 
+import com.alibaba.fastjson.JSON;
 import org.coodex.concrete.attachments.client.ClientServiceImpl;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorCodes;
@@ -157,7 +158,16 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
         return null;
     }
 
-//    @Override
+    @Override
+    public void multiPojo(String pathParam, List<int[]> body1, GenericPojo<BookInfo> body2, Book body3, int[] body4) {
+        log.debug(pathParam);
+        log.debug(JSON.toJSONString(body1));
+        log.debug(JSON.toJSONString(body2));
+        log.debug(JSON.toJSONString(body3));
+        log.debug(JSON.toJSONString(body4));
+    }
+
+    //    @Override
     public G2<GenericPojo<String>, GenericPojo<Integer>> g5(G2<GenericPojo<String>, GenericPojo<Integer>> xx) {
         return null;
     }

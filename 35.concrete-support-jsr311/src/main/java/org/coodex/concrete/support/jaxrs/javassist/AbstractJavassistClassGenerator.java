@@ -74,7 +74,7 @@ public abstract class AbstractJavassistClassGenerator implements ClassGenerator 
         context.getClassFile().addAttribute(
                 JavassistHelper.aggregate(context.getConstPool(),
                         context.path(module.getName()),
-                        context.createInfo()));
+                        context.createInfo(null)));
 
         // 构造方法
         CtConstructor spiConstructor = new CtConstructor(null, context.getNewClass());

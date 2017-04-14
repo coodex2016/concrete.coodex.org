@@ -25,4 +25,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface CreatedByConcrete {
+    Class[] paramClasses();
+    int paramCount();
 }

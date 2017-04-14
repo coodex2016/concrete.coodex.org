@@ -18,6 +18,7 @@ package org.coodex.concrete.support.jaxrs.javassist;
 
 import javassist.CannotCompileException;
 import javassist.CtClass;
+import javassist.CtField;
 import javassist.CtMethod;
 import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ParameterAnnotationsAttribute;
@@ -30,8 +31,10 @@ import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.Common;
 
 import java.lang.reflect.Modifier;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.jaxrs.ClassGenerator.FRONTEND_DEV_MODE;
+import static org.coodex.concrete.support.jaxrs.javassist.CGContext.CLASS_POOL;
 
 
 /**
@@ -62,17 +65,28 @@ public abstract class AbstractMethodGenerator {
     /**
      * @return 获取javassist的参数类型
      */
-    protected abstract CtClass[] getParameterTypes();
+    protected abstract CtClass[] getParameterTypes(Class pojoClass);
 
-    protected final CtClass[] getParameterTypesWith(CtClass... addingCtClass) {
-        int count = addingCtClass == null ? 0 : addingCtClass.length;
+    protected final CtClass[] getParameterTypesWith(Class pojoClass, CtClass... addingCtClass) {
+        int additionParamCount = addingCtClass == null ? 0 : addingCtClass.length;
         Param[] params = getUnit().getParameters();
-        CtClass[] parameters = new CtClass[params.length + count];
-        for (int i = 0; i < params.length; i++) {
-            parameters[i + count] = CGContext.CLASS_POOL
-                    .getOrNull(JavassistHelper.getTypeName(params[i].getType()));
+        Param[] pojoParam = getUnit().getPojo();
+
+        CtClass[] parameters = new CtClass[actualParamCount() + additionParamCount];
+        boolean pojoAdded = false;
+        for (int i = 0, index = 0; i < params.length; i++) {
+            if (pojoClass != null && Common.inArray(params[i], pojoParam)) {
+                if (pojoAdded) continue;
+                parameters[index + additionParamCount] = CLASS_POOL
+                        .getOrNull(pojoClass.getName());
+                pojoAdded = true;
+            } else {
+                parameters[index + additionParamCount] = CLASS_POOL
+                        .getOrNull(JavassistHelper.getTypeName(params[i].getType()));
+            }
+            index++;
         }
-        if (count > 0) {
+        if (additionParamCount > 0) {
             for (int i = 0; i < addingCtClass.length; i++) {
                 parameters[i] = addingCtClass[i];
             }
@@ -80,24 +94,57 @@ public abstract class AbstractMethodGenerator {
         return parameters;
     }
 
-    protected final CtClass[] getParameterTypesForDemo() {
-        return getParameterTypesWith();
+    protected final CtClass[] getParameterTypesForDemo(Class pojoClass) {
+        return getParameterTypesWith(pojoClass);
     }
 
     /**
      * @return 获取参数签名类型
      */
-    protected abstract SignatureAttribute.Type[] getSignatureTypes();
+    protected abstract SignatureAttribute.Type[] getSignatureTypes(Class pojoClass);
 
-    protected final SignatureAttribute.Type[] getSignatureTypesWith(SignatureAttribute.Type... addingTypes) {
-        int count = addingTypes == null ? 0 : addingTypes.length;
+    private static final AtomicInteger REF = new AtomicInteger(0);
+
+    protected int actualParamCount() {
+        return getUnit().getParameters().length -
+                (getUnit().getPojoCount() == 0 ? 0 : (getUnit().getPojoCount() - 1));
+    }
+
+    private Class pojoClass() throws CannotCompileException {
+        if (getUnit().getPojoCount() > 1)
+            return createPojoClass(
+                    getUnit().getPojo(),
+                    String.format("POJO$%s$%s$%08X",
+                            getContext().getServiceClass().getSimpleName(),
+                            getUnit().getMethod().getName(),
+                            REF.incrementAndGet())
+            );
+        else
+            return null;
+    }
+
+    protected final SignatureAttribute.Type[] getSignatureTypesWith(Class pojoClass, SignatureAttribute.Type... addingTypes) {
+        int additionParamCount = addingTypes == null ? 0 : addingTypes.length;
         Param[] params = getUnit().getParameters();
-        SignatureAttribute.Type[] parameters = new SignatureAttribute.Type[params.length + count];
-        for (int i = 0; i < params.length; i++) {
-            parameters[i + count] = JavassistHelper.classType(
-                    params[i].getGenericType(), getContext().getServiceClass());
+        Param[] pojoParam = getUnit().getPojo();
+
+        SignatureAttribute.Type pojoType = pojoClass == null ? null : new SignatureAttribute.ClassType(pojoClass.getName());
+        int paramCount = additionParamCount + actualParamCount();
+        boolean pojoAdded = false;
+        SignatureAttribute.Type[] parameters =
+                new SignatureAttribute.Type[paramCount];
+        for (int i = 0, index = 0; i < params.length; i++) {
+            if (pojoType != null && Common.inArray(params[i], pojoParam)) {
+                if (pojoAdded) continue;
+                parameters[index + additionParamCount] = pojoType;
+                pojoAdded = true;
+            } else {
+                parameters[index + additionParamCount] = JavassistHelper.classType(
+                        params[i].getGenericType(), getContext().getServiceClass());
+            }
+            index++;
         }
-        if (count > 0) {
+        if (additionParamCount > 0) {
             for (int i = 0; i < addingTypes.length; i++) {
                 parameters[i] = addingTypes[i];
             }
@@ -105,21 +152,31 @@ public abstract class AbstractMethodGenerator {
         return parameters;
     }
 
-    protected final SignatureAttribute.Type[] getSignatureTypesForDemo() {
-        return getSignatureTypesWith();
-//        Param[] params = getUnit().getParameters();
-//        SignatureAttribute.Type[] parameters = new SignatureAttribute.Type[params.length];
-//        for (int i = 0; i < params.length; i++) {
-//            parameters[i] = JavassistHelper.classType(
-//                    params[i].getGenericType(), getContext().getServiceClass());
-//        }
-//        return parameters;
+    private Class createPojoClass(Param[] pojoParams, String className) throws CannotCompileException {
+        CtClass ctClass = CLASS_POOL.makeClass(className);
+
+        for (Param param : pojoParams) {
+            CtField field = new CtField(CLASS_POOL.getOrNull(param.getType().getName()), param.getName(), ctClass);
+            field.setModifiers(javassist.Modifier.PUBLIC);
+            field.setGenericSignature(
+                    JavassistHelper.getSignature(
+                            JavassistHelper.classType(param.getGenericType(), getContext().getServiceClass())
+                    )
+            );
+            ctClass.addField(field);
+        }
+
+        return ctClass.toClass();
+    }
+
+    protected final SignatureAttribute.Type[] getSignatureTypesForDemo(Class pojoClass) {
+        return getSignatureTypesWith(pojoClass);
     }
 
     /**
      * @return 获取方法源码
      */
-    protected abstract String getMethodBody();
+    protected abstract String getMethodBody(Class pojoClass);
 
     protected final String getMethodBodyForDemo() {
         return "{return ($r)mockResult();}";
@@ -129,10 +186,6 @@ public abstract class AbstractMethodGenerator {
      * @return 方法返回类型签名
      */
     protected abstract SignatureAttribute.Type getReturnSignatureType();
-//    {
-//
-//        return JavassistHelper.classType(unit.getGenericReturnType(), context.getServiceClass());
-//    }
 
     protected final SignatureAttribute.Type getReturnSignatureTypeForDemo() {
         return JavassistHelper.classType(unit.getGenericReturnType(), context.getServiceClass());
@@ -144,7 +197,7 @@ public abstract class AbstractMethodGenerator {
     protected abstract CtClass getReturnType();
 
     protected CtClass getReturnTypeForDemo() {
-        return CGContext.CLASS_POOL.getOrNull(unit.getReturnType().getName());
+        return CLASS_POOL.getOrNull(unit.getReturnType().getName());
     }
 
 
@@ -154,27 +207,38 @@ public abstract class AbstractMethodGenerator {
     protected abstract AttributeInfo getParameterAnnotationsAttribute();
 
     protected AttributeInfo getParameterAnnotationsAttributeWith(Annotation... adding) {
-        int count = adding == null ? 0 : adding.length;
+        int additionParamCount = adding == null ? 0 : adding.length;
 
         ParameterAnnotationsAttribute attributeInfo = new ParameterAnnotationsAttribute(
                 getContext().getConstPool(), ParameterAnnotationsAttribute.visibleTag);
 
         Param[] params = getUnit().getParameters();
-        Annotation[][] annotations = new Annotation[params.length + count][];
+        Param[] pojoParams = getUnit().getPojo();
+
+        int paramCount = additionParamCount + actualParamCount();
+        Annotation[][] annotations = new Annotation[paramCount][];
         int added = 0;
 
-        for (int i = 0; i < params.length; i++) {
-            String pathParamValue = getPathParam(params[i]);
-            if (pathParamValue != null) {
-                annotations[i + count] = new Annotation[]{getContext().pathParam(pathParamValue)};
-                added++;
+        boolean pojoAdded = false;
+        for (int i = 0, index = 0; i < params.length; i++) {
+            if (Common.inArray(params[i], pojoParams)) {
+                if (pojoAdded) continue;
+                annotations[index + additionParamCount] = new Annotation[0];
+                pojoAdded = true;
             } else {
-                annotations[i + count] = new Annotation[0];
+                String pathParamValue = getPathParam(params[i]);
+                if (pathParamValue != null) {
+                    annotations[index + additionParamCount] = new Annotation[]{getContext().pathParam(pathParamValue)};
+                    added++;
+                } else {
+                    annotations[index + additionParamCount] = new Annotation[0];
+                }
             }
+            index++;
         }
 
 
-        if (count > 0) {
+        if (additionParamCount > 0) {
             for (int i = 0; i < adding.length; i++) {
                 if (adding[i] == null) {
                     annotations[i] = new Annotation[0];
@@ -190,39 +254,18 @@ public abstract class AbstractMethodGenerator {
         return attributeInfo;
     }
 
-    ;
-
     protected final AttributeInfo getParameterAnnotationsAttributeForDemo() {
         return getParameterAnnotationsAttributeWith();
-//        ParameterAnnotationsAttribute attributeInfo = new ParameterAnnotationsAttribute(
-//                getContext().getConstPool(), ParameterAnnotationsAttribute.visibleTag);
-//
-//        Param[] params = getUnit().getParameters();
-//        Annotation[][] annotations = new Annotation[params.length][];
-//        int added = 0;
-//
-//        for (int i = 0; i < params.length; i++) {
-//            String pathParamValue = getPathParam(params[i]);
-//            if (pathParamValue != null) {
-//                annotations[i] = new Annotation[]{getContext().pathParam(pathParamValue)};
-//                added++;
-//            } else {
-//                annotations[i] = new Annotation[0];
-//            }
-//        }
-//
-//        if (added == 0) return null;
-//        attributeInfo.setAnnotations(annotations);
-//        return attributeInfo;
     }
 
 
     final CtMethod generateMethod(String methodName) throws CannotCompileException {
+        Class pojoClass = pojoClass();
         // 方法名、参数及签名
         CtMethod spiMethod = new CtMethod(
                 FRONTEND_DEV_MODE ? getReturnTypeForDemo() : getReturnType(),
                 methodName,
-                FRONTEND_DEV_MODE ? getParameterTypesForDemo() : getParameterTypes(),
+                FRONTEND_DEV_MODE ? getParameterTypesForDemo(pojoClass) : getParameterTypes(pojoClass),
                 context.getNewClass());
 
         AttributeInfo attribute = FRONTEND_DEV_MODE
@@ -237,14 +280,14 @@ public abstract class AbstractMethodGenerator {
         spiMethod.setGenericSignature(
                 new SignatureAttribute.MethodSignature(
                         null,
-                        FRONTEND_DEV_MODE ? getSignatureTypesForDemo() : getSignatureTypes(),
+                        FRONTEND_DEV_MODE ? getSignatureTypesForDemo(pojoClass) : getSignatureTypes(pojoClass),
                         FRONTEND_DEV_MODE ? getReturnSignatureTypeForDemo() : getReturnSignatureType(),
                         null).encode()
         );
 
 
         // body
-        spiMethod.setBody(FRONTEND_DEV_MODE ? getMethodBodyForDemo() : getMethodBody());
+        spiMethod.setBody(FRONTEND_DEV_MODE ? getMethodBodyForDemo() : getMethodBody(pojoClass));
 
         // 增加JSR311定义
         spiMethod.getMethodInfo().addAttribute(
@@ -253,7 +296,7 @@ public abstract class AbstractMethodGenerator {
                         httpMethod(),
                         context.consumes(),
                         context.produces(),
-                        context.createInfo()));
+                        context.createInfo(getUnit().getMethod().getParameterTypes())));
 
         return spiMethod;
     }
@@ -270,14 +313,10 @@ public abstract class AbstractMethodGenerator {
 
 
     private String box(Class<?> c, int index) {
-        String param = "$" + index;
-//        int i = -1;
-//        for(int j = 0; j < PRIMITIVE_CLASSES.length; j ++){
-//            if(c == PRIMITIVE_CLASSES[j]){
-//                i = j;
-//                break;
-//            }
-//        }
+        return box(c, "$" + index);
+    }
+
+    private String box(Class<?> c, String param) {
         int i = Common.findInArray(c, PRIMITIVE_CLASSES);
         if (i >= 0)
             return PRIMITIVE_BOX_CLASSES[i].getName() + ".valueOf(" + param + ")";
@@ -285,12 +324,23 @@ public abstract class AbstractMethodGenerator {
             return param;
     }
 
-    protected String getParamListSrc(int startIndex) {
+
+    protected String getParamListSrc(Class pojoClass, int startIndex) {
         StringBuilder buffer = new StringBuilder();
         Param[] params = unit.getParameters();
-        for (int i = 0; i < params.length; i++) {
+        Param[] pojoParams = unit.getPojo();
+        int pojoIndex = -1;
+        for (int i = 0, index = 0; i < params.length; i++) {
             if (i > 0) buffer.append(", ");
-            buffer.append(box(params[i].getType(), i + startIndex));
+            if (pojoClass != null && Common.inArray(params[i], pojoParams)) {
+                if (pojoIndex < 0) {
+                    pojoIndex = i;
+                }
+                buffer.append(box(params[i].getType(), "$" + (pojoIndex + startIndex) + "." + params[i].getName()));
+                continue;
+            }
+            buffer.append(box(params[i].getType(), index + startIndex));
+            index++;
         }
         return buffer.toString();
     }

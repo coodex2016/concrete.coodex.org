@@ -46,4 +46,6 @@ public interface ServiceExample extends ServiceB, GenericService<D, D> {
 
     GenericPojo<GenericPojo<Book>> g6(GenericPojo<GenericPojo<Book>> gp);
 
+    void multiPojo(String pathParam, List<int[]> body1, GenericPojo<BookInfo> body2, Book body3, int[] body4);
+
 }

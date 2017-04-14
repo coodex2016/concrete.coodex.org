@@ -37,10 +37,11 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
     }
 
     @Override
-    protected CtClass[] getParameterTypes() {
+    protected CtClass[] getParameterTypes(Class pojoClass) {
         // 参数1：@Suspended AsyncResponse
         // 参数2: @CookieParam String tokenId
         return getParameterTypesWith(
+                pojoClass,
                 CGContext.CLASS_POOL.getOrNull(AsyncResponse.class.getName()),
                 CGContext.CLASS_POOL.getOrNull(String.class.getName()));
 //        Param[] params = getUnit().getParameters();
@@ -56,10 +57,11 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
     }
 
     @Override
-    protected SignatureAttribute.Type[] getSignatureTypes() {
+    protected SignatureAttribute.Type[] getSignatureTypes(Class pojoClass) {
         // 参数1：@Suspended AsyncResponse
         // 参数2: @CookieParam String tokenId
         return getSignatureTypesWith(
+                pojoClass,
                 new SignatureAttribute.ClassType(AsyncResponse.class.getName()),
                 new SignatureAttribute.ClassType(String.class.getName()));
 //        Param[] params = getUnit().getParameters();
@@ -74,8 +76,8 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
     }
 
     @Override
-    protected String getMethodBody() {
-        String paramListSrc = getParamListSrc(3);
+    protected String getMethodBody(Class pojoClass) {
+        String paramListSrc = getParamListSrc(pojoClass,3);
         return "{execute(\"" + getUnit().getFunctionName() + "\", $1, $2"
                 + (paramListSrc.length() == 0 ? ", null" : (", new java.lang.Object[]{" + paramListSrc + "}")) + "); return null;}";
     }

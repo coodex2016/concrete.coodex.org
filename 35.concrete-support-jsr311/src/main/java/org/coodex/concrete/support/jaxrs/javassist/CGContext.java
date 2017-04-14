@@ -23,6 +23,7 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ArrayMemberValue;
+import javassist.bytecode.annotation.IntegerMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 import org.coodex.concrete.jaxrs.AbstractJAXRSResource;
 import org.coodex.concrete.jaxrs.CreatedByConcrete;
@@ -47,7 +48,7 @@ public class CGContext {
         CLASS_POOL.insertClassPath(new ClassClassPath(AbstractJavassistClassGenerator.class));
     }
 
-    private static final Class[] PRIMITIVE_CLASSESS = new Class[]{
+    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
             String.class,
             Boolean.class,
             Character.class,
@@ -70,7 +71,7 @@ public class CGContext {
     };
 
     public static boolean isPrimitive(Class c) {
-        return Common.inArray(c, PRIMITIVE_CLASSESS);
+        return Common.inArray(c, PRIMITIVE_CLASSES);
     }
 
     public CGContext(Class<?> serviceClass, Class<?> superClass, String newClassName) {
@@ -153,8 +154,23 @@ public class CGContext {
         return anno;
     }
 
-    public Annotation createInfo() {
-        return new Annotation(CreatedByConcrete.class.getName(), constPool);
+    public Annotation createInfo(Class[] parameterTypes) {
+        Annotation annotation = new Annotation(CreatedByConcrete.class.getName(), constPool);
+
+        ArrayMemberValue memberValue = new ArrayMemberValue(constPool);
+        // javassist 缺陷？
+//        if (parameterTypes != null) {
+//            List<ClassMemberValue> values = new ArrayList<ClassMemberValue>();
+//            for (Class c : parameterTypes) {
+//                values.add(new ClassMemberValue(c.getName(), constPool));
+//            }
+//            memberValue.setValue(values.toArray(new ClassMemberValue[0]));
+//        }
+
+        annotation.addMemberValue("paramClasses", memberValue);
+        annotation.addMemberValue("paramCount", new IntegerMemberValue(constPool,
+                parameterTypes == null ? 0 : parameterTypes.length));
+        return annotation;
     }
 
     public Annotation tokenCookieParam() {

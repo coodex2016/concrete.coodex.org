@@ -27,9 +27,9 @@ import org.coodex.util.Common;
 import org.coodex.util.SPIFacade;
 
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
-
-import static org.coodex.concrete.jaxrs.JaxRSHelper.getSubmitBody;
 
 /**
  * Created by davidoff shen on 2016-12-07.
@@ -88,20 +88,21 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
 
                     // 找需要提交的对象
                     Object toSubmit = null;
+                    Param[] pojoParams = unit.getPojo();
                     if (args != null) {
-                        Param param = getSubmitBody(unit);
-                        if (param != null)
-                            toSubmit = args[param.getIndex()];
-
-//                        // 2017-03-09 修复java客户端BigString Post问题
-//                        for (int i = 0; i < unit.getParameters().length; i++) {
-//                            if (args[i] == null) continue;
-//                            Param param = unit.getParameters()[i];
-//                            if (!JaxRSHelper.isPrimitive(param.getType()) || JaxRSHelper.isBigString(param)) {
-//                                toSubmit = args[i];
-//                                break;
-//                            }
-//                        }
+                        switch (pojoParams.length) {
+                            case 0:
+                                break;
+                            case 1:
+                                toSubmit = args[pojoParams[0].getIndex()];
+                                break;
+                            default:
+                                Map<String, Object> body = new HashMap<String, Object>();
+                                for (Param param : pojoParams) {
+                                    body.put(param.getName(), args[param.getIndex()]);
+                                }
+                                toSubmit = body;
+                        }
                     }
                     return invoke(path, unit, toSubmit);
                 }

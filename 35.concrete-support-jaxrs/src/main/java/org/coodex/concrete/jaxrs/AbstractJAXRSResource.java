@@ -111,12 +111,7 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
                 Class<?> clz = c == null ? getInterfaceClass() : c;
                 for (Method method : this.getClass().getMethods()) {
                     if (method.getName().equals(methodKey) && method.getAnnotation(CreatedByConcrete.class) != null) {
-                        Class<?>[] parameterTypes = getParameterTypes(method.getParameterTypes());
-                        try {
-                            found = clz.getMethod(methodName, parameterTypes);
-                        } catch (NoSuchMethodException e) {
-                            throw new RuntimeException(e);
-                        }
+                        found = findActualMethod(methodName, clz, method.getAnnotation(CreatedByConcrete.class));
                         break;
                     }
                 }
@@ -126,6 +121,23 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
             }
             return found;
         }
+    }
+
+    private int getParameterCount(Method method){
+        return method.getParameterTypes() == null ? 0 : method.getParameterTypes().length;
+    }
+
+    private Method findActualMethod(String methodName, Class<?> clz, CreatedByConcrete concrete) {
+//        Class<?>[] parameterTypes = method.getAnnotation(CreatedByConcrete.class).paramClasses();
+        // 不确定原因，javassist int[]生成的注解不受支持
+        //getParameterTypes(method.getParameterTypes());
+
+            for(Method m : clz.getMethods()){
+                if(m.getName().equals(methodName) && getParameterCount(m) == concrete.paramCount()){
+                    return m;
+                }
+            }
+            throw new RuntimeException("no such method: " + methodName + ", paramCount: " + concrete.paramCount());
     }
 
     /**

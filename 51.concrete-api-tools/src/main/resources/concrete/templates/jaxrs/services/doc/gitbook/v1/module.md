@@ -21,9 +21,9 @@ ${unit.description!""}
 * **return:** ${tool.formatTypeStr(unit.genericReturnType, module.interfaceClass)}
 * **params:** <#if (paramCount > 0)>
 
-| paramName | label | Type                  | Description |
-| --------- |---- | --------------------- | ------------ |<#list unit.parameters as param>
-| ${param.name} | ${param.label} | ${tool.formatTypeStr(param.genericType, module.interfaceClass)} | ${tool.tableSafe(param.description)} |</#list><#else>NONE</#if>
+| ParamName | Method | Label | Type                  | Description |
+| --------- | -- | ---- | --------------------- | ------------ |<#list unit.parameters as param>
+| ${param.name} | <#if !param.pathParam>${unit.invokeType}</#if> | ${param.label} | ${tool.formatTypeStr(param.genericType, module.interfaceClass)} | ${tool.tableSafe(param.description)} |</#list><#else>NONE</#if>
 
 </#list>
 </#escape>
