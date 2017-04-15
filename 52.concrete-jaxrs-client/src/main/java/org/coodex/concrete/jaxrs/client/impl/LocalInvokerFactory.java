@@ -29,11 +29,6 @@ import org.coodex.concrete.jaxrs.struct.Unit;
  */
 public class LocalInvokerFactory implements InvokerFactory {
 
-    private static final String LOCAL_INVOKER = "local";
-
-    public static final boolean isLocal(String domain){
-        return LOCAL_INVOKER.equalsIgnoreCase(domain);
-    }
 
     static class LocalInvoker extends AbstractInvoker {
         @Override
@@ -53,7 +48,7 @@ public class LocalInvokerFactory implements InvokerFactory {
 
     @Override
     public boolean accept(String domain) {
-        return isLocal(domain);
+        return false;
     }
 
     @Override

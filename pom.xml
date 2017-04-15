@@ -80,7 +80,6 @@
         <module>51.concrete-api-tools</module>
         <module>52.concrete-jaxrs-client</module>
         <module>52.concrete-jaxrs-invoker-okhttp3</module>
-        <module>52.concrete-jaxrs-serializer-fastjson</module>
 
         <module>60.concrete-attachments</module>
         <module>61.concrete-attachments-jaxrs</module>

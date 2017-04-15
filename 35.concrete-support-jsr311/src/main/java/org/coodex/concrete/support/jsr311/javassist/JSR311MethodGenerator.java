@@ -74,4 +74,9 @@ public class JSR311MethodGenerator extends AbstractMethodGenerator {
         return getParameterAnnotationsAttributeWith(getContext().tokenCookieParam());
     }
 
+    @Override
+    protected String[] getContentType() {
+        return null;
+    }
+
 }

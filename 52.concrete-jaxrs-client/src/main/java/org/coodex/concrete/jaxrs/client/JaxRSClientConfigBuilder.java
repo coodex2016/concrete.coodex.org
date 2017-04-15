@@ -16,16 +16,15 @@
 
 package org.coodex.concrete.jaxrs.client;
 
-import org.coodex.concrete.api.ConcreteService;
+import javax.ws.rs.core.Configuration;
 
 /**
- * Created by davidoff shen on 2016-12-07.
+ * Created by davidoff shen on 2017-04-15.
  */
-public interface ClientInstanceFactory {
+public interface JaxRSClientConfigBuilder {
 
-//    <T extends ConcreteService> T create(Class<? extends T> type);
-
-    <T extends ConcreteService> T create(Class<? extends T> type, String domain);
-
-    Invoker getInvoker(String domain);
+    /**
+     * @return
+     */
+    Configuration buildConfig();
 }

@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.jaxrs.client;
+package org.coodex.concrete.jaxrs.client.impl;
 
-import org.coodex.concrete.api.ConcreteService;
+import com.alibaba.fastjson.JSON;
+import org.coodex.concrete.jaxrs.client.JSONSerializer;
+
+import java.lang.reflect.Type;
 
 /**
  * Created by davidoff shen on 2016-12-07.
  */
-public interface ClientInstanceFactory {
+public class FastJsonSerializer implements JSONSerializer {
+    @Override
+    public <T> T parse(String json, Type t) {
+        return JSON.parseObject(json, t);
+    }
 
-//    <T extends ConcreteService> T create(Class<? extends T> type);
-
-    <T extends ConcreteService> T create(Class<? extends T> type, String domain);
-
-    Invoker getInvoker(String domain);
+    @Override
+    public String toJson(Object t) {
+        return JSON.toJSONString(t);
+    }
 }

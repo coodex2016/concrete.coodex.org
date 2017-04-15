@@ -17,7 +17,6 @@
 package org.coodex.concrete.jaxrs.saas;
 
 import org.coodex.concrete.jaxrs.client.AbstractInvokerFactory;
-import org.coodex.concrete.jaxrs.client.impl.LocalInvokerFactory;
 
 import javax.net.ssl.SSLContext;
 
@@ -27,7 +26,7 @@ import javax.net.ssl.SSLContext;
 public class ReverserClientInvokerFactory extends AbstractInvokerFactory<ReverserClientInvoker> /*implements InvokerFactory */ {
     @Override
     public boolean accept(String domain) {
-        return !LocalInvokerFactory.isLocal(domain) && DeliveryContext.getContext() != null;
+        return DeliveryContext.getContext() != null;
     }
 
 //    @Override

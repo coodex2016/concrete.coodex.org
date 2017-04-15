@@ -61,7 +61,7 @@ public abstract class SPIFacade<T> {
                         }
                     }
                     if (instances.size() == 0) {
-                        log.debug("no ServiceProvider found for [{}]", getInterfaceClass().getCanonicalName());
+                        log.debug("no ServiceProvider found for [{}], using default provider.", getInterfaceClass().getCanonicalName());
                     }
                 }
             }

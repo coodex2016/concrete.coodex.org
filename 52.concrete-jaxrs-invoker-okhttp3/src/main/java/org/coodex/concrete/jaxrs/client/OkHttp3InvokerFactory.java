@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.jaxrs.client;
 
-import org.coodex.concrete.jaxrs.client.impl.LocalInvokerFactory;
 import org.coodex.util.Profile;
 
 import javax.net.ssl.SSLContext;
@@ -29,8 +28,7 @@ public class OkHttp3InvokerFactory extends AbstractInvokerFactory<OkHttp3Invoker
 
     @Override
     public boolean accept(String domain) {
-        return !LocalInvokerFactory.isLocal(domain)
-                && getDomainRule(domain) != null;
+        return getDomainRule(domain) != null;
     }
 
     private String getDomainRule(String domain) {

@@ -229,12 +229,6 @@
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-jaxrs-serializer-fastjson</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-attachments</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>

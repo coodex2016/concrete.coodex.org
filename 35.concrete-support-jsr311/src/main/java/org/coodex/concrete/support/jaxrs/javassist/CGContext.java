@@ -31,6 +31,8 @@ import org.coodex.util.Common;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by davidoff shen on 2016-11-24.
@@ -136,20 +138,28 @@ public class CGContext {
             throw new RuntimeException("nonsupport http method: " + httpMethod);
     }
 
-    public Annotation consumes() {
+    private StringMemberValue[] getContentTypes(String... contentTypes) {
+        if (contentTypes == null || contentTypes.length == 0)
+            contentTypes = new String[]{MediaType.APPLICATION_JSON};
+        List<StringMemberValue> values = new ArrayList<StringMemberValue>();
+        for (String contentType : contentTypes) {
+            values.add(new StringMemberValue(contentType, constPool));
+        }
+        return values.toArray(new StringMemberValue[0]);
+    }
+
+    public Annotation consumes(String... contentTypes) {
         Annotation anno = new Annotation(Consumes.class.getName(), constPool);
         ArrayMemberValue mv = new ArrayMemberValue(constPool);
-        mv.setValue(new StringMemberValue[]{new StringMemberValue(
-                MediaType.APPLICATION_JSON, constPool)});
+        mv.setValue(getContentTypes(contentTypes));
         anno.addMemberValue("value", mv);
         return anno;
     }
 
-    public Annotation produces() {
+    public Annotation produces(String... contentTypes) {
         Annotation anno = new Annotation(Produces.class.getName(), constPool);
         ArrayMemberValue mv = new ArrayMemberValue(constPool);
-        mv.setValue(new StringMemberValue[]{new StringMemberValue(
-                MediaType.APPLICATION_JSON, constPool)});
+        mv.setValue(getContentTypes(contentTypes));
         anno.addMemberValue("value", mv);
         return anno;
     }

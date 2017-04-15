@@ -118,15 +118,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.coodex</groupId>
-            <artifactId>concrete-jaxrs-serializer-fastjson</artifactId>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.coodex</groupId>
-            <artifactId>concrete-jaxrs-invoker-okhttp3</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.coodex</groupId>-->
+            <!--<artifactId>concrete-jaxrs-invoker-okhttp3</artifactId>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.coodex</groupId>

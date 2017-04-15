@@ -17,16 +17,24 @@
 package org.coodex.concrete.jaxrs.client;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ConcreteSPIFacade;
 import org.coodex.concrete.jaxrs.ClassGenerator;
+import org.coodex.concrete.jaxrs.ErrorInfo;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
+import org.coodex.concrete.jaxrs.client.impl.FastJsonSerializer;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.pojomocker.POJOMocker;
 import org.coodex.util.Common;
 import org.coodex.util.SPIFacade;
+import org.coodex.util.TypeHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -36,7 +44,14 @@ import java.util.StringTokenizer;
  */
 public abstract class AbstractRemoteInvoker extends AbstractInvoker {
 
+    private final static Logger log = LoggerFactory.getLogger(AbstractRemoteInvoker.class);
+
     private static final SPIFacade<JSONSerializer> JSON_SERIALIZER_FACTORY = new ConcreteSPIFacade<JSONSerializer>() {
+
+        @Override
+        protected JSONSerializer getDefaultProvider() {
+            return new FastJsonSerializer();
+        }
     };
 
     public static JSONSerializer getJSONSerializer() {
@@ -48,6 +63,17 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
 
     public AbstractRemoteInvoker(String domain) {
         this.domain = domain;
+    }
+
+    protected String getEncodingCharset() {
+        String charset = ConcreteHelper.getProfile().getString("jaxrs.client.charset." + domain,
+                ConcreteHelper.getProfile().getString("jaxrs.client.charset", "utf-8"));
+        try {
+            return Charset.forName(charset).displayName();
+        } catch (UnsupportedCharsetException e) {
+            log.warn("Unsupported charset: {}", charset);
+            return "utf-8";
+        }
     }
 
     @Override
@@ -82,7 +108,7 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
                                 }
                             }
                         }
-                        builder.append(URLEncoder.encode(node, "UTF-8"));
+                        builder.append(URLEncoder.encode(node, getEncodingCharset()));
                     }
                     path = path + builder.toString();
 
@@ -104,14 +130,20 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
                                 toSubmit = body;
                         }
                     }
-                    return invoke(path, unit, toSubmit);
+                    try {
+                        return invoke(path, unit, toSubmit);
+                    }catch (ClientException clientEx){
+                        throw clientEx;
+                    }catch (Throwable th){
+                        throw new ClientException(-1, th.getLocalizedMessage(), path, unit.getInvokeType());
+                    }
                 }
             }
         };
     }
 
 
-    protected abstract Object invoke(String path, Unit unit, Object toSubmit);
+    protected abstract Object invoke(String url, Unit unit, Object toSubmit) throws Throwable;
 
     protected String toStr(Object o) {
         if (o == null) return null;
@@ -119,6 +151,26 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
         return getJSONSerializer().toJson(o);
     }
 
+    private ClientException throwException(boolean errorOccurred, int code, String body, Unit unit, String url) {
+        if (errorOccurred) {
+            ErrorInfo errorInfo = getJSONSerializer().parse(body, ErrorInfo.class);
+            return new ClientException(errorInfo.getCode(), errorInfo.getMsg(), url, unit.getInvokeType());
+        } else {
+            return new ClientException(code, body, url, unit.getInvokeType());
+        }
+    }
+
+    protected Object processResult(int code, String body, Unit unit, boolean errorOccurred, String url){
+        if (code >= 200 && code < 300) {
+            return void.class.equals(unit.getReturnType()) ?
+                    null :
+                    getJSONSerializer().parse(body,
+                            TypeHelper.toTypeReference(unit.getGenericReturnType(),
+                                    unit.getDeclaringModule().getInterfaceClass()));
+        } else {
+            throw throwException(errorOccurred, code, body, unit, url);
+        }
+    }
 
 //    protected abstract Object call(Module module, Unit unit, Object[] args) throws Throwable;
 }

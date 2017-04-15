@@ -66,9 +66,9 @@ public class ReverserClientInvoker extends AbstractRemoteInvoker {
     }
 
     @Override
-    protected Object invoke(String path, Unit unit, Object toSubmit) {
-        log.debug("invoke: domain[{}] path[{}]", domain, path);
-        Invocation.Builder builder = client.target(path).request();
+    protected Object invoke(String url, Unit unit, Object toSubmit) {
+        log.debug("invoke: domain[{}] path[{}]", domain, url);
+        Invocation.Builder builder = client.target(url).request();
         builder = setHeaders(builder);
         return delivery(execute(builder, unit, toSubmit));
     }

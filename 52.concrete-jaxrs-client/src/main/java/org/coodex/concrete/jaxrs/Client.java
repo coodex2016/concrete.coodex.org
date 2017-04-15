@@ -18,12 +18,8 @@ package org.coodex.concrete.jaxrs;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.ConcreteService;
-import org.coodex.concrete.common.ConcreteSPIFacade;
-import org.coodex.concrete.common.ConcreteToolkit;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.jaxrs.client.ClientInstanceFactory;
-import org.coodex.concrete.jaxrs.client.Invoker;
-import org.coodex.concrete.jaxrs.client.InvokerFactory;
 import org.coodex.concrete.jaxrs.client.impl.JavaProxyClientInstanceFactory;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.SPIFacade;
@@ -80,36 +76,36 @@ public final class Client {
     }
 
 
-    private static final SPIFacade<InvokerFactory> INVOKER_FACTORY_SPI_FACADE =
-            new ConcreteSPIFacade<InvokerFactory>() {
-            };
+//    private static final SPIFacade<InvokerFactory> INVOKER_FACTORY_SPI_FACADE =
+//            new ConcreteSPIFacade<InvokerFactory>() {
+//            };
 
-    protected static String getServiceRoot(String domain) {
+//    protected static String getServiceRoot(String domain) {
+//
+//        String s = domain == null ?
+//                ConcreteToolkit.getProfile().getString("concrete.serviceRoot", "").trim() :
+//                ConcreteToolkit.getProfile().getString("concrete." + domain + ".serviceRoot", domain);
+//        char[] buf = s.toCharArray();
+//        int len = buf.length;
+//        while (len > 0 && buf[len - 1] == '/') {
+//            len--;
+//        }
+//        return new String(buf, 0, len);
+//    }
 
-        String s = domain == null ?
-                ConcreteToolkit.getProfile().getString("concrete.serviceRoot", "").trim() :
-                ConcreteToolkit.getProfile().getString("concrete." + domain + ".serviceRoot", domain);
-        char[] buf = s.toCharArray();
-        int len = buf.length;
-        while (len > 0 && buf[len - 1] == '/') {
-            len--;
-        }
-        return new String(buf, 0, len);
-    }
 
-
-    public static Invoker getInvoker(String domain) {
-
-        domain = getServiceRoot(domain);
-
-        for (InvokerFactory factory : INVOKER_FACTORY_SPI_FACADE.getAllInstances()) {
-            if (factory.accept(domain)) {
-                return factory.getInvoker(domain);
-            }
-        }
-        throw new RuntimeException("unable found "
-                + InvokerFactory.class.getName() + " service for [" + domain + "]");
-    }
+//    public static Invoker getInvoker(String domain) {
+//
+//        domain = getServiceRoot(domain);
+//
+//        for (InvokerFactory factory : INVOKER_FACTORY_SPI_FACADE.getAllInstances()) {
+//            if (factory.accept(domain)) {
+//                return factory.getInvoker(domain);
+//            }
+//        }
+//        throw new RuntimeException("unable found "
+//                + InvokerFactory.class.getName() + " service for [" + domain + "]");
+//    }
 
 
     // ------------

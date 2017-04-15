@@ -294,12 +294,14 @@ public abstract class AbstractMethodGenerator {
                 JavassistHelper.aggregate(context.getConstPool(),
                         context.path(path()),
                         httpMethod(),
-                        context.consumes(),
-                        context.produces(),
+                        context.consumes(getContentType()),
+                        context.produces(getContentType()),
                         context.createInfo(getUnit().getMethod().getParameterTypes())));
 
         return spiMethod;
     }
+
+    protected abstract String [] getContentType();
 
     private static final Class<?>[] PRIMITIVE_CLASSES = new Class[]{
             boolean.class, byte.class, char.class, short.class, int.class,

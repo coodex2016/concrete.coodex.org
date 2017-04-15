@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.jaxrs.client;
+package org.coodex.concrete.jaxrs.client.impl;
 
-import com.alibaba.fastjson.JSON;
+import org.coodex.concrete.jaxrs.client.AbstractInvokerFactory;
 
-import java.lang.reflect.Type;
+import javax.net.ssl.SSLContext;
 
 /**
- * Created by davidoff shen on 2016-12-07.
+ * Created by davidoff shen on 2017-04-15.
  */
-public class FastJsonSerializer implements JSONSerializer {
+public class JaxRSClientInvokerFactory extends AbstractInvokerFactory<JaxRSClientInvoker> {
     @Override
-    public <T> T parse(String json, Type t) {
-        return JSON.parseObject(json, t);
+    public boolean accept(String domain) {
+        return false;
     }
 
     @Override
-    public String toJson(Object t) {
-        return JSON.toJSONString(t);
+    protected JaxRSClientInvoker getHttpInvoker(String domain) {
+        return new JaxRSClientInvoker(domain, null);
+    }
+
+    @Override
+    protected JaxRSClientInvoker getSSLInvoker(String domain, SSLContext context) {
+        return new JaxRSClientInvoker(domain, context);
     }
 }

@@ -19,16 +19,13 @@ package org.coodex.concrete.jaxrs.client;
 import okhttp3.*;
 import okhttp3.internal.Util;
 import okhttp3.internal.platform.Platform;
-import org.coodex.concrete.jaxrs.ErrorInfo;
 import org.coodex.concrete.jaxrs.struct.Unit;
-import org.coodex.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import java.io.IOException;
 
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 
@@ -74,36 +71,22 @@ public class OkHttp3Invoker extends AbstractRemoteInvoker {
 
 
     @Override
-    protected Object invoke(String path, Unit unit, Object toSubmit) {
-        Request.Builder builder = new Request.Builder().url(path)
+    protected Object invoke(String url, Unit unit, Object toSubmit) throws Throwable {
+        Request.Builder builder = new Request.Builder().url(url)
                 .addHeader("Accept", "application/json, text/javascript, */*; q=0.01")
 //                .addHeader("Accept-Language", "zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4")
-                .addHeader("Content-Type", "application/json; charset=utf-8");
+                .addHeader("Content-Type", "application/json; charset=" + getEncodingCharset());
 
 
         RequestBody body = toSubmit == null ?
                 Util.EMPTY_REQUEST :
-                RequestBody.create(MediaType.parse("application/json; charset=utf-8"), toStr(toSubmit));
+                RequestBody.create(MediaType.parse("application/json; charset=" + getEncodingCharset()),
+                        toStr(toSubmit));
+        log.debug("request:{} {}", unit.getInvokeType(), url);
 
-        try {
-            log.debug("request:{} {}", unit.getInvokeType(), path);
-            Response response = client.newCall(build(unit.getInvokeType(), builder, body)).execute();
-            if (response.isSuccessful()) {
-
-                return void.class.equals(unit.getReturnType()) ? null :
-                        getJSONSerializer().parse(response.body().string(),
-                                TypeHelper.toTypeReference(unit.getGenericReturnType(), unit.getDeclaringModule().getInterfaceClass()));
-            } else {
-                if (response.header(HEADER_ERROR_OCCURRED) != null) {
-                    ErrorInfo errorInfo = getJSONSerializer().parse(response.body().string(), ErrorInfo.class);
-                    throw new ClientException(errorInfo.getCode(), errorInfo.getMsg(), path, unit.getInvokeType());
-                } else {
-                    throw new ClientException(response.code(), response.body().string(), path, unit.getInvokeType());
-                }
-            }
-        } catch (IOException e) {
-            throw new ClientException(-1, e.getLocalizedMessage(), path, unit.getInvokeType());
-        }
+        Response response = client.newCall(build(unit.getInvokeType(), builder, body)).execute();
+        return processResult(response.code(), response.body().string(), unit,
+                response.header(HEADER_ERROR_OCCURRED) != null, url);
 
     }
 }

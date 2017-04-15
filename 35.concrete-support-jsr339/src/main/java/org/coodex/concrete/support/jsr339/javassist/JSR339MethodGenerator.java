@@ -20,17 +20,27 @@ import javassist.CtClass;
 import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.concrete.support.jaxrs.javassist.AbstractMethodGenerator;
 import org.coodex.concrete.support.jaxrs.javassist.CGContext;
+import org.coodex.util.Common;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
+import javax.ws.rs.core.MediaType;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 
 /**
  * Created by davidoff shen on 2016-11-27.
  */
 public class JSR339MethodGenerator extends AbstractMethodGenerator {
+
+    private final static Logger log = LoggerFactory.getLogger(JSR339MethodGenerator.class);
+
 
     public JSR339MethodGenerator(CGContext context, Unit unit) {
         super(context, unit);
@@ -77,7 +87,7 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
 
     @Override
     protected String getMethodBody(Class pojoClass) {
-        String paramListSrc = getParamListSrc(pojoClass,3);
+        String paramListSrc = getParamListSrc(pojoClass, 3);
         return "{execute(\"" + getUnit().getFunctionName() + "\", $1, $2"
                 + (paramListSrc.length() == 0 ? ", null" : (", new java.lang.Object[]{" + paramListSrc + "}")) + "); return null;}";
     }
@@ -120,4 +130,19 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
 //        attributeInfo.setAnnotations(annotations);
 //        return attributeInfo;
     }
+
+    @Override
+    protected String[] getContentType() {
+        MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+        String charsetStr = ConcreteHelper.getProfile().getString("jsr339.charset", "utf8");
+        if (!Common.isBlank(charsetStr)) {
+            try {
+                mediaType = mediaType.withCharset(Charset.forName(charsetStr).displayName());
+            } catch (UnsupportedCharsetException e) {
+                log.warn("unsupported charset: {}", charsetStr);
+            }
+        }
+        return new String[]{mediaType.toString()};
+    }
+
 }

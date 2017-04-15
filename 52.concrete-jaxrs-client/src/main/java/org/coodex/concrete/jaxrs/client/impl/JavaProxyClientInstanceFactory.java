@@ -17,9 +17,8 @@
 package org.coodex.concrete.jaxrs.client.impl;
 
 import org.coodex.concrete.api.ConcreteService;
-import org.coodex.concrete.jaxrs.Client;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
-import org.coodex.concrete.jaxrs.client.ClientInstanceFactory;
+import org.coodex.concrete.jaxrs.client.AbstractClientInstanceFactory;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Unit;
 
@@ -30,8 +29,7 @@ import java.lang.reflect.Proxy;
 /**
  * Created by davidoff shen on 2016-12-07.
  */
-public class JavaProxyClientInstanceFactory implements ClientInstanceFactory {
-
+public class JavaProxyClientInstanceFactory extends AbstractClientInstanceFactory {
 
     @Override
     @SuppressWarnings("unchecked")
@@ -52,7 +50,7 @@ public class JavaProxyClientInstanceFactory implements ClientInstanceFactory {
                             if (method.getName().equals(unit.getMethod().getName())
                                     && count == unit.getParameters().length) {
 
-                                return Client.getInvoker(domain).invoke(unit, args, proxy);
+                                return getInvoker(domain).invoke(unit, args, proxy);
                             }
                         }
                         throw new RuntimeException("method not found in [" + type.getName() + "]: [" + method.getName() + "] with " + count + " parameter(s).");
