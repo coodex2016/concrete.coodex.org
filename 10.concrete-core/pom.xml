@@ -60,11 +60,23 @@
             <artifactId>aopalliance</artifactId>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>javax.inject</groupId>-->
-        <!--<artifactId>javax.inject</artifactId>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
 
 </project>

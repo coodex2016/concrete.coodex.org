@@ -20,6 +20,7 @@ import org.coodex.concrete.common.AbstractBeanProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.Map;
 
@@ -31,6 +32,7 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
     private static ApplicationContext context = null;
 
     @Override
+    @Scheduled
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         context = applicationContext;
     }

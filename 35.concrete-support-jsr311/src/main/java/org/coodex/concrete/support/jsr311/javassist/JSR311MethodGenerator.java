@@ -19,10 +19,10 @@ package org.coodex.concrete.support.jsr311.javassist;
 import javassist.CtClass;
 import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.SignatureAttribute;
+import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.concrete.support.jaxrs.javassist.AbstractMethodGenerator;
 import org.coodex.concrete.support.jaxrs.javassist.CGContext;
-import org.coodex.concrete.support.jaxrs.javassist.JavassistHelper;
 
 import javax.ws.rs.core.Response;
 

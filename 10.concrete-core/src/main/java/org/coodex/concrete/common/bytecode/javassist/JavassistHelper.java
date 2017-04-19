@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.support.jaxrs.javassist;
+package org.coodex.concrete.common.bytecode.javassist;
 
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
@@ -28,8 +28,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by davidoff shen on 2016-11-24.
@@ -48,56 +46,14 @@ public class JavassistHelper {
     }
 
     public static String getTypeName(Class<?> c) {
-//        switch (c.getName()) {
-//            case "boolean":
-//                return Boolean.class.getName();
-//            case "byte":
-//                return Byte.class.getName();
-//            case "char":
-//                return Character.class.getName();
-//            case "short":
-//                return Short.class.getName();
-//            case "int":
-//                return Integer.class.getName();
-//            case "long":
-//                return Long.class.getName();
-//            case "float":
-//                return Float.class.getName();
-//            case "double":
-//                return Double.class.getName();
-//            default:
-//                return c.getName();
-//        }
         return c.getName();
     }
 
     public static String getSignature(SignatureAttribute.Type type) {
         if (type instanceof SignatureAttribute.ObjectType) {
-            return fixJavassist(((SignatureAttribute.ObjectType) type).encode());
+            return ((SignatureAttribute.ObjectType) type).encode();
         }
         return null;
-    }
-
-    private static final Map<String, String> PRIMITIVE_CONVERTER = new HashMap<String, String>();
-
-    static {
-        PRIMITIVE_CONVERTER.put(boolean.class.getName(), "Z");
-        PRIMITIVE_CONVERTER.put(byte.class.getName(), "B");
-        PRIMITIVE_CONVERTER.put(char.class.getName(), "C");
-        PRIMITIVE_CONVERTER.put(short.class.getName(), "S");
-        PRIMITIVE_CONVERTER.put(int.class.getName(), "I");
-        PRIMITIVE_CONVERTER.put(long.class.getName(), "J");
-        PRIMITIVE_CONVERTER.put(float.class.getName(), "F");
-        PRIMITIVE_CONVERTER.put(double.class.getName(), "D");
-    }
-
-
-    private static String fixJavassist(String encode) {
-        if (encode == null) return null;
-        for (String key : PRIMITIVE_CONVERTER.keySet()) {
-            encode = encode.replaceAll("L" + key + ";", PRIMITIVE_CONVERTER.get(key));
-        }
-        return encode;
     }
 
     public static SignatureAttribute.Type classType(java.lang.reflect.Type t,
@@ -115,7 +71,10 @@ public class JavassistHelper {
                     dim++;
                     c = c.getComponentType();
                 }
-                return new SignatureAttribute.ArrayType(dim, new SignatureAttribute.ClassType(getTypeName(c)));
+                return new SignatureAttribute.ArrayType(dim,
+                        c.isPrimitive() ?
+                                new SignatureAttribute.BaseType(getTypeName(c)) :
+                                new SignatureAttribute.ClassType(getTypeName(c)));
             } else {
                 if (c.isPrimitive()) {
                     return new SignatureAttribute.BaseType(c.getName());

@@ -24,6 +24,7 @@ import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ParameterAnnotationsAttribute;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
+import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.PathParam;
 import org.coodex.concrete.jaxrs.struct.Param;

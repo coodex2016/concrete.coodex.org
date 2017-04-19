@@ -28,6 +28,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Set;
@@ -55,6 +56,14 @@ public class ExampleApplication extends ResourceConfig {
                 log.debug("method: {}", method);
                 log.debug("Method Annotations: {}", Arrays.deepToString(method.getAnnotations()));
                 log.debug("Method param: {}", Arrays.deepToString(method.getParameterAnnotations()));
+                log.debug("Method Parameters: {}", Arrays.deepToString(method.getGenericParameterTypes()));
+                for(Class c: method.getParameterTypes()){
+                    if(c.getName().startsWith("POJO$")){
+                        for(Field field : c.getFields()){
+                            log.debug("field: {}, {}", field.getName(), field.getGenericType());
+                        }
+                    }
+                }
             }
         }
         registerClasses(classes);
