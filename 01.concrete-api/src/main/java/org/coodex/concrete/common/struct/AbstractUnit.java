@@ -18,6 +18,7 @@ package org.coodex.concrete.common.struct;
 
 import org.coodex.concrete.api.AccessAllow;
 import org.coodex.concrete.api.Description;
+import org.coodex.concrete.api.Signable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -116,6 +117,15 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
      */
     public AccessAllow getAccessAllow() {
         return getDeclaredAnnotation(AccessAllow.class);
+    }
+
+    /**
+     * 获取签名信息
+     *
+     * @return
+     */
+    public Signable getSignable() {
+        return getAnnotation(Signable.class);
     }
 
     /**

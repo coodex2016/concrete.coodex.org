@@ -17,6 +17,8 @@
 package org.coodex.concrete.apitools.jaxrs;
 
 import org.coodex.concrete.api.Description;
+import org.coodex.concrete.api.Signable;
+import org.coodex.concrete.core.signature.SignUtil;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.Common;
 
@@ -145,6 +147,19 @@ public abstract class DocToolkit {
 
     public String tableSafeLabel(Description description) {
         return description == null ? "　" : tableSafe(description.name());
+    }
+
+    public String formatSignable(Signable signable) {
+        SignUtil.HowToSign howToSign = SignUtil.howToSign(signable);
+        String clientKeyId = SignUtil.getString("keyId", howToSign.getPaperName(), null);
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n\n| property | value |\n| ---- | --- |\n")
+                .append("| `paperName` | `").append(howToSign.getPaperName()).append("`|\n ")
+                .append("| `algorithm` | `").append(howToSign.getAlgorithm()).append("`|\n ");
+        if(clientKeyId != null){
+            builder.append("| `keyId` | `").append(clientKeyId).append("`|\n");
+        }
+        return builder.toString();
     }
 
 
