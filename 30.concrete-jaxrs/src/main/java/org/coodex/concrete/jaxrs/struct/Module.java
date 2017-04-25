@@ -23,9 +23,12 @@ import org.coodex.concrete.common.ConcreteToolkit;
 import org.coodex.concrete.common.struct.AbstractModule;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.Predicates;
+import org.coodex.concrete.jaxrs.saas.RouteBy;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by davidoff shen on 2016-11-30.
@@ -62,7 +65,7 @@ public class Module extends AbstractModule<Unit> {
             stack.push(parent);
             parent = findParent(parent);
         }
-        while(!stack.isEmpty()){
+        while (!stack.isEmpty()) {
             inheritedChain.add(stack.pop());
         }
     }
@@ -92,12 +95,51 @@ public class Module extends AbstractModule<Unit> {
                         method.getDeclaringClass().getName(), method.getName(),
                         exists.getDeclaringClass().getName(), exists.getName()));
             }
+            checkUnit(unit);
             units.add(unit);
 
             serviceAtoms.put(serviceKey, method);
         }
         this.units = units.toArray(new Unit[0]);
         Arrays.sort(this.units);
+    }
+
+    private void checkUnit(Unit unit) {
+        String fullResource = getName() + unit.getName();
+        Matcher m = Pattern.compile("(\\{)[^{^}]*(\\})").matcher(fullResource);
+        while (m.find()) {
+            String param = m.group();
+            param = param.substring(1, param.length() - 1).trim();
+            if (!findPathParam(unit, param)) {
+                throw new RuntimeException("path param [" + param + "] not found in "
+                        + this.getInterfaceClass().getName() + "." + unit.getMethod().getName());
+            }
+        }
+
+        RouteBy routeBy = getDeclaredAnnotation(RouteBy.class);
+        if (routeBy != null) {
+            String routeByParam = routeBy.value();
+            boolean found = false;
+            for (Param param : unit.getParameters()) {
+                if (param.isPathParam() && param.getName().equals(routeByParam)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                throw new RuntimeException("routeBy [" + routeByParam + "] not found in "
+                        + this.getInterfaceClass().getName() + "." + unit.getMethod().getName());
+        }
+
+    }
+
+    private boolean findPathParam(Unit unit, String param) {
+        for (Param p : unit.getParameters()) {
+            if (p.isPathParam() && param.equals(p.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -108,7 +150,7 @@ public class Module extends AbstractModule<Unit> {
     @Override
     public String getName() {
         StringBuilder builder = new StringBuilder();
-        for(Class<?> c: getInheritedChain()){
+        for (Class<?> c : getInheritedChain()) {
             builder.append("/").append(ConcreteToolkit.getServiceName(c));
         }
         return JaxRSHelper.camelCaseByPath(builder.toString(), true);

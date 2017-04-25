@@ -18,11 +18,16 @@ package org.coodex.concrete.jaxrs.client.impl;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.BeanProviderFacade;
+import org.coodex.concrete.common.ConcreteClosure;
+import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.jaxrs.client.AbstractInvoker;
 import org.coodex.concrete.jaxrs.client.ClientMethodInvocation;
 import org.coodex.concrete.jaxrs.client.Invoker;
 import org.coodex.concrete.jaxrs.client.InvokerFactory;
 import org.coodex.concrete.jaxrs.struct.Unit;
+
+import static org.coodex.concrete.common.ConcreteContext.SIDE;
+import static org.coodex.concrete.common.ConcreteContext.SIDE_LOCAL_INVOKE;
 
 /**
  * Created by davidoff shen on 2016-12-13.
@@ -36,10 +41,15 @@ public class LocalInvokerFactory implements InvokerFactory {
             return new ClientMethodInvocation(instance, unit, args) {
                 @Override
                 public Object proceed() throws Throwable {
-                    return unit.getMethod().invoke(
-                            BeanProviderFacade.getBeanProvider().getBean(
-                                    unit.getDeclaringModule().getInterfaceClass()),
-                            args);
+                    return ConcreteContext.run(SIDE, SIDE_LOCAL_INVOKE, new ConcreteClosure() {
+                        @Override
+                        public Object concreteRun() throws Throwable {
+                            return unit.getMethod().invoke(
+                                    BeanProviderFacade.getBeanProvider().getBean(
+                                            unit.getDeclaringModule().getInterfaceClass()),
+                                    args);
+                        }
+                    }).run();
                 }
             };
         }

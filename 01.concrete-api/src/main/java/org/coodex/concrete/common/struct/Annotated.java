@@ -29,7 +29,7 @@ public interface Annotated {
      * @param <T>
      * @return
      */
-    <T extends Annotation> T getAnnotation(Class<T> annotationClass);
+    <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass);
 
     /**
      * 获取全部注解

@@ -350,9 +350,9 @@ public abstract class AbstractMethodGenerator {
 
 
     protected String getPathParam(Param parameter) {
-        PathParam pathParam = parameter.getAnnotation(PathParam.class);
+        PathParam pathParam = parameter.getDeclaredAnnotation(PathParam.class);
         if (pathParam != null) return pathParam.value();
-        javax.ws.rs.PathParam pathParam1 = parameter.getAnnotation(javax.ws.rs.PathParam.class);
+        javax.ws.rs.PathParam pathParam1 = parameter.getDeclaredAnnotation(javax.ws.rs.PathParam.class);
         return pathParam1 == null ?
                 ((CGContext.isPrimitive(parameter.getType()) && !JaxRSHelper.isBigString(parameter)) ?
                         parameter.getName() : null) :

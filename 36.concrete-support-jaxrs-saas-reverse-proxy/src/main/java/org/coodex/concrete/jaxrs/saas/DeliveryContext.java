@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.jaxrs.saas;
 
-import org.coodex.closure.threadlocals.ClosureThreadLocal;
+import org.coodex.closure.AbstractClosureContext;
 import org.coodex.concrete.common.ConcreteClosure;
 
 import javax.ws.rs.container.AsyncResponse;
@@ -43,7 +43,7 @@ public class DeliveryContext {
     }
 
     private static class DeliveryContextClosure
-            extends ClosureThreadLocal<DeliveryContext> {
+            extends AbstractClosureContext<DeliveryContext> {
 
         Object runWith(DeliveryContext context, ConcreteClosure runnable) {
             return closureRun(context, runnable);

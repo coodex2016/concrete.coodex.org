@@ -27,7 +27,7 @@ import org.coodex.concrete.support.jsr339.javassist.JSR339ClassGenerator;
 public class ReverseClassGenerator extends JSR339ClassGenerator {
 
     public static final String GENERATOR_NAME =
-            JaxRSModuleMaker.JAX_RS_PREV + ".reverseProxy." + GENTERATOR_TOOLS_NAME + ".v1";
+            JaxRSModuleMaker.JAX_RS_PREV + ".reverseProxy." + BYTE_CODE_TOOLS_NAME + ".v1";
 
 
     @Override

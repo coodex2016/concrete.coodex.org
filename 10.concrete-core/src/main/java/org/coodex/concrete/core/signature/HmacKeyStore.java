@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.api;
+package org.coodex.concrete.core.signature;
 
 /**
- * Created by davidoff shen on 2016-11-01.
+ * Created by davidoff shen on 2017-04-24.
  */
-public interface ServiceTimingChecker {
-    boolean isAllowed();
+public interface HmacKeyStore {
+
+    byte[] getHmacKey(String paperName, String keyId);
 }

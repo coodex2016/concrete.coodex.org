@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.coodex.closure.threadlocals;
-
-import org.coodex.closure.Closure;
+package org.coodex.closure;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +22,7 @@ import java.util.Map;
 /**
  * Created by davidoff shen on 2016-09-04.
  */
-public class MapClosureThreadLocal<K, V> extends ClosureThreadLocal<Map<K, V>> {
+public class MapClosureContext<K, V> extends AbstractClosureContext<Map<K, V>> {
 
     protected Map<K, V> initValue() {
         return new HashMap<K, V>();

@@ -18,6 +18,7 @@ package org.coodex.practice.jaxrs.api;
 
 import org.coodex.concrete.api.Abstract;
 import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.Signable;
 import org.coodex.practice.jaxrs.pojo.Book;
 
 import java.util.List;
@@ -31,8 +32,10 @@ public interface ServiceB extends ServiceA {
 
     List<Book> all();
 
-    List<Book> findByAuthorLike( String author);
+    @Signable()
+    List<Book> findByAuthorLike(String author);
 
-    List<Book> findByPriceLessThen( int price);
+    @Signable(algorithm = "HmacSHA1")
+    List<Book> findByPriceLessThen(int price);
 
 }

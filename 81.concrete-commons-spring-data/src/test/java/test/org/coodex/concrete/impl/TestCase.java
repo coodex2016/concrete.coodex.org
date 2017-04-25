@@ -21,7 +21,6 @@ import org.coodex.commons.jpa.springdata.SpecCommon;
 import org.coodex.concrete.test.ConcreteTestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import test.org.coodex.concrete.entities.TestEntity;
@@ -44,56 +43,56 @@ public class TestCase extends ConcreteTestCase {
     public void testIntSpec() {
         // =
         testRepo.findAll(
-                SpecCommon.<TestEntity,Integer>spec(Logical.EQUAL, "intAttr", 1));
+                SpecCommon.<TestEntity, Integer>spec(Logical.EQUAL, "intAttr", 1));
 
         // <
         testRepo.findAll(
-                SpecCommon.<TestEntity,Integer>spec(Logical.LESS, "intAttr", 1));
+                SpecCommon.<TestEntity, Integer>spec(Logical.LESS, "intAttr", 1));
 
         // <=
         testRepo.findAll(
-                SpecCommon.<TestEntity,Integer>spec(Logical.LESS_EQUAL, "intAttr", 1));
+                SpecCommon.<TestEntity, Integer>spec(Logical.LESS_EQUAL, "intAttr", 1));
 
         // >
         testRepo.findAll(
-                SpecCommon.<TestEntity,Integer>spec(Logical.GREATER, "intAttr", 1));
+                SpecCommon.<TestEntity, Integer>spec(Logical.GREATER, "intAttr", 1));
 
         // >=
         testRepo.findAll(
-                SpecCommon.<TestEntity,Integer>spec(Logical.GREATER_EQUAL, "intAttr", 1));
+                SpecCommon.<TestEntity, Integer>spec(Logical.GREATER_EQUAL, "intAttr", 1));
 
         // not
         testRepo.findAll(
-                SpecCommon.<TestEntity,Integer>spec( Logical.NOT_EQUAL, "intAttr", 1));
+                SpecCommon.<TestEntity, Integer>spec(Logical.NOT_EQUAL, "intAttr", 1));
 
         // in
         testRepo.findAll(
-                SpecCommon.<TestEntity,Integer>spec(Logical.IN, "intAttr", 1));
+                SpecCommon.<TestEntity, Integer>spec(Logical.IN, "intAttr", 1));
 
         // between
         testRepo.findAll(
-                SpecCommon.<TestEntity,Integer>spec( Logical.BETWEEN, "intAttr", 1, 2));
+                SpecCommon.<TestEntity, Integer>spec(Logical.BETWEEN, "intAttr", 1, 2));
     }
 
     @Test
     public void testStr() {
         testRepo.findAll(
-                SpecCommon.<TestEntity,String>spec( Logical.EQUAL, "strAttr", "%"));
+                SpecCommon.<TestEntity, String>spec(Logical.EQUAL, "strAttr", "%"));
 
         testRepo.findAll(
-                SpecCommon.<TestEntity,String>spec(Logical.LESS_EQUAL, "strAttr", "%"));
+                SpecCommon.<TestEntity, String>spec(Logical.LESS_EQUAL, "strAttr", "%"));
 
         testRepo.findAll(
-                SpecCommon.<TestEntity,String>spec(Logical.IN, "strAttr", "%", "33"));
+                SpecCommon.<TestEntity, String>spec(Logical.IN, "strAttr", "%", "33"));
 
         testRepo.findAll(
-                SpecCommon.<TestEntity,String>spec(Logical.LIKE, "strAttr", "adsf"));
+                SpecCommon.<TestEntity, String>spec(Logical.LIKE, "strAttr", "adsf"));
 
     }
 
     @Test
     public void testMemberOf() {
-        Specification<TestEntity> specification = SpecCommon.memberOf(TestEntity.class, "colAttr", "x");
-        testRepo.findAll(SpecCommon.<TestEntity,String>memberOf("colAttr", "x"));
+//        Specification<TestEntity> specification = SpecCommon.<TestEntity, String>memberOf("colAttr", "x");
+        testRepo.findAll(SpecCommon.<TestEntity, String>memberOf("colAttr", "x"));
     }
 }

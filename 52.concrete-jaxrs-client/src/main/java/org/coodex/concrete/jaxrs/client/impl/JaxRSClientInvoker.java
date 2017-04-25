@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.jaxrs.client.impl;
 
+import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.jaxrs.client.AbstractRemoteInvoker;
 import org.coodex.concrete.jaxrs.client.JaxRSClientConfigBuilder;
 import org.coodex.concrete.jaxrs.struct.Unit;
@@ -37,6 +38,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.coodex.concrete.common.ConcreteContext.SUBJOIN;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 
 /**
@@ -116,6 +118,13 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
     private Response request(String url, String method, Object body) throws URISyntaxException {
         URI uri = new URI(url);
         Invocation.Builder builder = client.target(url).request();
+
+        Subjoin subjoin = SUBJOIN.get();
+        if(subjoin != null){
+            for(String key : subjoin.keySet()){
+                builder = builder.header(key, subjoin.get(key));
+            }
+        }
         for (Cookie cookie : getCookieManager(domain).load(uri.getPath())) {
             builder = builder.cookie(cookie);
         }

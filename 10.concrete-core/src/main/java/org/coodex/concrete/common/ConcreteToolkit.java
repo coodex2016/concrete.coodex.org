@@ -104,12 +104,12 @@ public class ConcreteToolkit {
     }
 
 //    private static String getServiceAnnotation(ServiceDefinition definition) {
-//        MicroService annotation = definition.getServiceClass().getAnnotation(MicroService.class);
+//        MicroService annotation = definition.getServiceClass().getDeclaredAnnotation(MicroService.class);
 //        return annotation == null ? "NULL" : "@MicroService(value = \"" + annotation.value() + "\")";
 //    }
 
 //    private static String getMethodAnnotation(Method method) {
-//        MicroService annotation = method.getAnnotation(MicroService.class);
+//        MicroService annotation = method.getDeclaredAnnotation(MicroService.class);
 //        return annotation == null ? "NULL" : "@MicroService(value = \"" + annotation.value() + "\")";
 //    }
 

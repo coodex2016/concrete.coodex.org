@@ -60,11 +60,11 @@ public abstract class AbstractModule<UNIT extends AbstractUnit> implements Annot
      * @return
      */
     public Domain getDomain() {
-        return getAnnotation(Domain.class);
+        return getDeclaredAnnotation(Domain.class);
     }
 
     private Description getDesc() {
-        return getAnnotation(Description.class);
+        return getDeclaredAnnotation(Description.class);
     }
 
     /**
@@ -100,8 +100,12 @@ public abstract class AbstractModule<UNIT extends AbstractUnit> implements Annot
     public abstract UNIT[] getUnits();
 
     @Override
-    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+    public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
         return interfaceClass.getAnnotation(annotationClass);
+    }
+
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass){
+        return getDeclaredAnnotation(annotationClass);
     }
 
     @Override

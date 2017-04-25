@@ -25,6 +25,9 @@ public final class ErrorCodes extends AbstractErrorCodes {
 
     public static final int UNKNOWN_ERROR = CUSTOM_LOWER_BOUND - 1;
 
+    public static final int CLIENT_ERROR = UNKNOWN_ERROR - 1;
+
+
     public static final int MODULE_DEFINITION_NOT_FOUND = CONCRETE_CORE + 1;
 
     public static final int UNIT_DEFINITION_NOT_FOUND = CONCRETE_CORE + 2;
@@ -53,7 +56,9 @@ public final class ErrorCodes extends AbstractErrorCodes {
 
     public static final int OVERRUN = CONCRETE_CORE + 14;
 
+    public static final int SIGNING_FAILED = CONCRETE_CORE + 15;
 
+    public static final int SIGNATURE_VERIFICATION_FAILED = CONCRETE_CORE + 16;
 
 
 }

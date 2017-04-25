@@ -45,7 +45,7 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
     }
 
     private Description getDesc() {
-        return getAnnotation(Description.class);
+        return getDeclaredAnnotation(Description.class);
     }
 
     /**
@@ -115,7 +115,7 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
      * @return
      */
     public AccessAllow getAccessAllow() {
-        return getAnnotation(AccessAllow.class);
+        return getDeclaredAnnotation(AccessAllow.class);
     }
 
     /**
@@ -126,8 +126,15 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
      * @return
      */
     @Override
-    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+    public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
         return method.getAnnotation(annotationClass);
+    }
+
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        T annotation = getDeclaredAnnotation(annotationClass);
+        return annotation == null ?
+                (T) declaringModule.getAnnotation(annotationClass) :
+                annotation;
     }
 
     @Override

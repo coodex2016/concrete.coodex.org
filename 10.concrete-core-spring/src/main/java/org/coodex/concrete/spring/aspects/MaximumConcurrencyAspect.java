@@ -16,30 +16,11 @@
 
 package org.coodex.concrete.spring.aspects;
 
-import org.aopalliance.intercept.MethodInvocation;
 import org.aspectj.lang.annotation.Aspect;
-import org.coodex.concrete.common.RuntimeContext;
-import org.coodex.concrete.core.intercept.atoms.MaximumConcurrency;
-
-import static org.coodex.concrete.core.intercept.InterceptOrders.LIMITING;
+import org.coodex.concrete.core.intercept.MaximumConcurrencyInterceptor;
 
 /**
  * Created by davidoff shen on 2017-04-10.
  */
 @Aspect
-public class MaximumConcurrencyAspect extends AbstractConcreteAspect {
-    @Override
-    public int getOrder() {
-        return LIMITING;
-    }
-
-    @Override
-    public boolean accept(RuntimeContext context) {
-        return MaximumConcurrency.accept(context);
-    }
-
-    @Override
-    public Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable {
-        return MaximumConcurrency.around(context, joinPoint);
-    }
-}
+public class MaximumConcurrencyAspect extends AbstractConcreteAspect<MaximumConcurrencyInterceptor> {}

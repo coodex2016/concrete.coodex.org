@@ -34,6 +34,12 @@ public class InterceptOrders {
 
     public static final int LIMITING = 300;
 
+
+    /**
+     * 签名验签
+     */
+    public static final int SIGNATURE = 900;
+
     /**
      * Bean有效性验证切片
      */

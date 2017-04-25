@@ -55,7 +55,7 @@ public class ReverseResource<T extends ConcreteService> extends AbstractJSR339Re
 
                     Unit unit = JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass()), params);
 
-                    String routeBy = Assert.isNull(unit.getDeclaringModule().getAnnotation(RouteBy.class),
+                    String routeBy = Assert.isNull(unit.getDeclaringModule().getDeclaredAnnotation(RouteBy.class),
                             ReverseProxyErrorCodes.ROUTE_BY_NOT_FOUND,
                             unit.getDeclaringModule().getInterfaceClass()).value();
                     Reverser reverser = ReverserFactory.getReverser(routeBy);

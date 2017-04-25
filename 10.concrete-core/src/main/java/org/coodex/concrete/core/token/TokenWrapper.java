@@ -16,11 +16,15 @@
 
 package org.coodex.concrete.core.token;
 
-import org.coodex.closure.threadlocals.StackClosureThreadLocal;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.Account;
+import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.Token;
 
 import java.io.Serializable;
 import java.util.Enumeration;
+
+import static org.coodex.concrete.common.ConcreteContext.TOKEN;
 
 /**
  * 基于当前线程上下文提供<s>Session</s> Token
@@ -30,23 +34,6 @@ import java.util.Enumeration;
  */
 public class TokenWrapper implements Token {
 
-//    private final static TokenManager LOCAL_TOKEN_MANAGER = new LocalTokenManager();
-//
-//    private final static ConcreteSPIFacade<TokenManager> TOKEN_MANAGER_SPI_FACADE = new ConcreteSPIFacade<TokenManager>() {
-//        @Override
-//        protected TokenManager getDefaultProvider() {
-//            return LOCAL_TOKEN_MANAGER;
-//        }
-//    };
-//
-//    public static final TokenManager getTokenManager() {
-//        return TOKEN_MANAGER_SPI_FACADE.getBeanProvider();
-//    }
-
-
-    //////////////////
-
-    private static final StackClosureThreadLocal<Token> closure = new StackClosureThreadLocal<Token>();
 
     private static final Token singletonInstance = new TokenWrapper();
 
@@ -55,7 +42,7 @@ public class TokenWrapper implements Token {
     }
 
     private Token getToken(boolean checkValidation) {
-        Token token = closure.get();
+        Token token = TOKEN.get();
         Assert.isNull(token, ErrorCodes.NONE_TOKEN);
         Assert.is(checkValidation && !token.isValid(), ErrorCodes.TOKEN_INVALIDATE, token.getTokenId());
         return token;
@@ -64,11 +51,6 @@ public class TokenWrapper implements Token {
     public static final Token getInstance() {
         return singletonInstance;
     }
-
-    public static final Object closure(Token token, ConcreteClosure runnable) {
-        return closure.runWith(token, runnable);
-    }
-
 
     @Override
     public long created() {

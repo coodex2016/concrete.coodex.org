@@ -19,6 +19,7 @@ package org.coodex.concrete.jaxrs.client;
 import okhttp3.*;
 import okhttp3.internal.Util;
 import okhttp3.internal.platform.Platform;
+import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 
+import static org.coodex.concrete.common.ConcreteContext.SUBJOIN;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 
 /**
@@ -76,7 +78,13 @@ public class OkHttp3Invoker extends AbstractRemoteInvoker {
                 .addHeader("Accept", "application/json, text/javascript, */*; q=0.01")
 //                .addHeader("Accept-Language", "zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4")
                 .addHeader("Content-Type", "application/json; charset=" + getEncodingCharset());
-
+        
+        Subjoin subjoin = SUBJOIN.get();
+        if (subjoin != null) {
+            for (String key : subjoin.keySet()) {
+                builder = builder.addHeader(key, subjoin.get(key));
+            }
+        }
 
         RequestBody body = toSubmit == null ?
                 Util.EMPTY_REQUEST :

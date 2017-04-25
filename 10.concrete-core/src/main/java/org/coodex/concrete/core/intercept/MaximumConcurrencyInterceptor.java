@@ -17,8 +17,16 @@
 package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.coodex.concrete.api.Limiting;
+import org.coodex.concrete.api.NotService;
+import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.RuntimeContext;
-import org.coodex.concrete.core.intercept.atoms.MaximumConcurrency;
+import org.coodex.util.Profile;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.core.intercept.InterceptOrders.LIMITING;
 
@@ -33,11 +41,77 @@ public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
 
     @Override
     public boolean accept(RuntimeContext context) {
-        return MaximumConcurrency.accept(context);
+        return context.getDeclaringMethod().getAnnotation(NotService.class) == null
+                && (context.getDeclaringMethod().getAnnotation(Limiting.class) != null
+                || context.getDeclaringClass().getAnnotation(Limiting.class) != null);
     }
 
     @Override
     public Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable {
-        return MaximumConcurrency.around(context, joinPoint);
+        ConcurrencyStrategy strategy = null;
+        Limiting limiting = context.getDeclaringMethod().getAnnotation(Limiting.class);
+        if (limiting == null)
+            limiting = context.getDeclaringClass().getAnnotation(Limiting.class);
+
+        if (limiting != null)
+            strategy = getStrategy(limiting.strategy());
+
+        if (strategy != null && !strategy.alloc())
+            throw new ConcreteException(ErrorCodes.OVERRUN);
+
+        try {
+            return joinPoint.proceed();
+        } catch (ConcreteException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, e.getLocalizedMessage(), e);
+        } finally {
+            if (strategy != null)
+                strategy.release();
+        }
     }
+
+    private static final Profile MC_PROFILE = Profile.getProfile("limiting.maximum.concurrency.properties");
+
+    static class ConcurrencyStrategy {
+        // 计数器
+        private final AtomicInteger counter = new AtomicInteger(0);
+        private final String strategyName;
+
+
+        public ConcurrencyStrategy(String strategyName) {
+            this.strategyName = strategyName;
+        }
+
+        public synchronized boolean alloc() {
+            if (counter.get() < getMaximum()) {
+                counter.incrementAndGet();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public synchronized void release() {
+            counter.decrementAndGet();
+        }
+
+        public long getMaximum() {
+            return MC_PROFILE.getInt(strategyName + ".max",
+                    MC_PROFILE.getInt("max", Integer.MAX_VALUE));
+        }
+    }
+
+    private static final Map<String, ConcurrencyStrategy> STRATEGIES = new HashMap<String, ConcurrencyStrategy>();
+
+    private static ConcurrencyStrategy getStrategy(String strategyName) {
+        synchronized (STRATEGIES) {
+            if (!STRATEGIES.containsKey(strategyName)) {
+                ConcurrencyStrategy strategy = new ConcurrencyStrategy(strategyName);
+                STRATEGIES.put(strategyName, strategy);
+            }
+        }
+        return STRATEGIES.get(strategyName);
+    }
+
 }

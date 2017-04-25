@@ -19,6 +19,8 @@ package org.coodex.concrete.common;
 import org.coodex.util.Profile;
 import org.coodex.util.SPIFacade;
 
+import java.util.Map;
+
 /**
  * 使用concrete.properties解决冲突的SPIFacade。
  * <p>
@@ -26,7 +28,7 @@ import org.coodex.util.SPIFacade;
  * <pre>
  *     <i>interfaceClass</i>.provider = <i>service Class</i>
  * </pre>
- *
+ * <p>
  * Created by davidoff shen on 2016-09-08.
  */
 public abstract class ConcreteSPIFacade<T> extends SPIFacade<T> {
@@ -37,6 +39,29 @@ public abstract class ConcreteSPIFacade<T> extends SPIFacade<T> {
 
     protected ConcreteSPIFacade() {
         super();
+    }
+
+    //    private Collection<T> instances;
+    private boolean init = false;
+
+    @Override
+    protected void loadInstances() {
+        synchronized (this) {
+            super.loadInstances();
+            if (!init) {
+                try {
+                    Map<String, T> beans = BeanProviderFacade.getBeanProvider().getBeansOfType(getInterfaceClass());
+                    if (beans != null && beans.size() > 0)
+                        for (T t : beans.values()) {
+                            if (!instances.values().contains(t))
+                                instances.put(t.getClass().getCanonicalName(), t);
+                        }
+                } catch (Throwable th) {
+                }
+                init = true;
+            }
+        }
+
     }
 
     @Override

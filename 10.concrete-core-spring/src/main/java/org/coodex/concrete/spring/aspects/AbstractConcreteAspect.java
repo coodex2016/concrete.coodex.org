@@ -16,21 +16,71 @@
 
 package org.coodex.concrete.spring.aspects;
 
+import org.aopalliance.intercept.MethodInvocation;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
+import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.core.intercept.AbstractInterceptor;
+import org.coodex.concrete.core.intercept.ConcreteInterceptor;
+import org.coodex.util.TypeHelper;
 import org.springframework.core.Ordered;
 
 /**
  * Created by davidoff shen on 2016-09-01.
  */
-public abstract class AbstractConcreteAspect extends AbstractInterceptor implements Ordered {
+public abstract class AbstractConcreteAspect<T extends AbstractInterceptor> extends AbstractInterceptor implements Ordered {
     public static final String ASPECT_POINT = "target(org.coodex.concrete.api.ConcreteService) && execution(public * *(..))";
 
 
+    private ConcreteInterceptor interceptor;
+
+    private synchronized ConcreteInterceptor getInterceptor() {
+        if (interceptor == null) {
+            try {
+                interceptor = (ConcreteInterceptor) ((Class) TypeHelper.findActualClassFrom(AbstractConcreteAspect.class.getTypeParameters()[0], this.getClass()))
+                        .newInstance();
+            } catch (Throwable th) {
+                throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
+            }
+        }
+        return interceptor;
+    }
+
     @Around(ASPECT_POINT)
-    public Object weaverPoint(ProceedingJoinPoint joinPoint) throws Throwable {
+    public final Object weaverPoint(ProceedingJoinPoint joinPoint) throws Throwable {
         return invoke(AspectJHelper.proceedJoinPointToMethodInvocation(joinPoint));
     }
-    
+
+
+    @Override
+    public final boolean accept(RuntimeContext context) {
+        return getInterceptor().accept(context);
+    }
+
+    @Override
+    public final Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable {
+        return getInterceptor().around(context, joinPoint);
+    }
+
+    @Override
+    public final void before(RuntimeContext context, MethodInvocation joinPoint) {
+        getInterceptor().before(context, joinPoint);
+    }
+
+    @Override
+    public final Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+        return getInterceptor().after(context, joinPoint, result);
+    }
+
+    @Override
+    public final Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
+        return getInterceptor().onError(context, joinPoint, th);
+    }
+
+    @Override
+    public final int getOrder() {
+        return getInterceptor().getOrder();
+    }
 }

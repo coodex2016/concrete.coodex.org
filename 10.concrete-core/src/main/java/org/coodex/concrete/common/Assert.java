@@ -29,8 +29,11 @@ public final class Assert {
      * @param objects
      */
     public static final void is(boolean exp, int code, Object... objects) {
-        if (exp)
-            throw new ConcreteException(code, objects);
+        is(exp, new ConcreteException(code, objects));
+    }
+
+    public static final void is(boolean exp, ConcreteException ex) {
+        if (exp) throw ex;
     }
 
     /**
@@ -41,8 +44,11 @@ public final class Assert {
      * @param objects
      */
     public static final void not(boolean exp, int code, Object... objects) {
-        if (!exp)
-            throw new ConcreteException(code, objects);
+        not(exp, new ConcreteException(code, objects));
+    }
+
+    public static final void not(boolean exp, ConcreteException ex) {
+        is(!exp, ex);
     }
 
     /**
@@ -54,7 +60,11 @@ public final class Assert {
      * @return
      */
     public static final <T> T isNull(T o, int code, Object... objects) {
-        is(o == null, code, objects);
+        return isNull(o, new ConcreteException(code, objects));
+    }
+
+    public static final <T> T isNull(T o, ConcreteException exp) {
+        is(o == null, exp);
         return o;
     }
 
@@ -66,7 +76,11 @@ public final class Assert {
      * @param objects
      */
     public static final void notNull(Object o, int code, Object... objects) {
-        is(o != null, code, objects);
+        notNull(o, new ConcreteException(code, objects));
+    }
+
+    public static final void notNull(Object o, ConcreteException ex) {
+        is(o != null, ex);
     }
 
 

@@ -66,6 +66,7 @@ public class ExampleApplication extends ResourceConfig {
                 }
             }
         }
+        register(ConcreteExceptionMapper.class);
         registerClasses(classes);
     }
 

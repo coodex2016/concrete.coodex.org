@@ -14,30 +14,34 @@
  * limitations under the License.
  */
 
-package org.coodex.closure.threadlocals;
-
-import org.coodex.closure.Closure;
+package org.coodex.concrete.common;
 
 /**
- * Created by davidoff shen on 2016-09-04.
+ * 名称源自《国家宝藏1》
+ * <p>
+ * Created by davidoff shen on 2017-04-20.
  */
-public abstract class ClosureThreadLocal<VariantType> {
+public interface IronPen {
+
+    /**
+     * 签名
+     *
+     * @param content
+     * @param algorithm
+     * @param keyId
+     * @return
+     */
+    byte[] sign(byte[] content, String algorithm, String keyId);
 
 
-    private ThreadLocal<VariantType> threadLocal = new ThreadLocal<VariantType>();
-
-    protected final VariantType $getVariant() {
-        return threadLocal.get();
-    }
-
-    protected final Object closureRun(VariantType variant, Closure runnable) {
-        if (runnable == null) return null;
-        threadLocal.set(variant);
-        try {
-            return runnable.run();
-        } finally {
-            threadLocal.remove();
-        }
-    }
-
+    /**
+     * 验签
+     *
+     * @param content
+     * @param signature
+     * @param algorithm
+     * @param keyId
+     * @return
+     */
+    boolean verify(byte[] content, byte[] signature, String algorithm, String keyId);
 }

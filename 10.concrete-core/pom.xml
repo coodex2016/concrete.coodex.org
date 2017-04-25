@@ -60,6 +60,11 @@
             <artifactId>aopalliance</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
         <dependency>

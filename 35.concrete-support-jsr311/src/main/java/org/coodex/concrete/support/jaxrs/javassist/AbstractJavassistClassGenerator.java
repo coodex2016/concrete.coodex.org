@@ -30,7 +30,7 @@ import org.coodex.concrete.jaxrs.struct.Unit;
  */
 public abstract class AbstractJavassistClassGenerator implements ClassGenerator {
 
-    protected final static String GENTERATOR_TOOLS_NAME = "javassist";
+    protected final static String BYTE_CODE_TOOLS_NAME = "javassist";
 
     private int ref = 0;
 

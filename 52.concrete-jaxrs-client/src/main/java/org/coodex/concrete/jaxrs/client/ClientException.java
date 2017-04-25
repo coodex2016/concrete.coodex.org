@@ -16,19 +16,25 @@
 
 package org.coodex.concrete.jaxrs.client;
 
+import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.ErrorCodes;
+
 /**
  * Created by davidoff shen on 2016-12-07.
  */
-public class ClientException extends RuntimeException {
-    private int code;
-    private String path;
-    private String method;
+public class ClientException extends ConcreteException {
+    private final int code;
+    private final String path;
+    private final String method;
+
+    private final String msg;
 
     public ClientException(int code, String msg, String path, String method) {
-        super(msg);
+        super(ErrorCodes.CLIENT_ERROR);
         this.code = code;
         this.path = path;
         this.method = method;
+        this.msg = msg;
     }
 
     public int getCode() {
@@ -41,5 +47,10 @@ public class ClientException extends RuntimeException {
 
     public String getMethod() {
         return method;
+    }
+
+    @Override
+    public String getMessage() {
+        return msg;
     }
 }

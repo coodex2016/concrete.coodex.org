@@ -37,7 +37,7 @@ public class Param extends AbstractParam {
 
     public Param(Method method, int index) {
         this.parameter = new ReflectHelper.MethodParameter(method, index);
-        this.description = getAnnotation(Description.class);
+        this.description = getDeclaredAnnotation(Description.class);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class Param extends AbstractParam {
     }
 
     @Override
-    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+    public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
         return parameter.getAnnotation(annotationClass);
     }
 

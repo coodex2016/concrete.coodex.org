@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.core.intercept.timecheckers;
 
-import org.coodex.concrete.api.ServiceTimingChecker;
+import org.coodex.concrete.common.ServiceTimingChecker;
 import org.coodex.util.Common;
 
 import java.text.DateFormat;

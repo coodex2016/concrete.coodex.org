@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package org.coodex.closure;
+package org.coodex.concrete.common;
 
-import org.coodex.closure.threadlocals.StackClosureThreadLocal;
 
-import java.util.Locale;
+import org.coodex.util.AcceptableService;
 
 /**
- * Created by davidoff shen on 2016-09-04.
+ * Created by davidoff shen on 2017-04-20.
  */
-public final class LocaleClosure {
+public interface IronPenFactory extends AcceptableService<String> {
 
-    private final static StackClosureThreadLocal<Locale> localeClosure = new StackClosureThreadLocal<Locale>();
+    IronPen getIronPen(String paperName);
 
-    public static Locale get() {
-        return localeClosure.get();
-    }
-
-    public static void closureRun(Locale locale, Closure runnable) {
-        localeClosure.runWith(locale, runnable);
-    }
+//    IronPen getClientSidePen(String paperName);
 
 }

@@ -21,7 +21,6 @@ import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Priority;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenManager;
-import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.pojomocker.POJOMocker;
 import org.coodex.util.Common;
 import org.coodex.util.TypeHelper;
@@ -32,6 +31,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.coodex.concrete.common.ConcreteContext.runWith;
+
 /**
  * 默认的JaxRS Resource，提供数据模拟功能
  * <p>
@@ -39,12 +40,15 @@ import java.util.Map;
  */
 public abstract class AbstractJAXRSResource<T extends ConcreteService> {
 
-    public static final String TOKEN_ID_IN_COOKIE = "CONCRETE_JAXRS_TOKENID";
+    public static final String TOKEN_ID_IN_COOKIE = "CONCRETE_JAXRS_TOKEN_ID";
 
     private final Class<T> clz = getInterfaceClass();
 
     @Context
     protected UriInfo uriInfo;
+
+    @Context
+    protected HttpHeaders httpHeaders;
 
 
     @SuppressWarnings("unchecked")
@@ -123,21 +127,21 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         }
     }
 
-    private int getParameterCount(Method method){
+    private int getParameterCount(Method method) {
         return method.getParameterTypes() == null ? 0 : method.getParameterTypes().length;
     }
 
     private Method findActualMethod(String methodName, Class<?> clz, CreatedByConcrete concrete) {
-//        Class<?>[] parameterTypes = method.getAnnotation(CreatedByConcrete.class).paramClasses();
+//        Class<?>[] parameterTypes = method.getDeclaredAnnotation(CreatedByConcrete.class).paramClasses();
         // 不确定原因，javassist int[]生成的注解不受支持
         //getParameterTypes(method.getParameterTypes());
 
-            for(Method m : clz.getMethods()){
-                if(m.getName().equals(methodName) && getParameterCount(m) == concrete.paramCount()){
-                    return m;
-                }
+        for (Method m : clz.getMethods()) {
+            if (m.getName().equals(methodName) && getParameterCount(m) == concrete.paramCount()) {
+                return m;
             }
-            throw new RuntimeException("no such method: " + methodName + ", paramCount: " + concrete.paramCount());
+        }
+        throw new RuntimeException("no such method: " + methodName + ", paramCount: " + concrete.paramCount());
     }
 
     /**
@@ -173,7 +177,9 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
             token = getToken(Common.getUUIDStr(), true);
             newToken = true;
         }
-        Object result = convert(TokenWrapper.closure(token, new ConcreteClosure() {
+
+        Object result = convert(runWith(getSubjoin(), token, new ConcreteClosure() {
+
             public Object concreteRun() throws Throwable {
                 Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
                 if (paramCount == 0)
@@ -193,6 +199,11 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         if (result != null) builder = builder.entity(result);
 
         return builder.build();
+    }
+
+
+    private Subjoin getSubjoin() {
+        return new JaxRSSubjoin(httpHeaders);
     }
 
 

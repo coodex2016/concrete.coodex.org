@@ -67,7 +67,7 @@ public class JaxRSHelper {
 
     public static boolean isBigString(Param param) {
         return String.class.isAssignableFrom(param.getType())
-                && param.getAnnotation(BigString.class) != null;
+                && param.getDeclaredAnnotation(BigString.class) != null;
     }
 
 
@@ -149,7 +149,7 @@ public class JaxRSHelper {
     }
 
 
-    public static final Unit getUnitFromContext(DefinitionContext context, Object... params) {
+    public static final Unit getUnitFromContext(DefinitionContext context, Object[] params) {
         Module module = getModule(context.getDeclaringClass());
         Method method = context.getDeclaringMethod();
         int count = params == null ? 0 : params.length;

@@ -21,10 +21,7 @@ package org.coodex.util;
 
 import java.io.*;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author davidoff
@@ -112,6 +109,8 @@ public class Common {
     }
 
     public static int random(int min, int max) {
+        if(max == Integer.MAX_VALUE)
+            max = max - 1;
         return min + (int) (Math.random() * (max - min + 1));
     }
 
@@ -294,6 +293,23 @@ public class Common {
             }
         }
         return -1;
+    }
+
+    public static String concat(List<String> list,String split) {
+        if (list == null) return null;
+        switch (list.size()) {
+            case 0:
+                return "";
+            case 1:
+                return list.get(0);
+            default:
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < list.size(); i++) {
+                    if (i > 0) builder.append(split);
+                    builder.append(list.get(i));
+                }
+                return builder.toString();
+        }
     }
 
 }

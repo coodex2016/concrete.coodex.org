@@ -31,3 +31,4 @@
 #
 
 org.coodex.practice.jaxrs.impl.ClientInterceptorTest
+org.coodex.practice.jaxrs.impl.SignatureAspect

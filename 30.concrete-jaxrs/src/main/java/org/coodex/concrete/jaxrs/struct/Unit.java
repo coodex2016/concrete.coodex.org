@@ -48,7 +48,7 @@ public class Unit extends AbstractUnit<Param, Module> {
             Param param = parameters[i];
             if (!isPrimitive(param.getType()) ||
                     (param.getType() == String.class
-                            && param.getAnnotation(BigString.class) != null)) {
+                            && param.getDeclaredAnnotation(BigString.class) != null)) {
 
                 pojo.add(param);
                 param.setPathParam(false);
@@ -62,7 +62,7 @@ public class Unit extends AbstractUnit<Param, Module> {
         int pojoCount = pojo.size();
 //        for (Param param : parameters) {
 //            if (!isPrimitive(param.getType()) ||
-//                    (param.getType() == String.class && param.getAnnotation(BigString.class) != null))
+//                    (param.getType() == String.class && param.getDeclaredAnnotation(BigString.class) != null))
 //                pojoCount++;
 //        }
 
@@ -124,12 +124,12 @@ public class Unit extends AbstractUnit<Param, Module> {
 
 
     protected String getPathParam(Param parameter) {
-        PathParam pathParam = parameter.getAnnotation(PathParam.class);
+        PathParam pathParam = parameter.getDeclaredAnnotation(PathParam.class);
         if (pathParam != null) return pathParam.value();
-        javax.ws.rs.PathParam pathParam1 = parameter.getAnnotation(javax.ws.rs.PathParam.class);
+        javax.ws.rs.PathParam pathParam1 = parameter.getDeclaredAnnotation(javax.ws.rs.PathParam.class);
         if (pathParam1 != null) return pathParam1.value();
         Class<?> clz = parameter.getType();
-        boolean isBigString = parameter.getAnnotation(BigString.class) != null;
+        boolean isBigString = parameter.getDeclaredAnnotation(BigString.class) != null;
         //大字符串
         if (clz == String.class && isBigString) return null;
 
@@ -138,7 +138,7 @@ public class Unit extends AbstractUnit<Param, Module> {
 //        return pathParam1 == null ?
 //                (isPrimitive(parameter.getType())
 //                        && (parameter.getType() == String.class
-//                        && parameter.getAnnotation(BigString.class) == null)
+//                        && parameter.getDeclaredAnnotation(BigString.class) == null)
 //                        ? parameter.getName() : null) :
 //                pathParam1.value();
     }
@@ -161,7 +161,8 @@ public class Unit extends AbstractUnit<Param, Module> {
 
     @Override
     public int compareTo(AbstractUnit o) {
-        int v = getName().replaceAll("\\{[^{}]*}", "").compareTo(o.getName().replaceAll("\\{[^{}]*}", ""));
+        int v = getName().replaceAll("\\{[^{}]*}", "")
+                .compareTo(o.getName().replaceAll("\\{[^{}]*}", ""));
         if (v == 0)
             v = getName().compareTo(o.getName());
         return v == 0 ? getInvokeType().compareTo(o.getInvokeType()) : v;

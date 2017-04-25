@@ -24,6 +24,9 @@ public class JavaClient {
                 System.out.println(book);
             }
 
+            serviceExample.findByPriceLessThen(10000);
+            serviceExample.findByAuthorLike("神经豆豆");
+
 
             serviceExample.get("沈海南是个大逗比", 1005);
             System.out.println(serviceExample.delete(54321));

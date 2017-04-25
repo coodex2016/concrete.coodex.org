@@ -29,7 +29,7 @@ import org.coodex.concrete.support.jsr339.AbstractJSR339Resource;
 public class JSR339ClassGenerator extends AbstractJavassistClassGenerator {
 
     public static final String GENERATOR_NAME =
-            JaxRSModuleMaker.JAX_RS_PREV + ".jsr339." + GENTERATOR_TOOLS_NAME + ".v1";
+            JaxRSModuleMaker.JAX_RS_PREV + ".jsr339." + BYTE_CODE_TOOLS_NAME + ".v1";
 
 
     @Override

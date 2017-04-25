@@ -30,7 +30,7 @@ import org.coodex.concrete.support.jsr311.AbstractJSR311Resource;
 public final class JSR311ClassGenerator extends AbstractJavassistClassGenerator {
 
     public static final String GENERATOR_NAME =
-            JaxRSModuleMaker.JAX_RS_PREV + ".jsr311." + GENTERATOR_TOOLS_NAME + ".v1";
+            JaxRSModuleMaker.JAX_RS_PREV + ".jsr311." + BYTE_CODE_TOOLS_NAME + ".v1";
 
 
     @Override

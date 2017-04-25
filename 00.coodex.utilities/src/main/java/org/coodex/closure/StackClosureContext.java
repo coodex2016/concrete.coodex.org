@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
-package org.coodex.closure.threadlocals;
-
-import org.coodex.closure.Closure;
+package org.coodex.closure;
 
 import java.util.Stack;
 
 /**
  * Created by davidoff shen on 2016-09-04.
  */
-public class StackClosureThreadLocal<VariantType> extends ClosureThreadLocal<Stack<VariantType>> {
+public class StackClosureContext<VariantType> extends AbstractClosureContext<Stack<VariantType>> implements ClosureContext<VariantType> {
 
+    @Override
     public VariantType get() {
         Stack<VariantType> stack = $getVariant();
         return stack == null ? null : stack.lastElement();
     }
 
+    @Override
+    public VariantType get(VariantType defaultValue) {
+        return get() == null ? defaultValue : get();
+    }
 
-    public Object runWith(VariantType variant, Closure runnable) {
+    @Override
+    public Object run(VariantType variant, Closure runnable) {
         if (runnable == null) return null;
 
         Stack<VariantType> stack = $getVariant();
