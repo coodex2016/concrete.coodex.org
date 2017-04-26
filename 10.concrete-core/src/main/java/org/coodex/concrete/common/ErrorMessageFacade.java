@@ -20,7 +20,7 @@ import org.coodex.concrete.api.ErrorMsg;
 import org.coodex.concrete.core.JavaTextFormatMessageFormatter;
 import org.coodex.concrete.core.ResourceBundlesMessagePatternLoader;
 import org.coodex.util.Common;
-import org.coodex.util.SPIFacade;
+import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,16 +143,16 @@ public class ErrorMessageFacade {
     private ErrorMessageFacade() {
     }
 
-    private final static SPIFacade<MessageFormatter> MESSAGE_FORMATTER_SPI_FACADE = new ConcreteSPIFacade<MessageFormatter>() {
+    private final static ServiceLoader<MessageFormatter> MESSAGE_FORMATTER_SPI_FACADE = new ConcreteServiceLoader<MessageFormatter>() {
         @Override
-        protected MessageFormatter getDefaultProvider() {
+        public MessageFormatter getDefaultProvider() {
             return DEFAULT_MESSAGE_FORMATTER;
         }
     };
 
-    private final static SPIFacade<MessagePatternLoader> MESSAGE_PATTERN_LOADER_SPI_FACADE = new ConcreteSPIFacade<MessagePatternLoader>() {
+    private final static ServiceLoader<MessagePatternLoader> MESSAGE_PATTERN_LOADER_SPI_FACADE = new ConcreteServiceLoader<MessagePatternLoader>() {
         @Override
-        protected MessagePatternLoader getDefaultProvider() {
+        public MessagePatternLoader getDefaultProvider() {
             return DEFAULT_PATTERN_LOADER;
         }
     };

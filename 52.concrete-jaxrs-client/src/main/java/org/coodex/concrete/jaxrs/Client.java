@@ -18,11 +18,12 @@ package org.coodex.concrete.jaxrs;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.jaxrs.client.ClientInstanceFactory;
 import org.coodex.concrete.jaxrs.client.impl.JavaProxyClientInstanceFactory;
 import org.coodex.concrete.jaxrs.struct.Unit;
-import org.coodex.util.SPIFacade;
+import org.coodex.util.ServiceLoader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,11 +35,11 @@ import java.util.Map;
  */
 public final class Client {
 
-    private static final SPIFacade<ClientInstanceFactory> BUILDER = new SPIFacade<ClientInstanceFactory>() {
+    private static final ServiceLoader<ClientInstanceFactory> BUILDER = new ConcreteServiceLoader<ClientInstanceFactory>() {
         private ClientInstanceFactory defaultFactory = new JavaProxyClientInstanceFactory();
 
         @Override
-        protected ClientInstanceFactory getDefaultProvider() {
+        public ClientInstanceFactory getDefaultProvider() {
             return defaultFactory;
         }
     };
@@ -76,8 +77,8 @@ public final class Client {
     }
 
 
-//    private static final SPIFacade<InvokerFactory> INVOKER_FACTORY_SPI_FACADE =
-//            new ConcreteSPIFacade<InvokerFactory>() {
+//    private static final ServiceLoaderFacade<InvokerFactory> INVOKER_FACTORY_SPI_FACADE =
+//            new ConcreteServiceLoader<InvokerFactory>() {
 //            };
 
 //    protected static String getServiceRoot(String domain) {

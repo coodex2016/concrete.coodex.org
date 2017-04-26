@@ -19,10 +19,11 @@ package org.coodex.concrete.jaxrs.client;
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.ConcreteClosure;
 import org.coodex.concrete.common.ConcreteContext;
+import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.InterceptorChain;
 import org.coodex.concrete.jaxrs.struct.Unit;
-import org.coodex.util.SPIFacade;
+import org.coodex.util.ServiceLoader;
 
 import static org.coodex.concrete.common.SubjoinWrapper.DEFAULT_SUBJOIN;
 
@@ -50,7 +51,7 @@ public abstract class AbstractInvoker implements Invoker {
 
     private static synchronized InterceptorChain getInterceptorChain() {
         if (interceptors == null) {
-            SPIFacade<ConcreteInterceptor> spiFacade = new SPIFacade<ConcreteInterceptor>() {
+            ServiceLoader<ConcreteInterceptor> spiFacade = new ConcreteServiceLoader<ConcreteInterceptor>() {
             };
             interceptors = new InterceptorChain();
             for (ConcreteInterceptor interceptor : spiFacade.getAllInstances()) {

@@ -16,11 +16,12 @@
 
 package org.coodex.concrete.jaxrs.client.impl;
 
+import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.jaxrs.client.AbstractRemoteInvoker;
 import org.coodex.concrete.jaxrs.client.JaxRSClientConfigBuilder;
 import org.coodex.concrete.jaxrs.struct.Unit;
-import org.coodex.util.SPIFacade;
+import org.coodex.util.ServiceLoader;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -64,9 +65,10 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
 
     private final Client client;
 
-    private static final SPIFacade<JaxRSClientConfigBuilder> BUILDER_SPI_FACADE = new SPIFacade<JaxRSClientConfigBuilder>() {
+    private static final ServiceLoader<JaxRSClientConfigBuilder> BUILDER_SPI_FACADE =
+            new ConcreteServiceLoader<JaxRSClientConfigBuilder>() {
         @Override
-        protected JaxRSClientConfigBuilder getDefaultProvider() {
+        public JaxRSClientConfigBuilder getDefaultProvider() {
             return new JaxRSClientConfigBuilder() {
                 @Override
                 public Configuration buildConfig() {

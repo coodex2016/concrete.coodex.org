@@ -17,17 +17,18 @@
 package org.coodex.concrete.jaxrs.saas;
 
 import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.ReverseProxyErrorCodes;
-import org.coodex.util.AcceptableServiceSPIFacade;
+import org.coodex.util.AcceptableServiceLoader;
 
 /**
  * Created by davidoff shen on 2017-03-22.
  */
 public class ReverserFactory {
 
-    private static final AcceptableServiceSPIFacade<String, Reverser> REVERSER_FACTORY =
-            new AcceptableServiceSPIFacade<String, Reverser>() {
-            };
+    private static final AcceptableServiceLoader<String, Reverser> REVERSER_FACTORY =
+            new AcceptableServiceLoader<String, Reverser>(new ConcreteServiceLoader<Reverser>() {
+            }) ;
 
 
     public static final Reverser getReverser(String propertyName) {

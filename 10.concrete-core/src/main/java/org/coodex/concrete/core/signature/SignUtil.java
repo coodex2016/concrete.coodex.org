@@ -17,15 +17,15 @@
 package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.api.Signable;
-import org.coodex.concrete.common.ConcreteSPIFacade;
+import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.IronPenFactory;
 import org.coodex.concrete.common.SignatureSerializer;
 import org.coodex.concrete.common.struct.AbstractUnit;
-import org.coodex.util.AcceptableServiceSPIFacade;
+import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
-import org.coodex.util.SPIFacade;
+import org.coodex.util.ServiceLoader;
 
 /**
  * Created by davidoff shen on 2017-04-21.
@@ -73,15 +73,15 @@ public class SignUtil {
         }
     }
 
-    private static final AcceptableServiceSPIFacade<String, IronPenFactory> IRON_PEN_FACTORY_CONCRETE_SPI_FACADE
-            = new AcceptableServiceSPIFacade<String, IronPenFactory>() {
-    };
+    private static final AcceptableServiceLoader<String, IronPenFactory> IRON_PEN_FACTORY_CONCRETE_SPI_FACADE
+            = new AcceptableServiceLoader<String, IronPenFactory>(new ConcreteServiceLoader<IronPenFactory>() {
+    });
 
     private static final SignatureSerializer DEFAULT_SERIALIZER = new DefaultSignatureSerializer();
-    private static final SPIFacade<SignatureSerializer> SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE
-            = new ConcreteSPIFacade<SignatureSerializer>() {
+    private static final ServiceLoader<SignatureSerializer> SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE
+            = new ConcreteServiceLoader<SignatureSerializer>() {
         @Override
-        protected SignatureSerializer getDefaultProvider() {
+        public SignatureSerializer getDefaultProvider() {
             return DEFAULT_SERIALIZER;
         }
     };

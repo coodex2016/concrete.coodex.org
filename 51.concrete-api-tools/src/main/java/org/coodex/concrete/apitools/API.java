@@ -16,8 +16,8 @@
 
 package org.coodex.concrete.apitools;
 
-import org.coodex.concrete.common.ConcreteSPIFacade;
-import org.coodex.util.SPIFacade;
+import org.coodex.concrete.common.ConcreteServiceLoader;
+import org.coodex.util.ServiceLoader;
 
 import java.io.IOException;
 
@@ -25,7 +25,8 @@ import java.io.IOException;
  * Created by davidoff shen on 2016-12-01.
  */
 public class API {
-    private static final SPIFacade<ConcreteAPIRender> RENDERS = new ConcreteSPIFacade<ConcreteAPIRender>() {
+    private static final ServiceLoader<ConcreteAPIRender> RENDERS =
+            new ConcreteServiceLoader<ConcreteAPIRender>() {
     };
 
     public static void generate(String desc, String path, String... packages) throws IOException {

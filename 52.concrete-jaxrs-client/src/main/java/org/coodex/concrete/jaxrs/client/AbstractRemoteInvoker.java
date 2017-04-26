@@ -18,7 +18,7 @@ package org.coodex.concrete.jaxrs.client;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.ConcreteSPIFacade;
+import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.jaxrs.ClassGenerator;
 import org.coodex.concrete.jaxrs.ErrorInfo;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
@@ -27,7 +27,7 @@ import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.pojomocker.POJOMocker;
 import org.coodex.util.Common;
-import org.coodex.util.SPIFacade;
+import org.coodex.util.ServiceLoader;
 import org.coodex.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,10 +46,10 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractRemoteInvoker.class);
 
-    private static final SPIFacade<JSONSerializer> JSON_SERIALIZER_FACTORY = new ConcreteSPIFacade<JSONSerializer>() {
+    private static final ServiceLoader<JSONSerializer> JSON_SERIALIZER_FACTORY = new ConcreteServiceLoader<JSONSerializer>() {
 
         @Override
-        protected JSONSerializer getDefaultProvider() {
+        public JSONSerializer getDefaultProvider() {
             return new FastJsonSerializer();
         }
     };

@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.common.ConcreteToolkit;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
@@ -125,7 +125,7 @@ public class Predicates {
      * @see #PREDICATES
      */
     public static String getHttpMethod(Unit unit) {
-        String methodName = ConcreteToolkit.getMethodName(unit.getMethod());
+        String methodName = ConcreteHelper.getMethodName(unit.getMethod());
         String[] paths = paths(methodName);
         int index = getLastNodeIndex(paths);
         if (index >= 0) {
@@ -185,7 +185,7 @@ public class Predicates {
      * @return
      */
     public static final String getRESTFulPath(Method method) {
-        String methodName = ConcreteToolkit.getMethodName(method);
+        String methodName = ConcreteHelper.getMethodName(method);
 
         String[] paths = paths(methodName);
         int index = getLastNodeIndex(paths);

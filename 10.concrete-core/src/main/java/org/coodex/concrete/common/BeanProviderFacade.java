@@ -17,22 +17,23 @@
 package org.coodex.concrete.common;
 
 import org.coodex.util.ReflectHelper;
-import org.coodex.util.SPIFacade;
+import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderFacade;
 
 /**
  * Created by davidoff shen on 2016-11-01.
  */
-public class BeanProviderFacade extends ConcreteSPIFacade<BeanProvider> {
+public class BeanProviderFacade extends ServiceLoaderFacade<BeanProvider> {
 
     private static final BeanProvider DEFAULT_PROVIDER = ReflectHelper.throwExceptionObject(
             BeanProvider.class, new ConcreteException(ErrorCodes.NO_BEAN_PROVIDER_FOUND));
 
     @Override
-    protected BeanProvider getDefaultProvider() {
+    public BeanProvider getDefaultProvider() {
         return DEFAULT_PROVIDER;
     }
 
-    private static final SPIFacade<BeanProvider> SPI_INSTANCE = new BeanProviderFacade();
+    private static final ServiceLoader<BeanProvider> SPI_INSTANCE = new BeanProviderFacade();
 
     public static BeanProvider getBeanProvider() {
         return SPI_INSTANCE.getInstance();

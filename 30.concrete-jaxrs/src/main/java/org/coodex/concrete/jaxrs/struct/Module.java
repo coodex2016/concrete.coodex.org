@@ -19,7 +19,7 @@ package org.coodex.concrete.jaxrs.struct;
 import org.coodex.concrete.api.Abstract;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.MicroService;
-import org.coodex.concrete.common.ConcreteToolkit;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.struct.AbstractModule;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.Predicates;
@@ -78,7 +78,7 @@ public class Module extends AbstractModule<Unit> {
 
         Set<Unit> units = new HashSet<Unit>();
         Map<String, Method> serviceAtoms = new HashMap<String, Method>();
-        for (Method method : ConcreteToolkit.getAllMethod(interfaceClass)) {
+        for (Method method : ConcreteHelper.getAllMethod(interfaceClass)) {
 
             if (method.getDeclaringClass() == Object.class) continue;
 
@@ -151,7 +151,7 @@ public class Module extends AbstractModule<Unit> {
     public String getName() {
         StringBuilder builder = new StringBuilder();
         for (Class<?> c : getInheritedChain()) {
-            builder.append("/").append(ConcreteToolkit.getServiceName(c));
+            builder.append("/").append(ConcreteHelper.getServiceName(c));
         }
         return JaxRSHelper.camelCaseByPath(builder.toString(), true);
     }

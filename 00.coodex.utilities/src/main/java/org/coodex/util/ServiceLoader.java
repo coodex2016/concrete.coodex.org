@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-package org.coodex.count;
+package org.coodex.util;
 
-import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderFacade;
+import java.util.Collection;
 
 /**
- * Created by davidoff shen on 2017-04-18.
+ * Created by davidoff shen on 2017-04-26.
  */
-public class CounterFacade {
-    private static final ServiceLoader<CountFacade> COUNTER_FACTORY = new ServiceLoaderFacade<CountFacade>() {
-    };
+public interface ServiceLoader<T> {
+    Collection<T> getAllInstances();
 
-    /**
-     * 扔一个数进去统计
-     *
-     * @param value
-     * @param <T>
-     */
-    public static <T extends Countable> void count(T value) {
-        COUNTER_FACTORY.getInstance().count(value);
-    }
+    T getInstance(Class<? extends T> providerClass);
+
+    T getInstance(String className);
+
+    @SuppressWarnings("unchecked")
+    T getInstance();
 }

@@ -17,9 +17,10 @@
 package org.coodex.concrete.jaxrs.client;
 
 import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.ConcreteSPIFacade;
+import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.jaxrs.client.impl.X509CertsSSLContextFactory;
+import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,10 +38,10 @@ public abstract class AbstractInvokerFactory<T extends Invoker> implements Invok
 
     private final static SSLContextFactory DEFAULT_CONTEXT_FACTORY = new X509CertsSSLContextFactory();
 
-    private final static ConcreteSPIFacade<SSLContextFactory> SSL_CONTEXT_FACTORY
-            = new ConcreteSPIFacade<SSLContextFactory>() {
+    private final static ServiceLoader<SSLContextFactory> SSL_CONTEXT_FACTORY
+            = new ConcreteServiceLoader<SSLContextFactory>() {
         @Override
-        protected SSLContextFactory getDefaultProvider() {
+        public SSLContextFactory getDefaultProvider() {
             return DEFAULT_CONTEXT_FACTORY;
         }
     };

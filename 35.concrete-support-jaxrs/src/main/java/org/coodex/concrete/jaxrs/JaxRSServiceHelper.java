@@ -17,8 +17,8 @@
 package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.common.AbstractErrorCodes;
-import org.coodex.concrete.common.ConcreteSPIFacade;
-import org.coodex.concrete.common.ConcreteToolkit;
+import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.ErrorMessageFacade;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.util.ClassFilter;
@@ -33,7 +33,7 @@ import static org.coodex.util.ReflectHelper.foreachClass;
  */
 public class JaxRSServiceHelper {
 
-    private static final ConcreteSPIFacade<ClassGenerator> CLASS_GENERATORS = new ConcreteSPIFacade<ClassGenerator>() {
+    private static final ConcreteServiceLoader<ClassGenerator> CLASS_GENERATORS = new ConcreteServiceLoader<ClassGenerator>() {
     };
 
     private static ClassGenerator getGenerator(String desc) {
@@ -52,7 +52,7 @@ public class JaxRSServiceHelper {
 
         registErrorCodes(packages);
 
-        List<Module> modules = ConcreteToolkit.loadModules(desc, packages);
+        List<Module> modules = ConcreteHelper.loadModules(desc, packages);
 
         try {
             for (Module module : modules) {

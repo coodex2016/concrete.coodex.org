@@ -59,7 +59,7 @@ public class DefinitionContext {
     }
 
     public String getModuleName() {
-        return ConcreteHelper.getServicesName(getDeclaringClass());
+        return ConcreteHelper.getServiceName(getDeclaringClass());
     }
 
     public String getMethodName() {

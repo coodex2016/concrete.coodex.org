@@ -16,8 +16,7 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.util.Profile;
-import org.coodex.util.SPIFacade;
+import org.coodex.util.ServiceLoaderFacade;
 
 import java.util.Map;
 
@@ -31,13 +30,13 @@ import java.util.Map;
  * <p>
  * Created by davidoff shen on 2016-09-08.
  */
-public abstract class ConcreteSPIFacade<T> extends SPIFacade<T> {
+public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
 
 
-    private static Profile profile = ConcreteToolkit.getProfile();
+//    private static Profile profile = ConcreteToolkit.getProfile();
 
 
-    protected ConcreteSPIFacade() {
+    protected ConcreteServiceLoader() {
         super();
     }
 
@@ -66,7 +65,7 @@ public abstract class ConcreteSPIFacade<T> extends SPIFacade<T> {
 
     @Override
     protected T conflict() {
-        String key = profile.getString(getInterfaceClass().getCanonicalName() + ".provider");
+        String key = ConcreteHelper.getProfile().getString(getInterfaceClass().getCanonicalName() + ".provider");
         return instances.containsKey(key) ? instances.get(key) : super.conflict();
     }
 

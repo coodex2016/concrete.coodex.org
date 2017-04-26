@@ -19,25 +19,52 @@ package org.coodex.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
+
 /**
  * Created by davidoff shen on 2017-03-09.
  */
-public abstract class AcceptableServiceSPIFacade<Param_Type, T extends AcceptableService<Param_Type>> extends SPIFacade<T> {
+public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Param_Type>> implements ServiceLoader<T> {
 
-    private final static Logger log = LoggerFactory.getLogger(AcceptableServiceSPIFacade.class);
+    private final static Logger log = LoggerFactory.getLogger(AcceptableServiceLoader.class);
 
+    private final ServiceLoaderFacade<T> serviceLoaderFacade;
+
+    public AcceptableServiceLoader(ServiceLoaderFacade<T> serviceLoaderFacade) {
+        this.serviceLoaderFacade = serviceLoaderFacade;
+    }
 
     public T getServiceInstance(Param_Type param) {
         for (T instance : getAllInstances()) {
             if (instance.accept(param))
                 return instance;
         }
-        T instance = getDefaultProvider();
+        T instance = serviceLoaderFacade.getDefaultProvider();
         if (instance.accept(param))
             return instance;
 
         log.warn("no service instance accept this: {}", param);
 
         return null;
+    }
+
+    @Override
+    public Collection<T> getAllInstances() {
+        return serviceLoaderFacade.getAllInstances();
+    }
+
+    @Override
+    public T getInstance(Class<? extends T> providerClass) {
+        return serviceLoaderFacade.getInstance(providerClass);
+    }
+
+    @Override
+    public T getInstance(String className) {
+        return serviceLoaderFacade.getInstance(className);
+    }
+
+    @Override
+    public T getInstance() {
+        return serviceLoaderFacade.getInstance();
     }
 }

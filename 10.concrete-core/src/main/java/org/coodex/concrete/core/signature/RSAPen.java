@@ -17,11 +17,11 @@
 package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.ConcreteSPIFacade;
+import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.util.Common;
 import org.coodex.util.RSACommon;
-import org.coodex.util.SPIFacade;
+import org.coodex.util.ServiceLoader;
 
 
 /**
@@ -29,9 +29,9 @@ import org.coodex.util.SPIFacade;
  */
 public class RSAPen extends AbstractIronPen {
 
-    private static final SPIFacade<RSAKeyStore> RSA_KEY_STORE_PROVIDERS = new ConcreteSPIFacade<RSAKeyStore>() {
+    private static final ServiceLoader<RSAKeyStore> RSA_KEY_STORE_PROVIDERS = new ConcreteServiceLoader<RSAKeyStore>() {
         @Override
-        protected RSAKeyStore getDefaultProvider() {
+        public RSAKeyStore getDefaultProvider() {
             return new RSAKeyStoreDefaultImpl();
         }
     };

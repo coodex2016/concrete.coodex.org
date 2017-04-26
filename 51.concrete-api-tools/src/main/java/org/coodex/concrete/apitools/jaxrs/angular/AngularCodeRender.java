@@ -19,7 +19,7 @@ package org.coodex.concrete.apitools.jaxrs.angular;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.apitools.jaxrs.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.angular.meta.*;
-import org.coodex.concrete.common.ConcreteToolkit;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Param;
@@ -52,7 +52,7 @@ public class AngularCodeRender extends AbstractRender {
     public void writeTo(String... packages) throws IOException {
         String moduleName = getRenderDesc().substring(RENDER_NAME.length());
         moduleName = Common.isBlank(moduleName) ? null : moduleName.substring(1);
-        List<Module> jaxrsModules = ConcreteToolkit.loadModules(RENDER_NAME, packages);
+        List<Module> jaxrsModules = ConcreteHelper.loadModules(RENDER_NAME, packages);
         String contextPath = Common.isBlank(moduleName) ? "@concrete/" : (getModuleName(moduleName) + "/");
 
         // 按包归类

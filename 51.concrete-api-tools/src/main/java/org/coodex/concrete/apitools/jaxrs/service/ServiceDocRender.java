@@ -18,7 +18,7 @@ package org.coodex.concrete.apitools.jaxrs.service;
 
 import org.coodex.concrete.apitools.jaxrs.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
-import org.coodex.concrete.common.ConcreteToolkit;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.ErrorDefinition;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.JaxRSServiceHelper;
@@ -100,7 +100,7 @@ public class ServiceDocRender extends AbstractRender {
 
     @Override
     public void writeTo(String... packages) throws IOException {
-        writeTo(ConcreteToolkit.<Module>loadModules(RENDER_NAME, packages));
+        writeTo(ConcreteHelper.<Module>loadModules(RENDER_NAME, packages));
 
         List<ErrorDefinition> errors = new ArrayList<ErrorDefinition>();
 

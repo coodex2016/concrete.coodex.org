@@ -18,10 +18,11 @@ package org.coodex.concrete.common.count;
 
 import javassist.*;
 import javassist.bytecode.SignatureAttribute;
-import org.coodex.concrete.common.BeanProviderFacade;
 import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.count.*;
+import org.coodex.util.ServiceLoader;
 import org.coodex.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +47,14 @@ public class CountFacadeProvider implements CountFacade {
 
     private Map<Class, CounterChain> chainMap;
 
+    private static ServiceLoader<Counter> counterProvider = new ConcreteServiceLoader<Counter>() {
+    };
+
     private void buildMap() {
         TypeVariable t = Counter.class.getTypeParameters()[0];
         chainMap = new HashMap<Class, CounterChain>();
 
-        for (Counter counter : BeanProviderFacade.getBeanProvider().getBeansOfType(Counter.class).values()) {
+        for (Counter counter : counterProvider.getAllInstances()) {
 
             Type type = TypeHelper.findActualClassFrom(t, counter.getClass());
             if (type instanceof Class) {

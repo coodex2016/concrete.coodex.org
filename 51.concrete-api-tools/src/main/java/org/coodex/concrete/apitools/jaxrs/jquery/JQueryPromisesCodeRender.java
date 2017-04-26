@@ -17,7 +17,7 @@
 package org.coodex.concrete.apitools.jaxrs.jquery;
 
 import org.coodex.concrete.apitools.jaxrs.AbstractRender;
-import org.coodex.concrete.common.ConcreteToolkit;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Param;
@@ -106,7 +106,7 @@ public class JQueryPromisesCodeRender extends AbstractRender {
 
     @Override
     public void writeTo(String... packages) throws IOException {
-        List<Module> moduleList = ConcreteToolkit.loadModules(RENDER_NAME, packages);
+        List<Module> moduleList = ConcreteHelper.loadModules(RENDER_NAME, packages);
         Set<String> modules = new HashSet<String>();
         for (Module module : moduleList) {
             StringBuilder builder = new StringBuilder();

@@ -18,10 +18,10 @@ package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.common.Assert;
 import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.ConcreteSPIFacade;
+import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.util.DigestHelper;
-import org.coodex.util.SPIFacade;
+import org.coodex.util.ServiceLoader;
 
 import java.util.Arrays;
 
@@ -33,9 +33,9 @@ import static org.coodex.concrete.core.signature.SignUtil.getString;
  */
 public class HmacPen extends AbstractIronPen {
 
-    private static final SPIFacade<HmacKeyStore> HMAC_KEY_STORE_PROVIDERS = new ConcreteSPIFacade<HmacKeyStore>() {
+    private static final ServiceLoader<HmacKeyStore> HMAC_KEY_STORE_PROVIDERS = new ConcreteServiceLoader<HmacKeyStore>() {
         @Override
-        protected HmacKeyStore getDefaultProvider() {
+        public HmacKeyStore getDefaultProvider() {
             return new HmacKeyStore() {
                 /**
                  * 优先级

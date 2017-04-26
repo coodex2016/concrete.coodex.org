@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ServiceLoader;
 
 /**
  * <S>待coodex utilities放弃1.5时移入org.coodex.util</S>
@@ -30,22 +29,22 @@ import java.util.ServiceLoader;
  * <p>
  * Created by davidoff shen on 2016-11-30.
  */
-public abstract class SPIFacade<T> {
+public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
 
-    public SPIFacade() {
+    public ServiceLoaderFacade() {
         loadInstances();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(SPIFacade.class);
+    private final static Logger log = LoggerFactory.getLogger(ServiceLoaderFacade.class);
 
     protected Map<String, T> instances = null;
 
     @SuppressWarnings("unchecked")
     protected Class<T> getInterfaceClass() {
-        return (Class<T>) TypeHelper.findActualClassFrom(SPIFacade.class.getTypeParameters()[0], getClass());
+        return (Class<T>) TypeHelper.findActualClassFrom(ServiceLoaderFacade.class.getTypeParameters()[0], getClass());
     }
 
-    protected T getDefaultProvider() {
+    public T getDefaultProvider() {
         throw new RuntimeException("no provider found for: " + getInterfaceClass().getName());
     }
 
@@ -54,7 +53,7 @@ public abstract class SPIFacade<T> {
             synchronized (this) {
                 if (instances == null) {
                     instances = new HashMap<String, T>();
-                    ServiceLoader<T> loader = ServiceLoader.load(getInterfaceClass());
+                    java.util.ServiceLoader<T> loader = java.util.ServiceLoader.<T>load(getInterfaceClass());
                     for (T service : loader) {
                         if (service != null) {
                             instances.put(service.getClass().getCanonicalName(), service);
@@ -68,14 +67,17 @@ public abstract class SPIFacade<T> {
         }
     }
 
+    @Override
     public Collection<T> getAllInstances() {
         return instances.values();
     }
 
+    @Override
     public T getInstance(Class<? extends T> providerClass) {
         return getInstance(providerClass.getCanonicalName());
     }
 
+    @Override
     public T getInstance(String className) {
         T instance = instances.get(className);
         return instance == null ? getDefaultProvider() : instance;
@@ -91,6 +93,7 @@ public abstract class SPIFacade<T> {
         throw new RuntimeException(buffer.toString());
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T getInstance() {
         if (instances.size() == 0)

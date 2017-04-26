@@ -18,7 +18,7 @@ package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.*;
-import org.coodex.util.SPIFacade;
+import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +46,9 @@ public class BeanValidationInterceptor extends AbstractInterceptor {
         }
     };
 
-    private final static SPIFacade<ViolationsFormatter> VIOLATIONS_FORMATTER_SPI = new ConcreteSPIFacade<ViolationsFormatter>() {
+    private final static ServiceLoader<ViolationsFormatter> VIOLATIONS_FORMATTER_SPI = new ConcreteServiceLoader<ViolationsFormatter>() {
         @Override
-        protected ViolationsFormatter getDefaultProvider() {
+        public ViolationsFormatter getDefaultProvider() {
             return DEFAULT_FORMMATER;
         }
     };
