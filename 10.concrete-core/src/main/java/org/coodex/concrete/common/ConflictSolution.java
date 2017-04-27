@@ -16,14 +16,16 @@
 
 package org.coodex.concrete.common;
 
+import org.coodex.util.AcceptableService;
+
 import java.util.Map;
 
 /**
  * Created by davidoff shen on 2016-11-01.
  */
-public interface ConflictSolution {
+public interface ConflictSolution extends AcceptableService<Class> {
 
-    boolean accepted(Class<?> clazz);
+//    boolean accepted(Class<?> clazz);
 
     <T> T conflict(Map<String, T> beans, Class<T> clz);
 }

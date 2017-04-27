@@ -48,7 +48,7 @@ public class BeanNameFilter implements ConflictSolution {
     }
 
     @Override
-    public boolean accepted(Class<?> clazz) {
+    public boolean accept(Class clazz) {
         return true;
     }
 

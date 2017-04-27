@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public class ThrowException implements ConflictSolution {
     @Override
-    public boolean accepted(Class<?> clazz) {
+    public boolean accept(Class clazz) {
         return false;
     }
 

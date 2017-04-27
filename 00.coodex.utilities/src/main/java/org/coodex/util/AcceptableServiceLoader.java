@@ -39,10 +39,12 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
             if (instance.accept(param))
                 return instance;
         }
-        T instance = serviceLoaderFacade.getDefaultProvider();
-        if (instance.accept(param))
-            return instance;
-
+        try {
+            T instance = serviceLoaderFacade.getDefaultProvider();
+            if (instance.accept(param))
+                return instance;
+        }catch (Throwable th){
+        }
         log.warn("no service instance accept this: {}", param);
 
         return null;

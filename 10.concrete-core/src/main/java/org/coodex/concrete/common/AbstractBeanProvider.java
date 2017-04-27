@@ -17,6 +17,7 @@
 package org.coodex.concrete.common;
 
 import org.coodex.concrete.common.conflictsolutions.ThrowException;
+import org.coodex.util.AcceptableServiceLoader;
 
 import java.util.Map;
 
@@ -27,30 +28,32 @@ public abstract class AbstractBeanProvider implements BeanProvider {
 
     private static final ConflictSolution DEFAULT_CONFLICT_SOLUTION = new ThrowException();
 
-    private static final ConcreteServiceLoader<ConflictSolution> SOLUTION_CONCRETE_SPI_FACADE =
-            new ConcreteServiceLoader<ConflictSolution>() {};
+    private static final AcceptableServiceLoader<Class, ConflictSolution> SOLUTION_CONCRETE_SPI_FACADE =
+            new AcceptableServiceLoader<Class, ConflictSolution>(new ConcreteServiceLoader<ConflictSolution>() {
+            });
 
     private static final ConflictSolution getSolution(Class<?> clz) {
-        // 1 从BeanProvider里找
-        try {
-            Map<String, ConflictSolution> map = BeanProviderFacade.getBeanProvider().getBeansOfType(ConflictSolution.class);
-            if (map != null) {
-                for (ConflictSolution solution : map.values()) {
-                    if (solution != null && solution.accepted(clz))
-                        return solution;
-                }
-            }
-        } catch (Throwable th) {
-        }
-        // 2 ServiceLoader
-        try {
-            for (ConflictSolution solution : SOLUTION_CONCRETE_SPI_FACADE.getAllInstances()) {
-                if (solution != null && solution.accepted(clz))
-                    return solution;
-            }
-        } catch (Throwable th) {
-        }
-
+//        // 1 从BeanProvider里找
+//        try {
+//            Map<String, ConflictSolution> map = BeanProviderFacade.getBeanProvider().getBeansOfType(ConflictSolution.class);
+//            if (map != null) {
+//                for (ConflictSolution solution : map.values()) {
+//                    if (solution != null && solution.accepted(clz))
+//                        return solution;
+//                }
+//            }
+//        } catch (Throwable th) {
+//        }
+//        // 2 ServiceLoader
+//        try {
+//            for (ConflictSolution solution : SOLUTION_CONCRETE_SPI_FACADE.getAllInstances()) {
+//                if (solution != null && solution.accepted(clz))
+//                    return solution;
+//            }
+//        } catch (Throwable th) {
+//        }
+        ConflictSolution conflictSolution = SOLUTION_CONCRETE_SPI_FACADE.getServiceInstance(clz);
+        if (conflictSolution != null) return conflictSolution;
 
         // 3 从配置文件中读取
         try {
@@ -63,7 +66,7 @@ public abstract class AbstractBeanProvider implements BeanProvider {
     }
 
     @Override
-    public final  <T> T getBean(Class<T> type) {
+    public final <T> T getBean(Class<T> type) {
         Map<String, T> instanceMap = getBeansOfType(type);
         switch (instanceMap.size()) {
             case 0:
