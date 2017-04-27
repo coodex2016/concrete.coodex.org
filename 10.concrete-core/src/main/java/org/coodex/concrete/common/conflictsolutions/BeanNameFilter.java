@@ -16,13 +16,11 @@
 
 package org.coodex.concrete.common.conflictsolutions;
 
-import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.ConflictSolution;
-import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -31,9 +29,29 @@ import java.util.Set;
  * 基于Bean的名字过滤出唯一的实现
  * Created by davidoff shen on 2016-11-01.
  */
-public class BeanNameFilter implements ConflictSolution {
+public class BeanNameFilter extends AbstractConflictSolution /*implements ConflictSolution*/ {
 
     private static final Profile profile = ConcreteHelper.getProfile();
+
+
+    @Override
+    public boolean accept(Class clazz) {
+        return true;
+    }
+
+    @Override
+    protected <T> Map<String, T> doFilter(Map<String, T> beans, Class<T> clz) {
+
+        String prefix = profile.getString(BeanNameFilter.class.getCanonicalName() + ".prefix");
+        if (Common.isBlank(prefix)) return beans;
+
+        Map<String, T> map = new HashMap<String, T>();
+        for (String str : beans.keySet()) {
+            if (str != null && str.startsWith(prefix))
+                map.put(str, beans.get(str));
+        }
+        return map;
+    }
 
     private Set<String> filter(Set<String> set) {
         String prefix = profile.getString(BeanNameFilter.class.getCanonicalName() + ".prefix");
@@ -47,21 +65,16 @@ public class BeanNameFilter implements ConflictSolution {
         return stringSet;
     }
 
-    @Override
-    public boolean accept(Class clazz) {
-        return true;
-    }
-
-    @Override
-    public <T> T conflict(Map<String, T> beans, Class<T> clz) {
-        Set<String> set = filter(beans.keySet());
-        switch (set.size()) {
-            case 0:
-                throw new ConcreteException(ErrorCodes.NO_SERVICE_INSTANCE_FOUND, clz);
-            case 1:
-                return beans.get(set.iterator().next());
-            default:
-                throw new ConcreteException(ErrorCodes.BEAN_CONFLICT, clz, set.size());
-        }
-    }
+//    @Override
+//    public <T> T conflict(Map<String, T> beans, Class<T> clz) {
+//        Set<String> set = filter(beans.keySet());
+//        switch (set.size()) {
+//            case 0:
+//                throw new ConcreteException(ErrorCodes.NO_SERVICE_INSTANCE_FOUND, clz);
+//            case 1:
+//                return beans.get(set.iterator().next());
+//            default:
+//                throw new ConcreteException(ErrorCodes.BEAN_CONFLICT, clz, set.size());
+//        }
+//    }
 }
