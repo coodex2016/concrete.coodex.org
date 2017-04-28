@@ -117,8 +117,7 @@ public class Unit extends AbstractUnit<Param, Module> {
 
 
     private String getNameOnInit() {
-        MicroService microService = getMethod().getAnnotation(MicroService.class);
-        String methodName = microService == null ? removePredicate(getMethod().getName()) : microService.value();
+
         List<Class> inheritedChain = ConcreteHelper.inheritedChain(
                 getMethod().getDeclaringClass(), getDeclaringModule().getInterfaceClass());
         if (inheritedChain == null)
@@ -129,7 +128,8 @@ public class Unit extends AbstractUnit<Param, Module> {
             buffer.append(slash(JaxRSHelper.camelCase(ConcreteHelper.getServiceName(c), true)));
         }
 
-        buffer.append(slash(methodName));
+        MicroService microService = getMethod().getAnnotation(MicroService.class);
+        buffer.append(slash(microService == null ? removePredicate(getMethod().getName()) : microService.value()));
 
         String toTest = slash(getDeclaringModule().getName())
                 + buffer.toString();

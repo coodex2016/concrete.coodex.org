@@ -49,7 +49,7 @@ public class JQueryDocRender extends AbstractRender {
     }
 
     private void writeModule(Module module) throws IOException {
-        writeTo("modules" + FS + toolkit.canonicalName(module.getName()) + ".md",
+        writeTo("modules" + FS + module.getInterfaceClass().getName() + ".md",
                 "module.md",
                 "module", module, toolkit);
     }

@@ -119,13 +119,13 @@ public class ConcreteHelper {
     private static <MODULE extends AbstractModule> List<MODULE> loadModules(
             final ModuleMaker<MODULE> maker, String... packages) {
 
-        final Map<String, MODULE> moduleMap = new HashMap<String, MODULE>();
+        final Map<Class, MODULE> moduleMap = new HashMap<Class, MODULE>();
         foreachService(new ReflectHelper.Processor() {
             @Override
             public void process(Class<?> serviceClass) {
                 MODULE module = maker.make(serviceClass);
 
-                String key = module.getName();
+                Class key = module.getInterfaceClass();//.getName();
                 MODULE exists = moduleMap.get(key);
 
                 if (exists != null) {
