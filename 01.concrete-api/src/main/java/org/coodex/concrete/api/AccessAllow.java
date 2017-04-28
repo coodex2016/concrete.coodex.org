@@ -23,7 +23,7 @@ import java.lang.annotation.*;
  * <p>
  * Created by davidoff shen on 2016-09-01.
  */
-@Target({ElementType.METHOD})
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface AccessAllow {

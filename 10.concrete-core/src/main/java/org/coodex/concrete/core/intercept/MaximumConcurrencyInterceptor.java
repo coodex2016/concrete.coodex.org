@@ -42,16 +42,15 @@ public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
     @Override
     public boolean accept(RuntimeContext context) {
         return context.getDeclaringMethod().getAnnotation(NotService.class) == null
-                && (context.getDeclaringMethod().getAnnotation(Limiting.class) != null
-                || context.getDeclaringClass().getAnnotation(Limiting.class) != null);
+                && (context.getAnnotation(Limiting.class) != null);
     }
 
     @Override
     public Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable {
         ConcurrencyStrategy strategy = null;
-        Limiting limiting = context.getDeclaringMethod().getAnnotation(Limiting.class);
-        if (limiting == null)
-            limiting = context.getDeclaringClass().getAnnotation(Limiting.class);
+        Limiting limiting = context.getAnnotation(Limiting.class);
+//        if (limiting == null)
+//            limiting = context.getDeclaringClass().getAnnotation(Limiting.class);
 
         if (limiting != null)
             strategy = getStrategy(limiting.strategy());

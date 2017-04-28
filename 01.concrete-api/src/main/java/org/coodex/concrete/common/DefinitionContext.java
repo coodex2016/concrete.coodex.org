@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.api;
+package org.coodex.concrete.common;
 
-import java.lang.annotation.*;
+import org.coodex.concrete.api.ConcreteService;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 /**
- * 服务执行优先级，需要异步环境支持，例如Servlet 3.x, JAX-RS 2.x
- * <p>
- * Created by davidoff shen on 2016-11-02.
+ * Created by davidoff shen on 2017-04-28.
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Overlay
-public @interface Priority {
+public interface DefinitionContext {
+    Class<? extends ConcreteService> getDeclaringClass();
 
-    /**
-     * 指定优先级组名
-     *
-     * @return
-     */
-    int value() default Thread.NORM_PRIORITY;
+    Method getDeclaringMethod();
+
+    String getModuleName();
+
+    <T extends Annotation> T getDeclaringAnnotation(Class<T> annotationClass);
+
+    <T extends Annotation> T getAnnotation(Class<T> annotationClass);
+
 }

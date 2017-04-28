@@ -19,12 +19,13 @@ package org.coodex.concrete.api;
 import java.lang.annotation.*;
 
 /**
- * 限流策略定义
+ * 限流策略定义，可重载
  * Created by davidoff shen on 2017-04-06.
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Overlay
 public @interface Limiting {
 
     /**

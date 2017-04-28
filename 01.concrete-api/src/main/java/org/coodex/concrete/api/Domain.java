@@ -19,12 +19,13 @@ package org.coodex.concrete.api;
 import java.lang.annotation.*;
 
 /**
- * 服务领域
+ * 服务领域，可重载
  * Created by davidoff shen on 2016-09-05.
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Overlay
 public @interface Domain {
 
     /**

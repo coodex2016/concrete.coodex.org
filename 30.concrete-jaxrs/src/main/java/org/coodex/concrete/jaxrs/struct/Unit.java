@@ -16,6 +16,8 @@
 
 package org.coodex.concrete.jaxrs.struct;
 
+import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.concrete.jaxrs.BigString;
 import org.coodex.concrete.jaxrs.PathParam;
@@ -157,6 +159,11 @@ public class Unit extends AbstractUnit<Param, Module> {
     @Override
     public Param[] getParameters() {
         return parameters;
+    }
+
+    @Override
+    protected DefinitionContext toContext() {
+        return ConcreteHelper.getContext(getMethod(), getDeclaringModule().getInterfaceClass());
     }
 
     @Override

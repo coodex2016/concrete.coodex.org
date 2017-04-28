@@ -18,13 +18,12 @@ package org.coodex.concrete.common;
 
 import org.coodex.concrete.api.ConcreteService;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
  * Created by davidoff shen on 2016-09-06.
  */
-public class RuntimeContext extends DefinitionContext {
+public class RuntimeContext extends DefinitionContextImpl {
 
     private RuntimeContext() {
     }
@@ -69,23 +68,23 @@ public class RuntimeContext extends DefinitionContext {
      * @param <T>
      * @return
      */
-    @SuppressWarnings("unchecked")
-    public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
-        if (actualMethod == null) return null;
-
-        Class clz = actualMethod.getDeclaringClass();
-        while (clz != null) {
-            try {
-                Method method = clz.getMethod(actualMethod.getName(), actualMethod.getParameterTypes());
-                T annotation = method.getAnnotation(annotationType);
-                if (annotation != null) return annotation;
-                clz = method.getDeclaringClass();
-            } catch (NoSuchMethodException e) {
-            }
-            clz = clz.getSuperclass();
-        }
-
-        return getDeclaringMethod() == null ? null : getDeclaringMethod().getAnnotation(annotationType);
-//        return getDeclaringAnnotation(annotationType);
-    }
+//    @SuppressWarnings("unchecked")
+//    public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
+//        if (actualMethod == null) return null;
+//
+//        Class clz = actualMethod.getDeclaringClass();
+//        while (clz != null) {
+//            try {
+//                Method method = clz.getMethod(actualMethod.getName(), actualMethod.getParameterTypes());
+//                T annotation = method.getAnnotation(annotationType);
+//                if (annotation != null) return annotation;
+//                clz = method.getDeclaringClass();
+//            } catch (NoSuchMethodException e) {
+//            }
+//            clz = clz.getSuperclass();
+//        }
+//
+//        return getDeclaringMethod() == null ? null : getDeclaringMethod().getAnnotation(annotationType);
+////        return getDeclaringAnnotation(annotationType);
+//    }
 }

@@ -39,7 +39,7 @@ public class JaxRSHelper {
 //    public static final String KEY_ERROR_MESSAGE = "msg";
     public static final String HEADER_ERROR_OCCURRED = "CONCRETE-ERROR-OCCURRED";
 
-    private static final Class[] PRIMITIVE_CLASSESS = new Class[]{
+    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
             String.class,
             Boolean.class,
             Character.class,
@@ -62,7 +62,7 @@ public class JaxRSHelper {
     };
 
     public static boolean isPrimitive(Class c) {
-        return Common.inArray(c, PRIMITIVE_CLASSESS);
+        return Common.inArray(c, PRIMITIVE_CLASSES);
     }
 
     public static boolean isBigString(Param param) {

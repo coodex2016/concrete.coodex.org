@@ -19,6 +19,7 @@ package org.coodex.concrete.common.struct;
 import org.coodex.concrete.api.AccessAllow;
 import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.Signable;
+import org.coodex.concrete.common.DefinitionContext;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -31,6 +32,7 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
 
     private Method method;
     private MODULE declaringModule;
+    private DefinitionContext context;
 
     public AbstractUnit(Method method, MODULE module) {
         this.method = method;
@@ -116,7 +118,7 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
      * @return
      */
     public AccessAllow getAccessAllow() {
-        return getDeclaredAnnotation(AccessAllow.class);
+        return getContext().getAnnotation(AccessAllow.class);
     }
 
     /**
@@ -125,7 +127,7 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
      * @return
      */
     public Signable getSignable() {
-        return getAnnotation(Signable.class);
+        return getContext().getAnnotation(Signable.class);
     }
 
     /**
@@ -157,7 +159,14 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
      *
      * @return
      */
-    public abstract AbstractParam[] getParameters();
+    public abstract PARAM[] getParameters();
 
+    public synchronized DefinitionContext getContext() {
+        if (context == null)
+            context = toContext();
+        return context;
+    }
+
+    protected abstract DefinitionContext toContext();
 
 }

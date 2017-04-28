@@ -26,6 +26,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Overlay
 public @interface Signable {
 
     String paperName() default "";

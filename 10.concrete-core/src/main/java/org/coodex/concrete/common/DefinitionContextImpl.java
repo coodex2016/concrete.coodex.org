@@ -17,19 +17,21 @@
 package org.coodex.concrete.common;
 
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.Overlay;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * Created by davidoff shen on 2016-09-01.
  */
-public class DefinitionContext {
+public class DefinitionContextImpl implements DefinitionContext {
 
     private Class<? extends ConcreteService> declaringClass;
     private Method declaringMethod;
 
-    DefinitionContext() {
+    DefinitionContextImpl() {
     }
 
     void setDeclaringClass(Class<? extends ConcreteService> declaringClass) {
@@ -45,6 +47,7 @@ public class DefinitionContext {
      *
      * @return
      */
+    @Override
     public Class<? extends ConcreteService> getDeclaringClass() {
         return declaringClass;
     }
@@ -54,25 +57,57 @@ public class DefinitionContext {
      *
      * @return
      */
+    @Override
     public Method getDeclaringMethod() {
         return declaringMethod;
     }
 
+    @Override
     public String getModuleName() {
         return ConcreteHelper.getServiceName(getDeclaringClass());
     }
 
-    public String getMethodName() {
-        return ConcreteHelper.getMethodName(getDeclaringMethod());
+
+    /**
+     * @param annotationClass
+     * @param <T>
+     * @return
+     */
+    @Override
+    public final <T extends Annotation> T getDeclaringAnnotation(Class<T> annotationClass) {
+        return getDeclaringMethod().getAnnotation(annotationClass);
     }
 
-
-    public <T extends Annotation> T getDeclaringAnnotation(Class<T> annotaionClass) {
-        T annotation = declaringMethod == null ? null : declaringMethod.getAnnotation(annotaionClass);
+    /**
+     * 优先级：
+     * annotationClass不可覆盖时：
+     * - method
+     * - method.declaringClass
+     * - moduleClass
+     * <p>
+     * annotationClass可覆盖时:
+     * - method
+     * - moduleClass
+     * - method.declaringClass
+     *
+     * @param annotationClass
+     * @param <T>
+     * @return
+     */
+    @Override
+    public final <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        boolean overlay = annotationClass.getAnnotation(Overlay.class) != null;
+        T annotation = declaringMethod == null ? null : declaringMethod.getAnnotation(annotationClass);
         if (annotation == null) {
-            return declaringClass.getAnnotation(annotaionClass);
+            for (Class<?> c : overlay ?
+                    Arrays.asList(declaringClass, declaringMethod.getDeclaringClass()) :
+                    Arrays.asList(declaringMethod.getDeclaringClass(), declaringClass)) {
+                annotation = c.getAnnotation(annotationClass);
+                if (annotation != null) break;
+            }
         }
         return annotation;
     }
+
 
 }

@@ -16,7 +16,10 @@
 
 package org.coodex.concrete.common.struct;
 
-import org.coodex.concrete.api.*;
+import org.coodex.concrete.api.Abstract;
+import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.Description;
+import org.coodex.concrete.api.MicroService;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -54,14 +57,14 @@ public abstract class AbstractModule<UNIT extends AbstractUnit> implements Annot
         return interfaceClass;
     }
 
-    /**
-     * 服务模块的角色属主
-     *
-     * @return
-     */
-    public Domain getDomain() {
-        return getDeclaredAnnotation(Domain.class);
-    }
+//    /**
+//     * 服务模块的角色属主
+//     *
+//     * @return
+//     */
+//    public Domain getDomain() {
+//        return getDeclaredAnnotation(Domain.class);
+//    }
 
     private Description getDesc() {
         return getDeclaredAnnotation(Description.class);

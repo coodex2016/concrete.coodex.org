@@ -199,7 +199,7 @@ public class ConcreteHelper {
         if (clz.getAnnotation(MicroService.class) != null &&
                 clz.getAnnotation(Abstract.class) == null) {
 
-            DefinitionContext context = new DefinitionContext();
+            DefinitionContextImpl context = new DefinitionContextImpl();
             context.setDeclaringClass((Class<ConcreteService>) clz);
 
             // 查找方法
@@ -266,6 +266,11 @@ public class ConcreteHelper {
         return concreteException;
     }
 
+
+//    public static <T extends Annotation> T getAnnotation(Method method, Class<T> annotationClass) {
+//        T annotation = method.getAnnotation(annotationClass);
+//        return annotation == null ? method.getDeclaringClass().getAnnotation(annotationClass) : annotation;
+//    }
 
 
 }

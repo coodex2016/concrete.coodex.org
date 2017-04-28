@@ -21,7 +21,6 @@ import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.IronPenFactory;
 import org.coodex.concrete.common.SignatureSerializer;
-import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
@@ -100,10 +99,6 @@ public class SignUtil {
     }
 
     public static HowToSign howToSign(DefinitionContext context) {
-        return howToSign(context.getDeclaringAnnotation(Signable.class));
-    }
-
-    public static HowToSign howToSign(AbstractUnit unit) {
-        return howToSign((Signable) unit.getAnnotation(Signable.class));
+        return howToSign(context.getAnnotation(Signable.class));
     }
 }

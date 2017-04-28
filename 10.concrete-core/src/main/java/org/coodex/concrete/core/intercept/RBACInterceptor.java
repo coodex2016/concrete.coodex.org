@@ -39,17 +39,21 @@ public class RBACInterceptor extends AbstractInterceptor {
 
     private Token token = TokenWrapper.getInstance();
 
+
     @Override
     public void before(RuntimeContext context, MethodInvocation joinPoint) {
 
         if (context.getDeclaringMethod() != null) {
             // 找profile
             Profile profile = Profile.getProfile(context.getModuleName() + ".properties");
-            String[] acl = profile.getStrList(context.getMethodName());
+            // 修改为基于java方法名.参数数量
+            // String[] acl = profile.getStrList(context.getMethodName());
+            String[] acl = profile.getStrList(context.getDeclaringMethod().getName() + "."
+                    + context.getDeclaringMethod().getParameterTypes().length);
             String domain = profile.getString("domain");
 
             if (domain == null) {
-                Domain owner = context.getDeclaringAnnotation(Domain.class);
+                Domain owner = context.getAnnotation(Domain.class);
                 if (owner != null && !Common.isBlank(owner.value().trim()))
                     domain = owner.value();
             }
@@ -57,20 +61,13 @@ public class RBACInterceptor extends AbstractInterceptor {
 
             // 找AccessAllow
             if (acl == null) {
-                AccessAllow accessAllow = context.getDeclaringMethod().getAnnotation(AccessAllow.class);
+                // AccessAllow accessAllow = context.getDeclaringMethod().getAnnotation(AccessAllow.class);
+                AccessAllow accessAllow = context.getAnnotation(AccessAllow.class);
                 if (accessAllow != null) {
                     acl = accessAllow.roles();
                     if (acl.length == 0) {
                         acl = new String[]{AccessAllow.EVERYBODY};
                     }
-//                    else if (domain != null) {
-//                        for (int i = 0; i < acl.length; i++) {
-//                            if (!Common.isBlank(acl[i])) {
-//                                acl[i] = domain + "." + acl[i];
-//                            }
-//                        }
-//                    }
-
                 }
             }
 

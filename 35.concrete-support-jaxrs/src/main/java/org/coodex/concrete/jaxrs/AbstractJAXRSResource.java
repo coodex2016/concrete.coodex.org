@@ -61,10 +61,12 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
     }
 
     protected int getPriority(Method method) {
-        Priority priority = method.getAnnotation(Priority.class);
-        if (priority == null) {
-            priority = getInterfaceClass().getAnnotation(Priority.class);
-        }
+        DefinitionContext context = ConcreteHelper.getContext(method, clz);
+        Priority priority = context.getAnnotation(Priority.class);
+//                method.getAnnotation(Priority.class);
+//        if (priority == null) {
+//            priority = getInterfaceClass().getAnnotation(Priority.class);
+//        }
         return priority == null ?
                 Thread.NORM_PRIORITY :
                 Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY, priority.value()));

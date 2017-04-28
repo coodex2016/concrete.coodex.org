@@ -19,6 +19,8 @@ package org.coodex.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +43,14 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
 
     @SuppressWarnings("unchecked")
     protected Class<T> getInterfaceClass() {
-        return (Class<T>) TypeHelper.findActualClassFrom(ServiceLoaderFacade.class.getTypeParameters()[0], getClass());
+        Type t = TypeHelper.findActualClassFrom(
+                ServiceLoaderFacade.class.getTypeParameters()[0],
+                getClass());
+//        return (Class<T>) TypeHelper.findActualClassFrom(ServiceLoaderFacade.class.getTypeParameters()[0], getClass());
+        if (t instanceof ParameterizedType)
+            return (Class<T>) ((ParameterizedType) t).getRawType();
+        else
+            return (Class<T>) t;
     }
 
     public T getDefaultProvider() {

@@ -53,7 +53,7 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
 
     @Override
     public void before(RuntimeContext context, MethodInvocation joinPoint) {
-        Assert.not(getValidator(context.getDeclaringAnnotation(ServiceTiming.class)).isAllowed(),
+        Assert.not(getValidator(context.getAnnotation(ServiceTiming.class)).isAllowed(),
                 ErrorCodes.OUT_OF_SERVICE_TIME);
     }
 
@@ -70,8 +70,7 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
 
     public boolean isTimingLimitService(RuntimeContext context) {
         return context.getDeclaringMethod().getAnnotation(NotService.class) == null
-                && (context.getDeclaringMethod().getAnnotation(ServiceTiming.class) != null
-                || context.getDeclaringClass().getAnnotation(ServiceTiming.class) != null);
+                && (context.getAnnotation(ServiceTiming.class) != null);
     }
 
 
