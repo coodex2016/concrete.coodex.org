@@ -14,24 +14,10 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common;
+package org.coodex.concrete.api.pojo;
 
 /**
- * Created by davidoff shen on 2016-09-04.
+ * Created by davidoff shen on 2017-04-28.
  */
-public abstract class AbstractErrorCodes {
-
-    public static final int OK = 0;
-
-
-    protected static final int CUSTOM_LOWER_BOUND = 100000;
-
-
-    protected static final int CONCRETE_CORE = 1000;
-
-    protected static final int ATTACHMENT_ERROR_CODE = CONCRETE_CORE + 1000;
-
-    protected static final int REVERSE_PROXY_ERROR_CODE = CONCRETE_CORE + 2000;
-
-    /// 10000 - 19999 保留给concrete accounts 模块
+public class StrID<P> extends Identifiable<String, P> {
 }

@@ -125,18 +125,19 @@ public class Predicates {
      * @see #PREDICATES
      */
     public static String getHttpMethod(Unit unit) {
-        String methodName = ConcreteHelper.getMethodName(unit.getMethod());
-        String[] paths = paths(methodName);
-        int index = getLastNodeIndex(paths);
-        if (index >= 0) {
-            String last = paths[index];
-            for (int i = 0; i < PREDICATES.length; i++) {
-                for (int j = 0; j < PREDICATES[i].length; j++) {
-                    if (last.startsWith(PREDICATES[i][j]))
-                        return HTTP_METHOD[i];
-                }
+//        String methodName = ConcreteHelper.getMethodName(unit.getMethod());
+//        String[] paths = paths(methodName);
+//        int index = getLastNodeIndex(paths);
+//        if (index >= 0) {
+//            String last = paths[index];
+        String methodName = unit.getMethod().getName();
+        for (int i = 0; i < PREDICATES.length; i++) {
+            for (int j = 0; j < PREDICATES[i].length; j++) {
+                if (methodName.startsWith(PREDICATES[i][j]))
+                    return HTTP_METHOD[i];
             }
         }
+//        }
 //        Annotation[][] annotations = method.getParameterAnnotations();
 //        for (int i = 0, j = method.getParameterTypes().length; i < j; i++) {
 ////        for(Class<?> paramType: method.getParameterTypes()){
