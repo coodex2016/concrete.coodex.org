@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Created by davidoff shen on 2016-11-28.
  */
-@MicroService
+@MicroService("ServiceB")
 @Abstract
 public interface ServiceB extends ServiceA {
 

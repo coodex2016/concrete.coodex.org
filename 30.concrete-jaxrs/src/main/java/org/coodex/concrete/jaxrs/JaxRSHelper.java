@@ -179,5 +179,11 @@ public class JaxRSHelper {
         return toSubmit;
     }
 
+    public static String slash(String str) {
+        if (Common.isBlank(str)) return "";
+
+        return str.startsWith("/") ? str : ("/" + str);
+    }
+
 
 }

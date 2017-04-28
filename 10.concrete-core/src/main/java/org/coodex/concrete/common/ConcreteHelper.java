@@ -60,10 +60,11 @@ public class ConcreteHelper {
 
 
     public static String getServiceName(Class<?> clz) {
-        if (clz == null) return null;
+        if (clz == null || !ConcreteService.class.isAssignableFrom(clz)) return null;
         MicroService concreteService = clz.getAnnotation(MicroService.class);
 
         if (concreteService == null) return null;
+
         return Common.isBlank(concreteService.value()) ?
                 (clz.getAnnotation(Abstract.class) != null ? clz.getSimpleName() : clz.getCanonicalName()) :
                 concreteService.value();
@@ -90,7 +91,7 @@ public class ConcreteHelper {
     };
 
 
-    public static void foreachIntf(ReflectHelper.Processor processor, String... packages) {
+    public static void foreachService(ReflectHelper.Processor processor, String... packages) {
         ReflectHelper.foreachClass(processor, CONCRETE_SERVICE_INTERFACE_FILTER, packages);
     }
 
@@ -119,7 +120,7 @@ public class ConcreteHelper {
             final ModuleMaker<MODULE> maker, String... packages) {
 
         final Map<String, MODULE> moduleMap = new HashMap<String, MODULE>();
-        foreachIntf(new ReflectHelper.Processor() {
+        foreachService(new ReflectHelper.Processor() {
             @Override
             public void process(Class<?> serviceClass) {
                 MODULE module = maker.make(serviceClass);
@@ -162,16 +163,16 @@ public class ConcreteHelper {
 //    }
 
 
-    public static DefinitionContext getContextIfFound(Method method, Class<?> clz) {
-        DefinitionContext context = getContext(method, clz);
-
-        Assert.is(context == null, ErrorCodes.MODULE_DEFINITION_NOT_FOUND,
-                method.getName(), clz.getCanonicalName());
-        Assert.is(context.getDeclaringMethod() == null,
-                ErrorCodes.UNIT_DEFINITION_NOT_FOUND,
-                getServiceName(clz), method.getName());
-        return context;
-    }
+//    public static DefinitionContext getContextIfFound(Method method, Class<?> clz) {
+//        DefinitionContext context = getContext(method, clz);
+//
+//        Assert.is(context == null, ErrorCodes.MODULE_DEFINITION_NOT_FOUND,
+//                method.getName(), clz.getCanonicalName());
+//        Assert.is(context.getDeclaringMethod() == null,
+//                ErrorCodes.UNIT_DEFINITION_NOT_FOUND,
+//                getServiceName(clz), method.getName());
+//        return context;
+//    }
 
 
     public static DefinitionContext getContext(Method method, Class<?> clz) {
@@ -271,6 +272,26 @@ public class ConcreteHelper {
 //        T annotation = method.getAnnotation(annotationClass);
 //        return annotation == null ? method.getDeclaringClass().getAnnotation(annotationClass) : annotation;
 //    }
+
+    public static List<Class> inheritedChain(Class root, Class sub) {
+        if (!ConcreteService.class.isAssignableFrom(root)) return null;
+//        Stack<Class<?>> inheritedChain = new Stack<Class<?>>();
+        if (root.equals(sub)) {
+            return Arrays.asList();
+        }
+        for (Class<?> c : sub.getInterfaces()) {
+            if (root.isAssignableFrom(c)) {
+                List<Class> subChain = inheritedChain(root, c);
+                if (subChain != null) {
+                    List<Class> inheritedChain = new ArrayList<Class>();
+                    inheritedChain.add(c);
+                    inheritedChain.addAll(subChain);
+                    return inheritedChain;
+                }
+            }
+        }
+        return null;
+    }
 
 
 }

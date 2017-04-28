@@ -16,7 +16,10 @@
 
 package org.coodex.practice.jaxrs.api;
 
-import org.coodex.concrete.api.*;
+import org.coodex.concrete.api.Abstract;
+import org.coodex.concrete.api.AccessAllow;
+import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ServiceTiming;
 import org.coodex.concrete.jaxrs.BigString;
 import org.coodex.practice.jaxrs.pojo.Book;
 import org.coodex.practice.jaxrs.pojo.BookInfo;
@@ -26,7 +29,7 @@ import org.coodex.practice.jaxrs.pojo.BookInfo;
  */
 @MicroService("A")
 @Abstract
-public interface ServiceA extends ConcreteService {
+public interface ServiceA extends Calc {
 
 //    @MicroService("getBean")
 //    String helloWorld(@PathParam("userName") String userName);

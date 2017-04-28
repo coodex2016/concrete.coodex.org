@@ -27,7 +27,6 @@ import java.util.Map;
  * Created by davidoff shen on 2016-11-28.
  */
 @MicroService("book")
-
 public interface ServiceExample extends ServiceB, GenericService<D, D> {
     @ServiceTiming("rule2")
     String tokenId();

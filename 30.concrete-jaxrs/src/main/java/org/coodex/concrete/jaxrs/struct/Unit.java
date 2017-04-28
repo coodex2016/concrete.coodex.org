@@ -16,20 +16,25 @@
 
 package org.coodex.concrete.jaxrs.struct;
 
+import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.concrete.jaxrs.BigString;
+import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.PathParam;
 
 import javax.ws.rs.HttpMethod;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 import static org.coodex.concrete.jaxrs.JaxRSHelper.isPrimitive;
+import static org.coodex.concrete.jaxrs.JaxRSHelper.slash;
 import static org.coodex.concrete.jaxrs.Predicates.getHttpMethod;
-import static org.coodex.concrete.jaxrs.Predicates.getRESTFulPath;
+import static org.coodex.concrete.jaxrs.Predicates.removePredicate;
 
 /**
  * Created by davidoff shen on 2016-11-30.
@@ -100,16 +105,34 @@ public class Unit extends AbstractUnit<Param, Module> {
 //        String httpMethod =
     }
 
+    private List<Class<?>> buildLink() {
+        Stack<Class<?>> stack = new Stack<Class<?>>();
+        Class<?> current = getDeclaringModule().getInterfaceClass();
+        Class<?> root = getMethod().getDeclaringClass();
+        while (!root.equals(current)) {
+
+        }
+        return stack;
+    }
+
+
     private String getNameOnInit() {
-        String methodName = getRESTFulPath(getMethod());
+        MicroService microService = getMethod().getAnnotation(MicroService.class);
+        String methodName = microService == null ? removePredicate(getMethod().getName()) : microService.value();
+        List<Class> inheritedChain = ConcreteHelper.inheritedChain(
+                getMethod().getDeclaringClass(), getDeclaringModule().getInterfaceClass());
+        if (inheritedChain == null)
+            inheritedChain = Arrays.asList();
 
         StringBuffer buffer = new StringBuffer();
+        for (Class c : inheritedChain) {
+            buffer.append(slash(JaxRSHelper.camelCase(ConcreteHelper.getServiceName(c), true)));
+        }
 
-        if (methodName != null)
-            buffer.append("/").append(methodName);
+        buffer.append(slash(methodName));
 
-        String toTest = "/" + getDeclaringModule().getName()
-                + (methodName == null ? "" : ("/" + methodName));
+        String toTest = slash(getDeclaringModule().getName())
+                + buffer.toString();
 
         for (Param parameter : getParameters()) {
             String pathParamValue = getPathParam(parameter);
@@ -117,7 +140,7 @@ public class Unit extends AbstractUnit<Param, Module> {
                 String restfulNode = "{" + pathParamValue + "}";
 
                 if (toTest == null || toTest.indexOf(restfulNode) < 0) {
-                    buffer.append("/").append(restfulNode);
+                    buffer.append(slash(restfulNode));
                 }
             }
         }

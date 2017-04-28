@@ -16,19 +16,16 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
 
 import javax.ws.rs.HttpMethod;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import static org.coodex.concrete.jaxrs.JaxRSHelper.getSubmitBody;
-import static org.coodex.concrete.jaxrs.JaxRSHelper.lowerFirstChar;
 
 
 /**
@@ -179,34 +176,45 @@ public class Predicates {
         return builder.toString();
     }
 
-    /**
-     * 去掉path中的谓词
-     *
-     * @param method
-     * @return
-     */
-    public static final String getRESTFulPath(Method method) {
-        String methodName = ConcreteHelper.getMethodName(method);
-
-        String[] paths = paths(methodName);
-        int index = getLastNodeIndex(paths);
-        if (index >= 0) {
-            String lastNode = paths[index];
-            foreign:
-            for (String[] predicates : PREDICATES) {
-                for (String predicate : predicates) {
-                    if (lastNode.startsWith(predicate)) {
-                        lastNode = lastNode.substring(predicate.length());
-                        break foreign;
-                    }
+    public static final String removePredicate(String name) {
+        for (String[] predicates : PREDICATES) {
+            for (String predicate : predicates) {
+                if (name.startsWith(predicate)) {
+                    return JaxRSHelper.lowerFirstChar(name.substring(predicate.length()));
                 }
             }
-            paths[index] = lastNode;
         }
-        methodName = buildPath(paths);
-
-        return Common.isBlank(methodName) ? null : lowerFirstChar(methodName);
+        return name;
     }
+
+//    /**
+//     * 去掉path中的谓词
+//     *
+//     * @param method
+//     * @return
+//     */
+//    public static final String getRESTFulPath(Method method) {
+//        String methodName = ConcreteHelper.getMethodName(method);
+//
+//        String[] paths = paths(methodName);
+//        int index = getLastNodeIndex(paths);
+//        if (index >= 0) {
+//            String lastNode = paths[index];
+//            foreign:
+//            for (String[] predicates : PREDICATES) {
+//                for (String predicate : predicates) {
+//                    if (lastNode.startsWith(predicate)) {
+//                        lastNode = lastNode.substring(predicate.length());
+//                        break foreign;
+//                    }
+//                }
+//            }
+//            paths[index] = lastNode;
+//        }
+//        methodName = buildPath(paths);
+//
+//        return Common.isBlank(methodName) ? null : lowerFirstChar(methodName);
+//    }
 
     private static int getLastNodeIndex(String[] paths) {
         int index = -1;

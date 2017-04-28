@@ -22,7 +22,6 @@ import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.MicroService;
 
 import java.lang.annotation.Annotation;
-import java.util.List;
 
 /**
  * Created by davidoff shen on 2016-11-30.
@@ -41,12 +40,12 @@ public abstract class AbstractModule<UNIT extends AbstractUnit> implements Annot
         }
     }
 
-    /**
-     * 业务模块继承链
-     *
-     * @return
-     */
-    public abstract List<Class<?>> getInheritedChain();
+//    /**
+//     * 业务模块继承链
+//     *
+//     * @return
+//     */
+//    public abstract List<Class<?>> getInheritedChain();
 
     /**
      * 服务模块所在的class

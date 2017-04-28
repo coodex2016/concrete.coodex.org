@@ -16,9 +16,6 @@
 
 package org.coodex.concrete.jaxrs.struct;
 
-import org.coodex.concrete.api.Abstract;
-import org.coodex.concrete.api.ConcreteService;
-import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.struct.AbstractModule;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
@@ -30,13 +27,15 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.coodex.concrete.jaxrs.JaxRSHelper.slash;
+
 /**
  * Created by davidoff shen on 2016-11-30.
  */
 public class Module extends AbstractModule<Unit> {
 
     private Unit[] units;
-    private List<Class<?>> inheritedChain = new ArrayList<Class<?>>();
+//    private List<Class<?>> inheritedChain = new ArrayList<Class<?>>();
 
     protected final boolean sameMethod(Method m1, Method m2) {
         if (m1 == null || m2 == null) return false;
@@ -45,35 +44,35 @@ public class Module extends AbstractModule<Unit> {
 
     }
 
-    private Class<?> findParent(Class<?> clz) {
+//    private Class<?> findParent(Class<?> clz) {
+//
+//        for (Class<?> c : clz.getInterfaces()) {
+//            if (ConcreteService.class.isAssignableFrom(clz)) {
+//                return c.getAnnotation(MicroService.class) != null
+//                        && c.getAnnotation(Abstract.class) != null
+//                        ? c : findParent(c);
+//            }
+//        }
+//        return null;
+//    }
 
-        for (Class<?> c : clz.getInterfaces()) {
-            if (ConcreteService.class.isAssignableFrom(clz)) {
-                return c.getAnnotation(MicroService.class) != null
-                        && c.getAnnotation(Abstract.class) != null
-                        ? c : findParent(c);
-            }
-        }
-        return null;
-    }
-
-    private void initInheritedChain() {
-        Stack<Class<?>> stack = new Stack<Class<?>>();
-        Class<?> parent = getInterfaceClass();
-        _while:
-        while (parent != null) {
-            stack.push(parent);
-            parent = findParent(parent);
-        }
-        while (!stack.isEmpty()) {
-            inheritedChain.add(stack.pop());
-        }
-    }
+//    private void initInheritedChain() {
+//        Stack<Class<?>> stack = new Stack<Class<?>>();
+//        Class<?> parent = getInterfaceClass();
+//        _while:
+//        while (parent != null) {
+//            stack.push(parent);
+//            parent = findParent(parent);
+//        }
+//        while (!stack.isEmpty()) {
+//            inheritedChain.add(stack.pop());
+//        }
+//    }
 
     public Module(Class<?> interfaceClass) {
         super(interfaceClass);
 
-        initInheritedChain();
+//        initInheritedChain();
 
 
         Set<Unit> units = new HashSet<Unit>();
@@ -116,7 +115,7 @@ public class Module extends AbstractModule<Unit> {
             }
         }
 
-        RouteBy routeBy = getDeclaredAnnotation(RouteBy.class);
+        RouteBy routeBy = unit.getAnnotation(RouteBy.class);//getDeclaredAnnotation(RouteBy.class);
         if (routeBy != null) {
             String routeByParam = routeBy.value();
             boolean found = false;
@@ -142,18 +141,30 @@ public class Module extends AbstractModule<Unit> {
         return false;
     }
 
-    @Override
-    public List<Class<?>> getInheritedChain() {
-        return inheritedChain;
-    }
+//    @Override
+//    public List<Class<?>> getInheritedChain() {
+//        return inheritedChain;
+//    }
 
     @Override
     public String getName() {
-        StringBuilder builder = new StringBuilder();
-        for (Class<?> c : getInheritedChain()) {
-            builder.append("/").append(ConcreteHelper.getServiceName(c));
-        }
-        return JaxRSHelper.camelCaseByPath(builder.toString(), true);
+//        StringBuilder builder = new StringBuilder();
+//        for (Class<?> c : getInheritedChain()) {
+//        for (int i = inheritedChain.size() - 1; i > 0; i--) {
+//            Class<?> c = inheritedChain.get(i);
+//            String serviceName = ConcreteHelper.getServiceName(c);
+//            if (!Common.isBlank(serviceName)) {
+//                if (!serviceName.startsWith("/")) {
+//                    builder.append("/");
+//                }
+//                builder.append(serviceName);
+//            }
+//        }
+//        if (builder.length() == 0) {
+//        String serviceName = ConcreteHelper.getServiceName(c);
+//        builder.append("/").append(ConcreteHelper.getServiceName());
+//        }
+        return slash(JaxRSHelper.camelCaseByPath(ConcreteHelper.getServiceName(getInterfaceClass()), true));
     }
 
     @Override

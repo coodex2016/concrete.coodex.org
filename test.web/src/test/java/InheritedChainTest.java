@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package org.coodex.practice.jaxrs.api;
+import org.coodex.practice.jaxrs.api.Calc;
+import org.coodex.practice.jaxrs.api.ServiceExample;
 
-import org.coodex.concrete.api.Abstract;
-import org.coodex.concrete.api.ConcreteService;
-import org.coodex.concrete.api.MicroService;
-import org.coodex.practice.jaxrs.pojo.GenericPojo;
-
-import java.util.List;
+import static org.coodex.concrete.common.ConcreteHelper.inheritedChain;
 
 /**
- * Created by davidoff shen on 2017-04-13.
+ * Created by davidoff shen on 2017-04-28.
  */
-@MicroService("genericTest")
-@Abstract
-public interface GenericService<P extends GenericPojo, X extends GenericPojo> extends ConcreteService {
+public class InheritedChainTest {
 
-    P genericTest1001(P x);
-
-    List<P> genericTest1002(List<X> x);
+    public static void main(String [] args){
+        for(Class c : inheritedChain(Calc.class, ServiceExample.class)){
+            System.out.println(c.getName());
+        }
+    }
 }
