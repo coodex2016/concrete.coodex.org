@@ -21,6 +21,7 @@ import org.coodex.concrete.api.Signable;
 import org.coodex.concrete.core.signature.SignUtil;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.Common;
+import org.coodex.util.TypeHelper;
 
 import java.io.IOException;
 import java.lang.reflect.GenericArrayType;
@@ -69,6 +70,8 @@ public abstract class DocToolkit {
     }
 
     public String formatTypeStr(Type t, Class<?> contextClass) throws IOException {
+
+
         if (t instanceof ParameterizedType) {
 
             ParameterizedType pt = (ParameterizedType) t;
@@ -84,7 +87,9 @@ public abstract class DocToolkit {
             builder.append('>');
             return builder.toString();
         } else if (t instanceof TypeVariable) {
-
+            if (contextClass != null) {
+                return formatTypeStr(TypeHelper.findActualClassFrom((TypeVariable) t, contextClass));
+            }
             return ((TypeVariable) t).getName();
         } else if (t instanceof GenericArrayType) {
 
@@ -156,7 +161,7 @@ public abstract class DocToolkit {
         builder.append("\n\n| property | value |\n| ---- | --- |\n")
                 .append("| `paperName` | `").append(howToSign.getPaperName()).append("`|\n ")
                 .append("| `algorithm` | `").append(howToSign.getAlgorithm()).append("`|\n ");
-        if(clientKeyId != null){
+        if (clientKeyId != null) {
             builder.append("| `keyId` | `").append(clientKeyId).append("`|\n");
         }
         return builder.toString();
