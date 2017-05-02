@@ -89,8 +89,8 @@ public abstract class DocToolkit {
         } else if (t instanceof TypeVariable) {
             if (contextClass != null) {
                 return formatTypeStr(TypeHelper.findActualClassFrom((TypeVariable) t, contextClass));
-            }
-            return ((TypeVariable) t).getName();
+            } else
+                return ((TypeVariable) t).getName();
         } else if (t instanceof GenericArrayType) {
 
             return formatTypeStr(((GenericArrayType) t).getGenericComponentType(), contextClass) + "[]";

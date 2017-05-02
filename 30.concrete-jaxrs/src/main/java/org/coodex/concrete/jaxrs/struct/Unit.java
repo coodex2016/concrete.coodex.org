@@ -23,6 +23,7 @@ import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.concrete.jaxrs.BigString;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.PathParam;
+import org.coodex.util.Common;
 
 import javax.ws.rs.HttpMethod;
 import java.lang.reflect.Method;
@@ -125,7 +126,9 @@ public class Unit extends AbstractUnit<Param, Module> {
 
         StringBuffer buffer = new StringBuffer();
         for (Class c : inheritedChain) {
-            buffer.append(slash(JaxRSHelper.camelCase(ConcreteHelper.getServiceName(c), true)));
+            String serviceName = ConcreteHelper.getServiceName(c);
+            if (!Common.isBlank(serviceName))
+                buffer.append(slash(JaxRSHelper.camelCase(serviceName, true)));
         }
 
         MicroService microService = getMethod().getAnnotation(MicroService.class);

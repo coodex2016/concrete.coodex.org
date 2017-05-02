@@ -122,7 +122,7 @@ public class AngularCodeRender extends AbstractRender {
 
     private boolean noDep(TSClass tsClass, Map<Class, TSClass> cache) {
         for (Class clz : tsClass.getImports()) {
-            if (cache.get(clz) != null) return false;
+            if (cache.get(clz) != null && !cache.get(clz).equals(tsClass)) return false;
         }
         return true;
     }
