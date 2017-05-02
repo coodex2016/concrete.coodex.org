@@ -5,5 +5,5 @@
 <#list modules as m>  * [${m_index+1}. ${m.label}](modules/${m.interfaceClass.name}.md)
 </#list>
 * B. POJO
-<#list tool.pojos?sort as pojo>  * [${pojo}](pojos/${pojo}.md) 
+<#list tool.pojos?sort as pojo>  * [${tool.getPojoName(pojo)}](pojos/${pojo}.md) 
 </#list>

@@ -1,5 +1,7 @@
 <#escape x as x?html> 
-# ${type}
+# ${tool.getPojoName(type)}
+
+**package**: ${tool.getPojoPackage(type)}
 
 | property | label | type  | description |
 | -------- | ---- | ---- | ----------- |

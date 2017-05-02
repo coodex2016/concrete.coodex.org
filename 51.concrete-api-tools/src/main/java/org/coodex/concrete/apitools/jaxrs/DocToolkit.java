@@ -53,6 +53,14 @@ public abstract class DocToolkit {
         return canonicalName(name, "\\/");
     }
 
+    public String getPojoName(String name){
+        return name.substring(name.lastIndexOf('.') + 1);
+    }
+
+    public String getPojoPackage(String name){
+        return name.substring(0, name.lastIndexOf('.'));
+    }
+
     public String canonicalName(String name, String delim) {
         StringBuilder builder = new StringBuilder();
         StringTokenizer stringTokenizer = new StringTokenizer(name, delim);

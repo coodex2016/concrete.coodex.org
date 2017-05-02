@@ -8,5 +8,5 @@
 </#list>
 * [B. 错误号信息](errorInfo.md)
 * C. POJO
-<#list tool.pojos?sort as pojo>  * [${pojo}](pojos/${pojo}.md) 
+<#list tool.pojos?sort as pojo>  * [${tool.getPojoName(pojo)}](pojos/${pojo}.md) 
 </#list>
