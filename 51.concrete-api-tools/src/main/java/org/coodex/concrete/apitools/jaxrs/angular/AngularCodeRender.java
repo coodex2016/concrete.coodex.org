@@ -121,8 +121,11 @@ public class AngularCodeRender extends AbstractRender {
     }
 
     private boolean noDep(TSClass tsClass, Map<Class, TSClass> cache) {
+        if (tsClass instanceof TSPojo) {
+            return cache.get(((TSPojo) tsClass).getSuperType()) == null;
+        }
         for (Class clz : tsClass.getImports()) {
-            if (cache.get(clz) != null && !cache.get(clz).equals(tsClass)) return false;
+            if (cache.get(clz) != null) return false;
         }
         return true;
     }

@@ -26,10 +26,12 @@ public class TSPojo extends TSClass {
 
     public TSPojo(Class c) {
         super(CLASS_TYPE_POJO, c);
+        this.superType = c.getSuperclass();
     }
 
     private List<TSField> fields = new ArrayList<TSField>();
     private String superClass;
+    private Class superType;
 
     public List<TSField> getFields() {
         return fields;
@@ -46,4 +48,9 @@ public class TSPojo extends TSClass {
     public void setSuperClass(String superClass) {
         this.superClass = superClass;
     }
+
+    public Class getSuperType() {
+        return superType;
+    }
+
 }
