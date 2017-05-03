@@ -21,10 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -350,16 +347,18 @@ public class Profile {
         if (s == null)
             return v;
         StringTokenizer st = new StringTokenizer(s, delim, false);
-        int count = 0;
+        List<String> list = new ArrayList<String>();
+//        int count = 0;
         while (st.hasMoreElements()) {
-            st.nextElement();
-            count++;
+            list.add(st.nextToken().trim());
+//            st.nextElement();
+//            count++;
         }
-        st = new StringTokenizer(s, delim, false);
-        String[] result = new String[count];
-        for (int i = 0; i < count; i++)
-            result[i] = (String) st.nextElement();
-        return result;
+//        st = new StringTokenizer(s, delim, false);
+//        String[] result = new String[count];
+//        for (int i = 0; i < count; i++)
+//            result[i] = (String) st.nextElement();
+        return list.toArray(new String[0]);
     }
 
     public void setString(String key, String value) {
