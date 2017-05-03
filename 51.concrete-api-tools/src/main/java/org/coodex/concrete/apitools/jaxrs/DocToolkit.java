@@ -97,8 +97,15 @@ public abstract class DocToolkit {
         } else if (t instanceof TypeVariable) {
             if (contextClass != null) {
                 return formatTypeStr(TypeHelper.findActualClassFrom((TypeVariable) t, contextClass));
-            } else
-                return ((TypeVariable) t).getName();
+            } else {
+                TypeVariable typeVariable = (TypeVariable) t;
+                StringBuilder builder = new StringBuilder();
+                builder.append(typeVariable.getName());
+                if(!Object.class.equals(typeVariable.getBounds()[0])){
+                    builder.append(" extends ").append(formatTypeStr(typeVariable.getBounds()[0]));
+                }
+                return builder.toString();
+            }
         } else if (t instanceof GenericArrayType) {
 
             return formatTypeStr(((GenericArrayType) t).getGenericComponentType(), contextClass) + "[]";
