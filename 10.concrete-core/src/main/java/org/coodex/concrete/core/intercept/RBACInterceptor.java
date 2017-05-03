@@ -19,6 +19,7 @@ package org.coodex.concrete.core.intercept;
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.AccessAllow;
 import org.coodex.concrete.api.Domain;
+import org.coodex.concrete.api.Safely;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.util.Common;
@@ -36,6 +37,10 @@ public class RBACInterceptor extends AbstractInterceptor {
         return InterceptOrders.RBAC;
     }
 
+    @Override
+    public boolean accept(RuntimeContext context) {
+        return context.getAnnotation(AccessAllow.class) != null;
+    }
 
     private Token token = TokenWrapper.getInstance();
 
@@ -71,7 +76,7 @@ public class RBACInterceptor extends AbstractInterceptor {
                 }
             }
 
-            rbac(acl, domain);
+            rbac(acl, domain, context.getAnnotation(Safely.class) != null);
         }
     }
 
@@ -81,15 +86,17 @@ public class RBACInterceptor extends AbstractInterceptor {
      * @param acl
      */
     @SuppressWarnings("unchecked")
-    public void rbac(String[] acl, String domain) {
+    public void rbac(String[] acl, String domain, boolean safely) {
         if (acl != null) {//需要判定权限
             Account currentAccount = getCurrentAccount();//token.currentAccount();
             //用户未登录
             Assert.isNull(currentAccount, ErrorCodes.NONE_ACCOUNT, token);
             //用户已失效
             Assert.not(currentAccount.isValid(), ErrorCodes.ACCOUNT_INVALIDATE);
-            //用户不可信
-            Assert.not(token.isAccountCredible(), ErrorCodes.UNTRUSTED_ACCOUNT);
+            if (safely) {
+                //用户不可信
+                Assert.not(token.isAccountCredible(), ErrorCodes.UNTRUSTED_ACCOUNT);
+            }
 
             //从用户角色中过滤出匹配domain的角色
             Set<String> accountDomainRoles = getAccountDomainRoles(domain, currentAccount);
