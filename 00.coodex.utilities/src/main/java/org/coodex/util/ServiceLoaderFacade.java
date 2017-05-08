@@ -82,8 +82,33 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
     }
 
     @Override
-    public T getInstance(Class<? extends T> providerClass) {
-        return getInstance(providerClass.getCanonicalName());
+    public <P extends T> P getInstance(Class<P> providerClass) {
+//        return (P) getInstance(providerClass.getCanonicalName());
+        Map<String, P> copy = new HashMap<String, P>();
+        for (String key : instances.keySet()) {
+            T t = instances.get(key);
+            if (t != null && providerClass.isAssignableFrom(t.getClass())) {
+                copy.put(key, (P) t);
+            }
+        }
+        switch (copy.size()) {
+            case 0:
+                throw null;
+            case 1:
+                return copy.values().iterator().next();
+        }
+        return conflict(providerClass, copy);
+    }
+
+    protected <P extends T> P conflict(Class<P> providerClass, Map<String, P> map) {
+        StringBuffer buffer = new StringBuffer(getInterfaceClass().getName());
+        buffer.append("[providerClass: ").append(providerClass.getName()).append("]");
+        buffer.append(" has ").append(map.size()).append(" services:[");
+        for (T service : map.values()) {
+            buffer.append("\n\t").append(service.getClass().getName());
+        }
+        buffer.append("]");
+        throw new RuntimeException(buffer.toString());
     }
 
     @Override

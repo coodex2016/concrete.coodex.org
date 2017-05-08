@@ -41,7 +41,7 @@ public abstract class AbstractInvokerFactory<T extends Invoker> implements Invok
     private final static ServiceLoader<SSLContextFactory> SSL_CONTEXT_FACTORY
             = new ConcreteServiceLoader<SSLContextFactory>() {
         @Override
-        public SSLContextFactory getDefaultProvider() {
+        public SSLContextFactory getConcreteDefaultProvider() {
             return DEFAULT_CONTEXT_FACTORY;
         }
     };

@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.coodex.concrete.common.ConcreteContext.LOGGING;
+
 /**
  * Created by davidoff shen on 2016-11-28.
  */
@@ -102,6 +104,7 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
     @Override
     public Book get(String author, long price) {
         log.debug("author: {}, price: {}", author, price);
+        LOGGING.get().put("logTest", "ok");
         return books.get(0);
     }
 

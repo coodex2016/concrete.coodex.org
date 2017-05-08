@@ -43,12 +43,21 @@ public class DigestHelper {
      * @since 1.1.0[2011-9-15]
      */
     public static String digest(byte[] buf, String algorithm) {
-        MessageDigest md = null;
+//        MessageDigest md = null;
+//        try {
+//            md = MessageDigest.getInstance(algorithm);
+//        } catch (NoSuchAlgorithmException e) {
+//        }
+//        return Common.byte2hex(md.digest(buf));
+        return Common.byte2hex(digestBuff(buf, algorithm));
+    }
+
+    public static byte[] digestBuff(byte[] buf, String algorithm) {
         try {
-            md = MessageDigest.getInstance(algorithm);
+            return MessageDigest.getInstance(algorithm).digest(buf);
         } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
-        return Common.byte2hex(md.digest(buf));
     }
 
     public static String sha1(byte[] content) {
@@ -65,7 +74,7 @@ public class DigestHelper {
     }
 
     public static byte[] hmac(byte[] content, byte[] key, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
-        SecretKey secretKey = new SecretKeySpec(key, algorithm);
+        SecretKey secretKey = new SecretKeySpec(key, "RAW");
         Mac mac = Mac.getInstance(algorithm);
         mac.init(secretKey);
         return mac.doFinal(content);
@@ -115,10 +124,28 @@ public class DigestHelper {
 
     }
 
-//    public static void main(String [] args){
-//        System.out.println(sha1("1".getBytes()));
-//        System.out.println(sha256("1".getBytes()));
-//        System.out.println(md5("1".getBytes()));
+
+//    private static String hmacTest1(byte[] content, byte[] key, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
+//        SecretKey secretKey = new SecretKeySpec(key, "RAW");
+//        Mac mac = Mac.getInstance(algorithm);
+//        mac.init(secretKey);
+//        return Common.byte2hex(mac.doFinal(content));
+//    }
+//
+//
+//    private static String hmacTest2(byte[] content, byte[] key, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
+//        SecretKey secretKey = new SecretKeySpec(key, algorithm);
+//        Mac mac = Mac.getInstance(algorithm);
+//        mac.init(secretKey);
+//        return Common.byte2hex(mac.doFinal(content));
+//    }
+//
+//    public static void main(String [] args) throws InvalidKeyException, NoSuchAlgorithmException {
+////        System.out.println(sha1("1".getBytes()));
+////        System.out.println(sha256("1".getBytes()));
+////        System.out.println(md5("1".getBytes()));
+////        System.out.println(hmacTest1("1".getBytes(), "abc".getBytes(), "HmacSHA1"));
+////        System.out.println(hmacTest2("1".getBytes(), "abc".getBytes(), "HmacSHA1"));
 //    }
 
 }

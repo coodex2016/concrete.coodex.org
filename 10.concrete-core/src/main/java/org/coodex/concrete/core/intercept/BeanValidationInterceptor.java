@@ -48,7 +48,7 @@ public class BeanValidationInterceptor extends AbstractInterceptor {
 
     private final static ServiceLoader<ViolationsFormatter> VIOLATIONS_FORMATTER_SPI = new ConcreteServiceLoader<ViolationsFormatter>() {
         @Override
-        public ViolationsFormatter getDefaultProvider() {
+        protected ViolationsFormatter getConcreteDefaultProvider() {
             return DEFAULT_FORMMATER;
         }
     };

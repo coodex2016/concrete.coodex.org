@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package org.coodex.util;
+package org.coodex.concrete.spring.aspects;
 
-import java.util.Collection;
+import org.aspectj.lang.annotation.Aspect;
+import org.coodex.concrete.core.intercept.OperationLogInterceptor;
 
 /**
- * Created by davidoff shen on 2017-04-26.
+ * Created by davidoff shen on 2017-05-08.
  */
-public interface ServiceLoader<T> {
-    Collection<T> getAllInstances();
-
-    <P extends T> P getInstance(Class<P> providerClass);
-
-    T getInstance(String className);
-
-    @SuppressWarnings("unchecked")
-    T getInstance();
+@Aspect
+public class OperationLogAspect extends AbstractConcreteAspect<OperationLogInterceptor> {
 }

@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.formatters;
 
+import org.coodex.concrete.common.LogFormatter;
 import org.coodex.concrete.common.MessageFormatter;
 
 import java.util.HashMap;
@@ -27,7 +28,7 @@ import java.util.Map;
  * <p>
  * Created by davidoff shen on 2016-12-02.
  */
-public class FreemarkerMessageFormatter extends AbstractFreemarkerFormatter implements MessageFormatter {
+public class FreemarkerMessageFormatter extends AbstractFreemarkerFormatter implements MessageFormatter, LogFormatter {
     /**
      * @param pattern free marker引擎模版，o+index就是objects里的索引, 从1开始
      * @param objects
@@ -41,7 +42,16 @@ public class FreemarkerMessageFormatter extends AbstractFreemarkerFormatter impl
             values.put("o" + i, objects[i - 1]);
         }
         try {
-            return super.format(pattern, values);
+            return super.formatMsg(pattern, values);
+        } catch (Throwable th) {
+            throw new RuntimeException(th.getLocalizedMessage(), th);
+        }
+    }
+
+    @Override
+    public String format(String pattern, Map<String, Object> values) {
+        try {
+            return super.formatMsg(pattern, values);
         } catch (Throwable th) {
             throw new RuntimeException(th.getLocalizedMessage(), th);
         }

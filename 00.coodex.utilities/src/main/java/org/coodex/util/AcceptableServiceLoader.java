@@ -56,7 +56,7 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
     }
 
     @Override
-    public T getInstance(Class<? extends T> providerClass) {
+    public <P extends T> P getInstance(Class<P> providerClass) {
         return serviceLoaderFacade.getInstance(providerClass);
     }
 

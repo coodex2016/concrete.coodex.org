@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package org.coodex.util;
+package org.coodex.concrete.api;
 
-import java.util.Collection;
+import org.coodex.concrete.common.OperationLogger;
+
+import java.lang.annotation.*;
 
 /**
- * Created by davidoff shen on 2017-04-26.
+ * Created by davidoff shen on 2017-05-08.
  */
-public interface ServiceLoader<T> {
-    Collection<T> getAllInstances();
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Overlay
+public @interface LogAtomic {
+    String subClass() default "";
 
-    <P extends T> P getInstance(Class<P> providerClass);
-
-    T getInstance(String className);
-
-    @SuppressWarnings("unchecked")
-    T getInstance();
+    Class<? extends OperationLogger> loggerClass() default OperationLogger.class;
 }

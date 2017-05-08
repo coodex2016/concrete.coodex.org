@@ -68,7 +68,7 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
     private static final ServiceLoader<JaxRSClientConfigBuilder> BUILDER_SPI_FACADE =
             new ConcreteServiceLoader<JaxRSClientConfigBuilder>() {
         @Override
-        public JaxRSClientConfigBuilder getDefaultProvider() {
+        public JaxRSClientConfigBuilder getConcreteDefaultProvider() {
             return new JaxRSClientConfigBuilder() {
                 @Override
                 public Configuration buildConfig() {

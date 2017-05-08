@@ -46,6 +46,11 @@ public class InterceptOrders {
     public static final int BEAN_VALIDATION = 1000;
 
     /**
+     * 业务日志
+     */
+    public static final int OPERATION_LOG = 2000;
+
+    /**
      * RBAC切片
      */
     public static final int RBAC = 9000;

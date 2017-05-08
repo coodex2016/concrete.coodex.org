@@ -31,7 +31,7 @@ public class RSAPen extends AbstractIronPen {
 
     private static final ServiceLoader<RSAKeyStore> RSA_KEY_STORE_PROVIDERS = new ConcreteServiceLoader<RSAKeyStore>() {
         @Override
-        public RSAKeyStore getDefaultProvider() {
+        public RSAKeyStore getConcreteDefaultProvider() {
             return new RSAKeyStoreDefaultImpl();
         }
     };

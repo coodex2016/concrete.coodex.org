@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package org.coodex.util;
+package org.coodex.concrete.common;
 
-import java.util.Collection;
+import java.util.Map;
 
 /**
- * Created by davidoff shen on 2017-04-26.
+ * Created by davidoff shen on 2017-05-08.
  */
-public interface ServiceLoader<T> {
-    Collection<T> getAllInstances();
+public interface LogFormatter {
 
-    <P extends T> P getInstance(Class<P> providerClass);
-
-    T getInstance(String className);
-
-    @SuppressWarnings("unchecked")
-    T getInstance();
+    String format(String pattern, Map<String, Object> values);
 }

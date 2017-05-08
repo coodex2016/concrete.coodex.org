@@ -17,10 +17,7 @@
 package org.coodex.concrete.common;
 
 import org.coodex.concrete.api.ErrorMsg;
-import org.coodex.concrete.core.JavaTextFormatMessageFormatter;
-import org.coodex.concrete.core.ResourceBundlesMessagePatternLoader;
 import org.coodex.util.Common;
-import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,38 +27,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+
 /**
  * Created by davidoff shen on 2016-09-04.
  */
-public class ErrorMessageFacade {
+public class ErrorMessageFacade extends AbstractMessageFacade {
 
     /*
      * 没有MessageFormatter Provider的时候，以此Formatter输出，确保formatter不为空
      * 2016-11-01，修改默认使用JavaTextFormatMessageFormatter
      */
-    private final static MessageFormatter DEFAULT_MESSAGE_FORMATTER = new JavaTextFormatMessageFormatter();
-
     private final static Logger log = LoggerFactory.getLogger(ErrorMessageFacade.class);
 
-    private final static MessagePatternLoader DEFAULT_PATTERN_LOADER = new ResourceBundlesMessagePatternLoader();
 
-
-    private static MessageFormatter getFormatter(Class<? extends MessageFormatter> formatterClass) {
-
-        MessageFormatter formatter = formatterClass == null || formatterClass == MessageFormatter.class ?
-                MESSAGE_FORMATTER_SPI_FACADE.getInstance() :
-                MESSAGE_FORMATTER_SPI_FACADE.getInstance(formatterClass);
-
-        return formatter == null ? DEFAULT_MESSAGE_FORMATTER : formatter;
-    }
-
-    private static MessagePatternLoader getPatternLoader(Class<? extends MessagePatternLoader> loaderClass) {
-        MessagePatternLoader patternLoader = loaderClass == null || loaderClass == MessagePatternLoader.class ?
-                MESSAGE_PATTERN_LOADER_SPI_FACADE.getInstance() :
-                MESSAGE_PATTERN_LOADER_SPI_FACADE.getInstance(loaderClass);
-
-        return patternLoader == null ? DEFAULT_PATTERN_LOADER : patternLoader;
-    }
 
 
     private final static Map<Integer, Field> errorCodes = new HashMap<Integer, Field>();
@@ -143,18 +121,6 @@ public class ErrorMessageFacade {
     private ErrorMessageFacade() {
     }
 
-    private final static ServiceLoader<MessageFormatter> MESSAGE_FORMATTER_SPI_FACADE = new ConcreteServiceLoader<MessageFormatter>() {
-        @Override
-        public MessageFormatter getDefaultProvider() {
-            return DEFAULT_MESSAGE_FORMATTER;
-        }
-    };
 
-    private final static ServiceLoader<MessagePatternLoader> MESSAGE_PATTERN_LOADER_SPI_FACADE = new ConcreteServiceLoader<MessagePatternLoader>() {
-        @Override
-        public MessagePatternLoader getDefaultProvider() {
-            return DEFAULT_PATTERN_LOADER;
-        }
-    };
 
 }

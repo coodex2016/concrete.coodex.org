@@ -33,14 +33,10 @@ import java.util.Map;
 public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
 
 
-//    private static Profile profile = ConcreteToolkit.getProfile();
-
-
     protected ConcreteServiceLoader() {
         super();
     }
 
-    //    private Collection<T> instances;
     private boolean init = false;
 
     @Override
@@ -50,17 +46,25 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
             if (!init) {
                 try {
                     Map<String, T> beans = BeanProviderFacade.getBeanProvider().getBeansOfType(getInterfaceClass());
-                    if (beans != null && beans.size() > 0)
-                        for (T t : beans.values()) {
-                            if (!instances.values().contains(t))
-                                instances.put(t.getClass().getCanonicalName(), t);
+                    if (beans != null && beans.size() > 0) {
+                        for (String key : beans.keySet()) {
+                            T t = beans.get(key);
+                            if (t != null && !instances.values().contains(t)) {
+                                instances.put(key, t);
+                            }
                         }
+                    }
                 } catch (Throwable th) {
                 }
                 init = true;
             }
         }
+    }
 
+    @Override
+    protected <P extends T> P conflict(Class<P> providerClass, Map<String, P> map) {
+        String key = ConcreteHelper.getProfile().getString(providerClass + ".provider");
+        return map.containsKey(key) ? map.get(key) : super.conflict(providerClass, map);
     }
 
     @Override
@@ -69,5 +73,19 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
         return instances.containsKey(key) ? instances.get(key) : super.conflict();
     }
 
+    protected final T getDefaultProviderFromProfile() {
+        String key = ConcreteHelper.getProfile().getString(getInterfaceClass().getCanonicalName() + ".default");
+        return instances.containsKey(key) ? instances.get(key) : null;
+    }
+
+    protected T getConcreteDefaultProvider(){
+        return super.getDefaultProvider();
+    }
+
+    @Override
+    public final T getDefaultProvider() {
+        T instance = getDefaultProviderFromProfile();
+        return instance == null ? getConcreteDefaultProvider() : instance;
+    }
 }
 

@@ -46,7 +46,7 @@ public class AbstractFreemarkerFormatter {
     }
 
 
-    protected final String format(String template, Map<String, Object> values) throws IOException, TemplateException {
+    protected final String formatMsg(String template, Map<String, Object> values) throws IOException, TemplateException {
         Template t = getTemplate(template);
         Writer writer = new StringWriter();
         try {

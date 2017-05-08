@@ -80,7 +80,7 @@ public class SignUtil {
     private static final ServiceLoader<SignatureSerializer> SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE
             = new ConcreteServiceLoader<SignatureSerializer>() {
         @Override
-        public SignatureSerializer getDefaultProvider() {
+        public SignatureSerializer getConcreteDefaultProvider() {
             return DEFAULT_SERIALIZER;
         }
     };

@@ -38,9 +38,12 @@ public class ResourceBundlesMessagePatternLoader implements MessagePatternLoader
                 .getStrList("messagePattern.resourceBundles", ",", new String[]{MESSAGE_PATTERN})) {
 
             Locale locale = LOCALE.get();//.get();
+            if(locale == null)
+                locale = Locale.getDefault();
+
             if (Common.isBlank(resource) || Common.isBlank(resource.trim())) continue;
             try {
-                String pattern = ResourceBundle.getBundle(resource, locale == null ? Locale.getDefault() : locale).getString(key);
+                String pattern = ResourceBundle.getBundle(resource, locale).getString(key);
                 if (pattern != null) return pattern;
             } catch (Throwable t) {
             }

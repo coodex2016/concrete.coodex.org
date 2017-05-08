@@ -19,7 +19,9 @@ package org.coodex.concrete.common;
 import org.coodex.closure.ClosureContext;
 import org.coodex.closure.StackClosureContext;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by davidoff shen on 2017-04-20.
@@ -39,6 +41,8 @@ public final class ConcreteContext {
 
     public static final ClosureContext<Token> TOKEN = new StackClosureContext<Token>();
 
+    public static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<Map<String, Object>>();
+
     public static final <T> ConcreteClosure run(final ClosureContext<T> closureContext, final T var, final ConcreteClosure runnable) {
         return new ConcreteClosure() {
             @Override
@@ -53,7 +57,8 @@ public final class ConcreteContext {
                 run(SIDE, SIDE_SERVER,
                         run(SUBJOIN, subjoin,
                                 run(LOCALE, getLocale(),
-                                        run(TOKEN, token, runnable)))).run();
+                                        run(LOGGING, new HashMap<String, Object>(),
+                                                run(TOKEN, token, runnable))))).run();
     }
 
     private static Locale getLocale() {

@@ -39,7 +39,7 @@ public final class Client {
         private ClientInstanceFactory defaultFactory = new JavaProxyClientInstanceFactory();
 
         @Override
-        public ClientInstanceFactory getDefaultProvider() {
+        public ClientInstanceFactory getConcreteDefaultProvider() {
             return defaultFactory;
         }
     };

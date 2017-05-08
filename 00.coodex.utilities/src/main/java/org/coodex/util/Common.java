@@ -109,7 +109,7 @@ public class Common {
     }
 
     public static int random(int min, int max) {
-        if(max == Integer.MAX_VALUE)
+        if (max == Integer.MAX_VALUE)
             max = max - 1;
         return min + (int) (Math.random() * (max - min + 1));
     }
@@ -295,7 +295,7 @@ public class Common {
         return -1;
     }
 
-    public static String concat(List<String> list,String split) {
+    public static String concat(List<String> list, String split) {
         if (list == null) return null;
         switch (list.size()) {
             case 0:
@@ -310,6 +310,45 @@ public class Common {
                 }
                 return builder.toString();
         }
+    }
+
+    public static int toInt(String str, int value) {
+        try {
+            return Integer.valueOf(str);
+        } catch (Throwable th) {
+            return value;
+        }
+    }
+
+    public static long toLong(String str, long value) {
+        try {
+            return Long.valueOf(str);
+        } catch (Throwable th) {
+            return value;
+        }
+    }
+
+    public static boolean toBool(String str, boolean v) {
+        String s = nullToStr(str);
+        if (s.equals("1") || s.equalsIgnoreCase("T")
+                || s.equalsIgnoreCase("TRUE"))
+            return true;
+        else if (s.equals("0") || s.equalsIgnoreCase("F")
+                || s.equalsIgnoreCase("FALSE"))
+            return false;
+        else
+            return v;
+    }
+
+    public static String[] toArray(String str, String delim, String[] v) {
+        if (str == null)
+            return v;
+        StringTokenizer st = new StringTokenizer(str, delim, false);
+        List<String> list = new ArrayList<String>();
+        while (st.hasMoreElements()) {
+            list.add(st.nextToken().trim());
+        }
+        return list.toArray(new String[0]);
     }
 
 }

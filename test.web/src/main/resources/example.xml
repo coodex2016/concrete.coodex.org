@@ -30,6 +30,7 @@
 
     <bean class="org.coodex.concrete.spring.aspects.ServiceTimingAspect"></bean>
     <bean class="org.coodex.practice.jaxrs.impl.SignatureAspect"></bean>
+    <bean class="org.coodex.concrete.spring.aspects.OperationLogAspect"></bean>
     <!--<bean class="RBAC_Aspect"></bean>-->
 
     <bean class="org.coodex.concrete.attachments.repo.FastDFSRepository"></bean>

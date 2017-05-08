@@ -49,7 +49,7 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
     private static final ServiceLoader<JSONSerializer> JSON_SERIALIZER_FACTORY = new ConcreteServiceLoader<JSONSerializer>() {
 
         @Override
-        public JSONSerializer getDefaultProvider() {
+        public JSONSerializer getConcreteDefaultProvider() {
             return new FastJsonSerializer();
         }
     };

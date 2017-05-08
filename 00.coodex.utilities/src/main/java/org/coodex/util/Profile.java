@@ -21,9 +21,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import static org.coodex.util.Common.*;
 
 /**
  * 自财运通项目中移植过来utilities中<br>
@@ -260,15 +264,16 @@ public class Profile {
 
     public boolean getBool(String key, boolean v) {
         check();
-        String s = Common.nullToStr(p.getProperty(key));
-        if (s.equals("1") || s.equalsIgnoreCase("T")
-                || s.equalsIgnoreCase("TRUE"))
-            return true;
-        else if (s.equals("0") || s.equalsIgnoreCase("F")
-                || s.equalsIgnoreCase("FALSE"))
-            return false;
-        else
-            return v;
+        return toBool(p.getProperty(key), v);
+//        String s = Common.nullToStr(p.getProperty(key));
+//        if (s.equals("1") || s.equalsIgnoreCase("T")
+//                || s.equalsIgnoreCase("TRUE"))
+//            return true;
+//        else if (s.equals("0") || s.equalsIgnoreCase("F")
+//                || s.equalsIgnoreCase("FALSE"))
+//            return false;
+//        else
+//            return v;
     }
 
     public String getString(String key, String v) {
@@ -312,12 +317,13 @@ public class Profile {
     }
 
     public int getInt(String key, int v) {
-        String s = getString(key);
-        try {
-            return Integer.valueOf(s);
-        } catch (Exception e) {
-            return v;
-        }
+//        String s = getString(key);
+//        try {
+//            return Integer.valueOf(s);
+//        } catch (Exception e) {
+//            return v;
+//        }
+        return toInt(getString(key), v);
     }
 
     public long getLong(String key) {
@@ -325,12 +331,13 @@ public class Profile {
     }
 
     public long getLong(String key, long v) {
-        String s = getString(key);
-        try {
-            return Long.valueOf(s);
-        } catch (Exception e) {
-            return v;
-        }
+        return toLong(getString(key), v);
+//        String s = getString(key);
+//        try {
+//            return Long.valueOf(s);
+//        } catch (Exception e) {
+//            return v;
+//        }
     }
 
     public String[] getStrList(String key) {
@@ -343,22 +350,23 @@ public class Profile {
 
     public String[] getStrList(String key, String delim, String[] v) {
         check();
-        String s = p.getProperty(key);
-        if (s == null)
-            return v;
-        StringTokenizer st = new StringTokenizer(s, delim, false);
-        List<String> list = new ArrayList<String>();
-//        int count = 0;
-        while (st.hasMoreElements()) {
-            list.add(st.nextToken().trim());
-//            st.nextElement();
-//            count++;
-        }
-//        st = new StringTokenizer(s, delim, false);
-//        String[] result = new String[count];
-//        for (int i = 0; i < count; i++)
-//            result[i] = (String) st.nextElement();
-        return list.toArray(new String[0]);
+        return toArray(getString(key), delim, v);
+//        String s = p.getProperty(key);
+//        if (s == null)
+//            return v;
+//        StringTokenizer st = new StringTokenizer(s, delim, false);
+//        List<String> list = new ArrayList<String>();
+////        int count = 0;
+//        while (st.hasMoreElements()) {
+//            list.add(st.nextToken().trim());
+////            st.nextElement();
+////            count++;
+//        }
+////        st = new StringTokenizer(s, delim, false);
+////        String[] result = new String[count];
+////        for (int i = 0; i < count; i++)
+////            result[i] = (String) st.nextElement();
+//        return list.toArray(new String[0]);
     }
 
     public void setString(String key, String value) {

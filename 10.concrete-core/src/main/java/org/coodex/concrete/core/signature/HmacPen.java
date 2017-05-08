@@ -35,7 +35,7 @@ public class HmacPen extends AbstractIronPen {
 
     private static final ServiceLoader<HmacKeyStore> HMAC_KEY_STORE_PROVIDERS = new ConcreteServiceLoader<HmacKeyStore>() {
         @Override
-        public HmacKeyStore getDefaultProvider() {
+        public HmacKeyStore getConcreteDefaultProvider() {
             return new HmacKeyStore() {
                 /**
                  * 优先级
