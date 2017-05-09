@@ -17,6 +17,8 @@
 package org.coodex.concrete.common;
 
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.util.Common;
+import org.coodex.util.RecursivelyProfile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,28 +45,41 @@ public abstract class ConcreteCache<K, V> {
             ConcreteHelper.getProfile().getInt("cache.thread.pool.size", 1)
     );
 
+    private final static RecursivelyProfile RECURSIVELY_PROFILE = new RecursivelyProfile(ConcreteHelper.getProfile());
 
     private Map<K, Cached<V>> cache = new HashMap<K, Cached<V>>();
 
-    private int time;
+    //    private int time;
     private TimeUnit unit;
 
     public ConcreteCache() {
-        this(ConcreteHelper.getProfile().getInt("cache.object.life", 10), TimeUnit.MINUTES);
+        this(
+//                ConcreteHelper.getProfile().getInt("cache.object.life", 10),
+                TimeUnit.MINUTES);
+    }
+
+    protected String getRule(){
+        return null;
+    }
+
+    protected final long getCachingTime() {
+        return Common.toLong(RECURSIVELY_PROFILE.getString(getRule(), "cache.object.life"), 10);
     }
 
     /**
      * time个unit单位后移除缓存
      *
-     * @param time
      * @param unit
      */
-    public ConcreteCache(int time, TimeUnit unit) {
-        this.time = time;
+    public ConcreteCache(/*int time,*/ TimeUnit unit) {
+//        this.time = time;
         this.unit = unit;
     }
 
     public V get(final K key) {
+        long time = getCachingTime();
+        if (time <= 0) return load(key);
+
         synchronized (cache) {
             if (!cache.containsKey(key)) {
                 cache.put(key, new Cached<V>(load(key),
