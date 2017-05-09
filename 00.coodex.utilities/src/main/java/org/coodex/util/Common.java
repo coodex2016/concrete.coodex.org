@@ -351,4 +351,30 @@ public class Common {
         return list.toArray(new String[0]);
     }
 
+    private static boolean inArray(char ch, char [] chars){
+        for(char c: chars){
+            if(c == ch ) return true;
+        }
+        return false;
+    }
+
+    public static String trim(String str, char ... trimChars){
+        if (Common.isBlank(str) || trimChars == null || trimChars.length == 0) return str;
+        char[] chars = str.toCharArray();
+        int start, end = chars.length;
+        for (start = 0; start < end; start++) {
+            if (!inArray(chars[start], trimChars)) break;
+        }
+        for (; end > start; end--) {
+            if (!inArray(chars[end - 1], trimChars)) break;
+        }
+        return new String(chars, start, end - start);
+    }
+
+    public static String trim(String str, String toTrim) {
+        if (Common.isBlank(str) || Common.isBlank(toTrim)) return str;
+        return trim(str, toTrim.toCharArray());
+    }
+
+
 }
