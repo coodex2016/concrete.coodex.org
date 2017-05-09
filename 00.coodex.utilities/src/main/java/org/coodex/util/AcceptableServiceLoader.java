@@ -19,6 +19,8 @@ package org.coodex.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 
 /**
@@ -34,16 +36,31 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
         this.serviceLoaderFacade = serviceLoaderFacade;
     }
 
+    private boolean accept(T instance, Param_Type param) {
+        Class tClass = instance.getClass();
+        Class paramClass = param.getClass();
+        Type t = TypeHelper.findActualClassFrom(
+                AcceptableService.class.getTypeParameters()[0],
+                tClass);
+        Class required = (t instanceof ParameterizedType) ? (Class) ((ParameterizedType) t).getRawType() : (Class) t;
+
+        if (required.isAssignableFrom(paramClass)) {
+            return instance.accept(param);
+        } else {
+            return false;
+        }
+    }
+
     public T getServiceInstance(Param_Type param) {
         for (T instance : getAllInstances()) {
-            if (instance.accept(param))
+            if (accept(instance, param))
                 return instance;
         }
         try {
             T instance = serviceLoaderFacade.getDefaultProvider();
-            if (instance.accept(param))
+            if (accept(instance, param))
                 return instance;
-        }catch (Throwable th){
+        } catch (Throwable th) {
         }
         log.warn("no service instance accept this: {}", param);
 
