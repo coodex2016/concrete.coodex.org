@@ -17,6 +17,7 @@
 package org.coodex.practice.jaxrs.impl;
 
 import com.alibaba.fastjson.JSON;
+import org.coodex.concrete.api.LogAtomic;
 import org.coodex.concrete.attachments.client.ClientServiceImpl;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorCodes;
@@ -35,12 +36,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.coodex.concrete.common.ConcreteContext.LOGGING;
+import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
+
 
 /**
  * Created by davidoff shen on 2016-11-28.
  */
 @Named
+//@OperationLog(category = "overlay")
 public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
 
     private final static Logger log = LoggerFactory.getLogger(ServiceExampleImpl.class);
@@ -102,9 +105,10 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
     }
 
     @Override
+    @LogAtomic(subClass = "111111")
     public Book get(String author, long price) {
         log.debug("author: {}, price: {}", author, price);
-        LOGGING.get().put("logTest", "ok");
+        putLoggingData("logTest", "ok");
         return books.get(0);
     }
 

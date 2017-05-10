@@ -30,14 +30,9 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Overlay
+@Overlay(definition = false)
 public @interface OperationLog {
 
-    /**
-     * 分类
-     *
-     * @return
-     */
     String category() default "";
 
     Class<? extends LogFormatter> formatterClass() default LogFormatter.class;

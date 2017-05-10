@@ -25,4 +25,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Overlay {
+
+    boolean overlay() default true;
+
+    boolean definition() default true;
 }

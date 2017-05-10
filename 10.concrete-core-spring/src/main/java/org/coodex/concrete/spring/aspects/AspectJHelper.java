@@ -34,14 +34,25 @@ public class AspectJHelper {
 
     private static class ProceedJoinPointToMethodInvocation implements MethodInvocation {
         private ProceedingJoinPoint joinPoint;
+        private Method method = null;
 
         ProceedJoinPointToMethodInvocation(ProceedingJoinPoint joinPoint) {
             this.joinPoint = joinPoint;
         }
 
         @Override
-        public Method getMethod() {
-            return AspectJHelper.getMethod(joinPoint.getSignature());
+        public synchronized Method getMethod() {
+            if(method == null) {
+                method = AspectJHelper.getMethod(joinPoint.getSignature());
+                int paramCount = method.getParameterTypes().length;
+                for(Method m: getThis().getClass().getMethods()){
+                    if(m.getName().equals(method.getName()) && m.getParameterTypes().length == paramCount){
+                        method = m;
+                        break;
+                    }
+                }
+            }
+            return method;
         }
 
         @Override
@@ -56,8 +67,7 @@ public class AspectJHelper {
 
         @Override
         public Object getThis() {
-            // 这里是否正确?
-            return joinPoint.getThis();
+            return joinPoint.getTarget();
         }
 
         @Override

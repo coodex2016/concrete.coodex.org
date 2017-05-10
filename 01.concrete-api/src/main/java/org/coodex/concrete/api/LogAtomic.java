@@ -26,9 +26,21 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Overlay
+@Overlay(definition = false)
 public @interface LogAtomic {
+
+    /**
+     * ALWAYS: 一直记录
+     * DATA: 当有数据时进行记录
+     * NO: 不记录
+     */
+    enum LoggingType {
+        ALWAYS, DATA, NO
+    }
+
     String subClass() default "";
+
+    LoggingType loggingType() default LoggingType.DATA;
 
     Class<? extends OperationLogger> loggerClass() default OperationLogger.class;
 }

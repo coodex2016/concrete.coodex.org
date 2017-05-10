@@ -41,7 +41,21 @@ public final class ConcreteContext {
 
     public static final ClosureContext<Token> TOKEN = new StackClosureContext<Token>();
 
-    public static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<Map<String, Object>>();
+    private static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<Map<String, Object>>();
+
+    /**
+     * 放入记录日志所需的数据
+     *
+     * @param key
+     * @param value
+     */
+    public static final void putLoggingData(String key, Object value) {
+        LOGGING.get().put(key, value);
+    }
+
+    public static final Map<String, Object> getLoggingData(){
+        return LOGGING.get();
+    }
 
     public static final <T> ConcreteClosure run(final ClosureContext<T> closureContext, final T var, final ConcreteClosure runnable) {
         return new ConcreteClosure() {

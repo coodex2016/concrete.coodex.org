@@ -24,6 +24,14 @@ public class Identifiable<ID, POJO> {
     private ID id;
     private POJO pojo;
 
+    public Identifiable() {
+    }
+
+    public Identifiable(ID id, POJO pojo) {
+        this.id = id;
+        this.pojo = pojo;
+    }
+
     public ID getId() {
         return id;
     }

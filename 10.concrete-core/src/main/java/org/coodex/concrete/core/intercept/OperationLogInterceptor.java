@@ -30,7 +30,7 @@ import java.io.Serializable;
 
 import static org.coodex.concrete.common.AbstractMessageFacade.getLogFormatter;
 import static org.coodex.concrete.common.AbstractMessageFacade.getPatternLoader;
-import static org.coodex.concrete.common.ConcreteContext.LOGGING;
+import static org.coodex.concrete.common.ConcreteContext.getLoggingData;
 
 /**
  * Created by davidoff shen on 2017-05-08.
@@ -76,9 +76,11 @@ public class OperationLogInterceptor extends AbstractInterceptor {
             }
             String category = null;
             String subClass = null;
+            LogAtomic.LoggingType loggingType = LogAtomic.LoggingType.DATA;
             Class<? extends LogFormatter> formatterClass = LogFormatter.class;
             Class<? extends MessagePatternLoader> patternLoaderClass = MessagePatternLoader.class;
             Class<? extends OperationLogger> loggerClass = OperationLogger.class;
+
 
             OperationLog operationLog = context.getAnnotation(OperationLog.class);
             if (operationLog != null) {
@@ -94,12 +96,25 @@ public class OperationLogInterceptor extends AbstractInterceptor {
                     loggerClass = logAtomic.loggerClass();
                 }
                 subClass = logAtomic.subClass();
+                loggingType = logAtomic.loggingType();
             }
 
+            boolean doLog = false;
+            switch (loggingType) {
+                case NO:
+                    break;
+                case DATA:
+                    doLog = getLoggingData().size() > 0;
+                    break;
+                case ALWAYS:
+                    doLog = true;
+            }
 
-            getLogger(loggerClass)
-                    .log(accountId, accountName, category, subClass,
-                            buildLog(category, subClass, formatterClass, patternLoaderClass));
+            if (doLog) {
+                getLogger(loggerClass)
+                        .log(accountId, accountName, category, subClass,
+                                buildLog(category, subClass, formatterClass, patternLoaderClass));
+            }
 
         } catch (Throwable th) {
             log.warn("{}", th.getLocalizedMessage(), th);
@@ -107,6 +122,7 @@ public class OperationLogInterceptor extends AbstractInterceptor {
             return super.after(context, joinPoint, result);
         }
     }
+
 
     private static String buildLog(String category, String subClass, Class<? extends LogFormatter> formatterClass,
                                    Class<? extends MessagePatternLoader> patternLoaderClass) {
@@ -122,7 +138,7 @@ public class OperationLogInterceptor extends AbstractInterceptor {
         }
         return getLogFormatter(formatterClass)
                 .format(getPatternLoader(patternLoaderClass).getMessageTemplate(builder.toString()),
-                        LOGGING.get());
+                        getLoggingData());
     }
 
     private static OperationLogger getLogger(Class<? extends OperationLogger> loggerClass) {

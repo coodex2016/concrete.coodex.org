@@ -20,4 +20,11 @@ package org.coodex.concrete.api.pojo;
  * Created by davidoff shen on 2017-04-28.
  */
 public class StrID<P> extends Identifiable<String, P> {
+
+    public StrID() {
+    }
+
+    public StrID(String s, P p) {
+        super(s, p);
+    }
 }

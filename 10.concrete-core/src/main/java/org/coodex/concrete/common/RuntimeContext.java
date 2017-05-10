@@ -17,7 +17,9 @@
 package org.coodex.concrete.common;
 
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.Overlay;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -36,6 +38,7 @@ public class RuntimeContext extends DefinitionContextImpl {
         runtimeContext.setDeclaringMethod(context.getDeclaringMethod());
         runtimeContext.setDeclaringClass(context.getDeclaringClass());
         runtimeContext.setActualClass((Class<? extends ConcreteService>) clz);
+        // find actual method
         runtimeContext.setActualMethod(method);
         return runtimeContext;
     }
@@ -61,30 +64,24 @@ public class RuntimeContext extends DefinitionContextImpl {
         this.actualMethod = actualMethod;
     }
 
+
     /**
      * 获取运行期定义的Annotaion
      *
-     * @param annotationType
+     * @param annotationClass
      * @param <T>
      * @return
      */
-//    @SuppressWarnings("unchecked")
-//    public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
-//        if (actualMethod == null) return null;
-//
-//        Class clz = actualMethod.getDeclaringClass();
-//        while (clz != null) {
-//            try {
-//                Method method = clz.getMethod(actualMethod.getName(), actualMethod.getParameterTypes());
-//                T annotation = method.getAnnotation(annotationType);
-//                if (annotation != null) return annotation;
-//                clz = method.getDeclaringClass();
-//            } catch (NoSuchMethodException e) {
-//            }
-//            clz = clz.getSuperclass();
-//        }
-//
-//        return getDeclaringMethod() == null ? null : getDeclaringMethod().getAnnotation(annotationType);
-////        return getDeclaringAnnotation(annotationType);
-//    }
+    @Override
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        Overlay overlayAnnotation = annotationClass.getAnnotation(Overlay.class);
+        boolean justDefinition = overlayAnnotation == null ? false : overlayAnnotation.definition();
+        T annotation = justDefinition ? null : getAnnotationFromImpl(annotationClass);
+        return annotation == null ? super.getAnnotation(annotationClass) : annotation;
+    }
+
+    private <T extends Annotation> T getAnnotationFromImpl(Class<T> annotationClass) {
+        T annotation = actualMethod.getAnnotation(annotationClass);
+        return annotation == null ? actualClass.getAnnotation(annotationClass) : annotation;
+    }
 }

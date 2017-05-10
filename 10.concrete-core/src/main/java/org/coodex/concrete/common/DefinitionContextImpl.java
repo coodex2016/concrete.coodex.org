@@ -100,8 +100,9 @@ public class DefinitionContextImpl implements DefinitionContext {
      * @return
      */
     @Override
-    public final <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        boolean overlay = annotationClass.getAnnotation(Overlay.class) != null;
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        Overlay overlayAnnotation = annotationClass.getAnnotation(Overlay.class);
+        boolean overlay = overlayAnnotation != null && overlayAnnotation.overlay();
         T annotation = declaringMethod == null ? null : declaringMethod.getAnnotation(annotationClass);
         if (annotation == null) {
             for (Class<?> c : overlay ?
