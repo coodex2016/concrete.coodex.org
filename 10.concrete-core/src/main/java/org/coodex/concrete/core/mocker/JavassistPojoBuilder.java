@@ -152,7 +152,6 @@ public class JavassistPojoBuilder implements PojoBuilder {
 
     @Override
     public void set(Object instance, PojoProperty property, Object value) {
-        if (property.isReadonly()) return;
         if (instance instanceof JavassistPojo) {
             Class c = classCache.get(((JavassistPojo) instance).__key());
             if (property.getMethod() != null) {

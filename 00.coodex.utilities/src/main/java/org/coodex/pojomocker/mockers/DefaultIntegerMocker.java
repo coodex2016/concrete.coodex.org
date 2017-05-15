@@ -49,6 +49,6 @@ public class DefaultIntegerMocker extends AbstractPrimitiveMocker<Integer, INTEG
             }
         }
 
-        return (int)(Math.random() * (max - min) * (positive ? -1 : 1));
+        return (int)(Math.random() * (max - min) * (positive ? 1 : -1));
     }
 }

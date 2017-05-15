@@ -49,6 +49,6 @@ public class DefaultFloatMocker extends AbstractPrimitiveMocker<Float, FLOAT> {
             }
         }
 
-        return (float)(Math.random() * (max - min) * (positive ? -1 : 1));
+        return (float)(Math.random() * (max - min) * (positive ?  1 : -1));
     }
 }

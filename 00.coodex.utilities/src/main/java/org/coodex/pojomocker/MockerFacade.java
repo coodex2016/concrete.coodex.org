@@ -190,7 +190,8 @@ public class MockerFacade {
     private static final Annotation getAnnotation(PojoProperty property) {
         if (property == null) return null;
         for (Annotation annotation : property.getAnnotations()) {
-            if (annotation != null && annotation.getClass().getAnnotation(Mock.class) != null) {
+            if (annotation != null &&
+                    annotation.annotationType().getAnnotation(Mock.class) != null) {
                 return annotation;
             }
         }

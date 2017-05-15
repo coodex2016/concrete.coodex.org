@@ -49,6 +49,6 @@ public class DefaultLongMocker extends AbstractPrimitiveMocker<Long, LONG> {
             }
         }
 
-        return (long)(Math.random() * (max - min) * (positive ? -1 : 1));
+        return (long)(Math.random() * (max - min) * (positive ?  1 : -1));
     }
 }

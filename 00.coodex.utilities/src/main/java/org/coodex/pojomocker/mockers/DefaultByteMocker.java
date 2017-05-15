@@ -49,6 +49,6 @@ public class DefaultByteMocker extends AbstractPrimitiveMocker<Byte, BYTE> {
             }
         }
 
-        return (byte)(Math.random() * (max - min) * (positive ? -1 : 1));
+        return (byte)(Math.random() * (max - min) * (positive ?  1 : -1));
     }
 }

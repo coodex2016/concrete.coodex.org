@@ -49,6 +49,6 @@ public class DefaultShortMocker extends AbstractPrimitiveMocker<Short, SHORT> {
             }
         }
 
-        return (short)(Math.random() * (max - min) * (positive ? -1 : 1));
+        return (short)(Math.random() * (max - min) * (positive ?  1 : -1));
     }
 }

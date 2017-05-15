@@ -49,6 +49,6 @@ public class DefaultDoubleMocker extends AbstractPrimitiveMocker<Double, DOUBLE>
             }
         }
 
-        return Math.random() * (max - min) * (positive ? -1 : 1);
+        return Math.random() * (max - min) * (positive ?  1 : -1);
     }
 }

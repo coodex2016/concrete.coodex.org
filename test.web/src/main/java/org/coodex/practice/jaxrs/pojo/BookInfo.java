@@ -16,6 +16,7 @@
 
 package org.coodex.practice.jaxrs.pojo;
 
+import org.coodex.concrete.api.mockers.Name;
 import org.coodex.pojomocker.annotations.INTEGER;
 
 /**
@@ -23,6 +24,7 @@ import org.coodex.pojomocker.annotations.INTEGER;
  */
 public class BookInfo {
     private String bookName;
+    @Name
     private String author;
     @INTEGER(min = 100)
     private int price; //分
@@ -40,6 +42,7 @@ public class BookInfo {
     public String getBookName() {
         return bookName;
     }
+
 
     public String getAuthor() {
         return author;
