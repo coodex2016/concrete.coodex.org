@@ -27,6 +27,7 @@ import java.util.List;
  * @author davidoff
  *
  */
+@Deprecated
 public class CI_ListMocker extends CI_AbstractCollectionsMocker {
 
    /*

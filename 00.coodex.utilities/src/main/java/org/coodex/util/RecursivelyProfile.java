@@ -16,6 +16,7 @@
 
 package org.coodex.util;
 
+import java.util.Properties;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
@@ -37,10 +38,24 @@ import java.util.StringTokenizer;
  */
 public class RecursivelyProfile {
 
-    private final Profile profile;
+    private final StringMap profile;
 
     public RecursivelyProfile(Profile profile) {
         this.profile = profile;
+    }
+
+    public RecursivelyProfile(final Properties properties) {
+        this.profile = new StringMap() {
+            @Override
+            public String getString(String key) {
+                return getString(key, null);
+            }
+
+            @Override
+            public String getString(String key, String defaultValue) {
+                return properties == null ? defaultValue : properties.getProperty(key, defaultValue);
+            }
+        };
     }
 
     public String getString(String namespace, String key, String value) {

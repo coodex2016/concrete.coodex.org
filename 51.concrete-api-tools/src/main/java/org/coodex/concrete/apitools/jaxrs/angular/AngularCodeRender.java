@@ -149,15 +149,8 @@ public class AngularCodeRender extends AbstractRender {
             method.setMethodPath(
                     (module.getName() + unit.getName()).replace("{", "${"));
 
-
-//            Param toSubmit = getSubmitBody(unit);
-//            if (toSubmit != null)
             method.setBody(getBody(unit));
-//            JaxRSHelper.isBigString(toSubmit) ?
-//                    // TODO: 待验证，不确定
-//                    String.format("{ %s }", toSubmit.getName()) : toSubmit.getName()
 
-            //params
             method.setParams(getParams(unit, tsModule));
 
             tsModule.getMethods().add(method);
@@ -241,7 +234,7 @@ public class AngularCodeRender extends AbstractRender {
             return getClassType(((GenericArrayType) type).getGenericComponentType(), clz, contextClass) + "[]";
         } else if (type instanceof TypeVariable) {
             if (contextClass != null) {
-                return getClassType(TypeHelper.findActualClassFrom((TypeVariable) type, contextClass), clz, null);
+                return getClassType(TypeHelper.solve((TypeVariable) type, contextClass), clz, null);
             } else
                 return ((TypeVariable) type).getName();
         } else {

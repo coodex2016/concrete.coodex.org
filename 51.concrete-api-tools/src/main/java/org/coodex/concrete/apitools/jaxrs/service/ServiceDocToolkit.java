@@ -20,7 +20,8 @@ import org.coodex.concrete.apitools.jaxrs.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
 import org.coodex.concrete.apitools.jaxrs.POJOPropertyInfo;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
-import org.coodex.util.ReflectHelper;
+import org.coodex.util.PojoInfo;
+import org.coodex.util.PojoProperty;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -53,21 +54,25 @@ public class ServiceDocToolkit extends DocToolkit {
 
     private void buildPojo(Class<?> clz) throws IOException {
         String name = canonicalName(clz.getName());
-            if (!pojoTypes.contains(name)) {
+        if (!pojoTypes.contains(name)) {
             pojoTypes.add(name);
 
             List<POJOPropertyInfo> pojoPropertyInfos = new ArrayList<POJOPropertyInfo>();
+            PojoInfo pojoInfo = new PojoInfo(clz);
 
-
-            for (Method method : clz.getMethods()) {
-                if (isProperty(method))
-                    pojoPropertyInfos.add(new POJOPropertyInfo(clz, method));
+            for (PojoProperty pojoProperty : pojoInfo.getProperties()) {
+                pojoPropertyInfos.add(new POJOPropertyInfo(pojoProperty));
             }
 
-            for (Field field : ReflectHelper.getAllDeclaredFields(clz)) {
-                if (isProperty(field))
-                    pojoPropertyInfos.add(new POJOPropertyInfo(clz, field));
-            }
+//            for (Method method : clz.getMethods()) {
+//                if (isProperty(method))
+//                    pojoPropertyInfos.add(new POJOPropertyInfo(clz, method));
+//            }
+//
+//            for (Field field : ReflectHelper.getAllDeclaredFields(clz)) {
+//                if (isProperty(field))
+//                    pojoPropertyInfos.add(new POJOPropertyInfo(clz, field));
+//            }
 
 
 //            pojoTypes.add(canonicalName(clz.getName()));

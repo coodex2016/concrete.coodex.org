@@ -27,4 +27,5 @@ import java.lang.annotation.*;
 public @interface CreatedByConcrete {
     Class[] paramClasses();
     int paramCount();
+//    String methodName();
 }

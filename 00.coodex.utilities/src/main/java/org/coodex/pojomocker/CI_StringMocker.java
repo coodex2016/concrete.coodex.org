@@ -28,6 +28,7 @@ import java.util.Calendar;
 /**
  * @author davidoff
  */
+@Deprecated
 public class CI_StringMocker extends AbstractUnmockFieldMocker {
 
     public static final String ASCII = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";

@@ -78,7 +78,6 @@ public class ReverserClientInvoker extends AbstractRemoteInvoker {
     }
 
     private Response copy(Response response) {
-        // TODO: 待验证是否可行
         return response;
     }
 

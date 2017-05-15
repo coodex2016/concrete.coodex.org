@@ -33,6 +33,7 @@ import java.util.Map;
  * @author davidoff
  *
  */
+@Deprecated
 public class MockContext {
 
    public Map<Class<?>, Integer> getCreated() {
@@ -60,7 +61,6 @@ public class MockContext {
    private int arrayLevel = 0;
 
    MockContext(MockContext parent) {
-      // TODO 根据上一个上下文构建一个新的上下文
       if (parent != null) {
          Common.copyMap(parent.created, created);
          mockInfo = parent.mockInfo;

@@ -24,6 +24,7 @@ package org.coodex.pojomocker;
  * @author davidoff
  *
  */
+@Deprecated
 public abstract class AbstractUnmockFieldMocker extends
       AbstractClassInstanceMocker {
 

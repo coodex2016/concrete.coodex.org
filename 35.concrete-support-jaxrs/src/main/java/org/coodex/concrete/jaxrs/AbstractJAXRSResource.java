@@ -21,9 +21,8 @@ import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Priority;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenManager;
-import org.coodex.pojomocker.POJOMocker;
+import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
-import org.coodex.util.TypeHelper;
 
 import javax.ws.rs.core.*;
 import java.lang.reflect.Method;
@@ -32,6 +31,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.coodex.concrete.common.ConcreteContext.runWith;
+import static org.coodex.util.TypeHelper.solve;
+import static org.coodex.util.TypeHelper.typeToClass;
 
 /**
  * 默认的JaxRS Resource，提供数据模拟功能
@@ -78,7 +79,7 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
 
     @SuppressWarnings("unchecked")
     protected Class<T> getInterfaceClass() {
-        return (Class<T>) TypeHelper.findActualClassFrom(AbstractJAXRSResource.class.getTypeParameters()[0], getClass());
+        return (Class<T>) typeToClass(solve(AbstractJAXRSResource.class.getTypeParameters()[0], getClass()));
     }
 
     protected T getInstance() {
@@ -90,17 +91,17 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         return Thread.currentThread().getStackTrace()[deep + 2].getMethodName();
     }
 
-    protected final Object mockResult() {
-        return __mockResult();
+    protected final Object mockResult(String methodName) {
+        return __mockResult(methodName);
     }
 
-    private Object __mockResult() {
+    private Object __mockResult(String methodName) {
         try {
-            Method method = findMethod(getMethodNameInStack(2), this.getClass());
+            Method method = findMethod(methodName, null);
             if (method.getReturnType() == void.class)
                 return null;
             else
-                return convert(POJOMocker.mock(method.getGenericReturnType(), getInterfaceClass()));
+                return convert(MockerFacade.mock(method.getGenericReturnType(), getInterfaceClass()));
         } catch (Throwable th) {
             throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }

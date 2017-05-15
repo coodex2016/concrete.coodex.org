@@ -74,7 +74,7 @@ public class POJOTypeInfo {
             }
             return (Class<?>) genericType;
         } else if (genericType instanceof TypeVariable) {
-            return $loadClass(TypeHelper.findActualClassFrom((TypeVariable) genericType, contextType));
+            return $loadClass(TypeHelper.solve((TypeVariable) genericType, contextType));
         }
         throw new RuntimeException("unknown Type: " + genericType + ". genericType: " + this.genericType
                 + ": instanceClass:" + contextType);

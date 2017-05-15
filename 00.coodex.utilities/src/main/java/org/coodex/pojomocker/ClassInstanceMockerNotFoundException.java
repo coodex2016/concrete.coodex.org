@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
  * @author davidoff
  *
  */
+@Deprecated
 public class ClassInstanceMockerNotFoundException extends
       UnsupportedTypeException {
 

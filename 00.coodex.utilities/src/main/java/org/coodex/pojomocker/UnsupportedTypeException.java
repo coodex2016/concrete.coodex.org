@@ -28,6 +28,7 @@ import java.lang.reflect.TypeVariable;
  * @author davidoff
  *
  */
+@Deprecated
 public class UnsupportedTypeException extends MockException {
 
    private static final long serialVersionUID = 3609086274197974556L;

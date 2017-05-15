@@ -26,6 +26,7 @@ package org.coodex.pojomocker;
  * @author davidoff
  *
  */
+@Deprecated
 public class ClassTypeMocker extends AbstractTypeBasedMocker<Class<?>> {
 
    /*

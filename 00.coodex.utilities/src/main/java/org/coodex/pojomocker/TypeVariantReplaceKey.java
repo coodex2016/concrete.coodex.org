@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
  * @author davidoff
  *
  */
+@Deprecated
 final class TypeVariantReplaceKey {
    private int index;
    private Type declared;

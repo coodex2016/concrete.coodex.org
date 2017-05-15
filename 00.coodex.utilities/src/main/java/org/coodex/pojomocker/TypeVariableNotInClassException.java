@@ -28,6 +28,7 @@ import java.lang.reflect.TypeVariable;
  * @author davidoff
  *
  */
+@Deprecated
 public class TypeVariableNotInClassException extends
       NoActualClassFoundException {
 

@@ -50,7 +50,7 @@ public class Operators {
         protected abstract <ATTR> Predicate buildPredicate(Path<ATTR> attrPath, CriteriaBuilder cb, ATTR[] attributes);
 
         protected <ATTR> Class<ATTR> getAttributeType(Path<ATTR> attrPath) {
-            return (Class<ATTR>) TypeHelper.findActualClassFrom(Path.class.getTypeParameters()[0], attrPath.getClass());
+            return (Class<ATTR>) TypeHelper.solve(Path.class.getTypeParameters()[0], attrPath.getClass());
         }
 
         protected <ATTR> Predicate unsupported(Path<ATTR> attrPath) {

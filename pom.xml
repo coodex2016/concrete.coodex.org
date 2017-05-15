@@ -84,12 +84,11 @@
         <module>60.concrete-attachments</module>
         <module>61.concrete-attachments-jaxrs</module>
         <module>62.concrete-attachments-repo-fastdfs</module>
+        <module>81.concrete-commons-spring-data</module>
 
         <module>99.concrete-bom</module>
 
         <module>plugins.concrete-formatters-freemarker</module>
-        <module>00.coodex.utilities.sec.tools</module>
-        <module>81.concrete-commons-spring-data</module>
 
         <module>test.reverse.proxy</module>
         <module>test.web</module>
@@ -122,6 +121,7 @@
         <freemarker.version>2.3.23</freemarker.version>
         <fastjson.version>1.2.29</fastjson.version>
         <guice.version>4.1.0</guice.version>
+        <javassist.verion>${default.version}</javassist.verion>
 
         <thrift.version>${default.version}</thrift.version>
 
@@ -440,6 +440,13 @@
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>1.10</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>${javassist.verion}</version>
             </dependency>
 
 

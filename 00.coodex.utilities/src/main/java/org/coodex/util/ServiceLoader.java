@@ -17,6 +17,7 @@
 package org.coodex.util;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by davidoff shen on 2017-04-26.
@@ -24,9 +25,11 @@ import java.util.Collection;
 public interface ServiceLoader<T> {
     Collection<T> getAllInstances();
 
-    <P extends T> P getInstance(Class<P> providerClass);
+    Map<String, T> getInstances();
 
-    T getInstance(String className);
+    T getInstance(Class<? extends T> providerClass);
+
+    T getInstance(String name);
 
     @SuppressWarnings("unchecked")
     T getInstance();

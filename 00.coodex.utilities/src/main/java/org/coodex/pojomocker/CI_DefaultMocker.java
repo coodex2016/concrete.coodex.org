@@ -23,6 +23,7 @@ package org.coodex.pojomocker;
  * @author davidoff
  *
  */
+@Deprecated
 public class CI_DefaultMocker extends AbstractClassInstanceMocker {
 
    @Override

@@ -23,6 +23,7 @@ import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.Common;
+import org.coodex.util.TypeHelper;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -39,30 +40,31 @@ public class JaxRSHelper {
 //    public static final String KEY_ERROR_MESSAGE = "msg";
     public static final String HEADER_ERROR_OCCURRED = "CONCRETE-ERROR-OCCURRED";
 
-    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
-            String.class,
-            Boolean.class,
-            Character.class,
-            Byte.class,
-            Short.class,
-            Integer.class,
-            Long.class,
-            Float.class,
-            Double.class,
-            Void.class,
-            boolean.class,
-            char.class,
-            byte.class,
-            short.class,
-            int.class,
-            long.class,
-            float.class,
-            double.class,
-            void.class,
-    };
+//    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
+//            String.class,
+//            Boolean.class,
+//            Character.class,
+//            Byte.class,
+//            Short.class,
+//            Integer.class,
+//            Long.class,
+//            Float.class,
+//            Double.class,
+//            Void.class,
+//            boolean.class,
+//            char.class,
+//            byte.class,
+//            short.class,
+//            int.class,
+//            long.class,
+//            float.class,
+//            double.class,
+//            void.class,
+//    };
 
     public static boolean isPrimitive(Class c) {
-        return Common.inArray(c, PRIMITIVE_CLASSES);
+//        return Common.inArray(c, PRIMITIVE_CLASSES);
+        return TypeHelper.isPrimitive(c);
     }
 
     public static boolean isBigString(Param param) {

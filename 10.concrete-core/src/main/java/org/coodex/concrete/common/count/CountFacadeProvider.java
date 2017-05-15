@@ -23,7 +23,6 @@ import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.count.*;
 import org.coodex.util.ServiceLoader;
-import org.coodex.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +35,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.coodex.util.TypeHelper.solve;
+
 /**
  * Created by davidoff shen on 2017-04-18.
  */
@@ -47,7 +48,7 @@ public class CountFacadeProvider implements CountFacade {
 
     private Map<Class, CounterChain> chainMap;
 
-    private static ServiceLoader<Counter> counterProvider = new ConcreteServiceLoader<Counter>() {
+    private final static ServiceLoader<Counter> counterProvider = new ConcreteServiceLoader<Counter>() {
     };
 
     private void buildMap() {
@@ -56,7 +57,7 @@ public class CountFacadeProvider implements CountFacade {
 
         for (Counter counter : counterProvider.getAllInstances()) {
 
-            Type type = TypeHelper.findActualClassFrom(t, counter.getClass());
+            Type type = solve(t, counter.getClass());
             if (type instanceof Class) {
                 try {
                     getCounterChain((Class) type).addCounter(counter);

@@ -26,7 +26,9 @@ import java.lang.annotation.RetentionPolicy;
  * @author davidoff
  *
  */
+
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface POJOMock {
 
    enum MockType {
@@ -53,7 +55,7 @@ public @interface POJOMock {
 
    int[] arraySize() default { -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
          5, 5 };
-
+   @Deprecated
    Class<? extends POJOMockerFactory> factory() default DefaultPOJOMockerFactory.class;
 
    /**

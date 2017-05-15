@@ -351,14 +351,14 @@ public class Common {
         return list.toArray(new String[0]);
     }
 
-    private static boolean inArray(char ch, char [] chars){
-        for(char c: chars){
-            if(c == ch ) return true;
+    private static boolean inArray(char ch, char[] chars) {
+        for (char c : chars) {
+            if (c == ch) return true;
         }
         return false;
     }
 
-    public static String trim(String str, char ... trimChars){
+    public static String trim(String str, char... trimChars) {
         if (Common.isBlank(str) || trimChars == null || trimChars.length == 0) return str;
         char[] chars = str.toCharArray();
         int start, end = chars.length;
@@ -377,10 +377,28 @@ public class Common {
     }
 
 
-    public static boolean sameString(String str1, String str2){
-        if(str1 == null && str2 == null) return true;
-        if(str1 == null || str2 == null) return false;
+    public static boolean sameString(String str1, String str2) {
+        if (str1 == null && str2 == null) return true;
+        if (str1 == null || str2 == null) return false;
         return str1.equals(str2);
+    }
+
+
+    /**
+     * 参考：http://tools.jb51.net/table/gb2312
+     *
+     * @return 一个随机的中文字符(GB2312的一级文字)
+     */
+    public static char randomGB2312Char() {
+        // 16-55区(0xB0 - 0xD7, D7最大到F9): 一级汉字
+        // 56-87区(0xD8 - 0xF7): 二级汉字
+        try {
+            int b1 = Common.random(0xB0, 0xD7);
+            int b2 = Common.random(0xA1, b1 == 0xD7 ? 0xF9 : 0xFE);
+            return new String(new byte[]{(byte) b1, (byte) b2}, "GB2312").charAt(0);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e.getLocalizedMessage(), e);
+        }
     }
 
 

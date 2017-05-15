@@ -16,9 +16,7 @@
 
 package org.coodex.concrete.test;
 
-import org.coodex.concrete.common.ConcreteClosure;
-import org.coodex.concrete.common.ConcreteContext;
-import org.coodex.concrete.common.Subjoin;
+import org.coodex.concrete.common.*;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -37,20 +35,24 @@ public class ConcreteTestRule implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                runWith(getSubjion(),
-                        ConcreteTokenProvider.getToken(description),
-                        ConcreteContext.run(SIDE, SIDE_TEST, new ConcreteClosure() {
-                            @Override
-                            public Object concreteRun() throws Throwable {
-                                base.evaluate();
-                                return null;
-                            }
-                        }));
+                try {
+                    runWith(getSubjoin(),
+                            ConcreteTokenProvider.getToken(description),
+                            ConcreteContext.run(SIDE, SIDE_TEST, new ConcreteClosure() {
+                                @Override
+                                public Object concreteRun() throws Throwable {
+                                    base.evaluate();
+                                    return null;
+                                }
+                            }));
+                }catch (ConcreteException ce){
+                    throw ce.getCause() == null && ce.getCode() == ErrorCodes.UNKNOWN_ERROR ? ce : ce.getCause();
+                }
             }
         };
     }
 
-    private Subjoin getSubjion() {
+    private Subjoin getSubjoin() {
         return DEFAULT_SUBJOIN;
     }
 

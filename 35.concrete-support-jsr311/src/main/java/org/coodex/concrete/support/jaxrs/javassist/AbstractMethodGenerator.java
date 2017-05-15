@@ -26,11 +26,11 @@ import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
-import org.coodex.concrete.jaxrs.PathParam;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.Common;
 
+import javax.ws.rs.PathParam;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -180,7 +180,7 @@ public abstract class AbstractMethodGenerator {
     protected abstract String getMethodBody(Class pojoClass);
 
     protected final String getMethodBodyForDemo() {
-        return "{return ($r)mockResult();}";
+        return "{return ($r)mockResult(\"" + getUnit().getFunctionName() + "\");}";
     }
 
     /**
@@ -302,7 +302,7 @@ public abstract class AbstractMethodGenerator {
         return spiMethod;
     }
 
-    protected abstract String [] getContentType();
+    protected abstract String[] getContentType();
 
     private static final Class<?>[] PRIMITIVE_CLASSES = new Class[]{
             boolean.class, byte.class, char.class, short.class, int.class,
@@ -350,9 +350,9 @@ public abstract class AbstractMethodGenerator {
 
 
     protected String getPathParam(Param parameter) {
-        PathParam pathParam = parameter.getDeclaredAnnotation(PathParam.class);
-        if (pathParam != null) return pathParam.value();
-        javax.ws.rs.PathParam pathParam1 = parameter.getDeclaredAnnotation(javax.ws.rs.PathParam.class);
+//        PathParam pathParam = parameter.getDeclaredAnnotation(PathParam.class);
+//        if (pathParam != null) return pathParam.value();
+        PathParam pathParam1 = parameter.getDeclaredAnnotation(PathParam.class);
         return pathParam1 == null ?
                 ((CGContext.isPrimitive(parameter.getType()) && !JaxRSHelper.isBigString(parameter)) ?
                         parameter.getName() : null) :

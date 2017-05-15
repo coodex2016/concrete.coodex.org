@@ -27,6 +27,7 @@ import java.util.Set;
  * @author davidoff
  *
  */
+@Deprecated
 public class CI_SetMocker extends CI_AbstractCollectionsMocker {
 
    /*

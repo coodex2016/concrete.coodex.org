@@ -5,7 +5,7 @@
 
 | property | label | type  | description |
 | -------- | ---- | ---- | ----------- |
-<#list properties?sort_by("name") as p>| ${p.name} | ${p.label} | ${tool.formatTypeStr(p.type)} | ${tool.tableSafe(p.description)} | 
+<#list properties?sort_by("name") as p>| ${p.name} | ${p.label} | ${tool.formatTypeStr(p.type)} | <#if p.property.readonly>[Readonly]</#if><#if p.deprecated>[Deprecated.]</#if>${tool.tableSafe(p.description)} | 
 </#list>
 
 </#escape>

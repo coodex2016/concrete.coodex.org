@@ -22,10 +22,10 @@ import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.concrete.jaxrs.BigString;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
-import org.coodex.concrete.jaxrs.PathParam;
 import org.coodex.util.Common;
 
 import javax.ws.rs.HttpMethod;
+import javax.ws.rs.PathParam;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +36,8 @@ import static org.coodex.concrete.jaxrs.JaxRSHelper.isPrimitive;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.slash;
 import static org.coodex.concrete.jaxrs.Predicates.getHttpMethod;
 import static org.coodex.concrete.jaxrs.Predicates.removePredicate;
+
+//import org.coodex.concrete.jaxrs.PathParam;
 
 /**
  * Created by davidoff shen on 2016-11-30.
@@ -152,9 +154,9 @@ public class Unit extends AbstractUnit<Param, Module> {
 
 
     protected String getPathParam(Param parameter) {
-        PathParam pathParam = parameter.getDeclaredAnnotation(PathParam.class);
-        if (pathParam != null) return pathParam.value();
-        javax.ws.rs.PathParam pathParam1 = parameter.getDeclaredAnnotation(javax.ws.rs.PathParam.class);
+//        PathParam pathParam = parameter.getDeclaredAnnotation(PathParam.class);
+//        if (pathParam != null) return pathParam.value();
+        PathParam pathParam1 = parameter.getDeclaredAnnotation(PathParam.class);
         if (pathParam1 != null) return pathParam1.value();
         Class<?> clz = parameter.getType();
         boolean isBigString = parameter.getDeclaredAnnotation(BigString.class) != null;

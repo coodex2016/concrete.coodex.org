@@ -30,6 +30,7 @@ import java.util.Map;
  * @author davidoff
  *
  */
+@Deprecated
 class POJOMockerImpl {
 
    private static final AbstractTypeBasedMocker<? extends Type> typeVariableMocker = new TypeVariableMocker();

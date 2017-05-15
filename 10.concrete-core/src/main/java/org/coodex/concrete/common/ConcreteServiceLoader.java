@@ -45,6 +45,7 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
             super.loadInstances();
             if (!init) {
                 try {
+                    Map<String, T> instances = $getInstances();
                     Map<String, T> beans = BeanProviderFacade.getBeanProvider().getBeansOfType(getInterfaceClass());
                     if (beans != null && beans.size() > 0) {
                         for (String key : beans.keySet()) {
@@ -62,7 +63,7 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
     }
 
     @Override
-    protected <P extends T> P conflict(Class<P> providerClass, Map<String, P> map) {
+    protected T conflict(Class<? extends T> providerClass, Map<String, T> map) {
         String key = ConcreteHelper.getProfile().getString(providerClass + ".provider");
         return map.containsKey(key) ? map.get(key) : super.conflict(providerClass, map);
     }
@@ -70,11 +71,13 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
     @Override
     protected T conflict() {
         String key = ConcreteHelper.getProfile().getString(getInterfaceClass().getCanonicalName() + ".provider");
+        Map<String, T> instances = $getInstances();
         return instances.containsKey(key) ? instances.get(key) : super.conflict();
     }
 
     protected final T getDefaultProviderFromProfile() {
         String key = ConcreteHelper.getProfile().getString(getInterfaceClass().getCanonicalName() + ".default");
+        Map<String, T> instances = $getInstances();
         return instances.containsKey(key) ? instances.get(key) : null;
     }
 

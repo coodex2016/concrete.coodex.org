@@ -78,9 +78,9 @@ public class ConcreteHelper {
     }
 
 
-    private static final ClassFilter CONCRETE_SERVICE_INTERFACE_FILTER = new ClassFilter() {
+    private static final ClassNameFilter CONCRETE_SERVICE_INTERFACE_FILTER = new ConcreteClassFilter() {
         @Override
-        public boolean accept(Class<?> clazz) {
+        protected boolean accept(Class<?> clazz) {
             return clazz != null
                     && clazz.isInterface() //是接口
                     && ConcreteService.class.isAssignableFrom(clazz) //是ConcreteService

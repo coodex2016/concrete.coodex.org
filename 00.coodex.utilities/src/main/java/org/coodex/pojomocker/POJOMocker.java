@@ -34,6 +34,7 @@ import java.lang.reflect.Type;
 /**
  * @author davidoff
  */
+@Deprecated
 public class POJOMocker {
 
     private static final POJOMockerImpl mocker = new POJOMockerImpl();

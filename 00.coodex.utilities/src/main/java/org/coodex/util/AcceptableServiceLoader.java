@@ -19,9 +19,11 @@ package org.coodex.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Map;
+
+import static org.coodex.util.TypeHelper.solve;
+import static org.coodex.util.TypeHelper.typeToClass;
 
 /**
  * Created by davidoff shen on 2017-03-09.
@@ -36,15 +38,20 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
         this.serviceLoaderFacade = serviceLoaderFacade;
     }
 
+
+
     private boolean accept(T instance, Param_Type param) {
         Class tClass = instance.getClass();
-        Class paramClass = param.getClass();
-        Type t = TypeHelper.findActualClassFrom(
-                AcceptableService.class.getTypeParameters()[0],
-                tClass);
-        Class required = (t instanceof ParameterizedType) ? (Class) ((ParameterizedType) t).getRawType() : (Class) t;
+        Class paramClass = param == null ? null : param.getClass();
+//        Type t = ;
+        if(paramClass == null)
+            return instance.accept(null);
 
-        if (required.isAssignableFrom(paramClass)) {
+        Class required = typeToClass(solve(
+                AcceptableService.class.getTypeParameters()[0], tClass));
+        //(t instanceof ParameterizedType) ? (Class) ((ParameterizedType) t).getRawType() : (Class) t;
+
+        if (required != null && required.isAssignableFrom(paramClass)) {
             return instance.accept(param);
         } else {
             return false;
@@ -73,17 +80,22 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
     }
 
     @Override
-    public <P extends T> P getInstance(Class<P> providerClass) {
+    public T getInstance(Class<? extends T> providerClass) {
         return serviceLoaderFacade.getInstance(providerClass);
     }
 
     @Override
-    public T getInstance(String className) {
-        return serviceLoaderFacade.getInstance(className);
+    public T getInstance(String name) {
+        return serviceLoaderFacade.getInstance(name);
     }
 
     @Override
     public T getInstance() {
         return serviceLoaderFacade.getInstance();
+    }
+
+    @Override
+    public Map<String, T> getInstances() {
+        return serviceLoaderFacade.getInstances();
     }
 }

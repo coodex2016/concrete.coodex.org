@@ -34,6 +34,7 @@ import java.util.Map;
  * @author davidoff
  *
  */
+@Deprecated
 public class ParameterizedTypeMocker
       extends AbstractTypeBasedMocker<ParameterizedType> {
 

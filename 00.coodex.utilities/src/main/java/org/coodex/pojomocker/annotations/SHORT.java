@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-package org.coodex.security;
+package org.coodex.pojomocker.annotations;
+
+import org.coodex.pojomocker.Mock;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * 上下文工厂
- * Created by davidoff shen on 2017-02-05.
+ * Created by davidoff shen on 2017-05-15.
  */
-public interface SecretContextFactory {
-
-    SecretContext getContext(String driver);
+@Target({ElementType.FIELD, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Mock
+public @interface SHORT {
+    short min() default Short.MIN_VALUE;
+    short max() default Short.MAX_VALUE;
 }

@@ -27,6 +27,7 @@ import java.lang.reflect.Array;
  * @author davidoff
  *
  */
+@Deprecated
 public class CI_ArrayMocker extends AbstractUnmockFieldMocker {
 
    /*

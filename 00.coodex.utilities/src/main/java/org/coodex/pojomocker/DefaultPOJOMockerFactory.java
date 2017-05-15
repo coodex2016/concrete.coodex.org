@@ -24,6 +24,7 @@ package org.coodex.pojomocker;
  * @author davidoff
  *
  */
+@Deprecated
 public class DefaultPOJOMockerFactory extends POJOMockerFactory {
 
    /**

@@ -25,6 +25,7 @@ import java.util.Collection;
  * @author davidoff
  *
  */
+@Deprecated
 public abstract class CI_AbstractCollectionsMocker extends
       AbstractUnmockFieldMocker {
 

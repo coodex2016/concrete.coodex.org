@@ -55,7 +55,7 @@ import static org.coodex.util.Common.*;
  * @author davidoff
  * @version v1.0 2014-03-18
  */
-public class Profile {
+public class Profile implements StringMap{
 
     private static ScheduledExecutorService RELOAD_POOL;
 
@@ -276,6 +276,7 @@ public class Profile {
 //            return v;
     }
 
+    @Override
     public String getString(String key, String v) {
         check();
         String s = p.getProperty(key);
@@ -308,6 +309,7 @@ public class Profile {
         return v;
     }
 
+    @Override
     public String getString(String key) {
         return getString(key, null);
     }

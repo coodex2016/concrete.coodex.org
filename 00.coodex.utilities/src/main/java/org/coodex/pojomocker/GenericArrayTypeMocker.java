@@ -31,6 +31,7 @@ import java.lang.reflect.Type;
  * @author davidoff
  *
  */
+@Deprecated
 public class GenericArrayTypeMocker extends
       AbstractTypeBasedMocker<GenericArrayType> {
 

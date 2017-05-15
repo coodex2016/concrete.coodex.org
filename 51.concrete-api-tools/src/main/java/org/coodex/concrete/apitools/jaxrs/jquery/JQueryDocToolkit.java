@@ -33,18 +33,23 @@ public class JQueryDocToolkit extends ServiceDocToolkit {
         super(render);
     }
 
-    public String camelCase(String s){
+    public String camelCase(String s) {
         return JaxRSHelper.camelCase(s);
     }
 
-    public String mockParameters(Unit unit, Module module){
+    public String mockParameters(Unit unit, Module module) {
         StringBuilder builder = new StringBuilder();
-        for(int i = 0; i < unit.getParameters().length; i ++){
-            if(i > 0){
+        for (int i = 0; i < unit.getParameters().length; i++) {
+            if (i > 0) {
                 builder.append(", ");
             }
             try {
-                builder.append(JSON.toJSONString(POJOMocker.mock(unit.getParameters()[i].getGenericType(), module.getInterfaceClass()),true));
+                builder.append(
+                        JSON.toJSONString(
+                                // TODO new mocker
+                                POJOMocker.mock(
+                                        unit.getParameters()[i].getGenericType(), module.getInterfaceClass()
+                                ), true));
             } catch (Throwable e) {
                 builder.append("{}");
             }

@@ -26,6 +26,7 @@ import java.util.Collection;
  * @author davidoff
  *
  */
+@Deprecated
 public abstract class POJOMockerFactory {
 
    private final Collection<AbstractClassInstanceMocker> mockerProducts = new ArrayList<AbstractClassInstanceMocker>();

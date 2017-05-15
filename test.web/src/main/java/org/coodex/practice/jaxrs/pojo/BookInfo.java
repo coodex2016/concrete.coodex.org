@@ -16,12 +16,15 @@
 
 package org.coodex.practice.jaxrs.pojo;
 
+import org.coodex.pojomocker.annotations.INTEGER;
+
 /**
  * Created by davidoff shen on 2016-12-05.
  */
 public class BookInfo {
     private String bookName;
     private String author;
+    @INTEGER(min = 100)
     private int price; //分
 
     public BookInfo(){
@@ -61,9 +64,9 @@ public class BookInfo {
     @Override
     public String toString() {
         return "BookInfo{" +
-                "bookName='" + bookName + '\'' +
-                ", author='" + author + '\'' +
-                ", price=" + price +
+                "bookName='" + getBookName() + '\'' +
+                ", author='" + getAuthor() + '\'' +
+                ", price=" + getPrice() +
                 '}';
     }
 }

@@ -27,6 +27,7 @@ import java.lang.reflect.TypeVariable;
  * @author davidoff
  *
  */
+@Deprecated
 public class TypeVariableMocker extends
       AbstractTypeBasedMocker<TypeVariable<?>> {
 

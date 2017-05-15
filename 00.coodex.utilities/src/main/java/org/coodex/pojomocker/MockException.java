@@ -23,6 +23,7 @@ package org.coodex.pojomocker;
  * @author davidoff
  *
  */
+@Deprecated
 public abstract class MockException extends Exception {
    private static final long serialVersionUID = -3884473801380757433L;
 

@@ -26,6 +26,7 @@ import java.util.Map;
  * @author davidoff
  *
  */
+@Deprecated
 public class CI_MapMocker extends AbstractUnmockFieldMocker {
 
    /*

@@ -25,7 +25,7 @@ import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.client.impl.FastJsonSerializer;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
-import org.coodex.pojomocker.POJOMocker;
+import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
 import org.coodex.util.TypeHelper;
@@ -82,7 +82,7 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
             @Override
             public Object proceed() throws Throwable {
                 if (ClassGenerator.FRONTEND_DEV_MODE) {
-                    return POJOMocker.mock(unit.getGenericReturnType(), unit.getDeclaringModule().getInterfaceClass());
+                    return MockerFacade.mock(unit.getGenericReturnType(), unit.getDeclaringModule().getInterfaceClass());
                 } else {
 
                     String path = domain;

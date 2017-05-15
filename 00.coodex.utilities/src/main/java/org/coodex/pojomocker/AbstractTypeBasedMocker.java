@@ -27,6 +27,7 @@ import java.lang.reflect.Type;
  * @author davidoff
  *
  */
+@Deprecated
 public abstract class AbstractTypeBasedMocker<T extends Type> {
 
    protected abstract Class<?> getTypeClass();

@@ -19,11 +19,12 @@ package org.coodex.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.coodex.util.TypeHelper.solve;
+import static org.coodex.util.TypeHelper.typeToClass;
 
 /**
  * <S>待coodex utilities放弃1.5时移入org.coodex.util</S>
@@ -39,18 +40,20 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
 
     private final static Logger log = LoggerFactory.getLogger(ServiceLoaderFacade.class);
 
-    protected Map<String, T> instances = null;
+    private Map<String, T> instances = null;
 
     @SuppressWarnings("unchecked")
+
     protected Class<T> getInterfaceClass() {
-        Type t = TypeHelper.findActualClassFrom(
-                ServiceLoaderFacade.class.getTypeParameters()[0],
-                getClass());
-//        return (Class<T>) TypeHelper.findActualClassFrom(ServiceLoaderFacade.class.getTypeParameters()[0], getClass());
-        if (t instanceof ParameterizedType)
-            return (Class<T>) ((ParameterizedType) t).getRawType();
-        else
-            return (Class<T>) t;
+        return typeToClass(solve(ServiceLoaderFacade.class.getTypeParameters()[0],getClass()));
+//        Type t = TypeHelper.findActualClassFrom(
+//                ServiceLoaderFacade.class.getTypeParameters()[0],
+//                getClass());
+////        return (Class<T>) TypeHelper.findActualClassFrom(ServiceLoaderFacade.class.getTypeParameters()[0], getClass());
+//        if (t instanceof ParameterizedType)
+//            return (Class<T>) ((ParameterizedType) t).getRawType();
+//        else
+//            return (Class<T>) t;
     }
 
     public T getDefaultProvider() {
@@ -81,14 +84,23 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
         return instances.values();
     }
 
+    protected Map<String, T> $getInstances(){
+        return instances;
+    }
+
     @Override
-    public <P extends T> P getInstance(Class<P> providerClass) {
+    public Map<String, T> getInstances() {
+        return new HashMap<String, T>($getInstances());
+    }
+
+    @Override
+    public T getInstance(Class<? extends T> providerClass) {
 //        return (P) getInstance(providerClass.getCanonicalName());
-        Map<String, P> copy = new HashMap<String, P>();
+        Map<String, T> copy = new HashMap<String, T>();
         for (String key : instances.keySet()) {
             T t = instances.get(key);
             if (t != null && providerClass.isAssignableFrom(t.getClass())) {
-                copy.put(key, (P) t);
+                copy.put(key, t);
             }
         }
         switch (copy.size()) {
@@ -97,10 +109,14 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
             case 1:
                 return copy.values().iterator().next();
         }
+//        T t =  getInstance(providerClass.getName());
         return conflict(providerClass, copy);
     }
 
-    protected <P extends T> P conflict(Class<P> providerClass, Map<String, P> map) {
+    protected T conflict(Class<? extends T> providerClass, Map<String, T> map) {
+        T t = getInstance(providerClass.getName());
+        if(t != null) return t;
+
         StringBuffer buffer = new StringBuffer(getInterfaceClass().getName());
         buffer.append("[providerClass: ").append(providerClass.getName()).append("]");
         buffer.append(" has ").append(map.size()).append(" services:[");
@@ -112,8 +128,8 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
     }
 
     @Override
-    public T getInstance(String className) {
-        T instance = instances.get(className);
+    public T getInstance(String name) {
+        T instance = instances.get(name);
         return instance == null ? getDefaultProvider() : instance;
     }
 

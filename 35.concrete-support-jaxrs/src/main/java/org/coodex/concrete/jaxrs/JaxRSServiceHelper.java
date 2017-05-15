@@ -16,12 +16,9 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.common.AbstractErrorCodes;
-import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.ConcreteServiceLoader;
-import org.coodex.concrete.common.ErrorMessageFacade;
+import org.coodex.concrete.common.*;
 import org.coodex.concrete.jaxrs.struct.Module;
-import org.coodex.util.ClassFilter;
+import org.coodex.util.ClassNameFilter;
 import org.coodex.util.ReflectHelper;
 
 import java.util.*;
@@ -65,9 +62,9 @@ public class JaxRSServiceHelper {
         }
     }
 
-    private static final ClassFilter CONCRETE_ERROR = new ClassFilter() {
+    private static final ClassNameFilter CONCRETE_ERROR = new ConcreteClassFilter() {
         @Override
-        public boolean accept(Class<?> clazz) {
+        protected boolean accept(Class<?> clazz) {
             return clazz != null
                     && AbstractErrorCodes.class.isAssignableFrom(clazz);
         }

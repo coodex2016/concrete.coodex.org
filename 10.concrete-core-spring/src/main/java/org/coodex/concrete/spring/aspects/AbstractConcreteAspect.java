@@ -24,8 +24,10 @@ import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.core.intercept.AbstractInterceptor;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
-import org.coodex.util.TypeHelper;
 import org.springframework.core.Ordered;
+
+import static org.coodex.util.TypeHelper.solve;
+import static org.coodex.util.TypeHelper.typeToClass;
 
 /**
  * Created by davidoff shen on 2016-09-01.
@@ -39,7 +41,8 @@ public abstract class AbstractConcreteAspect<T extends AbstractInterceptor> exte
     private synchronized ConcreteInterceptor getInterceptor() {
         if (interceptor == null) {
             try {
-                interceptor = (ConcreteInterceptor) ((Class) TypeHelper.findActualClassFrom(AbstractConcreteAspect.class.getTypeParameters()[0], this.getClass()))
+                interceptor = (ConcreteInterceptor) (typeToClass(
+                        solve(AbstractConcreteAspect.class.getTypeParameters()[0], this.getClass())))
                         .newInstance();
             } catch (Throwable th) {
                 throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);

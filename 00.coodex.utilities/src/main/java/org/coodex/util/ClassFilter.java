@@ -23,6 +23,7 @@ package org.coodex.util;
  * @author davidoff
  *
  */
+@Deprecated
 public interface ClassFilter {
 
    boolean accept(Class<?> clazz);

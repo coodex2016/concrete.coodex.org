@@ -42,6 +42,8 @@ public class ReflectHelper {
         void process(Class<?> serviceClass);
     }
 
+
+
     public static class MethodParameter {
 
         private final Method method;
@@ -60,35 +62,37 @@ public class ReflectHelper {
             type = method.getParameterTypes()[index];
             genericType = method.getGenericParameterTypes()[index];
 
-            try {
-                name = getParameterName();
-            } catch (Throwable th) {
-            }
-            if (Common.isBlank(name))
-                name = "p" + index;
+            name = getParameterName(method, index, "p");
+//            try {
+//                name = getParameterName();
+//            } catch (Throwable th) {
+//            }
+//            if (Common.isBlank(name))
+//                name = "arg" + index;
 
         }
 
-        /**
-         * 使用java 8的getParameters来获取参数名，编译时，使用jdk的javac，-parameters。在java8环境中运行有效
-         *
-         * @return
-         * @throws NoSuchMethodException
-         * @throws InvocationTargetException
-         * @throws IllegalAccessException
-         * @throws ClassNotFoundException
-         */
-        private String getParameterName() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
-
-            Method getParameters = Method.class.getMethod("getParameters");
-            Object[] paramters = (Object[]) getParameters.invoke(getMethod());
-            if (paramters != null) {
-                Class<?> methodParameterClass = Class.forName("java.lang.reflect.Parameter");
-                Method getName = methodParameterClass.getMethod("getName");
-                return (String) getName.invoke(paramters[index]);
-            }
-            return null;
-        }
+//        /**
+//         * 使用java 8的getParameters来获取参数名，编译时，使用jdk的javac，-parameters。在java8环境中运行有效
+//         *
+//         * @return
+//         * @throws NoSuchMethodException
+//         * @throws InvocationTargetException
+//         * @throws IllegalAccessException
+//         * @throws ClassNotFoundException
+//         */
+//        private String getParameterName() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+//            return ReflectHelper.getParameterName(method, index);
+////
+////            Method getParameters = Method.class.getMethod("getParameters");
+////            Object[] parameters = (Object[]) getParameters.invoke(getMethod());
+////            if (parameters != null) {
+////                Class<?> methodParameterClass = Class.forName("java.lang.reflect.Parameter");
+////                Method getName = methodParameterClass.getMethod("getName");
+////                return (String) getName.invoke(parameters[index]);
+////            }
+////            return null;
+//        }
 
         public Class<?> getType() {
             return type;
@@ -126,6 +130,48 @@ public class ReflectHelper {
             return null;
         }
     }
+
+    public static String getParameterName(Method method, int index, String prefix){
+        try {
+            return getParameterName(method, index);
+        } catch (Throwable th) {
+            return prefix + index;
+        }
+    }
+
+    public static String getParameterName(Method method, int index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+
+        Method getParameters = Method.class.getMethod("getParameters");
+        Object[] parameters = (Object[]) getParameters.invoke(method);
+        if (parameters != null) {
+            Class<?> methodParameterClass = Class.forName("java.lang.reflect.Parameter");
+            Method getName = methodParameterClass.getMethod("getName");
+            return (String) getName.invoke(parameters[index]);
+        }
+        return null;
+    }
+
+    public static String getParameterName(Constructor constructor, int index, String prefix){
+        try {
+            return getParameterName(constructor, index);
+        }catch (Throwable th){
+            return prefix + index;
+        }
+    }
+
+    public static String getParameterName(Constructor constructor, int index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+
+        Method getParameters = Method.class.getMethod("getParameters");
+        Object[] parameters = (Object[]) getParameters.invoke(constructor);
+        if (parameters != null) {
+            Class<?> methodParameterClass = Class.forName("java.lang.reflect.Parameter");
+            Method getName = methodParameterClass.getMethod("getName");
+            return (String) getName.invoke(parameters[index]);
+        }
+        return null;
+    }
+
+
 
     private ReflectHelper() {
     }
@@ -220,7 +266,7 @@ public class ReflectHelper {
     }
 
     public static Collection<Class<?>> getClasses(String packageName,
-                                                  ClassFilter filter) {
+                                                  ClassNameFilter filter) {
         ClassLoader classLoader = ReflectHelper.class.getClassLoader();
 
         List<Class<?>> list = new ArrayList<Class<?>>();
@@ -260,8 +306,9 @@ public class ReflectHelper {
         return list;
     }
 
-    private static Collection<Class<?>> loadFromDirectory(String packageName,
-                                                          ClassFilter filter, File dir) {
+    private static Collection<Class<?>> loadFromDirectory(
+            String packageName, ClassNameFilter filter, File dir) {
+
         log.debug("Scan package[{}] in dir[{}]", packageName,
                 dir.getAbsolutePath());
 
@@ -277,9 +324,8 @@ public class ReflectHelper {
                     String className = packageName + "."
                             + fileName.substring(0, fileName.length() - 6);
                     try {
-                        Class<?> clz = Class.forName(className);
-                        if (filter == null || filter.accept(clz))
-                            result.add(clz);
+                        if (filter == null || filter.accept(className))
+                            result.add(Class.forName(className));
 
                     } catch (Throwable e) {
                         log.debug("load Class {} fail. {}", className,
@@ -291,8 +337,9 @@ public class ReflectHelper {
         return result;
     }
 
-    private static Collection<Class<?>> loadFromZipFile(String packageName,
-                                                        ClassFilter filter, File zipFile) throws IOException {
+    private static Collection<Class<?>> loadFromZipFile(
+            String packageName, ClassNameFilter filter, File zipFile) throws IOException {
+
         List<Class<?>> list = new ArrayList<Class<?>>();
         ZipFile zip = new ZipFile(zipFile);
 
@@ -311,9 +358,8 @@ public class ReflectHelper {
                     String className = entryName
                             .substring(0, entryName.length() - 6);
                     try {
-                        Class<?> clz = Class.forName(className);
-                        if (filter == null || filter.accept(clz))
-                            list.add(clz);
+                        if (filter == null || filter.accept(className))
+                            list.add(Class.forName(className));
 
                     } catch (ClassNotFoundException e) {
                         log.debug("load Class {} fail. {}", className,
@@ -327,7 +373,7 @@ public class ReflectHelper {
         }
     }
 
-    public static void foreachClass(Processor processor, ClassFilter filter, String... packages) {
+    public static void foreachClass(Processor processor, ClassNameFilter filter, String... packages) {
         if (processor == null) return;
         Set<Class> submittedClasses = new HashSet<Class>();
         try {
@@ -345,7 +391,7 @@ public class ReflectHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static  <T> T throwExceptionObject(Class<T> interfaceClass, final Throwable th) {
+    public static <T> T throwExceptionObject(Class<T> interfaceClass, final Throwable th) {
         return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[]{interfaceClass}, new InvocationHandler() {
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                 throw th;

@@ -36,6 +36,18 @@ public class JavassistHelper {
 
     private final static Logger log = LoggerFactory.getLogger(JavassistHelper.class);
 
+//    public static String getGenericSignature(ParameterizedType type){
+//        List<String> arguments = new ArrayList<String>();
+//        for(Type t : type.getActualTypeArguments()){
+//            if(t instanceof ParameterizedType){
+//                arguments.add(getGenericSignature((ParameterizedType) t));
+//            } else if(t instanceof Class){
+//                if(((Class) t).isArray())
+//                arguments.add(((Class) t).getName())
+//            }
+//        }
+//        return null;
+//    }
 
     public static SignatureAttribute.ClassType classType(String className, String... arguments) {
         Collection<SignatureAttribute.TypeArgument> args = new ArrayList<SignatureAttribute.TypeArgument>();
@@ -148,5 +160,6 @@ public class JavassistHelper {
         }
         return attr;
     }
+
 
 }

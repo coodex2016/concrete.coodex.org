@@ -96,7 +96,7 @@ public abstract class DocToolkit {
             return builder.toString();
         } else if (t instanceof TypeVariable) {
             if (contextClass != null) {
-                return formatTypeStr(TypeHelper.findActualClassFrom((TypeVariable) t, contextClass));
+                return formatTypeStr(TypeHelper.solve((TypeVariable) t, contextClass));
             } else {
                 TypeVariable typeVariable = (TypeVariable) t;
                 StringBuilder builder = new StringBuilder();

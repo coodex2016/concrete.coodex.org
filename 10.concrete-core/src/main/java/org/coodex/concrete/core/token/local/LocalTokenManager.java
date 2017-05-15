@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * 本地会话管理<br/>
  * 可在concrete.properties 中设置 localTokenManager.maxIdleTime，单位为分钟，必须为大于0的整数，默认60分钟
  * <p>
- * TODO <S>增加集群支持</S> 2016-11-22，利用分布式TokenManager完成（额外添加）
+ * <S>增加集群支持</S> 2016-11-22，利用分布式TokenManager完成（额外添加）
  * <p>
  * Created by davidoff shen on 2016-11-02.
  */

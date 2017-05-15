@@ -17,6 +17,7 @@
 package org.coodex.practice.jaxrs.pojo;
 
 import org.coodex.concrete.api.Description;
+import org.coodex.concrete.api.mockers.ID;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -40,6 +41,7 @@ public class Book extends BookInfo {
     }
 
     @Description(name = "书本ID", description = "主键，唯一标识")
+    @ID
     public long getId() {
         return id;
     }

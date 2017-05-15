@@ -28,6 +28,7 @@ import java.util.Stack;
  * @author davidoff
  *
  */
+@Deprecated
 public class MockContextHelper {
    private final static ThreadLocal<Stack<MockContext>> stackThreadLocal = new ThreadLocal<Stack<MockContext>>();
 
@@ -62,7 +63,6 @@ public class MockContextHelper {
 
    private static void accessCheck(StackTraceElement ste)
          throws IllegalAccessException {
-      // TODO 更近一步控制安全，仅允许已明确的类型调用enter和leave
       // throw new IllegalAccessException();
    }
 

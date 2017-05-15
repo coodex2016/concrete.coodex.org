@@ -18,6 +18,10 @@ package test.org.coodex.concrete;
 
 import org.coodex.concrete.common.AbstractCopier;
 import org.coodex.concrete.common.Copier;
+import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
+import org.coodex.util.GenericType;
+
+import java.util.List;
 
 /**
  * Created by davidoff shen on 2017-03-21.
@@ -32,6 +36,8 @@ public class CopierTest {
             }
         };
         copier.copy(new A(10)).test();
+
+        System.out.println(JavassistHelper.classType(new GenericType<List<String>>(){}.genericType(), null));
     }
 
     public static class A {

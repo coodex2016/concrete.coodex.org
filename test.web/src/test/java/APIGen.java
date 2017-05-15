@@ -4,8 +4,6 @@ import org.coodex.concrete.apitools.jaxrs.jquery.JQueryDocRender;
 import org.coodex.concrete.apitools.jaxrs.jquery.JQueryPromisesCodeRender;
 import org.coodex.concrete.apitools.jaxrs.service.ServiceDocRender;
 import org.coodex.concurrent.ExecutorsHelper;
-import org.coodex.pojomocker.UnableMockException;
-import org.coodex.pojomocker.UnsupportedTypeException;
 import org.coodex.practice.jaxrs.api.ServiceExample;
 
 import java.io.IOException;
@@ -16,7 +14,7 @@ import java.lang.reflect.Method;
  */
 public class APIGen {
 
-    public static void main(String[] args) throws IOException, UnableMockException, UnsupportedTypeException {
+    public static void main(String[] args) throws IOException {
         try {
             Class c = ServiceExample.class;
             Method m = null;

@@ -31,6 +31,7 @@ import java.util.Collection;
  * @author davidoff
  *
  */
+@Deprecated
 public class CI_PrivimitiveTypeMocker extends AbstractUnmockFieldMocker {
 
    private static Logger log = LoggerFactory

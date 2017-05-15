@@ -61,4 +61,5 @@ public final class ErrorCodes extends AbstractErrorCodes {
     public static final int SIGNATURE_VERIFICATION_FAILED = CONCRETE_CORE + 16;
 
 
+    public static final int UNKNOWN_CLASS = CONCRETE_CORE + 17;
 }

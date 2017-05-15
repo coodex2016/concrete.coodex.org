@@ -89,7 +89,6 @@ public class Module extends AbstractModule<Unit> {
                 continue;
             }
             if (exists != null) {
-                // TODO: 无法重载，怎么搞，异常？
                 throw new RuntimeException(String.format("Method Conflict [%s]. m1:%s.%s, m2:%s.%s", serviceKey,
                         method.getDeclaringClass().getName(), method.getName(),
                         exists.getDeclaringClass().getName(), exists.getName()));
