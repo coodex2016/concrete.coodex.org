@@ -30,27 +30,30 @@ class PojoBuilderImpl implements PojoBuilder {
     private final static Logger log = LoggerFactory.getLogger(PojoBuilderImpl.class);
 
     @Override
-    public Object newInstance(PojoInfo pojoInfo) {
+    public Object newInstance(PojoInfo pojoInfo) throws Throwable {
+        return pojoInfo.getRowType().newInstance();
+    }
 
-        try {
-            return pojoInfo.getRowType().newInstance();
-        } catch (Throwable th) {
-            throw new RuntimeException("Cannot instance type: " + pojoInfo.getType().toString()
-                    + ", \nCaused by: " + th.getLocalizedMessage(), th);
+    @Override
+    public void set(Object instance, PojoProperty property, Object value) throws Throwable {
+        if (property.getField() != null) {
+            property.getField().setAccessible(true);
+            property.getField().set(instance, value);
+        } else {
+            log.warn("unable set property: " + property.getName());
         }
     }
 
     @Override
-    public void set(Object instance, PojoProperty property, Object value) {
-        if (property.getField() != null) {
-            try {
-                property.getField().setAccessible(true);
-                property.getField().set(instance, value);
-            } catch (Throwable th) {
-                throw new RuntimeException("set field error: " + th.getLocalizedMessage(), th);
-            }
+    public Object get(Object instance, PojoProperty property) throws Throwable {
+        if (property.getMethod() != null) {
+            property.getMethod().setAccessible(true);
+            return property.getMethod().invoke(instance);
+        } else if (property.getField() != null) {
+            property.getField().setAccessible(true);
+            return property.getField().get(instance);
         } else {
-            log.warn("unable set property: " + property.getName());
+            return null;
         }
     }
 }

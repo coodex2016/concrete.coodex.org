@@ -101,7 +101,7 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
             if (method.getReturnType() == void.class)
                 return null;
             else
-                return convert(MockerFacade.mock(method.getGenericReturnType(), getInterfaceClass()));
+                return convert(MockerFacade.mock(method, getInterfaceClass()));
         } catch (Throwable th) {
             throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }

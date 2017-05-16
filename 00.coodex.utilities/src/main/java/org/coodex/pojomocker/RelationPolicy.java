@@ -16,11 +16,13 @@
 
 package org.coodex.pojomocker;
 
+import java.util.List;
+
 /**
  * 关联策略
  * Created by davidoff shen on 2017-05-11.
  */
 public interface RelationPolicy {
 
-    Object relate(Object ... fieldValues);
+    Object relate(List fieldValues);
 }

@@ -24,8 +24,10 @@ import org.coodex.util.PojoProperty;
  */
 public interface PojoBuilder {
 
-    Object newInstance(PojoInfo pojoInfo);
+    Object newInstance(PojoInfo pojoInfo) throws Throwable;
 
-    void set(Object instance, PojoProperty property, Object value);
+    void set(Object instance, PojoProperty property, Object value) throws Throwable;
+
+    Object get(Object instance, PojoProperty property) throws Throwable;
 
 }

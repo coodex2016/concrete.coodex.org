@@ -14,6 +14,5 @@
 # limitations under the License.
 #
 
-org.coodex.concrete.core.mocker.IDMocker
-org.coodex.concrete.core.mocker.NameMocker
-org.coodex.concrete.core.mocker.IdCardMocker
+
+org.coodex.practice.jaxrs.api.mock.CopyPolicy

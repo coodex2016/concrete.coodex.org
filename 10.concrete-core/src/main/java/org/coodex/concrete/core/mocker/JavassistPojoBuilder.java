@@ -116,10 +116,14 @@ public class JavassistPojoBuilder implements PojoBuilder {
         return "set" + upperFirstChar(propertyName);
     }
 
-    private String upperFirstChar(String propertyName) {
+    private String getGetterName(String propertyName) {
+        return "get" + upperFirstChar(propertyName);
+    }
+
+    private static String upperFirstChar(String propertyName) {
         char[] chars = propertyName.toCharArray();
         if (chars.length > 0 && chars[0] <= 'z' && chars[0] >= 'a') {
-            chars[0] = (char) (chars[0] + 'a' - 'A');
+            chars[0] = (char) (chars[0] + 'A' - 'a');
             return new String(chars);
         }
         return propertyName;
@@ -142,27 +146,28 @@ public class JavassistPojoBuilder implements PojoBuilder {
 
 
     @Override
-    public Object newInstance(PojoInfo pojoInfo) {
-        try {
-            return getClass(pojoInfo).newInstance();
-        } catch (Throwable th) {
-            throw new RuntimeException(th.getLocalizedMessage(), th);
+    public Object newInstance(PojoInfo pojoInfo) throws Throwable {
+        return getClass(pojoInfo).newInstance();
+    }
+
+    @Override
+    public void set(Object instance, PojoProperty property, Object value) throws Throwable {
+        if (instance instanceof JavassistPojo) {
+            Class c = classCache.get(((JavassistPojo) instance).__key());
+            if (property.getMethod() != null) {
+                Method method = c.getMethod(getSetterName(property.getName()), new Class[]{MockerFacade.getComponentClass(property.getType())});
+                method.invoke(instance, value);
+            }
         }
     }
 
     @Override
-    public void set(Object instance, PojoProperty property, Object value) {
+    public Object get(Object instance, PojoProperty property) throws Throwable {
         if (instance instanceof JavassistPojo) {
             Class c = classCache.get(((JavassistPojo) instance).__key());
-            if (property.getMethod() != null) {
-                try {
-                    Method method = c.getMethod(getSetterName(property.getName()), new Class[]{MockerFacade.getComponentClass(property.getType())});
-                    method.invoke(instance, value);
-                } catch (Throwable th) {
-                    throw new RuntimeException(th.getLocalizedMessage(), th);
-                }
-            }
+            return c.getMethod(getGetterName(property.getName())).invoke(instance);
         }
+        return null;
     }
 
 }

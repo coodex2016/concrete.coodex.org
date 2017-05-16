@@ -16,20 +16,31 @@
 
 package org.coodex.practice.jaxrs.pojo;
 
+import org.coodex.concrete.api.mockers.ID;
+import org.coodex.concrete.api.mockers.IdCard;
 import org.coodex.concrete.api.mockers.Name;
+import org.coodex.pojomocker.MAP;
+import org.coodex.pojomocker.Relation;
 import org.coodex.pojomocker.annotations.INTEGER;
+import org.coodex.practice.jaxrs.api.mock.CopyPolicy;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by davidoff shen on 2016-12-05.
  */
 public class BookInfo {
+    @Relation(properties = {"author"}, policy = CopyPolicy.class)
     private String bookName;
     @Name
+//@Relation(properties = {"bookName"}, policy = CopyPolicy.class)
     private String author;
     @INTEGER(min = 100)
     private int price; //分
 
-    public BookInfo(){
+    public BookInfo() {
 
     }
 
@@ -62,6 +73,14 @@ public class BookInfo {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    @ID
+    @IdCard
+    @Name
+    @MAP(keyMocker = IdCard.class, valueMocker = Name.class)
+    public Map<String, List<String>> getMap(){
+        return new HashMap<>();
     }
 
     @Override

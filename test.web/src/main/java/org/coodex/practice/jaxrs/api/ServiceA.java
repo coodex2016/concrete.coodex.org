@@ -20,6 +20,7 @@ import org.coodex.concrete.api.Abstract;
 import org.coodex.concrete.api.AccessAllow;
 import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.api.ServiceTiming;
+import org.coodex.concrete.api.mockers.IdCard;
 import org.coodex.concrete.jaxrs.BigString;
 import org.coodex.practice.jaxrs.pojo.Book;
 import org.coodex.practice.jaxrs.pojo.BookInfo;
@@ -37,12 +38,15 @@ public interface ServiceA extends Calc {
     @ServiceTiming("rule1")
     Book get(long bookId);
 
+    @IdCard
     String bigStringTest(String pathParam, @BigString String toPost);
 
     Book get(String author, long price);
 
+    @IdCard
     String update(long bookId, BookInfo book);
 
+    @IdCard
     String delete(long bookId);
 
     @AccessAllow()

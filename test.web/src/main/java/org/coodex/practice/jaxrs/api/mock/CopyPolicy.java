@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package org.coodex.pojomocker;
+package org.coodex.practice.jaxrs.api.mock;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.coodex.pojomocker.RelationPolicy;
+
+import java.util.List;
 
 /**
- * 关联
- *
- * Created by davidoff shen on 2017-05-11.
+ * Created by davidoff shen on 2017-05-16.
  */
-@Target({ElementType.FIELD, ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Relation {
-
-    String[] properties();
-
-    Class<? extends RelationPolicy> policy();
+public class CopyPolicy implements RelationPolicy {
+    @Override
+    public Object relate(List fieldValues) {
+        return fieldValues != null && fieldValues.size() > 0 ? fieldValues.get(0) : null;
+    }
 }

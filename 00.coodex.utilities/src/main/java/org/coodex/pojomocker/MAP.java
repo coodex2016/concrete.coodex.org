@@ -22,15 +22,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 关联
- *
- * Created by davidoff shen on 2017-05-11.
+ * Created by davidoff shen on 2017-05-16.
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Relation {
+public @interface MAP {
 
-    String[] properties();
+    Class keyType() default String.class;
 
-    Class<? extends RelationPolicy> policy();
+    Class keyMocker() default Mock.class;
+
+    Class valueType() default Object.class;
+
+    Class valueMocker() default Mock.class;
+
+    int size() default 5;
+
 }

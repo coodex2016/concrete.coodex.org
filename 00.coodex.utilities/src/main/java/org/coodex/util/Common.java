@@ -258,7 +258,7 @@ public class Common {
     }
 
 
-    public static URL getResource(String resource) {
+    public static URL getResource(String resource, ClassLoader ... classLoaders) {
         ClassLoader classLoader = null;
         URL url = null;
 
@@ -267,6 +267,15 @@ public class Common {
             url = classLoader.getResource(resource);
             if (url != null) {
                 return url;
+            }
+        }
+
+        if(classLoaders != null && classLoaders.length > 0){
+            for(ClassLoader cl : classLoaders){
+                url = cl.getResource(resource);
+                if (url != null) {
+                    return url;
+                }
             }
         }
 

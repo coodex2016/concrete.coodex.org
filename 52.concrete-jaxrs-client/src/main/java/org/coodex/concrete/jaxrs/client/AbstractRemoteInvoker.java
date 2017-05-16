@@ -82,7 +82,7 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
             @Override
             public Object proceed() throws Throwable {
                 if (ClassGenerator.FRONTEND_DEV_MODE) {
-                    return MockerFacade.mock(unit.getGenericReturnType(), unit.getDeclaringModule().getInterfaceClass());
+                    return MockerFacade.mock(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
                 } else {
 
                     String path = domain;

@@ -37,6 +37,14 @@ public class PojoProperty {
 
     private Annotation[] annotations = null;
 
+    protected PojoProperty(PojoProperty property, Type type){
+        this.method = property == null ? null : property.getMethod();
+        this.field = property == null ? null : property.getField();
+        this.readonly = property == null ? false : property.isReadonly();
+        this.type = type;
+        this.name = property == null ? null : property.getName();
+    }
+
     PojoProperty(Field field, Type type) {
         this(null, field, Modifier.isFinal(field.getModifiers()), type, field.getName());
     }
@@ -71,8 +79,13 @@ public class PojoProperty {
 
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         if (annotationClass == null) return null;
-        T annotation = method == null ? null : method.getAnnotation(annotationClass);
-        return field == null ? annotation : field.getAnnotation(annotationClass);
+        for(Annotation annotation: getAnnotations()) {
+            if(annotation.annotationType().equals(annotationClass))
+                return (T) annotation;
+        }
+        return null;
+//        T annotation = method == null ? null : method.getAnnotation(annotationClass);
+//        return field == null ? annotation : field.getAnnotation(annotationClass);
     }
 
     public Annotation[] getAnnotations() {

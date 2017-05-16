@@ -57,6 +57,10 @@ public class MockerFacade {
                     }
             );
 
+    private static final ServiceLoaderFacade<RelationPolicy> RELATION_POLICY_LOADER =
+            new ServiceLoaderFacade<RelationPolicy>() {
+            };
+
 
     public static <T> T mock(GenericType<T> genericType) {
         return mock(genericType, null);
@@ -68,6 +72,24 @@ public class MockerFacade {
 
     public static <T> T mock(Type type) {
         return mock(type, null);
+    }
+
+    public static <T> T mock(Method method) {
+        return mock(method, null);
+    }
+
+    public static <T> T mock(final Method method, Class ... context){
+        Type type = toTypeReference(method.getGenericReturnType(), context);
+        if (type instanceof TypeVariable) {
+            throw new RuntimeException(typeVariableInfo(type, context));
+        } else {
+            return $mock(type, new PojoProperty(null, type){
+                @Override
+                public Annotation[] getAnnotations() {
+                    return method.getAnnotations();
+                }
+            }, 0, null, context);
+        }
     }
 
     public static <T> T mock(Type type, Class... context) {
@@ -123,7 +145,7 @@ public class MockerFacade {
         if (type == null) return null;
 
         if (type instanceof ParameterizedType) {
-            return mockParameterizedType((ParameterizedType) type, property, dimension,stack, context);
+            return mockParameterizedType((ParameterizedType) type, property, dimension, stack, context);
 //            return mockPojo(getPojoInfo(type, context), property, stack, context);
 //            return mockClass((Class) ((ParameterizedType) type).getRawType(), property, dimension, stack, context);
         } else if (type instanceof GenericArrayType) {
@@ -145,7 +167,8 @@ public class MockerFacade {
         if (Collection.class.isAssignableFrom(c)) {
             return (T) mockCollection(c, type.getActualTypeArguments()[0], property, dimension, stack, context);
         } else if (Map.class.isAssignableFrom(c)) {
-            // TODO mock Map
+            return (T) mockMap(c, type.getActualTypeArguments()[0], type.getActualTypeArguments()[1],
+                    property, dimension, stack, context);
         }
         return mockPojo(new PojoInfo(type, context), property, stack, context);
     }
@@ -205,8 +228,8 @@ public class MockerFacade {
         if (Collection.class.isAssignableFrom(clazz)) {
             return (T) mockCollection(clazz, null, property, dimension, stack, context);
         } else if (Map.class.isAssignableFrom(clazz)) {
-            // TODO map
-            return null;
+            return (T) mockMap(clazz, null, null,
+                    property, dimension, stack, context);
         } else if (TypeHelper.isPrimitive(clazz)) {
             Annotation annotation = getAnnotation(property);
             return (T) MOCKER_LOADER.getServiceInstance(annotation).mock(annotation, clazz);
@@ -217,6 +240,62 @@ public class MockerFacade {
             } else
                 return mockPojo(new PojoInfo(clazz, context), property, stack, context);
         }
+    }
+
+    private static final <T extends Map> T mockMap(
+            Class<? extends Map> mapClass,
+            Type keyType, Type valueType,
+            PojoProperty property,
+            int dimension,
+            Stack<String> stack,
+            Type... context) {
+        Map map = null;
+        if (Map.class.equals(mapClass)) {
+            map = new HashMap();
+        } else {
+            try {
+                map = mapClass.newInstance();
+            } catch (Throwable th) {
+                throw new RuntimeException("unable init map: " + th.getLocalizedMessage(), th);
+            }
+        }
+        MAP annotation = property.getAnnotation(MAP.class);
+        int size = 5;
+        Annotation keyMocker = null;
+        Annotation valueMocker = null;
+
+        if (annotation != null) {
+            size = Math.max(1, annotation.size());
+            keyMocker = property.getAnnotation(annotation.keyMocker());
+            valueMocker = property.getAnnotation(annotation.valueMocker());
+            if (keyType == null) keyType = annotation.keyType();
+            if (valueType == null) valueType = annotation.valueType();
+        }
+
+        if (keyType == null) keyType = String.class;
+        if (valueType == null) valueType = String.class;
+
+        while (map.size() < size) {
+
+            final Annotation finalKeyMocker = keyMocker;
+            Object key = $mock(keyType, keyMocker == null ? null : new PojoProperty(property, keyType){
+                @Override
+                public Annotation[] getAnnotations() {
+                    return new Annotation[]{finalKeyMocker};
+                }
+            }, dimension, stack, context);
+
+            final Annotation finalValueMocker = valueMocker;
+            Object value = $mock(valueType, valueMocker == null ? null : new PojoProperty(property, valueType){
+                @Override
+                public Annotation[] getAnnotations() {
+                    return new Annotation[]{finalValueMocker};
+                }
+            }, dimension, stack, context);
+            map.put(key, value);
+        }
+
+        return (T) map;
     }
 
     private static final <T extends Collection> T mockCollection(
@@ -282,29 +361,85 @@ public class MockerFacade {
                 }
             }
 
-            Object instance = POJO_BUILDER.newInstance(pojoInfo);
+            Map<String, List<String>> relations = new HashMap<String, List<String>>();
             for (PojoProperty pojoProperty : pojoInfo.getProperties()) {
-                try {
-                    // TODO relation
-                    POJO_BUILDER.set(instance, pojoProperty,
-                            $mock(pojoProperty.getType(), pojoProperty, 0, stack, context));
-                } catch (Throwable th) {
-                    String message = new StringBuilder("Cannot set property: ")
-                            .append(pojoProperty.getName())
-                            .append(", caused by: ")
-                            .append(th.getLocalizedMessage()).toString();
+                Relation relation = pojoProperty.getAnnotation(Relation.class);
+                if (relations.containsKey(pojoProperty.getName())) continue;
 
-                    if ("warn".equalsIgnoreCase(System.getProperty(Mock.POLICY_KEY))) {
-                        log.warn("{}", message, th);
-                    } else {
-                        throw new RuntimeException(message, th);
+                if (relation != null && relation.properties() != null && relation.properties().length > 0) {
+                    relations.put(pojoProperty.getName(), Arrays.asList(relation.properties()));
+                    List<String> list = relations.get(pojoProperty.getName());
+                    for (String dependency : list) {// field是否存在
+                        if (pojoInfo.getProperty(dependency) == null)
+                            throw new RuntimeException("property not exists: " + dependency);
                     }
+                    checkCircular(relations, list, pojoProperty.getName());
                 }
             }
-            return (T) instance;
+
+            return (T) buildPojo(pojoInfo, stack, context);
         } finally {
             stack.pop();
         }
+    }
+
+    private static void checkCircular(
+            Map<String, List<String>> relations, List<String> dependencies, String propertyName) {
+        if (dependencies == null || dependencies.size() == 0) return;
+        for (String s : dependencies) {
+            if (propertyName.equals(s))
+                throw new RuntimeException("circular relation: " + propertyName);
+            checkCircular(relations, relations.get(s), propertyName);
+        }
+    }
+
+
+    private static Object buildPojo(PojoInfo pojoInfo, Stack<String> stack, Type... context) {
+        Object instance = null;
+        try {
+            instance = POJO_BUILDER.newInstance(pojoInfo);
+        } catch (Throwable th) {
+            throw new RuntimeException("Cannot instance type: " + pojoInfo.getType().toString()
+                    + ", caused by: " + th.getLocalizedMessage(), th);
+        }
+        Set<String> over = new HashSet<String>();
+        for (PojoProperty pojoProperty : pojoInfo.getProperties()) {
+            try {
+                buildProperty(instance, over, stack, pojoInfo, pojoProperty, context);
+
+            } catch (Throwable th) {
+                String message = new StringBuilder("Cannot set property: ")
+                        .append(pojoProperty.getName())
+                        .append(", caused by: ")
+                        .append(th.getLocalizedMessage()).toString();
+
+                if ("warn".equalsIgnoreCase(System.getProperty(Mock.POLICY_KEY))) {
+                    log.warn("{}", message, th);
+                } else {
+                    throw new RuntimeException(message, th);
+                }
+            }
+        }
+        return instance;
+    }
+
+    private static void buildProperty(Object instance, Set<String> over, Stack<String> stack, PojoInfo pojoInfo, PojoProperty pojoProperty, Type[] context) throws Throwable {
+        if (over.contains(pojoProperty.getName())) return;
+        Relation relation = pojoProperty.getAnnotation(Relation.class);
+        if (relation != null && relation.properties() != null && relation.properties().length > 0) {
+            List<Object> dependencies = new ArrayList<Object>();
+            for (String property : relation.properties()) {
+                PojoProperty p = pojoInfo.getProperty(property);
+                buildProperty(instance, over, stack, pojoInfo, p, context);
+                dependencies.add(POJO_BUILDER.get(instance, p));
+            }
+            POJO_BUILDER.set(instance, pojoProperty,
+                    RELATION_POLICY_LOADER.getInstance(relation.policy()).relate(dependencies));
+        } else {
+            POJO_BUILDER.set(instance, pojoProperty,
+                    $mock(pojoProperty.getType(), pojoProperty, 0, stack, context));
+        }
+        over.add(pojoProperty.getName());
     }
 
     private static int getDeep(PojoProperty property) {
