@@ -32,7 +32,6 @@ public class DefaultByteMocker extends AbstractPrimitiveMocker<Byte, BYTE> {
     protected Byte $mock(BYTE mockAnnotation) {
         byte min = mockAnnotation.min();
         byte max = mockAnnotation.max();
-        boolean positive = true;
         if(min == max) return min;
         if(min > max){
             byte t = min;
@@ -40,15 +39,6 @@ public class DefaultByteMocker extends AbstractPrimitiveMocker<Byte, BYTE> {
             max = t;
         }
 
-        if(min <0 && max > 0){
-            if(Math.random() < 0.5){
-                max = 0;
-                positive = false;
-            } else {
-                min = 0;
-            }
-        }
-
-        return (byte)(Math.random() * (max - min) * (positive ?  1 : -1));
+        return (byte)(Math.random() * (max - min) + min);
     }
 }

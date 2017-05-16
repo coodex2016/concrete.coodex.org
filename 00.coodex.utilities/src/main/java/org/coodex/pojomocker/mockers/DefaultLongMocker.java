@@ -32,7 +32,6 @@ public class DefaultLongMocker extends AbstractPrimitiveMocker<Long, LONG> {
     protected Long $mock(LONG mockAnnotation) {
         long min = mockAnnotation.min();
         long max = mockAnnotation.max();
-        boolean positive = true;
         if(min == max) return min;
         if(min > max){
             long t = min;
@@ -40,15 +39,7 @@ public class DefaultLongMocker extends AbstractPrimitiveMocker<Long, LONG> {
             max = t;
         }
 
-        if(min <0 && max > 0){
-            if(Math.random() < 0.5){
-                max = 0;
-                positive = false;
-            } else {
-                min = 0;
-            }
-        }
 
-        return (long)(Math.random() * (max - min) * (positive ?  1 : -1));
+        return (long)(Math.random() * (max - min) + min);
     }
 }

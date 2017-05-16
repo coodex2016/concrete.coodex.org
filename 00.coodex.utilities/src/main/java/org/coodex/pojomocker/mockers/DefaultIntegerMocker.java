@@ -32,23 +32,14 @@ public class DefaultIntegerMocker extends AbstractPrimitiveMocker<Integer, INTEG
     protected Integer $mock(INTEGER mockAnnotation) {
         int min = mockAnnotation.min();
         int max = mockAnnotation.max();
-        boolean positive = true;
-        if(min == max) return min;
-        if(min > max){
+        if (min == max) return min;
+        if (min > max) {
             int t = min;
             min = max;
             max = t;
         }
 
-        if(min <0 && max > 0){
-            if(Math.random() < 0.5){
-                max = 0;
-                positive = false;
-            } else {
-                min = 0;
-            }
-        }
 
-        return (int)(Math.random() * (max - min) * (positive ? 1 : -1));
+        return (int) (Math.random() * (max - min) + min);
     }
 }

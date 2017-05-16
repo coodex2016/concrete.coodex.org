@@ -16,10 +16,7 @@
 
 package org.coodex.practice.jaxrs.pojo;
 
-import org.coodex.concrete.api.mockers.ID;
-import org.coodex.concrete.api.mockers.IdCard;
-import org.coodex.concrete.api.mockers.Name;
-import org.coodex.concrete.api.mockers.VehicleNum;
+import org.coodex.concrete.api.mockers.*;
 import org.coodex.pojomocker.MAP;
 import org.coodex.pojomocker.Relation;
 import org.coodex.pojomocker.annotations.INTEGER;
@@ -80,7 +77,8 @@ public class BookInfo {
     @IdCard
     @Name
     @VehicleNum
-    @MAP(keyMocker = IdCard.class, valueMocker = VehicleNum.class)
+    @DateTime(max = "2020-12-31 23:59:59")
+    @MAP(keyMocker = IdCard.class, valueMocker = DateTime.class)
     public Map<String, List<String>> getMap(){
         return new HashMap<>();
     }

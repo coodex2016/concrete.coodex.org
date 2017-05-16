@@ -32,7 +32,6 @@ public class DefaultShortMocker extends AbstractPrimitiveMocker<Short, SHORT> {
     protected Short $mock(SHORT mockAnnotation) {
         short min = mockAnnotation.min();
         short max = mockAnnotation.max();
-        boolean positive = true;
         if(min == max) return min;
         if(min > max){
             short t = min;
@@ -40,15 +39,7 @@ public class DefaultShortMocker extends AbstractPrimitiveMocker<Short, SHORT> {
             max = t;
         }
 
-        if(min <0 && max > 0){
-            if(Math.random() < 0.5){
-                max = 0;
-                positive = false;
-            } else {
-                min = 0;
-            }
-        }
 
-        return (short)(Math.random() * (max - min) * (positive ?  1 : -1));
+        return (short)(Math.random() * (max - min) + min);
     }
 }

@@ -32,7 +32,6 @@ public class DefaultFloatMocker extends AbstractPrimitiveMocker<Float, FLOAT> {
     protected Float $mock(FLOAT mockAnnotation) {
         float min = mockAnnotation.min();
         float max = mockAnnotation.max();
-        boolean positive = true;
         if(min == max) return min;
         if(min > max){
             float t = min;
@@ -40,15 +39,6 @@ public class DefaultFloatMocker extends AbstractPrimitiveMocker<Float, FLOAT> {
             max = t;
         }
 
-        if(min <0 && max > 0){
-            if(Math.random() < 0.5){
-                max = 0;
-                positive = false;
-            } else {
-                min = 0;
-            }
-        }
-
-        return (float)(Math.random() * (max - min) * (positive ?  1 : -1));
+        return (float)(Math.random() * (max - min)  + min);
     }
 }
