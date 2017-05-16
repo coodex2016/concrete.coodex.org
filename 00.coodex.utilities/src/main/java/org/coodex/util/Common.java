@@ -258,7 +258,7 @@ public class Common {
     }
 
 
-    public static URL getResource(String resource, ClassLoader ... classLoaders) {
+    public static URL getResource(String resource, ClassLoader... classLoaders) {
         ClassLoader classLoader = null;
         URL url = null;
 
@@ -270,8 +270,8 @@ public class Common {
             }
         }
 
-        if(classLoaders != null && classLoaders.length > 0){
-            for(ClassLoader cl : classLoaders){
+        if (classLoaders != null && classLoaders.length > 0) {
+            for (ClassLoader cl : classLoaders) {
                 url = cl.getResource(resource);
                 if (url != null) {
                     return url;
@@ -408,6 +408,24 @@ public class Common {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e.getLocalizedMessage(), e);
         }
+    }
+
+    public static char randomChar(String s) {
+        if (Common.isBlank(s)) throw new IllegalArgumentException("range is blank.");
+        return s.charAt(Common.random(s.length() - 1));
+    }
+
+    public static <T> T random(T[] range) {
+        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        return range[random(range.length - 1)];
+    }
+
+    public static String randomStr(int min, int max, String range){
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0, j = random(min, max); i < j; i++) {
+            builder.append(randomChar(range));
+        }
+        return builder.toString();
     }
 
 

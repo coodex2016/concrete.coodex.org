@@ -19,3 +19,5 @@ org.coodex.concrete.core.mocker.NameMocker
 org.coodex.concrete.core.mocker.IdCardMocker
 org.coodex.concrete.core.mocker.VehicleNumMocker
 org.coodex.concrete.core.mocker.DateTimeMocker
+org.coodex.concrete.core.mocker.EMailMocker
+org.coodex.concrete.core.mocker.MobilePhoneNumMocker

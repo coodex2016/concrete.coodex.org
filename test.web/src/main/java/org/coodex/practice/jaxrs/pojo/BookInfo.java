@@ -78,7 +78,9 @@ public class BookInfo {
     @Name
     @VehicleNum
     @DateTime(max = "2020-12-31 23:59:59")
-    @MAP(keyMocker = IdCard.class, valueMocker = DateTime.class)
+    @EMail(domains = {"github.com", "gmail.com", "coodex.org"})
+    @MobilePhoneNum(appleStyle = true)
+    @MAP(keyMocker = IdCard.class, valueMocker = MobilePhoneNum.class)
     public Map<String, List<String>> getMap(){
         return new HashMap<>();
     }

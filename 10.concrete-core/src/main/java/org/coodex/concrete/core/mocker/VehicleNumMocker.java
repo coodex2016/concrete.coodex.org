@@ -20,6 +20,8 @@ import org.coodex.concrete.api.mockers.VehicleNum;
 import org.coodex.pojomocker.AbstractMocker;
 import org.coodex.util.Common;
 
+import static org.coodex.util.Common.randomChar;
+
 /**
  * Created by davidoff shen on 2017-05-16.
  */
@@ -28,9 +30,9 @@ public class VehicleNumMocker extends AbstractMocker<VehicleNum> {
     private final String alphabets = "ABCDEFGHJKLMNPQRSTUVWXYZ";
     private final String numbers = "0123456789";
 
-    private char randomChar(String s) {
-        return s.charAt(Common.random(s.length() - 1));
-    }
+//    private char randomChar(String s) {
+//        return s.charAt(Common.random(s.length() - 1));
+//    }
 
     @Override
     public Object mock(VehicleNum mockAnnotation, Class clazz) {
