@@ -25,9 +25,9 @@ import java.util.List;
  * Created by davidoff shen on 2017-03-21.
  */
 public class SortedPageRequest<T> extends PageRequest<T> {
+    @Description(name = "排序信息")
     private List<Sorted> sort = new ArrayList<Sorted>();
 
-    @Description(name = "排序信息")
     public List<Sorted> getSort() {
         return sort;
     }

@@ -39,13 +39,13 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
 
 ////    @Override
 //    @SuppressWarnings("unchecked")
-//    public <T> T getBean(String name) {
-//        return (T) context.getBean(name);
+//    public <T> T getBean(String getName) {
+//        return (T) context.getBean(getName);
 //    }
 //
 ////    @Override
-//    public <T> T getBean(Class<T> type, String name) {
-//        return context.getBeansOfType(type).get(name);
+//    public <T> T getBean(Class<T> type, String getName) {
+//        return context.getBeansOfType(type).get(getName);
 //    }
 
     @Override

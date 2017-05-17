@@ -22,10 +22,12 @@ import org.coodex.concrete.api.Description;
  * Created by davidoff shen on 2017-03-21.
  */
 public abstract class AbstractPage {
+    @Description(name = "第几页", description = "从1开始")
     private Long num;
+    @Description(name = "每页多少条数据")
     private Integer pageSize;
 
-    @Description(name = "第几页", description = "从1开始")
+
     public Long getNum() {
         return num;
     }
@@ -34,7 +36,7 @@ public abstract class AbstractPage {
         this.num = num;
     }
 
-    @Description(name = "每页多少条数据")
+
     public Integer getPageSize() {
         return pageSize;
     }

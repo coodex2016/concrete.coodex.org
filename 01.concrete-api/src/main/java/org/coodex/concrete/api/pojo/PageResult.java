@@ -25,11 +25,13 @@ import java.util.List;
  * Created by davidoff shen on 2017-03-21.
  */
 public class PageResult<T> extends AbstractPage {
+    @Description(name = "总共多少页")
     private Long total;
+    @Description(name = "总共多少条数据")
     private Long count;
     private List<T> list = new ArrayList<T>();
 
-    @Description(name = "总共多少页")
+
     public Long getTotal() {
         return total;
     }
@@ -38,7 +40,7 @@ public class PageResult<T> extends AbstractPage {
         this.total = total;
     }
 
-    @Description(name = "总共多少条数据")
+
     public Long getCount() {
         return count;
     }

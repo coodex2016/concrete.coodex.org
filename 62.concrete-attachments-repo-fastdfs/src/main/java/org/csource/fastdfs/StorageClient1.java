@@ -22,7 +22,7 @@ import org.csource.common.NameValuePair;
 import java.io.IOException;
 
 /**
-* Storage client for 1 field file id: combined group name and filename
+* Storage client for 1 field file id: combined group getName and filename
 * @author Happy Fish / YuQing
 * @version Version 1.21
 */
@@ -56,17 +56,17 @@ public class StorageClient1 extends StorageClient
 			return ProtoCommon.ERR_NO_EINVAL;
 		}
 		
-		results[0] = file_id.substring(0, pos); //group name
-		results[1] = file_id.substring(pos + 1); //file name
+		results[0] = file_id.substring(0, pos); //group getName
+		results[1] = file_id.substring(pos + 1); //file getName
 		return 0;
   }
   	
 	/**
-	* upload file to storage server (by file name)
+	* upload file to storage server (by file getName)
 	* @param local_filename local filename to upload
-	* @param file_ext_name file ext name, do not include dot(.), null to extract ext name from the local filename
+	* @param file_ext_name file ext getName, do not include dot(.), null to extract ext getName from the local filename
 	* @param meta_list meta info array
-	* @return  file id(including group name and filename) if success, <br>
+	* @return  file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_file1(String local_filename, String file_ext_name, 
@@ -84,12 +84,12 @@ public class StorageClient1 extends StorageClient
 	}
 
 	/**
-	* upload file to storage server (by file name)
-	* @param group_name the group name to upload file to, can be empty
+	* upload file to storage server (by file getName)
+	* @param group_name the group getName to upload file to, can be empty
 	* @param local_filename local filename to upload
-	* @param file_ext_name file ext name, do not include dot(.), null to extract ext name from the local filename
+	* @param file_ext_name file ext getName, do not include dot(.), null to extract ext getName from the local filename
 	* @param meta_list meta info array
-	* @return  file id(including group name and filename) if success, <br>
+	* @return  file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_file1(String group_name, String local_filename, String file_ext_name, 
@@ -109,9 +109,9 @@ public class StorageClient1 extends StorageClient
 	/**
 	* upload file to storage server (by file buff)
 	* @param file_buff file content/buff
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
-	* @return  file id(including group name and filename) if success, <br>
+	* @return  file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_file1(byte[] file_buff, String file_ext_name,	
@@ -130,11 +130,11 @@ public class StorageClient1 extends StorageClient
 
 	/**
 	* upload file to storage server (by file buff)
-	* @param group_name the group name to upload file to, can be empty
+	* @param group_name the group getName to upload file to, can be empty
 	* @param file_buff file content/buff
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
-	* @return  file id(including group name and filename) if success, <br>
+	* @return  file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_file1(String group_name, byte[] file_buff, String file_ext_name,	
@@ -153,12 +153,12 @@ public class StorageClient1 extends StorageClient
 
 	/**
 	* upload file to storage server (by callback)
-	* @param group_name the group name to upload file to, can be empty
+	* @param group_name the group getName to upload file to, can be empty
 	* @param file_size the file size
 	* @param callback the write data callback object
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
-  * @return file id(including group name and filename) if success, <br>
+  * @return file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_file1(String group_name, long file_size, 
@@ -177,11 +177,11 @@ public class StorageClient1 extends StorageClient
 	}
 
 	/**
-	* upload appender file to storage server (by file name)
+	* upload appender file to storage server (by file getName)
 	* @param local_filename local filename to upload
-	* @param file_ext_name file ext name, do not include dot(.), null to extract ext name from the local filename
+	* @param file_ext_name file ext getName, do not include dot(.), null to extract ext getName from the local filename
 	* @param meta_list meta info array
-	* @return  file id(including group name and filename) if success, <br>
+	* @return  file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_appender_file1(String local_filename, String file_ext_name, 
@@ -199,12 +199,12 @@ public class StorageClient1 extends StorageClient
 	}
 
 	/**
-	* upload appender file to storage server (by file name)
-	* @param group_name the group name to upload file to, can be empty
+	* upload appender file to storage server (by file getName)
+	* @param group_name the group getName to upload file to, can be empty
 	* @param local_filename local filename to upload
-	* @param file_ext_name file ext name, do not include dot(.), null to extract ext name from the local filename
+	* @param file_ext_name file ext getName, do not include dot(.), null to extract ext getName from the local filename
 	* @param meta_list meta info array
-	* @return  file id(including group name and filename) if success, <br>
+	* @return  file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_appender_file1(String group_name, String local_filename, String file_ext_name, 
@@ -224,9 +224,9 @@ public class StorageClient1 extends StorageClient
 	/**
 	* upload appender file to storage server (by file buff)
 	* @param file_buff file content/buff
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
-	* @return  file id(including group name and filename) if success, <br>
+	* @return  file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_appender_file1(byte[] file_buff, String file_ext_name,	
@@ -245,11 +245,11 @@ public class StorageClient1 extends StorageClient
 
 	/**
 	* upload appender file to storage server (by file buff)
-	* @param group_name the group name to upload file to, can be empty
+	* @param group_name the group getName to upload file to, can be empty
 	* @param file_buff file content/buff
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
-	* @return  file id(including group name and filename) if success, <br>
+	* @return  file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_appender_file1(String group_name, byte[] file_buff, String file_ext_name,	
@@ -268,12 +268,12 @@ public class StorageClient1 extends StorageClient
 
 	/**
 	* upload appender file to storage server (by callback)
-	* @param group_name the group name to upload file to, can be empty
+	* @param group_name the group getName to upload file to, can be empty
 	* @param file_size the file size
 	* @param callback the write data callback object
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
-  * @return file id(including group name and filename) if success, <br>
+  * @return file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_appender_file1(String group_name, long file_size, 
@@ -292,13 +292,13 @@ public class StorageClient1 extends StorageClient
 	}
 	
 	/**
-	* upload file to storage server (by file name, slave file mode)
+	* upload file to storage server (by file getName, slave file mode)
 	* @param master_file_id the master file id to generate the slave file
-	* @param prefix_name the prefix name to generate the slave file
+	* @param prefix_name the prefix getName to generate the slave file
 	* @param local_filename local filename to upload
-	* @param file_ext_name file ext name, do not include dot(.), null to extract ext name from the local filename
+	* @param file_ext_name file ext getName, do not include dot(.), null to extract ext getName from the local filename
 	* @param meta_list meta info array
-	* @return  file id(including group name and filename) if success, <br>
+	* @return  file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_file1(String master_file_id, String prefix_name, 
@@ -326,11 +326,11 @@ public class StorageClient1 extends StorageClient
 	/**
 	* upload file to storage server (by file buff, slave file mode)
 	* @param master_file_id the master file id to generate the slave file
-	* @param prefix_name the prefix name to generate the slave file
+	* @param prefix_name the prefix getName to generate the slave file
 	* @param file_buff file content/buff
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
-	* @return  file id(including group name and filename) if success, <br>
+	* @return  file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_file1(String master_file_id, String prefix_name, 
@@ -357,11 +357,11 @@ public class StorageClient1 extends StorageClient
 	/**
 	* upload file to storage server (by file buff, slave file mode)
 	* @param master_file_id the master file id to generate the slave file
-	* @param prefix_name the prefix name to generate the slave file
+	* @param prefix_name the prefix getName to generate the slave file
 	* @param file_buff file content/buff
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
-	* @return  file id(including group name and filename) if success, <br>
+	* @return  file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_file1(String master_file_id, String prefix_name, 
@@ -390,12 +390,12 @@ public class StorageClient1 extends StorageClient
 	/**
 	* upload file to storage server (by callback)
 	* @param master_file_id the master file id to generate the slave file
-	* @param prefix_name the prefix name to generate the slave file
+	* @param prefix_name the prefix getName to generate the slave file
 	* @param file_size the file size
 	* @param callback the write data callback object
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
-  * @return file id(including group name and filename) if success, <br>
+  * @return file id(including group getName and filename) if success, <br>
 	*         return null if fail
 	*/
 	public String upload_file1(String master_file_id, String prefix_name, long file_size, 
@@ -421,7 +421,7 @@ public class StorageClient1 extends StorageClient
 	}
 
 	/**
-	* append file to storage server (by file name)
+	* append file to storage server (by file getName)
 	* @param appender_file_id the appender file id
 	* @param local_filename local filename to append
 	* @return 0 for success, != 0 for error (error no)
@@ -496,7 +496,7 @@ public class StorageClient1 extends StorageClient
 	}
 	
 	/**
-	* modify appender file to storage server (by file name)
+	* modify appender file to storage server (by file getName)
 	* @param appender_file_id the appender file id
 	* @param file_offset the offset of appender file
 	* @param local_filename local filename to append
@@ -581,7 +581,7 @@ public class StorageClient1 extends StorageClient
 	
 	/**
 	* delete file from storage server
-	* @param file_id the file id(including group name and filename)
+	* @param file_id the file id(including group getName and filename)
 	* @return 0 for success, none zero for fail (error code)
 	*/
 	public int delete_file1(String file_id) throws IOException, MyException
@@ -633,7 +633,7 @@ public class StorageClient1 extends StorageClient
 	
 	/**
 	* download file from storage server
-	* @param file_id the file id(including group name and filename)
+	* @param file_id the file id(including group getName and filename)
 	* @return file content/buffer, return null if fail
 	*/
 	public byte[] download_file1(String file_id) throws IOException, MyException
@@ -646,7 +646,7 @@ public class StorageClient1 extends StorageClient
 	
 	/**
 	* download file from storage server
-	* @param file_id the file id(including group name and filename)
+	* @param file_id the file id(including group getName and filename)
 	* @param file_offset the start offset of the file
 	* @param download_bytes download bytes, 0 for remain bytes from offset
 	* @return file content/buff, return null if fail
@@ -665,7 +665,7 @@ public class StorageClient1 extends StorageClient
 
 	/**
 	* download file from storage server
-	* @param file_id the file id(including group name and filename)
+	* @param file_id the file id(including group getName and filename)
 	* @param local_filename  the filename on local
 	* @return 0 success, return none zero errno if fail
 	*/
@@ -679,7 +679,7 @@ public class StorageClient1 extends StorageClient
 	
 	/**
 	* download file from storage server
-	* @param file_id the file id(including group name and filename)
+	* @param file_id the file id(including group getName and filename)
 	* @param file_offset the start offset of the file
 	* @param download_bytes download bytes, 0 for remain bytes from offset
 	* @param local_filename  the filename on local
@@ -699,7 +699,7 @@ public class StorageClient1 extends StorageClient
 	
 	/**
 	* download file from storage server
-	* @param file_id the file id(including group name and filename)
+	* @param file_id the file id(including group getName and filename)
 	* @param callback the callback object, will call callback.recv() when data arrive
 	* @return 0 success, return none zero errno if fail
 	*/
@@ -713,7 +713,7 @@ public class StorageClient1 extends StorageClient
 	
 	/**
 	* download file from storage server
-	* @param file_id the file id(including group name and filename)
+	* @param file_id the file id(including group getName and filename)
 	* @param file_offset the start offset of the file
 	* @param download_bytes download bytes, 0 for remain bytes from offset
 	* @param callback the callback object, will call callback.recv() when data arrive
@@ -733,7 +733,7 @@ public class StorageClient1 extends StorageClient
 
 	/**
 	* get all metadata items from storage server
-	* @param file_id the file id(including group name and filename)
+	* @param file_id the file id(including group getName and filename)
 	* @return meta info array, return null if fail
 	*/
 	public NameValuePair[] get_metadata1(String file_id)throws IOException, MyException
@@ -750,7 +750,7 @@ public class StorageClient1 extends StorageClient
 	
 	/**
 	* set metadata items to storage server
-	* @param file_id the file id(including group name and filename)
+	* @param file_id the file id(including group getName and filename)
 	*	@param meta_list meta item array
 	* @param op_flag flag, can be one of following values: <br>
 	*            <ul><li> ProtoCommon.STORAGE_SET_METADATA_FLAG_OVERWRITE: overwrite all old
@@ -773,7 +773,7 @@ public class StorageClient1 extends StorageClient
 	
 	/**
 	* get file info from storage server
-	* @param file_id the file id(including group name and filename)
+	* @param file_id the file id(including group getName and filename)
 	* @return FileInfo object for success, return null for fail
 	*/
 	public FileInfo query_file_info1(String file_id) throws IOException, MyException
@@ -790,7 +790,7 @@ public class StorageClient1 extends StorageClient
 	
 	/**
 	* get file info decoded from filename
-	* @param file_id the file id(including group name and filename)
+	* @param file_id the file id(including group getName and filename)
 	* @return FileInfo object for success, return null for fail
 	*/
 	public FileInfo get_file_info1(String file_id) throws IOException, MyException

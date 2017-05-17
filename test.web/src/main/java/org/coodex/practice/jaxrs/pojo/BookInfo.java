@@ -30,7 +30,7 @@ import java.util.Map;
  * Created by davidoff shen on 2016-12-05.
  */
 public class BookInfo {
-    @Relation(properties = {"author"}, policy = CopyPolicy.class)
+    @Relation(properties = {"author"}, policy = CopyPolicy.POLICY_NAME)
     private String bookName;
     @Name
 //@Relation(properties = {"bookName"}, policy = CopyPolicy.class)

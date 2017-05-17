@@ -287,9 +287,9 @@ public class ProtoCommon
 	}
 
 /**
-* split metadata to name value pair array
+* split metadata to getName value pair array
 * @param meta_buff metadata
-* @return name value pair array
+* @return getName value pair array
 */
 	public static NameValuePair[] split_metadata(String meta_buff)
 	{
@@ -297,11 +297,11 @@ public class ProtoCommon
 	}
 
 /**
-* split metadata to name value pair array
+* split metadata to getName value pair array
 * @param meta_buff metadata
 * @param recordSeperator record/row seperator
 * @param filedSeperator field/column seperator
-* @return name value pair array
+* @return getName value pair array
 */
 	public static NameValuePair[] split_metadata(String meta_buff, 
 						    String  recordSeperator, String  filedSeperator)
@@ -502,8 +502,8 @@ public class ProtoCommon
  /**
 * generate slave filename
 * @param master_filename the master filename to generate the slave filename
-* @param prefix_name the prefix name to generate the slave filename
-* @param ext_name the extension name of slave filename, null for same as the master extension name
+* @param prefix_name the prefix getName to generate the slave filename
+* @param ext_name the extension getName of slave filename, null for same as the master extension getName
 * @return slave filename string
 */
  public static String genSlaveFilename(String master_filename, 

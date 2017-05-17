@@ -53,7 +53,7 @@ public class IniFileReader
 	
 /**
 * get string value from config file
-* @param name item name in config file
+* @param name item getName in config file
 * @return string value
 */
 	public String getStrValue(String name)
@@ -75,7 +75,7 @@ public class IniFileReader
 
 /**
 * get int value from config file
-* @param name item name in config file
+* @param name item getName in config file
 * @param default_value the default value
 * @return int value
 */
@@ -92,7 +92,7 @@ public class IniFileReader
 
 /**
 * get boolean value from config file
-* @param name item name in config file
+* @param name item getName in config file
 * @param default_value the default value
 * @return boolean value
 */
@@ -110,7 +110,7 @@ public class IniFileReader
 	
 /**
 * get all values from config file
-* @param name item name in config file
+* @param name item getName in config file
 * @return string values (array)
 */
 	public String[] getValues(String name)

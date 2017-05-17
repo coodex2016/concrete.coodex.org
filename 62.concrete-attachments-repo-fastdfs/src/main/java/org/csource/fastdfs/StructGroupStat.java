@@ -81,7 +81,7 @@ public class StructGroupStat extends StructBase
 		fieldsTotalSize = offset;
 	}
 	
-	protected String groupName;  //name of this group
+	protected String groupName;  //getName of this group
 	protected long totalMB;      //total disk storage in MB
 	protected long freeMB;       //free disk space in MB
 	protected long trunkFreeMB;  //trunk free space in MB
@@ -95,8 +95,8 @@ public class StructGroupStat extends StructBase
 	protected int currentTrunkFileId; //current trunk file id
 	
 /**
-* get group name
-* @return group name
+* get group getName
+* @return group getName
 */
   public String getGroupName()
   {

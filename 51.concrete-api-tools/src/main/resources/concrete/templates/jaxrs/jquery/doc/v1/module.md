@@ -4,7 +4,7 @@
 ## 获得模块
 <#assign insName=tool.camelCase(module.interfaceClass.simpleName)>
 ```javascript
-var ${insName} = concrete.module("${module.interfaceClass.name}");
+var ${insName} = concrete.module(getName);
 ```
 ${module.description!""}
 

@@ -16,13 +16,17 @@
 
 package org.coodex.pojomocker;
 
+import org.coodex.util.AcceptableService;
+
 import java.util.List;
 
 /**
  * 关联策略
  * Created by davidoff shen on 2017-05-11.
  */
-public interface RelationPolicy {
+public interface RelationPolicy extends AcceptableService<String> {
 
-    Object relate(List fieldValues);
+    String[] getPolicyNames();
+
+    Object relate(String policyName, List fieldValues);
 }

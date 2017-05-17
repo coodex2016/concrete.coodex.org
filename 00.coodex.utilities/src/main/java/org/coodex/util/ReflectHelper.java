@@ -64,11 +64,11 @@ public class ReflectHelper {
 
             name = getParameterName(method, index, "p");
 //            try {
-//                name = getParameterName();
+//                getName = getParameterName();
 //            } catch (Throwable th) {
 //            }
-//            if (Common.isBlank(name))
-//                name = "arg" + index;
+//            if (Common.isBlank(getName))
+//                getName = "arg" + index;
 
         }
 

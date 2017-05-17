@@ -290,7 +290,7 @@ public class StructStorageStat extends StructBase
 	protected String id;
 	protected String ipAddr;
 	protected String srcIpAddr;
-	protected String domainName; //http domain name
+	protected String domainName; //http domain getName
 	protected String version;
 	protected long totalMB; //total disk storage in MB
 	protected long freeMB;  //free disk storage in MB
@@ -386,8 +386,8 @@ public class StructStorageStat extends StructBase
   }
   
 /**
-* get the domain name of the storage server
-* @return the domain name of the storage server
+* get the domain getName of the storage server
+* @return the domain getName of the storage server
 */
   public String getDomainName()
   {

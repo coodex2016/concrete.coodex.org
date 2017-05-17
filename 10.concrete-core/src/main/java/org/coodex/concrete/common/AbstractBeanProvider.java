@@ -81,12 +81,12 @@ public abstract class AbstractBeanProvider implements BeanProvider {
     }
 
 //    @Override
-//    public <T> T getBean(String name) {
+//    public <T> T getBean(String getName) {
 //        return null;
 //    }
 
 //    @Override
-//    public <T> T getBean(Class<T> type, String name) {
+//    public <T> T getBean(Class<T> type, String getName) {
 //        return null;
 //    }
 

@@ -57,9 +57,9 @@ public class MockerFacade {
                     }
             );
 
-    private static final ServiceLoaderFacade<RelationPolicy> RELATION_POLICY_LOADER =
-            new ServiceLoaderFacade<RelationPolicy>() {
-            };
+    private static final AcceptableServiceLoader<String, RelationPolicy> RELATION_POLICY_LOADER =
+            new AcceptableServiceLoader<String, RelationPolicy>(new ServiceLoaderFacade<RelationPolicy>() {
+            });
 
 
     public static <T> T mock(GenericType<T> genericType) {
@@ -78,12 +78,12 @@ public class MockerFacade {
         return mock(method, null);
     }
 
-    public static <T> T mock(final Method method, Class ... context){
+    public static <T> T mock(final Method method, Class... context) {
         Type type = toTypeReference(method.getGenericReturnType(), context);
         if (type instanceof TypeVariable) {
             throw new RuntimeException(typeVariableInfo(type, context));
         } else {
-            return $mock(type, new PojoProperty(null, type){
+            return $mock(type, new PojoProperty(null, type) {
                 @Override
                 public Annotation[] getAnnotations() {
                     return method.getAnnotations();
@@ -278,7 +278,7 @@ public class MockerFacade {
         while (map.size() < size) {
 
             final Annotation finalKeyMocker = keyMocker;
-            Object key = $mock(keyType, keyMocker == null ? null : new PojoProperty(property, keyType){
+            Object key = $mock(keyType, keyMocker == null ? null : new PojoProperty(property, keyType) {
                 @Override
                 public Annotation[] getAnnotations() {
                     return new Annotation[]{finalKeyMocker};
@@ -286,7 +286,7 @@ public class MockerFacade {
             }, dimension, stack, context);
 
             final Annotation finalValueMocker = valueMocker;
-            Object value = $mock(valueType, valueMocker == null ? null : new PojoProperty(property, valueType){
+            Object value = $mock(valueType, valueMocker == null ? null : new PojoProperty(property, valueType) {
                 @Override
                 public Annotation[] getAnnotations() {
                     return new Annotation[]{finalValueMocker};
@@ -434,7 +434,7 @@ public class MockerFacade {
                 dependencies.add(POJO_BUILDER.get(instance, p));
             }
             POJO_BUILDER.set(instance, pojoProperty,
-                    RELATION_POLICY_LOADER.getInstance(relation.policy()).relate(dependencies));
+                    RELATION_POLICY_LOADER.getServiceInstance(relation.policy()).relate(relation.policy(), dependencies));
         } else {
             POJO_BUILDER.set(instance, pojoProperty,
                     $mock(pojoProperty.getType(), pojoProperty, 0, stack, context));

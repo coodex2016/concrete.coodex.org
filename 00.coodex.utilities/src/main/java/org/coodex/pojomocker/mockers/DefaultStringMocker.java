@@ -21,6 +21,15 @@ import org.coodex.pojomocker.annotations.STRING;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by davidoff shen on 2017-05-15.
  */
@@ -37,7 +46,14 @@ public class DefaultStringMocker implements Mocker<STRING> {
 
     @Override
     public Object mock(STRING mockAnnotation, Class clazz) {
-        if(mockAnnotation.range() != null && mockAnnotation.range().length > 0){
+
+        if (!Common.isBlank(mockAnnotation.txt())) {
+            String[] range = loadFromTxt(mockAnnotation.txt());
+            if (range != null && range.length > 0)
+                return Common.random(range);
+        }
+
+        if (mockAnnotation.range() != null && mockAnnotation.range().length > 0) {
             return Common.random(mockAnnotation.range());
         }
         int min = Math.max(0, mockAnnotation.minLen());
@@ -49,5 +65,34 @@ public class DefaultStringMocker implements Mocker<STRING> {
         }
 
         return builder.toString();
+    }
+
+    private String[] loadFromTxt(String txt) {
+        try {
+            URL url = Common.getResource(Common.trim(txt, '/', '\\'),
+                    DefaultStringMocker.class.getClassLoader());
+            BufferedReader reader = null;
+            if (url == null) {
+                File f = new File(txt);
+                if (f.exists())
+                    reader = new BufferedReader(new InputStreamReader(new FileInputStream(f), Charset.forName("utf8")));
+            } else {
+                reader = new BufferedReader(new InputStreamReader(url.openStream(), Charset.forName("utf8")));
+            }
+
+            if (reader != null) {
+                String line;
+                List<String> stringList = new ArrayList<String>();
+                while ((line = reader.readLine()) != null) {
+                    if (!Common.isBlank(line))
+                        stringList.add(line);
+                }
+                if (stringList.size() > 0)
+                    return stringList.toArray(new String[0]);
+            }
+            return null;
+        } catch (Throwable th) {
+            return null;
+        }
     }
 }

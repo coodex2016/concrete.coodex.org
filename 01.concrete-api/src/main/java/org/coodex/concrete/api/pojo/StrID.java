@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.api.pojo;
 
-import org.coodex.concrete.api.mockers.ID;
 
 /**
  * Created by davidoff shen on 2017-04-28.
@@ -31,7 +30,6 @@ public class StrID<P> extends Identifiable<String, P> {
     }
 
     @Override
-    @ID
     public String getId() {
         return super.getId();
     }

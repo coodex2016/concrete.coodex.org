@@ -16,16 +16,24 @@
 
 package org.coodex.practice.jaxrs.api.mock;
 
-import org.coodex.pojomocker.RelationPolicy;
-
-import java.util.List;
+import org.coodex.pojomocker.AbstractRelationPolicy;
+import org.coodex.pojomocker.RelationMethod;
 
 /**
  * Created by davidoff shen on 2017-05-16.
  */
-public class CopyPolicy implements RelationPolicy {
+public class CopyPolicy extends AbstractRelationPolicy {
+
+    public static final String POLICY_NAME = "copy";
+
+
+    @RelationMethod(POLICY_NAME)
+    public Object copy(Object o){
+        return o;
+    }
+
     @Override
-    public Object relate(List fieldValues) {
-        return fieldValues != null && fieldValues.size() > 0 ? fieldValues.get(0) : null;
+    public String[] getPolicyNames() {
+        return new String[] {POLICY_NAME};
     }
 }

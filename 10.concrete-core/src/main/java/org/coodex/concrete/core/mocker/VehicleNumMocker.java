@@ -74,7 +74,7 @@ public class VehicleNumMocker extends AbstractMocker<VehicleNum> {
 //            String s = (String) key;
 //            String v = profile.getString(s);
 //            int index=s.indexOf('（');
-//            String name = s.substring(0, index);
+//            String getName = s.substring(0, index);
 //            char jian = s.charAt(index + 1);
 //
 //            StringBuilder codes = new StringBuilder();
@@ -88,8 +88,8 @@ public class VehicleNumMocker extends AbstractMocker<VehicleNum> {
 //                enumStr.append(", ");
 //                defaultValue.append(", ");
 //            }
-//            enumStr.append(name).append("('").append(jian).append("', \"").append(codes).append("\")");
-//            defaultValue.append("Province.").append(name);
+//            enumStr.append(getName).append("('").append(jian).append("', \"").append(codes).append("\")");
+//            defaultValue.append("Province.").append(getName);
 //        }
 //
 //        System.out.println(enumStr.toString());

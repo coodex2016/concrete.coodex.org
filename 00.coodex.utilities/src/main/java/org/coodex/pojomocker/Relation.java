@@ -32,5 +32,11 @@ public @interface Relation {
 
     String[] properties();
 
-    Class<? extends RelationPolicy> policy();
+//    Class<? extends RelationPolicy> policy();
+
+    /**
+     * 指定关联策略
+     * @return
+     */
+    String policy();
 }

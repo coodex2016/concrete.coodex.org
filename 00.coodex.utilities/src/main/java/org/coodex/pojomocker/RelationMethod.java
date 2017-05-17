@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common;
+package org.coodex.pojomocker;
 
-import java.util.Map;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Created by davidoff shen on 2016-11-01.
+ * Created by davidoff shen on 2017-05-17.
  */
-public interface BeanProvider {
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RelationMethod {
 
-    <T> T getBean(Class<T> type);
-
-//    <T> T getBean(String getName);
-
-//    <T> T getBean(Class<T> type, String getName);
-
-    <T> Map<String, T> getBeansOfType(Class<T> type);
-
+    String value();
 }

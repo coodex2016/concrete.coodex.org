@@ -36,7 +36,7 @@ public class FastFDSClient {
         ClientGlobal.setG_charset("UTF-8");
     }
 
-    public static final String META_FILE_NAME = "file-name";
+    public static final String META_FILE_NAME = "file-getName";
 
     class StorageClient_ extends StorageClient {
         StorageClient_(TrackerServer trackerServer, StorageServer storageServer) {

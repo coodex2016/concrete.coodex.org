@@ -25,7 +25,7 @@ import java.net.Socket;
 import java.util.Arrays;
 
 /**
-* Storage client for 2 fields file id: group name and filename
+* Storage client for 2 fields file id: group getName and filename
 * @author Happy Fish / YuQing
 * @version Version 1.24
 */
@@ -102,12 +102,12 @@ public class StorageClient
 	}
 
 	/**
-	* upload file to storage server (by file name)
+	* upload file to storage server (by file getName)
 	* @param local_filename local filename to upload
-	* @param file_ext_name file ext name, do not include dot(.), null to extract ext name from the local filename
+	* @param file_ext_name file ext getName, do not include dot(.), null to extract ext getName from the local filename
 	* @param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file </li></ul>
+	*           <ul><li>results[0]: the group getName to store the file </li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -119,13 +119,13 @@ public class StorageClient
 	}
 	
 	/**
-	* upload file to storage server (by file name)
-	* @param group_name the group name to upload file to, can be empty
+	* upload file to storage server (by file getName)
+	* @param group_name the group getName to upload file to, can be empty
 	* @param local_filename local filename to upload
-	* @param file_ext_name file ext name, do not include dot(.), null to extract ext name from the local filename
+	* @param file_ext_name file ext getName, do not include dot(.), null to extract ext getName from the local filename
 	* @param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file </li></ul>
+	*           <ul><li>results[0]: the group getName to store the file </li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -137,14 +137,14 @@ public class StorageClient
 	}
 
 	/**
-	* upload file to storage server (by file name)
+	* upload file to storage server (by file getName)
 	* @param cmd the command
-	* @param group_name the group name to upload file to, can be empty
+	* @param group_name the group getName to upload file to, can be empty
 	* @param local_filename local filename to upload
-	* @param file_ext_name file ext name, do not include dot(.), null to extract ext name from the local filename
+	* @param file_ext_name file ext getName, do not include dot(.), null to extract ext getName from the local filename
 	* @param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file </li></ul>
+	*           <ul><li>results[0]: the group getName to store the file </li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -179,10 +179,10 @@ public class StorageClient
 	* @param file_buff file content/buff
 	* @param offset start offset of the buff
 	* @param length the length of buff to upload
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file</li></ul>
+	*           <ul><li>results[0]: the group getName to store the file</li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -195,14 +195,14 @@ public class StorageClient
 	
 	/**
 	* upload file to storage server (by file buff)
-	* @param group_name the group name to upload file to, can be empty
+	* @param group_name the group getName to upload file to, can be empty
 	* @param file_buff file content/buff
 	* @param offset start offset of the buff
 	* @param length the length of buff to upload
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file</li></ul>
+	*           <ul><li>results[0]: the group getName to store the file</li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -216,10 +216,10 @@ public class StorageClient
 	/**
 	* upload file to storage server (by file buff)
 	* @param file_buff file content/buff
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file</li></ul>
+	*           <ul><li>results[0]: the group getName to store the file</li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -232,12 +232,12 @@ public class StorageClient
 	
 	/**
 	* upload file to storage server (by file buff)
-	* @param group_name the group name to upload file to, can be empty
+	* @param group_name the group getName to upload file to, can be empty
 	* @param file_buff file content/buff
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file</li></ul>
+	*           <ul><li>results[0]: the group getName to store the file</li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -251,13 +251,13 @@ public class StorageClient
 	
 	/**
 	* upload file to storage server (by callback)
-	* @param group_name the group name to upload file to, can be empty
+	* @param group_name the group getName to upload file to, can be empty
 	* @param file_size the file size
 	* @param callback the write data callback object
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file</li></ul>
+	*           <ul><li>results[0]: the group getName to store the file</li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -272,15 +272,15 @@ public class StorageClient
 	}
 	
 	/**
-	* upload file to storage server (by file name, slave file mode)
-	* @param group_name the group name of master file
-	* @param master_filename the master file name to generate the slave file
-	* @param prefix_name the prefix name to generate the slave file
+	* upload file to storage server (by file getName, slave file mode)
+	* @param group_name the group getName of master file
+	* @param master_filename the master file getName to generate the slave file
+	* @param prefix_name the prefix getName to generate the slave file
 	* @param local_filename local filename to upload
-	* @param file_ext_name file ext name, do not include dot(.), null to extract ext name from the local filename
+	* @param file_ext_name file ext getName, do not include dot(.), null to extract ext getName from the local filename
 	* @param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file </li></ul>
+	*           <ul><li>results[0]: the group getName to store the file </li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -319,14 +319,14 @@ public class StorageClient
 	
 	/**
 	* upload file to storage server (by file buff, slave file mode)
-	* @param group_name the group name of master file
-	* @param master_filename the master file name to generate the slave file
-	* @param prefix_name the prefix name to generate the slave file
+	* @param group_name the group getName of master file
+	* @param master_filename the master file getName to generate the slave file
+	* @param prefix_name the prefix getName to generate the slave file
 	* @param file_buff file content/buff
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file</li></ul>
+	*           <ul><li>results[0]: the group getName to store the file</li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -346,16 +346,16 @@ public class StorageClient
 	
 	/**
 	* upload file to storage server (by file buff, slave file mode)
-	* @param group_name the group name of master file
-	* @param master_filename the master file name to generate the slave file
-	* @param prefix_name the prefix name to generate the slave file
+	* @param group_name the group getName of master file
+	* @param master_filename the master file getName to generate the slave file
+	* @param prefix_name the prefix getName to generate the slave file
 	* @param file_buff file content/buff
 	* @param offset start offset of the buff
 	* @param length the length of buff to upload
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file</li></ul>
+	*           <ul><li>results[0]: the group getName to store the file</li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -376,15 +376,15 @@ public class StorageClient
 
 	/**
 	* upload file to storage server (by callback, slave file mode)
-	* @param group_name the group name to upload file to, can be empty
-	* @param master_filename the master file name to generate the slave file
-	* @param prefix_name the prefix name to generate the slave file
+	* @param group_name the group getName to upload file to, can be empty
+	* @param master_filename the master file getName to generate the slave file
+	* @param prefix_name the prefix getName to generate the slave file
 	* @param file_size the file size
 	* @param callback the write data callback object
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file</li></ul>
+	*           <ul><li>results[0]: the group getName to store the file</li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -397,12 +397,12 @@ public class StorageClient
 	}
 	
 	/**
-	* upload appender file to storage server (by file name)
+	* upload appender file to storage server (by file getName)
 	* @param local_filename local filename to upload
-	* @param file_ext_name file ext name, do not include dot(.), null to extract ext name from the local filename
+	* @param file_ext_name file ext getName, do not include dot(.), null to extract ext getName from the local filename
 	* @param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file </li></ul>
+	*           <ul><li>results[0]: the group getName to store the file </li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -414,13 +414,13 @@ public class StorageClient
 	}
 	
 	/**
-	* upload appender file to storage server (by file name)
-	* @param group_name the group name to upload file to, can be empty
+	* upload appender file to storage server (by file getName)
+	* @param group_name the group getName to upload file to, can be empty
 	* @param local_filename local filename to upload
-	* @param file_ext_name file ext name, do not include dot(.), null to extract ext name from the local filename
+	* @param file_ext_name file ext getName, do not include dot(.), null to extract ext getName from the local filename
 	* @param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file </li></ul>
+	*           <ul><li>results[0]: the group getName to store the file </li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -436,10 +436,10 @@ public class StorageClient
 	* @param file_buff file content/buff
 	* @param offset start offset of the buff
 	* @param length the length of buff to upload
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file</li></ul>
+	*           <ul><li>results[0]: the group getName to store the file</li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -452,14 +452,14 @@ public class StorageClient
 	
 	/**
 	* upload appender file to storage server (by file buff)
-	* @param group_name the group name to upload file to, can be empty
+	* @param group_name the group getName to upload file to, can be empty
 	* @param file_buff file content/buff
 	* @param offset start offset of the buff
 	* @param length the length of buff to upload
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file</li></ul>
+	*           <ul><li>results[0]: the group getName to store the file</li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -473,10 +473,10 @@ public class StorageClient
 	/**
 	* upload appender file to storage server (by file buff)
 	* @param file_buff file content/buff
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file</li></ul>
+	*           <ul><li>results[0]: the group getName to store the file</li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -489,12 +489,12 @@ public class StorageClient
 	
 	/**
 	* upload appender file to storage server (by file buff)
-	* @param group_name the group name to upload file to, can be empty
+	* @param group_name the group getName to upload file to, can be empty
 	* @param file_buff file content/buff
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file</li></ul>
+	*           <ul><li>results[0]: the group getName to store the file</li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -507,13 +507,13 @@ public class StorageClient
 	
 	/**
 	* upload appender file to storage server (by callback)
-	* @param group_name the group name to upload file to, can be empty
+	* @param group_name the group getName to upload file to, can be empty
 	* @param file_size the file size
 	* @param callback the write data callback object
-	* @param file_ext_name file ext name, do not include dot(.)
+	* @param file_ext_name file ext getName, do not include dot(.)
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*           <ul><li>results[0]: the group name to store the file</li></ul>
+	*           <ul><li>results[0]: the group getName to store the file</li></ul>
 	*           <ul><li>results[1]: the new created filename</li></ul>
 	*         return null if fail
 	*/
@@ -528,8 +528,8 @@ public class StorageClient
 	}
 
 	/**
-	* append file to storage server (by file name)
-	* @param group_name the group name of appender file
+	* append file to storage server (by file getName)
+	* @param group_name the group getName of appender file
 	* @param appender_filename the appender filename
 	* @param local_filename local filename to append
 	* @return 0 for success, != 0 for error (error no)
@@ -551,7 +551,7 @@ public class StorageClient
 	
 	/**
 	* append file to storage server (by file buff)
-	* @param group_name the group name of appender file
+	* @param group_name the group getName of appender file
 	* @param appender_filename the appender filename
 	* @param file_buff file content/buff
 	* @return 0 for success, != 0 for error (error no)
@@ -563,7 +563,7 @@ public class StorageClient
 	
 	/**
 	* append file to storage server (by file buff)
-	* @param group_name the group name of appender file
+	* @param group_name the group getName of appender file
 	* @param appender_filename the appender filename
 	* @param file_buff file content/buff
 	* @param offset start offset of the buff
@@ -578,7 +578,7 @@ public class StorageClient
 
 	/**
 	* append file to storage server (by callback)
-	* @param group_name the group name to append file to
+	* @param group_name the group getName to append file to
 	* @param appender_filename the appender filename
 	* @param file_size the file size
 	* @param callback the write data callback object
@@ -591,8 +591,8 @@ public class StorageClient
 	}
 
 	/**
-	* modify appender file to storage server (by file name)
-	* @param group_name the group name of appender file
+	* modify appender file to storage server (by file getName)
+	* @param group_name the group getName of appender file
 	* @param appender_filename the appender filename
 	* @param file_offset the offset of appender file
 	* @param local_filename local filename to append
@@ -617,7 +617,7 @@ public class StorageClient
 	
 	/**
 	* modify appender file to storage server (by file buff)
-	* @param group_name the group name of appender file
+	* @param group_name the group getName of appender file
 	* @param appender_filename the appender filename
 	* @param file_offset the offset of appender file
 	* @param file_buff file content/buff
@@ -632,7 +632,7 @@ public class StorageClient
 	
 	/**
 	* modify appender file to storage server (by file buff)
-	* @param group_name the group name of appender file
+	* @param group_name the group getName of appender file
 	* @param appender_filename the appender filename
 	* @param file_offset the offset of appender file
 	* @param file_buff file content/buff
@@ -649,7 +649,7 @@ public class StorageClient
 
 	/**
 	* modify appender file to storage server (by callback)
-	* @param group_name the group name to modify file to
+	* @param group_name the group getName to modify file to
 	* @param appender_filename the appender filename
 	* @param file_offset the offset of appender file
 	* @param modify_size the modify size
@@ -666,15 +666,15 @@ public class StorageClient
 	/**
 	* upload file to storage server
 	* @param cmd the command code
-	* @param group_name the group name to upload file to, can be empty
-	* @param master_filename the master file name to generate the slave file
-	* @param prefix_name the prefix name to generate the slave file
-  * @param file_ext_name file ext name, do not include dot(.)
+	* @param group_name the group getName to upload file to, can be empty
+	* @param master_filename the master file getName to generate the slave file
+	* @param prefix_name the prefix getName to generate the slave file
+  * @param file_ext_name file ext getName, do not include dot(.)
 	* @param file_size the file size
 	* @param callback the write data callback object
 	*	@param meta_list meta info array
 	* @return  2 elements string array if success:<br>
-	*          <ul><li> results[0]: the group name to store the file</li></ul>
+	*          <ul><li> results[0]: the group getName to store the file</li></ul>
 	*          <ul><li> results[1]: the new created filename</li></ul> 
 	*         return null if fail
 	*/
@@ -879,7 +879,7 @@ public class StorageClient
 
 	/**
 	* append file to storage server
-	* @param group_name the group name of appender file
+	* @param group_name the group getName of appender file
 	* @param appender_filename the appender filename
 	* @param file_size the file size
 	* @param callback the write data callback object
@@ -988,7 +988,7 @@ public class StorageClient
 
 	/**
 	* modify appender file to storage server
-	* @param group_name the group name of appender file
+	* @param group_name the group getName of appender file
 	* @param appender_filename the appender filename
 	* @param file_offset the offset of appender file
 	* @param modify_size the modify size
@@ -1102,7 +1102,7 @@ public class StorageClient
 	
 	/**
 	* delete file from storage server
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
 	* @return 0 for success, none zero for fail (error code)
 	*/
@@ -1162,7 +1162,7 @@ public class StorageClient
 	
 	/**
 	* truncate appender file to size 0 from storage server
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param appender_filename the appender filename
 	* @return 0 for success, none zero for fail (error code)
 	*/
@@ -1174,7 +1174,7 @@ public class StorageClient
 	
 	/**
 	* truncate appender file from storage server
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param appender_filename the appender filename
 	* @param truncated_file_size truncated file size
 	* @return 0 for success, none zero for fail (error code)
@@ -1272,7 +1272,7 @@ public class StorageClient
 	
 	/**
 	* download file from storage server
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
 	* @return file content/buff, return null if fail
 	*/
@@ -1286,7 +1286,7 @@ public class StorageClient
 	
 	/**
 	* download file from storage server
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
 	* @param file_offset the start offset of the file
 	* @param download_bytes download bytes, 0 for remain bytes from offset
@@ -1355,7 +1355,7 @@ public class StorageClient
 
 	/**
 	* download file from storage server
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
 	* @param local_filename  filename on local
 	* @return 0 success, return none zero errno if fail
@@ -1371,7 +1371,7 @@ public class StorageClient
 	
 	/**
 	* download file from storage server
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
   * @param file_offset the start offset of the file
 	* @param download_bytes download bytes, 0 for remain bytes from offset
@@ -1482,7 +1482,7 @@ public class StorageClient
 	
 	/**
 	* download file from storage server
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
 	* @param callback call callback.recv() when data arrive
 	* @return 0 success, return none zero errno if fail
@@ -1498,7 +1498,7 @@ public class StorageClient
 	
 	/**
 	* download file from storage server
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
   * @param file_offset the start offset of the file
 	* @param download_bytes download bytes, 0 for remain bytes from offset
@@ -1593,7 +1593,7 @@ public class StorageClient
 	
 	/**
 	* get all metadata items from storage server
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
 	* @return meta info array, return null if fail
 	*/
@@ -1660,7 +1660,7 @@ public class StorageClient
 	
 	/**
 	* set metadata items to storage server
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
 	*	@param meta_list meta item array
 	* @param op_flag flag, can be one of following values: <br>
@@ -1783,7 +1783,7 @@ public class StorageClient
 
 	/**
 	* get file info decoded from the filename, fetch from the storage if necessary
-	* @param group_name the group name
+	* @param group_name the group getName
 	*	@param remote_filename the filename
 	* @return FileInfo object for success, return null for fail
 	*/
@@ -1826,7 +1826,7 @@ public class StorageClient
 
 	/**
 	* get file info from storage server
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
 	* @return FileInfo object for success, return null for fail
 	*/
@@ -1927,7 +1927,7 @@ public class StorageClient
 	
 	/**
 	* check storage socket, if null create a new connection
-	* @param group_name the group name to upload file to, can be empty
+	* @param group_name the group getName to upload file to, can be empty
 	* @return true if create a new connection
 	*/
 	protected boolean newWritableStorageConnection(String group_name) throws IOException, MyException
@@ -1950,7 +1950,7 @@ public class StorageClient
 
 	/**
 	* check storage socket, if null create a new connection
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
 	* @return true if create a new connection
 	*/
@@ -1974,7 +1974,7 @@ public class StorageClient
 
 	/**
 	* check storage socket, if null create a new connection
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
 	* @return true if create a new connection
 	*/
@@ -1999,7 +1999,7 @@ public class StorageClient
 	/**
 	* send package to storage server
 	* @param cmd which command to send
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
 	*/
 	protected void send_package(byte cmd, String group_name, String remote_filename) throws IOException
@@ -2035,7 +2035,7 @@ public class StorageClient
 	
 	/**
 	* send package to storage server
-	* @param group_name the group name of storage server
+	* @param group_name the group getName of storage server
 	*	@param remote_filename filename on storage server
 	* @param file_offset the start offset of the file
 	* @param download_bytes download bytes

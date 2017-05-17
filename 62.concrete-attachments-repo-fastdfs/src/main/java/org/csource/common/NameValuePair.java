@@ -17,7 +17,7 @@
 package org.csource.common;
 
 /**
-* name(key) and value pair model
+* getName(key) and value pair model
 * @author Happy Fish / YuQing
 * @version Version 1.0
 */

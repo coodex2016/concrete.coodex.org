@@ -79,7 +79,7 @@ class CookieManager extends AbstractCookieManager implements CookieJar {
 //                    cached = new HashMap<String, Cookie>();
 //                    this.cookies.put(cookie.path(), cached);
 //                }
-//                cached.put(cookie.name(), cookie);
+//                cached.put(cookie.getName(), cookie);
 //            }
 //        }
     }
@@ -104,9 +104,9 @@ class CookieManager extends AbstractCookieManager implements CookieJar {
 //            if (match(path, urlPath)) {
 //                for (Cookie cookie : this.cookies.get(path).values()) {
 //                    if (cookie.expiresAt() >= System.currentTimeMillis()) {
-//                        cookieMap.put(cookie.name(), cookie);
+//                        cookieMap.put(cookie.getName(), cookie);
 //                    } else {
-//                        this.cookies.get(path).remove(cookie.name());
+//                        this.cookies.get(path).remove(cookie.getName());
 //                    }
 //                }
 //            }
