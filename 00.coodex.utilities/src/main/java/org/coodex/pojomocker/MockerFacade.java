@@ -83,12 +83,16 @@ public class MockerFacade {
         if (type instanceof TypeVariable) {
             throw new RuntimeException(typeVariableInfo(type, context));
         } else {
-            return $mock(type, new PojoProperty(null, type) {
-                @Override
-                public Annotation[] getAnnotations() {
-                    return method.getAnnotations();
-                }
-            }, 0, null, context);
+            try {
+                return $mock(type, new PojoProperty(null, type) {
+                    @Override
+                    public Annotation[] getAnnotations() {
+                        return method.getAnnotations();
+                    }
+                }, 0, null, context);
+            } catch (MaxDeepException e) {
+                return null;
+            }
         }
     }
 
@@ -97,7 +101,11 @@ public class MockerFacade {
         if (type instanceof TypeVariable) {
             throw new RuntimeException(typeVariableInfo(type, context));
         } else {
-            return $mock(type, null, 0, null, context);
+            try {
+                return $mock(type, null, 0, null, context);
+            } catch (MaxDeepException e) {
+                return null;
+            }
         }
     }
 
@@ -141,7 +149,9 @@ public class MockerFacade {
         return builder.append(')').toString();
     }
 
-    private static <T> T $mock(Type type, PojoProperty property, int dimension, Stack<String> stack, Type... context) {
+    private static <T> T $mock(
+            Type type, PojoProperty property, int dimension, Stack<String> stack, Type... context)
+            throws MaxDeepException {
         if (type == null) return null;
 
         if (type instanceof ParameterizedType) {
@@ -162,7 +172,8 @@ public class MockerFacade {
     }
 
     private static final <T> T mockParameterizedType(
-            ParameterizedType type, PojoProperty property, int dimension, Stack<String> stack, Type... context) {
+            ParameterizedType type, PojoProperty property, int dimension, Stack<String> stack, Type... context)
+            throws MaxDeepException {
         Class c = (Class) type.getRawType();
         if (Collection.class.isAssignableFrom(c)) {
             return (T) mockCollection(c, type.getActualTypeArguments()[0], property, dimension, stack, context);
@@ -174,7 +185,9 @@ public class MockerFacade {
     }
 
     private static final <T> T mockGenericArray(
-            GenericArrayType type, PojoProperty property, int dimension, Stack<String> stack, Type... context) {
+            GenericArrayType type, PojoProperty property,
+            int dimension, Stack<String> stack, Type... context)
+            throws MaxDeepException {
 
         Type componentType = toTypeReference(type.getGenericComponentType(), context);
         int size = getArraySize(property, dimension);
@@ -222,7 +235,8 @@ public class MockerFacade {
     }
 
     private static final <T> T mockClass(
-            Class clazz, PojoProperty property, int dimension, Stack<String> stack, Type... context) {
+            Class clazz, PojoProperty property, int dimension, Stack<String> stack, Type... context)
+            throws MaxDeepException {
 
 
         if (Collection.class.isAssignableFrom(clazz)) {
@@ -248,7 +262,7 @@ public class MockerFacade {
             PojoProperty property,
             int dimension,
             Stack<String> stack,
-            Type... context) {
+            Type... context) throws MaxDeepException {
         Map map = null;
         if (Map.class.equals(mapClass)) {
             map = new HashMap();
@@ -304,7 +318,7 @@ public class MockerFacade {
             PojoProperty property,
             int dimension,
             Stack<String> stack,
-            Type... context) {
+            Type... context) throws MaxDeepException {
 
         Collection collection = null;
         if (List.class.equals(collectionClass)) {
@@ -347,17 +361,17 @@ public class MockerFacade {
         return POJO_INFO_MAP.get(type.toString());
     }
 
-    private static <T> T mockPojo(PojoInfo pojoInfo, PojoProperty property, Stack<String> stack, Type... context) {
+    private static <T> T mockPojo(PojoInfo pojoInfo, PojoProperty property, Stack<String> stack, Type... context) throws MaxDeepException {
         if (stack == null)
             stack = new Stack<String>();
         stack.push(pojoInfo.getType().toString());
         try {
             // 达到指定层次时返回空值
-            int deep = getDeep(property);
+            int deep = getDeep(property) + 1;
             String pojoType = pojoInfo.getType().toString();
             for (String s : stack) {
                 if (pojoType.equals(s)) {
-                    if (--deep < 0) return null;
+                    if (--deep < 0) throw new MaxDeepException();
                 }
             }
 
@@ -436,8 +450,12 @@ public class MockerFacade {
             POJO_BUILDER.set(instance, pojoProperty,
                     RELATION_POLICY_LOADER.getServiceInstance(relation.policy()).relate(relation.policy(), dependencies));
         } else {
-            POJO_BUILDER.set(instance, pojoProperty,
-                    $mock(pojoProperty.getType(), pojoProperty, 0, stack, context));
+            try {
+                POJO_BUILDER.set(instance, pojoProperty,
+                        $mock(pojoProperty.getType(), pojoProperty, 0, stack, context));
+            } catch (MaxDeepException e) {
+                POJO_BUILDER.set(instance, pojoProperty, null);
+            }
         }
         over.add(pojoProperty.getName());
     }
@@ -447,7 +465,7 @@ public class MockerFacade {
         if (property != null) {
             Deep deep = property.getAnnotation(Deep.class);
             if (deep != null) {
-                deepMin = Math.max(1, deepMin);
+                deepMin = Math.max(1, deep.min());
                 deepMax = Math.max(deep.max(), deepMin);
             }
         }
@@ -473,7 +491,8 @@ public class MockerFacade {
 
     private static <T> T mockArray(
             Class clazz, PojoProperty pojoProperty, int dimension,
-            Stack<String> stack, Type... context) {
+            Stack<String> stack, Type... context)
+            throws MaxDeepException {
         Class componentClass = clazz.getComponentType();
         int arraySize = getArraySize(pojoProperty, dimension);
         Object array = Array.newInstance(componentClass, arraySize);
@@ -483,6 +502,9 @@ public class MockerFacade {
                     mockClass(componentClass, pojoProperty, dimension + 1, stack, context));
         }
         return (T) array;
+    }
+
+    private static class MaxDeepException extends Exception {
     }
 
 //    public static void main(String [] args) throws ClassNotFoundException {
