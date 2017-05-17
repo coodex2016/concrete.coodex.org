@@ -461,7 +461,7 @@ public class MockerFacade {
     }
 
     private static int getDeep(PojoProperty property) {
-        int deepMin = 1, deepMax = 5;
+        int deepMin = 2, deepMax = 5;
         if (property != null) {
             Deep deep = property.getAnnotation(Deep.class);
             if (deep != null) {

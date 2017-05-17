@@ -39,7 +39,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Deep {
 
-    int min() default 1;
+    int min() default 2;
 
     int max() default 5;
 }
