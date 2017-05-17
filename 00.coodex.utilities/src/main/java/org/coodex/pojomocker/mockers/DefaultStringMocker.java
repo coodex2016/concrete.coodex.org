@@ -84,7 +84,7 @@ public class DefaultStringMocker implements Mocker<STRING> {
                 String line;
                 List<String> stringList = new ArrayList<String>();
                 while ((line = reader.readLine()) != null) {
-                    if (!Common.isBlank(line))
+                    if (!Common.isBlank(line) && !line.trim().startsWith("#"))
                         stringList.add(line);
                 }
                 if (stringList.size() > 0)
