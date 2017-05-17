@@ -367,7 +367,7 @@ public class MockerFacade {
         stack.push(pojoInfo.getType().toString());
         try {
             // 达到指定层次时返回空值
-            int deep = getDeep(property) + 1;
+            int deep = getDeep(property);
             String pojoType = pojoInfo.getType().toString();
             for (String s : stack) {
                 if (pojoType.equals(s)) {
