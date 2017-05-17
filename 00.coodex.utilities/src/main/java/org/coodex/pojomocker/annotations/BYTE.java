@@ -34,4 +34,6 @@ public @interface BYTE {
     byte min() default Byte.MIN_VALUE;
 
     byte max() default Byte.MAX_VALUE;
+
+    byte[] range() default {};
 }

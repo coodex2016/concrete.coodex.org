@@ -37,6 +37,9 @@ public class DefaultStringMocker implements Mocker<STRING> {
 
     @Override
     public Object mock(STRING mockAnnotation, Class clazz) {
+        if(mockAnnotation.range() != null && mockAnnotation.range().length > 0){
+            return Common.random(mockAnnotation.range());
+        }
         int min = Math.max(0, mockAnnotation.minLen());
         int max = Math.max(min, mockAnnotation.maxLen());
         char[] range = getDefaultRange();

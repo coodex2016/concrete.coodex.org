@@ -32,4 +32,6 @@ import java.lang.annotation.Target;
 public @interface SHORT {
     short min() default Short.MIN_VALUE;
     short max() default Short.MAX_VALUE;
+
+    short [] range() default {};
 }

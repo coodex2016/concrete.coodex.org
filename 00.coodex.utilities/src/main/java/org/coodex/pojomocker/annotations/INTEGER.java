@@ -34,4 +34,6 @@ public @interface INTEGER {
     int min() default Integer.MIN_VALUE + 1;
 
     int max() default Integer.MAX_VALUE;
+
+    int[] range() default {};
 }

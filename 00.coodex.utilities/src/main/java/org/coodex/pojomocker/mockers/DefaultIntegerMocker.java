@@ -18,6 +18,7 @@ package org.coodex.pojomocker.mockers;
 
 import org.coodex.pojomocker.AbstractPrimitiveMocker;
 import org.coodex.pojomocker.annotations.INTEGER;
+import org.coodex.util.Common;
 
 /**
  * Created by davidoff shen on 2017-05-15.
@@ -30,6 +31,9 @@ public class DefaultIntegerMocker extends AbstractPrimitiveMocker<Integer, INTEG
 
     @Override
     protected Integer $mock(INTEGER mockAnnotation) {
+        if(mockAnnotation.range() != null && mockAnnotation.range().length > 0){
+            return Common.random(mockAnnotation.range());
+        }
         int min = mockAnnotation.min();
         int max = mockAnnotation.max();
         if (min == max) return min;

@@ -18,6 +18,7 @@ package org.coodex.pojomocker.mockers;
 
 import org.coodex.pojomocker.AbstractPrimitiveMocker;
 import org.coodex.pojomocker.annotations.SHORT;
+import org.coodex.util.Common;
 
 /**
  * Created by davidoff shen on 2017-05-15.
@@ -30,6 +31,9 @@ public class DefaultShortMocker extends AbstractPrimitiveMocker<Short, SHORT> {
 
     @Override
     protected Short $mock(SHORT mockAnnotation) {
+        if(mockAnnotation.range() != null && mockAnnotation.range().length > 0){
+            return Common.random(mockAnnotation.range());
+        }
         short min = mockAnnotation.min();
         short max = mockAnnotation.max();
         if(min == max) return min;

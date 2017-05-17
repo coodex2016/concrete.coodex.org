@@ -32,4 +32,5 @@ import java.lang.annotation.Target;
 public @interface LONG {
     long min() default Long.MIN_VALUE + 1;
     long max() default Long.MAX_VALUE;
+    long [] range() default {};
 }

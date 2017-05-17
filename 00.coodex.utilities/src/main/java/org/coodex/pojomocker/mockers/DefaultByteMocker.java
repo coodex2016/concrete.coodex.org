@@ -18,6 +18,7 @@ package org.coodex.pojomocker.mockers;
 
 import org.coodex.pojomocker.AbstractPrimitiveMocker;
 import org.coodex.pojomocker.annotations.BYTE;
+import org.coodex.util.Common;
 
 /**
  * Created by davidoff shen on 2017-05-15.
@@ -30,6 +31,11 @@ public class DefaultByteMocker extends AbstractPrimitiveMocker<Byte, BYTE> {
 
     @Override
     protected Byte $mock(BYTE mockAnnotation) {
+
+        if(mockAnnotation.range() != null && mockAnnotation.range().length > 0){
+            return Common.random(mockAnnotation.range());
+        }
+
         byte min = mockAnnotation.min();
         byte max = mockAnnotation.max();
         if(min == max) return min;

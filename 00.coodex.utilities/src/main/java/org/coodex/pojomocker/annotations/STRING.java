@@ -34,5 +34,5 @@ public @interface STRING {
 
     int maxLen() default 50;
 
-    boolean nullable() default false;
+    String[] range() default {};
 }

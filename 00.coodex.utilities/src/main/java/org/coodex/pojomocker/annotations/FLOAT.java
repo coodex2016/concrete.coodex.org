@@ -32,4 +32,5 @@ import java.lang.annotation.Target;
 public @interface FLOAT {
     float min() default Float.MIN_VALUE;
     float max() default Float.MAX_VALUE;
+    float [] range() default {};
 }

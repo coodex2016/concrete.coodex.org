@@ -420,7 +420,37 @@ public class Common {
         return range[random(range.length - 1)];
     }
 
-    public static String randomStr(int min, int max, String range){
+    public static byte random(byte[] range) {
+        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        return range[random(range.length - 1)];
+    }
+
+    public static short random(short[] range) {
+        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        return range[random(range.length - 1)];
+    }
+
+    public static int random(int[] range) {
+        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        return range[random(range.length - 1)];
+    }
+
+    public static long random(long[] range) {
+        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        return range[random(range.length - 1)];
+    }
+
+    public static float random(float[] range) {
+        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        return range[random(range.length - 1)];
+    }
+
+    public static double random(double[] range) {
+        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        return range[random(range.length - 1)];
+    }
+
+    public static String randomStr(int min, int max, String range) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0, j = random(min, max); i < j; i++) {
             builder.append(randomChar(range));
