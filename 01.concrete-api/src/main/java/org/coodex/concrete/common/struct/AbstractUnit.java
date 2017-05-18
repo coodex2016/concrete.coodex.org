@@ -33,10 +33,12 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
     private Method method;
     private MODULE declaringModule;
     private DefinitionContext context;
+    private final boolean deprecated;
 
     public AbstractUnit(Method method, MODULE module) {
         this.method = method;
         this.declaringModule = module;
+        this.deprecated = method.getAnnotation(Deprecated.class) != null;
     }
 
     public MODULE getDeclaringModule() {
@@ -169,4 +171,8 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
 
     protected abstract DefinitionContext toContext();
 
+
+    public boolean isDeprecated() {
+        return deprecated;
+    }
 }

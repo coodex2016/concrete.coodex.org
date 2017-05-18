@@ -10,7 +10,7 @@ ${module.description!""}
 
 ## 接口
 <#list module.units as unit>
-### ${unit.method.name}
+### <#if unit.deprecated>~~</#if>${unit.method.name}<#if unit.deprecated>~~</#if>
 
 ${unit.description!""}
 

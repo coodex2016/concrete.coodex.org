@@ -9,7 +9,7 @@ ${module.description!""}
 
 ## 接口
 <#list module.units?sort_by("label") as unit>
-### <span id="m${unit_index+1}"><#if unit.label?length == 0>根接口<#else>${unit.label}</#if></span>
+### <span id="m${unit_index+1}"><#if unit.deprecated>~~</#if><#if unit.label?length == 0>根接口<#else>${unit.label}</#if><#if unit.deprecated>~~</#if></span>
 
 ${unit.description!""}
 
