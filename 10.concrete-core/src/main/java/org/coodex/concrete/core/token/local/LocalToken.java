@@ -168,6 +168,11 @@ class LocalToken implements Token {
     }
 
     @Override
+    public void renew() {
+        if (!valid) valid = true;
+    }
+
+    @Override
     public String toString() {
         return "LocalToken{" +
                 "attributes=" + attributes +

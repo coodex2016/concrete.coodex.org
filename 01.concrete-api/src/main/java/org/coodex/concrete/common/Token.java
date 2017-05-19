@@ -123,5 +123,6 @@ public interface Token extends Serializable {
      */
     void flush();
 
+    void renew();
 
 }

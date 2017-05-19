@@ -95,16 +95,17 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
 
     private static String getMessageOrPattern(boolean format, int code, Object... objects) {
         Field f = errorCodes.get(code);
+        ErrorMsg errorMsg = null;
+        ErrorMsg formatterValue = null;
         if (f == null) {
-            log.debug("errorCode [{}] has not registed.", code);
-            return null;
+            log.debug("errorCode [{}] has not register.", code);
+//            return null;
+        } else {
+
+            errorMsg = f.getAnnotation(ErrorMsg.class);
+            formatterValue = errorMsg == null ? f.getDeclaringClass().getAnnotation(ErrorMsg.class) : errorMsg;
         }
-
-        ErrorMsg errorMsg = f.getAnnotation(ErrorMsg.class);
-        ErrorMsg formatterValue = errorMsg == null ? f.getDeclaringClass().getAnnotation(ErrorMsg.class) : errorMsg;
-
         MessageFormatter formatter = getFormatter(formatterValue == null ? null : formatterValue.formatterClass());
-
         String msgTemp = (errorMsg == null || Common.isBlank(errorMsg.value().trim())) ?
                 "{message." + code + "}" : errorMsg.value();
 

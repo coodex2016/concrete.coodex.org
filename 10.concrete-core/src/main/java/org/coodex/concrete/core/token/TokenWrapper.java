@@ -53,6 +53,11 @@ public class TokenWrapper implements Token {
     }
 
     @Override
+    public void renew() {
+        getToken(false).renew();
+    }
+
+    @Override
     public long created() {
         return getToken().created();
     }

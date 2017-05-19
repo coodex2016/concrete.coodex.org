@@ -178,6 +178,12 @@ public class SharedCacheToken implements Token {
     }
 
     @Override
+    public void renew() {
+        tokenData.valid = true;
+        write();
+    }
+
+    @Override
     public String toString() {
         return "SharedCacheToken{" +
                 "tokenData=" + tokenData +

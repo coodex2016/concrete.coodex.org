@@ -38,7 +38,7 @@ public abstract class AbstractTwoWayCopier<A, B>
 
     @Override
     public A initA() {
-        return initA(null);
+        return initA(newA());
     }
 
     @Override
@@ -73,7 +73,7 @@ public abstract class AbstractTwoWayCopier<A, B>
 
     @Override
     public B initB() {
-        return initB(null);
+        return initB(newB());
     }
 
     @Override

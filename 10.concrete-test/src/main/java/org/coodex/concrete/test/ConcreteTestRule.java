@@ -46,7 +46,7 @@ public class ConcreteTestRule implements TestRule {
                                 }
                             }));
                 }catch (ConcreteException ce){
-                    throw ce.getCause() == null && ce.getCode() == ErrorCodes.UNKNOWN_ERROR ? ce : ce.getCause();
+                    throw (ce.getCause() != null && ce.getCode() == ErrorCodes.UNKNOWN_ERROR) ? ce.getCause() : ce;
                 }
             }
         };

@@ -35,7 +35,15 @@ import static org.coodex.util.TypeHelper.typeToClass;
 public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
 
     public ServiceLoaderFacade() {
-        loadInstances();
+//        loadInstances();
+    }
+
+    private void load(){
+        synchronized (this){
+            if(instances == null){
+                loadInstances();
+            }
+        }
     }
 
     private final static Logger log = LoggerFactory.getLogger(ServiceLoaderFacade.class);
@@ -45,6 +53,7 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
     @SuppressWarnings("unchecked")
 
     protected Class<T> getInterfaceClass() {
+        load();
         return typeToClass(solve(ServiceLoaderFacade.class.getTypeParameters()[0],getClass()));
 //        Type t = TypeHelper.findActualClassFrom(
 //                ServiceLoaderFacade.class.getTypeParameters()[0],
@@ -57,6 +66,7 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
     }
 
     public T getDefaultProvider() {
+        load();
         throw new RuntimeException("no provider found for: " + getInterfaceClass().getName());
     }
 
@@ -81,20 +91,24 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
 
     @Override
     public Collection<T> getAllInstances() {
+        load();
         return instances.values();
     }
 
     protected Map<String, T> $getInstances(){
+        load();
         return instances;
     }
 
     @Override
     public Map<String, T> getInstances() {
+        load();
         return new HashMap<String, T>($getInstances());
     }
 
     @Override
     public T getInstance(Class<? extends T> providerClass) {
+        load();
 //        return (P) getInstance(providerClass.getCanonicalName());
         Map<String, T> copy = new HashMap<String, T>();
         for (String key : instances.keySet()) {
@@ -129,6 +143,7 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
 
     @Override
     public T getInstance(String name) {
+        load();
         T instance = instances.get(name);
         return instance == null ? getDefaultProvider() : instance;
     }
@@ -146,6 +161,7 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
     @Override
     @SuppressWarnings("unchecked")
     public T getInstance() {
+        load();
         if (instances.size() == 0)
             return getDefaultProvider();
         else if (instances.size() == 1)
