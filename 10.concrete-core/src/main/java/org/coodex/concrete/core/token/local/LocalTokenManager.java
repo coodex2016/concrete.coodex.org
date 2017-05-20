@@ -37,10 +37,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class LocalTokenManager implements TokenManager {
 
-    private static final Map<String, TokenWithFuture> TOKENS = new ConcurrentHashMap<String, TokenWithFuture>();
+    static final Map<String, TokenWithFuture> TOKENS = new ConcurrentHashMap<String, TokenWithFuture>();
 
     private static final ScheduledExecutorService EXECUTOR = ExecutorsHelper.newSingleThreadScheduledExecutor();
-
 
     private static class TokenWithFuture {
 
@@ -95,12 +94,7 @@ public class LocalTokenManager implements TokenManager {
         if (id == null) throw new NullPointerException("token id could NOT be NULL.");
         TokenWithFuture tokenWithFuture = TOKENS.get(id);
         if (tokenWithFuture == null && force) {
-            tokenWithFuture = new TokenWithFuture(new LocalToken(id, new Runnable() {
-                @Override
-                public void run() {
-                    TOKENS.remove(id);
-                }
-            }));
+            tokenWithFuture = new TokenWithFuture(new LocalToken(id));
             TOKENS.put(id, tokenWithFuture);
         }
 

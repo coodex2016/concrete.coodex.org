@@ -17,109 +17,88 @@
 package org.coodex.concrete.core.token;
 
 import org.coodex.concrete.common.Account;
-import org.coodex.concrete.common.Assert;
-import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.Token;
 
 import java.io.Serializable;
 import java.util.Enumeration;
 
-import static org.coodex.concrete.common.ConcreteContext.TOKEN;
-
 /**
- * 基于当前线程上下文提供<s>Session</s> Token
- * <i><s>TO</s><s>DO: 考虑到需要支持servlet 3.0和其他需要异步的i/o提供者，需要支持异步获取会话</s></i>
- * 上述内容无需由TokenWrapper考虑，应有I/O服务提供者层提供
- * Created by davidoff shen on 2016-09-05.
+ * Created by davidoff shen on 2017-05-20.
  */
-public class TokenWrapper implements Token {
+class ReadOnlyToken implements Token {
+    private final Token token;
 
-
-    private static final Token singletonInstance = new TokenWrapper();
-
-    private Token getToken() {
-        return getToken(true);
-    }
-
-    private Token getToken(boolean checkValidation) {
-        Token token = TOKEN.get();
-        Assert.isNull(token, ErrorCodes.NONE_TOKEN);
-        Assert.is(checkValidation && !token.isValid(), ErrorCodes.TOKEN_INVALIDATE, token.getTokenId());
-        return token;
-    }
-
-    public static final Token getInstance() {
-        return singletonInstance;
-    }
-
-    @Override
-    public void renew() {
-        getToken(false).renew();
+    ReadOnlyToken(Token token) {
+        this.token = token;
     }
 
     @Override
     public long created() {
-        return getToken().created();
+        return token.created();
     }
 
     @Override
     public boolean isValid() {
-        return getToken(false).isValid();
+        return token.isValid();
     }
 
     @Override
     public void invalidate() {
-        getToken().invalidate();
+        throw new RuntimeException("cannot invalidate in listener.");
     }
-
 
     @Override
     public <ID extends Serializable> Account<ID> currentAccount() {
-        return getToken().currentAccount();
+        return token.currentAccount();
     }
 
     @Override
     public void setAccount(Account account) {
-        getToken().setAccount(account);
+        throw new RuntimeException("cannot set account in listener.");
     }
 
     @Override
     public boolean isAccountCredible() {
-        return getToken().isAccountCredible();
+        return token.isAccountCredible();
     }
 
     @Override
     public void setAccountCredible(boolean credible) {
-        getToken().setAccountCredible(credible);
+        throw new RuntimeException("cannot set account credible in listener.");
     }
 
     @Override
     public String getTokenId() {
-        return getToken(false).getTokenId();
+        return token.getTokenId();
     }
 
     @Override
     public <T> T getAttribute(String key) {
-        return getToken().getAttribute(key);
+        return token.getAttribute(key);
     }
 
     @Override
     public void setAttribute(String key, Serializable attribute) {
-        getToken().setAttribute(key, attribute);
+        throw new RuntimeException("cannot set attribute in listener.");
     }
 
     @Override
     public void removeAttribute(String key) {
-        getToken().removeAttribute(key);
+        throw new RuntimeException("cannot remove attribute in listener");
     }
 
     @Override
     public Enumeration<String> attributeNames() {
-        return getToken().attributeNames();
+        return token.attributeNames();
     }
 
     @Override
     public void flush() {
-        getToken().flush();
+        throw new RuntimeException("cannot flust in listener");
+    }
+
+    @Override
+    public void renew() {
+        throw new RuntimeException("cannot renew in listener");
     }
 }

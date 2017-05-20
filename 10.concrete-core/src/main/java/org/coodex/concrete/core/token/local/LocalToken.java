@@ -19,7 +19,7 @@ package org.coodex.concrete.core.token.local;
 import org.coodex.concrete.common.Account;
 import org.coodex.concrete.common.AccountFactory;
 import org.coodex.concrete.common.BeanProviderFacade;
-import org.coodex.concrete.common.Token;
+import org.coodex.concrete.core.token.AbstractToken;
 import org.coodex.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ import java.util.Vector;
 /**
  * Created by davidoff shen on 2016-09-05.
  */
-class LocalToken implements Token {
+class LocalToken /*implements Token*/ extends AbstractToken {
 
     private final static Logger log = LoggerFactory.getLogger(LocalToken.class);
 
@@ -46,14 +46,13 @@ class LocalToken implements Token {
     private boolean valid = true;
     private long lastActive;
     private String sessionId = Common.getUUIDStr();
-    private Runnable onInvalid;
     private long created = System.currentTimeMillis();
 
-    public LocalToken(String sessionId, Runnable onInvalid) {
+    public LocalToken(String sessionId) {
         if (sessionId != null)
             this.sessionId = sessionId;
-        this.lastActive = System.currentTimeMillis();
-        this.onInvalid = onInvalid;
+        active();
+        runListeners(Event.CREATED, false);
     }
 
     void active() {
@@ -74,7 +73,8 @@ class LocalToken implements Token {
         return valid;
     }
 
-    void _invalidate() {
+    @Override
+    protected void $invalidate() {
         attributes.clear();
         currentAccountId = null;
         accountCredible = false;
@@ -82,23 +82,6 @@ class LocalToken implements Token {
         valid = false;
     }
 
-    @Override
-    public void invalidate() {
-        _invalidate();
-        onInvalidate();
-    }
-
-    @Override
-    public void onInvalidate() {
-        if (onInvalid != null) {
-            try {
-                onInvalid.run();
-            } catch (Throwable t) {
-                log.warn("error occurred on LocalToken invalidate. {}: {}",
-                        t.getClass().getCanonicalName(), t.getLocalizedMessage());
-            }
-        }
-    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -164,12 +147,12 @@ class LocalToken implements Token {
 
     @Override
     public void flush() {
-
     }
 
     @Override
-    public void renew() {
-        if (!valid) valid = true;
+    protected void $renew() {
+        if (!valid)
+            valid = true;
     }
 
     @Override
@@ -181,7 +164,6 @@ class LocalToken implements Token {
                 ", valid=" + valid +
                 ", lastActive=" + lastActive +
                 ", sessionId='" + sessionId + '\'' +
-                ", onInvalid=" + onInvalid +
                 ", created=" + created +
                 '}';
     }

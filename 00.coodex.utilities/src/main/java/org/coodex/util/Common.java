@@ -205,19 +205,43 @@ public class Common {
         return result;
     }
 
+    private static <T, C extends Collection<T>> C join(C instance, Collection ... collections){
+        if(collections != null && collections.length > 0){
+            for(Collection c : collections){
+                if(c != null) instance.addAll(c);
+            }
+        }
+        return instance;
+    }
     /**
-     * 并集 ary1 + ary2
+     * 并集
      *
-     * @param ary1
-     * @param ary2
+     * @param sets
      * @return
      */
-    public static <T> Set<T> join(Set<T> ary1, Set<T> ary2) {
-        Set<T> result = new HashSet<T>();
-        result.addAll(ary1);
-        result.addAll(ary2);
-        return result;
+    public static <T> Set<T> join(Collection<T> ... sets) {
+//        Set<T> result = new HashSet<T>();
+//        if(sets != null && sets.length > 0){
+//            for(Set<T> set : sets){
+//                if(set != null) result.addAll(set);
+//            }
+//        }
+//        result.addAll(ary1);
+//        result.addAll(ary2);
+        return join(new HashSet<T>(), sets);
     }
+
+//    public static <T> List<T> joinList(List<T> ... lists) {
+////        List<T> result = new ArrayList<T>();
+////        if(lists != null && lists.length > 0){
+////            for(List<T> set : lists){
+////                if(set != null) result.addAll(set);
+////            }
+////        }
+////        result.addAll(ary1);
+////        result.addAll(ary2);
+//        return join(new ArrayList<T>(), lists);
+//    }
 
 
     public static String native2AscII(String str) {

@@ -19,7 +19,9 @@ package org.coodex.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static org.coodex.util.TypeHelper.solve;
@@ -56,6 +58,21 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
         } else {
             return false;
         }
+    }
+
+    public List<T> getServiceInstances(Param_Type param){
+        List<T> list = new ArrayList<T>();
+        for (T instance : getAllInstances()) {
+            if (accept(instance, param))
+                list.add(instance);
+        }
+        try {
+            T instance = serviceLoaderFacade.getDefaultProvider();
+            if (accept(instance, param))
+                list.add(instance);
+        } catch (Throwable th) {
+        }
+        return list;
     }
 
     public T getServiceInstance(Param_Type param) {

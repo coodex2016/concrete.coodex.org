@@ -19,7 +19,6 @@ package org.coodex.concrete.common;
 import org.coodex.closure.ClosureContext;
 import org.coodex.closure.StackClosureContext;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -41,7 +40,7 @@ public final class ConcreteContext {
 
     public static final ClosureContext<Token> TOKEN = new StackClosureContext<Token>();
 
-    private static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<Map<String, Object>>();
+    public static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<Map<String, Object>>();
 
     /**
      * 放入记录日志所需的数据
@@ -53,7 +52,7 @@ public final class ConcreteContext {
         LOGGING.get().put(key, value);
     }
 
-    public static final Map<String, Object> getLoggingData(){
+    public static final Map<String, Object> getLoggingData() {
         return LOGGING.get();
     }
 
@@ -71,8 +70,12 @@ public final class ConcreteContext {
                 run(SIDE, SIDE_SERVER,
                         run(SUBJOIN, subjoin,
                                 run(LOCALE, getLocale(),
-                                        run(LOGGING, new HashMap<String, Object>(),
-                                                run(TOKEN, token, runnable))))).run();
+//                                        run(LOGGING, new HashMap<String, Object>(),
+                                        run(TOKEN, token, runnable)
+//                                )
+                                )
+                        )
+                ).run();
     }
 
     private static Locale getLocale() {

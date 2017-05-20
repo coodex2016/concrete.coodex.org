@@ -16,8 +16,6 @@
 
 package org.coodex.concrete.api;
 
-import org.coodex.concrete.common.OperationLogger;
-
 import java.lang.annotation.*;
 
 /**
@@ -38,9 +36,13 @@ public @interface LogAtomic {
         ALWAYS, DATA, NO
     }
 
+    String category() default "";
+
     String subClass() default "";
+
+    String message() default "";
 
     LoggingType loggingType() default LoggingType.DATA;
 
-    Class<? extends OperationLogger> loggerClass() default OperationLogger.class;
+//    Class<? extends OperationLogger> loggerClass() default OperationLogger.class;
 }

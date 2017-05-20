@@ -25,6 +25,10 @@ import java.util.Enumeration;
  */
 public interface Token extends Serializable {
 
+    enum Event{
+        CREATED, INVALIDATED
+    }
+
     /**
      * 令牌创建时间
      *
@@ -44,10 +48,10 @@ public interface Token extends Serializable {
      */
     void invalidate();
 
-    /**
-     * 失效事件，此时应清空全部缓存的数据
-     */
-    void onInvalidate();
+//    /**
+//     * 失效事件，此时应清空全部缓存的数据
+//     */
+//    void onInvalidate();
 
 
     /**

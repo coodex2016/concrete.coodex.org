@@ -37,15 +37,17 @@ public class FreemarkerMessageFormatter extends AbstractFreemarkerFormatter impl
     @Override
     public String format(String pattern, Object... objects) {
         if (objects == null || objects.length == 0) return pattern;
+
         Map<String, Object> values = new HashMap<String, Object>();
         for (int i = 1; i <= objects.length; i++) {
             values.put("o" + i, objects[i - 1]);
         }
-        try {
-            return super.formatMsg(pattern, values);
-        } catch (Throwable th) {
-            throw new RuntimeException(th.getLocalizedMessage(), th);
-        }
+        return format(pattern, values);
+//        try {
+//            return super.formatMsg(pattern, values);
+//        } catch (Throwable th) {
+//            throw new RuntimeException(th.getLocalizedMessage(), th);
+//        }
     }
 
     @Override

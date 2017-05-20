@@ -27,9 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import static org.coodex.concrete.common.AbstractMessageFacade.getLogFormatter;
 import static org.coodex.concrete.common.AbstractMessageFacade.getPatternLoader;
+import static org.coodex.concrete.common.ConcreteContext.LOGGING;
 import static org.coodex.concrete.common.ConcreteContext.getLoggingData;
 
 /**
@@ -64,18 +66,40 @@ public class OperationLogInterceptor extends AbstractInterceptor {
         return context.getAnnotation(OperationLog.class) != null || context.getAnnotation(LogAtomic.class) != null;
     }
 
-    @Override
-    public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+    static ThreadLocal<Account<? extends Serializable>> OPERATOR = new ThreadLocal<Account<? extends Serializable>>();
+
+    private Account<? extends Serializable> getOperator() {
         try {
-            Token token = TokenWrapper.getInstance();
-            Account<? extends Serializable> account = token.currentAccount();
+            return TokenWrapper.getInstance().currentAccount();
+        } catch (Throwable th) {
+            return OPERATOR.get();
+        } finally {
+            OPERATOR.remove();
+        }
+    }
+
+    @Override
+    public Object around(final RuntimeContext context, final MethodInvocation joinPoint) throws Throwable {
+        return LOGGING.run(new HashMap<String, Object>(), new ConcreteClosure() {
+            @Override
+            public Object concreteRun() throws Throwable {
+                return $$after(context, joinPoint, joinPoint.proceed());
+            }
+        });
+    }
+
+    //    @Override
+    private Object $$after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+        try {
+            Account<? extends Serializable> account = getOperator();
             String accountId = account == null ? null : account.getId().toString();
-            String accountName = null;
-            if (account != null && account instanceof NamedAccount) {
-                accountName = ((NamedAccount) account).getName();
+            String accountName = account == null ? "Anonymous" : null;
+            if (account != null) {
+                accountName = account instanceof NamedAccount ? ((NamedAccount) account).getName() : "Unknown";
             }
             String category = null;
             String subClass = null;
+            String messageTemplate = null;
             LogAtomic.LoggingType loggingType = LogAtomic.LoggingType.DATA;
             Class<? extends LogFormatter> formatterClass = LogFormatter.class;
             Class<? extends MessagePatternLoader> patternLoaderClass = MessagePatternLoader.class;
@@ -92,28 +116,19 @@ public class OperationLogInterceptor extends AbstractInterceptor {
 
             LogAtomic logAtomic = context.getAnnotation(LogAtomic.class);
             if (logAtomic != null) {
-                if (!OperationLogger.class.equals(logAtomic.loggerClass())) {
-                    loggerClass = logAtomic.loggerClass();
-                }
+                if (!Common.isBlank(logAtomic.category()))
+                    category = logAtomic.category();
                 subClass = logAtomic.subClass();
                 loggingType = logAtomic.loggingType();
+                messageTemplate = logAtomic.message();
             }
+            if (Common.isBlank(subClass)) subClass = context.getDeclaringMethod().getName();
 
-            boolean doLog = false;
-            switch (loggingType) {
-                case NO:
-                    break;
-                case DATA:
-                    doLog = getLoggingData().size() > 0;
-                    break;
-                case ALWAYS:
-                    doLog = true;
-            }
 
-            if (doLog) {
+            if (isDoLog(loggingType)) {
                 getLogger(loggerClass)
                         .log(accountId, accountName, category, subClass,
-                                buildLog(category, subClass, formatterClass, patternLoaderClass));
+                                buildLog(category, subClass, messageTemplate, formatterClass, patternLoaderClass));
             }
 
         } catch (Throwable th) {
@@ -123,22 +138,51 @@ public class OperationLogInterceptor extends AbstractInterceptor {
         }
     }
 
+    private boolean isDoLog(LogAtomic.LoggingType loggingType) {
+        boolean doLog = false;
+        switch (loggingType) {
+            case NO:
+                break;
+            case DATA:
+                doLog = getLoggingData().size() > 0;
+                break;
+            case ALWAYS:
+                doLog = true;
+        }
+        return doLog;
+    }
 
-    private static String buildLog(String category, String subClass, Class<? extends LogFormatter> formatterClass,
+
+    private static String buildLog(String category, String subClass, String messageTemplate,
+                                   Class<? extends LogFormatter> formatterClass,
                                    Class<? extends MessagePatternLoader> patternLoaderClass) {
 
-        if (Common.isBlank(category) && Common.isBlank(subClass)) {
-            return "category and subClass not set.";
+        String key = null, template = null;
+        if (messageTemplate != null && messageTemplate.startsWith("{") && messageTemplate.endsWith("}")) {
+            key = Common.trim(messageTemplate, '{', '}', ' ');
+        } else if(messageTemplate != null){
+            template = messageTemplate;
         }
+        if(template == null) {
+            if (key == null) key = getMessageKey(category, subClass);
+            template = getPatternLoader(patternLoaderClass).getMessageTemplate(key);
+        }
+
+
+        return getLogFormatter(formatterClass)
+                .format(messageTemplate, getLoggingData());
+    }
+
+    private static String getMessageKey(String category, String subClass) {
+        if (Common.isBlank(category) && Common.isBlank(subClass)) return null;
+
         StringBuilder builder = new StringBuilder();
         if (!Common.isBlank(category)) builder.append(category);
         if (!Common.isBlank(subClass)) {
             if (builder.length() > 0) builder.append('.');
             builder.append(subClass);
         }
-        return getLogFormatter(formatterClass)
-                .format(getPatternLoader(patternLoaderClass).getMessageTemplate(builder.toString()),
-                        getLoggingData());
+        return builder.toString();
     }
 
     private static OperationLogger getLogger(Class<? extends OperationLogger> loggerClass) {

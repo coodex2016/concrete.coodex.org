@@ -20,6 +20,7 @@ import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Overlay;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
 /**
@@ -75,10 +76,26 @@ public class RuntimeContext extends DefinitionContextImpl {
     @Override
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         Overlay overlayAnnotation = annotationClass.getAnnotation(Overlay.class);
-        boolean justDefinition = overlayAnnotation == null ? false : overlayAnnotation.definition();
-        T annotation = justDefinition ? null : getAnnotationFromImpl(annotationClass);
+        boolean justDefinition = overlayAnnotation == null ? true : overlayAnnotation.definition();
+
+        T annotation = justDefinition ?
+                getDeclaringMethod().getAnnotation(annotationClass) :
+                getAnnotationFrom(annotationClass, new AnnotatedElement[]{
+                        actualMethod, getDeclaringMethod(), actualClass
+                });
+
+
+//        if (annotation == null) {
+//            annotation = justDefinition ?
+//                    super.getAnnotation(annotationClass) :
+//                    getAnnotationFromImpl(annotationClass);
+//        }
+//        annotation = justDefinition ? annotation : getAnnotationFromImpl(annotationClass);
+//        return annotation == null ? super.getAnnotation(annotationClass) : annotation;
         return annotation == null ? super.getAnnotation(annotationClass) : annotation;
     }
+
+
 
     private <T extends Annotation> T getAnnotationFromImpl(Class<T> annotationClass) {
         T annotation = actualMethod.getAnnotation(annotationClass);

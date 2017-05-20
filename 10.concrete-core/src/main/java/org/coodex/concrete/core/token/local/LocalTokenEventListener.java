@@ -14,32 +14,29 @@
  * limitations under the License.
  */
 
-package org.coodex.util;
+package org.coodex.concrete.core.token.local;
 
-import java.util.Collection;
-import java.util.HashSet;
+import org.coodex.concrete.common.Token;
+import org.coodex.concrete.common.TokenEventListener;
+
+import static org.coodex.concrete.core.token.local.LocalTokenManager.TOKENS;
 
 /**
- * Created by davidoff shen on 2017-05-19.
+ * Created by davidoff shen on 2017-05-20.
  */
-public class SafeHashSet<E> extends HashSet<E> {
-    public SafeHashSet() {
-    }
-
-    public SafeHashSet(Collection<? extends E> c) {
-        addAll(c);
-    }
-
-    public SafeHashSet(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
-    }
-
-    public SafeHashSet(int initialCapacity) {
-        super(initialCapacity);
+public class LocalTokenEventListener implements TokenEventListener {
+    @Override
+    public boolean accept(Token.Event param) {
+        return Token.Event.INVALIDATED.equals(param);
     }
 
     @Override
-    public boolean addAll(Collection<? extends E> c) {
-        return c == null ? false : super.addAll(c);
+    public void before(Token token) {
+
+    }
+
+    @Override
+    public void after(Token token) {
+        if (TOKENS.containsKey(token.getTokenId())) TOKENS.remove(token.getTokenId());
     }
 }

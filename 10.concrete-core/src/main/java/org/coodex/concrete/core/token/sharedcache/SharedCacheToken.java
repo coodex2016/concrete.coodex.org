@@ -19,7 +19,7 @@ package org.coodex.concrete.core.token.sharedcache;
 import org.coodex.concrete.common.Account;
 import org.coodex.concrete.common.AccountFactory;
 import org.coodex.concrete.common.BeanProviderFacade;
-import org.coodex.concrete.common.Token;
+import org.coodex.concrete.core.token.AbstractToken;
 import org.coodex.sharedcache.SharedCacheClient;
 
 import java.io.Serializable;
@@ -30,7 +30,7 @@ import java.util.Vector;
 /**
  * Created by davidoff shen on 2016-11-23.
  */
-public class SharedCacheToken implements Token {
+public class SharedCacheToken /*implements Token*/ extends AbstractToken {
 
     private static final String PREFIX = SharedCacheToken.class.getCanonicalName();
 
@@ -66,6 +66,7 @@ public class SharedCacheToken implements Token {
         this.maxIdleTime = maxIdleTime;
         this.cacheKey = PREFIX + "." + this.tokenId;
         init();
+        runListeners(Event.CREATED, false);
     }
 
 
@@ -93,17 +94,14 @@ public class SharedCacheToken implements Token {
         return tokenData.valid;
     }
 
+
     @Override
-    public void invalidate() {
+    protected void $invalidate() {
         tokenData.valid = false;
         tokenData.map.clear();
         client.remove(cacheKey);
     }
 
-    @Override
-    public void onInvalidate() {
-
-    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -178,7 +176,7 @@ public class SharedCacheToken implements Token {
     }
 
     @Override
-    public void renew() {
+    protected void $renew() {
         tokenData.valid = true;
         write();
     }

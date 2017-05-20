@@ -21,8 +21,8 @@ import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.api.Overlay;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 /**
  * Created by davidoff shen on 2016-09-01.
@@ -103,16 +103,34 @@ public class DefinitionContextImpl implements DefinitionContext {
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         Overlay overlayAnnotation = annotationClass.getAnnotation(Overlay.class);
         boolean overlay = overlayAnnotation != null && overlayAnnotation.overlay();
-        T annotation = declaringMethod == null ? null : declaringMethod.getAnnotation(annotationClass);
-        if (annotation == null) {
-            for (Class<?> c : overlay ?
-                    Arrays.asList(declaringClass, declaringMethod.getDeclaringClass()) :
-                    Arrays.asList(declaringMethod.getDeclaringClass(), declaringClass)) {
-                annotation = c.getAnnotation(annotationClass);
-                if (annotation != null) break;
+
+//        T annotation = declaringMethod == null ? null : declaringMethod.getAnnotation(annotationClass);
+//
+//        if (annotation == null) {
+//            for (Class<?> c : overlay ?
+//                    Arrays.asList(declaringClass, declaringMethod.getDeclaringClass()) :
+//                    Arrays.asList(declaringMethod.getDeclaringClass(), declaringClass)) {
+//                annotation = c.getAnnotation(annotationClass);
+//                if (annotation != null) break;
+//            }
+//        }
+//        return annotation;
+        return getAnnotationFrom(annotationClass,
+                overlay ?
+                        new AnnotatedElement[]{
+                                declaringMethod, declaringClass, declaringMethod.getDeclaringClass()} :
+                        new AnnotatedElement[]{
+                                declaringMethod, declaringMethod.getDeclaringClass(), declaringClass});
+    }
+
+    protected <T extends Annotation> T getAnnotationFrom(Class<T> annotationClass, AnnotatedElement... accessibleObjects) {
+        for (AnnotatedElement annotatedElement : accessibleObjects) {
+            if (annotatedElement != null) {
+                T annotation = annotatedElement.getAnnotation(annotationClass);
+                if (annotation != null) return annotation;
             }
         }
-        return annotation;
+        return null;
     }
 
 
