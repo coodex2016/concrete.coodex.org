@@ -17,18 +17,22 @@
 package org.coodex.concrete.jaxrs;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.coodex.concrete.api.Abstract;
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
+import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.util.ClassNameFilter;
 import org.coodex.util.Common;
+import org.coodex.util.ReflectHelper;
 import org.coodex.util.TypeHelper;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 
 /**
@@ -141,13 +145,61 @@ public class JaxRSHelper {
 
     private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<Class<?>, Module>();
 
-    public static final synchronized Module getModule(Class<? extends ConcreteService> type) {
+    public static final synchronized Module getModule(final Class<? extends ConcreteService> type, String ... packages) {
         Module module = MODULE_CACHE.get(type);
         if (module == null) {
-            module = new Module(type);
+            if (type.getAnnotation(Abstract.class) != null) { //抽象的服务定义，则找具体定义
+                if(packages == null){
+                    packages = ConcreteHelper.getApiPackages();
+                }
+                final Set<Class<? extends ConcreteService>> serviceType = new HashSet<Class<? extends ConcreteService>>();
+                ReflectHelper.foreachClass(new ReflectHelper.Processor() {
+                    @Override
+                    public void process(Class<?> serviceClass) {
+                        if (serviceClass.isInterface() &&
+                                type.isAssignableFrom(serviceClass) &&
+                                serviceClass.getAnnotation(Abstract.class) == null) {
+                            serviceType.add((Class<? extends ConcreteService>) serviceClass);
+                        }
+                    }
+                }, new ClassNameFilter() {
+                    @Override
+                    public boolean accept(String className) {
+                        return true;
+                    }
+                }, packages);
+
+                switch (serviceType.size()) {
+                    case 0:
+                        throw new ConcreteException(ErrorCodes.MODULE_DEFINITION_NOT_FOUND, type);
+                    case 1:
+                        module = new Module(serviceType.iterator().next());
+                        break;
+                    default:
+                        throw new ConcreteException(ErrorCodes.MODULE_DEFINITION_NON_UNIQUENESS, type);
+                }
+            } else {
+                module = new Module(type);
+            }
             MODULE_CACHE.put(type, module);
         }
         return module;
+    }
+
+    private static final Set<Class<? extends ConcreteService>> getConcreteServiceClassFrom(
+            Class<?> clz, Class<? extends ConcreteService> type) {
+        Set<Class<? extends ConcreteService>> set = new HashSet<Class<? extends ConcreteService>>();
+        if (type.isAssignableFrom(clz)) {
+            if (clz.isInterface() && clz.getAnnotation(Abstract.class) != null)
+                set.add((Class<? extends ConcreteService>) clz);
+            else {
+                set.addAll(getConcreteServiceClassFrom(clz.getSuperclass(), type));
+                for (Class<?> interfaceClz : clz.getInterfaces()) {
+                    set.addAll(getConcreteServiceClassFrom(interfaceClz, type));
+                }
+            }
+        }
+        return set;
     }
 
 

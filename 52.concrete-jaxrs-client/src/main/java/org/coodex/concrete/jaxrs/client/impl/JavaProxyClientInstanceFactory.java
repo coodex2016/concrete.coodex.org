@@ -17,6 +17,7 @@
 package org.coodex.concrete.jaxrs.client.impl;
 
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.client.AbstractClientInstanceFactory;
 import org.coodex.concrete.jaxrs.struct.Module;
@@ -38,7 +39,7 @@ public class JavaProxyClientInstanceFactory extends AbstractClientInstanceFactor
 
             InvocationHandler handler = new InvocationHandler() {
                 //                private Module module = new Module(type);
-                private final Module module = JaxRSHelper.getModule(type);
+                private final Module module = JaxRSHelper.getModule(type, ConcreteHelper.getRemoteApiPackages());
 
                 @Override
                 public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

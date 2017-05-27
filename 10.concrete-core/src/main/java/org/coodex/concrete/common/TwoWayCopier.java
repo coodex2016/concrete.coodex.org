@@ -54,7 +54,9 @@ public interface TwoWayCopier<A, B> {
     <T extends Collection<A>> T copyB2A(Collection<B> srcCollection, Class<T> clazz);
 
 
+    Copier<A,B> a2bCopier();
 
+    Copier<B,A> b2aCopier();
 
 
 }

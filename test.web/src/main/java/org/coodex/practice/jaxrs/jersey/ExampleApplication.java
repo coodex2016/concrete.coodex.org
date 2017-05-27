@@ -46,7 +46,7 @@ public class ExampleApplication extends ResourceConfig {
 //        super(JSR339ClassGenerator.generates("org.coodex.practice.jarxs.api"));
         registerClasses(JacksonFeature.class, LoggingFeature.class, ConcreteExceptionMapper.class,
                 DownloadResource.class, UploadByFormResource.class);
-        Set<Class<?>> classes = JaxRSServiceHelper.generate(GENERATOR_NAME, "org.coodex.practice.jaxrs.api", "org.coodex.concrete.attachments");
+        Set<Class<?>> classes = JaxRSServiceHelper.generate(GENERATOR_NAME);
 //        registerClasses(JaxRSHelper.generate(GENERATOR_NAME, "org.coodex.practice.jaxrs.api"));
 
         log.info("{} classes created.", classes.size());

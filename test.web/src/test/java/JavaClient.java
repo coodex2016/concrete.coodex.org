@@ -1,5 +1,6 @@
 import org.coodex.concrete.jaxrs.Client;
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.practice.jaxrs.api.ServiceB;
 import org.coodex.practice.jaxrs.api.ServiceExample;
 import org.coodex.practice.jaxrs.pojo.Book;
 import org.coodex.practice.jaxrs.pojo.BookInfo;
@@ -14,6 +15,7 @@ public class JavaClient {
 
     public static void main(String[] args) {
         try {
+            ServiceB test = Client.getBean(ServiceB.class, "http://localhost:8080");
             ServiceExample serviceExample = Client.getBean(ServiceExample.class, "http://localhost:8080");
 
             serviceExample.multiPojo("中文",

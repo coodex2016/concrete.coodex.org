@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.apitools;
 
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.util.ServiceLoader;
 
@@ -27,9 +28,12 @@ import java.io.IOException;
 public class API {
     private static final ServiceLoader<ConcreteAPIRender> RENDERS =
             new ConcreteServiceLoader<ConcreteAPIRender>() {
-    };
+            };
 
     public static void generate(String desc, String path, String... packages) throws IOException {
+        if (packages == null) {
+            packages = ConcreteHelper.getApiPackages();
+        }
         if (RENDERS.getAllInstances().size() == 0)
             throw new RuntimeException("NONE render found.");
         for (ConcreteAPIRender render : RENDERS.getAllInstances()) {

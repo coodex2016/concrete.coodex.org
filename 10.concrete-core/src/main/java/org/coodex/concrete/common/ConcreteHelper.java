@@ -294,4 +294,15 @@ public class ConcreteHelper {
     }
 
 
+    public static String[] getApiPackages() {
+        return getProfile().getStrList("concrete.api.packages", ",", new String[0]);
+    }
+
+    public static String[] getRemoteApiPackages() {
+        return getProfile().getStrList("concrete.remoteapi.packages", ",", new String[0]);
+    }
+
+    public static String getAppSet(){
+        return getProfile().getString("concrete.appSet");
+    }
 }
