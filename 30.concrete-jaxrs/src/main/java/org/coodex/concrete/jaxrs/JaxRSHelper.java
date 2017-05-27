@@ -149,7 +149,7 @@ public class JaxRSHelper {
         Module module = MODULE_CACHE.get(type);
         if (module == null) {
             if (type.getAnnotation(Abstract.class) != null) { //抽象的服务定义，则找具体定义
-                if(packages == null){
+                if(packages == null || packages.length == 0){
                     packages = ConcreteHelper.getApiPackages();
                 }
                 final Set<Class<? extends ConcreteService>> serviceType = new HashSet<Class<? extends ConcreteService>>();

@@ -43,7 +43,7 @@ public class JaxRSServiceHelper {
 
 
     public static Set<Class<?>> generate(String desc, String... packages) {
-        if(packages == null){
+        if(packages == null || packages.length == 0){
             packages = ConcreteHelper.getApiPackages();
         }
         Set<Class<?>> classes = new HashSet<Class<?>>();
