@@ -31,18 +31,8 @@ public class DefaultDoubleMocker extends AbstractPrimitiveMocker<Double, DOUBLE>
 
     @Override
     protected Double $mock(DOUBLE mockAnnotation) {
-        if(mockAnnotation.range() != null && mockAnnotation.range().length > 0){
-            return Common.random(mockAnnotation.range());
-        }
-        double min = mockAnnotation.min();
-        double max = mockAnnotation.max();
-        if(min == max) return min;
-        if(min > max){
-            double t = min;
-            min = max;
-            max = t;
-        }
-
-        return Math.random() * (max - min)  + min;
+        return (mockAnnotation.range() != null && mockAnnotation.range().length > 0) ?
+                Common.random(mockAnnotation.range()) :
+                (float) Common.random(mockAnnotation.min(), mockAnnotation.max());
     }
 }

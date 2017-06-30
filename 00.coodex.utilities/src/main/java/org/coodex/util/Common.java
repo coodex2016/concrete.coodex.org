@@ -109,10 +109,31 @@ public class Common {
     }
 
     public static int random(int min, int max) {
-        if (max == Integer.MAX_VALUE)
-            max = max - 1;
-        return min + (int) (Math.random() * (max - min + 1));
+//        if (max == Integer.MAX_VALUE)
+//            max = max - 1;
+//        return min + (int) (Math.random() * (max - min + 1));
+        return (int) random((long) min, (long) max);
     }
+
+
+    public static long random(long min, long max) {
+
+        if (min == max) return min;
+        float _min = Math.min(min, max);
+        float _max = Math.max(min, max);
+
+        return (long) (Math.random() * (_max - _min + 1));
+    }
+
+
+    public static double random(double min, double max) {
+
+        if (min == max) return min;
+        double _min = Math.min(min, max);
+        double _max = Math.max(min, max);
+        return Math.random() * (_max - _min);
+    }
+
 
     public static <K extends Serializable, V extends Serializable> void copyMap(
             Map<K, V> org, Map<K, V> target) {
@@ -205,21 +226,22 @@ public class Common {
         return result;
     }
 
-    private static <T, C extends Collection<T>> C join(C instance, Collection ... collections){
-        if(collections != null && collections.length > 0){
-            for(Collection c : collections){
-                if(c != null) instance.addAll(c);
+    private static <T, C extends Collection<T>> C join(C instance, Collection... collections) {
+        if (collections != null && collections.length > 0) {
+            for (Collection c : collections) {
+                if (c != null) instance.addAll(c);
             }
         }
         return instance;
     }
+
     /**
      * 并集
      *
      * @param sets
      * @return
      */
-    public static <T> Set<T> join(Collection<T> ... sets) {
+    public static <T> Set<T> join(Collection<T>... sets) {
 //        Set<T> result = new HashSet<T>();
 //        if(sets != null && sets.length > 0){
 //            for(Set<T> set : sets){

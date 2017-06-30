@@ -31,19 +31,7 @@ public class DefaultLongMocker extends AbstractPrimitiveMocker<Long, LONG> {
 
     @Override
     protected Long $mock(LONG mockAnnotation) {
-        if(mockAnnotation.range() != null && mockAnnotation.range().length > 0){
-            return Common.random(mockAnnotation.range());
-        }
-        long min = mockAnnotation.min();
-        long max = mockAnnotation.max();
-        if(min == max) return min;
-        if(min > max){
-            long t = min;
-            min = max;
-            max = t;
-        }
-
-
-        return (long)(Math.random() * (max - min) + min);
+        return (mockAnnotation.range() != null && mockAnnotation.range().length > 0) ?
+                Common.random(mockAnnotation.range()) : Common.random(mockAnnotation.min(), mockAnnotation.max());
     }
 }

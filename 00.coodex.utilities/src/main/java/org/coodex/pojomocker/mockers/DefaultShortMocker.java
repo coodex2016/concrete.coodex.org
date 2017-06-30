@@ -31,19 +31,8 @@ public class DefaultShortMocker extends AbstractPrimitiveMocker<Short, SHORT> {
 
     @Override
     protected Short $mock(SHORT mockAnnotation) {
-        if(mockAnnotation.range() != null && mockAnnotation.range().length > 0){
-            return Common.random(mockAnnotation.range());
-        }
-        short min = mockAnnotation.min();
-        short max = mockAnnotation.max();
-        if(min == max) return min;
-        if(min > max){
-            short t = min;
-            min = max;
-            max = t;
-        }
-
-
-        return (short)(Math.random() * (max - min) + min);
+        return (mockAnnotation.range() != null && mockAnnotation.range().length > 0) ?
+                Common.random(mockAnnotation.range()):
+                (short) Common.random(mockAnnotation.min(), mockAnnotation.max());
     }
 }

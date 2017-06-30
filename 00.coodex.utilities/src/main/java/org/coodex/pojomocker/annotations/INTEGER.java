@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
 @Mock
 public @interface INTEGER {
 
-    int min() default Integer.MIN_VALUE + 1;
+    int min() default Integer.MIN_VALUE;
 
     int max() default Integer.MAX_VALUE;
 

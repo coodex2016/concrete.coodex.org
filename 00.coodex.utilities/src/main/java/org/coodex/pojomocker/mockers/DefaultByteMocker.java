@@ -31,20 +31,8 @@ public class DefaultByteMocker extends AbstractPrimitiveMocker<Byte, BYTE> {
 
     @Override
     protected Byte $mock(BYTE mockAnnotation) {
-
-        if(mockAnnotation.range() != null && mockAnnotation.range().length > 0){
-            return Common.random(mockAnnotation.range());
-        }
-
-        byte min = mockAnnotation.min();
-        byte max = mockAnnotation.max();
-        if(min == max) return min;
-        if(min > max){
-            byte t = min;
-            min = max;
-            max = t;
-        }
-
-        return (byte)(Math.random() * (max - min) + min);
+        return (mockAnnotation.range() != null && mockAnnotation.range().length > 0) ?
+                Common.random(mockAnnotation.range()) :
+                (byte) Common.random(mockAnnotation.min(), mockAnnotation.max());
     }
 }

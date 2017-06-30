@@ -31,19 +31,8 @@ public class DefaultFloatMocker extends AbstractPrimitiveMocker<Float, FLOAT> {
 
     @Override
     protected Float $mock(FLOAT mockAnnotation) {
-        if(mockAnnotation.range() != null && mockAnnotation.range().length > 0){
-            return Common.random(mockAnnotation.range());
-        }
-
-        float min = mockAnnotation.min();
-        float max = mockAnnotation.max();
-        if(min == max) return min;
-        if(min > max){
-            float t = min;
-            min = max;
-            max = t;
-        }
-
-        return (float)(Math.random() * (max - min)  + min);
+        return (mockAnnotation.range() != null && mockAnnotation.range().length > 0) ?
+                Common.random(mockAnnotation.range()) :
+                (float) Common.random(mockAnnotation.min(), mockAnnotation.max());
     }
 }

@@ -31,19 +31,7 @@ public class DefaultIntegerMocker extends AbstractPrimitiveMocker<Integer, INTEG
 
     @Override
     protected Integer $mock(INTEGER mockAnnotation) {
-        if(mockAnnotation.range() != null && mockAnnotation.range().length > 0){
-            return Common.random(mockAnnotation.range());
-        }
-        int min = mockAnnotation.min();
-        int max = mockAnnotation.max();
-        if (min == max) return min;
-        if (min > max) {
-            int t = min;
-            min = max;
-            max = t;
-        }
-
-
-        return (int) (Math.random() * (max - min) + min);
+        return (mockAnnotation.range() != null && mockAnnotation.range().length > 0) ?
+                Common.random(mockAnnotation.range()): Common.random(mockAnnotation.min(), mockAnnotation.max());
     }
 }
