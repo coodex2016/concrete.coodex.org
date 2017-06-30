@@ -349,7 +349,8 @@ public class TypeHelper {
 
             Type[] t = declaringClass.getTypeParameters();
             for (int i = 0; i < t.length; i++)
-                if (variable == t[i]) {
+//                if (variable == t[i]) {
+                if (variable.equals(t[i])) {
                     return pt.getActualTypeArguments()[i];
                 }
         } else {

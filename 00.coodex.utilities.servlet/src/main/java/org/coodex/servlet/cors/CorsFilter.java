@@ -15,7 +15,7 @@
  */
 
 /**
- * 
+ *
  */
 package org.coodex.servlet.cors;
 
@@ -27,61 +27,62 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- *
- * 
  * @author davidoff
- *
  */
 public class CorsFilter implements Filter {
 
-   private final CORSSetting corsSetting = new CORSSettingInProfile();
+    private final CORSSetting corsSetting = new CORSSettingInProfile();
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-    */
+    /*
+     * (non-Javadoc)
+     *
+     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+     */
 //   @Override
-   public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) throws ServletException {
 
-   }
+    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
-    * javax.servlet.ServletResponse, javax.servlet.FilterChain)
-    */
+    /*
+     * (non-Javadoc)
+     *
+     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+     * javax.servlet.ServletResponse, javax.servlet.FilterChain)
+     */
 //   @Override
-   public void doFilter(ServletRequest request, ServletResponse response,
-         FilterChain chain) throws IOException, ServletException {
-      doFilter((HttpServletRequest) request, (HttpServletResponse) response,
-            chain);
+    public void doFilter(ServletRequest request, ServletResponse response,
+                         FilterChain chain) throws IOException, ServletException {
+        doFilter((HttpServletRequest) request, (HttpServletResponse) response,
+                chain);
 
-   }
+    }
 
-   private void doFilter(HttpServletRequest request,
-         final HttpServletResponse response, FilterChain chain)
-         throws IOException, ServletException {
+    private void doFilter(HttpServletRequest request,
+                          final HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
-      CORSSetter.set(corsSetting, new HeaderSetter() {
+        CORSSetter.set(corsSetting, new HeaderSetter() {
 
-//         @Override
-         public void set(String header, String value) {
-            response.setHeader(header, value);
-         }
-      }, request.getHeader("Origin"));
+            //         @Override
+            public void set(String header, String value) {
+                response.setHeader(header, value);
+            }
+        }, request.getHeader("Origin"));
 
-      chain.doFilter(request, response);
-   }
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            chain.doFilter(request, response);
+        }
+    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see javax.servlet.Filter#destroy()
-    */
+    /*
+     * (non-Javadoc)
+     *
+     * @see javax.servlet.Filter#destroy()
+     */
 //   @Override
-   public void destroy() {
-   }
+    public void destroy() {
+    }
 
 }

@@ -47,9 +47,12 @@ public class VehicleNumMocker extends AbstractMocker<VehicleNum> {
         builder.append(randomChar(codeRange));
 
 
+        int alhpabetCount = 0;
         for (int i = 1; i < 5; i++) {
-            if (Math.random() < 0.1) {
+            //
+            if (alhpabetCount < 2 && Math.random() < 0.1) {
                 builder.append(randomChar(alphabets));
+                alhpabetCount ++;
             } else {
                 builder.append(randomChar(numbers));
             }

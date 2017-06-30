@@ -135,7 +135,9 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
                     }catch (ClientException clientEx){
                         throw clientEx;
                     }catch (Throwable th){
-                        throw new ClientException(-1, th.getLocalizedMessage(), path, unit.getInvokeType());
+                        ClientException ce = new ClientException(-1, th.getLocalizedMessage(), path, unit.getInvokeType());
+                        ce.initCause(th);
+                        throw ce;
                     }
                 }
             }

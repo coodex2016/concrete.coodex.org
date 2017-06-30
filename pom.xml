@@ -144,11 +144,11 @@
                 <!-- local repository -->
                 <snapshotRepository>
                     <id>private</id>
-                    <url>http://10.10.50.54:8081/repository/maven-snapshots/</url>
+                    <url>http://maven.telchina.cn/nexus/content/repositories/snapshots/</url>
                 </snapshotRepository>
                 <repository>
                     <id>private</id>
-                    <url>http://10.10.50.54:8081/repository/maven-public/</url>
+                    <url>http://maven.telchina.cn/nexus/content/repositories/releases/</url>
                 </repository>
 
             </distributionManagement>

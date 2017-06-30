@@ -104,7 +104,8 @@ public class Module extends AbstractModule<Unit> {
 
     private void checkUnit(Unit unit) {
         String fullResource = getName() + unit.getName();
-        Matcher m = Pattern.compile("(\\{)[^{^}]*(\\})").matcher(fullResource);
+//        Matcher m = Pattern.compile("(\\{)[^{^}]*(\\})").matcher(fullResource);
+        Matcher m = Pattern.compile("(\\{)[^{^}]{0,256}(\\})").matcher(fullResource);
         while (m.find()) {
             String param = m.group();
             param = param.substring(1, param.length() - 1).trim();

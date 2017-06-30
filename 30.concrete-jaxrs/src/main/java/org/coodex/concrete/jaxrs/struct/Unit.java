@@ -196,8 +196,8 @@ public class Unit extends AbstractUnit<Param, Module> {
 
     @Override
     public int compareTo(AbstractUnit o) {
-        int v = getName().replaceAll("\\{[^{}]*}", "")
-                .compareTo(o.getName().replaceAll("\\{[^{}]*}", ""));
+        int v = getName().replaceAll("(\\{)[^{^}]{0,256}(\\})", "")
+                .compareTo(o.getName().replaceAll("(\\{)[^{^}]{0,256}(\\})", ""));
         if (v == 0)
             v = getName().compareTo(o.getName());
         return v == 0 ? getInvokeType().compareTo(o.getInvokeType()) : v;
