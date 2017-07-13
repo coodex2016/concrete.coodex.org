@@ -59,7 +59,7 @@ public final class Client {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T extends ConcreteService> T getBean(Class<? extends T> type, String domain) {
+    public static <T extends ConcreteService> T getInstance(Class<? extends T> type, String domain) {
         if (type == null) throw new NullPointerException("type MUST NOT NULL.");
         synchronized (INSTANCE_CACHE) {
             String key = getKey(type, domain);
@@ -72,6 +72,16 @@ public final class Client {
         }
     }
 
+    public static <T extends ConcreteService> T getInstance(Class<? extends T> type) {
+        return getInstance(type, null);
+    }
+
+    @Deprecated
+    public static <T extends ConcreteService> T getBean(Class<? extends T> type, String domain) {
+        return getInstance(type,domain);
+    }
+
+    @Deprecated
     public static <T extends ConcreteService> T getBean(Class<? extends T> type) {
         return getBean(type, null);
     }
