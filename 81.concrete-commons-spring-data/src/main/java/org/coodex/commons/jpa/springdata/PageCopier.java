@@ -20,23 +20,23 @@ import org.coodex.concrete.api.pojo.PageResult;
 import org.coodex.concrete.common.Copier;
 import org.springframework.data.domain.Page;
 
-import java.util.ArrayList;
-
 /**
  * Created by davidoff shen on 2017-03-21.
  */
 public class PageCopier {
 
+    @Deprecated
     public static <SRC, TARGET> PageResult<TARGET> copy(Page<SRC> srcPage, Copier<SRC, TARGET> copier) {
-        PageResult<TARGET> result = new PageResult<TARGET>();
-        result.setCount(srcPage.getTotalElements());
-        result.setTotal((long) srcPage.getTotalPages());
-        result.setNum((long) srcPage.getNumber());
-        result.setPageSize(srcPage.getSize());
-        result.setList(new ArrayList<TARGET>());
-        for (SRC src : srcPage.getContent()) {
-            result.getList().add(copier.copy(src));
-        }
-        return result;
+//        PageResult<TARGET> result = new PageResult<TARGET>();
+//        result.setCount(srcPage.getTotalElements());
+//        result.setTotal((long) srcPage.getTotalPages());
+//        result.setNum((long) srcPage.getNumber());
+//        result.setPageSize(srcPage.getSize());
+//        result.setList(new ArrayList<TARGET>());
+//        for (SRC src : srcPage.getContent()) {
+//            result.getList().add(copier.copy(src));
+//        }
+//        return result;
+        return PageHelper.copy(srcPage, copier);
     }
 }
