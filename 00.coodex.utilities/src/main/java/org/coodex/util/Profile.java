@@ -171,6 +171,11 @@ public class Profile implements StringMap{
         }
     }
 
+    public static InputStream getResourceAsStream(String resourcePath) throws IOException {
+        URL url = getResource(Common.trim(resourcePath, '/'));
+        return url ==null ? new FileInputStream(resourcePath) : url.openStream();
+    }
+
     static public URL getResource(String resource) {
         ClassLoader classLoader = null;
         URL url = null;
