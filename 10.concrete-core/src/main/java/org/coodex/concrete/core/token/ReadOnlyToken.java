@@ -17,6 +17,7 @@
 package org.coodex.concrete.core.token;
 
 import org.coodex.concrete.common.Account;
+import org.coodex.concrete.common.AccountID;
 import org.coodex.concrete.common.Token;
 
 import java.io.Serializable;
@@ -48,7 +49,7 @@ class ReadOnlyToken implements Token {
     }
 
     @Override
-    public <ID extends Serializable> Account<ID> currentAccount() {
+    public <ID extends AccountID> Account<ID> currentAccount() {
         return token.currentAccount();
     }
 

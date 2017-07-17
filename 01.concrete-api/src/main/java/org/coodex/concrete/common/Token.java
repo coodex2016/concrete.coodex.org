@@ -59,7 +59,7 @@ public interface Token extends Serializable {
      *
      * @return
      */
-    <ID extends Serializable> Account<ID> currentAccount();
+    <ID extends AccountID> Account<ID> currentAccount();
 
     /**
      * 设置当前账户

@@ -18,23 +18,21 @@ package org.coodex.concrete.common;
 
 import org.coodex.util.AcceptableServiceLoader;
 
-import java.io.Serializable;
-
 /**
  * Created by davidoff shen on 2017-04-27.
  */
 public class AccountFactoryAggregation implements AccountFactory {
 
-    private final static AcceptableServiceLoader<Serializable, AcceptableAccountFactory<Serializable>>
+    private final static AcceptableServiceLoader<AccountID, AcceptableAccountFactory<AccountID>>
             ACCOUNT_FACTORY_LOADER =
-            new AcceptableServiceLoader<Serializable, AcceptableAccountFactory<Serializable>>(
-                    new ConcreteServiceLoader<AcceptableAccountFactory<Serializable>>() {
+            new AcceptableServiceLoader<AccountID, AcceptableAccountFactory<AccountID>>(
+                    new ConcreteServiceLoader<AcceptableAccountFactory<AccountID>>() {
                     }
             );
 
 
     @Override
-    public <ID extends Serializable> Account<ID> getAccountByID(ID id) {
+    public <ID extends AccountID> Account<ID> getAccountByID(ID id) {
         return ACCOUNT_FACTORY_LOADER.getServiceInstance(id).getAccountByID(id);
     }
 }

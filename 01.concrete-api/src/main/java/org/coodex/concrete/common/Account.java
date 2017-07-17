@@ -16,14 +16,13 @@
 
 package org.coodex.concrete.common;
 
-import java.io.Serializable;
 import java.util.Set;
 
 /**
  * 代表系统的一个账户
  * Created by davidoff shen on 2016-09-01.
  */
-public interface Account<ID extends Serializable> {
+public interface Account<ID extends AccountID> {
     /**
      * 帐号ID
      *

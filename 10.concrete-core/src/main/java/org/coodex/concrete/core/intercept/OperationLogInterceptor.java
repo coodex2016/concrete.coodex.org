@@ -26,7 +26,6 @@ import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 import static org.coodex.concrete.common.AbstractMessageFacade.getLogFormatter;
@@ -66,9 +65,9 @@ public class OperationLogInterceptor extends AbstractInterceptor {
         return context.getAnnotation(OperationLog.class) != null || context.getAnnotation(LogAtomic.class) != null;
     }
 
-    static ThreadLocal<Account<? extends Serializable>> OPERATOR = new ThreadLocal<Account<? extends Serializable>>();
+    static ThreadLocal<Account<? extends AccountID>> OPERATOR = new ThreadLocal<Account<? extends AccountID>>();
 
-    private Account<? extends Serializable> getOperator() {
+    private Account<? extends AccountID> getOperator() {
         try {
             return TokenWrapper.getInstance().currentAccount();
         } catch (Throwable th) {
@@ -91,8 +90,8 @@ public class OperationLogInterceptor extends AbstractInterceptor {
     //    @Override
     private Object $$after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
         try {
-            Account<? extends Serializable> account = getOperator();
-            String accountId = account == null ? null : account.getId().toString();
+            Account<? extends AccountID> account = getOperator();
+            String accountId = account == null ? null : account.getId().serialize();
             String accountName = account == null ? "Anonymous" : null;
             if (account != null) {
                 accountName = account instanceof NamedAccount ? ((NamedAccount) account).getName() : "Unknown";

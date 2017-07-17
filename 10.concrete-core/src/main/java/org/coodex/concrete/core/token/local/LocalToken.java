@@ -18,6 +18,7 @@ package org.coodex.concrete.core.token.local;
 
 import org.coodex.concrete.common.Account;
 import org.coodex.concrete.common.AccountFactory;
+import org.coodex.concrete.common.AccountID;
 import org.coodex.concrete.common.BeanProviderFacade;
 import org.coodex.concrete.core.token.AbstractToken;
 import org.coodex.util.Common;
@@ -85,7 +86,7 @@ class LocalToken /*implements Token*/ extends AbstractToken {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <ID extends Serializable> Account<ID> currentAccount() {
+    public <ID extends AccountID> Account<ID> currentAccount() {
 
         return currentAccountId == null ? null :
                 BeanProviderFacade.getBeanProvider().getBean(AccountFactory.class).getAccountByID((ID) currentAccountId);

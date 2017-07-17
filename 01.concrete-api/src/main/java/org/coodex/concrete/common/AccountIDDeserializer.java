@@ -16,10 +16,12 @@
 
 package org.coodex.concrete.common;
 
-/**
- * Created by davidoff shen on 2016-11-22.
- */
-public interface AccountFactory {
+import org.coodex.util.AcceptableService;
 
-    <ID extends AccountID> Account<ID> getAccountByID(ID id);
+/**
+ * Created by davidoff shen on 2017-07-17.
+ */
+public interface AccountIDDeserializer extends AcceptableService<String> {
+
+    AccountID deserialize(String accountIDStr);
 }

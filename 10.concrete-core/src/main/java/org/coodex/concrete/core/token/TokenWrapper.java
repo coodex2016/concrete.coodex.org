@@ -16,10 +16,7 @@
 
 package org.coodex.concrete.core.token;
 
-import org.coodex.concrete.common.Account;
-import org.coodex.concrete.common.Assert;
-import org.coodex.concrete.common.ErrorCodes;
-import org.coodex.concrete.common.Token;
+import org.coodex.concrete.common.*;
 
 import java.io.Serializable;
 import java.util.Enumeration;
@@ -74,7 +71,7 @@ public class TokenWrapper implements Token {
 
 
     @Override
-    public <ID extends Serializable> Account<ID> currentAccount() {
+    public <ID extends AccountID> Account<ID> currentAccount() {
         return getToken().currentAccount();
     }
 

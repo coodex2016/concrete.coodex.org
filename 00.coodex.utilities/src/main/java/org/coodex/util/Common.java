@@ -122,7 +122,7 @@ public class Common {
         float _min = Math.min(min, max);
         float _max = Math.max(min, max);
 
-        return (long) (Math.random() * (_max - _min + 1));
+        return (long) (_min + Math.random() * (_max - _min));
     }
 
 
@@ -131,7 +131,7 @@ public class Common {
         if (min == max) return min;
         double _min = Math.min(min, max);
         double _max = Math.max(min, max);
-        return Math.random() * (_max - _min);
+        return _min + Math.random() * (_max - _min);
     }
 
 
