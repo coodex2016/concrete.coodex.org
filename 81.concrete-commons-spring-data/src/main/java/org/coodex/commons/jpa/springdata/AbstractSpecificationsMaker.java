@@ -39,9 +39,9 @@ public abstract class AbstractSpecificationsMaker<C, T> implements Specification
         Assert.is(name.equals("make"), "Invalid SpecificationsMaker function name: make");
 
         Method makerFunction = null;
-        for (Method method : this.getClass().getMethods()) {
+        for (Method method : this.getClass().getDeclaredMethods()) {
             MakerFunction function = method.getAnnotation(MakerFunction.class);
-            String functionName = function == null ? method.getName() : method.getName();
+            String functionName = function == null ? method.getName() : function.value();
 
             if (isMakerFunction(method) && functionName.equals(name)) {
                 makerFunction = method;
@@ -50,9 +50,9 @@ public abstract class AbstractSpecificationsMaker<C, T> implements Specification
         }
 
         try {
-            return (Specifications<T>)
-                    Assert.isNull(makerFunction, "SpecificationsMaker function not exists: " + name)
-                            .invoke(this, condition);
+            Method method = Assert.isNull(makerFunction, "SpecificationsMaker function not exists: " + name);
+            method.setAccessible(true);
+            return (Specifications<T>) method.invoke(this, condition);
         } catch (Throwable th) {
             throw ConcreteHelper.getException(th);
         }

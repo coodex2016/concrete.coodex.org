@@ -17,6 +17,7 @@
 package test.org.coodex.concrete.impl;
 
 import org.coodex.commons.jpa.criteria.Operators.Logical;
+import org.coodex.commons.jpa.springdata.AbstractSpecificationsMaker;
 import org.coodex.commons.jpa.springdata.SpecCommon;
 import org.coodex.concrete.test.ConcreteTestCase;
 import org.junit.Test;
@@ -39,6 +40,9 @@ public class TestCase extends ConcreteTestCase {
 
     @Inject
     private TestRepo testRepo;
+
+    @Inject
+    private AbstractSpecificationsMaker<Condition, TestEntity> abstractSpecificationsMaker;
 
 
     @Test
@@ -101,5 +105,11 @@ public class TestCase extends ConcreteTestCase {
     @Test
     public void testNull(){
         testRepo.findAll((Specifications<TestEntity>)null, new PageRequest(1,1));
+    }
+
+    @Test
+    public void testMaker(){
+        testRepo.findAll(abstractSpecificationsMaker.make(null, "aaa"));
+        testRepo.findAll(abstractSpecificationsMaker.make(null, "a01"));
     }
 }

@@ -23,6 +23,7 @@
 
     <bean class="org.coodex.concrete.core.token.TokenWrapper"></bean>
     <bean class="org.coodex.concrete.spring.SpringBeanProvider"></bean>
+    <bean class="test.org.coodex.concrete.impl.Maker"></bean>
     <!-- entity manager -->
     <bean id="entityManagerFactory"
           class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
