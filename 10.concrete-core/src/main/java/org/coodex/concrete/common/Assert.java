@@ -36,6 +36,10 @@ public final class Assert {
         if (exp) throw ex;
     }
 
+    public static final void is(boolean exp, String message) {
+        is(exp, ConcreteHelper.getException(new RuntimeException(message)));
+    }
+
     /**
      * 表达式为否事，抛出code异常
      *
@@ -49,6 +53,10 @@ public final class Assert {
 
     public static final void not(boolean exp, ConcreteException ex) {
         is(!exp, ex);
+    }
+
+    public static final void not(boolean exp, String message) {
+        is(!exp, message);
     }
 
     /**
@@ -68,6 +76,10 @@ public final class Assert {
         return o;
     }
 
+    public static final <T> T isNull(T o, String message) {
+        return isNull(o, ConcreteHelper.getException(new RuntimeException(message)));
+    }
+
     /**
      * 当对象o不为null时，抛出code异常
      *
@@ -83,5 +95,8 @@ public final class Assert {
         is(o != null, ex);
     }
 
+    public static final void notNull(Object o, String message) {
+        notNull(o, ConcreteHelper.getException(new RuntimeException(message)));
+    }
 
 }

@@ -121,6 +121,11 @@ public class SpecCommon {
         return new MemberOfSpec<ATTR, ENTITY>(attributeName, attr);
     }
 
+
+    public static <ENTITY> Specifications<ENTITY> wrapper(Specifications<ENTITY> specifications) {
+        return specifications == null ? Specifications.where(specifications) : specifications;
+    }
+
     static class MemberOfSpec<ATTR, ENTITY> implements Specification<ENTITY> {
         private final ATTR attr;
         private final String attributeName;

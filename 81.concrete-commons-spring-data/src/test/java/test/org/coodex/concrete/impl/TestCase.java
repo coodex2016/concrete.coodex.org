@@ -21,6 +21,8 @@ import org.coodex.commons.jpa.springdata.SpecCommon;
 import org.coodex.concrete.test.ConcreteTestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import test.org.coodex.concrete.entities.TestEntity;
@@ -94,5 +96,10 @@ public class TestCase extends ConcreteTestCase {
     public void testMemberOf() {
 //        Specification<TestEntity> specification = SpecCommon.<TestEntity, String>memberOf("colAttr", "x");
         testRepo.findAll(SpecCommon.<TestEntity, String>memberOf("colAttr", "x"));
+    }
+
+    @Test
+    public void testNull(){
+        testRepo.findAll((Specifications<TestEntity>)null, new PageRequest(1,1));
     }
 }
