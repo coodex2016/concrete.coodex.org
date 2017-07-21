@@ -39,7 +39,7 @@ public abstract class AbstractSpecificationsMaker<C, T> implements Specification
         Assert.is(name.equals("make"), "Invalid SpecificationsMaker function name: make");
 
         Method makerFunction = null;
-        for (Method method : this.getClass().getDeclaredMethods()) {
+        for (Method method : this.getClass().getMethods()) {
             MakerFunction function = method.getAnnotation(MakerFunction.class);
             String functionName = function == null ? method.getName() : function.value();
 
@@ -60,6 +60,6 @@ public abstract class AbstractSpecificationsMaker<C, T> implements Specification
 
     private boolean isMakerFunction(Method method) {
         // TODO check result type and parameter type
-        return true;
+        return AbstractSpecificationsMaker.class.isAssignableFrom(method.getDeclaringClass());
     }
 }
