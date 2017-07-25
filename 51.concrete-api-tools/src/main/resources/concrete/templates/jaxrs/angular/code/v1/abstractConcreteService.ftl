@@ -25,7 +25,11 @@ export abstract class AbstractConcreteService {
     }
 
     protected extractData(res: Response){
-        return res.json() || null;
+        try{
+            return res.json() || null;
+        }catch(e){
+            return res.text();
+        }
     }
 
     private static onError(code: number, message: String): ErrorInfo {
