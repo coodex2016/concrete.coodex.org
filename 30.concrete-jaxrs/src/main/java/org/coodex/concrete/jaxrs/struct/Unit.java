@@ -130,7 +130,7 @@ public class Unit extends AbstractUnit<Param, Module> {
         for (Class c : inheritedChain) {
             String serviceName = ConcreteHelper.getServiceName(c);
             if (!Common.isBlank(serviceName))
-                buffer.append(slash(JaxRSHelper.camelCase(serviceName, true)));
+                buffer.append(slash(Common.camelCase(serviceName, true)));
         }
 
         MicroService microService = getMethod().getAnnotation(MicroService.class);

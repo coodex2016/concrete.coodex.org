@@ -80,8 +80,8 @@ public class ReverseResource<T extends ConcreteService> extends AbstractJSR339Re
                         @Override
                         public Object concreteRun() throws Throwable {
                             ConcreteService client = sDomain == null ?
-                                    Client.getBean(getInterfaceClass()) :
-                                    Client.getBean(getInterfaceClass(), sDomain);
+                                    Client.getInstance(getInterfaceClass()) :
+                                    Client.getInstance(getInterfaceClass(), sDomain);
 
                             method.invoke(client, params);
                             return null;

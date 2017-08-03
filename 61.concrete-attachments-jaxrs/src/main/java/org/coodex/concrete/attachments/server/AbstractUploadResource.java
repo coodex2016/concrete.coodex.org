@@ -39,7 +39,7 @@ public class AbstractUploadResource {
 
         Assert.is(AttachmentServiceHelper.ATTACHMENT_PROFILE.getBool(clientId + ".readonly", true), AttachmentInfoErrorCodes.NO_WRITE_PRIVILEGE);
 
-        ClientService clientService = Client.getBean(ClientService.class,
+        ClientService clientService = Client.getInstance(ClientService.class,
                 AttachmentServiceHelper.ATTACHMENT_PROFILE.getString(clientId + ".location"));
         Assert.not(clientService.writable(tokenId), AttachmentInfoErrorCodes.NO_WRITE_PRIVILEGE);
         attachmentInfo.setLastUsed(System.currentTimeMillis());

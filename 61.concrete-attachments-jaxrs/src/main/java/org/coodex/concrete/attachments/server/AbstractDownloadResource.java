@@ -47,7 +47,7 @@ public class AbstractDownloadResource {
 
         if (!"public".equalsIgnoreCase(AttachmentServiceHelper.ATTACHMENT_PROFILE.getString("rule.read", "public"))) {
 
-            ClientService clientService = Client.getBean(ClientService.class,
+            ClientService clientService = Client.getInstance(ClientService.class,
                     AttachmentServiceHelper.ATTACHMENT_PROFILE.getString(clientId + ".location"));
             Assert.not(clientService.readable(tokenId, attachmentId), AttachmentInfoErrorCodes.NO_READ_PRIVILEGE);
         }

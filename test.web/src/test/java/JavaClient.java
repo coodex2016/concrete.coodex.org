@@ -15,8 +15,8 @@ public class JavaClient {
 
     public static void main(String[] args) {
         try {
-            ServiceB test = Client.getBean(ServiceB.class, "http://localhost:8080");
-            ServiceExample serviceExample = Client.getBean(ServiceExample.class, "http://localhost:8080");
+            ServiceB test = Client.getInstance(ServiceB.class, "http://localhost:8080");
+            ServiceExample serviceExample = Client.getInstance(ServiceExample.class, "http://localhost:8080");
 
             serviceExample.multiPojo("中文",
                     new ArrayList<int[]>(0),
@@ -33,7 +33,7 @@ public class JavaClient {
             serviceExample.get("沈海南是个大逗比", 1005);
             System.out.println(serviceExample.delete(54321));
 
-            serviceExample = Client.getBean(ServiceExample.class, "http://localhost:8080");
+            serviceExample = Client.getInstance(ServiceExample.class, "http://localhost:8080");
 
             System.out.println(serviceExample.delete(12345l));
             System.out.println(serviceExample.bigStringTest("中华", "七七八八"));

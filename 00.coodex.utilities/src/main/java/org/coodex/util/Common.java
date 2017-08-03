@@ -510,4 +510,59 @@ public class Common {
         if (s1 == null || s2 == null) return false;
         return s1.equals(s2);
     }
+
+
+    public static Calendar copy(Calendar calendar){
+        return calendar == null ? null : (Calendar) calendar.clone();
+    }
+
+
+    private static final int TO_LOWER = 'a' - 'A';
+
+    public static String lowerFirstChar(String string) {
+        if (string == null) return string;
+        char[] charSeq = string.toCharArray();
+        if (charSeq.length > 1 && charSeq[0] >= 'A' && charSeq[0] <= 'Z') {
+            charSeq[0] = (char) (charSeq[0] + TO_LOWER);
+            return new String(charSeq);
+        }
+        return string;
+    }
+
+    public static String upperFirstChar(String string) {
+        if (string == null) return string;
+        char[] charSeq = string.toCharArray();
+        if (charSeq.length > 1 && charSeq[0] >= 'a' && charSeq[0] <= 'z') {
+            charSeq[0] = (char) (charSeq[0] - TO_LOWER);
+            return new String(charSeq);
+        }
+        return string;
+    }
+
+    private final static String DEFAULT_DELIM = ".-_ /\\";
+
+    public static String camelCase(String s) {
+        return camelCase(s, false);
+    }
+
+    public static String camelCase(String s, String delimiters) {
+        return camelCase(s, false, delimiters);
+    }
+
+    public static String camelCase(String s, boolean firstCharUpperCase) {
+        return camelCase(s, firstCharUpperCase, DEFAULT_DELIM);
+    }
+
+    public static String camelCase(String s, boolean firstCharUpperCase, String delimiters) {
+        StringTokenizer st = new StringTokenizer(s, delimiters);
+        StringBuilder builder = new StringBuilder();
+        while (st.hasMoreElements()) {
+            String node = st.nextToken();
+            if (node.length() == 0) continue;
+            builder.append(upperFirstChar(node));
+        }
+        return firstCharUpperCase ?
+                upperFirstChar(builder.toString()) :
+                lowerFirstChar(builder.toString());
+    }
 }

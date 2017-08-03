@@ -77,54 +77,64 @@ public class JaxRSHelper {
     }
 
 
-    private static final int TO_LOWER = 'a' - 'A';
+//    private static final int TO_LOWER = 'a' - 'A';
 
+    @Deprecated
     public static String lowerFirstChar(String string) {
-        if (string == null) return string;
-        char[] charSeq = string.toCharArray();
-        if (charSeq.length > 1 && charSeq[0] >= 'A' && charSeq[0] <= 'Z') {
-            charSeq[0] = (char) (charSeq[0] + TO_LOWER);
-            return new String(charSeq);
-        }
-        return string;
+        return Common.lowerFirstChar(string);
+//        if (string == null) return string;
+//        char[] charSeq = string.toCharArray();
+//        if (charSeq.length > 1 && charSeq[0] >= 'A' && charSeq[0] <= 'Z') {
+//            charSeq[0] = (char) (charSeq[0] + TO_LOWER);
+//            return new String(charSeq);
+//        }
+//        return string;
     }
 
+    @Deprecated
     public static String upperFirstChar(String string) {
-        if (string == null) return string;
-        char[] charSeq = string.toCharArray();
-        if (charSeq.length > 1 && charSeq[0] >= 'a' && charSeq[0] <= 'z') {
-            charSeq[0] = (char) (charSeq[0] - TO_LOWER);
-            return new String(charSeq);
-        }
-        return string;
+        return Common.upperFirstChar(string);
+//        if (string == null) return string;
+//        char[] charSeq = string.toCharArray();
+//        if (charSeq.length > 1 && charSeq[0] >= 'a' && charSeq[0] <= 'z') {
+//            charSeq[0] = (char) (charSeq[0] - TO_LOWER);
+//            return new String(charSeq);
+//        }
+//        return string;
     }
 
 
-    private final static String DEFAULT_DELIM = ".-_ /\\";
+//    private final static String DEFAULT_DELIM = ".-_ /\\";
 
+    @Deprecated
     public static String camelCase(String s) {
         return camelCase(s, false);
     }
 
+    @Deprecated
     public static String camelCase(String s, String delimiters) {
         return camelCase(s, false, delimiters);
     }
 
+    @Deprecated
     public static String camelCase(String s, boolean firstCharUpperCase) {
-        return camelCase(s, firstCharUpperCase, DEFAULT_DELIM);
+        return Common.camelCase(s, firstCharUpperCase);
+//        return camelCase(s, firstCharUpperCase, DEFAULT_DELIM);
     }
 
+    @Deprecated
     public static String camelCase(String s, boolean firstCharUpperCase, String delimiters) {
-        StringTokenizer st = new StringTokenizer(s, delimiters);
-        StringBuilder builder = new StringBuilder();
-        while (st.hasMoreElements()) {
-            String node = st.nextToken();
-            if (node.length() == 0) continue;
-            builder.append(upperFirstChar(node));
-        }
-        return firstCharUpperCase ?
-                upperFirstChar(builder.toString()) :
-                lowerFirstChar(builder.toString());
+        return Common.camelCase(s, firstCharUpperCase, delimiters);
+//        StringTokenizer st = new StringTokenizer(s, delimiters);
+//        StringBuilder builder = new StringBuilder();
+//        while (st.hasMoreElements()) {
+//            String node = st.nextToken();
+//            if (node.length() == 0) continue;
+//            builder.append(upperFirstChar(node));
+//        }
+//        return firstCharUpperCase ?
+//                upperFirstChar(builder.toString()) :
+//                lowerFirstChar(builder.toString());
     }
 
     public static String camelCaseByPath(String s) {
@@ -137,7 +147,7 @@ public class JaxRSHelper {
         while (st.hasMoreElements()) {
             String node = st.nextToken();
             if (node.length() == 0) continue;
-            builder.append('/').append(camelCase(node, firstCharUpperCase, ".-_ "));
+            builder.append('/').append(Common.camelCase(node, firstCharUpperCase, ".-_ "));
         }
         return builder.toString();
     }
@@ -145,11 +155,11 @@ public class JaxRSHelper {
 
     private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<Class<?>, Module>();
 
-    public static final synchronized Module getModule(final Class<? extends ConcreteService> type, String ... packages) {
+    public static final synchronized Module getModule(final Class<? extends ConcreteService> type, String... packages) {
         Module module = MODULE_CACHE.get(type);
         if (module == null) {
             if (type.getAnnotation(Abstract.class) != null) { //抽象的服务定义，则找具体定义
-                if(packages == null || packages.length == 0){
+                if (packages == null || packages.length == 0) {
                     packages = ConcreteHelper.getApiPackages();
                 }
                 final Set<Class<? extends ConcreteService>> serviceType = new HashSet<Class<? extends ConcreteService>>();

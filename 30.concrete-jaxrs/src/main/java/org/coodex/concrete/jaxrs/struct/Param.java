@@ -24,7 +24,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import static org.coodex.concrete.jaxrs.JaxRSHelper.camelCase;
+import static org.coodex.util.Common.camelCase;
+
 
 /**
  * Created by davidoff shen on 2016-11-30.

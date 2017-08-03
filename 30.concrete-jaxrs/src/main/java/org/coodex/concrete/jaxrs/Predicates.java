@@ -189,7 +189,7 @@ public class Predicates {
         for (String[] predicates : PREDICATES) {
             for (String predicate : predicates) {
                 if (name.startsWith(predicate)) {
-                    return JaxRSHelper.lowerFirstChar(name.substring(predicate.length()));
+                    return Common.lowerFirstChar(name.substring(predicate.length()));
                 }
             }
         }

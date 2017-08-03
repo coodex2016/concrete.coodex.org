@@ -19,10 +19,10 @@ package org.coodex.concrete.apitools.jaxrs.jquery;
 import com.alibaba.fastjson.JSON;
 import org.coodex.concrete.apitools.jaxrs.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.service.ServiceDocToolkit;
-import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Unit;
-import org.coodex.pojomocker.POJOMocker;
+import org.coodex.pojomocker.MockerFacade;
+import org.coodex.util.Common;
 
 /**
  * Created by davidoff shen on 2016-12-05.
@@ -34,7 +34,7 @@ public class JQueryDocToolkit extends ServiceDocToolkit {
     }
 
     public String camelCase(String s) {
-        return JaxRSHelper.camelCase(s);
+        return Common.camelCase(s);
     }
 
     public String mockParameters(Unit unit, Module module) {
@@ -47,7 +47,7 @@ public class JQueryDocToolkit extends ServiceDocToolkit {
                 builder.append(
                         JSON.toJSONString(
                                 // TODO new mocker
-                                POJOMocker.mock(
+                                MockerFacade.mock(
                                         unit.getParameters()[i].getGenericType(), module.getInterfaceClass()
                                 ), true));
             } catch (Throwable e) {

@@ -19,7 +19,6 @@ package org.coodex.concrete.apitools.jaxrs;
 import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.Signable;
 import org.coodex.concrete.core.signature.SignUtil;
-import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.Common;
 import org.coodex.util.TypeHelper;
 
@@ -154,7 +153,7 @@ public abstract class DocToolkit {
     }
 
     public String camelCase(String str) {
-        return JaxRSHelper.camelCase(str);
+        return Common.camelCase(str);
     }
 
     public String tableSafe(String str) {
