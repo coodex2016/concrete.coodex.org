@@ -1,0 +1,108 @@
+<!--
+  ~ Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html lang="zh">
+<head>
+    <title>concreteTest</title>
+    <script type="text/javascript" rel="script"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="jquery-concrete.js"></script>
+    <script>
+        $(document).ready(function () {
+            concrete.configure({
+                "root": "/services"
+            });
+
+            var module = concrete.module("org.coodex.practice.jaxrs.api.ServiceExample");
+            var saasExample = concrete.module("SaaSExample");
+
+            $("#all").click(function () {
+                saasExample.exampleForSaaS("54321", "ddd").done(function () {
+                    console.log(arguments);
+                })
+//                module.all().done(function () {
+//                    console.log(arguments);
+//                })
+            });
+
+            $("#update").click(function () {
+                module.update(0, {
+                    author: "davidoff",
+                    price: 10000,
+                    bookName: "concrete"
+                }).done(function () {
+                    console.log(arguments);
+                })
+            });
+
+            $("#checkRole").click(function () {
+                module.checkRole().success(function () {
+                    console.log(arguments);
+                })
+            })
+
+            $("#get1").click(function () {
+                module.get(1).success(function () {
+                    console.log(arguments);
+                })
+            })
+
+            $("#get2").click(function () {
+                module.get("沈/海/南", 1000).success(function () {
+                    console.log(arguments);
+                })
+            })
+
+            $("#delete").click(function () {
+                module.delete(1).success(function () {
+                    console.log(arguments);
+                })
+            })
+
+            $("#setTokenId").click(function () {
+                module.tokenId().success(function (tokenId) {
+                    $("#fileTest").attr("action", "/s/attachments/upload/byform/test/" + tokenId)
+                })
+            })
+
+            $("#bigStringTest").click(function () {
+                module.bigStringTest("abcd", "okokokokokkokoko中文测试").success(function (result) {
+                    alert(result);
+                })
+            })
+
+        });
+    </script>
+</head>
+<pathParam>
+
+<button id="all">all()</button>
+<button id="update">update</button>
+<button id="checkRole">checkRole</button>
+<button id="get1">get(id)</button>
+<button id="get2">get(author, price)</button>
+<button id="delete">delete(1)</button>
+<button id="setTokenId">setTokenId</button>
+<button id="bigStringTest">bigStringTest</button>
+
+<form id="fileTest"  method="POST" enctype="multipart/form-data">
+    <input type="file" name="toUpload">
+    <input type="file" name="toUpload">
+    <button type="submit">submit</button>
+</form>
+
+</pathParam>
+</html>

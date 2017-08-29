@@ -22,8 +22,10 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -36,12 +38,18 @@ import java.util.Arrays;
 @SpringBootApplication
 @Configuration
 @ImportResource({"classpath:example.xml"})
-public class Starter {
+public class Starter extends SpringBootServletInitializer {
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(Starter.class);
+    }
+
     @Bean
     public ServletRegistrationBean testServlet() {
         ServletContainer container = new ServletContainer();
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(
-                container, "/*");
+                container, "/service/*");
 //        registrationBean.ad
         registrationBean.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
                 ExampleApplication.class.getName());
@@ -55,24 +63,15 @@ public class Starter {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
         filterRegistrationBean.setFilter(new CorsFilter());
         filterRegistrationBean.setAsyncSupported(true);
-        filterRegistrationBean.setUrlPatterns(Arrays.asList("/*"));
+        filterRegistrationBean.setUrlPatterns(Arrays.asList("/service/*"));
         return filterRegistrationBean;
     }
 
-//    @Bean
-//    public WebMvcConfigurer corsConfigurer() {
-//        return new WebMvcConfigurerAdapter() {
-//            @Override
-//            public void addCorsMappings(CorsRegistry registry) {
-//                registry.addMapping("/**")
-//                        .allowedHeaders("*")
-//                        .allowedMethods("*")
-//                        .allowedOrigins("http://localhost:4200/");
-//            }
-//        };
-//    }
+
 
     public static void main(String[] args) {
-        SpringApplication.run(Starter.class, args);
+        SpringApplication.run(new Object[]{
+                Starter.class
+        }, args);
     }
 }

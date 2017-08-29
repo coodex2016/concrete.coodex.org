@@ -385,18 +385,18 @@ public class ReflectHelper {
                     }
                 }
             }
-        } finally {
-            submittedClasses.clear();
-        }
-    }
+                    } finally {
+                    submittedClasses.clear();
+                    }
+                    }
 
-    @SuppressWarnings("unchecked")
-    public static <T> T throwExceptionObject(Class<T> interfaceClass, final Throwable th) {
+@SuppressWarnings("unchecked")
+public static <T> T throwExceptionObject(Class<T> interfaceClass, final Throwable th) {
         return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[]{interfaceClass}, new InvocationHandler() {
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                throw th;
-            }
+public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        throw th;
+        }
         });
-    }
+        }
 
-}
+        }

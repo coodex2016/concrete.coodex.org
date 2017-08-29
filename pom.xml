@@ -111,10 +111,9 @@
         <slf4j.version>1.7.25</slf4j.version>
         <aspectj.version>1.8.10</aspectj.version>
 
-        <!-- 维持spring.data跟framework的一致 -->
-        <spring.framework.version>4.3.7.RELEASE</spring.framework.version>
-        <spring.data.version>Ingalls-RELEASE</spring.data.version>
-        <spring.boot.version>1.5.2.RELEASE</spring.boot.version>
+        <spring.framework.version>4.3.10.RELEASE</spring.framework.version>
+        <spring.data.version>Ingalls-SR6</spring.data.version>
+        <spring.boot.version>1.5.6.RELEASE</spring.boot.version>
 
         <jersey.version>2.25.1</jersey.version>
         <junit.version>${default.version}</junit.version>
@@ -128,7 +127,7 @@
         <hibernate.version>5.2.8.Final</hibernate.version>
         <hibernate.validator.version>5.4.0.Final</hibernate.validator.version>
 
-        <druid.version>1.0.29</druid.version>
+        <druid.version>1.1.2</druid.version>
 
         <!-- coodex utilities 版本，它并不需要随着concrete变化，待第一次正式发布后规划其版本 -->
         <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>
@@ -391,6 +390,19 @@
                 <type>pom</type>
             </dependency>
 
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             <!-- guice IoC -->
             <!--<dependency>-->
             <!--<groupId>com.google.inject</groupId>-->
