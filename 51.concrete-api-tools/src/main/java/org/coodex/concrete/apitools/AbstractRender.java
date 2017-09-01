@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.apitools.jaxrs;
+package org.coodex.concrete.apitools;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;

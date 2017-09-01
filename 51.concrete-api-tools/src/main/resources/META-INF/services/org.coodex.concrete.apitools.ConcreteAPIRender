@@ -34,3 +34,4 @@ org.coodex.concrete.apitools.jaxrs.service.ServiceDocRender
 org.coodex.concrete.apitools.jaxrs.jquery.JQueryPromisesCodeRender
 org.coodex.concrete.apitools.jaxrs.jquery.JQueryDocRender
 org.coodex.concrete.apitools.jaxrs.angular.AngularCodeRender
+org.coodex.concrete.apitools.rx.ReactiveStreamsRender

@@ -18,6 +18,7 @@ package org.coodex.concrete.apitools.jaxrs;
 
 import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.Signable;
+import org.coodex.concrete.apitools.AbstractRender;
 import org.coodex.concrete.core.signature.SignUtil;
 import org.coodex.util.Common;
 import org.coodex.util.TypeHelper;

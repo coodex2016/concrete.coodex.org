@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.jaxrs.client;
 
+import org.coodex.concrete.client.ClientCommon;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.jaxrs.client.impl.JaxRSClientInvokerFactory;
@@ -41,21 +42,21 @@ public abstract class AbstractClientInstanceFactory implements ClientInstanceFac
             new ConcreteServiceLoader<InvokerFactory>() {
             };
 
-    private String getServiceRoot(String domain) {
-
-        String s = domain == null ?
-                ConcreteHelper.getProfile().getString("concrete.serviceRoot", "").trim() :
-                ConcreteHelper.getProfile().getString("concrete." + domain + ".serviceRoot", domain);
-        char[] buf = s.toCharArray();
-        int len = buf.length;
-        while (len > 0 && buf[len - 1] == '/') {
-            len--;
-        }
-        return new String(buf, 0, len);
-    }
+//    private String getServiceRoot(String domain) {
+//
+//        String s = domain == null ?
+//                ConcreteHelper.getProfile().getString("concrete.serviceRoot", "").trim() :
+//                ConcreteHelper.getProfile().getString("concrete." + domain + ".serviceRoot", domain);
+//        char[] buf = s.toCharArray();
+//        int len = buf.length;
+//        while (len > 0 && buf[len - 1] == '/') {
+//            len--;
+//        }
+//        return new String(buf, 0, len);
+//    }
 
     protected Invoker getRemoveInvoker(String domain) {
-        domain = getServiceRoot(domain);
+        domain = ClientCommon.getDomain(domain).getIdentify();
 
         for (InvokerFactory factory : INVOKER_FACTORY_SPI_FACADE.getAllInstances()) {
             if (factory.accept(domain)) {

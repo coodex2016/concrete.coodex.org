@@ -23,7 +23,9 @@ import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.core.intercept.AbstractInterceptor;
+import org.coodex.concrete.core.intercept.AbstractSyncInterceptor;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
+import org.coodex.concrete.core.intercept.ConcreteSyncInterceptor;
 import org.springframework.core.Ordered;
 
 import static org.coodex.util.TypeHelper.solve;
@@ -32,13 +34,13 @@ import static org.coodex.util.TypeHelper.typeToClass;
 /**
  * Created by davidoff shen on 2016-09-01.
  */
-public abstract class AbstractConcreteAspect<T extends AbstractInterceptor> extends AbstractInterceptor implements Ordered {
+public abstract class AbstractConcreteAspect<T extends AbstractInterceptor> extends AbstractSyncInterceptor implements Ordered {
     public static final String ASPECT_POINT = "target(org.coodex.concrete.api.ConcreteService) && execution(public * *(..))";
 
 
     private ConcreteInterceptor interceptor;
 
-    private synchronized ConcreteInterceptor getInterceptor() {
+    private synchronized ConcreteSyncInterceptor getInterceptor() {
         if (interceptor == null) {
             try {
                 interceptor = (ConcreteInterceptor) (typeToClass(
@@ -48,7 +50,9 @@ public abstract class AbstractConcreteAspect<T extends AbstractInterceptor> exte
                 throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
             }
         }
-        return interceptor;
+        return interceptor instanceof ConcreteSyncInterceptor ?
+                (ConcreteSyncInterceptor) interceptor :
+                asyncToSync(interceptor);
     }
 
     @Around(ASPECT_POINT)

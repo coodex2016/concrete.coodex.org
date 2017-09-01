@@ -17,7 +17,7 @@
 package org.coodex.concrete.apitools.jaxrs.angular;
 
 import org.coodex.concrete.api.ConcreteService;
-import org.coodex.concrete.apitools.jaxrs.AbstractRender;
+import org.coodex.concrete.apitools.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.angular.meta.*;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;

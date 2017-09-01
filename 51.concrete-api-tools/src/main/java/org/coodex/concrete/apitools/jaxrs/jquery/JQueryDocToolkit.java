@@ -17,7 +17,7 @@
 package org.coodex.concrete.apitools.jaxrs.jquery;
 
 import com.alibaba.fastjson.JSON;
-import org.coodex.concrete.apitools.jaxrs.AbstractRender;
+import org.coodex.concrete.apitools.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.service.ServiceDocToolkit;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Unit;

@@ -36,7 +36,7 @@ import static org.coodex.concrete.common.ConcreteContext.getLoggingData;
 /**
  * Created by davidoff shen on 2017-05-08.
  */
-public class OperationLogInterceptor extends AbstractInterceptor {
+public class OperationLogInterceptor extends AbstractSyncInterceptor {
 
     private final static Logger log = LoggerFactory.getLogger(OperationLogInterceptor.class);
 

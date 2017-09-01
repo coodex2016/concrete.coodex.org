@@ -36,7 +36,7 @@ import static org.coodex.concrete.core.signature.SignUtil.PROFILE;
 /**
  * Created by davidoff shen on 2017-04-24.
  */
-public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
+public abstract class AbstractSignatureInterceptor extends AbstractSyncInterceptor {
 
 
     protected final String KEY_FIELD_ALGORITHM = "algorithm";

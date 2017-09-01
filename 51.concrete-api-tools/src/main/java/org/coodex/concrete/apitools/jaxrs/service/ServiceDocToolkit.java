@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.apitools.jaxrs.service;
 
-import org.coodex.concrete.apitools.jaxrs.AbstractRender;
+import org.coodex.concrete.apitools.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
 import org.coodex.concrete.apitools.jaxrs.POJOPropertyInfo;
 import org.coodex.concrete.jaxrs.JaxRSHelper;

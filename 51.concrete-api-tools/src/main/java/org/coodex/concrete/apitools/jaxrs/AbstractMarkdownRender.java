@@ -16,6 +16,8 @@
 
 package org.coodex.concrete.apitools.jaxrs;
 
+import org.coodex.concrete.apitools.AbstractRender;
+
 /**
  * Created by davidoff shen on 2017-04-13.
  */

@@ -42,48 +42,48 @@ public abstract class AbstractInterceptor implements ConcreteInterceptor {
 //        return false;
 //    }
 
-    @Override
-    public Object invoke(MethodInvocation invocation) throws Throwable {
-//        Object lock = atom.get();
+//    @Override
+//    public Object invoke(MethodInvocation invocation) throws Throwable {
+////        Object lock = atom.get();
+////
+////        if(!isAtomLevel() && lock != null){
+////            return invocation.proceed();
+////        }
 //
-//        if(!isAtomLevel() && lock != null){
+//        RuntimeContext context = getContext(invocation);
+//        if (context == null || !accept(context)) {
 //            return invocation.proceed();
 //        }
-
-        RuntimeContext context = getContext(invocation);
-        if (context == null || !accept(context)) {
-            return invocation.proceed();
-        }
-
-        before(context, invocation);
-        try {
-            Object result = around(context, invocation);
-            try {
-                after(context, invocation, result);
-//            }catch(ConcreteException ce){
-//                throw ce;
-            } catch (Throwable t) {
-                log.warn("Error occured in afterAdvice. {}", t.getLocalizedMessage(), t);
-            } finally {
-                return result;
-            }
-        } catch (ConcreteException ce) {
-            throw ce;
-        } catch (Throwable t) {
-            Throwable t2 = onError(context, invocation, t);
-            throw t2 == null ? t : t2;
-        }
-    }
+//
+//        before(context, invocation);
+//        try {
+//            Object result = around(context, invocation);
+//            try {
+//                after(context, invocation, result);
+////            }catch(ConcreteException ce){
+////                throw ce;
+//            } catch (Throwable t) {
+//                log.warn("Error occured in afterAdvice. {}", t.getLocalizedMessage(), t);
+//            } finally {
+//                return result;
+//            }
+//        } catch (ConcreteException ce) {
+//            throw ce;
+//        } catch (Throwable t) {
+//            Throwable t2 = onError(context, invocation, t);
+//            throw t2 == null ? t : t2;
+//        }
+//    }
 
     @Override
     public boolean accept(RuntimeContext context) {
         return true;
     }
 
-    @Override
-    public Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable {
-        return joinPoint.proceed();
-    }
+//    @Override
+//    private Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable {
+//        return joinPoint.proceed();
+//    }
 
     @Override
     public void before(RuntimeContext context, MethodInvocation joinPoint) {
@@ -98,4 +98,6 @@ public abstract class AbstractInterceptor implements ConcreteInterceptor {
     public Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
         return th;
     }
+
+
 }

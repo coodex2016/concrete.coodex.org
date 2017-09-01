@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.jaxrs.client;
+package rx.org.coodex.practice.jaxrs.api;
 
-import java.lang.reflect.Type;
+import org.coodex.concrete.rx.ReactiveExtensionFor;
+
+import io.reactivex.Observable;
+
+import org.coodex.practice.jaxrs.api.Calc;
 
 /**
- * Created by davidoff shen on 2016-12-07.
+ * Create by concrete-api-tools.
  */
-public interface JSONSerializer {
+@ReactiveExtensionFor(Calc.class)
+public interface Calc_RX {
 
-    <T> T parse(String json, Type t);
+    Observable<Integer> add(int x, int y);
 
-    String toJson(Object t);
+
 }

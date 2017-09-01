@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.jaxrs.client.impl;
-
-import com.alibaba.fastjson.JSON;
-import org.coodex.concrete.jaxrs.client.JSONSerializer;
+package org.coodex.concrete.client;
 
 import java.lang.reflect.Type;
 
 /**
  * Created by davidoff shen on 2016-12-07.
  */
-public class FastJsonSerializer implements JSONSerializer {
-    @Override
-    public <T> T parse(String json, Type t) {
-        return JSON.parseObject(json, t);
-    }
+public interface JSONSerializer {
 
-    @Override
-    public String toJson(Object t) {
-        return JSON.toJSONString(t);
-    }
+    <T> T parse(String json, Type t);
+
+    String toJson(Object t);
 }

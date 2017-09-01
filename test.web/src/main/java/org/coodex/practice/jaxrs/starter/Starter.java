@@ -49,7 +49,7 @@ public class Starter extends SpringBootServletInitializer {
     public ServletRegistrationBean testServlet() {
         ServletContainer container = new ServletContainer();
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(
-                container, "/service/*");
+                container, "/*");
 //        registrationBean.ad
         registrationBean.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
                 ExampleApplication.class.getName());
@@ -63,7 +63,7 @@ public class Starter extends SpringBootServletInitializer {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
         filterRegistrationBean.setFilter(new CorsFilter());
         filterRegistrationBean.setAsyncSupported(true);
-        filterRegistrationBean.setUrlPatterns(Arrays.asList("/service/*"));
+        filterRegistrationBean.setUrlPatterns(Arrays.asList("/*"));
         return filterRegistrationBean;
     }
 

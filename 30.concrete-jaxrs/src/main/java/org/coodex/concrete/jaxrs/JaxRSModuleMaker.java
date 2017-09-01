@@ -29,7 +29,7 @@ public class JaxRSModuleMaker implements ModuleMaker<Module> {
     @Override
     public boolean isAccept(String desc) {
         return desc != null
-                && desc.length() > JAX_RS_PREV.length()
+                && desc.length() >= JAX_RS_PREV.length()
                 && JAX_RS_PREV.equalsIgnoreCase(desc.substring(0, JAX_RS_PREV.length()));
     }
 

@@ -35,7 +35,8 @@ import java.util.Set;
 public class ClientServiceImpl implements ClientService {
 
 
-    private static final TokenManager tokenManager = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
+    private TokenManager tokenManager;
+    //= BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
 
     private static final Token token = TokenWrapper.getInstance();
 
@@ -78,7 +79,7 @@ public class ClientServiceImpl implements ClientService {
 
 
     private Token getTokenById(String tokenId) {
-        Token token = tokenManager.getToken(tokenId);
+        Token token = getTokenManager().getToken(tokenId);
         Assert.isNull(token, ErrorCodes.NONE_TOKEN);
         Assert.not(token.isValid(), ErrorCodes.TOKEN_INVALIDATE, tokenId);
         return token;
@@ -116,11 +117,17 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void notify(String token, String attachmentId) {
-        Token t = tokenManager.getToken(token);
+        Token t = getTokenManager().getToken(token);
         if (t != null) {
             Set<String> set = new HashSet<String>();
             set.add(attachmentId);
             allow(t, set);
         }
+    }
+
+    public TokenManager getTokenManager() {
+        if(tokenManager == null)
+            tokenManager = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
+        return tokenManager;
     }
 }

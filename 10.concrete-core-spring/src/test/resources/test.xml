@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
@@ -8,14 +24,15 @@
     <!--<bean id="beanValidationInterceptor" class="BeanValidationInterceptor"></bean>-->
 
 
-    <bean class="org.coodex.concrete.spring.aspects.BeanValidationAspect"></bean>
-    <bean class="org.coodex.concrete.spring.aspects.ServiceTimingAspect"></bean>
-    <bean class="org.coodex.concrete.spring.aspects.RBAC_Aspect"></bean>
+    <!--<bean class="org.coodex.concrete.spring.aspects.BeanValidationAspect"></bean>-->
+    <!--<bean class="org.coodex.concrete.spring.aspects.ServiceTimingAspect"></bean>-->
+    <!--<bean class="org.coodex.concrete.spring.aspects.RBAC_Aspect"></bean>-->
     <bean class="test.org.coodex.intf.impl.AspectTestImpl"></bean>
+
     <bean class="org.coodex.concrete.spring.aspects.ConcreteAOPChain">
         <constructor-arg index="0">
             <list>
-                <bean class="org.coodex.concrete.core.intercept.BeanValidationInterceptor"></bean>
+                <!--<bean class="org.coodex.concrete.core.intercept.BeanValidationInterceptor"></bean>-->
                 <bean class="test.org.coodex.intf.impl.ExampleInterceptor1"></bean>
                 <bean class="test.org.coodex.intf.impl.ExampleInterceptor2"></bean>
             </list>

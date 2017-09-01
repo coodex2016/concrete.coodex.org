@@ -45,8 +45,53 @@ public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
                 && (context.getAnnotation(Limiting.class) != null);
     }
 
+
     @Override
-    public Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable {
+    public void before(RuntimeContext context, MethodInvocation joinPoint) {
+        ConcurrencyStrategy strategy = getConcurrencyStrategy(context);
+
+        if (strategy != null && !strategy.alloc())
+            throw new ConcreteException(ErrorCodes.OVERRUN);
+    }
+
+    @Override
+    public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+        release(context);
+        return super.after(context, joinPoint, result);
+    }
+
+    private void release(RuntimeContext context) {
+        ConcurrencyStrategy strategy = getConcurrencyStrategy(context);
+        if (strategy != null)
+            strategy.release();
+    }
+
+    @Override
+    public Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
+        release(context);
+        return super.onError(context, joinPoint, th);
+    }
+
+//    @Override
+//    public Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable {
+//        ConcurrencyStrategy strategy = getConcurrencyStrategy(context);
+//
+//        if (strategy != null && !strategy.alloc())
+//            throw new ConcreteException(ErrorCodes.OVERRUN);
+//
+//        try {
+//            return joinPoint.proceed();
+//        } catch (ConcreteException e) {
+//            throw e;
+//        } catch (Throwable e) {
+//            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, e.getLocalizedMessage(), e);
+//        } finally {
+//            if (strategy != null)
+//                strategy.release();
+//        }
+//    }
+
+    private ConcurrencyStrategy getConcurrencyStrategy(RuntimeContext context) {
         ConcurrencyStrategy strategy = null;
         Limiting limiting = context.getAnnotation(Limiting.class);
 //        if (limiting == null)
@@ -54,20 +99,7 @@ public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
 
         if (limiting != null)
             strategy = getStrategy(limiting.strategy());
-
-        if (strategy != null && !strategy.alloc())
-            throw new ConcreteException(ErrorCodes.OVERRUN);
-
-        try {
-            return joinPoint.proceed();
-        } catch (ConcreteException e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, e.getLocalizedMessage(), e);
-        } finally {
-            if (strategy != null)
-                strategy.release();
-        }
+        return strategy;
     }
 
     private static final Profile MC_PROFILE = Profile.getProfile("limiting.maximum.concurrency.properties");

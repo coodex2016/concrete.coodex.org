@@ -17,6 +17,7 @@
 package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.coodex.concrete.common.RuntimeContext;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
@@ -25,14 +26,14 @@ import java.util.*;
 /**
  * Created by davidoff shen on 2016-09-07.
  */
-public class InterceptorChain extends AbstractInterceptor implements Set<ConcreteInterceptor> {
+public class InterceptorChain extends AbstractSyncInterceptor implements Set<ConcreteInterceptor> {
 
     private static class MethodInvocationChain implements MethodInvocation {
 
-        private Queue<ConcreteInterceptor> queue;
-        private MethodInvocation invocation;
+        private final Queue<ConcreteSyncInterceptor> queue;
+        private final MethodInvocation invocation;
 
-        public MethodInvocationChain(Queue<ConcreteInterceptor> queue, MethodInvocation invocation) {
+        public MethodInvocationChain(Queue<ConcreteSyncInterceptor> queue, MethodInvocation invocation) {
             this.queue = queue;
             this.invocation = invocation;
         }
@@ -51,7 +52,7 @@ public class InterceptorChain extends AbstractInterceptor implements Set<Concret
         public Object proceed() throws Throwable {
             if (queue.isEmpty())
                 return invocation.proceed();
-            ConcreteInterceptor interceptor = queue.poll();
+            ConcreteSyncInterceptor interceptor = queue.poll();
             return interceptor.invoke(new MethodInvocationChain(queue, invocation));
         }
 
@@ -96,17 +97,23 @@ public class InterceptorChain extends AbstractInterceptor implements Set<Concret
         return super.invoke(new MethodInvocationChain(createQueue(), invocation));
     }
 
-    private Queue<ConcreteInterceptor> createQueue() {
-        Queue<ConcreteInterceptor> queue = new LinkedList<ConcreteInterceptor>();
+    private Queue<ConcreteSyncInterceptor> createQueue() {
+        Queue<ConcreteSyncInterceptor> queue = new LinkedList<ConcreteSyncInterceptor>();
         ConcreteInterceptor[] interceptors = this.interceptors.toArray(new ConcreteInterceptor[0]);
         Arrays.sort(interceptors, comparator);
 
         for (ConcreteInterceptor interceptor : interceptors) {
-            if (interceptor != null && !(interceptor instanceof InterceptorChain))
-                queue.add(interceptor);
+            if (interceptor != null && !(interceptor instanceof InterceptorChain)) {
+                queue.add(
+                        interceptor instanceof ConcreteSyncInterceptor ?
+                                (ConcreteSyncInterceptor) interceptor :
+                                asyncToSync(interceptor));
+            }
         }
         return queue;
     }
+
+
 
 
     ///////////////////// 实现set接口
