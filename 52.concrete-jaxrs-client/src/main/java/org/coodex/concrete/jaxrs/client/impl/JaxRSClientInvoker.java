@@ -22,6 +22,8 @@ import org.coodex.concrete.jaxrs.client.AbstractRemoteInvoker;
 import org.coodex.concrete.jaxrs.client.JaxRSClientConfigBuilder;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.ServiceLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -46,6 +48,8 @@ import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
  * Created by davidoff shen on 2017-04-15.
  */
 public class JaxRSClientInvoker extends AbstractRemoteInvoker {
+
+    private final static Logger log = LoggerFactory.getLogger(JaxRSClientInvoker.class);
 
 
     private static final Map<String, Client> clients = new HashMap<String, Client>();
@@ -120,16 +124,31 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
     private Response request(String url, String method, Object body) throws URISyntaxException {
         URI uri = new URI(url);
         Invocation.Builder builder = client.target(url).request();
-
+        StringBuilder str = new StringBuilder();
+        str.append("url: ").append(url).append("\n").append("method: ").append(method);
         Subjoin subjoin = SUBJOIN.get();
         if(subjoin != null){
+            str.append("\nheaders:");
             for(String key : subjoin.keySet()){
                 builder = builder.header(key, subjoin.get(key));
+                str.append("\n\t").append(key).append(": ").append(subjoin.get(key));
             }
         }
+        StringBuilder cookies = new StringBuilder();
         for (Cookie cookie : getCookieManager(domain).load(uri.getPath())) {
             builder = builder.cookie(cookie);
+            cookies.append(String.format("\n\tdomain: %s; name: %s; value: %s; path: %s, version: %d",
+                    cookie.getDomain(), cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getVersion()));
         }
+        if(cookies.length() > 0){
+            str.append("\ncookies:").append(cookies.toString());
+        }
+
+        if(body != null){
+            str.append("\ncontent:\n").append(getJSONSerializer().toJson(body));
+        }
+
+        log.debug("requestInfo: \n{}", str.toString());
         return body == null ?
                 builder.build(method).invoke() :
                 builder.build(method, Entity.entity(body,

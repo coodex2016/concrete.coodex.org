@@ -43,7 +43,7 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
 
     @Override
     public boolean accept(RuntimeContext context) {
-        return super.accept(context) && isTimingLimitService(context);
+        return isTimingLimitService(context);
     }
 
     @Override

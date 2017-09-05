@@ -30,7 +30,7 @@ public abstract class AbstractInterceptor implements ConcreteInterceptor {
 //    private final static ThreadLocal<Object> atom = new ThreadLocal<>();
 
 
-    private final static Logger log = LoggerFactory.getLogger(AbstractInterceptor.class);
+//    private final static Logger log = LoggerFactory.getLogger(AbstractInterceptor.class);
 
 
     protected final static RuntimeContext getContext(MethodInvocation joinPoint) {
@@ -75,10 +75,10 @@ public abstract class AbstractInterceptor implements ConcreteInterceptor {
 //        }
 //    }
 
-    @Override
-    public boolean accept(RuntimeContext context) {
-        return true;
-    }
+//    @Override
+//    public boolean accept(RuntimeContext context) {
+//        return true;
+//    }
 
 //    @Override
 //    private Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable {

@@ -31,6 +31,11 @@ public class ExampleInterceptor2 extends AbstractInterceptor {
     }
 
     @Override
+    public boolean accept(RuntimeContext context) {
+        return true;
+    }
+
+    @Override
     public void before(RuntimeContext context, MethodInvocation joinPoint) {
         System.out.println(22220);
         super.before(context, joinPoint);

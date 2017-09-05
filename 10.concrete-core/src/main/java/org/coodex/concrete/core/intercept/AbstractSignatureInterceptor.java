@@ -23,7 +23,10 @@ import org.coodex.concrete.api.pojo.Signature;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.signature.SignUtil;
 import org.coodex.util.Common;
+import org.coodex.util.Profile;
 import org.coodex.util.ReflectHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -37,6 +40,9 @@ import static org.coodex.concrete.core.signature.SignUtil.PROFILE;
  * Created by davidoff shen on 2017-04-24.
  */
 public abstract class AbstractSignatureInterceptor extends AbstractSyncInterceptor {
+
+
+    private final static Logger log = LoggerFactory.getLogger(AbstractSignatureInterceptor.class);
 
 
     protected final String KEY_FIELD_ALGORITHM = "algorithm";
@@ -83,7 +89,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractSyncIntercept
             Map<String, Object> content = buildContent(context, joinPoint.getArguments());
             Assert.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
                     ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
-                    "noise MUST NOT null.");
+                    KEY_FIELD_NOISE + " MUST NOT null.");
 
             // 必须保留，存在向content中put数据的可能
             String algorithm = getKeyField(content, KEY_FIELD_ALGORITHM, howToSign.getAlgorithm());
@@ -120,7 +126,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractSyncIntercept
      * @throws IllegalAccessException
      */
     private Object serverSign(Signature signature, String algorithm, String keyId, IronPen ironPen, SignatureSerializer serializer) throws IllegalAccessException {
-        signature.setNoise(Common.random(Integer.MAX_VALUE ));
+        signature.setNoise(Common.random(Integer.MAX_VALUE));
         signature.setSign(
                 Base64.encodeBase64String(
                         ironPen.sign(serializer.serialize(signatureToMap(signature)), algorithm, keyId)));
@@ -145,7 +151,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractSyncIntercept
         Object key = content.containsKey(propertyName) ?
                 content.get(propertyName) :
                 SUBJOIN.get().get(propertyName);
-        if(key != null){
+        if (key != null) {
             content.put(propertyName, key);
         }
         return key == null ? defaultValue : key.toString();
@@ -183,13 +189,14 @@ public abstract class AbstractSignatureInterceptor extends AbstractSyncIntercept
             // 0 签名
             Map<String, Object> content = buildContent(context, joinPoint.getArguments());
             // noise
-            putKeyField(content, KEY_FIELD_NOISE, Common.random(0, Integer.MAX_VALUE), context, joinPoint);
+            int noise = Common.random(0, Integer.MAX_VALUE);
+            putKeyField(content, KEY_FIELD_NOISE, noise, context, joinPoint);
 
             //algorithm
             String algorithm = putKeyField(content, KEY_FIELD_ALGORITHM,
                     SignUtil.getString(KEY_FIELD_ALGORITHM, howToSign.getPaperName(), null),
                     context, joinPoint);
-            if(algorithm == null)
+            if (algorithm == null)
                 algorithm = howToSign.getAlgorithm();
 
             // keyId
@@ -197,10 +204,21 @@ public abstract class AbstractSignatureInterceptor extends AbstractSyncIntercept
                     SignUtil.getString(KEY_FIELD_KEY_ID, howToSign.getPaperName(), null),
                     context, joinPoint);
 
+            byte[] data = howToSign.getSerializer().serialize(content);
+
             String sign = Base64.encodeBase64String(howToSign.getIronPenFactory().getIronPen(howToSign.getPaperName())
-                    .sign(howToSign.getSerializer().serialize(content), algorithm, keyId));
+                    .sign(data, algorithm, keyId));
 
             putKeyField(content, KEY_FIELD_SIGN, sign, context, joinPoint);
+            log.debug("signature for[ {} ]: \n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}",
+                    context.getActualMethod().getName(),
+                    getPropertyName(KEY_FIELD_NOISE), noise,
+                    getPropertyName(KEY_FIELD_ALGORITHM), algorithm,
+                    getPropertyName(KEY_FIELD_KEY_ID), keyId,
+                    getPropertyName(KEY_FIELD_SIGN), sign,
+                    "toSign", dataToString(data)
+//                    "data",
+                    );
             Object o = joinPoint.proceed();
 
             if (o != null && o instanceof Signature) {
@@ -223,4 +241,8 @@ public abstract class AbstractSignatureInterceptor extends AbstractSyncIntercept
 
 
     protected abstract void setArgument(RuntimeContext context, MethodInvocation joinPoint, String parameterName, Object value);
+
+    protected abstract String dataToString(byte[] data);
+
+//    protected abstract String serialize(Map<String, Object>)
 }

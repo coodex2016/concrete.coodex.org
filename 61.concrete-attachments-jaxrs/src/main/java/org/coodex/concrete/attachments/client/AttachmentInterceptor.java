@@ -43,6 +43,11 @@ public class AttachmentInterceptor extends AbstractInterceptor {
     }
 
     @Override
+    public boolean accept(RuntimeContext context) {
+        return true;
+    }
+
+    @Override
     public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
         try {
             Set<String> attachments = new HashSet<String>();

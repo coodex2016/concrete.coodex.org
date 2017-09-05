@@ -28,6 +28,11 @@ import java.util.*;
  */
 public class InterceptorChain extends AbstractSyncInterceptor implements Set<ConcreteInterceptor> {
 
+    @Override
+    public boolean accept(RuntimeContext context) {
+        return true;
+    }
+
     private static class MethodInvocationChain implements MethodInvocation {
 
         private final Queue<ConcreteSyncInterceptor> queue;

@@ -37,6 +37,10 @@ public class ClientInterceptorTest extends AbstractInterceptor {
     }
 
 
+    @Override
+    public boolean accept(RuntimeContext context) {
+        return true;
+    }
 
     @Override
     public void before(RuntimeContext context, MethodInvocation joinPoint) {
