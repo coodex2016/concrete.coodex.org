@@ -21,7 +21,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
-import org.coodex.concrete.core.intercept.InterceptorChain;
+import org.coodex.concrete.core.intercept.SyncInterceptorChain;
 import org.coodex.util.Profile;
 import org.springframework.core.Ordered;
 
@@ -31,7 +31,7 @@ import java.util.List;
  * Created by davidoff shen on 2016-09-07.
  */
 @Aspect
-public class ConcreteAOPChain extends InterceptorChain implements Ordered {
+public class ConcreteAOPChain extends SyncInterceptorChain implements Ordered {
 
     private static final Profile profile = ConcreteHelper.getProfile();
 

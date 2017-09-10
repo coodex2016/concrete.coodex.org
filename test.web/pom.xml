@@ -88,6 +88,17 @@
         </dependency>
 
         <dependency>
+            <groupId>org.coodex</groupId>
+            <artifactId>concrete-support-websocket</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.coodex</groupId>
+            <artifactId>concrete-websocket-client-rx</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>7.0</version>

@@ -19,6 +19,7 @@ package org.coodex.concrete.jaxrs;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.ErrorInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

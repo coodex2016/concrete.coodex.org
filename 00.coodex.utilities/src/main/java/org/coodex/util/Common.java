@@ -395,7 +395,7 @@ public class Common {
             return v;
     }
 
-    public static String[] toArray(String str, String delim, String[] v) {
+    public static List<String> toArray(String str, String delim, List<String> v) {
         if (str == null)
             return v;
         StringTokenizer st = new StringTokenizer(str, delim, false);
@@ -403,7 +403,12 @@ public class Common {
         while (st.hasMoreElements()) {
             list.add(st.nextToken().trim());
         }
-        return list.toArray(new String[0]);
+        return list;
+    }
+
+    public static String[] toArray(String str, String delim, String[] v) {
+        return toArray(str, delim, v == null ? new ArrayList<String>() : Arrays.asList(v))
+                .toArray(new String[0]);
     }
 
     private static boolean inArray(char ch, char[] chars) {
@@ -512,7 +517,7 @@ public class Common {
     }
 
 
-    public static Calendar copy(Calendar calendar){
+    public static Calendar copy(Calendar calendar) {
         return calendar == null ? null : (Calendar) calendar.clone();
     }
 
@@ -565,4 +570,7 @@ public class Common {
                 upperFirstChar(builder.toString()) :
                 lowerFirstChar(builder.toString());
     }
+
+
+//    public static Locale
 }

@@ -25,18 +25,21 @@ import java.util.List;
 public class RX_Client_Test {
 
     public static void main(String [] args){
-        String [] domains = {null, "http://localhost:8080"};
-        for(String domain: domains) {
+        String [] domains = {"http://localhost:8080", "ws://localhost:8080/WebSocket"};
+        for(final String domain: domains) {
             ServiceExample_RX rx = RXClient.getInstance(ServiceExample_RX.class, domain);
-            rx.all().subscribe(new Observer<List<Book>>() {
+            rx.findByPriceLessThen(6000).subscribe(new Observer<List<Book>>() {
                 @Override
                 public void onSubscribe(Disposable d) {
                 }
 
                 @Override
                 public void onNext(List<Book> books) {
-                    for (Book book : books) {
-                        System.out.println(book);
+                    synchronized (RX_Client_Test.class) {
+                        System.out.println(domain);
+                        for (Book book : books) {
+                            System.out.println(book);
+                        }
                     }
                 }
 

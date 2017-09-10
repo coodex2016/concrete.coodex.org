@@ -37,17 +37,13 @@ public abstract class AbstractJSR339Resource<T extends ConcreteService> extends 
         return 2;
     }
 
-    private final static Executor EXECUTOR = ExecutorsHelper.newPriorityThreadPool(
-            ConcreteHelper.getProfile().getInt("jsr339.threadpool.corePoolSize", 0),
-            ConcreteHelper.getProfile().getInt("jsr339.threadpool.maximumPoolSize", Integer.MAX_VALUE)
-    );
 
 
     /**
      * @return
      */
     protected static Executor getExecutor() {
-        return EXECUTOR;
+        return ConcreteHelper.getExecutor();
     }
 
 

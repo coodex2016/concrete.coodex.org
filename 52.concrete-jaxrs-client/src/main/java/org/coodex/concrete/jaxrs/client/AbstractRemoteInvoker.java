@@ -17,13 +17,13 @@
 package org.coodex.concrete.jaxrs.client;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.client.JSONSerializer;
+import org.coodex.concrete.common.JSONSerializer;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.jaxrs.ClassGenerator;
-import org.coodex.concrete.jaxrs.ErrorInfo;
+import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
-import org.coodex.concrete.client.FastJsonSerializer;
+import org.coodex.concrete.common.FastJsonSerializer;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.pojomocker.MockerFacade;
@@ -164,6 +164,9 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
     }
 
     protected Object processResult(int code, String body, Unit unit, boolean errorOccurred, String url){
+
+        log.debug("response\nstatus: {}; \nresult: \n{}", code, body);
+
         if (code >= 200 && code < 300) {
             return void.class.equals(unit.getReturnType()) ?
                     null :

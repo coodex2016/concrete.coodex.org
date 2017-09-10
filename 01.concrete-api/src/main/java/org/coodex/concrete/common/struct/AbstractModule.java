@@ -16,12 +16,12 @@
 
 package org.coodex.concrete.common.struct;
 
-import org.coodex.concrete.api.Abstract;
-import org.coodex.concrete.api.ConcreteService;
-import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.*;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by davidoff shen on 2016-11-30.
@@ -30,6 +30,8 @@ public abstract class AbstractModule<UNIT extends AbstractUnit> implements Annot
 
     private Class<?> interfaceClass;
 
+    private List<UNIT> units = new ArrayList<UNIT>();
+
     public AbstractModule(Class<?> interfaceClass) {
         if (ConcreteService.class.isAssignableFrom(interfaceClass)
                 && interfaceClass.getAnnotation(MicroService.class) != null
@@ -37,6 +39,16 @@ public abstract class AbstractModule<UNIT extends AbstractUnit> implements Annot
             this.interfaceClass = interfaceClass;
         } else {
             throw new RuntimeException(interfaceClass.getName() + " is NOT a concrete ConcreteService");
+        }
+
+        for (Method method : interfaceClass.getMethods()) {
+            if (Object.class.equals(method.getDeclaringClass())) continue;
+
+            if (method.getAnnotation(NotService.class) == null) {
+                UNIT unit = buildUnit(method);
+                if (unit != null)
+                    units.add(unit);
+            }
         }
     }
 
@@ -99,14 +111,21 @@ public abstract class AbstractModule<UNIT extends AbstractUnit> implements Annot
      *
      * @return
      */
-    public abstract UNIT[] getUnits();
+    public final UNIT[] getUnits() {
+        return toArrays(units);
+    }
+
+
+    protected abstract UNIT[] toArrays(List<UNIT> units);
+
+    protected abstract UNIT buildUnit(Method method);
 
     @Override
     public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
         return interfaceClass.getAnnotation(annotationClass);
     }
 
-    public <T extends Annotation> T getAnnotation(Class<T> annotationClass){
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         return getDeclaredAnnotation(annotationClass);
     }
 

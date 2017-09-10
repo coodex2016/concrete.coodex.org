@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.client;
+package org.coodex.concrete.websocket;
 
-import com.alibaba.fastjson.JSON;
+public class Constants {
+    public static final String BROADCAST = "broadcast";
+    public static final String SUBJECT = "subject";
+    public static final String HOST_ID = "hostId";
+    public static final String LOCALE = "CONCRETE_LOCALE";
 
-import java.lang.reflect.Type;
-
-/**
- * Created by davidoff shen on 2016-12-07.
- */
-public class FastJsonSerializer implements JSONSerializer {
-    @Override
-    public <T> T parse(String json, Type t) {
-        return JSON.parseObject(json, t);
-    }
-
-    @Override
-    public String toJson(Object t) {
-        return JSON.toJSONString(t);
-    }
+    public static final String WEB_SOCKET_MODEL = "web_socket_model";
 }

@@ -30,7 +30,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
+import javax.websocket.DeploymentException;
+import javax.websocket.server.ServerContainer;
 import java.util.Arrays;
+import java.util.EventListener;
 
 /**
  * Created by davidoff shen on 2017-03-29.
@@ -46,10 +53,80 @@ public class Starter extends SpringBootServletInitializer {
     }
 
     @Bean
+    public ServletContainer getServletContainer(){
+        return new ServletContainer();
+    }
+
+    @Bean
     public ServletRegistrationBean testServlet() {
-        ServletContainer container = new ServletContainer();
+//        ServletContainer container = new ServletContainer();
+
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(
-                container, "/*");
+                getServletContainer(), "/*")
+//        {
+//            public void onStartup(ServletContext servletContext) throws ServletException {
+//                servletContext.addListener(new ServletContextListener() {
+//
+//                    @Override
+//                    public void contextInitialized(ServletContextEvent sce) {
+//                        final ServerContainer serverContainer = (ServerContainer) sce.getServletContext()
+//                                .getAttribute("javax.websocket.server.ServerContainer");
+//
+//                        try {
+//                            serverContainer.addEndpoint(TestWebSocketServer.class);
+//                        } catch (DeploymentException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void contextDestroyed(ServletContextEvent sce) {
+//
+//                    }
+//                });
+//            }
+//        }
+        ;
+
+//        registrationBean.ad
+        registrationBean.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
+                ExampleApplication.class.getName());
+        registrationBean.setName("test");
+        registrationBean.setAsyncSupported(true);
+        return registrationBean;
+    }
+
+    @Bean
+    public ServletRegistrationBean wsServlet() {
+//        ServletContainer container = new ServletContainer();
+
+        ServletRegistrationBean registrationBean = new ServletRegistrationBean(
+                getServletContainer(), "/*")
+        {
+            public void onStartup(ServletContext servletContext) throws ServletException {
+                servletContext.addListener(new ServletContextListener() {
+
+                    @Override
+                    public void contextInitialized(ServletContextEvent sce) {
+                        final ServerContainer serverContainer = (ServerContainer) sce.getServletContext()
+                                .getAttribute("javax.websocket.server.ServerContainer");
+
+                        try {
+                            serverContainer.addEndpoint(TestWebSocketServer.class);
+                        } catch (DeploymentException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void contextDestroyed(ServletContextEvent sce) {
+
+                    }
+                });
+            }
+        }
+                ;
+
 //        registrationBean.ad
         registrationBean.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
                 ExampleApplication.class.getName());

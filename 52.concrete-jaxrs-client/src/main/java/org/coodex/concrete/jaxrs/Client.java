@@ -121,7 +121,7 @@ public final class Client {
 
     // ------------
     public static final Unit getUnitFromContext(DefinitionContext context, MethodInvocation invocation) {
-        return JaxRSHelper.getUnitFromContext(context, invocation);
+        return JaxRSHelper.getUnitFromContext(context/*, invocation*/);
     }
 
 }

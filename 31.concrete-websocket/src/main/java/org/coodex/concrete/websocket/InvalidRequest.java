@@ -14,38 +14,25 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.jaxrs;
+package org.coodex.concrete.websocket;
 
-import org.coodex.concrete.common.AbstractErrorCodes;
+import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.ErrorInfo;
 
-/**
- * Created by davidoff shen on 2016-12-07.
- */
-public class ErrorInfo {
-    private int code = AbstractErrorCodes.OK;
-    private String msg = "";
+public class InvalidRequest extends ErrorInfo {
 
-    public ErrorInfo() {
+    private String requestData;
+
+    public InvalidRequest(ConcreteException exception, String requestData) {
+        super(exception);
+        this.requestData = requestData;
     }
 
-    public ErrorInfo(int code, String msg) {
-        this.code = code;
-        this.msg = msg;
+    public String getRequestData() {
+        return requestData;
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setRequestData(String requestData) {
+        this.requestData = requestData;
     }
 }

@@ -59,8 +59,14 @@ public class SignUtil {
             return paperName;
         }
 
+        @Deprecated
         public IronPenFactory getIronPenFactory() {
-            return ironPenFactory;
+            return getIronPenFactory(null);
+        }
+
+        public IronPenFactory getIronPenFactory(String algorithm) {
+            return algorithm == null ? ironPenFactory :
+                    IRON_PEN_FACTORY_CONCRETE_SPI_FACADE.getServiceInstance(algorithm);
         }
 
         public SignatureSerializer getSerializer() {

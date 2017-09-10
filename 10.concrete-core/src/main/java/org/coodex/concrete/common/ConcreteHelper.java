@@ -16,16 +16,16 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.concrete.api.Abstract;
-import org.coodex.concrete.api.ConcreteService;
-import org.coodex.concrete.api.MicroService;
-import org.coodex.concrete.api.NotService;
+import org.coodex.concrete.api.*;
 import org.coodex.concrete.common.struct.AbstractModule;
+import org.coodex.concrete.common.struct.AbstractUnit;
+import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.util.*;
 import org.coodex.util.ServiceLoader;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by davidoff shen on 2016-09-02.
@@ -34,6 +34,19 @@ public class ConcreteHelper {
 
     public static Profile getProfile() {
         return Profile.getProfile("concrete.properties");
+    }
+
+
+    private static ExecutorService executorService = null;
+
+    public synchronized static ExecutorService getExecutor() {
+        if (executorService == null) {
+            executorService = ExecutorsHelper.newPriorityThreadPool(
+                    getProfile().getInt("service.executor.corePoolSize", 0),
+                    getProfile().getInt("service.executor.maximumPoolSize", Integer.MAX_VALUE)
+            );
+        }
+        return executorService;
     }
 
     public static Method[] getAllMethod(Class<?> serviceClass) {
@@ -115,6 +128,12 @@ public class ConcreteHelper {
         throw new RuntimeException("No service provider supported '" + desc + "' ");
     }
 
+    public static boolean isConcreteService(Class<?> clz) {
+        return ConcreteService.class.isAssignableFrom(clz)
+                && clz.getAnnotation(MicroService.class) != null
+                && clz.getAnnotation(Abstract.class) == null;
+    }
+
     @SuppressWarnings("unchecked")
     private static <MODULE extends AbstractModule> List<MODULE> loadModules(
             final ModuleMaker<MODULE> maker, String... packages) {
@@ -174,6 +193,22 @@ public class ConcreteHelper {
 //        return context;
 //    }
 
+    public static int getPriority(Method method, Class<?> clz) {
+        DefinitionContext context = ConcreteHelper.getContext(method, clz);
+        Priority priority = context.getAnnotation(Priority.class);
+//                method.getAnnotation(Priority.class);
+//        if (priority == null) {
+//            priority = getInterfaceClass().getAnnotation(Priority.class);
+//        }
+        return priority == null ?
+                Thread.NORM_PRIORITY :
+                Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY, priority.value()));
+    }
+
+
+    public static int getPriority(AbstractUnit unit) {
+        return getPriority(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
+    }
 
     public static DefinitionContext getContext(Method method, Class<?> clz) {
         return getContext(method, clz, new Stack<Class<?>>());
@@ -302,7 +337,7 @@ public class ConcreteHelper {
         return getProfile().getStrList("concrete.remoteapi.packages", ",", new String[0]);
     }
 
-    public static String getAppSet(){
+    public static String getAppSet() {
         return getProfile().getString("concrete.appSet");
     }
 }

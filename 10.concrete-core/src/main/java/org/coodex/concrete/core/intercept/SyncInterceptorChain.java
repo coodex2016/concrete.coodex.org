@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * Created by davidoff shen on 2016-09-07.
  */
-public class InterceptorChain extends AbstractSyncInterceptor implements Set<ConcreteInterceptor> {
+public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set<ConcreteInterceptor> {
 
     @Override
     public boolean accept(RuntimeContext context) {
@@ -89,10 +89,10 @@ public class InterceptorChain extends AbstractSyncInterceptor implements Set<Con
 
     private Set<ConcreteInterceptor> interceptors = new HashSet<ConcreteInterceptor>();
 
-    public InterceptorChain() {
+    public SyncInterceptorChain() {
     }
 
-    public InterceptorChain(List<ConcreteInterceptor> interceptors) {
+    public SyncInterceptorChain(List<ConcreteInterceptor> interceptors) {
         this.interceptors.addAll(interceptors);
     }
 
@@ -108,7 +108,7 @@ public class InterceptorChain extends AbstractSyncInterceptor implements Set<Con
         Arrays.sort(interceptors, comparator);
 
         for (ConcreteInterceptor interceptor : interceptors) {
-            if (interceptor != null && !(interceptor instanceof InterceptorChain)) {
+            if (interceptor != null && !(interceptor instanceof SyncInterceptorChain)) {
                 queue.add(
                         interceptor instanceof ConcreteSyncInterceptor ?
                                 (ConcreteSyncInterceptor) interceptor :

@@ -78,7 +78,6 @@
         <module>36.concrete-support-jaxrs-saas-reverse-proxy</module>
 
         <module>50.concrete-rx</module>
-        <module>50.concrete-client</module>
         <module>51.concrete-api-tools</module>
         <module>52.concrete-rx-client</module>
         <module>52.concrete-jaxrs-client</module>
@@ -96,6 +95,9 @@
 
         <module>test.reverse.proxy</module>
         <module>test.web</module>
+        <module>37.concrete-support-websocket</module>
+        <module>31.concrete-websocket</module>
+        <module>53.concrete-websocket-client-rx</module>
 
     </modules>
 

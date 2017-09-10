@@ -44,6 +44,8 @@ public class JaxRSHelper {
 //    public static final String KEY_ERROR_MESSAGE = "msg";
     public static final String HEADER_ERROR_OCCURRED = "CONCRETE-ERROR-OCCURRED";
 
+    public static final String JAXRS_MODEL = "jaxrs_model";
+
 //    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
 //            String.class,
 //            Boolean.class,
@@ -213,10 +215,10 @@ public class JaxRSHelper {
     }
 
 
-    public static final Unit getUnitFromContext(DefinitionContext context, Object[] params) {
+    public static final Unit getUnitFromContext(DefinitionContext context/*, Object[] params*/) {
         Module module = getModule(context.getDeclaringClass());
         Method method = context.getDeclaringMethod();
-        int count = params == null ? 0 : params.length;
+        int count = method.getParameterTypes().length;// == null ? 0 : params.length;
         for (Unit unit : module.getUnits()) {
             if (method.getName().equals(unit.getMethod().getName())
                     && count == unit.getParameters().length) {
@@ -226,9 +228,9 @@ public class JaxRSHelper {
         return null;
     }
 
-    public static final Unit getUnitFromContext(DefinitionContext context, MethodInvocation invocation) {
-        return getUnitFromContext(context, invocation.getArguments());
-    }
+//    public static final Unit getUnitFromContext(DefinitionContext context/*, MethodInvocation invocation*/) {
+//        return getUnitFromContext(context/*, invocation.getArguments()*/);
+//    }
 
 
     public static Param getSubmitBody(Unit unit) {

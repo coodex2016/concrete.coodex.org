@@ -33,5 +33,7 @@ public abstract class AbstractErrorCodes {
 
     protected static final int REVERSE_PROXY_ERROR_CODE = CONCRETE_CORE + 2000;
 
+    protected static final int WEB_SOCKET_ERROR_CODE = CONCRETE_CORE + 3000;
+
     /// 10000 - 19999 保留给concrete accounts 模块
 }

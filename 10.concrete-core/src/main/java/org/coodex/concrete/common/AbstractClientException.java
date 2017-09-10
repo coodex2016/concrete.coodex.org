@@ -14,16 +14,27 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.client;
+package org.coodex.concrete.common;
 
-import java.lang.reflect.Type;
+import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.ErrorCodes;
 
-/**
- * Created by davidoff shen on 2016-12-07.
- */
-public interface JSONSerializer {
+public abstract class AbstractClientException extends ConcreteException {
+    protected final int code;
+    protected final String msg;
 
-    <T> T parse(String json, Type t);
+    public AbstractClientException(int code, String msg ) {
+        super(ErrorCodes.CLIENT_ERROR);
+        this.msg = msg;
+        this.code = code;
+    }
 
-    String toJson(Object t);
+    public int getCode() {
+        return code;
+    }
+
+    @Override
+    public String getMessage() {
+        return msg;
+    }
 }

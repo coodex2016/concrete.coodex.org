@@ -14,38 +14,26 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.jaxrs;
+package org.coodex.concrete.common;
 
-import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.Subjoin;
+import org.coodex.util.Common;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
-import static org.coodex.util.Common.concat;
+public abstract class AbstractSubjoin implements Subjoin {
 
-/**
- * Created by davidoff shen on 2017-04-20.
- */
-public class JaxRSSubjoin implements Subjoin {
-
-    private final Locale locale;
-    private final MultivaluedMap<String, String> headers;
-
-    public JaxRSSubjoin(HttpHeaders httpHeaders) {
-        this.locale = httpHeaders.getLanguage();
-        this.headers = httpHeaders.getRequestHeaders();
-    }
-
+    private Map<String, List<String>> stringMap = new HashMap<String, List<String>>();
+    private Locale locale = Locale.getDefault();
 
     @Override
     public Locale getLocale() {
         return locale;
+    }
+
+    protected void setLocale(Locale locale) {
+        if (locale != null)
+            this.locale = locale;
     }
 
     @Override
@@ -55,28 +43,31 @@ public class JaxRSSubjoin implements Subjoin {
 
     @Override
     public String get(String name, String split) {
-        return concat(headers.get(name), split);
+        return Common.concat(getList(name), split);
     }
 
     @Override
     public List<String> getList(String name) {
-        List<String> list = headers.get(name);
-        return list == null ? null : new ArrayList<String>(list);
+        return stringMap.get(name);
     }
 
     @Override
     public Set<String> keySet() {
-        return headers.keySet();
+        return stringMap.keySet();
     }
 
     @Override
     public void set(String name, List<String> values) {
-        throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, "header cannot change.");
+        stringMap.put(name, values);
     }
 
     @Override
     public void add(String name, String value) {
-        throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, "header cannot change.");
+        List<String> list = stringMap.get(name);
+        if (list == null) {
+            list = new ArrayList<String>();
+            stringMap.put(name, list);
+        }
+        list.add(value);
     }
-
 }

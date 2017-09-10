@@ -18,7 +18,7 @@ package org.coodex.practice.jaxrs.impl;
 
 import org.apache.commons.codec.binary.Base64;
 import org.aspectj.lang.annotation.Aspect;
-import org.coodex.concrete.core.intercept.JaxRSSignatureInterceptor;
+import org.coodex.concrete.core.intercept.SignatureInterceptor;
 import org.coodex.concrete.spring.aspects.AbstractConcreteAspect;
 
 import java.security.KeyPair;
@@ -30,7 +30,7 @@ import java.security.PublicKey;
  * Created by davidoff shen on 2017-04-25.
  */
 @Aspect
-public class SignatureAspect extends AbstractConcreteAspect<JaxRSSignatureInterceptor> {
+public class SignatureAspect extends AbstractConcreteAspect<SignatureInterceptor> {
 
     public static void main(String [] args){
         try{

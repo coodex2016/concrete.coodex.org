@@ -24,6 +24,8 @@ import org.coodex.concrete.common.DefinitionContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by davidoff shen on 2016-11-30.
@@ -34,12 +36,20 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
     private MODULE declaringModule;
     private DefinitionContext context;
     private final boolean deprecated;
+    private List<PARAM> params = new ArrayList<PARAM>();
 
     public AbstractUnit(Method method, MODULE module) {
         this.method = method;
         this.declaringModule = module;
         this.deprecated = method.getAnnotation(Deprecated.class) != null;
+
+        for(int i = 0, j = method.getParameterTypes().length; i < j; i ++){
+            params.add(buildParam(method, i));
+        }
+        afterInit();
     }
+
+    protected void afterInit(){}
 
     public MODULE getDeclaringModule() {
         return declaringModule;
@@ -59,6 +69,9 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
      * @return
      */
     public abstract String getName();
+
+
+    protected abstract PARAM buildParam(Method method, int index);
 
     /**
      * 文档化的名称
@@ -161,7 +174,11 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
      *
      * @return
      */
-    public abstract PARAM[] getParameters();
+    public final PARAM[] getParameters(){
+        return toArrays(params);
+    }
+
+    protected abstract PARAM[] toArrays(List<PARAM> params);
 
     public synchronized DefinitionContext getContext() {
         if (context == null)

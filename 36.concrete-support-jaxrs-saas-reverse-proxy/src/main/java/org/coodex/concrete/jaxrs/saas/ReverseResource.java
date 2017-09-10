@@ -53,7 +53,7 @@ public class ReverseResource<T extends ConcreteService> extends AbstractJSR339Re
             public void run() {
                 try {
 
-                    Unit unit = JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass()), params);
+                    Unit unit = JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())/*, params*/);
 
                     String routeBy = Assert.isNull(unit.getAnnotation(RouteBy.class),
                             //.getDeclaringModule().getDeclaredAnnotation(RouteBy.class),

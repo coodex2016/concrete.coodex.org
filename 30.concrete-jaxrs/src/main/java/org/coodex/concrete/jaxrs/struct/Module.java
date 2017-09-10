@@ -34,8 +34,9 @@ import static org.coodex.concrete.jaxrs.JaxRSHelper.slash;
  */
 public class Module extends AbstractModule<Unit> {
 
-    private Unit[] units;
+    //    private Unit[] units;
 //    private List<Class<?>> inheritedChain = new ArrayList<Class<?>>();
+    private Map<String, Method> serviceAtoms;
 
     protected final boolean sameMethod(Method m1, Method m2) {
         if (m1 == null || m2 == null) return false;
@@ -75,31 +76,31 @@ public class Module extends AbstractModule<Unit> {
 //        initInheritedChain();
 
 
-        Set<Unit> units = new HashSet<Unit>();
-        Map<String, Method> serviceAtoms = new HashMap<String, Method>();
-        for (Method method : ConcreteHelper.getAllMethod(interfaceClass)) {
-
-            if (method.getDeclaringClass() == Object.class) continue;
-
-            Unit unit = new Unit(method, this);
-
-            String serviceKey = Predicates.getHttpMethod(unit) + "$" + unit.getName();
-            Method exists = serviceAtoms.get(serviceKey);
-            if (sameMethod(method, exists)) {
-                continue;
-            }
-            if (exists != null) {
-                throw new RuntimeException(String.format("Method Conflict [%s]. m1:%s.%s, m2:%s.%s", serviceKey,
-                        method.getDeclaringClass().getName(), method.getName(),
-                        exists.getDeclaringClass().getName(), exists.getName()));
-            }
-            checkUnit(unit);
-            units.add(unit);
-
-            serviceAtoms.put(serviceKey, method);
-        }
-        this.units = units.toArray(new Unit[0]);
-        Arrays.sort(this.units);
+//        Set<Unit> units = new HashSet<Unit>();
+//
+//        for (Method method : ConcreteHelper.getAllMethod(interfaceClass)) {
+//
+//            if (method.getDeclaringClass() == Object.class) continue;
+//
+//            Unit unit = new Unit(method, this);
+//
+//            String serviceKey = Predicates.getHttpMethod(unit) + "$" + unit.getName();
+//            Method exists = serviceAtoms.get(serviceKey);
+//            if (sameMethod(method, exists)) {
+//                continue;
+//            }
+//            if (exists != null) {
+//                throw new RuntimeException(String.format("Method Conflict [%s]. m1:%s.%s, m2:%s.%s", serviceKey,
+//                        method.getDeclaringClass().getName(), method.getName(),
+//                        exists.getDeclaringClass().getName(), exists.getName()));
+//            }
+//            checkUnit(unit);
+//            units.add(unit);
+//
+//            serviceAtoms.put(serviceKey, method);
+//        }
+//        this.units = units.toArray(new Unit[0]);
+//        Arrays.sort(this.units);
     }
 
     private void checkUnit(Unit unit) {
@@ -167,9 +168,35 @@ public class Module extends AbstractModule<Unit> {
         return slash(JaxRSHelper.camelCaseByPath(ConcreteHelper.getServiceName(getInterfaceClass()), true));
     }
 
+//    @Override
+//    public Unit[] getUnits() {
+//        return units;
+//    }
+
     @Override
-    public Unit[] getUnits() {
-        return units;
+    protected Unit[] toArrays(List<Unit> units) {
+        Unit[] array = units.toArray(new Unit[0]);
+        Arrays.sort(array);
+        return array;
+    }
+
+    @Override
+    protected Unit buildUnit(Method method) {
+        if (serviceAtoms == null) serviceAtoms = new HashMap<String, Method>();
+        Unit unit = new Unit(method, this);
+        String serviceKey = Predicates.getHttpMethod(unit) + "$" + unit.getName();
+        Method exists = serviceAtoms.get(serviceKey);
+        if (sameMethod(method, exists)) {
+            return null;
+        }
+        if (exists != null) {
+            throw new RuntimeException(String.format("Method Conflict [%s]. m1:%s.%s, m2:%s.%s", serviceKey,
+                    method.getDeclaringClass().getName(), method.getName(),
+                    exists.getDeclaringClass().getName(), exists.getName()));
+        }
+        checkUnit(unit);
+        serviceAtoms.put(serviceKey, method);
+        return unit;
     }
 
     @Override

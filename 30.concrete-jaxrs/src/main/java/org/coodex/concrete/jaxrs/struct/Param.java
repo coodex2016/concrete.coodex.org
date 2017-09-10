@@ -32,53 +32,12 @@ import static org.coodex.util.Common.camelCase;
  */
 public class Param extends AbstractParam {
 
-    private final ReflectHelper.MethodParameter parameter;
-    private final Description description;
+
+//    private final Description description;
     private boolean pathParam = true;
 
     public Param(Method method, int index) {
-        this.parameter = new ReflectHelper.MethodParameter(method, index);
-        this.description = getDeclaredAnnotation(Description.class);
-    }
-
-    @Override
-    public Class<?> getType() {
-        return parameter.getType();
-    }
-
-    @Override
-    public Type getGenericType() {
-        return parameter.getGenericType();
-    }
-
-    @Override
-    public String getName() {
-        return camelCase(parameter.getName());
-    }
-
-    @Override
-    public int getIndex() {
-        return parameter.getIndex();
-    }
-
-    @Override
-    public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
-        return parameter.getAnnotation(annotationClass);
-    }
-
-    @Override
-    public Annotation[] getAnnotations() {
-        return parameter.getAnnotations();
-    }
-
-    public String getLabel() {
-        return description == null ? "" : description.name();
-//        return Common.isBlank(s) ? "　" : s;
-    }
-
-    public String getDescription() {
-        return description == null ? "" : description.description();
-//        return Common.isBlank(s) ? "　" : s;
+        super(method, index);
     }
 
     public boolean isPathParam() {

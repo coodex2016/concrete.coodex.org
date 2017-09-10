@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.jaxrs;
 
-import com.alibaba.fastjson.JSON;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Priority;
 import org.coodex.concrete.common.*;
@@ -30,6 +29,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.coodex.concrete.common.ConcreteContext.CURRENT_UNIT;
+import static org.coodex.concrete.common.ConcreteContext.run;
 import static org.coodex.concrete.common.ConcreteContext.runWith;
 import static org.coodex.util.TypeHelper.solve;
 import static org.coodex.util.TypeHelper.typeToClass;
@@ -56,21 +57,22 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
     private <R> R convert(R result) {
         if (result == null) return null;
         if (result instanceof String && ConcreteHelper.getProfile().getBool("service.result.quoteSingleStr", true)) {
-            return (R) JSON.toJSONString(result);
+            return (R) JSONSerializerFactory.getInstance().toJson(result);
         }
         return result;
     }
 
     protected int getPriority(Method method) {
-        DefinitionContext context = ConcreteHelper.getContext(method, clz);
-        Priority priority = context.getAnnotation(Priority.class);
-//                method.getAnnotation(Priority.class);
-//        if (priority == null) {
-//            priority = getInterfaceClass().getAnnotation(Priority.class);
-//        }
-        return priority == null ?
-                Thread.NORM_PRIORITY :
-                Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY, priority.value()));
+        return ConcreteHelper.getPriority(method, clz);
+//        DefinitionContext context = ConcreteHelper.getContext(method, clz);
+//        Priority priority = context.getAnnotation(Priority.class);
+////                method.getAnnotation(Priority.class);
+////        if (priority == null) {
+////            priority = getInterfaceClass().getAnnotation(Priority.class);
+////        }
+//        return priority == null ?
+//                Thread.NORM_PRIORITY :
+//                Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY, priority.value()));
     }
 
     private Token getToken(String tokenId, boolean force) {
@@ -181,17 +183,22 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
             newToken = true;
         }
 
-        Object result = convert(runWith(getSubjoin(), token, new ConcreteClosure() {
 
-            public Object concreteRun() throws Throwable {
-                Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
-                if (paramCount == 0)
-                    return method.invoke(instance);
-                else
-                    return method.invoke(instance, params);
+        Object result = convert(runWith(
+                //JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())),
+                JaxRSHelper.JAXRS_MODEL, getSubjoin(), token,
+                run(CURRENT_UNIT, JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())),
+                        new ConcreteClosure() {
 
-            }
-        }));
+                            public Object concreteRun() throws Throwable {
+                                Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
+                                if (paramCount == 0)
+                                    return method.invoke(instance);
+                                else
+                                    return method.invoke(instance, params);
+
+                            }
+                        })));
 
         Response.ResponseBuilder builder = result == null ? Response.noContent() : Response.ok();
 

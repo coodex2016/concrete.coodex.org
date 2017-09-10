@@ -219,6 +219,13 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-support-websocket</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-support-jaxrs-saas-reverse-proxy</artifactId>
@@ -246,6 +253,12 @@
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-jaxrs-client-rx</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-websocket-client-rx</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 

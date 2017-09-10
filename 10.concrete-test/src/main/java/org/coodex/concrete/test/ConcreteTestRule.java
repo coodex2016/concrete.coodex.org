@@ -36,7 +36,7 @@ public class ConcreteTestRule implements TestRule {
             @Override
             public void evaluate() throws Throwable {
                 try {
-                    runWith(getSubjoin(),
+                    runWith( "TEST", getSubjoin(),
                             ConcreteTokenProvider.getToken(description),
                             ConcreteContext.run(SIDE, SIDE_TEST, new ConcreteClosure() {
                                 @Override
@@ -45,7 +45,7 @@ public class ConcreteTestRule implements TestRule {
                                     return null;
                                 }
                             }));
-                }catch (ConcreteException ce){
+                } catch (ConcreteException ce) {
                     throw (ce.getCause() != null && ce.getCode() == ErrorCodes.UNKNOWN_ERROR) ? ce.getCause() : ce;
                 }
             }

@@ -45,31 +45,24 @@ import static org.coodex.concrete.jaxrs.Predicates.removePredicate;
 public class Unit extends AbstractUnit<Param, Module> {
 
 
-    private Param[] parameters;
-    private List<Param> pojo = new ArrayList<Param>();
+    private List<Param> pojo;
     private String name;
 
     public Unit(Method method, Module module) {
         super(method, module);
-        int paramCount = method.getParameterTypes().length;
-        parameters = new Param[paramCount];
-        for (int i = 0; i < paramCount; i++) {
-            parameters[i] = new Param(method, i);
-            Param param = parameters[i];
-            if (!isPrimitive(param.getType()) ||
-                    (param.getType() == String.class
-                            && param.getDeclaredAnnotation(BigString.class) != null)) {
-
-                pojo.add(param);
-                param.setPathParam(false);
-            }
-        }
         name = getNameOnInit();
         validation();
     }
 
+    private synchronized List<Param> _getPojo(){
+        if(pojo == null){
+            pojo = new ArrayList<Param>();
+        }
+        return pojo;
+    }
+
     private void validation() {
-        int pojoCount = pojo.size();
+        int pojoCount = _getPojo().size();
 //        for (Param param : parameters) {
 //            if (!isPrimitive(param.getType()) ||
 //                    (param.getType() == String.class && param.getDeclaredAnnotation(BigString.class) != null))
@@ -108,15 +101,15 @@ public class Unit extends AbstractUnit<Param, Module> {
 //        String httpMethod =
     }
 
-    private List<Class<?>> buildLink() {
-        Stack<Class<?>> stack = new Stack<Class<?>>();
-        Class<?> current = getDeclaringModule().getInterfaceClass();
-        Class<?> root = getMethod().getDeclaringClass();
-        while (!root.equals(current)) {
-
-        }
-        return stack;
-    }
+//    private List<Class<?>> buildLink() {
+//        Stack<Class<?>> stack = new Stack<Class<?>>();
+//        Class<?> current = getDeclaringModule().getInterfaceClass();
+//        Class<?> root = getMethod().getDeclaringClass();
+//        while (!root.equals(current)) {
+//
+//        }
+//        return stack;
+//    }
 
 
     private String getNameOnInit() {
@@ -180,13 +173,38 @@ public class Unit extends AbstractUnit<Param, Module> {
     }
 
     @Override
+    protected Param buildParam(Method method, int index) {
+
+//        int paramCount = method.getParameterTypes().length;
+//        parameters = new Param[paramCount];
+//        for (int i = 0; i < paramCount; i++) {
+        Param param = new Param(method, index);
+
+//            parameters[i] = new Param(method, i);
+//            Param param = parameters[i];
+            if (!isPrimitive(param.getType()) ||
+                    (param.getType() == String.class
+                            && param.getDeclaredAnnotation(BigString.class) != null)) {
+                _getPojo().add(param);
+                param.setPathParam(false);
+            }
+//        }
+        return param;
+    }
+
+    @Override
     public String getInvokeType() {
         return getHttpMethod(this);
     }
 
+//    @Override
+//    public Param[] getParameters() {
+//        return parameters;
+//    }
+
     @Override
-    public Param[] getParameters() {
-        return parameters;
+    protected Param[] toArrays(List<Param> params) {
+        return params.toArray(new Param[0]);
     }
 
     @Override
@@ -204,10 +222,10 @@ public class Unit extends AbstractUnit<Param, Module> {
     }
 
     public int getPojoCount() {
-        return pojo.size();
+        return _getPojo().size();
     }
 
     public Param[] getPojo() {
-        return pojo.toArray(new Param[0]);
+        return _getPojo().toArray(new Param[0]);
     }
 }

@@ -21,10 +21,13 @@ import org.coodex.concrete.common.ConcreteClosure;
 import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
-import org.coodex.concrete.core.intercept.InterceptorChain;
+import org.coodex.concrete.core.intercept.SyncInterceptorChain;
+import org.coodex.concrete.jaxrs.JaxRSHelper;
+import org.coodex.concrete.jaxrs.JaxRSSubjoin;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.ServiceLoader;
 
+import static org.coodex.concrete.common.ConcreteContext.*;
 import static org.coodex.concrete.common.SubjoinWrapper.DEFAULT_SUBJOIN;
 
 /**
@@ -36,24 +39,35 @@ public abstract class AbstractInvoker implements Invoker {
 
     @Override
     public final Object invoke(final Unit unit, final Object[] args, final Object instance) throws Throwable {
-        return ConcreteContext.run(
-                ConcreteContext.SUBJOIN, DEFAULT_SUBJOIN,
-                ConcreteContext.run(ConcreteContext.SIDE, ConcreteContext.SIDE_CLIENT, new ConcreteClosure() {
-            @Override
-            public Object concreteRun() throws Throwable {
-                return getInterceptorChain().invoke(getInvocation(unit, args, instance));
-            }
-        })).run();
+        return
+                run(CURRENT_UNIT, unit,
+                        run(MODEL, JaxRSHelper.JAXRS_MODEL,
+                                run(SUBJOIN, DEFAULT_SUBJOIN,
+                                        run(SIDE, SIDE_CLIENT, new ConcreteClosure() {
+                                            @Override
+                                            public Object concreteRun() throws Throwable {
+                                                return getInterceptorChain().invoke(getInvocation(unit, args, instance));
+                                            }
+                                        })
+                                )
+                        )
+                ).run();
+//        return ConcreteContext.runWith(JaxRSHelper.JAXRS_MODEL, new JaxRSSubjoin(null), null, new ConcreteClosure() {
+//            @Override
+//            public Object concreteRun() throws Throwable {
+//                return getInterceptorChain().invoke(getInvocation(unit, args, instance));
+//            }
+//        });
     }
 
 
-    private static InterceptorChain interceptors;
+    private static SyncInterceptorChain interceptors;
 
-    private static synchronized InterceptorChain getInterceptorChain() {
+    private static synchronized SyncInterceptorChain getInterceptorChain() {
         if (interceptors == null) {
             ServiceLoader<ConcreteInterceptor> spiFacade = new ConcreteServiceLoader<ConcreteInterceptor>() {
             };
-            interceptors = new InterceptorChain();
+            interceptors = new SyncInterceptorChain();
             for (ConcreteInterceptor interceptor : spiFacade.getAllInstances()) {
                 interceptors.add(interceptor);
             }

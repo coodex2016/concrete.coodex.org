@@ -18,6 +18,7 @@ package org.coodex.concrete.common;
 
 import org.coodex.closure.ClosureContext;
 import org.coodex.closure.StackClosureContext;
+import org.coodex.concrete.common.struct.AbstractUnit;
 
 import java.util.Locale;
 import java.util.Map;
@@ -32,6 +33,8 @@ public final class ConcreteContext {
     public static final int SIDE_TEST = 2;
     public static final int SIDE_CLIENT = 3;
 
+    public static final ClosureContext<String> MODEL = new StackClosureContext<String>();
+
     public static final ClosureContext<Integer> SIDE = new StackClosureContext<Integer>();
 
     public static final ClosureContext<Subjoin> SUBJOIN = new StackClosureContext<Subjoin>();
@@ -41,6 +44,8 @@ public final class ConcreteContext {
     public static final ClosureContext<Token> TOKEN = new StackClosureContext<Token>();
 
     public static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<Map<String, Object>>();
+
+    public static final ClosureContext<AbstractUnit> CURRENT_UNIT = new StackClosureContext<AbstractUnit>();
 
     /**
      * 放入记录日志所需的数据
@@ -65,16 +70,20 @@ public final class ConcreteContext {
         };
     }
 
-    public static final Object runWith(Subjoin subjoin, Token token, ConcreteClosure runnable) {
+    public static final Object runWith(/*AbstractUnit unit, */String model, Subjoin subjoin, Token token, ConcreteClosure runnable) {
         return
-                run(SIDE, SIDE_SERVER,
-                        run(SUBJOIN, subjoin,
-                                run(LOCALE, getLocale(),
+//                run(CURRENT_UNIT, unit,
+                        run(MODEL, model,
+                                run(SIDE, SIDE_SERVER,
+                                        run(SUBJOIN, subjoin,
+                                                run(LOCALE, getLocale(),
 //                                        run(LOGGING, new HashMap<String, Object>(),
-                                        run(TOKEN, token, runnable)
+                                                        run(TOKEN, token, runnable)
 //                                )
+                                                )
+                                        )
                                 )
-                        )
+//                        )
                 ).run();
     }
 
