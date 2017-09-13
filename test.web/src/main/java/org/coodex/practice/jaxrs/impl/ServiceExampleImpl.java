@@ -24,6 +24,8 @@ import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.concrete.jaxrs.BigString;
+import org.coodex.concrete.support.websocket.ConcreteWebSocketEndPoint;
+import org.coodex.concrete.websocket.WebSocket;
 import org.coodex.practice.jaxrs.api.Calc;
 import org.coodex.practice.jaxrs.api.SaaSExample;
 import org.coodex.practice.jaxrs.api.ServiceExample;
@@ -62,6 +64,17 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
     public List<Book> all() {
         token.setAttribute("test", "WWWWWWWWWWWWWWWW");
         log.debug("all : tokeId {}", token.getTokenId());
+        new Thread(){
+            @Override
+            public void run() {
+                try{
+                    Thread.sleep(3000);
+                    WebSocket.getEndPoint("/WebSocket").broadcast("abcd", books);
+                }catch (Throwable th){
+                    th.printStackTrace();
+                }
+            }
+        }.start();
         return books;
     }
 

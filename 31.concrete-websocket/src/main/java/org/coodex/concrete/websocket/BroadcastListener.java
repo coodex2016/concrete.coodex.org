@@ -16,18 +16,9 @@
 
 package org.coodex.concrete.websocket;
 
-import javax.websocket.Session;
-import java.util.Map;
+import org.coodex.util.AcceptableService;
 
-public interface WebSocketEndPoint {
+public interface BroadcastListener extends AcceptableService<String> {
 
-
-    <T> void broadcast(String subject, T content);
-
-    <T> void broadcast(String subject, T content, Map<String, String> subjoin);
-
-    <T> void broadcast(String subject, T content, SessionFilter sessionFilter);
-
-    <T> void broadcast(String subject, T content, Map<String, String> subjoin, SessionFilter sessionFilter);
-
+    void onBroadcast(String msgId, String hostId, String subject, String content);
 }

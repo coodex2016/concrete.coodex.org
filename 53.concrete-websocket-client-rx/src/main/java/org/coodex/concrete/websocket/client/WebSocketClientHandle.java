@@ -25,10 +25,7 @@ import org.coodex.concrete.core.intercept.AsyncInterceptorChain;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.websocket.*;
 import org.coodex.concurrent.ExecutorsHelper;
-import org.coodex.util.Common;
-import org.coodex.util.GenericType;
-import org.coodex.util.ServiceLoader;
-import org.coodex.util.TypeHelper;
+import org.coodex.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +41,17 @@ import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static org.coodex.concrete.websocket.Constants.BROADCAST;
-
 import static org.coodex.concrete.common.ConcreteContext.*;
-import static org.coodex.concrete.websocket.Constants.WEB_SOCKET_MODEL;
+import static org.coodex.concrete.websocket.Constants.*;
 
 @ClientEndpoint
 public class WebSocketClientHandle {
+
+    private static class Client extends WebSocket {
+        static Set<BroadcastListener> getRegisteredListeners() {
+            return getListeners();
+        }
+    }
 
     private static final WebSocketClientHandle handler = new WebSocketClientHandle();
 
@@ -66,6 +67,7 @@ public class WebSocketClientHandle {
     private Map<String, WebSocketCallback> callbackMap = new HashMap<String, WebSocketCallback>();
 
     private Map<String, Session> sessionMap = new HashMap<String, Session>();
+    private Map<String, Map<String, String>> subjoinMap = new HashMap<String, Map<String, String>>();
 
     private static ScheduledExecutorService scheduledExecutorService =
             ExecutorsHelper.newScheduledThreadPool(1);
@@ -106,13 +108,13 @@ public class WebSocketClientHandle {
                     try {
                         run(MODEL, WEB_SOCKET_MODEL,
                                 run(SIDE, SIDE_CLIENT,
-                                        run(SUBJOIN, new WebSocketSubjoin(null),
+                                        run(SUBJOIN, new WebSocketSubjoin(getSubjoin(domain)),
                                                 run(CURRENT_UNIT, callback.getUnit(),
                                                         new ConcreteClosure() {
                                                             @Override
                                                             public Object concreteRun() throws Throwable {
                                                                 getInterceptorChain().before(callback.getContext(), callback.getInvocation());
-                                                                requestPackage.setSubjoin(((WebSocketSubjoin)SUBJOIN.get()).toMap());
+                                                                requestPackage.setSubjoin(((WebSocketSubjoin) SUBJOIN.get()).toMap());
                                                                 sendRequest(requestPackage, session);
                                                                 return null;
                                                             }
@@ -183,12 +185,17 @@ public class WebSocketClientHandle {
         session.getAsyncRemote().sendText(content);
     }
 
+    private Map<String, String> getSubjoin(String domain){
+        return subjoinMap.get(domain);
+    }
+
     private Session getSession(String domain) throws InterruptedException, URISyntaxException, IOException, DeploymentException {
         synchronized (sessionMap) {
             Session session = sessionMap.get(domain);
             if (session == null || !session.isOpen()) {
                 WebSocketContainer container = ContainerProvider.getWebSocketContainer();
                 session = container.connectToServer(this, new URI(domain));
+                session.setMaxIdleTimeout(0);
                 sessionMap.put(domain, session);
             }
 
@@ -225,12 +232,19 @@ public class WebSocketClientHandle {
 
         log.debug("session {} received msg : \n{}", session.getId(), message);
 
+
+
         ResponsePackage<String> responsePackage = JSONSerializerFactory.getInstance().parse(
                 message, new GenericType<ResponsePackage<String>>() {
                 }.genericType()
         );
 
         Map<String, String> subjoin = responsePackage.getSubjoin();
+
+        if(subjoin != null){
+
+        }
+
         if (subjoin == null || !"true".equals(subjoin.get(BROADCAST))) {
             onReturn(responsePackage, session);
         } else {
@@ -292,16 +306,45 @@ public class WebSocketClientHandle {
         }
     }
 
-    WebSocketUnit getUnit(DefinitionContext definitionContext) {
-        return Assert.isNull(
-                unitMap.get(buildKey(definitionContext.getDeclaringClass(), definitionContext.getDeclaringMethod())),
-                WebSocketErrorCodes.UNIT_NOT_EXISTS,
-                keyBase(definitionContext.getDeclaringClass(), definitionContext.getDeclaringMethod())
-        );
+//    WebSocketUnit getUnit(DefinitionContext definitionContext) {
+//        return Assert.isNull(
+//                unitMap.get(buildKey(definitionContext.getDeclaringClass(), definitionContext.getDeclaringMethod())),
+//                WebSocketErrorCodes.UNIT_NOT_EXISTS,
+//                keyBase(definitionContext.getDeclaringClass(), definitionContext.getDeclaringMethod())
+//        );
+//    }
+
+    private final static AcceptableServiceLoader<String, BroadcastListener> listenerLoader
+            = new AcceptableServiceLoader<String, BroadcastListener>(new ConcreteServiceLoader<BroadcastListener>() {
+    });
+
+    private boolean handleBroadcast(BroadcastListener listener, ResponsePackage<String> responsePackage) {
+        try {
+            String subject = responsePackage.getSubjoin().get(SUBJECT);
+            if (listener.accept(subject)) {
+                listener.onBroadcast(responsePackage.getMsgId(),
+                        responsePackage.getSubjoin().get(HOST_ID),
+                        subject, responsePackage.getContent());
+                return true;
+            }
+        } catch (Throwable th) {
+            log.warn("{}", th.getLocalizedMessage(), th);
+        }
+        return false;
     }
 
     private void onBroadcast(ResponsePackage<String> responsePackage, Session session) {
-
+        boolean handle = false;
+        String subject = responsePackage.getSubjoin().get(SUBJECT);
+        for (BroadcastListener listener : Client.getRegisteredListeners()) {
+            if (handleBroadcast(listener, responsePackage)) handle = true;
+        }
+        for (BroadcastListener listener : listenerLoader.getAllInstances()) {
+            if (handleBroadcast(listener, responsePackage)) handle = true;
+        }
+        if (!handle) {
+            log.warn("no listener found for subject [{}]: \n {}", subject, responsePackage.getContent());
+        }
     }
 
 

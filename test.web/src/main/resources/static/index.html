@@ -17,13 +17,15 @@
 <html lang="zh">
 <head>
     <title>concreteTest</title>
+    <meta charset="UTF-8"/>
     <script type="text/javascript" rel="script"
             src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="jquery-concrete.js"></script>
+    <!--<script src="jquery-concrete.js"></script>-->
+    <script src="jquery-websocket-concrete.js"></script>
     <script>
         $(document).ready(function () {
             concrete.configure({
-                "root": "/services"
+                "root": "ws://localhost:8080/WebSocket"
             });
 
             var module = concrete.module("org.coodex.practice.jaxrs.api.ServiceExample");
@@ -33,9 +35,9 @@
                 saasExample.exampleForSaaS("54321", "ddd").done(function () {
                     console.log(arguments);
                 })
-//                module.all().done(function () {
-//                    console.log(arguments);
-//                })
+                module.all().done(function () {
+                    console.log(arguments);
+                })
             });
 
             $("#update").click(function () {
@@ -49,60 +51,186 @@
             });
 
             $("#checkRole").click(function () {
-                module.checkRole().success(function () {
+                module.checkRole().done(function () {
                     console.log(arguments);
                 })
             })
 
             $("#get1").click(function () {
-                module.get(1).success(function () {
+                module.get(1).done(function () {
                     console.log(arguments);
                 })
             })
 
             $("#get2").click(function () {
-                module.get("沈/海/南", 1000).success(function () {
+                module.get("沈/海/南", 1000).done(function () {
                     console.log(arguments);
                 })
             })
 
             $("#delete").click(function () {
-                module.delete(1).success(function () {
+                module.delete(1).done(function () {
                     console.log(arguments);
                 })
             })
 
             $("#setTokenId").click(function () {
-                module.tokenId().success(function (tokenId) {
+                module.tokenId().done(function (tokenId) {
                     $("#fileTest").attr("action", "/s/attachments/upload/byform/test/" + tokenId)
                 })
             })
 
             $("#bigStringTest").click(function () {
-                module.bigStringTest("abcd", "okokokokokkokoko中文测试").success(function (result) {
+                module.bigStringTest("abcd", "okokokokokkokoko中文测试").done(function (result) {
                     alert(result);
                 })
             })
+
+
+            ////////// websocket test
+
+//            var ws = function () {
+//
+//                function generateUUID() {
+//                    var d = new Date().getTime();
+//                    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+//                        var r = (d + Math.random() * 16) % 16 | 0;
+//                        d = Math.floor(d / 16);
+//                        return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
+//                    });
+//                    return uuid;
+//                };
+//
+//                var session = new WebSocket("ws://localhost:8080/WebSocket");
+//
+//                var onBroadcast = function (data) {
+//                    console.log(data);
+//                }
+//
+//                var msgHandle = function (msg) {
+//                    var data = JSON.parse(msg);
+//
+//                    if(data.broadcast){
+//                        onBroadcast(data);
+//                        return;
+//                    }
+//
+//                    var reg = registry.pick(data.msgId);
+//
+//                    if(!reg){
+//                        console.warn("invalid msg:" + msg );
+//                        return;
+//                    }
+//
+//                    if(data.ok){
+//                        reg.def.resolve(data.content);
+//                    } else {
+//                        reg.def.reject(data.content);
+//                    }
+//                }
+//
+//                session.onmessage = function (p1) {
+//                    msgHandle(p1.data);
+//                }
+//
+//                var registry = function () {
+//
+//                    var map = {};
+//
+//                    return {
+//                        get: function (msgId) {
+//                            return msgId ? map[msgId] : null;
+//                        },
+//                        set: function (msgId, data) {
+//                            map[msgId] = data;
+//                        },
+//                        pick: function (msgId) {
+//                            var reg = this.get(msgId);
+//                            if (reg) {
+//                                delete map[msgId];
+//                            }
+//                            return reg;
+//                        }
+//                    }
+//                }();
+//
+//                var send = function () {
+//                    var d = $.Deferred();
+//                    var msgId = generateUUID();
+//                    var reg = {
+//                        def: d,
+//                        future: setTimeout(function () {
+//                            var reg = registry.pick(msgId);
+//                            if (reg) {
+//                                reg.def.reject({
+//                                    clientSide: true,
+//                                    code: 10000,
+//                                    msg: 'timeOut'
+//                                })
+//                            }
+//                        }, 15 * 60 * 1000)
+//                    };
+//                    registry.set(msgId, reg);
+//
+//                    session.send(JSON.stringify({
+//                        msgId: msgId,
+//                        serviceId: '2CF247ABA7D55EF6523AA10DD3974F93A6CF7DE0',
+//
+//                            //'3D22D8E971A86505E454071BAE873C995D8BA344'
+//                    }));
+//                    return d.promise();
+//
+//                }
+//                return {
+//                    send: send
+//                }
+//
+//            }();
+//
+//            $('#ws').click(function () {
+//                console.log(ws);
+//
+//                ws.send().done(function (data) {
+//                    console.log(data);
+//                }).fail(function (err) {
+//                    console.log(err);
+//                });
+//            });
+//
+//            concrete.configure({
+//                root: "ws://localhost:8080/WebSocket"
+//            })
+//
+//            $("#all").click(function () {
+//                var module = concrete.module("org.coodex.practice.jaxrs.api.ServiceExample");
+//                module.all().done(
+//                    function (data) {
+//                        alert(data);
+//                    }
+//                )
+//            });
 
         });
     </script>
 </head>
 <pathParam>
 
-<button id="all">all()</button>
-<button id="update">update</button>
-<button id="checkRole">checkRole</button>
-<button id="get1">get(id)</button>
-<button id="get2">get(author, price)</button>
-<button id="delete">delete(1)</button>
-<button id="setTokenId">setTokenId</button>
-<button id="bigStringTest">bigStringTest</button>
+    <button id="all">all()</button>
+    <button id="update">update</button>
+    <button id="checkRole">checkRole</button>
+    <button id="get1">get(id)</button>
+    <button id="get2">get(author, price)</button>
+    <button id="delete">delete(1)</button>
+    <button id="setTokenId">setTokenId</button>
+    <button id="bigStringTest">bigStringTest</button>
 
-<form id="fileTest"  method="POST" enctype="multipart/form-data">
-    <input type="file" name="toUpload">
-    <input type="file" name="toUpload">
-    <button type="submit">submit</button>
-</form>
+    <button id="ws">ws</button>
+
+    <form id="fileTest" method="POST" enctype="multipart/form-data">
+        <input type="file" name="toUpload">
+        <input type="file" name="toUpload">
+        <button type="submit">submit</button>
+    </form>
 
 </pathParam>
 </html>

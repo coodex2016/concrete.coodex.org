@@ -62,7 +62,7 @@ public class Starter extends SpringBootServletInitializer {
 //        ServletContainer container = new ServletContainer();
 
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(
-                getServletContainer(), "/*")
+                getServletContainer(), "/jaxrs/*")
 //        {
 //            public void onStartup(ServletContext servletContext) throws ServletException {
 //                servletContext.addListener(new ServletContextListener() {
@@ -101,7 +101,7 @@ public class Starter extends SpringBootServletInitializer {
 //        ServletContainer container = new ServletContainer();
 
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(
-                getServletContainer(), "/*")
+                getServletContainer(), "/ws/*")
         {
             public void onStartup(ServletContext servletContext) throws ServletException {
                 servletContext.addListener(new ServletContextListener() {

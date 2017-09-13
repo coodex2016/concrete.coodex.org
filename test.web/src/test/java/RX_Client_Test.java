@@ -14,18 +14,69 @@
  * limitations under the License.
  */
 
+import com.alibaba.fastjson.JSON;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.rx.RXClient;
+import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.practice.jaxrs.pojo.Book;
+import rx.org.coodex.practice.jaxrs.api.SaaSExample_RX;
 import rx.org.coodex.practice.jaxrs.api.ServiceExample_RX;
 
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class RX_Client_Test {
 
-    public static void main(String [] args){
-        String [] domains = {"http://localhost:8080", "ws://localhost:8080/WebSocket"};
+    private static ScheduledExecutorService executorService = ExecutorsHelper.newScheduledThreadPool(1);
+
+    public static void main(String [] args) {
+
+//        Runnable runnable = new Runnable() {
+//            int count = 0;
+//
+//            @Override
+//            public void run() {
+//                try {
+//                    /// todo
+//                    System.out.println(count++);
+//                } finally {
+//                    executorService.schedule(this, 10, TimeUnit.MILLISECONDS);
+//                }
+//            }
+//        };
+//
+//
+//        executorService.execute(runnable);
+
+//        System.out.println(("ddd", String.class));
+//        System.out.println(JSONSerializerFactory.getInstance().parse("ddd", int.class));
+//        if(true) return;
+        String [] domains = {"http://localhost:8080/jaxrs", "ws://localhost:8080/WebSocket"};
+//        SaaSExample_RX saaSExample_rx = RXClient.getInstance(SaaSExample_RX.class, domains[1]);
+//        saaSExample_rx.exampleForSaaS("w123","ddd").subscribe(new Observer<String>() {
+//            @Override
+//            public void onSubscribe(Disposable d) {
+//
+//            }
+//
+//            @Override
+//            public void onNext(String s) {
+//
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//                e.printStackTrace();
+//            }
+//
+//            @Override
+//            public void onComplete() {
+//
+//            }
+//        });
         for(final String domain: domains) {
             ServiceExample_RX rx = RXClient.getInstance(ServiceExample_RX.class, domain);
             rx.findByPriceLessThen(6000).subscribe(new Observer<List<Book>>() {

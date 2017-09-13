@@ -27,7 +27,14 @@ import java.lang.reflect.Type;
 public class FastJsonSerializer implements JSONSerializer {
     @Override
     public <T> T parse(String json, Type t) {
-        return JSON.parseObject(json, t, Feature.IgnoreNotMatch);
+        try {
+            return JSON.parseObject(json, t, Feature.IgnoreNotMatch);
+        } catch (RuntimeException th) {
+            if (String.class.equals(t)) {
+                return (T) json;
+            } else
+                throw th;
+        }
     }
 
     @Override

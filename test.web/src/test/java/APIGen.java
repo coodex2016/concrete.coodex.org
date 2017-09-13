@@ -20,6 +20,7 @@ import org.coodex.concrete.apitools.jaxrs.jquery.JQueryDocRender;
 import org.coodex.concrete.apitools.jaxrs.jquery.JQueryPromisesCodeRender;
 import org.coodex.concrete.apitools.jaxrs.service.ServiceDocRender;
 import org.coodex.concrete.apitools.rx.ReactiveStreamsRender;
+import org.coodex.concrete.apitools.websocket.jquery.JQueryWebSocketCodeRender;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.practice.jaxrs.api.ServiceExample;
 
@@ -34,7 +35,8 @@ public class APIGen {
     public static void main(String[] args) throws IOException {
         API.generate(ReactiveStreamsRender.RENDER_NAME,
                 "D:\\Projects\\IntelliJ\\concrete\\test.web\\src\\main\\java",
-                ServiceExample.class.getPackage().getName());;
+                ServiceExample.class.getPackage().getName());
+        ;
 //        try {
 //            Class c = ServiceExample.class;
 //            Method m = null;
@@ -47,25 +49,29 @@ public class APIGen {
 //
 ////            System.out.println(JSON.toJSONString(POJOMocker.mock(m.getGenericReturnType(), c)));
 ////            System.out.println(new ServiceDocToolkit(new ServiceDocRender()).formatTypeStr(m.getGenericReturnType(), c));
-            API.generate(JQueryPromisesCodeRender.RENDER_NAME,
-                    "/concrete-demo/jquery.code",
-                    ServiceExample.class.getPackage().getName());
+        API.generate(JQueryPromisesCodeRender.RENDER_NAME,
+                "/concrete-demo/jquery.code",
+                ServiceExample.class.getPackage().getName());
 
-            API.generate(JQueryDocRender.RENDER_NAME,
-                    "/concrete-demo/jquery.api",
-                    ServiceExample.class.getPackage().getName());
-//
-            API.generate(ServiceDocRender.RENDER_NAME,
-                    "/concrete-demo/restful.api",
-                    ServiceExample.class.getPackage().getName());
-//
-            API.generate(AngularCodeRender.RENDER_NAME,
-                    "/concrete-demo/angular.code",
-                    ServiceExample.class.getPackage().getName());
+        API.generate(JQueryWebSocketCodeRender.RENDER_NAME,
+                "/concrete-demo/jquery.code",
+                ServiceExample.class.getPackage().getName());
 
-            API.generate(AngularCodeRender.RENDER_NAME + ".example",
-                    "/concrete-demo/angular.code",
-                    ServiceExample.class.getPackage().getName());
+        API.generate(JQueryDocRender.RENDER_NAME,
+                "/concrete-demo/jquery.api",
+                ServiceExample.class.getPackage().getName());
+//
+        API.generate(ServiceDocRender.RENDER_NAME,
+                "/concrete-demo/restful.api",
+                ServiceExample.class.getPackage().getName());
+//
+        API.generate(AngularCodeRender.RENDER_NAME,
+                "D:\\Projects\\front_ends\\ng2-admin\\src",
+                ServiceExample.class.getPackage().getName());
+
+        API.generate(AngularCodeRender.RENDER_NAME + ".example",
+                "/concrete-demo/angular.code",
+                ServiceExample.class.getPackage().getName());
 //        } finally {
 //            ExecutorsHelper.shutdownAllNOW();
 //        }

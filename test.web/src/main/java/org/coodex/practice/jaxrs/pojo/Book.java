@@ -18,7 +18,10 @@ package org.coodex.practice.jaxrs.pojo;
 
 import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.mockers.ID;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
