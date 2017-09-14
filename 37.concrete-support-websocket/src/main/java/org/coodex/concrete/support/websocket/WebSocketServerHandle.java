@@ -19,8 +19,8 @@ package org.coodex.concrete.support.websocket;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.struct.AbstractParam;
 import org.coodex.concrete.core.token.TokenManager;
-import org.coodex.concrete.websocket.*;
 import org.coodex.concrete.websocket.ConcreteWebSocketEndPoint;
+import org.coodex.concrete.websocket.*;
 import org.coodex.concurrent.components.PriorityRunnable;
 import org.coodex.util.Common;
 import org.coodex.util.GenericType;
@@ -37,15 +37,13 @@ import java.util.*;
 
 import static org.coodex.concrete.common.ConcreteContext.CURRENT_UNIT;
 import static org.coodex.concrete.common.ConcreteContext.runWith;
-import static org.coodex.concrete.websocket.Constants.BROADCAST;
-import static org.coodex.concrete.websocket.Constants.HOST_ID;
-import static org.coodex.concrete.websocket.Constants.SUBJECT;
+import static org.coodex.concrete.websocket.Constants.*;
 
 class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoint {
 
     private final static Logger log = LoggerFactory.getLogger(WebSocketServerHandle.class);
 
-    private final Set<Session> peers = Collections.synchronizedSet(new HashSet<Session>());
+    private final Map<Session, String> peers = Collections.synchronizedMap(new HashMap<Session, String>());
 
     private final Map<String, WebSocketUnit> unitMap = new HashMap<String, WebSocketUnit>();
 
@@ -55,14 +53,21 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
 
     @Override
     public void onOpen(Session peer) {
-        peers.add(peer);
+        if (!peers.containsKey(peer)) {
+            peers.put(peer, Common.getUUIDStr()/* session id*/);
+        }
         peer.setMaxIdleTimeout(0);
-        log.debug("session opened: {}, total sessions: {}", peer, peers.size());
+
+        log.debug("session opened: {}, concrete token id: {}, total sessions: {}", peer, peers.get(peer), peers.size());
     }
 
     @Override
     public void onClose(Session peer) {
-        peers.remove(peer);
+        String sessionId = peers.remove(peer);
+        if (sessionId != null) {
+            BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(sessionId, true).invalidate();
+            log.debug("token [{}] invalidate.", sessionId);
+        }
         log.debug("session closed: {}, total sessions: {}", peer, peers.size());
     }
 
@@ -85,7 +90,7 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
     public <T> void broadcast(String subject, T content, Map<String, String> subjoin, SessionFilter sessionFilter) {
 
         String text = JSONSerializerFactory.getInstance().toJson(buildPackage(subject, content, subjoin));
-        for (Session session : peers) {
+        for (Session session : peers.keySet()) {
             if (sessionFilter == null || sessionFilter.filter(session) != null) {
                 broadcastText(text, session);
             }
@@ -164,6 +169,11 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
         }
     }
 
+    @Override
+    public Token getToken(Session session) {
+        return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session), true);
+    }
+
 
     /**
      * serviceId定义：className#method.paramCount
@@ -180,7 +190,7 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
         final Object[] objects = analysisParameters(requestPackage.getContent(), unit);
 
         //3 调用并返回结果
-        final Token token = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(session.getId(), true);
+        final Token token = getToken(session);
 
         ConcreteHelper.getExecutor().execute(new PriorityRunnable(ConcreteHelper.getPriority(unit), new Runnable() {
             private Method method = unit.getMethod();

@@ -24,7 +24,6 @@ import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.concrete.jaxrs.BigString;
-import org.coodex.concrete.support.websocket.ConcreteWebSocketEndPoint;
 import org.coodex.concrete.websocket.WebSocket;
 import org.coodex.practice.jaxrs.api.Calc;
 import org.coodex.practice.jaxrs.api.SaaSExample;

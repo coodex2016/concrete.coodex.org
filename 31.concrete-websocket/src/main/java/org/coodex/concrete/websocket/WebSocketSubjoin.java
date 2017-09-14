@@ -25,7 +25,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import static org.coodex.concrete.websocket.Constants.LOCALE;
-import static org.coodex.concrete.websocket.Constants.WEB_SOCKET_MODEL;
 
 public class WebSocketSubjoin extends AbstractSubjoin {
 

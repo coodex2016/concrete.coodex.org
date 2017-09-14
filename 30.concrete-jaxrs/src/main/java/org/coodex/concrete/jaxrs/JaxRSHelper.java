@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.Abstract;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.ConcreteException;

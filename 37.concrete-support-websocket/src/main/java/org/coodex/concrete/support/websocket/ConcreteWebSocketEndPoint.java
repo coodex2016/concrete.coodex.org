@@ -16,8 +16,8 @@
 
 package org.coodex.concrete.support.websocket;
 
-import org.coodex.concrete.common.*;
-import org.coodex.concrete.websocket.*;
+import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.websocket.WebSocket;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -41,7 +41,6 @@ public abstract class ConcreteWebSocketEndPoint/* implements ConcreteWebSocketEn
             }
         }
     }
-
 
     @OnOpen
     public void onOpen(Session peer) {

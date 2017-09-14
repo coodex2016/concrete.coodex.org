@@ -23,7 +23,10 @@ import org.coodex.concrete.jaxrs.Predicates;
 import org.coodex.concrete.jaxrs.saas.RouteBy;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -16,9 +16,6 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.ErrorCodes;
-
 public abstract class AbstractClientException extends ConcreteException {
     protected final int code;
     protected final String msg;

@@ -17,7 +17,6 @@
 package org.coodex.concrete.jaxrs.client;
 
 import org.coodex.concrete.client.ClientCommon;
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.jaxrs.client.impl.JaxRSClientInvokerFactory;
 import org.coodex.concrete.jaxrs.client.impl.LocalInvokerFactory;

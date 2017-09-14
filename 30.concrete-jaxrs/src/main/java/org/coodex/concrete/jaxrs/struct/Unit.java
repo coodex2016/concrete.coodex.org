@@ -21,7 +21,6 @@ import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.concrete.jaxrs.BigString;
-import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.Common;
 
 import javax.ws.rs.HttpMethod;
@@ -30,7 +29,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Stack;
 
 import static org.coodex.concrete.jaxrs.JaxRSHelper.isPrimitive;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.slash;

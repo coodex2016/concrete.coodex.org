@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-import com.alibaba.fastjson.JSON;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.rx.RXClient;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.practice.jaxrs.pojo.Book;
-import rx.org.coodex.practice.jaxrs.api.SaaSExample_RX;
 import rx.org.coodex.practice.jaxrs.api.ServiceExample_RX;
 
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class RX_Client_Test {
 
@@ -55,6 +51,28 @@ public class RX_Client_Test {
 //        System.out.println(JSONSerializerFactory.getInstance().parse("ddd", int.class));
 //        if(true) return;
         String [] domains = {"http://localhost:8080/jaxrs", "ws://localhost:8080/WebSocket"};
+        ServiceExample_RX serviceExample_rx = RXClient.getInstance(ServiceExample_RX.class, "ws://localhost:8080/WebSocket");
+        serviceExample_rx.add(1,2).subscribe(new Observer<Integer>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
 //        SaaSExample_RX saaSExample_rx = RXClient.getInstance(SaaSExample_RX.class, domains[1]);
 //        saaSExample_rx.exampleForSaaS("w123","ddd").subscribe(new Observer<String>() {
 //            @Override

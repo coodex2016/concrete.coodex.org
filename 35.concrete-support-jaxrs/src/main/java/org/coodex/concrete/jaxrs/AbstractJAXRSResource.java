@@ -17,7 +17,6 @@
 package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.api.ConcreteService;
-import org.coodex.concrete.api.Priority;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.pojomocker.MockerFacade;
@@ -29,9 +28,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.coodex.concrete.common.ConcreteContext.CURRENT_UNIT;
-import static org.coodex.concrete.common.ConcreteContext.run;
-import static org.coodex.concrete.common.ConcreteContext.runWith;
+import static org.coodex.concrete.common.ConcreteContext.*;
 import static org.coodex.util.TypeHelper.solve;
 import static org.coodex.util.TypeHelper.typeToClass;
 

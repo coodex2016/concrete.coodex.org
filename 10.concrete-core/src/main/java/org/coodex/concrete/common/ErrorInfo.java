@@ -16,8 +16,6 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.concrete.common.AbstractErrorCodes;
-
 /**
  * Created by davidoff shen on 2016-12-07.
  */

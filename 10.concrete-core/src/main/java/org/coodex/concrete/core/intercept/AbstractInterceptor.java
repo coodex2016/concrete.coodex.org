@@ -17,10 +17,7 @@
 package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.RuntimeContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by davidoff shen on 2016-09-07.

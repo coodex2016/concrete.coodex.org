@@ -16,6 +16,8 @@
 
 package org.coodex.concrete.websocket;
 
+import org.coodex.concrete.common.Token;
+
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -33,6 +35,9 @@ public interface ConcreteWebSocketEndPoint {
 
     @OnMessage
     void onMessage(String message, Session session) throws IOException;
+
+
+    Token getToken(Session session);
 
 
     <T> void broadcast(String subject, T content);

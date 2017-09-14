@@ -18,8 +18,8 @@ package org.coodex.concrete.rx.jaxrs;
 
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.client.ClientCommon;
-import org.coodex.concrete.rx.RXClientProvider;
 import org.coodex.concrete.jaxrs.Client;
+import org.coodex.concrete.rx.RXClientProvider;
 import org.coodex.concrete.rx.ReactiveExtensionFor;
 
 import java.lang.reflect.Method;

@@ -20,3 +20,4 @@ org.coodex.concrete.apitools.jaxrs.jquery.JQueryDocRender
 org.coodex.concrete.apitools.jaxrs.angular.AngularCodeRender
 org.coodex.concrete.apitools.rx.ReactiveStreamsRender
 org.coodex.concrete.apitools.websocket.jquery.JQueryWebSocketCodeRender
+org.coodex.concrete.apitools.websocket.angular.AngularWebSocketCodeRender

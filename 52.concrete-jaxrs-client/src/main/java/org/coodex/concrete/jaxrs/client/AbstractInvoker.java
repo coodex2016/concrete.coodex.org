@@ -18,12 +18,10 @@ package org.coodex.concrete.jaxrs.client;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.ConcreteClosure;
-import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
-import org.coodex.concrete.jaxrs.JaxRSSubjoin;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.ServiceLoader;
 

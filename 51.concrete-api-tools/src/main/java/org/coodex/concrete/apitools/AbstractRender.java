@@ -19,7 +19,6 @@ package org.coodex.concrete.apitools;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.coodex.concrete.apitools.ConcreteAPIRender;
 import org.coodex.util.Common;
 
 import java.io.*;

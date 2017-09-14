@@ -16,15 +16,9 @@
 
 package org.coodex.concrete.jaxrs.struct;
 
-import org.coodex.concrete.api.Description;
 import org.coodex.concrete.common.struct.AbstractParam;
-import org.coodex.util.ReflectHelper;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-
-import static org.coodex.util.Common.camelCase;
 
 
 /**

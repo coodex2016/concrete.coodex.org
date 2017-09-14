@@ -16,10 +16,6 @@
 
 package org.coodex.util;
 
-import org.coodex.pojomocker.Deep;
-
-import java.util.List;
-
 /**
  * Created by davidoff shen on 2017-05-15.
  */

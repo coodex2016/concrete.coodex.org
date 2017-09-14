@@ -20,12 +20,11 @@ import org.coodex.concrete.apitools.jaxrs.jquery.JQueryDocRender;
 import org.coodex.concrete.apitools.jaxrs.jquery.JQueryPromisesCodeRender;
 import org.coodex.concrete.apitools.jaxrs.service.ServiceDocRender;
 import org.coodex.concrete.apitools.rx.ReactiveStreamsRender;
+import org.coodex.concrete.apitools.websocket.angular.AngularWebSocketCodeRender;
 import org.coodex.concrete.apitools.websocket.jquery.JQueryWebSocketCodeRender;
-import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.practice.jaxrs.api.ServiceExample;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 /**
  * Created by davidoff shen on 2016-12-05.
@@ -66,6 +65,10 @@ public class APIGen {
                 ServiceExample.class.getPackage().getName());
 //
         API.generate(AngularCodeRender.RENDER_NAME,
+                "D:\\Projects\\front_ends\\ng2-admin\\src",
+                ServiceExample.class.getPackage().getName());
+
+        API.generate(AngularWebSocketCodeRender.RENDER_NAME + ".websocket",
                 "D:\\Projects\\front_ends\\ng2-admin\\src",
                 ServiceExample.class.getPackage().getName());
 

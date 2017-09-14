@@ -18,9 +18,6 @@ package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.codec.binary.Base64;
-import org.coodex.closure.ClosureContext;
-import org.coodex.closure.StackClosureContext;
-import org.coodex.concrete.api.Abstract;
 import org.coodex.concrete.api.Signable;
 import org.coodex.concrete.api.pojo.Signature;
 import org.coodex.concrete.common.*;

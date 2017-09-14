@@ -17,13 +17,9 @@
 package org.coodex.concrete.jaxrs.client;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.common.JSONSerializer;
-import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.ConcreteServiceLoader;
+import org.coodex.concrete.common.*;
 import org.coodex.concrete.jaxrs.ClassGenerator;
-import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
-import org.coodex.concrete.common.FastJsonSerializer;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.pojomocker.MockerFacade;

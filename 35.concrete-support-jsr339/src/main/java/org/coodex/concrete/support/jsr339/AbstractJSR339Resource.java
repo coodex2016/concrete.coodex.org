@@ -19,7 +19,6 @@ package org.coodex.concrete.support.jsr339;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.AbstractJAXRSResource;
-import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.concurrent.components.PriorityRunnable;
 
 import javax.ws.rs.container.AsyncResponse;

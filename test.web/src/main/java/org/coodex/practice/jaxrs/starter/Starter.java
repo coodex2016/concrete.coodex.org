@@ -37,7 +37,6 @@ import javax.servlet.ServletException;
 import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 import java.util.Arrays;
-import java.util.EventListener;
 
 /**
  * Created by davidoff shen on 2017-03-29.
