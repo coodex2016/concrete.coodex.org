@@ -19,22 +19,39 @@ package org.coodex.util;
 import com.alibaba.fastjson.JSON;
 import org.coodex.pojomocker.MockerFacade;
 
+import java.lang.reflect.Constructor;
+
 /**
  * Created by davidoff shen on 2016-10-19.
  */
 public class Test {
-    public static void main(String[] args) {
+
+    public static class X {
+        public X(@Parameter("x1") String x1, String kkkk){}
+
+        public void abcd(@Parameter("ddd") String ddd, @Parameter("ok") String ok){}
+    }
+
+    public static void main(String[] args) throws NoSuchMethodException {
+
+        Class x = X.class;
+
+        Constructor constructor = x.getConstructor(String.class, String.class);
+        System.out.println(constructor.getParameterAnnotations().length);
+        System.out.println(ReflectHelper.getParameterName(constructor, 0, "p"));
+        System.out.println(ReflectHelper.getParameterName(constructor, 1, "p"));
+
 //        System.out.println(JSON.toJSONString(new PojoInfo(B.class), true));
 //        System.out.println(new PojoInfo(B.class).getProperty("x").getAnnotations()[0]);
 //        System.out.println(new PojoInfo(B.class).getProperty("xxx2").getType());
 //        System.out.println(new PojoInfo(new GenericType<A<List<String>>>(){}.genericType(B.class)).getProperty("xxx2").getType());
 
-        for(int i = 0; i < 10; i ++) {
-//            System.out.println(MockerFacade.mock(int.class));
-            System.out.print(JSON.toJSONString(MockerFacade.mock(new GenericType<A<Byte>>() {
-            }), true));
-//            System.out.println();
-        }
+//        for(int i = 0; i < 10; i ++) {
+////            System.out.println(MockerFacade.mock(int.class));
+//            System.out.print(JSON.toJSONString(MockerFacade.mock(new GenericType<A<Byte>>() {
+//            }), true));
+////            System.out.println();
+//        }
     }
 }
 

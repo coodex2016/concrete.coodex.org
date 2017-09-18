@@ -43,7 +43,6 @@ public class ReflectHelper {
     }
 
 
-
     public static class MethodParameter {
 
         private final Method method;
@@ -131,7 +130,7 @@ public class ReflectHelper {
         }
     }
 
-    public static String getParameterName(Method method, int index, String prefix){
+    public static String getParameterName(Method method, int index, String prefix) {
         try {
             return getParameterName(method, index);
         } catch (Throwable th) {
@@ -140,7 +139,11 @@ public class ReflectHelper {
     }
 
     public static String getParameterName(Method method, int index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+        String s = getParameterNameByAnnotation(method.getParameterAnnotations(), index);
+        return s == null ? getParameterNameByJava8(method, index) : s;
+    }
 
+    private static String getParameterNameByJava8(Method method, int index) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException {
         Method getParameters = Method.class.getMethod("getParameters");
         Object[] parameters = (Object[]) getParameters.invoke(method);
         if (parameters != null) {
@@ -151,16 +154,32 @@ public class ReflectHelper {
         return null;
     }
 
-    public static String getParameterName(Constructor constructor, int index, String prefix){
+    public static String getParameterName(Constructor constructor, int index, String prefix) {
         try {
             return getParameterName(constructor, index);
-        }catch (Throwable th){
+        } catch (Throwable th) {
             return prefix + index;
         }
     }
 
-    public static String getParameterName(Constructor constructor, int index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+    private static String getParameterNameByAnnotation(Annotation[][] annotations, int index) {
+        if(annotations == null || annotations.length < index) return null;
 
+        for(Annotation annotation: annotations[index]){
+            if(annotation instanceof Parameter){
+                return ((Parameter) annotation).value();
+            }
+        }
+        return null;
+    }
+
+    public static String getParameterName(Constructor constructor, int index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+        String s = getParameterNameByAnnotation(constructor.getParameterAnnotations(), index);
+
+        return s == null ? getParameterNameByJava8(constructor, index) : s;
+    }
+
+    private static String getParameterNameByJava8(Constructor constructor, int index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
         Method getParameters = Method.class.getMethod("getParameters");
         Object[] parameters = (Object[]) getParameters.invoke(constructor);
         if (parameters != null) {
@@ -170,7 +189,6 @@ public class ReflectHelper {
         }
         return null;
     }
-
 
 
     private ReflectHelper() {
@@ -385,18 +403,18 @@ public class ReflectHelper {
                     }
                 }
             }
-                    } finally {
-                    submittedClasses.clear();
-                    }
-                    }
+        } finally {
+            submittedClasses.clear();
+        }
+    }
 
-@SuppressWarnings("unchecked")
-public static <T> T throwExceptionObject(Class<T> interfaceClass, final Throwable th) {
+    @SuppressWarnings("unchecked")
+    public static <T> T throwExceptionObject(Class<T> interfaceClass, final Throwable th) {
         return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[]{interfaceClass}, new InvocationHandler() {
-public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        throw th;
-        }
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                throw th;
+            }
         });
-        }
+    }
 
-        }
+}

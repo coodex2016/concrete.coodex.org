@@ -18,6 +18,7 @@ package org.coodex.concrete.attachments.client;
 
 import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.attachments.AbstractAttachmentService;
+import org.coodex.util.Parameter;
 
 /**
  * Created by davidoff shen on 2016-12-13.
@@ -25,12 +26,19 @@ import org.coodex.concrete.attachments.AbstractAttachmentService;
 @MicroService("client")
 public interface ClientService extends AbstractAttachmentService {
 
-    boolean readable(String token, String attachmentId);
+    boolean readable(
+            @Parameter("token") String token,
+            @Parameter("attachmentId") String attachmentId);
 
-    boolean writable(String token);
+    boolean writable(
+            @Parameter("token") String token);
 
-    boolean deletable(String token, String attachmentId);
+    boolean deletable(
+            @Parameter("token") String token,
+            @Parameter("attachmentId") String attachmentId);
 
-    void notify(String token, String attachmentId);
+    void notify(
+            @Parameter("token") String token,
+            @Parameter("attachmentId") String attachmentId);
 
 }

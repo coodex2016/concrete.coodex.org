@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common;
+package org.coodex.util;
 
-import java.util.Map;
+import java.lang.annotation.*;
 
-/**
- * Created by davidoff shen on 2016-11-01.
- */
-public interface BeanProvider {
-
-    <T> T getBean(Class<T> type);
-
-//    <T> T getBean(Type t);
-
-//    <T> T getBean(String getName);
-
-//    <T> T getBean(Class<T> type, String getName);
-
-    <T> Map<String, T> getBeansOfType(Class<T> type);
-
+@Target({ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Parameter {
+    String value();
 }
