@@ -179,13 +179,17 @@ public class WebSocketClientHandle {
         return requestPackage;
     }
 
+    private String toJson(Object o) {
+        return JSONSerializerFactory.getInstance().toJson(o);
+    }
+
     private void sendRequest(RequestPackage requestPackage, Session session) {
-        String content = JSONSerializerFactory.getInstance().toJson(requestPackage);
+        String content = toJson(requestPackage);
         log.debug("session {} send message:\n{}", session.getId(), content);
         session.getAsyncRemote().sendText(content);
     }
 
-    private Map<String, String> getSubjoin(String domain){
+    private Map<String, String> getSubjoin(String domain) {
         return subjoinMap.get(domain);
     }
 
@@ -233,15 +237,14 @@ public class WebSocketClientHandle {
         log.debug("session {} received msg : \n{}", session.getId(), message);
 
 
-
-        ResponsePackage<String> responsePackage = JSONSerializerFactory.getInstance().parse(
-                message, new GenericType<ResponsePackage<String>>() {
+        ResponsePackage<Object> responsePackage = JSONSerializerFactory.getInstance().parse(
+                message, new GenericType<ResponsePackage<Object>>() {
                 }.genericType()
         );
 
         Map<String, String> subjoin = responsePackage.getSubjoin();
 
-        if(subjoin != null){
+        if (subjoin != null) {
 
         }
 
@@ -253,7 +256,7 @@ public class WebSocketClientHandle {
     }
 
 
-    private void onReturn(ResponsePackage<String> responsePackage, final Session session) {
+    private void onReturn(ResponsePackage<Object> responsePackage, final Session session) {
         final WebSocketCallback callback = callbackMap.get(responsePackage.getMsgId());
         if (callback == null) {
             log.warn("cannot found callback for {}", responsePackage.getMsgId());
@@ -318,13 +321,14 @@ public class WebSocketClientHandle {
             = new AcceptableServiceLoader<String, BroadcastListener>(new ConcreteServiceLoader<BroadcastListener>() {
     });
 
-    private boolean handleBroadcast(BroadcastListener listener, ResponsePackage<String> responsePackage) {
+    private boolean handleBroadcast(BroadcastListener listener, ResponsePackage<Object> responsePackage) {
         try {
             String subject = responsePackage.getSubjoin().get(SUBJECT);
             if (listener.accept(subject)) {
                 listener.onBroadcast(responsePackage.getMsgId(),
                         responsePackage.getSubjoin().get(HOST_ID),
-                        subject, responsePackage.getContent());
+                        subject,
+                        toJson(responsePackage.getContent()));
                 return true;
             }
         } catch (Throwable th) {
@@ -333,7 +337,7 @@ public class WebSocketClientHandle {
         return false;
     }
 
-    private void onBroadcast(ResponsePackage<String> responsePackage, Session session) {
+    private void onBroadcast(ResponsePackage<Object> responsePackage, Session session) {
         boolean handle = false;
         String subject = responsePackage.getSubjoin().get(SUBJECT);
         for (BroadcastListener listener : Client.getRegisteredListeners()) {

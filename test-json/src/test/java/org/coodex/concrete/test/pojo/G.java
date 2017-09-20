@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common;
+package org.coodex.concrete.test.pojo;
 
-import java.lang.reflect.Type;
+public class G<T> {
+    private T content;
 
-/**
- * Created by davidoff shen on 2016-12-07.
- */
-public interface JSONSerializer {
+    public void setContent(T content) {
+        this.content = content;
+    }
 
-    <T> T parse(String json, Type t);
-
-    <T> T parse(Object jsonObject, Type t);
-
-    String toJson(Object t);
+    public T getContent() {
+        return content;
+    }
 }

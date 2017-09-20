@@ -158,7 +158,7 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
 
         log.debug("message from {}:\n {}", session.getId(), message);
         // 1、解析
-        RequestPackage<String> requestPackage = analysisRequest(message, session);
+        RequestPackage<Object> requestPackage = analysisRequest(message, session);
         if (requestPackage == null) return;
 
         // 2、调用服务
@@ -181,13 +181,14 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
      * @param requestPackage
      * @param session
      */
-    private void invokeService(final RequestPackage<String> requestPackage, final Session session) {
+    private void invokeService(final RequestPackage<Object> requestPackage, final Session session) {
         //1 找到方法
         final WebSocketUnit unit = Assert.isNull(unitMap.get(requestPackage.getServiceId()),
                 WebSocketErrorCodes.SERVICE_ID_NOT_EXISTS, requestPackage.getServiceId());
 
         //2 解析数据
-        final Object[] objects = analysisParameters(requestPackage.getContent(), unit);
+        final Object[] objects = analysisParameters(
+                JSONSerializerFactory.getInstance().toJson(requestPackage.getContent()), unit);
 
         //3 调用并返回结果
         final Token token = getToken(session);
@@ -272,10 +273,10 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
     }
 
 
-    private RequestPackage<String> analysisRequest(String message, Session session) {
+    private RequestPackage<Object> analysisRequest(String message, Session session) {
         try {
             return JSONSerializerFactory.getInstance()
-                    .parse(message, new GenericType<RequestPackage<String>>() {
+                    .parse(message, new GenericType<RequestPackage<Object>>() {
                     }.genericType());
 
         } catch (Throwable throwable) {

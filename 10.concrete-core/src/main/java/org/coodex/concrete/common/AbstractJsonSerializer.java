@@ -18,14 +18,10 @@ package org.coodex.concrete.common;
 
 import java.lang.reflect.Type;
 
-/**
- * Created by davidoff shen on 2016-12-07.
- */
-public interface JSONSerializer {
+public abstract class AbstractJsonSerializer implements JSONSerializer {
 
-    <T> T parse(String json, Type t);
-
-    <T> T parse(Object jsonObject, Type t);
-
-    String toJson(Object t);
+    @Override
+    public final  <T> T parse(Object jsonObject, Type t) {
+        return (T) (jsonObject instanceof String ? parse((String)jsonObject, t): parse(toJson(jsonObject), t));
+    }
 }

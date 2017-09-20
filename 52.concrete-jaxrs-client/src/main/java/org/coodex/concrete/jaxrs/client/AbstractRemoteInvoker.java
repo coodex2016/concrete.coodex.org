@@ -43,16 +43,16 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractRemoteInvoker.class);
 
-    private static final ServiceLoader<JSONSerializer> JSON_SERIALIZER_FACTORY = new ConcreteServiceLoader<JSONSerializer>() {
-
-        @Override
-        public JSONSerializer getConcreteDefaultProvider() {
-            return new FastJsonSerializer();
-        }
-    };
+//    private static final ServiceLoader<JSONSerializer> JSON_SERIALIZER_FACTORY = new ConcreteServiceLoader<JSONSerializer>() {
+//
+//        @Override
+//        public JSONSerializer getConcreteDefaultProvider() {
+//            return new FastJsonSerializer();
+//        }
+//    };
 
     public static JSONSerializer getJSONSerializer() {
-        return JSON_SERIALIZER_FACTORY.getInstance();
+        return JSONSerializerFactory.getInstance();
     }
 
 
