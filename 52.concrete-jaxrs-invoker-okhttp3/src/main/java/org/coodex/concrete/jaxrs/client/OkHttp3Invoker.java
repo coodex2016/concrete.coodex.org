@@ -28,7 +28,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 
-import static org.coodex.concrete.common.ConcreteContext.SUBJOIN;
+import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 
 /**
@@ -79,7 +79,7 @@ public class OkHttp3Invoker extends AbstractRemoteInvoker {
 //                .addHeader("Accept-Language", "zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4")
                 .addHeader("Content-Type", "application/json; charset=" + getEncodingCharset());
         
-        Subjoin subjoin = SUBJOIN.get();
+        Subjoin subjoin = getServiceContext().getSubjoin();
         if (subjoin != null) {
             for (String key : subjoin.keySet()) {
                 builder = builder.addHeader(key, subjoin.get(key));

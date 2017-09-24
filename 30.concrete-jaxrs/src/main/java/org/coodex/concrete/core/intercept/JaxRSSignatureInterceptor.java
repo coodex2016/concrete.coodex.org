@@ -20,6 +20,8 @@ import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 
+import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
+
 /**
  * Created by davidoff shen on 2017-04-25.
  */
@@ -27,7 +29,7 @@ import org.coodex.concrete.jaxrs.JaxRSHelper;
 public class JaxRSSignatureInterceptor extends AbstractSignatureInterceptor {
     @Override
     public boolean accept(RuntimeContext context) {
-        return super.accept(context) && JaxRSHelper.JAXRS_MODEL.equals(ConcreteContext.MODEL.get());
+        return super.accept(context) && JaxRSHelper.JAXRS_MODEL.equals(getServiceContext().getModel());
     }
 
 //    @Override

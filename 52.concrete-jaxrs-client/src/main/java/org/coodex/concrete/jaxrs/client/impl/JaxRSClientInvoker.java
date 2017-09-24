@@ -41,7 +41,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.coodex.concrete.common.ConcreteContext.SUBJOIN;
+import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 
 /**
@@ -126,7 +126,7 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
         Invocation.Builder builder = client.target(url).request();
         StringBuilder str = new StringBuilder();
         str.append("url: ").append(url).append("\n").append("method: ").append(method);
-        Subjoin subjoin = SUBJOIN.get();
+        Subjoin subjoin = getServiceContext().getSubjoin();
         if(subjoin != null){
             str.append("\nheaders:");
             for(String key : subjoin.keySet()){

@@ -16,6 +16,7 @@
 
 package org.coodex.practice.jaxrs.starter;
 
+import org.coodex.concrete.spring.ConcreteSpringConfiguration;
 import org.coodex.practice.jaxrs.jersey.ExampleApplication;
 import org.coodex.servlet.cors.CorsFilter;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -28,6 +29,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 
 import javax.servlet.ServletContext;
@@ -43,6 +45,7 @@ import java.util.Arrays;
  */
 @SpringBootApplication
 @Configuration
+@Import(ConcreteSpringConfiguration.class)
 @ImportResource({"classpath:example.xml"})
 public class Starter extends SpringBootServletInitializer {
 

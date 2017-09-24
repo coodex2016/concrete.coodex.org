@@ -18,7 +18,7 @@ package org.coodex.concrete.common;
 
 import java.util.*;
 
-import static org.coodex.concrete.common.ConcreteContext.SUBJOIN;
+import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 import static org.coodex.util.Common.concat;
 
 /**
@@ -72,42 +72,49 @@ public class SubjoinWrapper implements Subjoin {
         }
     };
 
-    public static Subjoin getInstance() {
-        return SUBJOIN.get() == null ? DEFAULT_SUBJOIN : SUBJOIN.get();
+    private static Subjoin instance = new SubjoinWrapper();
+    public static Subjoin getInstance(){
+        return instance;
+    }
+
+    private Subjoin getSubjoin() {
+//        return SUBJOIN.get() == null ? DEFAULT_SUBJOIN : SUBJOIN.get();
+        Subjoin subjoin = getServiceContext().getSubjoin();
+        return subjoin == null ? DEFAULT_SUBJOIN : subjoin;
     }
 
     @Override
     public Locale getLocale() {
-        return getInstance().getLocale();
+        return getSubjoin().getLocale();
     }
 
     @Override
     public String get(String name) {
-        return getInstance().get(name);
+        return getSubjoin().get(name);
     }
 
     @Override
     public String get(String name, String split) {
-        return getInstance().get(name, split);
+        return getSubjoin().get(name, split);
     }
 
     @Override
     public List<String> getList(String name) {
-        return getInstance().getList(name);
+        return getSubjoin().getList(name);
     }
 
     @Override
     public Set<String> keySet() {
-        return getInstance().keySet();
+        return getSubjoin().keySet();
     }
 
     @Override
     public void set(String name, List<String> values) {
-        getInstance().set(name, values);
+        getSubjoin().set(name, values);
     }
 
     @Override
     public void add(String name, String value) {
-        getInstance().add(name, value);
+        getSubjoin().add(name, value);
     }
 }

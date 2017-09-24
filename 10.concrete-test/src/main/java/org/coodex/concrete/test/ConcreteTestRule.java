@@ -36,15 +36,26 @@ public class ConcreteTestRule implements TestRule {
             @Override
             public void evaluate() throws Throwable {
                 try {
-                    runWith( "TEST", getSubjoin(),
-                            ConcreteTokenProvider.getToken(description),
-                            ConcreteContext.run(SIDE, SIDE_TEST, new ConcreteClosure() {
+                    runWithContext(
+                            new TestServiceContext(
+                                    ConcreteTokenProvider.getToken(description),
+                                    getSubjoin()),
+                            new ConcreteClosure() {
                                 @Override
                                 public Object concreteRun() throws Throwable {
                                     base.evaluate();
                                     return null;
                                 }
-                            }));
+                            });
+//                    runWith("TEST", getSubjoin(),
+//                            ConcreteTokenProvider.getToken(description),
+//                            ConcreteContext.run(SIDE, SIDE_TEST, new ConcreteClosure() {
+//                                @Override
+//                                public Object concreteRun() throws Throwable {
+//                                    base.evaluate();
+//                                    return null;
+//                                }
+//                            }));
                 } catch (ConcreteException ce) {
                     throw (ce.getCause() != null && ce.getCode() == ErrorCodes.UNKNOWN_ERROR) ? ce.getCause() : ce;
                 }

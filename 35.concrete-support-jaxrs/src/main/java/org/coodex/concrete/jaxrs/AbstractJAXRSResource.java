@@ -18,10 +18,12 @@ package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.*;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -48,6 +50,9 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
 
     @Context
     protected HttpHeaders httpHeaders;
+
+    @Context
+    protected HttpServletRequest httpRequest;
 
 
     @SuppressWarnings("unchecked")
@@ -171,6 +176,25 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         }
     }
 
+    protected ServiceContext buildContext(Token token, AbstractUnit unit) {
+
+        return new JAXRSServiceContext(new Caller() {
+            @Override
+            public String getAddress() {
+                String xff = httpHeaders.getHeaderString("X-Forwarded-For");
+                if (xff != null) {
+                    return xff.split(",")[0].trim();
+                }
+                return httpRequest.getRemoteAddr();
+            }
+
+            @Override
+            public String getAgent() {
+                return httpHeaders.getHeaderString(HttpHeaders.USER_AGENT);
+            }
+        },token,unit,getSubjoin());
+    }
+
     protected Response invokeByTokenId(String tokenId, final Method method, final Object[] params) {
         final int paramCount = params == null ? 0 : params.length;
         boolean newToken = false;
@@ -180,11 +204,13 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
             newToken = true;
         }
 
+        Object result = convert(
+                runWithContext(
+                        buildContext(
+                                token,
+                                JaxRSHelper.getUnitFromContext(
+                                        ConcreteHelper.getContext(method, getInterfaceClass()))),
 
-        Object result = convert(runWith(
-                //JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())),
-                JaxRSHelper.JAXRS_MODEL, getSubjoin(), token,
-                run(CURRENT_UNIT, JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())),
                         new ConcreteClosure() {
 
                             public Object concreteRun() throws Throwable {
@@ -195,7 +221,24 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
                                     return method.invoke(instance, params);
 
                             }
-                        })));
+                        }));
+
+
+//        Object result = convert(runWith(
+//                //JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())),
+//                JaxRSHelper.JAXRS_MODEL, getSubjoin(), token,
+//                run(CURRENT_UNIT, JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())),
+//                        new ConcreteClosure() {
+//
+//                            public Object concreteRun() throws Throwable {
+//                                Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
+//                                if (paramCount == 0)
+//                                    return method.invoke(instance);
+//                                else
+//                                    return method.invoke(instance, params);
+//
+//                            }
+//                        })));
 
         Response.ResponseBuilder builder = result == null ? Response.noContent() : Response.ok();
 

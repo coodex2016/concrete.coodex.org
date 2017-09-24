@@ -35,8 +35,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static org.coodex.concrete.common.ConcreteContext.CURRENT_UNIT;
-import static org.coodex.concrete.common.ConcreteContext.runWith;
+import static org.coodex.concrete.common.ConcreteContext.runWithContext;
 import static org.coodex.concrete.websocket.Constants.*;
 
 class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoint {
@@ -182,6 +181,7 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
      * @param session
      */
     private void invokeService(final RequestPackage<Object> requestPackage, final Session session) {
+
         //1 找到方法
         final WebSocketUnit unit = Assert.isNull(unitMap.get(requestPackage.getServiceId()),
                 WebSocketErrorCodes.SERVICE_ID_NOT_EXISTS, requestPackage.getServiceId());
@@ -193,6 +193,8 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
         //3 调用并返回结果
         final Token token = getToken(session);
 
+//        final String
+//        session.getUserProperties()
         ConcreteHelper.getExecutor().execute(new PriorityRunnable(ConcreteHelper.getPriority(unit), new Runnable() {
             private Method method = unit.getMethod();
 
@@ -200,20 +202,33 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
             public void run() {
 
                 try {
-                    Object result = runWith(Constants.WEB_SOCKET_MODEL, getSubjoin(requestPackage.getSubjoin()), token,
-                            ConcreteContext.run(
-                                    CURRENT_UNIT, unit, new ConcreteClosure() {
+                    Object result = runWithContext(
+                            new WebSocketServiceContext(token, getSubjoin(requestPackage.getSubjoin()), unit),
+                            new ConcreteClosure() {
 
-                                        public Object concreteRun() throws Throwable {
-                                            Object instance = BeanProviderFacade.getBeanProvider().getBean(unit.getDeclaringModule().getInterfaceClass());
-                                            if (objects == null)
-                                                return method.invoke(instance);
-                                            else
-                                                return method.invoke(instance, objects);
+                                public Object concreteRun() throws Throwable {
+                                    Object instance = BeanProviderFacade.getBeanProvider().getBean(unit.getDeclaringModule().getInterfaceClass());
+                                    if (objects == null)
+                                        return method.invoke(instance);
+                                    else
+                                        return method.invoke(instance, objects);
 
-                                        }
-                                    }
-                            ));
+                                }
+                            });
+//                    Object result = runWith(Constants.WEB_SOCKET_MODEL, getSubjoin(requestPackage.getSubjoin()), token,
+//                            ConcreteContext.run(
+//                                    CURRENT_UNIT, unit, new ConcreteClosure() {
+//
+//                                        public Object concreteRun() throws Throwable {
+//                                            Object instance = BeanProviderFacade.getBeanProvider().getBean(unit.getDeclaringModule().getInterfaceClass());
+//                                            if (objects == null)
+//                                                return method.invoke(instance);
+//                                            else
+//                                                return method.invoke(instance, objects);
+//
+//                                        }
+//                                    }
+//                            ));
                     ResponsePackage responsePackage = new ResponsePackage();
                     responsePackage.setMsgId(requestPackage.getMsgId());
                     responsePackage.setOk(true);

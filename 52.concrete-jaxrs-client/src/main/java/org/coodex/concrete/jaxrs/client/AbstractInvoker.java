@@ -33,23 +33,31 @@ import static org.coodex.concrete.common.SubjoinWrapper.DEFAULT_SUBJOIN;
  */
 public abstract class AbstractInvoker implements Invoker {
 
+
+
     protected abstract MethodInvocation getInvocation(Unit unit, Object[] args, Object instance);
 
     @Override
     public final Object invoke(final Unit unit, final Object[] args, final Object instance) throws Throwable {
         return
-                run(CURRENT_UNIT, unit,
-                        run(MODEL, JaxRSHelper.JAXRS_MODEL,
-                                run(SUBJOIN, DEFAULT_SUBJOIN,
-                                        run(SIDE, SIDE_CLIENT, new ConcreteClosure() {
-                                            @Override
-                                            public Object concreteRun() throws Throwable {
-                                                return getInterceptorChain().invoke(getInvocation(unit, args, instance));
-                                            }
-                                        })
-                                )
-                        )
-                ).run();
+                runWithContext(new JaxrsClientServiceContext(unit),new ConcreteClosure() {
+                    @Override
+                    public Object concreteRun() throws Throwable {
+                        return getInterceptorChain().invoke(getInvocation(unit, args, instance));
+                    }
+                });
+//                run(CURRENT_UNIT, unit,
+//                        run(MODEL, JaxRSHelper.JAXRS_MODEL,
+//                                run(SUBJOIN, DEFAULT_SUBJOIN,
+//                                        run(SIDE, SIDE_CLIENT, new ConcreteClosure() {
+//                                            @Override
+//                                            public Object concreteRun() throws Throwable {
+//                                                return getInterceptorChain().invoke(getInvocation(unit, args, instance));
+//                                            }
+//                                        })
+//                                )
+//                        )
+//                ).run();
 //        return ConcreteContext.runWith(JaxRSHelper.JAXRS_MODEL, new JaxRSSubjoin(null), null, new ConcreteClosure() {
 //            @Override
 //            public Object concreteRun() throws Throwable {

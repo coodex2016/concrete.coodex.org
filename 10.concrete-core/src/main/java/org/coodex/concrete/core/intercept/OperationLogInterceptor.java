@@ -30,8 +30,7 @@ import java.util.HashMap;
 
 import static org.coodex.concrete.common.AbstractMessageFacade.getLogFormatter;
 import static org.coodex.concrete.common.AbstractMessageFacade.getPatternLoader;
-import static org.coodex.concrete.common.ConcreteContext.LOGGING;
-import static org.coodex.concrete.common.ConcreteContext.getLoggingData;
+import static org.coodex.concrete.common.ConcreteContext.*;
 
 /**
  * Created by davidoff shen on 2017-05-08.
@@ -39,6 +38,18 @@ import static org.coodex.concrete.common.ConcreteContext.getLoggingData;
 public class OperationLogInterceptor extends AbstractSyncInterceptor {
 
     private final static Logger log = LoggerFactory.getLogger(OperationLogInterceptor.class);
+
+    public static class AtomServiceContext extends ServiceContext {
+        public AtomServiceContext(ServiceContext context) {
+            this.caller = context.getCaller();
+            this.token = context.getToken();
+            this.model = context.getModel();
+            this.subjoin = context.getSubjoin();
+            this.side = context.getSide();
+        }
+
+
+    }
 
     private static final OperationLogger DEFAULT_LOGGER = new OperationLogger() {
         @Override
@@ -79,12 +90,19 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
 
     @Override
     public Object around(final RuntimeContext context, final MethodInvocation joinPoint) throws Throwable {
-        return LOGGING.run(new HashMap<String, Object>(), new ConcreteClosure() {
-            @Override
-            public Object concreteRun() throws Throwable {
-                return $$after(context, joinPoint, joinPoint.proceed());
-            }
-        });
+        return runWithContext(new AtomServiceContext(getServiceContext()),
+                new ConcreteClosure() {
+                    @Override
+                    public Object concreteRun() throws Throwable {
+                        return $$after(context, joinPoint, joinPoint.proceed());
+                    }
+                });
+//        return LOGGING.run(new HashMap<String, Object>(), new ConcreteClosure() {
+//            @Override
+//            public Object concreteRun() throws Throwable {
+//                return $$after(context, joinPoint, joinPoint.proceed());
+//            }
+//        });
     }
 
     //    @Override
@@ -159,10 +177,10 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
         String key = null, template = null;
         if (messageTemplate != null && messageTemplate.startsWith("{") && messageTemplate.endsWith("}")) {
             key = Common.trim(messageTemplate, '{', '}', ' ');
-        } else if(messageTemplate != null){
+        } else if (messageTemplate != null) {
             template = messageTemplate;
         }
-        if(template == null) {
+        if (template == null) {
             if (key == null) key = getMessageKey(category, subClass);
             template = getPatternLoader(patternLoaderClass).getMessageTemplate(key);
         }

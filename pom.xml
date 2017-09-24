@@ -149,36 +149,36 @@
     </properties>
 
     <profiles>
-        <profile>
-            <id>private.distribution</id>
-            <distributionManagement>
-                <!-- local repository -->
-                <snapshotRepository>
-                    <id>private</id>
-                    <url>http://10.10.50.54:8081/repository/maven-snapshots/</url>
-                </snapshotRepository>
-                <repository>
-                    <id>private</id>
-                    <url>http://10.10.50.54:8081/repository/maven-releases/</url>
-                </repository>
+        <!--<profile>-->
+            <!--<id>private.distribution</id>-->
+            <!--<distributionManagement>-->
+                <!--&lt;!&ndash; local repository &ndash;&gt;-->
+                <!--<snapshotRepository>-->
+                    <!--<id>private</id>-->
+                    <!--<url>http://10.10.50.54:8081/repository/maven-snapshots/</url>-->
+                <!--</snapshotRepository>-->
+                <!--<repository>-->
+                    <!--<id>private</id>-->
+                    <!--<url>http://10.10.50.54:8081/repository/maven-releases/</url>-->
+                <!--</repository>-->
 
-            </distributionManagement>
-        </profile>
+            <!--</distributionManagement>-->
+        <!--</profile>-->
 
-        <profile>
-            <id>dcsoft.distribution</id>
-            <distributionManagement>
-                <!-- local repository -->
-                <snapshotRepository>
-                    <id>dcsoft</id>
-                    <url>http://172.168.2.160/content/repositories/snapshots/</url>
-                </snapshotRepository>
-                <repository>
-                    <id>dcsoft</id>
-                    <url>http://172.168.2.160/content/repositories/releases/</url>
-                </repository>
-            </distributionManagement>
-        </profile>
+        <!--<profile>-->
+            <!--<id>dcsoft.distribution</id>-->
+            <!--<distributionManagement>-->
+                <!--&lt;!&ndash; local repository &ndash;&gt;-->
+                <!--<snapshotRepository>-->
+                    <!--<id>dcsoft</id>-->
+                    <!--<url>http://172.168.2.160/content/repositories/snapshots/</url>-->
+                <!--</snapshotRepository>-->
+                <!--<repository>-->
+                    <!--<id>dcsoft</id>-->
+                    <!--<url>http://172.168.2.160/content/repositories/releases/</url>-->
+                <!--</repository>-->
+            <!--</distributionManagement>-->
+        <!--</profile>-->
 
         <profile>
             <id>oss.distribution</id>

@@ -23,7 +23,7 @@ import org.coodex.util.Common;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static org.coodex.concrete.common.ConcreteContext.LOCALE;
+import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 
 /**
  * 基于 ResourceBundle 的实现
@@ -37,7 +37,7 @@ public class ResourceBundlesMessagePatternLoader implements MessagePatternLoader
         for (String resource : ConcreteHelper.getProfile()
                 .getStrList("messagePattern.resourceBundles", ",", new String[]{MESSAGE_PATTERN})) {
 
-            Locale locale = LOCALE.get();//.get();
+            Locale locale = getServiceContext().getLocale();//.get();
             if(locale == null)
                 locale = Locale.getDefault();
 

@@ -63,11 +63,12 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
     @Override
     public boolean accept(RuntimeContext context) {
-        return context.getAnnotation(Signable.class) != null && CURRENT_UNIT.get() != null;
+        return context.getAnnotation(Signable.class) != null &&
+                getServiceContext().getCurrentUnit() != null;
     }
 
     private int getModel() {
-        return SIDE.get() == null ? SIDE_SERVER : SIDE.get().intValue();
+        return getServiceContext().getSide() == null ? SIDE_SERVER : getServiceContext().getSide().intValue();
     }
 
     @Override
@@ -149,7 +150,8 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     }
 
     private void serverSide_Verify(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
-        Map<String, Object> content = buildContent(CURRENT_UNIT.get(), joinPoint.getArguments());
+        Map<String, Object> content = buildContent(
+                getServiceContext().getCurrentUnit(), joinPoint.getArguments());
         Assert.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
                 KEY_FIELD_NOISE + " MUST NOT null.");
@@ -169,7 +171,8 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     private Object serverSide_Sign(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign, Object o) {
         try {
             if (o != null && o instanceof Signature) {
-                Map<String, Object> content = buildContent(CURRENT_UNIT.get(), joinPoint.getArguments());
+                Map<String, Object> content = buildContent(
+                        getServiceContext().getCurrentUnit(), joinPoint.getArguments());
 
                 // 必须保留，存在向content中put数据的可能
                 String algorithm = getKeyField(content, KEY_FIELD_ALGORITHM, howToSign.getAlgorithm());
@@ -185,37 +188,37 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         }
     }
 
-    @Deprecated
-    private Object serverModel(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
-        try {
-            // 0 验签
-            Map<String, Object> content = buildContent(CURRENT_UNIT.get(), joinPoint.getArguments());
-            Assert.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
-                    ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
-                    KEY_FIELD_NOISE + " MUST NOT null.");
-
-            // 必须保留，存在向content中put数据的可能
-            String algorithm = getKeyField(content, KEY_FIELD_ALGORITHM, howToSign.getAlgorithm());
-            String keyId = getKeyField(content, KEY_FIELD_KEY_ID, null);
-            IronPen ironPen = howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName());
-            SignatureSerializer serializer = howToSign.getSerializer();
-            Assert.not(ironPen.verify(serializer.serialize(content),
-                    Base64.decodeBase64(getSignature(content)),
-                    algorithm, keyId),
-                    ErrorCodes.SIGNATURE_VERIFICATION_FAILED, "server side verify failed.");
-
-            Object o = joinPoint.proceed();
-
-            //1 签名
-            if (o != null && o instanceof Signature) {
-                return serverSign((Signature) o, algorithm, keyId, ironPen, serializer);
-            } else {
-                return o;
-            }
-        } catch (Throwable th) {
-            throw ConcreteHelper.getException(th);
-        }
-    }
+//    @Deprecated
+//    private Object serverModel(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
+//        try {
+//            // 0 验签
+//            Map<String, Object> content = buildContent(CURRENT_UNIT.get(), joinPoint.getArguments());
+//            Assert.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
+//                    ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
+//                    KEY_FIELD_NOISE + " MUST NOT null.");
+//
+//            // 必须保留，存在向content中put数据的可能
+//            String algorithm = getKeyField(content, KEY_FIELD_ALGORITHM, howToSign.getAlgorithm());
+//            String keyId = getKeyField(content, KEY_FIELD_KEY_ID, null);
+//            IronPen ironPen = howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName());
+//            SignatureSerializer serializer = howToSign.getSerializer();
+//            Assert.not(ironPen.verify(serializer.serialize(content),
+//                    Base64.decodeBase64(getSignature(content)),
+//                    algorithm, keyId),
+//                    ErrorCodes.SIGNATURE_VERIFICATION_FAILED, "server side verify failed.");
+//
+//            Object o = joinPoint.proceed();
+//
+//            //1 签名
+//            if (o != null && o instanceof Signature) {
+//                return serverSign((Signature) o, algorithm, keyId, ironPen, serializer);
+//            } else {
+//                return o;
+//            }
+//        } catch (Throwable th) {
+//            throw ConcreteHelper.getException(th);
+//        }
+//    }
 
     /**
      * @param signature
@@ -251,7 +254,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         String propertyName = getPropertyName(keyName);
         Object key = content.containsKey(propertyName) ?
                 content.get(propertyName) :
-                SUBJOIN.get().get(propertyName);
+                getServiceContext().getSubjoin().get(propertyName);
         if (key != null) {
             content.put(propertyName, key);
         }
@@ -263,7 +266,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         String propertySign = getPropertyName(KEY_FIELD_SIGN);
         String signStr = (String) content.remove(propertySign);
         if (signStr == null) {
-            signStr = Assert.isNull(SUBJOIN.get().get(propertySign),
+            signStr = Assert.isNull(getServiceContext().getSubjoin().get(propertySign),
                     ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
                     "no signature found");
         }
@@ -279,7 +282,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
                 setArgument(context, joinPoint, propertyName, value);
         } else {
             if (value != null)
-                SUBJOIN.get().set(propertyName, Arrays.asList(value.toString()));
+                getServiceContext().getSubjoin().set(propertyName, Arrays.asList(value.toString()));
         }
         content.put(propertyName, value);
         return value == null ? null : value.toString();
@@ -287,7 +290,8 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
     private void clientSide_Sign(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
         // 0 签名
-        Map<String, Object> content = buildContent(CURRENT_UNIT.get(), joinPoint.getArguments());
+        Map<String, Object> content = buildContent(
+                getServiceContext().getCurrentUnit(), joinPoint.getArguments());
         // noise
         int noise = Common.random(0, Integer.MAX_VALUE);
         putKeyField(content, KEY_FIELD_NOISE, noise, context, joinPoint);
@@ -325,7 +329,8 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         try {
             if (o != null && o instanceof Signature) {
                 // 0 签名
-                Map<String, Object> content = buildContent(CURRENT_UNIT.get(), joinPoint.getArguments());
+                Map<String, Object> content = buildContent(
+                        getServiceContext().getCurrentUnit(), joinPoint.getArguments());
 
                 //algorithm
                 String algorithm = putKeyField(content, KEY_FIELD_ALGORITHM,
@@ -347,54 +352,54 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         }
     }
 
-    @Deprecated
-    private Object clientModel(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
-        try {
-            // 0 签名
-            Map<String, Object> content = buildContent(CURRENT_UNIT.get(), joinPoint.getArguments());
-            // noise
-            int noise = Common.random(0, Integer.MAX_VALUE);
-            putKeyField(content, KEY_FIELD_NOISE, noise, context, joinPoint);
-
-            //algorithm
-            String algorithm = putKeyField(content, KEY_FIELD_ALGORITHM,
-                    SignUtil.getString(KEY_FIELD_ALGORITHM, howToSign.getPaperName(), null),
-                    context, joinPoint);
-            if (algorithm == null)
-                algorithm = howToSign.getAlgorithm();
-
-            // keyId
-            String keyId = putKeyField(content, KEY_FIELD_KEY_ID,
-                    SignUtil.getString(KEY_FIELD_KEY_ID, howToSign.getPaperName(), null),
-                    context, joinPoint);
-
-            byte[] data = howToSign.getSerializer().serialize(content);
-
-            String sign = Base64.encodeBase64String(howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName())
-                    .sign(data, algorithm, keyId));
-
-            putKeyField(content, KEY_FIELD_SIGN, sign, context, joinPoint);
-            log.debug("signature for[ {} ]: \n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}",
-                    context.getActualMethod().getName(),
-                    getPropertyName(KEY_FIELD_NOISE), noise,
-                    getPropertyName(KEY_FIELD_ALGORITHM), algorithm,
-                    getPropertyName(KEY_FIELD_KEY_ID), keyId,
-                    getPropertyName(KEY_FIELD_SIGN), sign,
-                    "toSign", dataToString(data)
-//                    "data",
-            );
-            Object o = joinPoint.proceed();
-
-            if (o != null && o instanceof Signature) {
-                clientVerify(howToSign, (Signature) o, algorithm, keyId);
-            }
-            return o;
-        } catch (ConcreteException ce) {
-            throw ce;
-        } catch (Throwable th) {
-            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
-        }
-    }
+//    @Deprecated
+//    private Object clientModel(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
+//        try {
+//            // 0 签名
+//            Map<String, Object> content = buildContent(CURRENT_UNIT.get(), joinPoint.getArguments());
+//            // noise
+//            int noise = Common.random(0, Integer.MAX_VALUE);
+//            putKeyField(content, KEY_FIELD_NOISE, noise, context, joinPoint);
+//
+//            //algorithm
+//            String algorithm = putKeyField(content, KEY_FIELD_ALGORITHM,
+//                    SignUtil.getString(KEY_FIELD_ALGORITHM, howToSign.getPaperName(), null),
+//                    context, joinPoint);
+//            if (algorithm == null)
+//                algorithm = howToSign.getAlgorithm();
+//
+//            // keyId
+//            String keyId = putKeyField(content, KEY_FIELD_KEY_ID,
+//                    SignUtil.getString(KEY_FIELD_KEY_ID, howToSign.getPaperName(), null),
+//                    context, joinPoint);
+//
+//            byte[] data = howToSign.getSerializer().serialize(content);
+//
+//            String sign = Base64.encodeBase64String(howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName())
+//                    .sign(data, algorithm, keyId));
+//
+//            putKeyField(content, KEY_FIELD_SIGN, sign, context, joinPoint);
+//            log.debug("signature for[ {} ]: \n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}",
+//                    context.getActualMethod().getName(),
+//                    getPropertyName(KEY_FIELD_NOISE), noise,
+//                    getPropertyName(KEY_FIELD_ALGORITHM), algorithm,
+//                    getPropertyName(KEY_FIELD_KEY_ID), keyId,
+//                    getPropertyName(KEY_FIELD_SIGN), sign,
+//                    "toSign", dataToString(data)
+////                    "data",
+//            );
+//            Object o = joinPoint.proceed();
+//
+//            if (o != null && o instanceof Signature) {
+//                clientVerify(howToSign, (Signature) o, algorithm, keyId);
+//            }
+//            return o;
+//        } catch (ConcreteException ce) {
+//            throw ce;
+//        } catch (Throwable th) {
+//            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
+//        }
+//    }
 
     private void clientVerify(SignUtil.HowToSign howToSign, Signature signature, String algorithm, String keyId) throws IllegalAccessException {
         Assert.not(howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName())
@@ -408,7 +413,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
 
     protected void setArgument(RuntimeContext context, MethodInvocation joinPoint, String parameterName, Object value) {
-        AbstractUnit unit = CURRENT_UNIT.get();
+        AbstractUnit unit = getServiceContext().getCurrentUnit();
         for (AbstractParam param : unit.getParameters()) {
             if (param.getName().equals(parameterName)) {
                 joinPoint.getArguments()[param.getIndex()] = value;

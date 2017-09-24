@@ -21,7 +21,7 @@ import org.coodex.concrete.common.*;
 import java.io.Serializable;
 import java.util.Enumeration;
 
-import static org.coodex.concrete.common.ConcreteContext.TOKEN;
+import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 
 /**
  * 基于当前线程上下文提供<s>Session</s> Token
@@ -39,7 +39,7 @@ public class TokenWrapper implements Token {
     }
 
     private Token getToken(boolean checkValidation) {
-        Token token = TOKEN.get();
+        Token token = getServiceContext().getToken();
         Assert.isNull(token, ErrorCodes.NONE_TOKEN);
         Assert.is(checkValidation && !token.isValid(), ErrorCodes.TOKEN_INVALIDATE, token.getTokenId());
         return token;

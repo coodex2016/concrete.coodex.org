@@ -106,23 +106,34 @@ public class WebSocketClientHandle {
                             toRuntimeContext(unit), new AsyncMethodInvocation(unit.getMethod(), args));
 
                     try {
-                        run(MODEL, WEB_SOCKET_MODEL,
-                                run(SIDE, SIDE_CLIENT,
-                                        run(SUBJOIN, new WebSocketSubjoin(getSubjoin(domain)),
-                                                run(CURRENT_UNIT, callback.getUnit(),
-                                                        new ConcreteClosure() {
-                                                            @Override
-                                                            public Object concreteRun() throws Throwable {
-                                                                getInterceptorChain().before(callback.getContext(), callback.getInvocation());
-                                                                requestPackage.setSubjoin(((WebSocketSubjoin) SUBJOIN.get()).toMap());
-                                                                sendRequest(requestPackage, session);
-                                                                return null;
-                                                            }
-                                                        }
-                                                )
-                                        )
-                                )
-                        ).run();
+//                        run(MODEL, WEB_SOCKET_MODEL,
+//                                run(SIDE, SIDE_CLIENT,
+//                                        run(SUBJOIN, new WebSocketSubjoin(getSubjoin(domain)),
+//                                                run(CURRENT_UNIT, callback.getUnit(),
+//                                                        new ConcreteClosure() {
+//                                                            @Override
+//                                                            public Object concreteRun() throws Throwable {
+//                                                                getInterceptorChain().before(callback.getContext(), callback.getInvocation());
+//                                                                requestPackage.setSubjoin(((WebSocketSubjoin) SUBJOIN.get()).toMap());
+//                                                                sendRequest(requestPackage, session);
+//                                                                return null;
+//                                                            }
+//                                                        }
+//                                                )
+//                                        )
+//                                )
+//                        ).run();
+                        runWithContext(
+                                new WebSocketClientServiceContext(callback.getUnit(), new WebSocketSubjoin(getSubjoin(domain))),
+                                new ConcreteClosure() {
+                                    @Override
+                                    public Object concreteRun() throws Throwable {
+                                        getInterceptorChain().before(callback.getContext(), callback.getInvocation());
+                                        requestPackage.setSubjoin(((WebSocketSubjoin) getServiceContext().getSubjoin()).toMap());
+                                        sendRequest(requestPackage, session);
+                                        return null;
+                                    }
+                                });
 
                     } catch (Throwable th) {
                         callbackMap.remove(msgId);
@@ -283,26 +294,40 @@ public class WebSocketClientHandle {
 //            Subjoin subjoin = ;
 //            ConcreteContext.runWith(new WebSocketSubjoin(responsePackage.getSubjoin()),)
             final Object o = result;
-            run(MODEL, WEB_SOCKET_MODEL,
-                    run(SIDE, SIDE_CLIENT,
-                            run(SUBJOIN, new WebSocketSubjoin(responsePackage.getSubjoin()),
-                                    run(CURRENT_UNIT, callback.getUnit(),
-                                            new ConcreteClosure() {
-                                                @Override
-                                                public Object concreteRun() throws Throwable {
-                                                    Object r = o;
-                                                    r = getInterceptorChain().after(callback.getContext(), callback.getInvocation(), r);
-                                                    if (r != null) {
-                                                        callback.getEmitter().onNext(r);
-                                                    }
-                                                    callback.getEmitter().onComplete();
-                                                    return null;
-                                                }
-                                            }
-                                    )
-                            )
-                    )
-            ).run();
+//            run(MODEL, WEB_SOCKET_MODEL,
+//                    run(SIDE, SIDE_CLIENT,
+//                            run(SUBJOIN, new WebSocketSubjoin(responsePackage.getSubjoin()),
+//                                    run(CURRENT_UNIT, callback.getUnit(),
+//                                            new ConcreteClosure() {
+//                                                @Override
+//                                                public Object concreteRun() throws Throwable {
+//                                                    Object r = o;
+//                                                    r = getInterceptorChain().after(callback.getContext(), callback.getInvocation(), r);
+//                                                    if (r != null) {
+//                                                        callback.getEmitter().onNext(r);
+//                                                    }
+//                                                    callback.getEmitter().onComplete();
+//                                                    return null;
+//                                                }
+//                                            }
+//                                    )
+//                            )
+//                    )
+//            ).run();
+            runWithContext(
+                    new WebSocketClientServiceContext(callback.getUnit(), new WebSocketSubjoin(responsePackage.getSubjoin())),
+                    new ConcreteClosure() {
+                        @Override
+                        public Object concreteRun() throws Throwable {
+                            Object r = o;
+                            r = getInterceptorChain().after(callback.getContext(), callback.getInvocation(), r);
+                            if (r != null) {
+                                callback.getEmitter().onNext(r);
+                            }
+                            callback.getEmitter().onComplete();
+                            return null;
+                        }
+                    });
 
         } catch (Throwable th) {
             callback.getEmitter().onError(ConcreteHelper.getException(th));

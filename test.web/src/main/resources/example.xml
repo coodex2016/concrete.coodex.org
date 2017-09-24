@@ -23,7 +23,7 @@
 
     <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
 
-    <bean class="org.coodex.concrete.spring.SpringBeanProvider"></bean>
+    <bean class="org.coodex.concrete.spring.ConcreteSpringConfiguration"></bean>
     <bean class="org.coodex.concrete.core.token.local.LocalTokenManager"></bean>
 
     <context:component-scan base-package="org.coodex.practice.jaxrs.impl"></context:component-scan>

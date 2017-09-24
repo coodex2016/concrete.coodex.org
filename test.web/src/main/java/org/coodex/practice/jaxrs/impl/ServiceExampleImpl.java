@@ -19,9 +19,7 @@ package org.coodex.practice.jaxrs.impl;
 import com.alibaba.fastjson.JSON;
 import org.coodex.concrete.api.LogAtomic;
 import org.coodex.concrete.attachments.client.ClientServiceImpl;
-import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.ErrorCodes;
-import org.coodex.concrete.common.Token;
+import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.concrete.jaxrs.BigString;
 import org.coodex.concrete.websocket.WebSocket;
@@ -32,6 +30,7 @@ import org.coodex.practice.jaxrs.pojo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +48,14 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
 
     private final static Logger log = LoggerFactory.getLogger(ServiceExampleImpl.class);
 
-    private Token token = TokenWrapper.getInstance();
+    @Inject
+    private Token token;
+
+    @Inject
+    private Caller caller;
+
+    @Inject
+    private Subjoin subjoin;
 
     private List<Book> books = new ArrayList<Book>();
 
@@ -96,6 +102,16 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
                 books.add(book);
             }
         }
+        StringBuilder builder = new StringBuilder();
+        builder.append("tokenId: ").append(token.getTokenId()).append("; caller:[")
+                .append(caller.getAddress()).append(", ").append(caller.getAgent())
+                .append("]");
+        for(String key : subjoin.keySet()){
+            builder.append("\n\tkey: ").append(key).append(", values: ")
+                    .append(subjoin.get(key));
+        }
+        log.debug(builder.toString());
+
         return books;
     }
 
@@ -193,6 +209,15 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
 
     @Override
     public int add(int x, int y) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("tokenId: ").append(token.getTokenId()).append("; caller:[")
+                .append(caller.getAddress()).append(", ").append(caller.getAgent())
+                .append("]");
+        for(String key : subjoin.keySet()){
+            builder.append("\n\tkey: ").append(key).append(", values: ")
+                    .append(subjoin.get(key));
+        }
+        log.debug(builder.toString());
         return x + y;
     }
 
