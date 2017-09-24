@@ -1,6 +1,6 @@
 # Concrete
 
-[book.concrete.coodex.org](https://book.concrete.coodex.org)
+[concrete.coodex.org](https://concrete.coodex.org)
 
 ## 什么鬼？
 
@@ -23,5 +23,5 @@ public interface SomeService extends ConcreteService{
 
 ## 怎么搞？
 
-看[书](https://book.concrete.coodex.org)，多练
+看[书](https://concrete.coodex.org)，多练
 
