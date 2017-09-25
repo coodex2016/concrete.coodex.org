@@ -17,11 +17,12 @@
 package org.coodex.practice.jaxrs.starter;
 
 import org.coodex.concrete.support.websocket.ConcreteWebSocketEndPoint;
+import org.coodex.concrete.support.websocket.CallerHackConfigurator;
 import org.coodex.practice.jaxrs.api.ServiceExample;
 
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint("/WebSocket")
+@ServerEndpoint(value = "/WebSocket", configurator = CallerHackConfigurator.class)
 public class TestWebSocketServer extends ConcreteWebSocketEndPoint {
 
     public TestWebSocketServer() {

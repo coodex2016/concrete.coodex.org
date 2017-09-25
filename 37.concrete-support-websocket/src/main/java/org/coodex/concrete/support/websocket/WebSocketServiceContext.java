@@ -39,12 +39,16 @@ public class WebSocketServiceContext extends ServiceContext {
         }
     };
 
-    public WebSocketServiceContext(Token token, Subjoin subjoin, AbstractUnit unit) {
+    public WebSocketServiceContext(Token token, Subjoin subjoin, AbstractUnit unit, Caller caller) {
         this.token = token;
         this.subjoin = subjoin;
         this.currentUnit = unit;
         this.model = WEB_SOCKET_MODEL;
-        this.caller = CALLER;
+        this.caller = caller == null ? CALLER : caller;
         this.side = SIDE_SERVER;
+    }
+
+    public WebSocketServiceContext(Token token, Subjoin subjoin, AbstractUnit unit) {
+        this(token,subjoin, unit, CALLER);
     }
 }

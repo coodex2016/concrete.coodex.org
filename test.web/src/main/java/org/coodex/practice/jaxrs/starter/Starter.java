@@ -17,6 +17,7 @@
 package org.coodex.practice.jaxrs.starter;
 
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
+import org.coodex.concrete.support.websocket.CallerHackFilter;
 import org.coodex.practice.jaxrs.jersey.ExampleApplication;
 import org.coodex.servlet.cors.CorsFilter;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -61,41 +62,23 @@ public class Starter extends SpringBootServletInitializer {
 
     @Bean
     public ServletRegistrationBean testServlet() {
-//        ServletContainer container = new ServletContainer();
 
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(
-                getServletContainer(), "/jaxrs/*")
-//        {
-//            public void onStartup(ServletContext servletContext) throws ServletException {
-//                servletContext.addListener(new ServletContextListener() {
-//
-//                    @Override
-//                    public void contextInitialized(ServletContextEvent sce) {
-//                        final ServerContainer serverContainer = (ServerContainer) sce.getServletContext()
-//                                .getAttribute("javax.websocket.server.ServerContainer");
-//
-//                        try {
-//                            serverContainer.addEndpoint(TestWebSocketServer.class);
-//                        } catch (DeploymentException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void contextDestroyed(ServletContextEvent sce) {
-//
-//                    }
-//                });
-//            }
-//        }
-        ;
-
-//        registrationBean.ad
+                getServletContainer(), "/jaxrs/*");
         registrationBean.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
                 ExampleApplication.class.getName());
         registrationBean.setName("test");
         registrationBean.setAsyncSupported(true);
         return registrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean wsFilter(){
+        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+        filterRegistrationBean.setFilter(new CallerHackFilter());
+        filterRegistrationBean.setAsyncSupported(true);
+        filterRegistrationBean.setUrlPatterns(Arrays.asList("/*"));
+        return filterRegistrationBean;
     }
 
     @Bean

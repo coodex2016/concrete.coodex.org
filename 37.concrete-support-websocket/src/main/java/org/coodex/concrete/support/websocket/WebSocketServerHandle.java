@@ -36,6 +36,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 import static org.coodex.concrete.common.ConcreteContext.runWithContext;
+import static org.coodex.concrete.support.websocket.CallerHackConfigurator.WEB_SOCKET_CALLER_INFO;
 import static org.coodex.concrete.websocket.Constants.*;
 
 class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoint {
@@ -203,7 +204,7 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
 
                 try {
                     Object result = runWithContext(
-                            new WebSocketServiceContext(token, getSubjoin(requestPackage.getSubjoin()), unit),
+                            new WebSocketServiceContext(token, getSubjoin(requestPackage.getSubjoin()), unit, (Caller) session.getUserProperties().get(WEB_SOCKET_CALLER_INFO)),
                             new ConcreteClosure() {
 
                                 public Object concreteRun() throws Throwable {
@@ -215,20 +216,7 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
 
                                 }
                             });
-//                    Object result = runWith(Constants.WEB_SOCKET_MODEL, getSubjoin(requestPackage.getSubjoin()), token,
-//                            ConcreteContext.run(
-//                                    CURRENT_UNIT, unit, new ConcreteClosure() {
-//
-//                                        public Object concreteRun() throws Throwable {
-//                                            Object instance = BeanProviderFacade.getBeanProvider().getBean(unit.getDeclaringModule().getInterfaceClass());
-//                                            if (objects == null)
-//                                                return method.invoke(instance);
-//                                            else
-//                                                return method.invoke(instance, objects);
-//
-//                                        }
-//                                    }
-//                            ));
+
                     ResponsePackage responsePackage = new ResponsePackage();
                     responsePackage.setMsgId(requestPackage.getMsgId());
                     responsePackage.setOk(true);

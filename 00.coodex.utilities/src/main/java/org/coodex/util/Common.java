@@ -571,6 +571,44 @@ public class Common {
                 lowerFirstChar(builder.toString());
     }
 
+    /**
+     * http://www.cnblogs.com/yujunyong/articles/2004724.html
+     * @param strA
+     * @param strB
+     * @return
+     */
+    private static int calculateStringDistance(String strA, String strB) {
+        int lenA = strA.length();
+        int lenB = strB.length();
+        int[][] c = new int[lenA + 1][lenB + 1];
+        // Record the distance of all begin points of each string
+        //初始化方式与背包问题有点不同
+        for (int i = 0; i < lenA; i++) c[i][lenB] = lenA - i;
+        for (int j = 0; j < lenB; j++) c[lenA][j] = lenB - j;
+        c[lenA][lenB] = 0;
+        for (int i = lenA - 1; i >= 0; i--)
+            for (int j = lenB - 1; j >= 0; j--) {
+                if (strB.charAt(j) == strA.charAt(i))
+                    c[i][j] = c[i + 1][j + 1];
+                else
+                    c[i][j] = Math.min(Math.min(c[i][j + 1], c[i + 1][j]), c[i + 1][j + 1]) + 1;
+            }
+
+        return c[0][0];
+    }
+
+
+    /**
+     * 两个字符串的相似度
+     * @param s1
+     * @param s2
+     * @return
+     */
+    public static double similarity(String s1, String s2){
+        if(s1 == null || s2 == null) return 0.0f;
+        if(s1.equals(s2)) return 1.0f;
+        return 1.0f - calculateStringDistance(s1, s2)/(Math.max(s1.length(), s2.length()) * 1.0f);
+    }
 
 //    public static Locale
 }

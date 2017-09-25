@@ -17,6 +17,7 @@
 package org.coodex.concrete.common;
 
 import org.coodex.concrete.common.struct.AbstractUnit;
+import org.coodex.concrete.core.token.TokenWrapper;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -29,8 +30,8 @@ public abstract class ServiceContext {
     protected Caller caller;
     protected String model;
     protected Integer side = SIDE_SERVER;
-    protected Subjoin subjoin;
-    protected Token token;
+    protected Subjoin subjoin = SubjoinWrapper.getInstance();
+    protected Token token = TokenWrapper.getInstance();
     protected Map<String, Object> logging = new HashMap<String, Object>();
     protected AbstractUnit currentUnit;
 
