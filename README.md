@@ -25,8 +25,15 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
-
 ## 2017-09-27
+
+- jaxrs: 
+    - 修正字符串返回值不规范的用法，调整为：若返回值为字符串时，content-type为text/plain
+    - 同步调整jaxrs-client/jquery jaxrs api tool/ angular jaxrs api tool
+    - angular用户需要注意，请删除 `AbstractConcreteService.ts` 重新生成api
+
+
+## 2017-09-25
 
 - 实现webSocket caller的获取方式 - -#
     - org.coodex.concrete.support.websocket.CallerHackFilter 负责在客户端第一次请求时将调用者信息保存在httpSession中
