@@ -201,10 +201,10 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
 
             @Override
             public void run() {
-
+                ServiceContext context = new WebSocketServiceContext(token, getSubjoin(requestPackage.getSubjoin()), unit, (Caller) session.getUserProperties().get(WEB_SOCKET_CALLER_INFO));
                 try {
                     Object result = runWithContext(
-                            new WebSocketServiceContext(token, getSubjoin(requestPackage.getSubjoin()), unit, (Caller) session.getUserProperties().get(WEB_SOCKET_CALLER_INFO)),
+                            context,
                             new ConcreteClosure() {
 
                                 public Object concreteRun() throws Throwable {
@@ -222,8 +222,15 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
                     responsePackage.setOk(true);
                     responsePackage.setContent(result);
                     sendText(JSONSerializerFactory.getInstance().toJson(responsePackage), session);
-                } catch (Throwable th) {
-                    sendError(requestPackage.getMsgId(), ConcreteHelper.getException(th), session);
+                } catch (final Throwable th) {
+                    runWithContext(context, new ConcreteClosure() {
+                        @Override
+                        public Object concreteRun() throws Throwable {
+                            sendError(requestPackage.getMsgId(), ConcreteHelper.getException(th), session);
+                            return null;
+                        }
+                    });
+
                 }
 
             }

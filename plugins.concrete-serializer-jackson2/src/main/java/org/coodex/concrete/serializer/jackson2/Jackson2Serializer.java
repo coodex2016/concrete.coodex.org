@@ -42,16 +42,12 @@ public class Jackson2Serializer extends AbstractJsonSerializer {
     public <T> T parse(String json, Type t) {
         try {
             if (t instanceof Class) {
-                return getMapper().readValue(json, (Class<T>) t);
+                return String.class.equals(t) ? (T) json : getMapper().readValue(json, (Class<T>) t);
             } else {
                 return getMapper().readValue(json, TypeFactory.defaultInstance().constructType(t));
             }
         } catch (Throwable th) {
-            if (String.class.equals(t)) {
-                return (T) json;
-            } else {
                 throw th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th);
-            }
         }
     }
 

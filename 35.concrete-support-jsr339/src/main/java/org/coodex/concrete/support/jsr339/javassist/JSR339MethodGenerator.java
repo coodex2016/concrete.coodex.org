@@ -24,6 +24,7 @@ import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.concrete.support.jaxrs.javassist.AbstractMethodGenerator;
 import org.coodex.concrete.support.jaxrs.javassist.CGContext;
+import org.coodex.concrete.support.jsr339.JSR339Common;
 import org.coodex.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,16 +134,16 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
 
     @Override
     protected String[] getContentType() {
-        MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
-        String charsetStr = ConcreteHelper.getProfile().getString("jsr339.charset", "utf8");
-        if (!Common.isBlank(charsetStr)) {
-            try {
-                mediaType = mediaType.withCharset(Charset.forName(charsetStr).displayName());
-            } catch (UnsupportedCharsetException e) {
-                log.warn("unsupported charset: {}", charsetStr);
-            }
-        }
-        return new String[]{mediaType.toString()};
+//        MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+//        String charsetStr = ConcreteHelper.getProfile().getString("jsr339.charset", "utf8");
+//        if (!Common.isBlank(charsetStr)) {
+//            try {
+//                mediaType = mediaType.withCharset(Charset.forName(charsetStr).displayName());
+//            } catch (UnsupportedCharsetException e) {
+//                log.warn("unsupported charset: {}", charsetStr);
+//            }
+//        }
+        return new String[]{JSR339Common.withCharset(MediaType.APPLICATION_JSON_TYPE).toString()};
     }
 
 }

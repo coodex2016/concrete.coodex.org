@@ -25,11 +25,12 @@ import org.coodex.concrete.jaxrs.JaxRSHelper;
 import javax.ws.rs.core.HttpHeaders;
 
 import static org.coodex.concrete.common.ConcreteContext.SIDE_CLIENT;
+import static org.coodex.concrete.common.ConcreteHelper.VERSION;
 import static org.coodex.concrete.common.SubjoinWrapper.DEFAULT_SUBJOIN;
 
 public class JaxrsClientServiceContext extends ServiceContext {
 
-    private static final String CONCRETE_JAXRS_USER_AGENT = "cocnrete-jaxrs-client 0.2.1-SNAPSHOT";
+    private static final String CONCRETE_JAXRS_USER_AGENT = "cocnrete-jaxrs-client " + VERSION;
 
     private static Caller CLIENT_CALLER = new Caller() {
         @Override

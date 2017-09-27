@@ -19,17 +19,12 @@ export abstract class AbstractConcreteService {
                 // 自行添加
                 'X-CLIENT-PROVIDER': 'CONCRETE-ANGULAR'
             }),
-            withCredentials: true,
-            responseType: ResponseContentType.Json
+            withCredentials: true
         });
     }
 
     protected extractData(res: Response){
-        try{
-            return res.json() || null;
-        }catch(e){
-            return res.text();
-        }
+        return res.headers.get('content-type').toLowerCase().startsWith('text/plain') ? res.text() : (res.json() || null);
     }
 
     private static onError(code: number, message: String): ErrorInfo {

@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 import static org.coodex.concrete.common.ConcreteContext.*;
 import static org.coodex.concrete.websocket.Constants.*;
 
-@ClientEndpoint
+@ClientEndpoint(configurator = SetUserAgentConfigurator.class)
 public class WebSocketClientHandle {
 
     private static class Client extends WebSocket {
@@ -106,23 +106,6 @@ public class WebSocketClientHandle {
                             toRuntimeContext(unit), new AsyncMethodInvocation(unit.getMethod(), args));
 
                     try {
-//                        run(MODEL, WEB_SOCKET_MODEL,
-//                                run(SIDE, SIDE_CLIENT,
-//                                        run(SUBJOIN, new WebSocketSubjoin(getSubjoin(domain)),
-//                                                run(CURRENT_UNIT, callback.getUnit(),
-//                                                        new ConcreteClosure() {
-//                                                            @Override
-//                                                            public Object concreteRun() throws Throwable {
-//                                                                getInterceptorChain().before(callback.getContext(), callback.getInvocation());
-//                                                                requestPackage.setSubjoin(((WebSocketSubjoin) SUBJOIN.get()).toMap());
-//                                                                sendRequest(requestPackage, session);
-//                                                                return null;
-//                                                            }
-//                                                        }
-//                                                )
-//                                        )
-//                                )
-//                        ).run();
                         runWithContext(
                                 new WebSocketClientServiceContext(callback.getUnit(), new WebSocketSubjoin(getSubjoin(domain))),
                                 new ConcreteClosure() {
@@ -291,29 +274,8 @@ public class WebSocketClientHandle {
                         TypeHelper.toTypeReference(callback.getUnit().getGenericReturnType(),
                                 callback.getUnit().getDeclaringModule().getInterfaceClass()));
             }
-//            Subjoin subjoin = ;
-//            ConcreteContext.runWith(new WebSocketSubjoin(responsePackage.getSubjoin()),)
             final Object o = result;
-//            run(MODEL, WEB_SOCKET_MODEL,
-//                    run(SIDE, SIDE_CLIENT,
-//                            run(SUBJOIN, new WebSocketSubjoin(responsePackage.getSubjoin()),
-//                                    run(CURRENT_UNIT, callback.getUnit(),
-//                                            new ConcreteClosure() {
-//                                                @Override
-//                                                public Object concreteRun() throws Throwable {
-//                                                    Object r = o;
-//                                                    r = getInterceptorChain().after(callback.getContext(), callback.getInvocation(), r);
-//                                                    if (r != null) {
-//                                                        callback.getEmitter().onNext(r);
-//                                                    }
-//                                                    callback.getEmitter().onComplete();
-//                                                    return null;
-//                                                }
-//                                            }
-//                                    )
-//                            )
-//                    )
-//            ).run();
+
             runWithContext(
                     new WebSocketClientServiceContext(callback.getUnit(), new WebSocketSubjoin(responsePackage.getSubjoin())),
                     new ConcreteClosure() {

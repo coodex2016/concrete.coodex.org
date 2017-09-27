@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.*;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,10 +58,10 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
 
     @SuppressWarnings("unchecked")
     private <R> R convert(R result) {
-        if (result == null) return null;
-        if (result instanceof String && ConcreteHelper.getProfile().getBool("service.result.quoteSingleStr", true)) {
-            return (R) JSONSerializerFactory.getInstance().toJson(result);
-        }
+//        if (result == null) return null;
+//        if (result instanceof String && ConcreteHelper.getProfile().getBool("service.result.quoteSingleStr", false)) {
+//            return (R) JSONSerializerFactory.getInstance().toJson(result);
+//        }
         return result;
     }
 
@@ -223,33 +224,24 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
                             }
                         }));
 
-
-//        Object result = convert(runWith(
-//                //JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())),
-//                JaxRSHelper.JAXRS_MODEL, getSubjoin(), token,
-//                run(CURRENT_UNIT, JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())),
-//                        new ConcreteClosure() {
-//
-//                            public Object concreteRun() throws Throwable {
-//                                Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
-//                                if (paramCount == 0)
-//                                    return method.invoke(instance);
-//                                else
-//                                    return method.invoke(instance, params);
-//
-//                            }
-//                        })));
-
         Response.ResponseBuilder builder = result == null ? Response.noContent() : Response.ok();
 
         if (newToken) {
             builder = setCookie(token, builder);
         }
 
-        if (result != null) builder = builder.entity(result);
+        if (result != null) {
+            builder = builder.entity(result);
+            if(result instanceof String){
+                builder = textType(builder);
+            }
+        }
+
 
         return builder.build();
     }
+
+    protected abstract Response.ResponseBuilder textType(Response.ResponseBuilder builder);
 
 
     private Subjoin getSubjoin() {

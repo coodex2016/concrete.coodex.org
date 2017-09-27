@@ -77,7 +77,7 @@ public class Starter extends SpringBootServletInitializer {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
         filterRegistrationBean.setFilter(new CallerHackFilter());
         filterRegistrationBean.setAsyncSupported(true);
-        filterRegistrationBean.setUrlPatterns(Arrays.asList("/*"));
+        filterRegistrationBean.setUrlPatterns(Arrays.asList("/WebSocket"));
         return filterRegistrationBean;
     }
 
@@ -86,7 +86,7 @@ public class Starter extends SpringBootServletInitializer {
 //        ServletContainer container = new ServletContainer();
 
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(
-                getServletContainer(), "/ws/*")
+                getServletContainer(), "/WebSocket")
         {
             public void onStartup(ServletContext servletContext) throws ServletException {
                 servletContext.addListener(new ServletContextListener() {

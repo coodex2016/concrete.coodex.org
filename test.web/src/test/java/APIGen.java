@@ -63,13 +63,9 @@ public class APIGen {
         API.generate(ServiceDocRender.RENDER_NAME,
                 "/concrete-demo/restful.api",
                 ServiceExample.class.getPackage().getName());
-//
-        API.generate(AngularCodeRender.RENDER_NAME,
-                "D:\\Projects\\front_ends\\ng2-admin\\src",
-                ServiceExample.class.getPackage().getName());
 
-        API.generate(AngularWebSocketCodeRender.RENDER_NAME + ".websocket",
-                "D:\\Projects\\front_ends\\ng2-admin\\src",
+        API.generate(AngularCodeRender.RENDER_NAME,
+                "/concrete-demo/angular.code",
                 ServiceExample.class.getPackage().getName());
 
         API.generate(AngularCodeRender.RENDER_NAME + ".example",

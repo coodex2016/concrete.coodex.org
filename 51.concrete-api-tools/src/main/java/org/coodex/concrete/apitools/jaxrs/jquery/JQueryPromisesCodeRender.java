@@ -61,8 +61,11 @@ public class JQueryPromisesCodeRender extends AbstractRender {
             builder.append(n);
             parameters.append("\"").append(n).append("\": ").append(n);
         }
-        builder.append(") {return invoke({\"path\": \"").append(module.getName()).append(unit.getName()).append("\",\"param\": {")
-                .append(parameters.toString()).append("},\"method\": \"").append(unit.getInvokeType()).append("\" });}");
+        builder.append(") {return invoke({\"path\": \"")
+                .append(module.getName()).append(unit.getName()).append("\",\"param\": {")
+                .append(parameters.toString()).append("},\"method\": \"")
+                .append(unit.getInvokeType()).append("\", \"dataType\": \"")
+                .append(String.class.equals(unit.getReturnType()) ? "text" : "json").append("\" });}");
         return builder.toString();
     }
 

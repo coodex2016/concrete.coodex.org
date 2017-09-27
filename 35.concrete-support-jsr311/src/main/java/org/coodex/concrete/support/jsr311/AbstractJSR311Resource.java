@@ -21,6 +21,8 @@ import org.coodex.concrete.jaxrs.AbstractJAXRSResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
 
 
@@ -75,6 +77,10 @@ public abstract class AbstractJSR311Resource<T extends ConcreteService>
     }
 
 
+    @Override
+    protected Response.ResponseBuilder textType(Response.ResponseBuilder builder) {
+        return builder.type(MediaType.TEXT_PLAIN_TYPE);
+    }
 
     protected Object execute(final String methodName, final String tokenId, Object... objects) {
         return __execute(methodName, tokenId, objects);

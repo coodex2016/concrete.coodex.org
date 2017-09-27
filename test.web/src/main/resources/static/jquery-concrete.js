@@ -1,19 +1,3 @@
-/*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 'use strict';
 
 (function (factory) {
@@ -80,7 +64,7 @@
 
             var data = {};
             if (Object.keys(param).length > 0) {
-                var obj = param[Object.keys(param)[0]];
+                var obj = Object.keys(param).length === 1 ? param[Object.keys(param)[0]] : param;
                 data = {
                     data: typeof(obj) === 'string' ? obj : JSON.stringify(obj)
                 }
@@ -90,7 +74,8 @@
                 url: configuration.root + url,
                 type: executable.method,
                 contentType: "application/json; charset=utf-8",
-                dataType: "json",
+                dataType: executable.dataType,
+                headers: { 'X-CLIENT-PROVIDER': 'CONCRETE-jQuery' },
                 crossDomain: true,
                 xhrFields: {
                     withCredentials: true
@@ -98,12 +83,12 @@
             })).error(function (jx) {
                 if (configuration.onError) {
                     var e = jx.responseJSON;
-                    if (typeof e === "object") {
-                        configuration.onError(e.code, e.msg);
+                    if(typeof e === "object"){
+                        configuration.onError(e.code,e.msg);
                     } else {
                         configuration.onError(jx.status, jx.responseText);
                     }
-                    // configuration.onError(this, arguments);
+                                        // configuration.onError(this, arguments);
                 }
             });
         } else {
@@ -187,69 +172,13 @@
         modules[moduleName][packageName] = module;
     };
 
-    register("ServiceExample", "org.coodex.practice.jaxrs.api", {
-        "all": function () {
-            return invoke({"path": "/A/ServiceB/Book/all", "param": {}, "method": "GET"});
-        }, "bigStringTest": function (pathParam, toPost) {
-            return invoke({
-                "path": "/A/ServiceB/Book/bigStringTest/{pathParam}",
-                "param": {"pathParam": pathParam, "toPost": toPost},
-                "method": "POST"
-            });
-        }, "tokenId": function () {
-            return invoke({"path": "/A/ServiceB/Book/tokenId", "param": {}, "method": "GET"});
-        }, "get": overload("get", {
-            "1": function (bookId) {
-                return invoke({"path": "/A/ServiceB/Book/{bookId}", "param": {"bookId": bookId}, "method": "GET"});
-            }, "2": function (author, price) {
-                return invoke({
-                    "path": "/A/ServiceB/Book/{author}/{price}",
-                    "param": {"author": author, "price": price},
-                    "method": "GET"
-                });
-            }
-        }), "update": function (bookId, book) {
-            return invoke({
-                "path": "/A/ServiceB/Book/{bookId}",
-                "param": {"bookId": bookId, "book": book},
-                "method": "PUT"
-            });
-        }, "findByAuthorLike": function (author) {
-            return invoke({
-                "path": "/A/ServiceB/Book/authorLike/{author}",
-                "param": {"author": author},
-                "method": "GET"
-            });
-        }, "delete": function (bookId) {
-            return invoke({"path": "/A/ServiceB/Book/{bookId}", "param": {"bookId": bookId}, "method": "DELETE"});
-        }, "checkRole": function () {
-            return invoke({"path": "/A/ServiceB/Book/checkRole", "param": {}, "method": "GET"});
-        }, "findByPriceLessThen": function (price) {
-            return invoke({
-                "path": "/A/ServiceB/Book/priceLessThen/{price}",
-                "param": {"price": price},
-                "method": "GET"
-            });
-        }
-    });
+    register("ServiceExample", "org.coodex.practice.jaxrs.api", { "add": function (x, y) {return invoke({"path": "/ServiceExample/ServiceB/A/Calc/add/{x}/{y}","param": {"x": x, "y": y},"method": "GET", "dataType": "json" });}, "all": function () {return invoke({"path": "/ServiceExample/ServiceB/all","param": {},"method": "GET", "dataType": "json" });}, "genericTest": function (x) {return invoke({"path": "/ServiceExample/genericTest","param": {"x": x},"method": "POST", "dataType": "json" });}, "genericTest1001": function (x) {return invoke({"path": "/ServiceExample/GenericTest/genericTest1001","param": {"x": x},"method": "POST", "dataType": "json" });}, "genericTest1002": function (x) {return invoke({"path": "/ServiceExample/GenericTest/genericTest1002","param": {"x": x},"method": "POST", "dataType": "json" });}, "tokenId": function () {return invoke({"path": "/ServiceExample/tokenId","param": {},"method": "GET", "dataType": "text" });}, "update": function (bookId, book) {return invoke({"path": "/ServiceExample/ServiceB/A/{bookId}","param": {"bookId": bookId, "book": book},"method": "PUT", "dataType": "text" });}, "delete": function (bookId) {return invoke({"path": "/ServiceExample/ServiceB/A/{bookId}","param": {"bookId": bookId},"method": "DELETE", "dataType": "text" });}, "g5": function (xx) {return invoke({"path": "/ServiceExample/g5","param": {"xx": xx},"method": "POST", "dataType": "json" });}, "findByPriceLessThen": function (price) {return invoke({"path": "/ServiceExample/ServiceB/priceLessThen/{price}","param": {"price": price},"method": "GET", "dataType": "json" });}, "g6": function (gp) {return invoke({"path": "/ServiceExample/g6","param": {"gp": gp},"method": "POST", "dataType": "json" });}, "multiPojo": function (pathParam, body1, body2, body3, body4) {return invoke({"path": "/ServiceExample/multiPojo/{pathParam}","param": {"pathParam": pathParam, "body1": body1, "body2": body2, "body3": body3, "body4": body4},"method": "POST", "dataType": "json" });}, "bigStringTest": function (pathParam, toPost) {return invoke({"path": "/ServiceExample/ServiceB/A/bigStringTest/{pathParam}","param": {"pathParam": pathParam, "toPost": toPost},"method": "POST", "dataType": "text" });}, "get": overload("get", {"1": function (bookId) {return invoke({"path": "/ServiceExample/ServiceB/A/{bookId}","param": {"bookId": bookId},"method": "GET", "dataType": "json" });}, "2": function (author, price) {return invoke({"path": "/ServiceExample/ServiceB/A/{author}/{price}","param": {"author": author, "price": price},"method": "GET", "dataType": "json" });}}), "genericTest5": function (gp) {return invoke({"path": "/ServiceExample/genericTest5","param": {"gp": gp},"method": "POST", "dataType": "json" });}, "findByAuthorLike": function (author) {return invoke({"path": "/ServiceExample/ServiceB/authorLike/{author}","param": {"author": author},"method": "GET", "dataType": "json" });}, "genericTest2": function (y) {return invoke({"path": "/ServiceExample/genericTest2","param": {"y": y},"method": "POST", "dataType": "json" });}, "genericTest4": function (gp) {return invoke({"path": "/ServiceExample/genericTest4","param": {"gp": gp},"method": "POST", "dataType": "json" });}, "checkRole": function () {return invoke({"path": "/ServiceExample/ServiceB/A/checkRole","param": {},"method": "GET", "dataType": "text" });}, "genericTest3": function (z) {return invoke({"path": "/ServiceExample/genericTest3","param": {"z": z},"method": "POST", "dataType": "json" });}});
 
-    register("Calc", "org.coodex.practice.jaxrs.api", {
-        "add": function (x, y) {
-            return invoke({"path": "/Calc/add/{x}/{y}", "param": {"x": x, "y": y}, "method": "GET"});
-        }
-    });
+    register("Calc", "org.coodex.practice.jaxrs.api", { "add": function (x, y) {return invoke({"path": "/Calc/add/{x}/{y}","param": {"x": x, "y": y},"method": "GET", "dataType": "json" });}});
 
-    register("SaaSExample", "org.coodex.practice.jaxrs.api", {
-        "exampleForSaaS": function (tenantId, ok) {
-            return invoke({
-                "path": "/SaaS/{tenantId}/Test/exampleForSaaS/{ok}",
-                "param": {"tenantId": tenantId, "ok": ok},
-                "method": "GET"
-            });
-        }
-    });
+    register("SaaSExample", "org.coodex.practice.jaxrs.api", { "exampleForSaaS": function (tenantId, ok) {return invoke({"path": "/SaaS/{tenantId}/Test/exampleForSaaS/{ok}","param": {"tenantId": tenantId, "ok": ok},"method": "GET", "dataType": "text" });}});
 
-    if (self) {
+    if(self){
         self.concrete = concrete;
     }
     return concrete;

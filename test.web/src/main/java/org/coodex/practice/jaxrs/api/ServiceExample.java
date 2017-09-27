@@ -27,10 +27,10 @@ import java.util.Map;
 /**
  * Created by davidoff shen on 2016-11-28.
  */
-@MicroService("Calc")
+@MicroService("ServiceExample")
 @OperationLog(category = "test")
 public interface ServiceExample extends ServiceB, GenericService<D, D> {
-    @ServiceTiming("rule2")
+//    @ServiceTiming("rule2")
     String tokenId();
 
     List<String> genericTest(List<Integer> x);

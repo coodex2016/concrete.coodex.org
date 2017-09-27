@@ -37,7 +37,7 @@ public class ResourceBundlesMessagePatternLoader implements MessagePatternLoader
         for (String resource : ConcreteHelper.getProfile()
                 .getStrList("messagePattern.resourceBundles", ",", new String[]{MESSAGE_PATTERN})) {
 
-            Locale locale = getServiceContext().getLocale();//.get();
+            Locale locale = getServiceContext() == null ? null : getServiceContext().getLocale();//.get();
             if(locale == null)
                 locale = Locale.getDefault();
 

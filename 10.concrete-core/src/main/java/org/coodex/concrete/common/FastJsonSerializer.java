@@ -47,14 +47,14 @@ public class FastJsonSerializer extends AbstractJsonSerializer {
                 }
             }
             toJSONString = jsonClass.getMethod("toJSONString", Object.class);
-            parseObject = jsonClass.getMethod("parseObject", String.class, Type.class, Array.newInstance(feature,0).getClass());
+            parseObject = jsonClass.getMethod("parseObject", String.class, Type.class, Array.newInstance(feature, 0).getClass());
         }
     }
 
     private Object $parse(String json, Type t) throws NoSuchMethodException, ClassNotFoundException, InvocationTargetException, IllegalAccessException {
         init();
-        Object array = Array.newInstance(feature,1);
-        Array.set(array,0,ignoreNotMatch);
+        Object array = Array.newInstance(feature, 1);
+        Array.set(array, 0, ignoreNotMatch);
         return parseObject.invoke(null, json, t, array);
     }
 
@@ -66,18 +66,12 @@ public class FastJsonSerializer extends AbstractJsonSerializer {
     @Override
     public <T> T parse(String json, Type t) {
         try {
-            return (T) $parse(json, t);
+            return String.class.equals(t) ? (T) json : (T) $parse(json, t);
             //JSON.parseObject(json, t, Feature.IgnoreNotMatch);
-        } catch (RuntimeException th) {
-            if (String.class.equals(t)) {
-                return (T) json;
-            } else
-                throw th;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
+        } catch (Throwable th) {
+            throw th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th);
         }
     }
-
 
 
     @Override
@@ -92,7 +86,7 @@ public class FastJsonSerializer extends AbstractJsonSerializer {
     }
 
 
-    public static void main(String [] args){
+    public static void main(String[] args) {
         System.out.println(JSONSerializerFactory.getInstance().toJson("ok"));
         System.out.println(JSONSerializerFactory.getInstance().parse("ok", String.class));
     }

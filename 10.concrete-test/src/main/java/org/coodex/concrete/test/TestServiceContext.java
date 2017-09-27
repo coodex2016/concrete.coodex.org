@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.coodex.concrete.common.ConcreteContext.SIDE_TEST;
+import static org.coodex.concrete.common.ConcreteHelper.VERSION;
 
 public class TestServiceContext extends ServiceContext {
 
@@ -37,7 +38,7 @@ public class TestServiceContext extends ServiceContext {
 
         @Override
         public String getAgent() {
-            return "Concrete-test 0.2.1-SNAPSHOT";
+            return "concrete-test " + VERSION;
         }
     }
 

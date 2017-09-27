@@ -1,12 +1,17 @@
 package rx.org.coodex.practice.jaxrs.api;
 
-import io.reactivex.Observable;
 import org.coodex.concrete.rx.ReactiveExtensionFor;
-import org.coodex.practice.jaxrs.api.ServiceExample;
-import org.coodex.practice.jaxrs.pojo.*;
+
+import io.reactivex.Observable;
 
 import java.util.List;
 import java.util.Map;
+import org.coodex.practice.jaxrs.api.ServiceExample;
+import org.coodex.practice.jaxrs.pojo.Book;
+import org.coodex.practice.jaxrs.pojo.BookInfo;
+import org.coodex.practice.jaxrs.pojo.D;
+import org.coodex.practice.jaxrs.pojo.G2;
+import org.coodex.practice.jaxrs.pojo.GenericPojo;
 
 /**
  * Create by concrete-api-tools.
@@ -14,47 +19,47 @@ import java.util.Map;
 @ReactiveExtensionFor(ServiceExample.class)
 public interface ServiceExample_RX {
 
-    Observable<String> checkRole();
+    Observable<Integer> add(int x, int y);
 
-    Observable<Map<String, BookInfo>> genericTest2(Map<String, Book> y);
-
-    Observable<Book> get(String author, long price);
-
-    Observable<GenericPojo<Book>> genericTest5(List<GenericPojo<BookInfo>> gp);
-
-    Observable<String> update(long bookId, BookInfo book);
-
-    Observable<List<String>> genericTest(List<Integer> x);
-
-    Observable<D> genericTest1001(D x);
-
-    Observable<String> bigStringTest(String pathParam, String toPost);
-
-    Observable<List<Book>> all();
-
-    Observable<List<List<BookInfo>>> genericTest3(List<List<BookInfo>> z);
+    Observable<GenericPojo<GenericPojo<Book>>> g6(GenericPojo<GenericPojo<Book>> gp);
 
     Observable<Book> get(long bookId);
 
-    Observable<List<Book>> findByAuthorLike(String author);
-
-    Observable<List<Book>> findByPriceLessThen(int price);
+    Observable<List<List<BookInfo>>> genericTest3(List<List<BookInfo>> z);
 
     Observable<String> delete(long bookId);
 
-    Observable<Void> multiPojo(String pathParam, List<int[]> body1, GenericPojo<BookInfo> body2, Book body3, int[] body4);
+    Observable<G2<GenericPojo<String>, GenericPojo<Integer>>> g5(G2<GenericPojo<String>, GenericPojo<Integer>> xx);
 
-    Observable<String> tokenId();
+    Observable<Book> get(String author, long price);
+
+    Observable<String> bigStringTest(String pathParam, String toPost);
+
+    Observable<List<String>> genericTest(List<Integer> x);
 
     Observable<List<D>> genericTest1002(List<D> x);
 
+    Observable<String> checkRole();
+
+    Observable<List<Book>> all();
+
+    Observable<D> genericTest1001(D x);
+
     Observable<GenericPojo<Book>> genericTest4(GenericPojo<BookInfo> gp);
 
-    Observable<Integer> add(int x, int y);
+    Observable<GenericPojo<Book>> genericTest5(List<GenericPojo<BookInfo>> gp);
 
-    Observable<G2<GenericPojo<String>, GenericPojo<Integer>>> g5(G2<GenericPojo<String>, GenericPojo<Integer>> xx);
+    Observable<Map<String, BookInfo>> genericTest2(Map<String, Book> y);
 
-    Observable<GenericPojo<GenericPojo<Book>>> g6(GenericPojo<GenericPojo<Book>> gp);
+    Observable<String> tokenId();
+
+    Observable<String> update(long bookId, BookInfo book);
+
+    Observable<List<Book>> findByAuthorLike(String author);
+
+    Observable<Void> multiPojo(String pathParam, List<int[]> body1, GenericPojo<BookInfo> body2, Book body3, int[] body4);
+
+    Observable<List<Book>> findByPriceLessThen(int price);
 
 
 }

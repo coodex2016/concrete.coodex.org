@@ -27,8 +27,9 @@ import java.lang.reflect.Type;
 public class JsonbSerializer extends AbstractJsonSerializer {
 
     private Jsonb jsonbInstnace = null;
+
     private synchronized Jsonb getInstance() {
-        if(jsonbInstnace == null ) {
+        if (jsonbInstnace == null) {
             String providerName = ConcreteHelper.getProfile().getString("jsonb.provider", null);
             jsonbInstnace = Common.isBlank(providerName) ? JsonbBuilder.create() : JsonbBuilder.newBuilder(providerName).build();
         }
@@ -37,7 +38,11 @@ public class JsonbSerializer extends AbstractJsonSerializer {
 
     @Override
     public <T> T parse(String json, Type t) {
-        return getInstance().fromJson(json, t);
+        try {
+            return String.class.equals(t) ? (T) json : getInstance().fromJson(json, t);
+        } catch (Throwable th) {
+            throw th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th);
+        }
     }
 
     @Override

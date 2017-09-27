@@ -22,6 +22,8 @@ import org.coodex.concrete.jaxrs.AbstractJAXRSResource;
 import org.coodex.concurrent.components.PriorityRunnable;
 
 import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
 
@@ -35,7 +37,6 @@ public abstract class AbstractJSR339Resource<T extends ConcreteService> extends 
     protected int getMethodStartIndex() {
         return 2;
     }
-
 
 
     /**
@@ -68,5 +69,8 @@ public abstract class AbstractJSR339Resource<T extends ConcreteService> extends 
         __execute(invokeMethodName, asyncResponse, tokenId, objects);
     }
 
-
+    @Override
+    protected Response.ResponseBuilder textType(Response.ResponseBuilder builder) {
+        return builder.type(JSR339Common.withCharset(MediaType.TEXT_PLAIN_TYPE));
+    }
 }

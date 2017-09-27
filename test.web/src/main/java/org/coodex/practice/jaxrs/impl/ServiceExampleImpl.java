@@ -67,6 +67,7 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
 
     @Override
     public List<Book> all() {
+        traceInfo();
         token.setAttribute("test", "WWWWWWWWWWWWWWWW");
         log.debug("all : tokeId {}", token.getTokenId());
         new Thread(){
@@ -102,6 +103,12 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
                 books.add(book);
             }
         }
+        traceInfo();
+
+        return books;
+    }
+
+    private void traceInfo() {
         StringBuilder builder = new StringBuilder();
         builder.append("tokenId: ").append(token.getTokenId()).append("; caller:[")
                 .append(caller.getAddress()).append(", ").append(caller.getAgent())
@@ -111,8 +118,6 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
                     .append(subjoin.get(key));
         }
         log.debug(builder.toString());
-
-        return books;
     }
 
     @Override
@@ -209,21 +214,14 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
 
     @Override
     public int add(int x, int y) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("tokenId: ").append(token.getTokenId()).append("; caller:[")
-                .append(caller.getAddress()).append(", ").append(caller.getAgent())
-                .append("]");
-        for(String key : subjoin.keySet()){
-            builder.append("\n\tkey: ").append(key).append(", values: ")
-                    .append(subjoin.get(key));
-        }
-        log.debug(builder.toString());
+        traceInfo();
         return x + y;
     }
 
     @Override
     public String exampleForSaaS(String tenantId, String ok) {
-        log.debug("tenantId: {}", tenantId);
+        log.debug("tenantId: {}, ok: {}", tenantId, ok);
+
         return ok;
     }
 

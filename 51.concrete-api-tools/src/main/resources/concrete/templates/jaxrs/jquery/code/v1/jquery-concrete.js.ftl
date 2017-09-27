@@ -74,7 +74,8 @@
                 url: configuration.root + url,
                 type: executable.method,
                 contentType: "application/json; charset=utf-8",
-                dataType: "json",
+                dataType: executable.dataType,
+                headers: { 'X-CLIENT-PROVIDER': 'CONCRETE-jQuery' },
                 crossDomain: true,
                 xhrFields: {
                     withCredentials: true

@@ -32,6 +32,8 @@ import java.util.concurrent.ExecutorService;
  */
 public class ConcreteHelper {
 
+    public static final String VERSION = "0.2.1-SNAPSHOT";
+
     public static Profile getProfile() {
         return Profile.getProfile("concrete.properties");
     }
