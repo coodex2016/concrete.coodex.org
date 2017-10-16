@@ -28,5 +28,6 @@ public class SetUserAgentConfigurator extends Configurator {
     public void beforeRequest(Map<String, List<String>> headers) {
         super.beforeRequest(headers);
         headers.put("User-Agent", Arrays.asList("concrete-web-socket-client " + VERSION));
+        headers.put("X-CLIENT-PROVIDER", Arrays.asList("concrete-web-socket-client " + VERSION));
     }
 }

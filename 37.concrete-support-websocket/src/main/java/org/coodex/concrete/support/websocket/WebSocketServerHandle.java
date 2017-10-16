@@ -21,6 +21,7 @@ import org.coodex.concrete.common.struct.AbstractParam;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concrete.websocket.ConcreteWebSocketEndPoint;
 import org.coodex.concrete.websocket.*;
+import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.concurrent.components.PriorityRunnable;
 import org.coodex.util.Common;
 import org.coodex.util.GenericType;
@@ -34,12 +35,16 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static org.coodex.concrete.common.ConcreteContext.runWithContext;
 import static org.coodex.concrete.support.websocket.CallerHackConfigurator.WEB_SOCKET_CALLER_INFO;
 import static org.coodex.concrete.websocket.Constants.*;
 
 class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoint {
+
+    private final static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newScheduledThreadPool(1);
 
     private final static Logger log = LoggerFactory.getLogger(WebSocketServerHandle.class);
 
@@ -99,12 +104,27 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
 
     private void broadcastText(String text, Session session) {
         log.debug("broadcast, async send to {}:\n{}", session.getId(), text);
-        session.getAsyncRemote().sendText(text);
+        $sendText(text, session);
+    }
+
+    private void $sendText(final String text, final Session session){
+        // TODO 异常处理
+        try {
+            session.getAsyncRemote().sendText(text);
+        }catch (IllegalStateException e){
+            scheduledExecutorService.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    session.getAsyncRemote().sendText(text);
+                }
+            }, 20, TimeUnit.MILLISECONDS);
+        }
+
     }
 
     private void sendText(String text, Session session) {
         log.debug("async send to {}:\n{}", session.getId(), text);
-        session.getAsyncRemote().sendText(text);
+        $sendText(text, session);
     }
 
     private void sendError(String msgId, ConcreteException exception, Session session) {
