@@ -20,12 +20,16 @@ import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.SignatureSerializer;
 import org.coodex.util.Common;
+import org.coodex.util.PojoInfo;
+import org.coodex.util.PojoProperty;
 import org.coodex.util.ReflectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URLEncoder;
 import java.util.*;
@@ -115,19 +119,47 @@ public class DefaultSignatureSerializer implements SignatureSerializer {
         return builder.toString();
     }
 
+    private Object getValue(PojoProperty pojoProperty, Object o) throws InvocationTargetException, IllegalAccessException {
+        Method method = pojoProperty.getMethod();
+        if(method != null){
+            method.setAccessible(true);
+            return method.invoke(o);
+        }
+        Field field = pojoProperty.getField();
+        if(field != null){
+            field.setAccessible(true);
+            return field.get(o);
+        }
+        return null;
+    }
+
     private String jointPojo(String key, Object o) {
         Map<String, Object> map = new HashMap<String, Object>();
-        for (Field field : ReflectHelper.getAllDeclaredFields(o.getClass())) {
-            field.setAccessible(true);
-            if (Modifier.isStatic(field.getModifiers())
-                    || Modifier.isTransient(field.getModifiers())) continue;
+        // TODO : bug fix
+        PojoInfo pojoInfo = new PojoInfo(o.getClass());
+        for(PojoProperty pojoProperty: pojoInfo.getProperties()){
+            String propertyName = pojoProperty.getName();
             try {
-                map.put(field.getName(), field.get(o));
+                map.put(propertyName,getValue(pojoProperty,o));
+            } catch (InvocationTargetException e) {
+                log.error("unable to get field value : {}", propertyName);
+                throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, e.getLocalizedMessage());
             } catch (IllegalAccessException e) {
-                log.error("unable to get field value : {}", field.getName());
+                log.error("unable to get field value : {}", propertyName);
                 throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, e.getLocalizedMessage());
             }
         }
+//        for (Field field : ReflectHelper.getAllDeclaredFields(o.getClass())) {
+//            field.setAccessible(true);
+//            if (Modifier.isStatic(field.getModifiers())
+//                    || Modifier.isTransient(field.getModifiers())) continue;
+//            try {
+//                map.put(field.getName(), field.get(o));
+//            } catch (IllegalAccessException e) {
+//                log.error("unable to get field value : {}", field.getName());
+//                throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, e.getLocalizedMessage());
+//            }
+//        }
         String s = toSign(map);
         return Common.isBlank(s) ? null : (encode(key) + "=" + encode(s));
     }
