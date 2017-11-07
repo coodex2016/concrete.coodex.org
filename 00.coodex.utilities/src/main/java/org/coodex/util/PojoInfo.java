@@ -70,6 +70,8 @@ public class PojoInfo {
 
             if (void.class.equals(method.getReturnType()) ||
                     method.getParameterTypes().length > 0 ||
+                    method.getName().equals("getClass") ||
+                    Class.class.equals(method.getDeclaringClass()) ||
                     Object.class.equals(method.getDeclaringClass()))
                 continue;
 
@@ -84,7 +86,9 @@ public class PojoInfo {
     private PojoProperty testProperty(Method method, PojoProperty property, Type... context) {
         if (property == null) {
             String methodName = method.getName();
-            if (methodName.length() > 3 && methodName.startsWith("get")) {
+            if (methodName.length() > 3
+                    && methodName.startsWith("get")) {
+
                 String beanName = lowerFirstChar(methodName.substring(3));
                 return new PojoProperty(
                         method, testField(beanName), isReadOnly(method),
