@@ -120,9 +120,9 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
         }
         try {
             synchronized (session) {
-                session.getAsyncRemote().sendText(text);
+                session.getBasicRemote().sendText(text);
             }
-        } catch (IllegalStateException e) {
+        } catch (IllegalStateException | IOException e) {
             scheduledExecutorService.schedule(new Runnable() {
                 @Override
                 public void run() {
