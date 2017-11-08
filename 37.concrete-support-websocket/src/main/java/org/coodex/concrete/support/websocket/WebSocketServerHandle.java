@@ -37,6 +37,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.common.ConcreteContext.runWithContext;
 import static org.coodex.concrete.support.websocket.CallerHackConfigurator.WEB_SOCKET_CALLER_INFO;
@@ -107,15 +108,26 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
         $sendText(text, session);
     }
 
-    private void $sendText(final String text, final Session session){
-        // TODO 异常处理
+    private void $sendText(final String text, final Session session) {
+        $sendText(text, session, null);
+    }
+
+    private void $sendText(final String text, final Session session, AtomicInteger retry) {
+        final AtomicInteger toRetry = retry == null ? new AtomicInteger(0) : retry;
+        if (toRetry.get() >= 5) {
+            log.warn("send text failed after retry 5 times. sessionId: {}, text: {}", session.getId(), text);
+            return;
+        }
         try {
-            session.getAsyncRemote().sendText(text);
-        }catch (IllegalStateException e){
+            synchronized (session) {
+                session.getAsyncRemote().sendText(text);
+            }
+        } catch (IllegalStateException e) {
             scheduledExecutorService.schedule(new Runnable() {
                 @Override
                 public void run() {
-                    session.getAsyncRemote().sendText(text);
+                    toRetry.incrementAndGet();
+                    $sendText(text, session, toRetry);
                 }
             }, 20, TimeUnit.MILLISECONDS);
         }

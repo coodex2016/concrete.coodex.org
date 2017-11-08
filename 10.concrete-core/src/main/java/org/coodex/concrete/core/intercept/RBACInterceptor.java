@@ -42,7 +42,7 @@ public class RBACInterceptor extends AbstractInterceptor {
         return context.getAnnotation(AccessAllow.class) != null;
     }
 
-    private Token token = TokenWrapper.getInstance();
+//    private Token token = TokenWrapper.getInstance();
 
 
     @Override
@@ -87,67 +87,68 @@ public class RBACInterceptor extends AbstractInterceptor {
      */
     @SuppressWarnings("unchecked")
     public void rbac(String[] acl, String domain, boolean safely) {
-        if (acl != null) {//需要判定权限
-            Account currentAccount = getCurrentAccount();//token.currentAccount();
-            //用户未登录
-            Assert.isNull(currentAccount, ErrorCodes.NONE_ACCOUNT, token);
-            //用户已失效
-            Assert.not(currentAccount.isValid(), ErrorCodes.ACCOUNT_INVALIDATE);
-            if (safely) {
-                //用户不可信
-                Assert.not(token.isAccountCredible(), ErrorCodes.UNTRUSTED_ACCOUNT);
-            }
-
-            //从用户角色中过滤出匹配domain的角色
-            Set<String> accountDomainRoles = getAccountDomainRoles(domain, currentAccount);
-
-            // 特权用户，放行
-            if (accountDomainRoles.contains(AccessAllow.PREROGATIVE)) return;
-
-            Set<String> roles = Common.arrayToSet(acl);
-            Assert.is(accountDomainRoles.size() == 0 ||
-                    Common.intersection(roles, accountDomainRoles).size() == 0, ErrorCodes.NO_AUTHORIZATION);
-        }
+        RBACHelper.rbac(acl, domain, safely);
+//        if (acl != null) {//需要判定权限
+//            Account currentAccount = getCurrentAccount();//token.currentAccount();
+//            //用户未登录
+//            Assert.isNull(currentAccount, ErrorCodes.NONE_ACCOUNT, token);
+//            //用户已失效
+//            Assert.not(currentAccount.isValid(), ErrorCodes.ACCOUNT_INVALIDATE);
+//            if (safely) {
+//                //用户不可信
+//                Assert.not(token.isAccountCredible(), ErrorCodes.UNTRUSTED_ACCOUNT);
+//            }
+//
+//            //从用户角色中过滤出匹配domain的角色
+//            Set<String> accountDomainRoles = getAccountDomainRoles(domain, currentAccount);
+//
+//            // 特权用户，放行
+//            if (accountDomainRoles.contains(AccessAllow.PREROGATIVE)) return;
+//
+//            Set<String> roles = Common.arrayToSet(acl);
+//            Assert.is(accountDomainRoles.size() == 0 ||
+//                    Common.intersection(roles, accountDomainRoles).size() == 0, ErrorCodes.NO_AUTHORIZATION);
+//        }
     }
 
-    @SuppressWarnings("unchecked")
-    private Set<String> getAccountDomainRoles(String domain, Account currentAccount) {
+//    @SuppressWarnings("unchecked")
+//    private Set<String> getAccountDomainRoles(String domain, Account currentAccount) {
+//
+//        Set<String> accountDomainRoles = new HashSet<String>();
+//        Set<String> accountRoles = currentAccount.getRoles();
+//        if (accountRoles != null) {
+//            if (Common.isBlank(domain)) {
+//                accountDomainRoles.addAll(accountRoles);
+//            } else {
+//                int domainPrefixLen = domain.length() + 1;
+//                for (String role : accountRoles) {
+//                    if (Common.isBlank(role)) continue;
+//                    if (role.equals(AccessAllow.PREROGATIVE)) {
+//                        accountDomainRoles.add(AccessAllow.PREROGATIVE);
+//                        break;
+//                    }
+//
+//                    if (role.startsWith(AccessAllow.PREROGATIVE + ".") && role.length() > 2) {
+//                        accountDomainRoles.add(role.substring(2));
+//                    } else if (role.startsWith(domain + ".") && role.length() > domainPrefixLen) {
+//                        accountDomainRoles.add(role.substring(domainPrefixLen));
+//                    }
+//                }
+//            }
+//        }
+//        if (!Common.isBlank(domain)) {
+//            if (accountDomainRoles.size() > 0) {
+//                // 领域非空，并且用户至少有该领域下一个角色，才能说明其可以使用该领域下的EVERYBODY
+//                accountDomainRoles.add(AccessAllow.EVERYBODY);
+//            }
+//        } else {//未定义领域，则是个人就行
+//            accountDomainRoles.add(AccessAllow.EVERYBODY);
+//        }
+//        return accountDomainRoles;
+//    }
 
-        Set<String> accountDomainRoles = new HashSet<String>();
-        Set<String> accountRoles = currentAccount.getRoles();
-        if (accountRoles != null) {
-            if (Common.isBlank(domain)) {
-                accountDomainRoles.addAll(accountRoles);
-            } else {
-                int domainPrefixLen = domain.length() + 1;
-                for (String role : accountRoles) {
-                    if (Common.isBlank(role)) continue;
-                    if (role.equals(AccessAllow.PREROGATIVE)) {
-                        accountDomainRoles.add(AccessAllow.PREROGATIVE);
-                        break;
-                    }
-
-                    if (role.startsWith(AccessAllow.PREROGATIVE + ".") && role.length() > 2) {
-                        accountDomainRoles.add(role.substring(2));
-                    } else if (role.startsWith(domain + ".") && role.length() > domainPrefixLen) {
-                        accountDomainRoles.add(role.substring(domainPrefixLen));
-                    }
-                }
-            }
-        }
-        if (!Common.isBlank(domain)) {
-            if (accountDomainRoles.size() > 0) {
-                // 领域非空，并且用户至少有该领域下一个角色，才能说明其可以使用该领域下的EVERYBODY
-                accountDomainRoles.add(AccessAllow.EVERYBODY);
-            }
-        } else {//未定义领域，则是个人就行
-            accountDomainRoles.add(AccessAllow.EVERYBODY);
-        }
-        return accountDomainRoles;
-    }
-
-    @SuppressWarnings("unchecked")
-    private Account getCurrentAccount() {
-        return token.currentAccount();
-    }
+//    @SuppressWarnings("unchecked")
+//    private Account getCurrentAccount() {
+//        return token.currentAccount();
+//    }
 }
