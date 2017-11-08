@@ -123,6 +123,7 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
                 session.getBasicRemote().sendText(text);
             }
         } catch (IllegalStateException | IOException e) {
+            log.warn("send text failed. session: {}", session.getId(), e);
             scheduledExecutorService.schedule(new Runnable() {
                 @Override
                 public void run() {
