@@ -19,4 +19,6 @@ package org.coodex.concrete.fsm;
 public interface FSMContext {
 
     <S extends State> S getState();
+
+    <FSM extends FiniteStateMachine> FSM getMachine();
 }

@@ -20,10 +20,14 @@ import org.coodex.concrete.fsm.FiniteStateMachine;
 import org.coodex.concrete.fsm.State;
 import org.coodex.concrete.fsm.WrongStateException;
 
-public abstract class AbstractFSM<S extends State> implements FiniteStateMachine<S> {
+public abstract class AbstractFSM<S extends State, FSM extends FiniteStateMachine<S>> implements FiniteStateMachine<S> {
 
     protected S getState() {
-        return (S) FSMContextImpl.closureContext.get();
+        return (S) FSMContextImpl.closureContext.get().getState();
+    }
+
+    protected FSM getSelf() {
+        return (FSM) FSMContextImpl.closureContext.get().getMachine();
     }
 
 

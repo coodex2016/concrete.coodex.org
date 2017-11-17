@@ -34,7 +34,7 @@ public class Runner {
                                 break;
                         }
                     } catch (DemoWrongStateException e) {
-                        System.out.println(String.format("Wrong state [%d] to %d", e.getOldState(), x));
+                        System.out.println(String.format("Wrong state [%d] to %d[thread: %d]", e.getOldState(), x, Thread.currentThread().getId()));
                     }
                 }
             }.start();

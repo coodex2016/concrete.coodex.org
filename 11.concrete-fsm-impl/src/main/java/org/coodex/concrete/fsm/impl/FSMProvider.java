@@ -16,9 +16,11 @@
 
 package org.coodex.concrete.fsm.impl;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.coodex.closure.Closure;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.fsm.*;
+import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
 
 import java.lang.reflect.InvocationHandler;
@@ -52,32 +54,54 @@ class FSMInvocationHandle implements InvocationHandler {
         this.original = original;
     }
 
+
     @Override
     public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
+        synchronized (state) {
+            FSMContextImpl.Context context = FSMContextImpl.closureContext.get();
+            final State current = context == null ? state : context.getState();
 
-        return FSMContextImpl.closureContext.run(state, new Closure() {
-            @Override
-            public Object run() {
-                synchronized (state) {
+            return FSMContextImpl.closureContext.run(new FSMContextImpl.Context(Common.deepCopy(current), (FiniteStateMachine) proxy), new Closure() {
+
+                private Class<? extends StateCondition> getCondition(Method action) {
+                    Guard guard = action.getAnnotation(Guard.class);
+                    if (guard != null) return guard.value();
                     StateTransfer transfer = method.getAnnotation(StateTransfer.class);
-                    Class<? extends StateCondition> condition = transfer == null ? StateCondition.class : transfer.value();
-                    if (condition != null && !StateCondition.class.equals(condition)) {
-                        StateCondition sc = CONDITIONS.getInstance(condition);
-                        if (sc != null && !sc.allow(state)) {
-                            RuntimeException e = original.errorHandle(new WrongStateException(state));
-                            if (e != null) throw e;
+                    return transfer == null ? null : transfer.value();
+                }
+
+                @Override
+                public Object run() {
+                    synchronized (state) {
+
+                        Class<? extends StateCondition> condition = getCondition(method);
+                        if (condition != null && !StateCondition.class.equals(condition)) {
+                            StateCondition sc = CONDITIONS.getInstance(condition);
+                            if (sc != null && !sc.allow(state)) {
+                                RuntimeException e = original.errorHandle(new WrongStateException(state));
+                                if (e != null) throw e;
+                            }
                         }
-                    }
-                    try {
-                        return method.invoke(original, args);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    } catch (InvocationTargetException e) {
-                        throw new RuntimeException(e);
+                        try {
+                            Object o = method.invoke(original, args);
+                            BeanUtils.copyProperties(current, FSMContextImpl.closureContext.get().getState());
+                            return o;
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException(e);
+                        } catch (InvocationTargetException e) {
+                            if (e.getTargetException() instanceof WrongStateException) {
+                                RuntimeException x = original.errorHandle((WrongStateException) e.getTargetException());
+                                if (x != null) throw x;
+                            } else if (e.getTargetException() instanceof RuntimeException) {
+                                throw (RuntimeException) e.getTargetException();
+                            }
+                            throw new RuntimeException(e);
+                        }
+
                     }
                 }
-            }
-        });
+            });
+        }
 
     }
 }

@@ -19,14 +19,38 @@ package org.coodex.concrete.fsm.impl;
 import org.coodex.closure.ClosureContext;
 import org.coodex.closure.StackClosureContext;
 import org.coodex.concrete.fsm.FSMContext;
+import org.coodex.concrete.fsm.FiniteStateMachine;
 import org.coodex.concrete.fsm.State;
 
 public class FSMContextImpl implements FSMContext {
 
-    static ClosureContext<State> closureContext = new StackClosureContext<State>();
+    public static class Context {
+        private final State state;
+        private final FiniteStateMachine machine;
+
+        Context(State state, FiniteStateMachine machine) {
+            this.state = state;
+            this.machine = machine;
+        }
+
+        public State getState() {
+            return state;
+        }
+
+        public FiniteStateMachine getMachine() {
+            return machine;
+        }
+    }
+
+    static ClosureContext<Context> closureContext = new StackClosureContext<Context>();
 
     @Override
     public <S extends State> S getState() {
-        return (S) closureContext.get();
+        return (S) closureContext.get().getState();
+    }
+
+    @Override
+    public <FSM extends FiniteStateMachine> FSM getMachine() {
+        return (FSM) closureContext.get().getMachine();
     }
 }

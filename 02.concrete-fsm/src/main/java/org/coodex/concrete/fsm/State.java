@@ -16,5 +16,7 @@
 
 package org.coodex.concrete.fsm;
 
-public interface State {
+import java.io.Serializable;
+
+public interface State extends Serializable {
 }

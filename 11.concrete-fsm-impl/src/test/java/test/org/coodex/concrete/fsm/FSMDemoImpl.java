@@ -3,7 +3,7 @@ package test.org.coodex.concrete.fsm;
 import org.coodex.concrete.fsm.WrongStateException;
 import org.coodex.concrete.fsm.impl.AbstractFSM;
 
-public class FSMDemoImpl extends AbstractFSM<NumericState> implements FSMDemo {
+public class FSMDemoImpl extends AbstractFSM<NumericState, FSMDemo> implements FSMDemo {
 
     private void toX(int x) {
         NumericState state = getState();
@@ -20,6 +20,7 @@ public class FSMDemoImpl extends AbstractFSM<NumericState> implements FSMDemo {
     @Override
     public void toZero() {
         toX(0);
+        getSelf().toThree();
     }
 
     @Override

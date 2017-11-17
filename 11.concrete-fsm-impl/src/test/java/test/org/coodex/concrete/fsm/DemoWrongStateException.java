@@ -14,4 +14,6 @@ public class DemoWrongStateException extends WrongStateException {
     public int getOldState() {
         return oldState;
     }
+
+
 }
