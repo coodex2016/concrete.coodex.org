@@ -65,10 +65,12 @@
         <module>00.coodex.sharedcache.memcached</module>
 
         <module>01.concrete-api</module>
+        <module>02.concrete-fsm</module>
 
         <module>10.concrete-core</module>
         <module>10.concrete-test</module>
         <module>10.concrete-core-spring</module>
+        <module>11.concrete-fsm-impl</module>
 
         <module>30.concrete-jaxrs</module>
 
