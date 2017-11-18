@@ -1,13 +1,7 @@
 package org.coodex.concrete.fsm;
 
-public class SignaledState implements State {
-    private long signal;
+public interface SignaledState extends State {
 
-    public final long getSignal() {
-        return signal;
-    }
+    long getSignal();
 
-    public final void setSignal(long signal) {
-        this.signal = signal;
-    }
 }

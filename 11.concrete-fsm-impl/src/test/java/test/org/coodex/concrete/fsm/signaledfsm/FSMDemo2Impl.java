@@ -4,12 +4,12 @@ import org.coodex.concrete.fsm.SignaledState;
 import org.coodex.concrete.fsm.WrongStateException;
 import org.coodex.concrete.fsm.impl.AbstractFSM;
 
-public class FSMDemo2Impl extends AbstractFSM<SignaledState,FSMDemo2> implements FSMDemo2 {
+public class FSMDemo2Impl extends AbstractFSM<DemoSignaledState,FSMDemo2> implements FSMDemo2 {
 
     private void toX(int x) {
-        SignaledState state = getState();
+        DemoSignaledState state = getState();
         long oldValue = state.getSignal();
-        state.setSignal(x);
+        state.setValue(x);
         System.out.println(String.format("from %d to %d[thread: %d]",oldValue, x, Thread.currentThread().getId()));
     }
 

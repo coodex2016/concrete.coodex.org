@@ -4,7 +4,7 @@ import org.coodex.concrete.fsm.FiniteStateMachine;
 import org.coodex.concrete.fsm.SignaledGuard;
 import org.coodex.concrete.fsm.SignaledState;
 
-public interface FSMDemo2 extends FiniteStateMachine<SignaledState> {
+public interface FSMDemo2 extends FiniteStateMachine<DemoSignaledState> {
 
     @SignaledGuard(allowed = 3)
     void toZero();

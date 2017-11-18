@@ -8,8 +8,8 @@ import org.coodex.concrete.fsm.WrongStateException;
 public class Runner2 {
 
     public static void main(String[] args) {
-        final SignaledState state = new SignaledState();
-        state.setSignal(0);
+        final DemoSignaledState state = new DemoSignaledState();
+        state.setValue(0);
         final FiniteStateMachineProvider provider = new ConcreteServiceLoader<FiniteStateMachineProvider>() {
         }.getInstance();
 
