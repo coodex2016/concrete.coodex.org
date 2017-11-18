@@ -1,2 +1,3 @@
 test.org.coodex.concrete.fsm.FSMDemoImpl
 test.org.coodex.concrete.fsm.signaledfsm.FSMDemo2Impl
+test.org.coodex.concrete.fsm.identified.DemoIDFSMImpl

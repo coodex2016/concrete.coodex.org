@@ -1,20 +1,12 @@
 package test.org.coodex.concrete.fsm.signaledfsm;
 
 import org.coodex.concrete.fsm.SignaledState;
+import test.org.coodex.concrete.fsm.AbstractDemoState;
 
-public class DemoSignaledState implements SignaledState {
-    private int value;
-
-    public int getValue() {
-        return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
-    }
+public class DemoSignaledState extends AbstractDemoState implements SignaledState {
 
     @Override
     public long getSignal() {
-        return value;
+        return getValue();
     }
 }

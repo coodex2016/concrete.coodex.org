@@ -6,11 +6,12 @@ import org.coodex.concrete.fsm.WrongStateException;
 
 public class Runner {
 
+    private static final FiniteStateMachineProvider provider = new ConcreteServiceLoader<FiniteStateMachineProvider>() {
+    }.getInstance();
+
 
     public static void main(String[] args) {
         final NumericState state = new NumericState();
-        final FiniteStateMachineProvider provider = new ConcreteServiceLoader<FiniteStateMachineProvider>() {
-        }.getInstance();
 
         for (int i = 0; i < 300; i++) {
             final int x = i % 4;

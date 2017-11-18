@@ -22,14 +22,16 @@ import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.fsm.*;
 import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 
 public class FSMProvider implements FiniteStateMachineProvider {
+
 
     private final static ServiceLoader<FiniteStateMachine> MACHINES = new ConcreteServiceLoader<FiniteStateMachine>() {
     };
@@ -44,11 +46,18 @@ public class FSMProvider implements FiniteStateMachineProvider {
 }
 
 class FSMInvocationHandle implements InvocationHandler {
+    private final static Logger log = LoggerFactory.getLogger(FSMProvider.class);
+
     private final State state;
     private final FiniteStateMachine original;
 
     private final static ServiceLoader<StateCondition> CONDITIONS = new ConcreteServiceLoader<StateCondition>() {
     };
+
+    private final static ServiceLoader<IdentifiedStateContainer> CONTAINER_SERVICE_LOADER
+            = new ConcreteServiceLoader<IdentifiedStateContainer>() {
+    };
+
 
     FSMInvocationHandle(State state, FiniteStateMachine original) {
         this.state = state;
@@ -66,7 +75,7 @@ class FSMInvocationHandle implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
         synchronized (state) {
-            FSMContextImpl.Context context = FSMContextImpl.closureContext.get();
+            final FSMContextImpl.Context context = FSMContextImpl.closureContext.get();
             final State current = context == null ? state : context.getState();
 
 
@@ -76,50 +85,64 @@ class FSMInvocationHandle implements InvocationHandler {
                 @Override
                 public Object run() {
                     synchronized (state) {
-                        Class<? extends StateCondition> condition = getCondition(method);
-                        boolean isSignaledState = current instanceof SignaledState;
-                        SignaledGuard signaledGuard = method.getAnnotation(SignaledGuard.class);
-                        if (condition != null && !StateCondition.class.equals(condition)) {
-                            StateCondition sc = CONDITIONS.getInstance(condition);
-                            if (sc != null && !sc.allow(current)) {
-                                RuntimeException e = original.errorHandle(new WrongStateException(current));
-                                if (e != null) throw e;
-                            }
-                        }
-
-                        if (isSignaledState && signaledGuard != null && signaledGuard.allowed().length > 0) {
-                            SignaledState signaledState = (SignaledState) current;
-                            boolean allow = false;
-                            long currentSignal = signaledState.getSignal();
-                            for(long signal: signaledGuard.allowed()){
-                                if(signal == currentSignal){
-                                    allow = true;
-                                    break;
+                        try {
+                            Class<? extends StateCondition> condition = getCondition(method);
+                            boolean isSignaledState = current instanceof SignaledState;
+                            SignaledGuard signaledGuard = method.getAnnotation(SignaledGuard.class);
+                            if (condition != null && !StateCondition.class.equals(condition)) {
+                                StateCondition sc = CONDITIONS.getInstance(condition);
+                                if (sc != null && !sc.allow(current)) {
+                                    RuntimeException e = original.errorHandle(new WrongStateException(current));
+                                    if (e != null) throw e;
                                 }
                             }
-                            if(!allow){
-                                RuntimeException e = original.errorHandle(new WrongStateException(current));
-                                if (e != null) throw e;
-                            }
-                        }
 
-                        try {
-                            Object o = method.invoke(original, args);
-                            BeanUtils.copyProperties(current, FSMContextImpl.closureContext.get().getState());
-                            return o;
-                        } catch (IllegalAccessException e) {
-                            throw new RuntimeException(e);
-                        } catch (InvocationTargetException e) {
-                            if (e.getTargetException() instanceof WrongStateException) {
-                                RuntimeException x = original.errorHandle((WrongStateException) e.getTargetException());
-                                if (x != null) throw x;
-                            } else if (e.getTargetException() instanceof RuntimeException) {
-                                throw (RuntimeException) e.getTargetException();
+                            if (isSignaledState && signaledGuard != null && signaledGuard.allowed().length > 0) {
+                                SignaledState signaledState = (SignaledState) current;
+                                boolean allow = false;
+                                long currentSignal = signaledState.getSignal();
+                                for (long signal : signaledGuard.allowed()) {
+                                    if (signal == currentSignal) {
+                                        allow = true;
+                                        break;
+                                    }
+                                }
+                                if (!allow) {
+                                    RuntimeException e = original.errorHandle(new WrongStateException(current));
+                                    if (e != null) throw e;
+                                }
                             }
-                            throw new RuntimeException(e);
+
+                            try {
+                                Object o = method.invoke(original, args);
+                                BeanUtils.copyProperties(current, FSMContextImpl.closureContext.get().getState());
+                                return o;
+                            } catch (IllegalAccessException e) {
+                                throw new RuntimeException(e);
+                            } catch (InvocationTargetException e) {
+                                if (e.getTargetException() instanceof WrongStateException) {
+                                    RuntimeException x = original.errorHandle((WrongStateException) e.getTargetException());
+                                    if (x != null) throw x;
+                                } else if (e.getTargetException() instanceof RuntimeException) {
+                                    throw (RuntimeException) e.getTargetException();
+                                }
+                                throw new RuntimeException(e);
+                            } finally {
+
+                            }
+                        }finally {
+                            try {
+                                if (context == null && state instanceof IdentifiedState) {
+                                    IdentifiedState identifiedState = (IdentifiedState) state;
+                                    CONTAINER_SERVICE_LOADER.getInstance().release(identifiedState.getId());
+                                }
+                            } catch (Throwable th) {
+                                log.warn(th.getLocalizedMessage(), th);
+                            }
                         }
 
                     }
+
                 }
             });
         }
