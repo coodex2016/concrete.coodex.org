@@ -90,8 +90,9 @@ class FSMInvocationHandle implements InvocationHandler {
                         if (isSignaledState && signaledGuard != null && signaledGuard.allowed().length > 0) {
                             SignaledState signaledState = (SignaledState) current;
                             boolean allow = false;
+                            long currentSignal = signaledState.getSignal();
                             for(long signal: signaledGuard.allowed()){
-                                if(signal == signaledState.getSignal()){
+                                if(signal == currentSignal){
                                     allow = true;
                                     break;
                                 }
