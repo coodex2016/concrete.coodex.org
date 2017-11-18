@@ -1,20 +1,21 @@
-package test.org.coodex.concrete.fsm;
+package test.org.coodex.concrete.fsm.signaledfsm;
 
+import org.coodex.concrete.fsm.SignaledState;
 import org.coodex.concrete.fsm.WrongStateException;
 import org.coodex.concrete.fsm.impl.AbstractFSM;
 
-public class FSMDemoImpl extends AbstractFSM<NumericState, FSMDemo> implements FSMDemo {
+public class FSMDemo2Impl extends AbstractFSM<SignaledState,FSMDemo2> implements FSMDemo2 {
 
     private void toX(int x) {
-        NumericState state = getState();
-        int oldValue = state.getValue();
-        state.setValue(x);
-        System.out.println(String.format("from %d to %d[thread: %d]", oldValue, state.getValue(), Thread.currentThread().getId()));
+        SignaledState state = getState();
+        long oldValue = state.getSignal();
+        state.setSignal(x);
+        System.out.println(String.format("from %d to %d[thread: %d]",oldValue, x, Thread.currentThread().getId()));
     }
 
     @Override
     public RuntimeException errorHandle(WrongStateException exception) {
-        return new DemoWrongStateException(getState(), getState().getValue());
+        return exception;
     }
 
     @Override

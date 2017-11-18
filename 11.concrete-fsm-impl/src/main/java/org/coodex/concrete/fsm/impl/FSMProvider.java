@@ -27,6 +27,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 
 public class FSMProvider implements FiniteStateMachineProvider {
 
@@ -54,6 +55,13 @@ class FSMInvocationHandle implements InvocationHandler {
         this.original = original;
     }
 
+    private Class<? extends StateCondition> getCondition(Method action) {
+        Guard guard = action.getAnnotation(Guard.class);
+        if (guard != null) return guard.value();
+        StateTransfer transfer = action.getAnnotation(StateTransfer.class);
+        return transfer == null ? null : transfer.value();
+    }
+
 
     @Override
     public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
@@ -61,27 +69,39 @@ class FSMInvocationHandle implements InvocationHandler {
             FSMContextImpl.Context context = FSMContextImpl.closureContext.get();
             final State current = context == null ? state : context.getState();
 
+
             return FSMContextImpl.closureContext.run(new FSMContextImpl.Context(Common.deepCopy(current), (FiniteStateMachine) proxy), new Closure() {
 
-                private Class<? extends StateCondition> getCondition(Method action) {
-                    Guard guard = action.getAnnotation(Guard.class);
-                    if (guard != null) return guard.value();
-                    StateTransfer transfer = method.getAnnotation(StateTransfer.class);
-                    return transfer == null ? null : transfer.value();
-                }
 
                 @Override
                 public Object run() {
                     synchronized (state) {
-
                         Class<? extends StateCondition> condition = getCondition(method);
+                        boolean isSignaledState = current instanceof SignaledState;
+                        SignaledGuard signaledGuard = method.getAnnotation(SignaledGuard.class);
                         if (condition != null && !StateCondition.class.equals(condition)) {
                             StateCondition sc = CONDITIONS.getInstance(condition);
-                            if (sc != null && !sc.allow(state)) {
-                                RuntimeException e = original.errorHandle(new WrongStateException(state));
+                            if (sc != null && !sc.allow(current)) {
+                                RuntimeException e = original.errorHandle(new WrongStateException(current));
                                 if (e != null) throw e;
                             }
                         }
+
+                        if (isSignaledState && signaledGuard != null && signaledGuard.allowed().length > 0) {
+                            SignaledState signaledState = (SignaledState) current;
+                            boolean allow = false;
+                            for(long signal: signaledGuard.allowed()){
+                                if(signal == signaledState.getSignal()){
+                                    allow = true;
+                                    break;
+                                }
+                            }
+                            if(!allow){
+                                RuntimeException e = original.errorHandle(new WrongStateException(current));
+                                if (e != null) throw e;
+                            }
+                        }
+
                         try {
                             Object o = method.invoke(original, args);
                             BeanUtils.copyProperties(current, FSMContextImpl.closureContext.get().getState());
