@@ -128,6 +128,7 @@ class WebSocketService {
             'msgId': msgId,
             'serviceId': serviceId,
             'content': data,
+            'concreteTokenId': null
         };
 		if(tokenId){
 			dataPackage.concreteTokenId = tokenId;
