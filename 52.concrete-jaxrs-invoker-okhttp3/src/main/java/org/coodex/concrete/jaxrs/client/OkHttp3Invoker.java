@@ -34,14 +34,15 @@ import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 /**
  * Created by davidoff shen on 2016-12-07.
  */
+@Deprecated
 public class OkHttp3Invoker extends AbstractRemoteInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(OkHttp3Invoker.class);
 
     private final OkHttpClient client;
 
-    public OkHttp3Invoker(String domain, SSLContext sslContext) {
-        super(domain);
+    public OkHttp3Invoker(String domain, SSLContext sslContext, String tokenManagerKey) {
+        super(domain, tokenManagerKey);
         OkHttpClient.Builder builder = new OkHttpClient.Builder().cookieJar(new CookieManager());
 
         if (sslContext != null) {

@@ -29,10 +29,10 @@ public class JaxRS_RXClientProvider implements RXClientProvider {
 
 
     @Override
-    public <T> T getInstance(Class<T> clz, final ClientCommon.Domain domain) {
+    public <T> T getInstance(Class<T> clz, final ClientCommon.Domain domain, String tokenManagerKey) {
         final Class<? extends ConcreteService> serviceClass = clz.getAnnotation(ReactiveExtensionFor.class).value();
 
-        final ConcreteService instance = Client.getInstance(serviceClass, domain.getIdentify());
+        final ConcreteService instance = Client.getInstance(serviceClass, domain.getIdentify(), tokenManagerKey);
 
         return (T) Proxy.newProxyInstance(JaxRS_RXClientProvider.class.getClassLoader(), new Class[]{clz}, new AbstractRxInvocationHandler(serviceClass) {
             @Override

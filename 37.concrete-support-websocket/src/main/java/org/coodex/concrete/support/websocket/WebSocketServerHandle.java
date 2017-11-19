@@ -202,11 +202,17 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
         }
     }
 
-    @Override
-    public Token getToken(Session session) {
-        return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session), true);
-    }
+//    @Override
+//    public Token getToken(Session session) {
+//        return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session), true);
+//    }
 
+    private synchronized Token getToken(Session session, RequestPackage requestPackage) {
+        if (!Common.isBlank(requestPackage.getConcreteTokenId())) {
+            peers.put(session, requestPackage.getConcreteTokenId());
+        }
+        return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session), false);
+    }
 
     /**
      * serviceId定义：className#method.paramCount
@@ -225,7 +231,12 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
                 JSONSerializerFactory.getInstance().toJson(requestPackage.getContent()), unit);
 
         //3 调用并返回结果
-        final Token token = getToken(session);
+        Token t = getToken(session, requestPackage);
+        final boolean isNew = t == null;
+
+        final Token token = t == null ?
+                BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session), true)
+                : t;//getToken(session);
 
 //        final String
 //        session.getUserProperties()
@@ -251,6 +262,8 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
                             });
 
                     ResponsePackage responsePackage = new ResponsePackage();
+                    if (isNew)
+                        responsePackage.setConcreteTokenId(token.getTokenId());
                     responsePackage.setMsgId(requestPackage.getMsgId());
                     responsePackage.setOk(true);
                     responsePackage.setContent(result);

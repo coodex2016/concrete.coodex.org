@@ -11,6 +11,7 @@
     }
 }(function ($, self) {
 
+
     /**
      * 根据方法参数数量重载方法
      * @param funcName
@@ -37,6 +38,7 @@
         }
     };
 
+
     var configuration = default_configuration;
 
     var encode = function (any) {
@@ -44,6 +46,21 @@
             return "";
         else
             return encodeURIComponent(any.toString());
+    }
+
+    var localTokenId = null;
+
+    var getTokenId = function(){
+        return (configuration.globalTokenKey ?
+            localStorage.getItem(configuration.globalTokenKey) : null) || localTokenId;
+    }
+
+    var setTokenId = function(tokenId){
+        if(!tokenId) return;
+        localTokenId = tokenId;
+        if(configuration.globalTokenKey){
+            localStorage.setItem(configuration.globalTokenKey, tokenId);
+        }
     }
 
     var invoke = function (executable) {
@@ -70,15 +87,22 @@
                 }
             }
 
+            var headers = { 'X-CLIENT-PROVIDER': 'CONCRETE-jQuery' };
+            var tokenId = getTokenId();
+            if(tokenId)headers["CONCRETE_TOKEN_ID"] = tokenId;
+
             return $.ajax($.extend({}, data, {
                 url: configuration.root + url,
                 type: executable.method,
                 contentType: "application/json; charset=utf-8",
                 dataType: executable.dataType,
-                headers: { 'X-CLIENT-PROVIDER': 'CONCRETE-jQuery' },
+                headers: headers,
                 crossDomain: true,
                 xhrFields: {
                     withCredentials: true
+                },
+                success: function(data, textStatus, request){
+                    setTokenId(request.getResponseHeader('CONCRETE_TOKEN_ID'));
                 }
             })).error(function (jx) {
                 if (configuration.onError) {

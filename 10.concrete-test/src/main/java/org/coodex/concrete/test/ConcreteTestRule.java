@@ -22,7 +22,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import static org.coodex.concrete.common.ConcreteContext.*;
-import static org.coodex.concrete.common.SubjoinWrapper.DEFAULT_SUBJOIN;
 
 /**
  * Created by davidoff shen on 2016-09-08.
@@ -64,7 +63,7 @@ public class ConcreteTestRule implements TestRule {
     }
 
     private Subjoin getSubjoin() {
-        return DEFAULT_SUBJOIN;
+        return new SubjoinWrapper.DefaultSubjoin();
     }
 
 

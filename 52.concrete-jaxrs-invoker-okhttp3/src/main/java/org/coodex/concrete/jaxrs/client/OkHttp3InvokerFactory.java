@@ -23,6 +23,7 @@ import javax.net.ssl.SSLContext;
 /**
  * Created by davidoff shen on 2016-12-09.
  */
+@Deprecated
 public class OkHttp3InvokerFactory extends AbstractInvokerFactory<OkHttp3Invoker> {
     private static final Profile PROFILE = Profile.getProfile("okHttp3.properties");
 
@@ -44,13 +45,13 @@ public class OkHttp3InvokerFactory extends AbstractInvokerFactory<OkHttp3Invoker
     }
 
     @Override
-    protected OkHttp3Invoker getHttpInvoker(String domain) {
-        return getSSLInvoker(domain, null);
+    protected OkHttp3Invoker getHttpInvoker(String domain, String tokenManagerKey) {
+        return getSSLInvoker(domain, null, tokenManagerKey);
     }
 
     @Override
-    protected OkHttp3Invoker getSSLInvoker(String domain, SSLContext context) {
-        return new OkHttp3Invoker(domain, context);
+    protected OkHttp3Invoker getSSLInvoker(String domain, SSLContext context, String tokenManagerKey) {
+        return new OkHttp3Invoker(domain, context, tokenManagerKey);
     }
 
 }

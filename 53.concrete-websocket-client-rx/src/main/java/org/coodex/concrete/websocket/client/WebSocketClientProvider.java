@@ -28,7 +28,7 @@ import java.lang.reflect.Proxy;
 
 public class WebSocketClientProvider implements RXClientProvider {
     @Override
-    public <T> T getInstance(Class<T> clz, final ClientCommon.Domain domain) {
+    public <T> T getInstance(Class<T> clz, final ClientCommon.Domain domain, final String tokenManagerKey) {
         try {
 
             final Class serviceClass = clz.getAnnotation(ReactiveExtensionFor.class).value();
@@ -41,7 +41,11 @@ public class WebSocketClientProvider implements RXClientProvider {
                             return Observable.create(
                                     WebSocketClientHandle.getInstance()
                                             .buildObservable(
-                                                    domain.getIdentify(), serviceClass, method, args));
+                                                    domain.getIdentify(),
+                                                    tokenManagerKey,
+                                                    serviceClass,
+                                                    method,
+                                                    args));
                         }
                     });
         } catch (Throwable th) {

@@ -57,9 +57,11 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
 
 
     protected final String domain;
+    protected final String tokenManagerKey;
 
-    public AbstractRemoteInvoker(String domain) {
+    public AbstractRemoteInvoker(String domain, String tokenManagerKey) {
         this.domain = domain;
+        this.tokenManagerKey = tokenManagerKey;
     }
 
     protected String getEncodingCharset() {

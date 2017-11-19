@@ -34,7 +34,7 @@ public class JavaProxyClientInstanceFactory extends AbstractClientInstanceFactor
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends ConcreteService> T create(final Class<? extends T> type, final String domain) {
+    public <T extends ConcreteService> T create(final Class<? extends T> type, final String domain, final String tokenManagerKey) {
         try {
 
             InvocationHandler handler = new InvocationHandler() {
@@ -51,7 +51,7 @@ public class JavaProxyClientInstanceFactory extends AbstractClientInstanceFactor
                             if (method.getName().equals(unit.getMethod().getName())
                                     && count == unit.getParameters().length) {
 
-                                return getInvoker(domain).invoke(unit, args, proxy);
+                                return getInvoker(domain, tokenManagerKey).invoke(unit, args, proxy);
                             }
                         }
                         throw new RuntimeException("method not found in [" + type.getName() + "]: [" + method.getName() + "] with " + count + " parameter(s).");
@@ -63,5 +63,10 @@ public class JavaProxyClientInstanceFactory extends AbstractClientInstanceFactor
         } catch (Throwable th) {
             throw new RuntimeException(th.getLocalizedMessage(), th);
         }
+    }
+
+    @Override
+    public <T extends ConcreteService> T create(Class<? extends T> type, String domain) {
+        return create(type, domain, null);
     }
 }

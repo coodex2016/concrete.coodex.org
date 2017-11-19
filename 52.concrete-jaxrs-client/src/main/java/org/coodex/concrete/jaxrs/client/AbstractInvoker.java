@@ -26,7 +26,6 @@ import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.ServiceLoader;
 
 import static org.coodex.concrete.common.ConcreteContext.*;
-import static org.coodex.concrete.common.SubjoinWrapper.DEFAULT_SUBJOIN;
 
 /**
  * Created by davidoff shen on 2017-03-09.

@@ -19,6 +19,7 @@ package org.coodex.concrete.websocket.client;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import org.aopalliance.intercept.MethodInvocation;
+import org.coodex.concrete.client.ClientCommon;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.struct.AbstractParam;
 import org.coodex.concrete.core.intercept.AsyncInterceptorChain;
@@ -76,7 +77,13 @@ public class WebSocketClientHandle {
     private WebSocketClientHandle() {
     }
 
-    ObservableOnSubscribe buildObservable(final String domain, final Class serviceClass, final Method method, final Object[] args) {
+    ObservableOnSubscribe buildObservable(
+            final String domain,
+            final String tokenManagerKey,
+            final Class serviceClass,
+            final Method method,
+            final Object[] args) {
+
         synchronized (this) {
             if (!loaded.contains(serviceClass)) {
                 WebSocketModule webSocketModule = new WebSocketModule(serviceClass);
@@ -100,10 +107,12 @@ public class WebSocketClientHandle {
                     final Session session = Assert.isNull(getSession(domain), WebSocketErrorCodes.CANNOT_OPEN_SESSION, domain);
 
                     String msgId = Common.getUUIDStr();
+                    final String tokenKey = Common.isBlank(tokenManagerKey) ? domain : tokenManagerKey;
                     final RequestPackage requestPackage = buildRequest(msgId, unit, args);
                     final WebSocketCallback callback = registerCallback(
-                            msgId, unit, e,
-                            toRuntimeContext(unit), new AsyncMethodInvocation(unit.getMethod(), args));
+                            msgId, tokenKey, unit, e,
+                            toRuntimeContext(unit),
+                            new AsyncMethodInvocation(unit.getMethod(), args));
 
                     try {
                         runWithContext(
@@ -112,6 +121,9 @@ public class WebSocketClientHandle {
                                     @Override
                                     public Object concreteRun() throws Throwable {
                                         getInterceptorChain().before(callback.getContext(), callback.getInvocation());
+
+                                        if (!Common.isBlank(ClientCommon.getTokenId(tokenKey)))
+                                            requestPackage.setConcreteTokenId(ClientCommon.getTokenId(tokenKey));
                                         requestPackage.setSubjoin(((WebSocketSubjoin) getServiceContext().getSubjoin()).toMap());
                                         sendRequest(requestPackage, session);
                                         return null;
@@ -137,8 +149,8 @@ public class WebSocketClientHandle {
         return RuntimeContext.getRuntimeContext(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
     }
 
-    private WebSocketCallback registerCallback(final String msgId, WebSocketUnit unit, final ObservableEmitter e, RuntimeContext context, MethodInvocation invocation) {
-        WebSocketCallback webSocketCallback = new WebSocketCallback(msgId, unit,
+    private WebSocketCallback registerCallback(final String msgId, String tokenManagerKey, WebSocketUnit unit, final ObservableEmitter e, RuntimeContext context, MethodInvocation invocation) {
+        WebSocketCallback webSocketCallback = new WebSocketCallback(msgId, tokenManagerKey, unit,
                 scheduledExecutorService.schedule(new Runnable() {
                     @Override
                     public void run() {
@@ -220,6 +232,8 @@ public class WebSocketClientHandle {
         return Common.sha1(keyBase(serviceClass, method));
     }
 
+
+
     @OnClose
     public void onClose(Session session) throws IOException {
         log.debug("session {} closed.", session.getId());
@@ -250,6 +264,7 @@ public class WebSocketClientHandle {
     }
 
 
+
     private void onReturn(ResponsePackage<Object> responsePackage, final Session session) {
         final WebSocketCallback callback = callbackMap.get(responsePackage.getMsgId());
         if (callback == null) {
@@ -263,6 +278,11 @@ public class WebSocketClientHandle {
 
         try {
             Object result = null;
+
+            if(!Common.isBlank(responsePackage.getConcreteTokenId())){
+                ClientCommon.setTokenId(callback.getTokenManagerKey(), responsePackage.getConcreteTokenId());
+            }
+
             if (!responsePackage.isOk()) {
                 throw new WebSocketClientException(
                         JSONSerializerFactory.getInstance().<ErrorInfo>parse(

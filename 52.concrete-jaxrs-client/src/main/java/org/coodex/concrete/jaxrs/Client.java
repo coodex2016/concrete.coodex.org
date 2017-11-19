@@ -51,6 +51,10 @@ public final class Client {
         return type.getName() + (domain == null ? "" : ("@" + domain));
     }
 
+    public static <T extends ConcreteService> T getInstance(Class<? extends T> type, String domain) {
+        return getInstance(type, domain,null);
+    }
+
     /**
      * 获得实例
      *
@@ -59,13 +63,13 @@ public final class Client {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T extends ConcreteService> T getInstance(Class<? extends T> type, String domain) {
+    public static <T extends ConcreteService> T getInstance(Class<? extends T> type, String domain, String tokenManagerKey) {
         if (type == null) throw new NullPointerException("type MUST NOT NULL.");
         synchronized (INSTANCE_CACHE) {
             String key = getKey(type, domain);
             ConcreteService instance = INSTANCE_CACHE.get(key);
             if (instance == null) {
-                instance = BUILDER.getInstance().create(type, domain);
+                instance = BUILDER.getInstance().create(type, domain, tokenManagerKey);
                 INSTANCE_CACHE.put(key, instance);
             }
             return (T) instance;

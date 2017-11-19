@@ -183,8 +183,8 @@ public class CGContext {
         return annotation;
     }
 
-    public Annotation tokenCookieParam() {
-        Annotation anno = new Annotation(CookieParam.class.getName(), constPool);
+    public Annotation tokenParam() {
+        Annotation anno = new Annotation(HeaderParam.class.getName(), constPool);
         anno.addMemberValue("value",
                 new StringMemberValue(AbstractJAXRSResource.TOKEN_ID_IN_COOKIE, constPool));
         return anno;

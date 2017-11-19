@@ -20,20 +20,16 @@ import javassist.CtClass;
 import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.concrete.support.jaxrs.javassist.AbstractMethodGenerator;
 import org.coodex.concrete.support.jaxrs.javassist.CGContext;
 import org.coodex.concrete.support.jsr339.JSR339Common;
-import org.coodex.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
-import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
 
 /**
  * Created by davidoff shen on 2016-11-27.
@@ -110,7 +106,7 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
         // 参数2: @CookieParam String tokenId
         return getParameterAnnotationsAttributeWith(
                 new Annotation(Suspended.class.getName(), getContext().getConstPool()),
-                getContext().tokenCookieParam()
+                getContext().tokenParam()
         );
 //        ParameterAnnotationsAttribute attributeInfo = new ParameterAnnotationsAttribute(
 //                getContext().getConstPool(), ParameterAnnotationsAttribute.visibleTag);

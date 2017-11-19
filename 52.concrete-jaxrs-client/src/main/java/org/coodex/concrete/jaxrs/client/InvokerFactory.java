@@ -23,5 +23,5 @@ public interface InvokerFactory {
 
     boolean accept(String domain);
 
-    Invoker getInvoker(String domain);
+    Invoker getInvoker(String domain, String tokenManagerKey);
 }

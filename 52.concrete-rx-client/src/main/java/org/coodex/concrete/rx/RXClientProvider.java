@@ -21,5 +21,5 @@ import org.coodex.util.AcceptableService;
 
 public interface RXClientProvider extends AcceptableService<ClientCommon.Domain> {
 
-    <T> T getInstance(Class<T> clz, ClientCommon.Domain domain);
+    <T> T getInstance(Class<T> clz, ClientCommon.Domain domain, String tokenManagerKey);
 }

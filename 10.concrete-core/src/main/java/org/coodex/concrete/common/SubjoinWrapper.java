@@ -26,7 +26,7 @@ import static org.coodex.util.Common.concat;
  */
 public class SubjoinWrapper implements Subjoin {
 
-    public static final Subjoin DEFAULT_SUBJOIN = new Subjoin() {
+    public static class DefaultSubjoin implements Subjoin {
 
         private Map<String, List<String>> subjoin = new HashMap<String, List<String>>();
 
@@ -80,7 +80,7 @@ public class SubjoinWrapper implements Subjoin {
     private Subjoin getSubjoin() {
 //        return SUBJOIN.get() == null ? DEFAULT_SUBJOIN : SUBJOIN.get();
         Subjoin subjoin = getServiceContext().getSubjoin();
-        return subjoin == null ? DEFAULT_SUBJOIN : subjoin;
+        return subjoin == null ? new DefaultSubjoin() : subjoin;
     }
 
     @Override

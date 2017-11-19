@@ -20,6 +20,7 @@ import org.coodex.concrete.api.Abstract;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.MicroService;
 import org.coodex.practice.jaxrs.pojo.GenericPojo;
+import org.coodex.util.Parameter;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ import java.util.List;
 @Abstract
 public interface GenericService<P extends GenericPojo, X extends GenericPojo> extends ConcreteService {
 
-    P genericTest1001(P x);
+    P genericTest1001(@Parameter("x") P x);
 
-    List<P> genericTest1002(List<X> x);
+    List<P> genericTest1002(@Parameter("x") List<X> x);
 }

@@ -39,6 +39,7 @@ public abstract class AbstractRxInvocationHandler implements InvocationHandler {
 
     protected final Class<?> serviceClass;
 
+
     public AbstractRxInvocationHandler(Class<?> serviceClass) {
         this.serviceClass = serviceClass;
     }

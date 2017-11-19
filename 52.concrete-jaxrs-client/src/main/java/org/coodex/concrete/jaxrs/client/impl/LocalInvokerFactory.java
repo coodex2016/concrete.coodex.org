@@ -69,7 +69,7 @@ public class LocalInvokerFactory implements InvokerFactory {
     }
 
     @Override
-    public Invoker getInvoker(String domain) {
+    public Invoker getInvoker(String domain, String tokenManagerKey) {
         return new LocalInvoker();
     }
 }

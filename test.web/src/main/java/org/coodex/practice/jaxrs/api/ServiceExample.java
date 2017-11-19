@@ -20,6 +20,7 @@ import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.api.OperationLog;
 import org.coodex.concrete.api.ServiceTiming;
 import org.coodex.practice.jaxrs.pojo.*;
+import org.coodex.util.Parameter;
 
 import java.util.List;
 import java.util.Map;
@@ -33,20 +34,26 @@ public interface ServiceExample extends ServiceB, GenericService<D, D> {
 //    @ServiceTiming("rule2")
     String tokenId();
 
-    List<String> genericTest(List<Integer> x);
+    List<String> genericTest(@Parameter("x") List<Integer> x);
 
-    Map<String, BookInfo> genericTest2(Map<String, Book> y);
+    Map<String, BookInfo> genericTest2(@Parameter("y") Map<String, Book> y);
 
-    List<List<BookInfo>> genericTest3(List<List<BookInfo>> z);
+    List<List<BookInfo>> genericTest3(@Parameter("z") List<List<BookInfo>> z);
 
-    GenericPojo<Book> genericTest4(GenericPojo<BookInfo> gp);
+    GenericPojo<Book> genericTest4(@Parameter("gp") GenericPojo<BookInfo> gp);
 
-    GenericPojo<Book> genericTest5(List<GenericPojo<BookInfo>> gp);
+    GenericPojo<Book> genericTest5(@Parameter("gp")List<GenericPojo<BookInfo>> gp);
 
-    G2<GenericPojo<String>, GenericPojo<Integer>> g5(G2<GenericPojo<String>, GenericPojo<Integer>> xx);
+    G2<GenericPojo<String>, GenericPojo<Integer>> g5(
+            @Parameter("xx") G2<GenericPojo<String>, GenericPojo<Integer>> xx);
 
-    GenericPojo<GenericPojo<Book>> g6(GenericPojo<GenericPojo<Book>> gp);
+    GenericPojo<GenericPojo<Book>> g6(@Parameter("gp")GenericPojo<GenericPojo<Book>> gp);
 
-    void multiPojo(String pathParam, List<int[]> body1, GenericPojo<BookInfo> body2, Book body3, int[] body4);
+    void multiPojo(
+            @Parameter("pathParam") String pathParam,
+            @Parameter("body1") List<int[]> body1,
+            @Parameter("body2")GenericPojo<BookInfo> body2,
+            @Parameter("body3")Book body3,
+            @Parameter("body4")int[] body4);
 
 }

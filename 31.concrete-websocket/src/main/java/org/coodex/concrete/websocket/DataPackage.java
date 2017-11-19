@@ -25,6 +25,7 @@ public class DataPackage<T> {
     private T content;
     private Map<String,String> subjoin;
     private String msgId = Common.getUUIDStr();
+    private String concreteTokenId;
 
     public T getContent() {
         return content;
@@ -48,5 +49,13 @@ public class DataPackage<T> {
 
     public void setMsgId(String msgId) {
         this.msgId = msgId;
+    }
+
+    public String getConcreteTokenId() {
+        return concreteTokenId;
+    }
+
+    public void setConcreteTokenId(String concreteTokenId) {
+        this.concreteTokenId = concreteTokenId;
     }
 }

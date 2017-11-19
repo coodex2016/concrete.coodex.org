@@ -49,11 +49,11 @@ public class APIGen {
 ////            System.out.println(JSON.toJSONString(POJOMocker.mock(m.getGenericReturnType(), c)));
 ////            System.out.println(new ServiceDocToolkit(new ServiceDocRender()).formatTypeStr(m.getGenericReturnType(), c));
         API.generate(JQueryPromisesCodeRender.RENDER_NAME,
-                "/concrete-demo/jquery.code",
+                "D:\\Projects\\IntelliJ\\concrete\\test.web\\src\\main\\resources\\static",
                 ServiceExample.class.getPackage().getName());
 
         API.generate(JQueryWebSocketCodeRender.RENDER_NAME,
-                "/concrete-demo/jquery.code",
+                "D:\\Projects\\IntelliJ\\concrete\\test.web\\src\\main\\resources\\static",
                 ServiceExample.class.getPackage().getName());
 
         API.generate(JQueryDocRender.RENDER_NAME,
@@ -65,11 +65,11 @@ public class APIGen {
                 ServiceExample.class.getPackage().getName());
 
         API.generate(AngularCodeRender.RENDER_NAME,
-                "/concrete-demo/angular.code",
+                "D:\\Projects\\front_ends\\ng2-admin\\src",
                 ServiceExample.class.getPackage().getName());
 
-        API.generate(AngularCodeRender.RENDER_NAME + ".example",
-                "/concrete-demo/angular.code",
+        API.generate(AngularWebSocketCodeRender.RENDER_NAME + ".websocket",
+                "D:\\Projects\\front_ends\\ng2-admin\\src",
                 ServiceExample.class.getPackage().getName());
 //        } finally {
 //            ExecutorsHelper.shutdownAllNOW();

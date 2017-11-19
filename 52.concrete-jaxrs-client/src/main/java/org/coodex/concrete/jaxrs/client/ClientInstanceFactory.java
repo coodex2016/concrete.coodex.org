@@ -25,7 +25,9 @@ public interface ClientInstanceFactory {
 
 //    <T extends ConcreteService> T create(Class<? extends T> type);
 
+    <T extends ConcreteService> T create(Class<? extends T> type, String domain, String tokenManagerKey);
+
     <T extends ConcreteService> T create(Class<? extends T> type, String domain);
 
-    Invoker getInvoker(String domain);
+    Invoker getInvoker(String domain, String tokenManagerKey);
 }

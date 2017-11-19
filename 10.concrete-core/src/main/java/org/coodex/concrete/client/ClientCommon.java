@@ -19,6 +19,9 @@ package org.coodex.concrete.client;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.util.Common;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ClientCommon {
 
     public static class Domain {
@@ -81,5 +84,15 @@ public class ClientCommon {
         }
         s = new String(buf, 0, len);
         return s;
+    }
+
+    private static final Map<String, String> CLIENT_TOKEN_MANAGER = new HashMap<String, String>();
+
+    public static void setTokenId(String key, String tokenId) {
+        if (!Common.isBlank(key)) CLIENT_TOKEN_MANAGER.put(key, tokenId);
+    }
+
+    public static String getTokenId(String key) {
+        return Common.isBlank(key) ? null : CLIENT_TOKEN_MANAGER.get(key);
     }
 }

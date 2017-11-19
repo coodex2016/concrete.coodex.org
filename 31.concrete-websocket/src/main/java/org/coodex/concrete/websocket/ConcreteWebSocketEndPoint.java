@@ -36,8 +36,8 @@ public interface ConcreteWebSocketEndPoint {
     @OnMessage
     void onMessage(String message, Session session) throws IOException;
 
-
-    Token getToken(Session session);
+//    @Deprecated
+//    Token getToken(Session session);
 
 
     <T> void broadcast(String subject, T content);

@@ -30,6 +30,7 @@ import java.util.List;
 /**
  * Created by davidoff shen on 2016-12-08.
  */
+@Deprecated
 class CookieManager extends AbstractCookieManager implements CookieJar {
 
     //    private Map<String/*path*/, Map<String/*key*/, Cookie>> cookies = new HashMap<String, Map<String, Cookie>>();

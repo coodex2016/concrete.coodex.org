@@ -19,6 +19,7 @@ package org.coodex.practice.jaxrs.api;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.jaxrs.saas.RouteBy;
+import org.coodex.util.Parameter;
 
 /**
  * Created by davidoff shen on 2017-03-21.
@@ -27,5 +28,5 @@ import org.coodex.concrete.jaxrs.saas.RouteBy;
 @RouteBy("tenantId")
 public interface SaaSExample extends ConcreteService {
 
-    String exampleForSaaS(String tenantId, String ok);
+    String exampleForSaaS(@Parameter("tenantId") String tenantId, @Parameter("ok") String ok);
 }

@@ -28,6 +28,8 @@ public class WebSocketCallback {
 
     private final String msgId;
 
+    private final String tokenManagerKey;
+
     private final ObservableEmitter emitter;
 
     private final WebSocketUnit unit;
@@ -36,8 +38,9 @@ public class WebSocketCallback {
 
     private final MethodInvocation invocation;
 
-    public WebSocketCallback(String msgId, WebSocketUnit unit, Future future, ObservableEmitter emitter, RuntimeContext context, MethodInvocation invocation) {
+    public WebSocketCallback(String msgId, String tokenManagerKey, WebSocketUnit unit, Future future, ObservableEmitter emitter, RuntimeContext context, MethodInvocation invocation) {
         this.future = future;
+        this.tokenManagerKey = tokenManagerKey;
         this.unit = unit;
         this.msgId = msgId;
         this.emitter = emitter;
@@ -67,5 +70,9 @@ public class WebSocketCallback {
 
     public MethodInvocation getInvocation() {
         return invocation;
+    }
+
+    public String getTokenManagerKey() {
+        return tokenManagerKey;
     }
 }

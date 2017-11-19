@@ -46,7 +46,7 @@ public class ReverserClientInvoker extends AbstractRemoteInvoker {
     private final Client client;
 
     public ReverserClientInvoker(String domain, SSLContext context) {
-        super(domain);
+        super(domain, null);
         client = CLIENT_BUILDER.sslContext(context).hostnameVerifier(new HostnameVerifier() {
             @Override
             public boolean verify(String s, SSLSession sslSession) {
@@ -56,7 +56,7 @@ public class ReverserClientInvoker extends AbstractRemoteInvoker {
     }
 
     public ReverserClientInvoker(String domain) {
-        super(domain);
+        super(domain, null);
         client = CLIENT_BUILDER.build();
     }
 

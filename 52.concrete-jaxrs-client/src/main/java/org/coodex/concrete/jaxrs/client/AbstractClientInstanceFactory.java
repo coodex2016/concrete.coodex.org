@@ -54,23 +54,23 @@ public abstract class AbstractClientInstanceFactory implements ClientInstanceFac
 //        return new String(buf, 0, len);
 //    }
 
-    protected Invoker getRemoveInvoker(String domain) {
+    protected Invoker getRemoteInvoker(String domain, String tokenManagerKey) {
         domain = ClientCommon.getDomain(domain).getIdentify();
 
         for (InvokerFactory factory : INVOKER_FACTORY_SPI_FACADE.getAllInstances()) {
             if (factory.accept(domain)) {
-                return factory.getInvoker(domain);
+                return factory.getInvoker(domain,tokenManagerKey);
             }
         }
 
-        return DEFAULT_INVOKER_FACTORY.getInvoker(domain);
+        return DEFAULT_INVOKER_FACTORY.getInvoker(domain,tokenManagerKey);
     }
 
 
     @Override
-    public final Invoker getInvoker(String domain) {
-        return isLocal(domain) ? LOCAL_INVOKER_FACTORY.getInvoker(domain) : getRemoveInvoker(domain);
+    public final Invoker getInvoker(String domain, String tokenManagerKey) {
+        return isLocal(domain) ? LOCAL_INVOKER_FACTORY.getInvoker(domain,tokenManagerKey) : getRemoteInvoker(domain,tokenManagerKey);
     }
 
-//    protected abstract Invoker getRemoveInvoker(String domain);
+//    protected abstract Invoker getRemoteInvoker(String domain);
 }

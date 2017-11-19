@@ -35,12 +35,12 @@ public class ReverserClientInvokerFactory extends AbstractInvokerFactory<Reverse
 //    }
 
     @Override
-    protected ReverserClientInvoker getHttpInvoker(String domain) {
+    protected ReverserClientInvoker getHttpInvoker(String domain, String tokenManagerKey) {
         return new ReverserClientInvoker(domain);
     }
 
     @Override
-    protected ReverserClientInvoker getSSLInvoker(String domain, SSLContext context) {
+    protected ReverserClientInvoker getSSLInvoker(String domain, SSLContext context, String tokenManagerKey) {
         return new ReverserClientInvoker(domain, context);
     }
 }

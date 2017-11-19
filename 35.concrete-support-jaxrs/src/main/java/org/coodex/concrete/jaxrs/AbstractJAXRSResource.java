@@ -17,6 +17,7 @@
 package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.Description;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.concrete.core.token.TokenManager;
@@ -32,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.coodex.concrete.common.ConcreteContext.*;
+import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.util.TypeHelper.solve;
 import static org.coodex.util.TypeHelper.typeToClass;
 
@@ -42,7 +44,7 @@ import static org.coodex.util.TypeHelper.typeToClass;
  */
 public abstract class AbstractJAXRSResource<T extends ConcreteService> {
 
-    public static final String TOKEN_ID_IN_COOKIE = "CONCRETE_JAXRS_TOKEN_ID";
+    public static final String TOKEN_ID_IN_COOKIE = CONCRETE_TOKEN_ID_KEY;
 
     private final Class<T> clz = getInterfaceClass();
 
@@ -193,7 +195,7 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
             public String getAgent() {
                 return httpHeaders.getHeaderString(HttpHeaders.USER_AGENT);
             }
-        },token,unit,getSubjoin());
+        }, token, unit, getSubjoin());
     }
 
     protected Response invokeByTokenId(String tokenId, final Method method, final Object[] params) {
@@ -227,16 +229,15 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         Response.ResponseBuilder builder = result == null ? Response.noContent() : Response.ok();
 
         if (newToken) {
-            builder = setCookie(token, builder);
+            builder = setTokenInfo(token, builder);
         }
 
         if (result != null) {
             builder = builder.entity(result);
-            if(result instanceof String){
+            if (result instanceof String) {
                 builder = textType(builder);
             }
         }
-
 
         return builder.build();
     }
@@ -248,15 +249,26 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         return new JaxRSSubjoin(httpHeaders);
     }
 
-
-    protected Response.ResponseBuilder setCookie(Token token, Response.ResponseBuilder builder) {
-        URI root = uriInfo.getBaseUri();
-        String cookiePath = ConcreteHelper.getProfile().getString("jaxrs.token.cookie.path");
-        builder = builder.cookie(new NewCookie(new Cookie(
-                TOKEN_ID_IN_COOKIE, token.getTokenId(),
-                Common.isBlank(cookiePath) ? root.getPath() : cookiePath, null)));
-        return builder;
+    protected Response.ResponseBuilder setTokenInfo(Token token, Response.ResponseBuilder builder) {
+        return builder.header(TOKEN_ID_IN_COOKIE,token.getTokenId());
     }
+
+//    /**
+//     * 不再使用cookie传递token信息
+//     * @param token
+//     * @param builder
+//     * @return
+//     */
+//    @Deprecated
+//    protected Response.ResponseBuilder setCookie(Token token, Response.ResponseBuilder builder) {
+//        URI root = uriInfo.getBaseUri();
+//        String cookiePath = ConcreteHelper.getProfile().getString("jaxrs.token.cookie.path");
+//        builder = builder.cookie(new NewCookie(new Cookie(
+//                TOKEN_ID_IN_COOKIE, token.getTokenId(),
+//                Common.isBlank(cookiePath) ? root.getPath() : cookiePath, null)));
+//
+//        return builder;
+//    }
 
 
 }

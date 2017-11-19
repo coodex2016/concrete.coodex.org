@@ -49,15 +49,15 @@ public abstract class AbstractInvokerFactory<T extends Invoker> implements Invok
     private final Map<String, T> cache = new HashMap<String, T>();
 
     @Override
-    public Invoker getInvoker(String domain) {
+    public Invoker getInvoker(String domain, String tokenManagerKey) {
         synchronized (cache) {
             if (!cache.containsKey(domain)) {
                 try {
                     URL url = new URL(domain.toLowerCase());
                     if ("https".equalsIgnoreCase(url.getProtocol())) {
-                        cache.put(domain, getSSLInvoker(domain, SSL_CONTEXT_FACTORY.getInstance().getSSLContext(domain)));
+                        cache.put(domain, getSSLInvoker(domain, SSL_CONTEXT_FACTORY.getInstance().getSSLContext(domain), tokenManagerKey));
                     } else {
-                        cache.put(domain, getHttpInvoker(domain));
+                        cache.put(domain, getHttpInvoker(domain, tokenManagerKey));
                     }
                 } catch (Throwable throwable) {
                     throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, throwable.getLocalizedMessage(), throwable);
@@ -68,8 +68,8 @@ public abstract class AbstractInvokerFactory<T extends Invoker> implements Invok
         return cache.get(domain);
     }
 
-    protected abstract T getHttpInvoker(String domain);
+    protected abstract T getHttpInvoker(String domain, String tokenManagerKey);
 
-    protected abstract T getSSLInvoker(String domain, SSLContext context);
+    protected abstract T getSSLInvoker(String domain, SSLContext context, String tokenManagerKey);
 
 }

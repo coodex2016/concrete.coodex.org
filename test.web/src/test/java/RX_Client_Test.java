@@ -96,33 +96,40 @@ public class RX_Client_Test {
 //            }
 //        });
         for(final String domain: domains) {
-            ServiceExample_RX rx = RXClient.getInstance(ServiceExample_RX.class, domain);
-            rx.tokenId().subscribe(new Observer<String>() {
-                @Override
-                public void onSubscribe(Disposable d) {
+            ServiceExample_RX rx = RXClient.getInstance(ServiceExample_RX.class, domain, "XXX");
+            for(int i = 0; i < 3; i ++) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                rx.tokenId().subscribe(new Observer<String>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
 
-                @Override
-                public void onNext(String tokenId) {
-                    synchronized (RX_Client_Test.class) {
-                        System.out.println(tokenId);
+                    @Override
+                    public void onNext(String tokenId) {
+                        synchronized (RX_Client_Test.class) {
+                            System.out.println(tokenId);
 //                        System.out.println(domain);
 //                        for (Book book : books) {
 //                            System.out.println(book);
 //                        }
+                        }
                     }
-                }
 
-                @Override
-                public void onError(Throwable e) {
-                    e.printStackTrace();
-                }
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
 
-                @Override
-                public void onComplete() {
-                    System.out.println("complete");
-                }
-            });
+                    @Override
+                    public void onComplete() {
+                        System.out.println("complete");
+                    }
+                });
+            }
         }
     }
 }

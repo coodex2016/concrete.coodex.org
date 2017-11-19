@@ -30,12 +30,12 @@ public class JaxRSClientInvokerFactory extends AbstractInvokerFactory<JaxRSClien
     }
 
     @Override
-    protected JaxRSClientInvoker getHttpInvoker(String domain) {
-        return new JaxRSClientInvoker(domain, null);
+    protected JaxRSClientInvoker getHttpInvoker(String domain, String tokenManagerKey) {
+        return new JaxRSClientInvoker(domain, null, tokenManagerKey);
     }
 
     @Override
-    protected JaxRSClientInvoker getSSLInvoker(String domain, SSLContext context) {
-        return new JaxRSClientInvoker(domain, context);
+    protected JaxRSClientInvoker getSSLInvoker(String domain, SSLContext context, String tokenManagerKey) {
+        return new JaxRSClientInvoker(domain, context, tokenManagerKey);
     }
 }

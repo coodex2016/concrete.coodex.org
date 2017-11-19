@@ -16,11 +16,14 @@
 
 package org.coodex.concrete.jaxrs.client.impl;
 
+import org.coodex.concrete.client.ClientCommon;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.Subjoin;
+import org.coodex.concrete.common.Token;
 import org.coodex.concrete.jaxrs.client.AbstractRemoteInvoker;
 import org.coodex.concrete.jaxrs.client.JaxRSClientConfigBuilder;
 import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
+import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 
 /**
@@ -67,20 +71,22 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
         return DOMAIN_COOKIE_MANAGERS.get(domain);
     }
 
+
     private final Client client;
+
 
     private static final ServiceLoader<JaxRSClientConfigBuilder> BUILDER_SPI_FACADE =
             new ConcreteServiceLoader<JaxRSClientConfigBuilder>() {
-        @Override
-        public JaxRSClientConfigBuilder getConcreteDefaultProvider() {
-            return new JaxRSClientConfigBuilder() {
                 @Override
-                public Configuration buildConfig() {
-                    return null;
+                public JaxRSClientConfigBuilder getConcreteDefaultProvider() {
+                    return new JaxRSClientConfigBuilder() {
+                        @Override
+                        public Configuration buildConfig() {
+                            return null;
+                        }
+                    };
                 }
             };
-        }
-    };
 
     private static Client getClient(String domain, SSLContext context, Configuration configuration) {
         synchronized (clients) {
@@ -106,14 +112,21 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
         return clients.get(domain);
     }
 
-    public JaxRSClientInvoker(String domain, SSLContext context) {
-        super(domain);
+    public JaxRSClientInvoker(String domain, SSLContext context, String tokenManagerKey) {
+        super(domain, tokenManagerKey);
         client = getClient(domain, context, BUILDER_SPI_FACADE.getInstance().buildConfig());
     }
 
     @Override
     protected Object invoke(String url, Unit unit, Object toSubmit) throws Throwable {
+
         Response response = request(url, unit.getInvokeType(), toSubmit);
+        // store token
+        String tokenId = response.getHeaderString(Token.CONCRETE_TOKEN_ID_KEY);
+        if (!Common.isBlank(tokenId)) {
+            String tokenKey = Common.isBlank(tokenManagerKey) ? domain : tokenManagerKey;
+            ClientCommon.setTokenId(tokenKey, tokenId);
+        }
         getCookieManager(domain).store(response.getCookies().values());
         String body = response.readEntity(String.class);
         return processResult(response.getStatus(), body, unit,
@@ -127,24 +140,32 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
         StringBuilder str = new StringBuilder();
         str.append("url: ").append(url).append("\n").append("method: ").append(method);
         Subjoin subjoin = getServiceContext().getSubjoin();
-        if(subjoin != null){
+        String tokenId = ClientCommon.getTokenId(Common.isBlank(tokenManagerKey) ? domain : tokenManagerKey);
+        if (subjoin != null || !Common.isBlank(tokenId)) {
             str.append("\nheaders:");
-            for(String key : subjoin.keySet()){
-                builder = builder.header(key, subjoin.get(key));
-                str.append("\n\t").append(key).append(": ").append(subjoin.get(key));
+            if (subjoin != null) {
+                for (String key : subjoin.keySet()) {
+                    builder = builder.header(key, subjoin.get(key));
+                    str.append("\n\t").append(key).append(": ").append(subjoin.get(key));
+                }
+            }
+            if (!Common.isBlank(tokenId)) {
+                builder = builder.header(CONCRETE_TOKEN_ID_KEY, tokenId);
+                str.append("\n\t").append(CONCRETE_TOKEN_ID_KEY).append(": ").append(tokenId);
             }
         }
+
         StringBuilder cookies = new StringBuilder();
         for (Cookie cookie : getCookieManager(domain).load(uri.getPath())) {
             builder = builder.cookie(cookie);
             cookies.append(String.format("\n\tdomain: %s; name: %s; value: %s; path: %s, version: %d",
                     cookie.getDomain(), cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getVersion()));
         }
-        if(cookies.length() > 0){
+        if (cookies.length() > 0) {
             str.append("\ncookies:").append(cookies.toString());
         }
 
-        if(body != null){
+        if (body != null) {
             str.append("\ncontent:\n").append(getJSONSerializer().toJson(body));
         }
 

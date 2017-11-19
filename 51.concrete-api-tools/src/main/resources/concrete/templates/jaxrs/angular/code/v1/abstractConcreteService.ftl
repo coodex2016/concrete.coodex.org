@@ -4,26 +4,58 @@ import { Response, RequestOptions, ResponseContentType, Headers } from '@angular
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/throw';
 
+
+class RuntimeContext{
+
+    // change it
+    private localTokenId: string = null;
+    private globalTokenKey: string = null;
+    public root: string = 'http://localhost:8080';
+
+    public getTokenId (): string{
+        return (this.globalTokenKey ?
+            localStorage.getItem(this.globalTokenKey) : null) || this.localTokenId;
+    }
+
+    public setTokenId (tokenId){
+        if (tokenId){
+            this.localTokenId = tokenId;
+            if (this.globalTokenKey){
+                localStorage.setItem(this.globalTokenKey, tokenId);
+            }
+        }
+    }
+}
+
+const runtimeContext: RuntimeContext = new RuntimeContext();
+
 export abstract class AbstractConcreteService {
 
     protected $$getServiceRoot(): string {
-        // TODO change it
-        return 'http://localhost:8080';
+        return runtimeContext.root;
     }
 
     protected defaultRequestOptions(httpMethod: string): RequestOptions {
+        const tokenId = runtimeContext.getTokenId();
+        const headers= new Headers({
+            'content-type': 'application/json',
+            // 自行添加
+            'X-CLIENT-PROVIDER': 'CONCRETE-ANGULAR'
+            });
+        if (tokenId){
+            headers.append('CONCRETE_TOKEN_ID', tokenId);
+        }
         return new RequestOptions({
             method: httpMethod,
-            headers: new Headers({
-                'content-type': 'application/json',
-                // 自行添加
-                'X-CLIENT-PROVIDER': 'CONCRETE-ANGULAR'
-            }),
+            headers: headers,
             withCredentials: true
         });
     }
 
     protected extractData(res: Response){
+        if(res.headers){
+            runtimeContext.setTokenId(res.headers.get('concrete_token_id'));
+        }
         return res.headers.get('content-type').toLowerCase().startsWith('text/plain') ? res.text() : (res.json() || null);
     }
 

@@ -25,6 +25,8 @@ import java.util.Enumeration;
  */
 public interface Token extends Serializable {
 
+    String CONCRETE_TOKEN_ID_KEY = "CONCRETE_TOKEN_ID";
+
     enum Event{
         CREATED, INVALIDATED
     }

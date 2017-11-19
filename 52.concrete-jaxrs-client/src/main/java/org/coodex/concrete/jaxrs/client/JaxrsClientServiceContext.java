@@ -18,6 +18,7 @@ package org.coodex.concrete.jaxrs.client;
 
 import org.coodex.concrete.common.Caller;
 import org.coodex.concrete.common.ServiceContext;
+import org.coodex.concrete.common.SubjoinWrapper;
 import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
@@ -26,7 +27,6 @@ import javax.ws.rs.core.HttpHeaders;
 
 import static org.coodex.concrete.common.ConcreteContext.SIDE_CLIENT;
 import static org.coodex.concrete.common.ConcreteHelper.VERSION;
-import static org.coodex.concrete.common.SubjoinWrapper.DEFAULT_SUBJOIN;
 
 public class JaxrsClientServiceContext extends ServiceContext {
 
@@ -54,7 +54,7 @@ public class JaxrsClientServiceContext extends ServiceContext {
         this.model = JaxRSHelper.JAXRS_MODEL;
         this.currentUnit = unit;
         this.token = TokenWrapper.getInstance();
-        this.subjoin = DEFAULT_SUBJOIN;
+        this.subjoin = new SubjoinWrapper.DefaultSubjoin();
         this.subjoin.add(HttpHeaders.USER_AGENT, CONCRETE_JAXRS_USER_AGENT);
     }
 }

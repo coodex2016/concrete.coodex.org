@@ -52,6 +52,22 @@
 
     var configuration = default_configuration;
 
+
+    var localTokenId = null;
+
+    var getTokenId = function(){
+        return (configuration.globalTokenKey ?
+        localStorage.getItem(configuration.globalTokenKey) : null) || localTokenId;
+    }
+
+    var setTokenId = function(tokenId){
+        if(!tokenId) return;
+        localTokenId = tokenId;
+        if(configuration.globalTokenKey){
+            localStorage.setItem(configuration.globalTokenKey, tokenId);
+        }
+    }
+
     var session;// web socket session
 
     var registry = function () {
@@ -81,7 +97,7 @@
                 configuration.onBroadcast(data.msgId, data.subjoin.hostId, data.subjoin.subject, data.content);
             return;
         }
-
+        setTokenId(data.concreteTokenId);
         var reg = registry.pick(data.msgId);
 
         if(!reg){
@@ -115,12 +131,16 @@
         registry.set(msgId, reg);
 
         var retryTimes = 0, maxRetryTimes = 5, delay = 50;
+        var dataPackage = {
+            msgId: msgId,
+            serviceId: executable.serviceId,
+            content: executable.param
+        }
+        var tokenId = getTokenId();
+        if(tokenId)dataPackage.concreteTokenId = tokenId;
+
         var _send = function(){
-            var str = JSON.stringify({
-                msgId: msgId,
-                serviceId: executable.serviceId,
-                content: executable.param
-            });
+            var str = JSON.stringify(dataPackage);
             if(session.readyState === 1){
                 session.send(str);
             } else {

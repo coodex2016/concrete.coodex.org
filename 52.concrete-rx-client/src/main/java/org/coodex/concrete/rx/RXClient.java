@@ -31,7 +31,11 @@ public class RXClient {
         return getInstance(rxClass, null);
     }
 
-    public static <T> T getInstance(Class<T> rxClass, String domain) {
+    public static <T> T getInstance(Class<T> rxClass, String domain){
+        return getInstance(rxClass, domain, null);
+    }
+
+    public static <T> T getInstance(Class<T> rxClass, String domain, String tokenManagerKey) {
         if (rxClass.getAnnotation(ReactiveExtensionFor.class) != null) {
             ClientCommon.Domain d = ClientCommon.getDomain(domain);
 
@@ -40,7 +44,7 @@ public class RXClient {
                 throw new RuntimeException("rx client provider for " + domain + " not found.");
             }
 
-            return rxClientProvider.getInstance(rxClass, d);
+            return rxClientProvider.getInstance(rxClass, d, tokenManagerKey);
         } else {
             throw new RuntimeException(rxClass + " is not a RXSupport service.");
         }

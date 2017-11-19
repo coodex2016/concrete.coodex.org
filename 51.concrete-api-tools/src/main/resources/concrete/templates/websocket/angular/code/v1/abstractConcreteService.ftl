@@ -8,8 +8,29 @@ import {WebSocketSubjectConfig} from 'rxjs/observable/dom/WebSocketSubject';
 import {Observer} from 'rxjs/Observer';
 import {isUndefined} from 'util';
 
-// TODO: change it
-const url: string = 'ws://localhost:8080/WebSocket';
+class RuntimeContext{
+
+    // change it
+    private localTokenId: string = null;
+    private globalTokenKey: string = null;
+    public root: string = 'ws://localhost:8080/WebSocket';
+
+    public getTokenId (): string{
+        return (this.globalTokenKey ?
+            localStorage.getItem(this.globalTokenKey) : null) || this.localTokenId;
+    }
+
+    public setTokenId (tokenId){
+        if (tokenId){
+            this.localTokenId = tokenId;
+            if (this.globalTokenKey){
+                localStorage.setItem(this.globalTokenKey, tokenId);
+            }
+        }
+    }
+}
+
+const runtimeContext: RuntimeContext = new RuntimeContext();
 
 class WebSocketService {
     private websocket: Subject<any>;
@@ -67,6 +88,10 @@ class WebSocketService {
             console.warn('invalid msg: ' + JSON.stringify(responsePackage));
             return;
         }
+		
+		if(responsePackage.concreteTokenId){
+			runtimeContext.setTokenId(responsePackage.concreteTokenId);
+		}
 
         if (responsePackage.subjoin && responsePackage.subjoin.broadcast) {
             this.bcSubject.get(responsePackage.subjoin.subject).next(responsePackage.content);
@@ -98,12 +123,16 @@ class WebSocketService {
 
     send(serviceId: string, data: any): Observable<any> {
         const msgId: string = this.generateUUID();
-
-        this.websocket.next(JSON.stringify({
+		const tokenId: string = runtimeContext.getTokenId();
+		const dataPackage = {
             'msgId': msgId,
             'serviceId': serviceId,
             'content': data,
-        }));
+        };
+		if(tokenId){
+			dataPackage.concreteTokenId = tokenId;
+		}
+        this.websocket.next(JSON.stringify(dataPackage));
 
         const self: WebSocketService = this;
         return Observable.create(obs => self.put(msgId, obs));
@@ -117,7 +146,7 @@ class WebSocketService {
     }
 }
 
-const webSocketService: WebSocketService = new WebSocketService(url);
+const webSocketService: WebSocketService = new WebSocketService(runtimeContext.root);
 
 
 export class Broadcast {

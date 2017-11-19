@@ -24,6 +24,7 @@ import org.coodex.concrete.api.mockers.IdCard;
 import org.coodex.concrete.jaxrs.BigString;
 import org.coodex.practice.jaxrs.pojo.Book;
 import org.coodex.practice.jaxrs.pojo.BookInfo;
+import org.coodex.util.Parameter;
 
 /**
  * Created by davidoff shen on 2016-11-28.
@@ -36,18 +37,21 @@ public interface ServiceA extends Calc {
 //    String helloWorld(@PathParam("userName") String userName);
 
     @ServiceTiming("rule1")
-    Book get(long bookId);
+    Book get(@Parameter("bookId") long bookId);
 
     @IdCard
     String bigStringTest(String pathParam, @BigString String toPost);
 
-    Book get(String author, long price);
+    Book get(@Parameter("author") String author,
+             @Parameter("price") long price);
 
     @IdCard
-    String update(long bookId, BookInfo book);
+    String update(
+            @Parameter("bookId") long bookId,
+            @Parameter("book") BookInfo book);
 
     @IdCard
-    String delete(long bookId);
+    String delete(@Parameter("bookId") long bookId);
 
     @AccessAllow()
     String checkRole();
