@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.core.intercept;
 
-import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 

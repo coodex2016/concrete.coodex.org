@@ -29,7 +29,6 @@ public class PriorityRunnable implements Runnable, Comparable<PriorityRunnable> 
     static final AtomicLong seq = new AtomicLong(0);
     private final long seqNum = seq.getAndIncrement();
 
-
     public PriorityRunnable(int priority, Runnable task) {
         this.priority = Math.min(Thread.MAX_PRIORITY, Math.min(priority, Thread.MIN_PRIORITY));
         this.task = task;
@@ -45,6 +44,7 @@ public class PriorityRunnable implements Runnable, Comparable<PriorityRunnable> 
             task.run();
         }
     }
+
 
     public long getSeqNum() {
         return seqNum;

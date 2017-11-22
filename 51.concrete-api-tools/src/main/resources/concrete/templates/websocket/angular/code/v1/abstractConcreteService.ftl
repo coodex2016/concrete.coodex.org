@@ -1,5 +1,3 @@
-// 定义抽象ConcreteService的行为, Concrete公用单元
-
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/throw';
 import 'rxjs/add/observable/dom/webSocket';
@@ -7,23 +5,24 @@ import {Subject} from 'rxjs/Subject';
 import {WebSocketSubjectConfig} from 'rxjs/observable/dom/WebSocketSubject';
 import {Observer} from 'rxjs/Observer';
 import {isUndefined} from 'util';
+import {Injectable} from '@angular/core';
 
-class RuntimeContext{
+class RuntimeContext {
 
     // change it
     private localTokenId: string = null;
     private globalTokenKey: string = null;
     public root: string = 'ws://localhost:8080/WebSocket';
 
-    public getTokenId (): string{
+    public getTokenId(): string {
         return (this.globalTokenKey ?
             localStorage.getItem(this.globalTokenKey) : null) || this.localTokenId;
     }
 
-    public setTokenId (tokenId){
-        if (tokenId){
+    public setTokenId(tokenId) {
+        if (tokenId) {
             this.localTokenId = tokenId;
-            if (this.globalTokenKey){
+            if (this.globalTokenKey) {
                 localStorage.setItem(this.globalTokenKey, tokenId);
             }
         }
@@ -88,13 +87,18 @@ class WebSocketService {
             console.warn('invalid msg: ' + JSON.stringify(responsePackage));
             return;
         }
-		
-		if(responsePackage.concreteTokenId){
-			runtimeContext.setTokenId(responsePackage.concreteTokenId);
-		}
+
+        if (responsePackage.concreteTokenId) {
+            runtimeContext.setTokenId(responsePackage.concreteTokenId);
+        }
 
         if (responsePackage.subjoin && responsePackage.subjoin.broadcast) {
-            this.bcSubject.get(responsePackage.subjoin.subject).next(responsePackage.content);
+            const subject = this.bcSubject.get(responsePackage.subjoin.subject);
+            if (subject) {
+                subject.next(responsePackage.content);
+            } else {
+                console.warn("no subscriber for " + responsePackage.subjoin.subject);
+            }
         } else {
             responsePackage.ok ? this.onReturn(msgId, responsePackage.content) : this.onError(msgId, responsePackage.content);
         }
@@ -123,16 +127,16 @@ class WebSocketService {
 
     send(serviceId: string, data: any): Observable<any> {
         const msgId: string = this.generateUUID();
-		const tokenId: string = runtimeContext.getTokenId();
-		const dataPackage = {
+        const tokenId: string = runtimeContext.getTokenId();
+        const dataPackage = {
             'msgId': msgId,
             'serviceId': serviceId,
             'content': data,
             'concreteTokenId': null
         };
-		if(tokenId){
-			dataPackage.concreteTokenId = tokenId;
-		}
+        if (tokenId) {
+            dataPackage.concreteTokenId = tokenId;
+        }
         this.websocket.next(JSON.stringify(dataPackage));
 
         const self: WebSocketService = this;
@@ -150,14 +154,14 @@ class WebSocketService {
 const webSocketService: WebSocketService = new WebSocketService(runtimeContext.root);
 
 
+@Injectable()
 export class Broadcast {
-    public static subscribe(subject: string, observer: Observer<any>): void {
+    public subscribe(subject: string, observer: Observer<any>): void {
         webSocketService.subscribe(subject, observer);
     }
 }
 
 export abstract class AbstractConcreteService {
-
 
     protected send(serviceId: string, data: any): Observable<any> {
         return webSocketService.send(serviceId, data);

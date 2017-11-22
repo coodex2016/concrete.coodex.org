@@ -14,14 +14,14 @@
   ~ limitations under the License.
   -->
 
-<html lang="zh">
+<html lang="zh" xmlns="http://java.sun.com/jsf/html">
 <head>
     <title>concreteTest</title>
     <meta charset="UTF-8"/>
     <script type="text/javascript" rel="script"
             src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!--<script src="jquery-concrete.js"></script>-->
-    <script src="jquery-websocket-concrete.js"></script>
+    <script src="jquery-concrete.js"></script>
+    <!--<script src="jquery-websocket-concrete.js"></script>-->
     <script>
 
         // http://www.jb51.net/article/87418.htm
@@ -105,12 +105,18 @@
 
         $(document).ready(function () {
             concrete.configure({
-//                "root": "/jaxrs"
-                "root": "ws://localhost:8080/WebSocket"
+                "root": "/jaxrs"
+//                "root": "ws://localhost:8080/WebSocket"
             });
 
             var module = concrete.module("org.coodex.practice.jaxrs.api.ServiceExample");
             var saasExample = concrete.module("SaaSExample");
+            concrete.polling();
+
+            $("#subscribe").click(function () {
+                module.subscribe().done(function(){
+                });
+            })
 
             $("#all").click(function () {
                 saasExample.exampleForSaaS("54321", "\"ddd\"").done(function (r) {
@@ -301,6 +307,7 @@
 </head>
 <pathParam>
 
+    <button id="subscribe">subscribe(2)</button>
     <button id="all">all()</button>
     <button id="update">update</button>
     <button id="checkRole">checkRole</button>

@@ -21,6 +21,7 @@ import org.coodex.concrete.attachments.server.UploadByFormResource;
 import org.coodex.concrete.jaxrs.ConcreteExceptionMapper;
 import org.coodex.concrete.jaxrs.CreatedByConcrete;
 import org.coodex.concrete.jaxrs.JaxRSServiceHelper;
+import org.coodex.concrete.jaxrs.Polling;
 import org.coodex.concrete.support.jsr339.javassist.JSR339ClassGenerator;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
@@ -66,8 +67,10 @@ public class ExampleApplication extends ResourceConfig {
                 }
             }
         }
+        classes.addAll(JaxRSServiceHelper.generate(GENERATOR_NAME, Polling.class.getPackage().getName()));
         register(ConcreteExceptionMapper.class);
         registerClasses(classes);
+//        register(JaxrsTest.class);
     }
 
     //

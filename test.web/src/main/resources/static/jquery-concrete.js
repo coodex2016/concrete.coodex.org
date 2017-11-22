@@ -33,8 +33,12 @@
 
     var default_configuration = {
         "root": "",
+        "pollingTimeout": 10,
         "onError": function (code, msg) {
             alert("errorCode:" + code + "\nerrorMsg:" + msg);
+        },
+        "onBroadcast": function (msgId, host, subject, data) {
+            console.log(data);
         }
     };
 
@@ -153,7 +157,35 @@
         }
     };
 
+
+
     var concrete = {
+        "polling": function(){
+            try{
+                if(!this.pollingStart){
+                    var pollingModule = this.module("org.coodex.concrete.jaxrs.Polling");
+                    var self = this;
+                    var pollingFunc = function(){
+                        if(!self.pollingStart) return;
+                        pollingModule.polling(configuration.pollingTimeout).done(function(messages){
+                            if(configuration.onBroadcast && messages && messages.length > 0){
+                                for(var i = 0; i < messages.length; i ++){
+                                    var msg = messages[i];
+                                    try{
+                                        configuration.onBroadcast(msg.id, msg.host, msg.subject, msg.body);
+                                    }catch(e){}
+                                }
+                            }
+                            setTimeout(pollingFunc, 10);
+                        }).error(function(){
+                            this.pollingStart = false;
+                        })
+                    }
+                    this.pollingStart = true;
+                    pollingFunc();
+                }
+            }catch(e){}
+        },
         "configure": function (config) {
             configuration = $.extend({}, default_configuration, config);
         },
@@ -196,11 +228,13 @@
         modules[moduleName][packageName] = module;
     };
 
-    register("Calc", "org.coodex.practice.jaxrs.api", { "add": function (x, y) {return invoke({"path": "/Calc/add/{x}/{y}","param": {"x": x, "y": y},"method": "GET", "dataType": "json" });}});
+    register("Polling", "org.coodex.concrete.jaxrs", { "polling": function (timeOut) {return invoke({"path": "/Concrete/polling/{timeOut}","param": {"timeOut": timeOut},"method": "GET", "dataType": "json" });}});
+
+    register("Calc", "org.coodex.practice.jaxrs.api", { "add": function (x, y) {return invoke({"path": "/Calc/add/{x}/{y}","param": {"x": x, "y": y},"method": "GET", "dataType": "json" });}, "subscribe": function () {return invoke({"path": "/Calc/subscribe","param": {},"method": "GET", "dataType": "json" });}});
+
+    register("ServiceExample", "org.coodex.practice.jaxrs.api", { "add": function (x, y) {return invoke({"path": "/ServiceExample/ServiceB/A/Calc/add/{x}/{y}","param": {"x": x, "y": y},"method": "GET", "dataType": "json" });}, "all": function () {return invoke({"path": "/ServiceExample/ServiceB/all","param": {},"method": "GET", "dataType": "json" });}, "genericTest": function (x) {return invoke({"path": "/ServiceExample/genericTest","param": {"x": x},"method": "POST", "dataType": "json" });}, "genericTest1001": function (x) {return invoke({"path": "/ServiceExample/GenericTest/genericTest1001","param": {"x": x},"method": "POST", "dataType": "json" });}, "genericTest1002": function (x) {return invoke({"path": "/ServiceExample/GenericTest/genericTest1002","param": {"x": x},"method": "POST", "dataType": "json" });}, "tokenId": function () {return invoke({"path": "/ServiceExample/tokenId","param": {},"method": "GET", "dataType": "text" });}, "subscribe": function () {return invoke({"path": "/ServiceExample/ServiceB/A/Calc/subscribe","param": {},"method": "GET", "dataType": "json" });}, "update": function (bookId, book) {return invoke({"path": "/ServiceExample/ServiceB/A/{bookId}","param": {"bookId": bookId, "book": book},"method": "PUT", "dataType": "text" });}, "delete": function (bookId) {return invoke({"path": "/ServiceExample/ServiceB/A/{bookId}","param": {"bookId": bookId},"method": "DELETE", "dataType": "text" });}, "g5": function (xx) {return invoke({"path": "/ServiceExample/g5","param": {"xx": xx},"method": "POST", "dataType": "json" });}, "findByPriceLessThen": function (price) {return invoke({"path": "/ServiceExample/ServiceB/priceLessThen/{price}","param": {"price": price},"method": "GET", "dataType": "json" });}, "g6": function (gp) {return invoke({"path": "/ServiceExample/g6","param": {"gp": gp},"method": "POST", "dataType": "json" });}, "multiPojo": function (pathParam, body1, body2, body3, body4) {return invoke({"path": "/ServiceExample/multiPojo/{pathParam}","param": {"pathParam": pathParam, "body1": body1, "body2": body2, "body3": body3, "body4": body4},"method": "POST", "dataType": "json" });}, "bigStringTest": function (arg0, arg1) {return invoke({"path": "/ServiceExample/ServiceB/A/bigStringTest/{arg0}","param": {"arg0": arg0, "arg1": arg1},"method": "POST", "dataType": "text" });}, "get": overload("get", {"1": function (bookId) {return invoke({"path": "/ServiceExample/ServiceB/A/{bookId}","param": {"bookId": bookId},"method": "GET", "dataType": "json" });}, "2": function (author, price) {return invoke({"path": "/ServiceExample/ServiceB/A/{author}/{price}","param": {"author": author, "price": price},"method": "GET", "dataType": "json" });}}), "genericTest5": function (gp) {return invoke({"path": "/ServiceExample/genericTest5","param": {"gp": gp},"method": "POST", "dataType": "json" });}, "findByAuthorLike": function (author) {return invoke({"path": "/ServiceExample/ServiceB/authorLike/{author}","param": {"author": author},"method": "GET", "dataType": "json" });}, "genericTest2": function (y) {return invoke({"path": "/ServiceExample/genericTest2","param": {"y": y},"method": "POST", "dataType": "json" });}, "genericTest4": function (gp) {return invoke({"path": "/ServiceExample/genericTest4","param": {"gp": gp},"method": "POST", "dataType": "json" });}, "checkRole": function () {return invoke({"path": "/ServiceExample/ServiceB/A/checkRole","param": {},"method": "GET", "dataType": "text" });}, "genericTest3": function (z) {return invoke({"path": "/ServiceExample/genericTest3","param": {"z": z},"method": "POST", "dataType": "json" });}});
 
     register("SaaSExample", "org.coodex.practice.jaxrs.api", { "exampleForSaaS": function (tenantId, ok) {return invoke({"path": "/SaaS/{tenantId}/Test/exampleForSaaS/{ok}","param": {"tenantId": tenantId, "ok": ok},"method": "GET", "dataType": "text" });}});
-
-    register("ServiceExample", "org.coodex.practice.jaxrs.api", { "add": function (x, y) {return invoke({"path": "/ServiceExample/ServiceB/A/Calc/add/{x}/{y}","param": {"x": x, "y": y},"method": "GET", "dataType": "json" });}, "all": function () {return invoke({"path": "/ServiceExample/ServiceB/all","param": {},"method": "GET", "dataType": "json" });}, "genericTest": function (x) {return invoke({"path": "/ServiceExample/genericTest","param": {"x": x},"method": "POST", "dataType": "json" });}, "genericTest1001": function (x) {return invoke({"path": "/ServiceExample/GenericTest/genericTest1001","param": {"x": x},"method": "POST", "dataType": "json" });}, "genericTest1002": function (x) {return invoke({"path": "/ServiceExample/GenericTest/genericTest1002","param": {"x": x},"method": "POST", "dataType": "json" });}, "tokenId": function () {return invoke({"path": "/ServiceExample/tokenId","param": {},"method": "GET", "dataType": "text" });}, "update": function (bookId, book) {return invoke({"path": "/ServiceExample/ServiceB/A/{bookId}","param": {"bookId": bookId, "book": book},"method": "PUT", "dataType": "text" });}, "delete": function (bookId) {return invoke({"path": "/ServiceExample/ServiceB/A/{bookId}","param": {"bookId": bookId},"method": "DELETE", "dataType": "text" });}, "g5": function (xx) {return invoke({"path": "/ServiceExample/g5","param": {"xx": xx},"method": "POST", "dataType": "json" });}, "findByPriceLessThen": function (price) {return invoke({"path": "/ServiceExample/ServiceB/priceLessThen/{price}","param": {"price": price},"method": "GET", "dataType": "json" });}, "g6": function (gp) {return invoke({"path": "/ServiceExample/g6","param": {"gp": gp},"method": "POST", "dataType": "json" });}, "multiPojo": function (pathParam, body1, body2, body3, body4) {return invoke({"path": "/ServiceExample/multiPojo/{pathParam}","param": {"pathParam": pathParam, "body1": body1, "body2": body2, "body3": body3, "body4": body4},"method": "POST", "dataType": "json" });}, "bigStringTest": function (arg0, arg1) {return invoke({"path": "/ServiceExample/ServiceB/A/bigStringTest/{arg0}","param": {"arg0": arg0, "arg1": arg1},"method": "POST", "dataType": "text" });}, "get": overload("get", {"1": function (bookId) {return invoke({"path": "/ServiceExample/ServiceB/A/{bookId}","param": {"bookId": bookId},"method": "GET", "dataType": "json" });}, "2": function (author, price) {return invoke({"path": "/ServiceExample/ServiceB/A/{author}/{price}","param": {"author": author, "price": price},"method": "GET", "dataType": "json" });}}), "genericTest5": function (gp) {return invoke({"path": "/ServiceExample/genericTest5","param": {"gp": gp},"method": "POST", "dataType": "json" });}, "findByAuthorLike": function (author) {return invoke({"path": "/ServiceExample/ServiceB/authorLike/{author}","param": {"author": author},"method": "GET", "dataType": "json" });}, "genericTest2": function (y) {return invoke({"path": "/ServiceExample/genericTest2","param": {"y": y},"method": "POST", "dataType": "json" });}, "genericTest4": function (gp) {return invoke({"path": "/ServiceExample/genericTest4","param": {"gp": gp},"method": "POST", "dataType": "json" });}, "checkRole": function () {return invoke({"path": "/ServiceExample/ServiceB/A/checkRole","param": {},"method": "GET", "dataType": "text" });}, "genericTest3": function (z) {return invoke({"path": "/ServiceExample/genericTest3","param": {"z": z},"method": "POST", "dataType": "json" });}});
 
     if(self){
         self.concrete = concrete;

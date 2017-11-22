@@ -19,4 +19,12 @@ package org.coodex.concrete.fsm;
 import java.io.Serializable;
 
 public interface State extends Serializable {
+
+//    enum LifeCycle {
+//        CREATED, LIVE, DEATH
+//    }
+//
+//    LifeCycle getLifeCycle();
+//
+//    void setLifeCycle(LifeCycle lifeCycle);
 }

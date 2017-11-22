@@ -21,11 +21,10 @@ import org.coodex.concrete.common.ConcreteClosure;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
-import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.ServiceLoader;
 
-import static org.coodex.concrete.common.ConcreteContext.*;
+import static org.coodex.concrete.common.ConcreteContext.runWithContext;
 
 /**
  * Created by davidoff shen on 2017-03-09.

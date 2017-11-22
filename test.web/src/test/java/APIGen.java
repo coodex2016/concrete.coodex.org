@@ -22,6 +22,7 @@ import org.coodex.concrete.apitools.jaxrs.service.ServiceDocRender;
 import org.coodex.concrete.apitools.rx.ReactiveStreamsRender;
 import org.coodex.concrete.apitools.websocket.angular.AngularWebSocketCodeRender;
 import org.coodex.concrete.apitools.websocket.jquery.JQueryWebSocketCodeRender;
+import org.coodex.concrete.jaxrs.Polling;
 import org.coodex.practice.jaxrs.api.ServiceExample;
 
 import java.io.IOException;
@@ -50,7 +51,8 @@ public class APIGen {
 ////            System.out.println(new ServiceDocToolkit(new ServiceDocRender()).formatTypeStr(m.getGenericReturnType(), c));
         API.generate(JQueryPromisesCodeRender.RENDER_NAME,
                 "D:\\Projects\\IntelliJ\\concrete\\test.web\\src\\main\\resources\\static",
-                ServiceExample.class.getPackage().getName());
+                ServiceExample.class.getPackage().getName(),
+                Polling.class.getPackage().getName());
 
         API.generate(JQueryWebSocketCodeRender.RENDER_NAME,
                 "D:\\Projects\\IntelliJ\\concrete\\test.web\\src\\main\\resources\\static",
@@ -58,15 +60,18 @@ public class APIGen {
 
         API.generate(JQueryDocRender.RENDER_NAME,
                 "/concrete-demo/jquery.api",
-                ServiceExample.class.getPackage().getName());
+                ServiceExample.class.getPackage().getName(),
+                Polling.class.getPackage().getName());
 //
         API.generate(ServiceDocRender.RENDER_NAME,
                 "/concrete-demo/restful.api",
-                ServiceExample.class.getPackage().getName());
+                ServiceExample.class.getPackage().getName(),
+                Polling.class.getPackage().getName());
 
         API.generate(AngularCodeRender.RENDER_NAME,
                 "D:\\Projects\\front_ends\\ng2-admin\\src",
-                ServiceExample.class.getPackage().getName());
+                ServiceExample.class.getPackage().getName(),
+                Polling.class.getPackage().getName());
 
         API.generate(AngularWebSocketCodeRender.RENDER_NAME + ".websocket",
                 "D:\\Projects\\front_ends\\ng2-admin\\src",

@@ -163,10 +163,10 @@ public class ReflectHelper {
     }
 
     private static String getParameterNameByAnnotation(Annotation[][] annotations, int index) {
-        if(annotations == null || annotations.length < index) return null;
+        if (annotations == null || annotations.length < index) return null;
 
-        for(Annotation annotation: annotations[index]){
-            if(annotation instanceof Parameter){
+        for (Annotation annotation : annotations[index]) {
+            if (annotation instanceof Parameter) {
                 return ((Parameter) annotation).value();
             }
         }
@@ -407,6 +407,22 @@ public class ReflectHelper {
             submittedClasses.clear();
         }
     }
+
+    public static void foreachClass(Processor processor, Class<?>... classes) {
+        if (processor == null) return;
+        Set<Class> submittedClasses = new HashSet<Class>();
+        try {
+            for (Class clazz : classes) {
+                if (!submittedClasses.contains(clazz)) {
+                    processor.process(clazz);
+                    submittedClasses.add(clazz);
+                }
+            }
+        } finally {
+            submittedClasses.clear();
+        }
+    }
+
 
     @SuppressWarnings("unchecked")
     public static <T> T throwExceptionObject(Class<T> interfaceClass, final Throwable th) {

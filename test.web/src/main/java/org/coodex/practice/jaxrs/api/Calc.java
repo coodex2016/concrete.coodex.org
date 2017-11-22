@@ -27,6 +27,9 @@ import org.coodex.util.Parameter;
 @MicroService("Calc")
 public interface Calc extends ConcreteService {
 
+    @Description(name = "订阅演示")
+    void subscribe();
+
     @Description(name = "求和", description = "求X + Y = ")
     int add(@Description(name = "被加数", description = "被加数")
             @Parameter("x") int x,

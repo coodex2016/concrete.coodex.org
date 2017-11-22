@@ -16,9 +16,6 @@
 
 package org.coodex.util;
 
-import com.alibaba.fastjson.JSON;
-import org.coodex.pojomocker.MockerFacade;
-
 import java.lang.reflect.Constructor;
 
 /**

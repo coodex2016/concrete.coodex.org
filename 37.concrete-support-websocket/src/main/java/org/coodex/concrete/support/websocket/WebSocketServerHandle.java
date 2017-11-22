@@ -17,6 +17,7 @@
 package org.coodex.concrete.support.websocket;
 
 import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.messages.Message;
 import org.coodex.concrete.common.struct.AbstractParam;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concrete.websocket.ConcreteWebSocketEndPoint;
@@ -49,7 +50,7 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
 
     private final static Logger log = LoggerFactory.getLogger(WebSocketServerHandle.class);
 
-    private final Map<Session, String> peers = Collections.synchronizedMap(new HashMap<Session, String>());
+    private final static Map<Session, String> peers = Collections.synchronizedMap(new HashMap<Session, String>());
 
     private final Map<String, WebSocketUnit> unitMap = new HashMap<String, WebSocketUnit>();
 
@@ -69,30 +70,35 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
 
     @Override
     public void onClose(Session peer) {
-        String sessionId = peers.remove(peer);
-        if (sessionId != null) {
-            BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(sessionId, true).invalidate();
-            log.debug("token [{}] invalidate.", sessionId);
-        }
+//        String sessionId =
+        peers.remove(peer);
+//        if (sessionId != null) {
+//            BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(sessionId, true).invalidate();
+//            log.debug("token [{}] invalidate.", sessionId);
+//        }
         log.debug("session closed: {}, total sessions: {}", peer, peers.size());
     }
 
     @Override
+    @Deprecated
     public <T> void broadcast(String subject, T content) {
         broadcast(subject, content, null, null);
     }
 
     @Override
+    @Deprecated
     public <T> void broadcast(String subject, T content, Map<String, String> subjoin) {
         broadcast(subject, content, subjoin, null);
     }
 
     @Override
+    @Deprecated
     public <T> void broadcast(String subject, T content, SessionFilter sessionFilter) {
         broadcast(subject, content, null, sessionFilter);
     }
 
     @Override
+    @Deprecated
     public <T> void broadcast(String subject, T content, Map<String, String> subjoin, SessionFilter sessionFilter) {
 
         String text = JSONSerializerFactory.getInstance().toJson(buildPackage(subject, content, subjoin));
@@ -112,7 +118,12 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
         $sendText(text, session, null);
     }
 
-    private void $sendText(final String text, final Session session, AtomicInteger retry) {
+//    static void sendText(String text, String tokenId){
+//
+//    }
+
+
+    private static void $sendText(final String text, final Session session, AtomicInteger retry) {
         final AtomicInteger toRetry = retry == null ? new AtomicInteger(0) : retry;
         if (toRetry.get() >= 5) {
             log.warn("send text failed after retry 5 times. sessionId: {}, text: {}", session.getId(), text);
@@ -140,12 +151,34 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
         $sendText(text, session);
     }
 
+    static <T> void sendMessage(Message<T> message, String tokenId) {
+        for (Session session : peers.keySet()) {
+            if (tokenId.equals(peers.get(session))) {
+                $sendText(JSONSerializerFactory.getInstance().toJson(buildPackage(message)),
+                        session, null);
+                break;
+            }
+        }
+    }
+
     private void sendError(String msgId, ConcreteException exception, Session session) {
         ResponsePackage<ErrorInfo> responsePackage = new ResponsePackage<ErrorInfo>();
         responsePackage.setOk(false);
         responsePackage.setMsgId(msgId);
         responsePackage.setContent(new ErrorInfo(exception));
         sendText(JSONSerializerFactory.getInstance().toJson(responsePackage), session);
+    }
+
+    private static <T> ResponsePackage<T> buildPackage(Message<T> message) {
+        ResponsePackage responsePackage = new ResponsePackage();
+        Map<String, String> subjoin = new HashMap<>();
+        subjoin.put(BROADCAST, "true");
+        subjoin.put(HOST_ID, message.getHost());
+        subjoin.put(SUBJECT, message.getSubject());
+        responsePackage.setSubjoin(subjoin);
+        responsePackage.setContent(message.getBody());
+        responsePackage.setMsgId(message.getId());
+        return responsePackage;
     }
 
     private <T> ResponsePackage buildPackage(String subject, T content, Map<String, String> subjoin) {
@@ -208,10 +241,9 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
 //    }
 
     private synchronized Token getToken(Session session, RequestPackage requestPackage) {
-        if (!Common.isBlank(requestPackage.getConcreteTokenId())) {
-            peers.put(session, requestPackage.getConcreteTokenId());
-        }
-        return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session), false);
+        Token token = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session), false);
+        peers.put(session, token == null ? null : token.getTokenId());
+        return token;
     }
 
     /**
@@ -231,13 +263,15 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
                 JSONSerializerFactory.getInstance().toJson(requestPackage.getContent()), unit);
 
         //3 调用并返回结果
+
         Token t = getToken(session, requestPackage);
+
         final boolean isNew = t == null;
 
         final Token token = t == null ?
-                BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session), true)
+                BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(Common.getUUIDStr(), true)
                 : t;//getToken(session);
-
+        peers.put(session, token.getTokenId());
 //        final String
 //        session.getUserProperties()
         ConcreteHelper.getExecutor().execute(new PriorityRunnable(ConcreteHelper.getPriority(unit), new Runnable() {

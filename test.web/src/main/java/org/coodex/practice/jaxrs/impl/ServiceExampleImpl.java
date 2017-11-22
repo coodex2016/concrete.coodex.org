@@ -20,7 +20,9 @@ import com.alibaba.fastjson.JSON;
 import org.coodex.concrete.api.LogAtomic;
 import org.coodex.concrete.attachments.client.ClientServiceImpl;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.concrete.common.messages.PostOffice;
+import org.coodex.concrete.core.messages.MessageHelper;
+import org.coodex.concrete.core.messages.TokenBaseSubscription;
 import org.coodex.concrete.jaxrs.BigString;
 import org.coodex.concrete.websocket.WebSocket;
 import org.coodex.practice.jaxrs.api.Calc;
@@ -70,17 +72,7 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
         traceInfo();
         token.setAttribute("test", "WWWWWWWWWWWWWWWW");
         log.debug("all : tokeId {}", token.getTokenId());
-        new Thread(){
-            @Override
-            public void run() {
-                try{
-                    Thread.sleep(3000);
-                    WebSocket.getEndPoint("/WebSocket").broadcast("abcd", books);
-                }catch (Throwable th){
-                    th.printStackTrace();
-                }
-            }
-        }.start();
+
         return books;
     }
 
@@ -113,7 +105,7 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
         builder.append("tokenId: ").append(token.getTokenId()).append("; caller:[")
                 .append(caller.getAddress()).append(", ").append(caller.getAgent())
                 .append("]");
-        for(String key : subjoin.keySet()){
+        for (String key : subjoin.keySet()) {
             builder.append("\n\tkey: ").append(key).append(", values: ")
                     .append(subjoin.get(key));
         }
@@ -210,6 +202,22 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
     //    @Override
     public G2<GenericPojo<String>, GenericPojo<Integer>> g5(G2<GenericPojo<String>, GenericPojo<Integer>> xx) {
         return null;
+    }
+
+    @Override
+    public void subscribe() {
+        MessageHelper.getPostOffice().subscribe(new TokenBaseSubscription<List<Book>>("abcd"));
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(3000);
+                    MessageHelper.getPostOffice().postMessage("abcd", books);
+                } catch (Throwable th) {
+                    th.printStackTrace();
+                }
+            }
+        }.start();
     }
 
     @Override

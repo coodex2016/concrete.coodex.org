@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import org.coodex.util.Common;
-
 import java.io.UnsupportedEncodingException;
 
 public class Test {

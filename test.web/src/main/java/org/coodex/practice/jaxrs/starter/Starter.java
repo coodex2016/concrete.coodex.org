@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.web.context.annotation.RequestScope;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;

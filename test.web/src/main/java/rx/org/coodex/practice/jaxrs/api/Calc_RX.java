@@ -12,6 +12,8 @@ import org.coodex.practice.jaxrs.api.Calc;
 @ReactiveExtensionFor(Calc.class)
 public interface Calc_RX {
 
+    Observable<Void> subscribe();
+
     Observable<Integer> add(int x, int y);
 
 

@@ -82,6 +82,11 @@ public abstract class AbstractJSR311Resource<T extends ConcreteService>
         return builder.type(MediaType.TEXT_PLAIN_TYPE);
     }
 
+    @Override
+    protected Response.ResponseBuilder jsonType(Response.ResponseBuilder builder) {
+        return builder.type(MediaType.APPLICATION_JSON_TYPE);
+    }
+
     protected Object execute(final String methodName, final String tokenId, Object... objects) {
         return __execute(methodName, tokenId, objects);
     }

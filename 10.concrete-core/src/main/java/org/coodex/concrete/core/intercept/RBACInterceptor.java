@@ -20,13 +20,10 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.AccessAllow;
 import org.coodex.concrete.api.Domain;
 import org.coodex.concrete.api.Safely;
-import org.coodex.concrete.common.*;
-import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.concrete.common.RBACHelper;
+import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by davidoff shen on 2016-09-07.

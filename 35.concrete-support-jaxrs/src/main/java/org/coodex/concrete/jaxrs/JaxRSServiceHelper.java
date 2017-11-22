@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.jaxrs;
 
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.util.ClassNameFilter;
@@ -40,7 +41,6 @@ public class JaxRSServiceHelper {
         }
         throw new RuntimeException("no class generator found for " + desc + ".");
     }
-
 
     public static Set<Class<?>> generate(String desc, String... packages) {
         if(packages == null || packages.length == 0){

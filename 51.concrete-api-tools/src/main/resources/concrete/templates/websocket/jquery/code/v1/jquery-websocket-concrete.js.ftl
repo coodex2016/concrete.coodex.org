@@ -45,7 +45,7 @@
         "onError": function (code, msg) {
             alert("errorCode:" + code + "\nerrorMsg:" + msg);
         },
-        "onBroadcast": function (data) {
+        "onBroadcast": function (msgId, host, subject, data) {
             console.log(data);
         }
     };
@@ -218,6 +218,7 @@
     };
 
     var concrete = {
+        "polling": function(){},
         "configure": function (config) {
             configuration = $.extend({}, default_configuration, config);
         },

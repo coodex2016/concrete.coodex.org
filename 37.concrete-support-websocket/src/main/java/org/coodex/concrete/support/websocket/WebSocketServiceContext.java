@@ -21,11 +21,14 @@ import org.coodex.concrete.common.ServiceContext;
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.common.struct.AbstractUnit;
+import org.coodex.concrete.core.messages.Courier;
 
 import static org.coodex.concrete.common.ConcreteContext.SIDE_SERVER;
 import static org.coodex.concrete.websocket.Constants.WEB_SOCKET_MODEL;
 
 public class WebSocketServiceContext extends ServiceContext {
+
+    private static final Courier webSocketCourier = new WebSocketCourier();
 
     private static Caller CALLER = new Caller() {
         @Override
@@ -46,9 +49,10 @@ public class WebSocketServiceContext extends ServiceContext {
         this.model = WEB_SOCKET_MODEL;
         this.caller = caller == null ? CALLER : caller;
         this.side = SIDE_SERVER;
+        this.courier = webSocketCourier;
     }
 
     public WebSocketServiceContext(Token token, Subjoin subjoin, AbstractUnit unit) {
-        this(token,subjoin, unit, CALLER);
+        this(token, subjoin, unit, CALLER);
     }
 }

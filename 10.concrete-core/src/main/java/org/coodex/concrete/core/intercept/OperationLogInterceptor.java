@@ -26,8 +26,6 @@ import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-
 import static org.coodex.concrete.common.AbstractMessageFacade.getLogFormatter;
 import static org.coodex.concrete.common.AbstractMessageFacade.getPatternLoader;
 import static org.coodex.concrete.common.ConcreteContext.*;
@@ -46,6 +44,8 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
             this.model = context.getModel();
             this.subjoin = context.getSubjoin();
             this.side = context.getSide();
+            this.currentUnit = context.getCurrentUnit();
+            this.courier = context.getCourier();
         }
 
 

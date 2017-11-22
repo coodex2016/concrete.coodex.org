@@ -33,8 +33,12 @@
 
     var default_configuration = {
         "root": "",
+        "pollingTimeout": 10,
         "onError": function (code, msg) {
             alert("errorCode:" + code + "\nerrorMsg:" + msg);
+        },
+        "onBroadcast": function (msgId, host, subject, data) {
+            console.log(data);
         }
     };
 
@@ -154,7 +158,35 @@
         }
     };
 
+
+
     var concrete = {
+        "polling": function(){
+            try{
+                if(!this.pollingStart){
+                    var pollingModule = this.module("org.coodex.concrete.jaxrs.Polling");
+                    var self = this;
+                    var pollingFunc = function(){
+                        if(!self.pollingStart) return;
+                        pollingModule.polling(configuration.pollingTimeout).done(function(messages){
+                            if(configuration.onBroadcast && messages && messages.length > 0){
+                                for(var i = 0; i < messages.length; i ++){
+                                    var msg = messages[i];
+                                    try{
+                                        configuration.onBroadcast(msg.id, msg.host, msg.subject, msg.body);
+                                    }catch(e){}
+                                }
+                            }
+                            setTimeout(pollingFunc, 10);
+                        }).error(function(){
+                            this.pollingStart = false;
+                        })
+                    }
+                    this.pollingStart = true;
+                    pollingFunc();
+                }
+            }catch(e){}
+        },
         "configure": function (config) {
             configuration = $.extend({}, default_configuration, config);
         },

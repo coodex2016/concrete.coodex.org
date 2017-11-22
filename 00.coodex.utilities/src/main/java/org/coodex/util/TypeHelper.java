@@ -235,6 +235,10 @@ public class TypeHelper {
     // 2017-05-12 彻底重构
     /////////////////////////
 
+//    public static boolean isAssignable(Class superClass, Type test){
+//        superClass.isAssignableFrom()
+//    }
+
     public static Class typeToClass(Type type) {
         if (type instanceof Class) {
             return (Class) type;

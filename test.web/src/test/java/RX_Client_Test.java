@@ -18,10 +18,8 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import org.coodex.concrete.rx.RXClient;
 import org.coodex.concurrent.ExecutorsHelper;
-import org.coodex.practice.jaxrs.pojo.Book;
 import rx.org.coodex.practice.jaxrs.api.ServiceExample_RX;
 
-import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class RX_Client_Test {

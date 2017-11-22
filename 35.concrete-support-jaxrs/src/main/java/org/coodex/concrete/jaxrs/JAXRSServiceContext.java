@@ -21,10 +21,13 @@ import org.coodex.concrete.common.ServiceContext;
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.common.struct.AbstractUnit;
+import org.coodex.concrete.core.messages.Courier;
 
 import static org.coodex.concrete.common.ConcreteContext.SIDE_SERVER;
 
 public class JAXRSServiceContext extends ServiceContext {
+
+    private final static Courier jaxrsCourier = new JaxRSCourier();
 
     JAXRSServiceContext(Caller caller, Token token, AbstractUnit unit, Subjoin subjoin) {
         this.caller = caller;
@@ -33,5 +36,6 @@ public class JAXRSServiceContext extends ServiceContext {
         this.subjoin = subjoin;
         this.side = SIDE_SERVER;
         this.model = JaxRSHelper.JAXRS_MODEL;
+        this.courier = jaxrsCourier;
     }
 }

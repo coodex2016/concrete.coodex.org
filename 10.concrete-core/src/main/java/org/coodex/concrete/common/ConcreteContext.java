@@ -18,9 +18,7 @@ package org.coodex.concrete.common;
 
 import org.coodex.closure.ClosureContext;
 import org.coodex.closure.StackClosureContext;
-import org.coodex.concrete.common.struct.AbstractUnit;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 

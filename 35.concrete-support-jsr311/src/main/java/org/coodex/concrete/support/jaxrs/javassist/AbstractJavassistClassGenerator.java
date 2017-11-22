@@ -17,12 +17,19 @@
 package org.coodex.concrete.support.jaxrs.javassist;
 
 import javassist.CannotCompileException;
+import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.bytecode.SignatureAttribute;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concrete.jaxrs.ClassGenerator;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.util.Common;
+
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 
 /**
@@ -53,6 +60,14 @@ public abstract class AbstractJavassistClassGenerator implements ClassGenerator 
                 context.getNewClass().addMethod(methodGenerator.generateMethod(
                         unit.getMethod().getName() + "$" + nextPostfix()));
         }
+//        CtClass ctClass = context.getNewClass();
+//        try {
+//            File file = Common.getNewFile("/classCache/" + ctClass.getName().replace('.', '/') + ".class");
+//
+//            ctClass.toBytecode(new DataOutputStream(new FileOutputStream(file)));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return context.getNewClass().toClass();
     }
 

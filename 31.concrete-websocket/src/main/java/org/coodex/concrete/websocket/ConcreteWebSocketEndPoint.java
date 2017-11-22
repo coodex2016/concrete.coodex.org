@@ -16,8 +16,6 @@
 
 package org.coodex.concrete.websocket;
 
-import org.coodex.concrete.common.Token;
-
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -40,12 +38,16 @@ public interface ConcreteWebSocketEndPoint {
 //    Token getToken(Session session);
 
 
+    @Deprecated
     <T> void broadcast(String subject, T content);
 
+    @Deprecated
     <T> void broadcast(String subject, T content, Map<String, String> subjoin);
 
+    @Deprecated
     <T> void broadcast(String subject, T content, SessionFilter sessionFilter);
 
+    @Deprecated
     <T> void broadcast(String subject, T content, Map<String, String> subjoin, SessionFilter sessionFilter);
 
 }

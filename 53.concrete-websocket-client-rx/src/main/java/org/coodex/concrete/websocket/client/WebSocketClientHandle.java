@@ -42,7 +42,8 @@ import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static org.coodex.concrete.common.ConcreteContext.*;
+import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
+import static org.coodex.concrete.common.ConcreteContext.runWithContext;
 import static org.coodex.concrete.websocket.Constants.*;
 
 @ClientEndpoint(configurator = SetUserAgentConfigurator.class)

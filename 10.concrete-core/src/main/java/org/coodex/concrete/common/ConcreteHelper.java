@@ -38,7 +38,6 @@ public class ConcreteHelper {
         return Profile.getProfile("concrete.properties");
     }
 
-
     private static ExecutorService executorService = null;
 
     public synchronized static ExecutorService getExecutor() {
@@ -114,6 +113,7 @@ public class ConcreteHelper {
     private final static ServiceLoader<ModuleMaker> MODULE_MAKERS = new ConcreteServiceLoader<ModuleMaker>() {
     };
 
+
     @SuppressWarnings("unchecked")
     public final static <MODULE extends AbstractModule> List<MODULE> loadModules(
             String desc, String... packages) {
@@ -135,6 +135,7 @@ public class ConcreteHelper {
                 && clz.getAnnotation(MicroService.class) != null
                 && clz.getAnnotation(Abstract.class) == null;
     }
+
 
     @SuppressWarnings("unchecked")
     private static <MODULE extends AbstractModule> List<MODULE> loadModules(

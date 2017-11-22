@@ -21,7 +21,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import static org.coodex.concrete.common.ConcreteContext.*;
+import static org.coodex.concrete.common.ConcreteContext.runWithContext;
 
 /**
  * Created by davidoff shen on 2016-09-08.

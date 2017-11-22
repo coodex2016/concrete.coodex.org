@@ -37,4 +37,6 @@
     <bean class="org.coodex.concrete.attachments.client.ClientServiceImpl"></bean>
     <bean class="org.coodex.concrete.attachments.server.AttachmentInfoServiceImpl"></bean>
 
+    <bean class="org.coodex.concrete.jaxrs.PollingImpl"/>
+
 </beans>

@@ -21,4 +21,6 @@ public interface FiniteStateMachine<S extends State> {
      * @return 非空时表示需要throw异常
      */
     RuntimeException errorHandle(WrongStateException exception);
+
+    void init();
 }

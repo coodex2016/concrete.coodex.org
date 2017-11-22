@@ -17,14 +17,16 @@
 package org.coodex.concrete.jaxrs.client;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.ErrorInfo;
+import org.coodex.concrete.common.JSONSerializer;
+import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.jaxrs.ClassGenerator;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
-import org.coodex.util.ServiceLoader;
 import org.coodex.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

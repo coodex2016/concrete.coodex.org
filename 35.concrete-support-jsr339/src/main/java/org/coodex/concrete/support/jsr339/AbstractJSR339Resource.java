@@ -19,6 +19,8 @@ package org.coodex.concrete.support.jsr339;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.AbstractJAXRSResource;
+import org.coodex.concrete.jaxrs.JaxRSCourier;
+import org.coodex.concrete.jaxrs.Polling;
 import org.coodex.concurrent.components.PriorityRunnable;
 
 import javax.ws.rs.container.AsyncResponse;
@@ -55,8 +57,14 @@ public abstract class AbstractJSR339Resource<T extends ConcreteService> extends 
             @Override
             public void run() {
                 try {
-
-                    asyncResponse.resume(invokeByTokenId(tokenId, method, params));
+                    if (method.getDeclaringClass().equals(Polling.class)) {
+                        JaxRSCourier.asyncMessageReceive(tokenId,
+                                new Jsr339AsyncMessageReceiver(asyncResponse,
+                                        ((Integer) params[0]).intValue() * 1000L,
+                                        new ResponseBuilder(tokenId, method, params)));
+                    } else {
+                        asyncResponse.resume(invokeByTokenId(tokenId, method, params));
+                    }
                 } catch (Throwable th) {
                     asyncResponse.resume(th);
                 }
@@ -72,5 +80,10 @@ public abstract class AbstractJSR339Resource<T extends ConcreteService> extends 
     @Override
     protected Response.ResponseBuilder textType(Response.ResponseBuilder builder) {
         return builder.type(JSR339Common.withCharset(MediaType.TEXT_PLAIN_TYPE));
+    }
+
+    @Override
+    protected Response.ResponseBuilder jsonType(Response.ResponseBuilder builder) {
+        return builder.type(JSR339Common.withCharset(MediaType.APPLICATION_JSON_TYPE));
     }
 }

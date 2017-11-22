@@ -16,22 +16,51 @@
 
 package org.coodex.concurrent;
 
+import org.coodex.concurrent.components.PriorityRunnable;
+
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by davidoff shen on 2016-09-05.
  */
 public class ExecutorsHelper {
 
+    static class ConcretePriorityBlockingQueue extends PriorityBlockingQueue<Runnable> {
+        private ThreadPoolExecutor threadPoolExecutor;
+        private int maximumPoolSize;
+        public void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor) {
+            this.threadPoolExecutor = threadPoolExecutor;
+            this.maximumPoolSize = threadPoolExecutor.getMaximumPoolSize();
+        }
 
-    public static ExecutorService newPriorityThreadPool(int coreSize, int maxSize) {
-        coreSize = Math.max(coreSize, 1);
-        maxSize = maxSize >= coreSize ? maxSize : Integer.MAX_VALUE;
-        ExecutorService threadPool = new ThreadPoolExecutor(
-                coreSize, maxSize, 60L, TimeUnit.SECONDS, new PriorityBlockingQueue<Runnable>()
+        @Override
+        public boolean offer(Runnable runnable) {
+            if (threadPoolExecutor == null) return super.offer(runnable);
+
+            return threadPoolExecutor.getActiveCount() < maximumPoolSize - 1/* 防止极端情况 */ ?
+                    false : super.offer(getPriorityRunnable(runnable));
+        }
+    }
+
+    private static PriorityRunnable getPriorityRunnable(Runnable runnable) {
+        return runnable instanceof PriorityRunnable ?
+                (PriorityRunnable) runnable :
+                new PriorityRunnable(Thread.NORM_PRIORITY, runnable);
+    }
+
+    public static ExecutorService newPriorityThreadPool(final int coreSize, int maxSize) {
+        int finalCoreSize = Math.max(coreSize, 1);
+        int finalMaxSize = maxSize >= coreSize ? maxSize : Integer.MAX_VALUE;
+        if (finalMaxSize == Integer.MAX_VALUE) finalMaxSize = Integer.MAX_VALUE - 1;
+
+        ConcretePriorityBlockingQueue priorityBlockingQueue = new ConcretePriorityBlockingQueue();
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
+                finalCoreSize, finalMaxSize + 1, 60L, TimeUnit.SECONDS,
+                priorityBlockingQueue
         );
-
+        priorityBlockingQueue.setThreadPoolExecutor(threadPool);
         return ExecutorWrapper.wrap(threadPool);
     }
 

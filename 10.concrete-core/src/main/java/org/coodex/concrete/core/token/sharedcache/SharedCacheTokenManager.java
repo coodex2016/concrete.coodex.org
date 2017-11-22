@@ -36,6 +36,7 @@ public class SharedCacheTokenManager implements TokenManager {
 
     @Override
     public Token getToken(String id, boolean force) {
+
         String tokenCacheType = ConcreteHelper.getProfile().getString("tokenCacheType");
         SharedCacheClient client = SharedCacheClientManager.getClient(tokenCacheType);
         long maxIdleTime = ConcreteHelper.getProfile().getLong("sharedCacheTokenManager.maxIdleTime", DEFAULT_MAX_IDLE) * 60 * 1000;

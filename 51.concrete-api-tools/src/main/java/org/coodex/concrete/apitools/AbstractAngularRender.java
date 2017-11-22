@@ -225,6 +225,8 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
             return "any[]";
         } else if (Map.class.isAssignableFrom(c)) {
             return "Map<any, any>";
+        } else if(Object.class.equals(c)){
+            return "any";
         } else {
             clz.getImports().add(c);
             return getTSPojo(c).getClassName();
@@ -239,6 +241,10 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
 
         TSPojo pojo = new TSPojo(c);
         map.put(c, pojo);
+
+        if(Object.class.equals(c)){
+            return pojo;
+        }
 
         if (!Object.class.equals(c.getGenericSuperclass()))
             pojo.setSuperClass(getClassType(c.getGenericSuperclass(), pojo, null));
