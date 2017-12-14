@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 /**
  * Created by davidoff shen on 2016-12-07.
  */
+@SuppressWarnings("unchecked")
 public class FastJsonSerializer extends AbstractJsonSerializer {
 
     private Class jsonClass = null;

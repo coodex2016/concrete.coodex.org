@@ -60,7 +60,7 @@ public class ReverserClientInvoker extends AbstractRemoteInvoker {
         client = CLIENT_BUILDER.build();
     }
 
-
+    @SuppressWarnings("unchecked")
     private Invocation.Builder setHeaders(Invocation.Builder builder) {
         return builder.headers(DeliveryContext.getContext().getRequestHeaders());
     }

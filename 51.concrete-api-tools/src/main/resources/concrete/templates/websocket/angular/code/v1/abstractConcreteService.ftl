@@ -159,6 +159,9 @@ export class Broadcast {
     public subscribe(subject: string, observer: Observer<any>): void {
         webSocketService.subscribe(subject, observer);
     }
+
+    public doPolling(){
+    }
 }
 
 export abstract class AbstractConcreteService {

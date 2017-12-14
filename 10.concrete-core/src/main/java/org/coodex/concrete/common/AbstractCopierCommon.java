@@ -71,6 +71,7 @@ public abstract class AbstractCopierCommon<A, B> {
 
     protected abstract Object copy(Object o, Index srcIndex);
 
+    @SuppressWarnings("unchecked")
     protected <T extends Collection> T copy(Collection srcCollection, Class<T> tClass, Index srcIndex) {
         if (srcCollection == null) throw new NullPointerException("srcCollection is NULL.");
         Collection collection = null;
@@ -105,6 +106,7 @@ public abstract class AbstractCopierCommon<A, B> {
             return clazz;
     }
 
+    @SuppressWarnings("unchecked")
     protected <T extends Collection> T copy(Collection srcCollection, Index srcIndex) {
         return (T) copy(srcCollection, getCollectionClass(srcCollection), srcIndex);
     }

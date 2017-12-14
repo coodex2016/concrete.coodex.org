@@ -44,6 +44,7 @@ public abstract class AbstractRxInvocationHandler implements InvocationHandler {
         this.serviceClass = serviceClass;
     }
 
+    @SuppressWarnings("unchecked")
     protected Object sync(final Object instance, final Method method, final Object[] args) throws Throwable {
         return Observable.create(new ObservableOnSubscribe() {
             @Override
@@ -56,6 +57,7 @@ public abstract class AbstractRxInvocationHandler implements InvocationHandler {
         });
     }
 
+    @SuppressWarnings("unchecked")
     protected Object async(final Object instance,  final Method method, final Object[] args) throws Throwable {
         return Observable.create(new ObservableOnSubscribe() {
             @Override

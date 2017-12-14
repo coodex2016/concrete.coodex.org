@@ -32,9 +32,22 @@ public class MessageTest {
 
         Subscriber<Body1> body1Subscriber = postOffice.subscribe(new AbstractSubscription<Body1>("1",new Filter1()){
 
+            @Override
+            public void setSubscriber(Subscriber<Body1> subscriber) {
+
+            }
         });
-        Subscriber<List<Body2>> listSubscriber = postOffice.subscribe(new AbstractSubscription<List<Body2>>("1",new Filter2()){});
+        Subscriber<List<Body2>> listSubscriber = postOffice.subscribe(new AbstractSubscription<List<Body2>>("1",new Filter2()){
+            @Override
+            public void setSubscriber(Subscriber<List<Body2>> subscriber) {
+
+            }
+        });
         Subscriber<Map<String,List<Body1>>> mapSubscriber = postOffice.subscribe(new AbstractSubscription<Map<String, List<Body1>>>("3",null) {
+            @Override
+            public void setSubscriber(Subscriber<Map<String, List<Body1>>> subscriber) {
+
+            }
         });
         postOffice.cancel(body1Subscriber);
         postOffice.postMessage("1", new Body1());

@@ -45,7 +45,7 @@ export abstract class AbstractConcreteService {
             'X-CLIENT-PROVIDER': 'CONCRETE-ANGULAR'
         });
         if (tokenId) {
-            headers.append('CONCRETE_TOKEN_ID', tokenId);
+            headers.append('CONCRETE-TOKEN-ID', tokenId);
         }
         return new RequestOptions({
             method: httpMethod,
@@ -56,7 +56,7 @@ export abstract class AbstractConcreteService {
 
     protected extractData(res: Response) {
         if (res.headers) {
-            runtimeContext.setTokenId(res.headers.get('concrete_token_id'));
+            runtimeContext.setTokenId(res.headers.get('concrete-token-id'));
         }
         if (res.status == 204) {
             return null;
@@ -116,12 +116,7 @@ export class Broadcast extends AbstractConcreteService {
             .catch(this.handleError);
     }
 
-    public subscribe(subject: string, observer: Observer<any>): void {
-        if (!this.bcSubject.get(subject)) {
-            this.bcSubject.set(subject, new Subject());
-        }
-        this.bcSubject.get(subject).subscribe(observer);
-
+    public doPolling(){
         if (!this.pollingStart) {
             const self = this;
             const pollingFunc = function () {
@@ -132,6 +127,15 @@ export class Broadcast extends AbstractConcreteService {
             }
             pollingFunc();
         }
+    }
+
+    public subscribe(subject: string, observer: Observer<any>): void {
+        if (!this.bcSubject.get(subject)) {
+            this.bcSubject.set(subject, new Subject());
+        }
+        this.bcSubject.get(subject).subscribe(observer);
+
+        this.doPolling();
     }
 }
 

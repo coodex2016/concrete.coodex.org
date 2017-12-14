@@ -185,6 +185,7 @@ public class JaxRSCourier implements Courier {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static void deregister(AsyncMessageReceiver getter) {
         getAsyncMessageReceivers(getter.getKey()).remove(getter);
     }

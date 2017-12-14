@@ -29,6 +29,7 @@ public class JaxRS_RXClientProvider implements RXClientProvider {
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getInstance(Class<T> clz, final ClientCommon.Domain domain, String tokenManagerKey) {
         final Class<? extends ConcreteService> serviceClass = clz.getAnnotation(ReactiveExtensionFor.class).value();
 

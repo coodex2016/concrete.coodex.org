@@ -68,6 +68,7 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
 
     private static Map<Class, IdentifiedStateLoader> loaderMap = new HashMap<Class, IdentifiedStateLoader>();
 
+    @SuppressWarnings("unchecked")
     private static <S extends IdentifiedState<ID>, ID extends Serializable, L extends IdentifiedStateLoader<S, ID>>
     L getLoader(Class<? extends S> stateClass) {
         synchronized (loaderMap) {

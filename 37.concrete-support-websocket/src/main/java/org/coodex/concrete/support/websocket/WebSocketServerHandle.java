@@ -24,6 +24,7 @@ import org.coodex.concrete.websocket.ConcreteWebSocketEndPoint;
 import org.coodex.concrete.websocket.*;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.concurrent.components.PriorityRunnable;
+import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
 import org.coodex.util.GenericType;
 import org.coodex.util.TypeHelper;
@@ -41,10 +42,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.common.ConcreteContext.runWithContext;
+import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 import static org.coodex.concrete.support.websocket.CallerHackConfigurator.WEB_SOCKET_CALLER_INFO;
 import static org.coodex.concrete.websocket.Constants.*;
 
-class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoint {
+class WebSocketServerHandle /*extends WebSocket*/ implements ConcreteWebSocketEndPoint {
 
     private final static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newScheduledThreadPool(1);
 
@@ -54,8 +56,12 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
 
     private final Map<String, WebSocketUnit> unitMap = new HashMap<String, WebSocketUnit>();
 
+    @Deprecated
     public WebSocketServerHandle(String endPoint) {
-        registerEndPoint(endPoint, this);
+//        registerEndPoint(endPoint, this);
+    }
+
+    public WebSocketServerHandle() {
     }
 
     @Override
@@ -169,6 +175,7 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
         sendText(JSONSerializerFactory.getInstance().toJson(responsePackage), session);
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> ResponsePackage<T> buildPackage(Message<T> message) {
         ResponsePackage responsePackage = new ResponsePackage();
         Map<String, String> subjoin = new HashMap<>();
@@ -181,6 +188,7 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
         return responsePackage;
     }
 
+    @SuppressWarnings("unchecked")
     private <T> ResponsePackage buildPackage(String subject, T content, Map<String, String> subjoin) {
 
         if (subjoin == null) subjoin = new HashMap<>();
@@ -252,6 +260,7 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
      * @param requestPackage
      * @param session
      */
+    @SuppressWarnings("unchecked")
     private void invokeService(final RequestPackage<Object> requestPackage, final Session session) {
 
         //1 找到方法
@@ -279,18 +288,26 @@ class WebSocketServerHandle extends WebSocket implements ConcreteWebSocketEndPoi
 
             @Override
             public void run() {
-                ServiceContext context = new WebSocketServiceContext(token, getSubjoin(requestPackage.getSubjoin()), unit, (Caller) session.getUserProperties().get(WEB_SOCKET_CALLER_INFO));
+                ServiceContext context = new WebSocketServiceContext(
+                        token, getSubjoin(requestPackage.getSubjoin()), unit,
+                        (Caller) session.getUserProperties().get(WEB_SOCKET_CALLER_INFO));
                 try {
                     Object result = runWithContext(
                             context,
                             new ConcreteClosure() {
 
                                 public Object concreteRun() throws Throwable {
-                                    Object instance = BeanProviderFacade.getBeanProvider().getBean(unit.getDeclaringModule().getInterfaceClass());
-                                    if (objects == null)
-                                        return method.invoke(instance);
-                                    else
-                                        return method.invoke(instance, objects);
+                                    if (isDevModel("websocket")) {
+                                        return void.class.equals(unit.getGenericReturnType()) ?
+                                                null :
+                                                MockerFacade.mock(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
+                                    } else {
+                                        Object instance = BeanProviderFacade.getBeanProvider().getBean(unit.getDeclaringModule().getInterfaceClass());
+                                        if (objects == null)
+                                            return method.invoke(instance);
+                                        else
+                                            return method.invoke(instance, objects);
+                                    }
 
                                 }
                             });

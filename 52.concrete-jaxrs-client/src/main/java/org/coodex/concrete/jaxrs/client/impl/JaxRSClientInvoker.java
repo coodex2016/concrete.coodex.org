@@ -17,12 +17,17 @@
 package org.coodex.concrete.jaxrs.client.impl;
 
 import org.coodex.concrete.client.ClientCommon;
+import org.coodex.concrete.client.MessagePojo;
+import org.coodex.concrete.client.MessageSubscriber;
 import org.coodex.concrete.common.ConcreteServiceLoader;
+import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.common.Token;
+import org.coodex.concrete.common.messages.Message;
 import org.coodex.concrete.jaxrs.client.AbstractRemoteInvoker;
 import org.coodex.concrete.jaxrs.client.JaxRSClientConfigBuilder;
 import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
@@ -31,18 +36,19 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
@@ -117,6 +123,52 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
         client = getClient(domain, context, BUILDER_SPI_FACADE.getInstance().buildConfig());
     }
 
+    private ScheduledExecutorService executorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
+
+    private int pollingState = 0; // -1:服务不支持；0未开始；1轮询中
+
+    private void executePoll() {
+        if (pollingState == -1) return;
+        executorService.schedule(
+                new Runnable() {
+
+                    @Override
+                    public void run() {
+                        String url = domain + (domain.endsWith("/") ? "Concrete" : "/Concrete")
+                                + "/polling/15";
+                        try {
+                            Response response = request(url, HttpMethod.GET, null);
+                            if (response.getStatus() == 404) {
+                                log.warn("polling service not found: {}", domain);
+                                pollingState = -1;
+                            } else if (response.getStatus() / 100 == 2) {
+                                try {
+                                    List<MessagePojo<Object>> messages = response.readEntity(new GenericType<List<MessagePojo<Object>>>() {
+                                    });
+                                    for (Message<Object> message : messages) {
+                                        MessageSubscriber.next(message.getSubject(), JSONSerializerFactory.getInstance().toJson(message.getBody()));
+                                    }
+                                } finally {
+                                    executePoll();
+                                }
+                            }
+                        } catch (Throwable e) {
+                            log.error(e.getLocalizedMessage(), e);
+                        }
+
+                    }
+                }, 50, TimeUnit.MILLISECONDS
+        );
+
+    }
+
+    private synchronized void polling() {
+        if (pollingState == 0) {
+            pollingState = 1;
+            executePoll();
+        }
+    }
+
     @Override
     protected Object invoke(String url, Unit unit, Object toSubmit) throws Throwable {
 
@@ -128,6 +180,8 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
             ClientCommon.setTokenId(tokenKey, tokenId);
         }
         getCookieManager(domain).store(response.getCookies().values());
+        // polling
+        polling();
         String body = response.readEntity(String.class);
         return processResult(response.getStatus(), body, unit,
                 response.getHeaders().keySet().contains(HEADER_ERROR_OCCURRED), url);
@@ -139,7 +193,7 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
         Invocation.Builder builder = client.target(url).request();
         StringBuilder str = new StringBuilder();
         str.append("url: ").append(url).append("\n").append("method: ").append(method);
-        Subjoin subjoin = getServiceContext().getSubjoin();
+        Subjoin subjoin = getServiceContext() == null ? null : getServiceContext().getSubjoin();
         String tokenId = ClientCommon.getTokenId(Common.isBlank(tokenManagerKey) ? domain : tokenManagerKey);
         if (subjoin != null || !Common.isBlank(tokenId)) {
             str.append("\nheaders:");

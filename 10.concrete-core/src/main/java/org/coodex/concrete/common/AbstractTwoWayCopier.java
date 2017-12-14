@@ -21,6 +21,7 @@ import java.util.Collection;
 /**
  * Created by davidoff shen on 2017-05-11.
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractTwoWayCopier<A, B>
         extends AbstractCopierCommon<A, B>
         implements TwoWayCopier<A, B> {

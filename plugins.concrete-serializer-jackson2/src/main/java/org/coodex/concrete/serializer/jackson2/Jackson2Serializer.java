@@ -39,6 +39,7 @@ public class Jackson2Serializer extends AbstractJsonSerializer {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T parse(String json, Type t) {
         try {
             if (t instanceof Class) {

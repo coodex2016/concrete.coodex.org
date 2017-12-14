@@ -89,6 +89,7 @@ public class RBACHelper {
         if(account == null) throw new RuntimeException("account MUST be NOT NULL.");
 
         Set<String> accountDomainRoles = new HashSet<String>();
+        @SuppressWarnings("unchecked")
         Set<String> accountRoles = account.getRoles();
         if (accountRoles != null) {
             if (Common.isBlank(domain)) {

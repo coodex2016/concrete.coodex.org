@@ -32,6 +32,7 @@ public abstract class AbstractSpecificationsMaker<C, T> implements Specification
         return wrapper(make(condition, null));
     }
 
+    @SuppressWarnings("unchecked")
     public Specifications<T> make(C condition, String name) {
 
         name = name == null ? "" : name;

@@ -29,6 +29,7 @@ import java.util.Collection;
  *
  * @author sujiwu@126.com
  */
+@SuppressWarnings("unchecked")
 public class SpecCommon {
 
     public static <ATTR, E> Path<ATTR> getPath(Root<E> root, String attrName) {
@@ -101,12 +102,20 @@ public class SpecCommon {
         return spec(logical, attributeName, attributes);
     }
 
+    @Deprecated
     public static <ENTITY, ATTR> Specification<ENTITY> spec(
             Operators.Logical logical,
             String attributeName,
             ATTR... attributes) {
 
-        return new Spec<ENTITY, ATTR>(logical, attributeName, attributes);
+        return $spec(logical, attributeName, attributes);
+    }
+
+    protected static <E, A> Specification<E> $spec(Operators.Logical logical,
+                                                   String attributeName,
+                                                   A... attributes) {
+
+        return new Spec<E, A>(logical, attributeName, attributes);
     }
 
     @Deprecated
@@ -116,10 +125,211 @@ public class SpecCommon {
         return memberOf(attributeName, attr);
     }
 
+    /**
+     * where attr in E.attribute
+     * @param attributeName
+     * @param attr
+     * @param <ENTITY>
+     * @param <ATTR>
+     * @return
+     */
     public static <ENTITY, ATTR> Specification<ENTITY> memberOf(String attributeName, ATTR attr) {
 
         return new MemberOfSpec<ATTR, ENTITY>(attributeName, attr);
     }
+
+    /**
+     * where E.attribute < value
+     *
+     * @param attributeName
+     * @param value
+     * @param <E>
+     * @param <A>
+     * @return
+     */
+    public static <E, A> Specification<E> lessThen(String attributeName, A value) {
+        return $spec(Operators.Logical.LESS, attributeName, value);
+    }
+
+    /**
+     * where E.attribute <= value
+     *
+     * @param attributeName
+     * @param value
+     * @param <E>
+     * @param <A>
+     * @return
+     */
+    public static <E, A> Specification<E> lessThenEquals(String attributeName, A value) {
+        return $spec(Operators.Logical.LESS_EQUAL, attributeName, value);
+    }
+
+    /**
+     * where E.attribute = value
+     *
+     * @param attributeName
+     * @param value
+     * @param <E>
+     * @param <A>
+     * @return
+     */
+    public static <E, A> Specification<E> equals(String attributeName, A value) {
+        return $spec(Operators.Logical.EQUAL, attributeName, value);
+    }
+
+    /**
+     * where E.attribute &lt;&gt; value
+     *
+     * @param attributeName
+     * @param value
+     * @param <E>
+     * @param <A>
+     * @return
+     */
+    public static <E, A> Specification<E> notEquals(String attributeName, A value) {
+        return $spec(Operators.Logical.NOT_EQUAL, attributeName, value);
+    }
+
+    /**
+     * where E.attribute > value
+     *
+     * @param attributeName
+     * @param value
+     * @param <E>
+     * @param <A>
+     * @return
+     */
+    public static <E, A> Specification<E> greaterThen(String attributeName, A value) {
+        return $spec(Operators.Logical.GREATER, attributeName, value);
+    }
+
+    /**
+     * where E.attribute >= value
+     *
+     * @param attributeName
+     * @param value
+     * @param <E>
+     * @param <A>
+     * @return
+     */
+    public static <E, A> Specification<E> greaterThenEquals(String attributeName, A value) {
+        return $spec(Operators.Logical.GREATER_EQUAL, attributeName, value);
+    }
+
+    /**
+     * where E.attribute like %value%
+     *
+     * @param attributeName
+     * @param value
+     * @param <E>
+     * @return
+     */
+    public static <E> Specification<E> like(String attributeName, String value) {
+        return $spec(Operators.Logical.LIKE, attributeName, value);
+    }
+
+    /**
+     * where E.attribute like value%
+     *
+     * @param attributeName
+     * @param value
+     * @param <E>
+     * @return
+     */
+    public static <E> Specification<E> startWith(String attributeName, String value) {
+        return $spec(Operators.Logical.START_WITH, attributeName, value);
+    }
+
+    /**
+     * where E.attribute like %value
+     *
+     * @param attributeName
+     * @param value
+     * @param <E>
+     * @return
+     */
+    public static <E> Specification<E> endWith(String attributeName, String value) {
+        return $spec(Operators.Logical.END_WITH, attributeName, value);
+    }
+
+    /**
+     * where E.attribute like value
+     *
+     * @param attributeName
+     * @param value
+     * @param <E>
+     * @return
+     */
+    public static <E> Specification<E> customLike(String attributeName, String value) {
+        return $spec(Operators.Logical.CUSTOM_LIKE, attributeName, value);
+    }
+
+    /**
+     * where E.attribute is NULL
+     *
+     * @param attributeName
+     * @param value
+     * @param <E>
+     * @param <A>
+     * @return
+     */
+    public static <E, A> Specification<E> isNull(String attributeName, A value) {
+        return $spec(Operators.Logical.IS_NULL, attributeName, value);
+    }
+
+    /**
+     * where E.attribute is not NULL
+     *
+     * @param attributeName
+     * @param value
+     * @param <E>
+     * @param <A>
+     * @return
+     */
+    public static <E, A> Specification<E> notNull(String attributeName, A value) {
+        return $spec(Operators.Logical.NOT_NULL, attributeName, value);
+    }
+
+
+    /**
+     * where E.attribute in (values)
+     *
+     * @param attributeName
+     * @param values
+     * @param <E>
+     * @param <A>
+     * @return
+     */
+    public static <E, A> Specification<E> in(String attributeName, A ... values) {
+        return $spec(Operators.Logical.IN, attributeName, values);
+    }
+
+    /**
+     * where E.attribute not in (values)
+     *
+     * @param attributeName
+     * @param values
+     * @param <E>
+     * @param <A>
+     * @return
+     */
+    public static <E, A> Specification<E> notIn(String attributeName, A ... values) {
+        return $spec(Operators.Logical.NOT_IN, attributeName, values);
+    }
+
+    /**
+     * where E.attribute between min and max
+     * @param attributeName
+     * @param min
+     * @param max
+     * @param <E>
+     * @param <A>
+     * @return
+     */
+    public static <E, A> Specification<E> between(String attributeName, A min, A max) {
+        return $spec(Operators.Logical.BETWEEN, attributeName, min, max);
+    }
+
 
 
     public static <ENTITY> Specifications<ENTITY> wrapper(Specifications<ENTITY> specifications) {

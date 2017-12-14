@@ -20,6 +20,7 @@ import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.util.ClassNameFilter;
+import org.coodex.util.Common;
 import org.coodex.util.ReflectHelper;
 
 import java.util.*;
@@ -42,10 +43,20 @@ public class JaxRSServiceHelper {
         throw new RuntimeException("no class generator found for " + desc + ".");
     }
 
-    public static Set<Class<?>> generate(String desc, String... packages) {
-        if(packages == null || packages.length == 0){
+    private static String[] addDefaults(String[] packages) {
+        Set<String> set = packages == null ? new HashSet<String>() : Common.arrayToSet(packages);
+        set.add(Polling.class.getPackage().getName());
+        return set.toArray(new String[0]);
+    }
+
+    public synchronized static Set<Class<?>> generate(String desc, String... packages) {
+        if (packages == null || packages.length == 0) {
             packages = ConcreteHelper.getApiPackages();
         }
+
+        packages = addDefaults(packages);
+
+
         Set<Class<?>> classes = new HashSet<Class<?>>();
         ClassGenerator classGenerator = getGenerator(desc);
 
@@ -57,7 +68,6 @@ public class JaxRSServiceHelper {
             for (Module module : modules) {
                 classes.add(classGenerator.generatesImplClass(module));
             }
-
             return classes;
         } catch (Throwable th) {
             throw new RuntimeException(th);

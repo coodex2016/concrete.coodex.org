@@ -18,6 +18,7 @@ package org.coodex.concrete.websocket;
 
 import org.coodex.util.AcceptableService;
 
+@Deprecated
 public interface BroadcastListener extends AcceptableService<String> {
 
     void onBroadcast(String msgId, String hostId, String subject, String content);

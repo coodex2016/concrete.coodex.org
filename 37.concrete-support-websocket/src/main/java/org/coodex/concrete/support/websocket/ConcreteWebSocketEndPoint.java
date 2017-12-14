@@ -17,7 +17,7 @@
 package org.coodex.concrete.support.websocket;
 
 import org.coodex.concrete.common.Assert;
-import org.coodex.concrete.websocket.WebSocket;
+//import org.coodex.concrete.websocket.WebSocket;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -32,13 +32,14 @@ public abstract class ConcreteWebSocketEndPoint/* implements ConcreteWebSocketEn
 
     public ConcreteWebSocketEndPoint() {
         ServerEndpoint serverEndpoint = Assert.isNull(getClass().getAnnotation(ServerEndpoint.class), "use ServerEndpoint plz.");
-        String endPoint = serverEndpoint.value();
+//        String endPoint = serverEndpoint.value();
         synchronized (ConcreteWebSocketEndPoint.class) {
-            try {
-                handle = (WebSocketServerHandle) WebSocket.getEndPoint(endPoint);
-            } catch (Throwable th) {
-                handle = new WebSocketServerHandle(endPoint);
-            }
+            handle = new WebSocketServerHandle();
+//            try {
+//                handle = (WebSocketServerHandle) WebSocket.getEndPoint(endPoint);
+//            } catch (Throwable th) {
+//                handle = new WebSocketServerHandle(endPoint);
+//            }
         }
     }
 

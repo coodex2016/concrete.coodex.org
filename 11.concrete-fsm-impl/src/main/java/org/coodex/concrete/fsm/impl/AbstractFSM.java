@@ -22,10 +22,12 @@ import org.coodex.concrete.fsm.WrongStateException;
 
 public abstract class AbstractFSM<S extends State, FSM extends FiniteStateMachine<S>> implements FiniteStateMachine<S> {
 
+    @SuppressWarnings("unchecked")
     protected S getState() {
         return (S) FSMContextImpl.closureContext.get().getState();
     }
 
+    @SuppressWarnings("unchecked")
     protected FSM getSelf() {
         return (FSM) FSMContextImpl.closureContext.get().getMachine();
     }

@@ -16,12 +16,15 @@
 
 package org.coodex.concrete.core.messages;
 
+import org.coodex.concrete.client.MessageSubscriber;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.messages.Message;
 import org.coodex.concrete.common.messages.MessageFilter;
 import org.coodex.concrete.common.messages.Subscription;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concrete.core.token.TokenWrapper;
+
+import static org.coodex.concrete.common.ConcreteContext.SIDE_LOCAL_INVOKE;
 
 public class TokenBaseSubscription<T> extends AbstractSubscription<T> {
 
@@ -35,13 +38,19 @@ public class TokenBaseSubscription<T> extends AbstractSubscription<T> {
 
     public TokenBaseSubscription(String subject, TokenBaseMessageFilter<T> filter) {
         super(subject, filter);
-        Token token = TokenWrapper.getInstance();
-        if (token == null || !token.isValid())
-            throw new RuntimeException("invalid token.");
-        tokenId = token.getTokenId();
         ServiceContext context = ConcreteContext.getServiceContext();
-        if (context.getCourier() == null)
-            throw new RuntimeException("no courier found.");
+        if (context.getSide() == SIDE_LOCAL_INVOKE) {
+            tokenId = null;
+        } else {
+            Token token = TokenWrapper.getInstance();
+            if (token == null || !token.isValid()) {
+                throw new RuntimeException("invalid token.");
+            }
+            tokenId = token.getTokenId();
+            if (context.getCourier() == null)
+                throw new RuntimeException("no courier found.");
+        }
+
         this.courier = context.getCourier();
     }
 
@@ -52,10 +61,21 @@ public class TokenBaseSubscription<T> extends AbstractSubscription<T> {
 
     @Override
     public void onMessage(Message<T> message) {
-        Token token = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(tokenId, false);
-        if (token == null || !token.isValid()) return;
-        synchronized (token) {
-            this.courier.pushTo(message, token);
+        if (tokenId != null) {
+            Token token = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(tokenId, false);
+            if (token == null || !token.isValid()) {
+                if (subscriber != null) {
+                    subscriber.cancel();
+                }
+                return;
+            }
+            synchronized (token) {
+                this.courier.pushTo(message, token);
+            }
+        } else { // local invoke
+            MessageSubscriber.next(message.getSubject(),
+                    JSONSerializerFactory.getInstance().toJson(message.getBody())
+            );
         }
     }
 

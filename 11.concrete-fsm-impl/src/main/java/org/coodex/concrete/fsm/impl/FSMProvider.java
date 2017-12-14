@@ -37,6 +37,7 @@ public class FSMProvider implements FiniteStateMachineProvider {
     };
 
     @Override
+    @SuppressWarnings("unchecked")
     public <S extends State, FSM extends FiniteStateMachine<? extends S>> FSM getMachine(S state, Class<? extends FSM> machineClass) {
         return (FSM) Proxy.newProxyInstance(
                 machineClass.getClassLoader(),
@@ -64,15 +65,17 @@ class FSMInvocationHandle implements InvocationHandler {
         this.original = original;
     }
 
+//    @SuppressWarnings("unchecked")
     private Class<? extends StateCondition> getCondition(Method action) {
         Guard guard = action.getAnnotation(Guard.class);
-        if (guard != null) return guard.value();
-        StateTransfer transfer = action.getAnnotation(StateTransfer.class);
-        return transfer == null ? null : transfer.value();
+        return (guard != null) ? guard.value(): null;
+//        StateTransfer transfer = action.getAnnotation(StateTransfer.class);
+//        return transfer == null ? null : transfer.value();
     }
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
         synchronized (state) {
             final FSMContextImpl.Context context = FSMContextImpl.closureContext.get();

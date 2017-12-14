@@ -32,7 +32,7 @@ public class Test {
     public static void main(String[] args) throws NoSuchMethodException {
 
         Class x = X.class;
-
+        @SuppressWarnings("unchecked")
         Constructor constructor = x.getConstructor(String.class, String.class);
         System.out.println(constructor.getParameterAnnotations().length);
         System.out.println(ReflectHelper.getParameterName(constructor, 0, "p"));

@@ -20,11 +20,10 @@ import com.alibaba.fastjson.JSON;
 import org.coodex.concrete.api.LogAtomic;
 import org.coodex.concrete.attachments.client.ClientServiceImpl;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.common.messages.PostOffice;
 import org.coodex.concrete.core.messages.MessageHelper;
 import org.coodex.concrete.core.messages.TokenBaseSubscription;
 import org.coodex.concrete.jaxrs.BigString;
-import org.coodex.concrete.websocket.WebSocket;
+import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.practice.jaxrs.api.Calc;
 import org.coodex.practice.jaxrs.api.SaaSExample;
 import org.coodex.practice.jaxrs.api.ServiceExample;
@@ -37,6 +36,7 @@ import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
 
@@ -204,20 +204,21 @@ public class ServiceExampleImpl implements ServiceExample, Calc, SaaSExample {
         return null;
     }
 
+
     @Override
     public void subscribe() {
-        MessageHelper.getPostOffice().subscribe(new TokenBaseSubscription<List<Book>>("abcd"));
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(3000);
-                    MessageHelper.getPostOffice().postMessage("abcd", books);
-                } catch (Throwable th) {
-                    th.printStackTrace();
-                }
-            }
-        }.start();
+        MessageHelper.getPostOffice().subscribe(
+                new TokenBaseSubscription<List<Book>>("abcd")
+        );
+
+        ExecutorsHelper.newScheduledThreadPool(1)
+                .scheduleAtFixedRate(new Thread() {
+                    @Override
+                    public void run() {
+                        MessageHelper.getPostOffice().postMessage("abcd", books);
+                    }
+                }, 3000, 5000000, TimeUnit.MILLISECONDS);
+        ;
     }
 
     @Override

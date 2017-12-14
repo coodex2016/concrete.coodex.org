@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.fsm;
+package org.coodex.concrete.client;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public interface MessageListener<T> {
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-@Deprecated
-public @interface StateTransfer {
-
-    Class<? extends StateCondition> value();
+    void onMessage(T message);
 }

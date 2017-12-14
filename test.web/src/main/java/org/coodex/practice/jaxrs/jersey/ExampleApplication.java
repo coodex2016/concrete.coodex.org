@@ -67,7 +67,7 @@ public class ExampleApplication extends ResourceConfig {
                 }
             }
         }
-        classes.addAll(JaxRSServiceHelper.generate(GENERATOR_NAME, Polling.class.getPackage().getName()));
+//        classes.addAll(JaxRSServiceHelper.generate(GENERATOR_NAME, Polling.class.getPackage().getName()));
         register(ConcreteExceptionMapper.class);
         registerClasses(classes);
 //        register(JaxrsTest.class);

@@ -37,6 +37,7 @@ public class JsonbSerializer extends AbstractJsonSerializer {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T parse(String json, Type t) {
         try {
             return String.class.equals(t) ? (T) json : getInstance().fromJson(json, t);

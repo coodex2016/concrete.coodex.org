@@ -156,6 +156,7 @@ public class JaxRSHelper {
 
     private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<Class<?>, Module>();
 
+    @SuppressWarnings("unchecked")
     public static final synchronized Module getModule(final Class<? extends ConcreteService> type, String... packages) {
         Module module = MODULE_CACHE.get(type);
         if (module == null) {
@@ -197,6 +198,7 @@ public class JaxRSHelper {
         return module;
     }
 
+    @SuppressWarnings("unchecked")
     private static final Set<Class<? extends ConcreteService>> getConcreteServiceClassFrom(
             Class<?> clz, Class<? extends ConcreteService> type) {
         Set<Class<? extends ConcreteService>> set = new HashSet<Class<? extends ConcreteService>>();

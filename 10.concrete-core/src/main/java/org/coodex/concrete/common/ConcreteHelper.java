@@ -311,6 +311,7 @@ public class ConcreteHelper {
 //        return annotation == null ? method.getDeclaringClass().getAnnotation(annotationClass) : annotation;
 //    }
 
+    @SuppressWarnings("unchecked")
     public static List<Class> inheritedChain(Class root, Class sub) {
         if (!ConcreteService.class.isAssignableFrom(root)) return null;
 //        Stack<Class<?>> inheritedChain = new Stack<Class<?>>();
@@ -342,5 +343,15 @@ public class ConcreteHelper {
 
     public static String getAppSet() {
         return getProfile().getString("concrete.appSet");
+    }
+
+    public static String devModelKey(String module) {
+        return "org.coodex.concrete" + (
+                Common.isBlank(module) ? "" : ("." + module)
+        ) + ".devMode";
+    }
+
+    public static boolean isDevModel(String module) {
+        return System.getProperty(devModelKey(module)) != null || System.getProperty(devModelKey(null)) != null;
     }
 }

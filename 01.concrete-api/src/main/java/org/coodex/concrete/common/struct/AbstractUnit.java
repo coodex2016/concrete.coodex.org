@@ -156,7 +156,7 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
     public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
         return method.getAnnotation(annotationClass);
     }
-
+    @SuppressWarnings("unchecked")
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         T annotation = getDeclaredAnnotation(annotationClass);
         return annotation == null ?

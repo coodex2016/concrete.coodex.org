@@ -28,8 +28,8 @@ public abstract class AbstractCopier<SRC, TARGET>
         extends AbstractCopierCommon<SRC, TARGET>
         implements Copier<SRC, TARGET> {
 
-//    private Class targetClass;
-
+    //    private Class targetClass;
+    @SuppressWarnings("unchecked")
     public TARGET newTargetObject() {
         return (TARGET) newObject(Index.B);
 //        synchronized (this) {
@@ -47,6 +47,7 @@ public abstract class AbstractCopier<SRC, TARGET>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public TARGET initTargetObject(TARGET target) {
         return (TARGET) init(target, Index.B);
     }
@@ -65,13 +66,14 @@ public abstract class AbstractCopier<SRC, TARGET>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected Object copy(Object o, Index srcIndex) {
-        return copy((SRC)o);
+        return copy((SRC) o);
     }
 
     @Override
     public <T extends Collection<TARGET>> T copy(Collection<SRC> srcCollection, Class<T> clazz) {
-        return copy(srcCollection,clazz, Index.A);
+        return copy(srcCollection, clazz, Index.A);
 //        if (srcCollection == null) throw new NullPointerException("srcCollection is NULL.");
 //        Collection<TARGET> collection = null;
 //        if (List.class.equals(clazz)) {
@@ -97,7 +99,7 @@ public abstract class AbstractCopier<SRC, TARGET>
 
     @Override
     public Collection<TARGET> copy(Collection<SRC> srcCollection) {
-        return copy(srcCollection,Index.A);
+        return copy(srcCollection, Index.A);
 //        Class<? extends Collection> clazz = srcCollection.getClass();
 //        if (List.class.isAssignableFrom(clazz)) {
 //            return copy(srcCollection, List.class);

@@ -34,7 +34,9 @@ import javax.ws.rs.PathParam;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.coodex.concrete.jaxrs.ClassGenerator.FRONTEND_DEV_MODE;
+//import static org.coodex.concrete.jaxrs.ClassGenerator.FRONTEND_DEV_MODE;
+//import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
+//import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 import static org.coodex.concrete.support.jaxrs.javassist.CGContext.CLASS_POOL;
 
 
@@ -95,9 +97,9 @@ public abstract class AbstractMethodGenerator {
         return parameters;
     }
 
-    protected final CtClass[] getParameterTypesForDemo(Class pojoClass) {
-        return getParameterTypesWith(pojoClass);
-    }
+//    protected final CtClass[] getParameterTypesForDemo(Class pojoClass) {
+//        return getParameterTypesWith(pojoClass);
+//    }
 
     /**
      * @return 获取参数签名类型
@@ -170,36 +172,36 @@ public abstract class AbstractMethodGenerator {
         return ctClass.toClass();
     }
 
-    protected final SignatureAttribute.Type[] getSignatureTypesForDemo(Class pojoClass) {
-        return getSignatureTypesWith(pojoClass);
-    }
+//    protected final SignatureAttribute.Type[] getSignatureTypesForDemo(Class pojoClass) {
+//        return getSignatureTypesWith(pojoClass);
+//    }
 
     /**
      * @return 获取方法源码
      */
     protected abstract String getMethodBody(Class pojoClass);
 
-    protected final String getMethodBodyForDemo() {
-        return "{return ($r)mockResult(\"" + getUnit().getFunctionName() + "\");}";
-    }
+//    protected final String getMethodBodyForDemo() {
+//        return "{return ($r)mockResult(\"" + getUnit().getFunctionName() + "\");}";
+//    }
 
     /**
      * @return 方法返回类型签名
      */
     protected abstract SignatureAttribute.Type getReturnSignatureType();
 
-    protected final SignatureAttribute.Type getReturnSignatureTypeForDemo() {
-        return JavassistHelper.classType(unit.getGenericReturnType(), context.getServiceClass());
-    }
+//    protected final SignatureAttribute.Type getReturnSignatureTypeForDemo() {
+//        return JavassistHelper.classType(unit.getGenericReturnType(), context.getServiceClass());
+//    }
 
     /**
      * @return 方法返回类型
      */
     protected abstract CtClass getReturnType();
 
-    protected CtClass getReturnTypeForDemo() {
-        return CLASS_POOL.getOrNull(unit.getReturnType().getName());
-    }
+//    protected CtClass getReturnTypeForDemo() {
+//        return CLASS_POOL.getOrNull(unit.getReturnType().getName());
+//    }
 
 
     /**
@@ -261,17 +263,18 @@ public abstract class AbstractMethodGenerator {
 
 
     final CtMethod generateMethod(String methodName) throws CannotCompileException {
+//        boolean isDevModel = isDevModel("jaxrs");
         Class pojoClass = pojoClass();
         // 方法名、参数及签名
         CtMethod spiMethod = new CtMethod(
-                FRONTEND_DEV_MODE ? getReturnTypeForDemo() : getReturnType(),
+                /*isDevModel ? getReturnTypeForDemo() : */getReturnType(),
                 methodName,
-                FRONTEND_DEV_MODE ? getParameterTypesForDemo(pojoClass) : getParameterTypes(pojoClass),
+                /*isDevModel ? getParameterTypesForDemo(pojoClass) : */getParameterTypes(pojoClass),
                 context.getNewClass());
 
-        AttributeInfo attribute = FRONTEND_DEV_MODE
+        AttributeInfo attribute = /*isDevModel
                 ? getParameterAnnotationsAttributeForDemo()
-                : getParameterAnnotationsAttribute();
+                : */getParameterAnnotationsAttribute();
 
         if (attribute != null)
             spiMethod.getMethodInfo().addAttribute(attribute);
@@ -281,14 +284,14 @@ public abstract class AbstractMethodGenerator {
         spiMethod.setGenericSignature(
                 new SignatureAttribute.MethodSignature(
                         null,
-                        FRONTEND_DEV_MODE ? getSignatureTypesForDemo(pojoClass) : getSignatureTypes(pojoClass),
-                        FRONTEND_DEV_MODE ? getReturnSignatureTypeForDemo() : getReturnSignatureType(),
+                        /*isDevModel ? getSignatureTypesForDemo(pojoClass) : */getSignatureTypes(pojoClass),
+                        /*isDevModel ? getReturnSignatureTypeForDemo() : */getReturnSignatureType(),
                         null).encode()
         );
 
 
         // body
-        spiMethod.setBody(FRONTEND_DEV_MODE ? getMethodBodyForDemo() : getMethodBody(pojoClass));
+        spiMethod.setBody(/*isDevModel ? getMethodBodyForDemo() :*/ getMethodBody(pojoClass));
 
         // 增加JSR311定义
         spiMethod.getMethodInfo().addAttribute(

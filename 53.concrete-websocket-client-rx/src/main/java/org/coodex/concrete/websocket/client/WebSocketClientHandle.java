@@ -20,12 +20,14 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.client.ClientCommon;
+import org.coodex.concrete.client.MessageSubscriber;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.struct.AbstractParam;
 import org.coodex.concrete.core.intercept.AsyncInterceptorChain;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.websocket.*;
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +46,13 @@ import java.util.concurrent.TimeUnit;
 
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 import static org.coodex.concrete.common.ConcreteContext.runWithContext;
+import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 import static org.coodex.concrete.websocket.Constants.*;
 
 @ClientEndpoint(configurator = SetUserAgentConfigurator.class)
 public class WebSocketClientHandle {
 
+    @Deprecated
     private static class Client extends WebSocket {
         static Set<BroadcastListener> getRegisteredListeners() {
             return getListeners();
@@ -78,6 +82,7 @@ public class WebSocketClientHandle {
     private WebSocketClientHandle() {
     }
 
+    @SuppressWarnings("unchecked")
     ObservableOnSubscribe buildObservable(
             final String domain,
             final String tokenManagerKey,
@@ -107,7 +112,7 @@ public class WebSocketClientHandle {
 
                     final Session session = Assert.isNull(getSession(domain), WebSocketErrorCodes.CANNOT_OPEN_SESSION, domain);
 
-                    String msgId = Common.getUUIDStr();
+                    final String msgId = Common.getUUIDStr();
                     final String tokenKey = Common.isBlank(tokenManagerKey) ? domain : tokenManagerKey;
                     final RequestPackage requestPackage = buildRequest(msgId, unit, args);
                     final WebSocketCallback callback = registerCallback(
@@ -126,7 +131,31 @@ public class WebSocketClientHandle {
                                         if (!Common.isBlank(ClientCommon.getTokenId(tokenKey)))
                                             requestPackage.setConcreteTokenId(ClientCommon.getTokenId(tokenKey));
                                         requestPackage.setSubjoin(((WebSocketSubjoin) getServiceContext().getSubjoin()).toMap());
-                                        sendRequest(requestPackage, session);
+                                        if (isDevModel("websocket.client")) {
+                                            final ResponsePackage responsePackage = new ResponsePackage();
+                                            responsePackage.setMsgId(msgId);
+                                            responsePackage.setOk(true);
+                                            responsePackage.setContent(
+                                                    void.class.equals(unit.getGenericReturnType()) ? null :
+                                                            MockerFacade.mock(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass())
+
+                                            );
+                                            new Thread() {
+                                                @Override
+                                                public void run() {
+                                                    try {
+                                                        onMessage(
+                                                                JSONSerializerFactory.getInstance().toJson(responsePackage),
+                                                                session
+                                                        );
+                                                    } catch (IOException e1) {
+                                                        throw new RuntimeException(e1.getLocalizedMessage(), e1);
+                                                    }
+                                                }
+                                            }.start();
+                                        } else {
+                                            sendRequest(requestPackage, session);
+                                        }
                                         return null;
                                     }
                                 });
@@ -163,6 +192,7 @@ public class WebSocketClientHandle {
         return webSocketCallback;
     }
 
+    @SuppressWarnings("unchecked")
     private RequestPackage buildRequest(String msgId, WebSocketUnit unit, Object[] args) {
         RequestPackage requestPackage = new RequestPackage();
         requestPackage.setMsgId(msgId);
@@ -234,7 +264,6 @@ public class WebSocketClientHandle {
     }
 
 
-
     @OnClose
     public void onClose(Session session) throws IOException {
         log.debug("session {} closed.", session.getId());
@@ -264,8 +293,7 @@ public class WebSocketClientHandle {
         }
     }
 
-
-
+    @SuppressWarnings("unchecked")
     private void onReturn(ResponsePackage<Object> responsePackage, final Session session) {
         final WebSocketCallback callback = callbackMap.get(responsePackage.getMsgId());
         if (callback == null) {
@@ -280,7 +308,7 @@ public class WebSocketClientHandle {
         try {
             Object result = null;
 
-            if(!Common.isBlank(responsePackage.getConcreteTokenId())){
+            if (!Common.isBlank(responsePackage.getConcreteTokenId())) {
                 ClientCommon.setTokenId(callback.getTokenManagerKey(), responsePackage.getConcreteTokenId());
             }
 
@@ -325,10 +353,12 @@ public class WebSocketClientHandle {
 //        );
 //    }
 
+    @Deprecated
     private final static AcceptableServiceLoader<String, BroadcastListener> listenerLoader
             = new AcceptableServiceLoader<String, BroadcastListener>(new ConcreteServiceLoader<BroadcastListener>() {
     });
 
+    @Deprecated
     private boolean handleBroadcast(BroadcastListener listener, ResponsePackage<Object> responsePackage) {
         try {
             String subject = responsePackage.getSubjoin().get(SUBJECT);
@@ -346,17 +376,19 @@ public class WebSocketClientHandle {
     }
 
     private void onBroadcast(ResponsePackage<Object> responsePackage, Session session) {
-        boolean handle = false;
-        String subject = responsePackage.getSubjoin().get(SUBJECT);
-        for (BroadcastListener listener : Client.getRegisteredListeners()) {
-            if (handleBroadcast(listener, responsePackage)) handle = true;
-        }
-        for (BroadcastListener listener : listenerLoader.getAllInstances()) {
-            if (handleBroadcast(listener, responsePackage)) handle = true;
-        }
-        if (!handle) {
-            log.warn("no listener found for subject [{}]: \n {}", subject, responsePackage.getContent());
-        }
+        MessageSubscriber.next(responsePackage.getSubjoin().get(SUBJECT),
+                toJson(responsePackage.getContent()));
+//        boolean handle = false;
+//        String subject = responsePackage.getSubjoin().get(SUBJECT);
+//        for (BroadcastListener listener : Client.getRegisteredListeners()) {
+//            if (handleBroadcast(listener, responsePackage)) handle = true;
+//        }
+//        for (BroadcastListener listener : listenerLoader.getAllInstances()) {
+//            if (handleBroadcast(listener, responsePackage)) handle = true;
+//        }
+//        if (!handle) {
+//            log.warn("no listener found for subject [{}]: \n {}", subject, responsePackage.getContent());
+//        }
     }
 
 

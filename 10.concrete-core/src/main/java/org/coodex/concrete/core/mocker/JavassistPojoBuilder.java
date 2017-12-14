@@ -155,6 +155,7 @@ public class JavassistPojoBuilder implements PojoBuilder {
         if (instance instanceof JavassistPojo) {
             Class c = classCache.get(((JavassistPojo) instance).__key());
             if (property.getMethod() != null) {
+                @SuppressWarnings("unchecked")
                 Method method = c.getMethod(getSetterName(property.getName()), new Class[]{MockerFacade.getComponentClass(property.getType())});
                 method.invoke(instance, value);
             }
@@ -162,6 +163,7 @@ public class JavassistPojoBuilder implements PojoBuilder {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object get(Object instance, PojoProperty property) throws Throwable {
         if (instance instanceof JavassistPojo) {
             Class c = classCache.get(((JavassistPojo) instance).__key());

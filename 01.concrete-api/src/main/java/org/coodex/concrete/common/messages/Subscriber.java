@@ -21,4 +21,6 @@ public interface Subscriber<T> {
 
     Subscription<T> getSubscription();
 
+    void cancel();
+
 }

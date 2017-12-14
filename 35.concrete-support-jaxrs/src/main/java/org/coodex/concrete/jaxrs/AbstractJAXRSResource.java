@@ -44,6 +44,7 @@ import static org.coodex.util.TypeHelper.typeToClass;
  */
 public abstract class AbstractJAXRSResource<T extends ConcreteService> {
 
+
     public static final String TOKEN_ID_IN_COOKIE = CONCRETE_TOKEN_ID_KEY;
 
     private final Class<T> clz = getInterfaceClass();
@@ -57,6 +58,9 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
     @Context
     protected HttpServletRequest httpRequest;
 
+    private static boolean isDevModel() {
+        return ConcreteHelper.isDevModel("jaxrs");
+    }
 
     @SuppressWarnings("unchecked")
     private <R> R convert(R result) {
@@ -94,21 +98,21 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         return Thread.currentThread().getStackTrace()[deep + 2].getMethodName();
     }
 
-    protected final Object mockResult(String methodName) {
-        return __mockResult(methodName);
-    }
+//    protected final Object mockResult(String methodName) {
+//        return __mockResult(methodName);
+//    }
 
-    private Object __mockResult(String methodName) {
-        try {
-            Method method = findMethod(methodName, null);
-            if (method.getReturnType() == void.class)
-                return null;
-            else
-                return convert(MockerFacade.mock(method, getInterfaceClass()));
-        } catch (Throwable th) {
-            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
-        }
-    }
+//    private Object __mockResult(String methodName) {
+//        try {
+//            Method method = findMethod(methodName, null);
+//            if (method.getReturnType() == void.class)
+//                return null;
+//            else
+//                return convert(MockerFacade.mock(method, getInterfaceClass()));
+//        } catch (Throwable th) {
+//            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
+//        }
+//    }
 
     private final Map<String, Method> methodMap = new HashMap<String, Method>();
 
@@ -164,7 +168,7 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
      * @return 接口定义method的参数类型
      */
     private Class<?>[] getParameterTypes(Class<?>[] parameterTypes) {
-        if (ClassGenerator.FRONTEND_DEV_MODE) {
+        if (isDevModel()) {
             return parameterTypes;
         } else {
             int count = parameterTypes.length - getMethodStartIndex();
@@ -220,14 +224,14 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
             if (result instanceof String) {
                 builder = textType(builder);
             } else {
-//                builder =
+                builder = jsonType(builder);
             }
         }
 
         return builder.build();
     }
 
-    public class ResponseBuilder{
+    public class ResponseBuilder {
         private final String tokenId;
         private final Method method;
         private final Object[] params;
@@ -238,7 +242,7 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
             this.params = params;
         }
 
-        public Response build(RunWithToken runWithToken){
+        public Response build(RunWithToken runWithToken) {
             return buildResponse(tokenId, method, params, runWithToken);
         }
 
@@ -311,12 +315,16 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
                                 new ConcreteClosure() {
 
                                     public Object concreteRun() throws Throwable {
-
-                                        Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
-                                        if (paramCount == 0)
-                                            return method.invoke(instance);
-                                        else
-                                            return method.invoke(instance, params);
+                                        if (!Polling.class.equals(method.getDeclaringClass()) && isDevModel()) {
+                                            return void.class.equals(method.getGenericReturnType()) ? null :
+                                                    MockerFacade.mock(method, getInterfaceClass());
+                                        } else {
+                                            Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
+                                            if (paramCount == 0)
+                                                return method.invoke(instance);
+                                            else
+                                                return method.invoke(instance, params);
+                                        }
 
                                     }
                                 }));

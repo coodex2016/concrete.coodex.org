@@ -43,6 +43,7 @@ public class Operators {
     /**
      * Created by davidoff shen on 2017-03-17.
      */
+    @SuppressWarnings("unchecked")
     abstract static class AbstractOperator implements Operator {
 
         protected abstract <ATTR> void check(ATTR[] attributes);
@@ -116,6 +117,7 @@ public class Operators {
      * TODO 需要考虑转义符怎么处理
      * Created by davidoff shen on 2017-03-17.
      */
+    @SuppressWarnings("unchecked")
     abstract static class AbstractLikeOperator extends SingleParamOperator {
 
         protected abstract String toPattern(String value);
@@ -209,6 +211,7 @@ public class Operators {
     /**
      * Created by davidoff shen on 2017-03-17.
      */
+    @SuppressWarnings("unchecked")
     public static class LessOperator extends SingleParamOperator {
         @Override
         public Logical getLogical() {
@@ -239,6 +242,7 @@ public class Operators {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected <ATTR> Predicate buildPredicate(Path<ATTR> attrPath, CriteriaBuilder cb, ATTR[] attributes) {
 //            if (attributes[0] instanceof Number) {
 //                return cb.le((Path<Number>) attrPath, (Number) attributes[0]);
@@ -296,6 +300,7 @@ public class Operators {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected <ATTR> Predicate buildPredicate(Path<ATTR> attrPath, CriteriaBuilder cb, ATTR[] attributes) {
             if (attributes[0] instanceof Comparable) {
                 return cb.between((Path<? extends Comparable>) attrPath, (Comparable) attributes[0], (Comparable) attributes[1]);
@@ -315,6 +320,7 @@ public class Operators {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected <ATTR> Predicate buildPredicate(Path<ATTR> attrPath, CriteriaBuilder cb, ATTR[] attributes) {
 //            if (attributes[0] instanceof Number) {
 //                return cb.gt((Path<Number>) attrPath, (Number) attributes[0]);
@@ -337,6 +343,7 @@ public class Operators {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected <ATTR> Predicate buildPredicate(Path<ATTR> attrPath, CriteriaBuilder cb, ATTR[] attributes) {
 //            if (attributes[0] instanceof Number) {
 //                return cb.ge((Path<Number>) attrPath, (Number) attributes[0]);

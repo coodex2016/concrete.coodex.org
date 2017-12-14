@@ -51,6 +51,7 @@ public class CountFacadeProvider implements CountFacade {
     private final static ServiceLoader<Counter> counterProvider = new ConcreteServiceLoader<Counter>() {
     };
 
+    @SuppressWarnings("unchecked")
     private void buildMap() {
         TypeVariable t = Counter.class.getTypeParameters()[0];
         chainMap = new HashMap<Class, CounterChain>();
@@ -133,6 +134,7 @@ public class CountFacadeProvider implements CountFacade {
             = ExecutorsHelper.newScheduledThreadPool(ConcreteHelper.getProfile().getInt("counter.thread.pool.size", 10));
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends Countable> void count(final T value) {
         synchronized (CountFacadeProvider.class) {
             if (chainMap == null)

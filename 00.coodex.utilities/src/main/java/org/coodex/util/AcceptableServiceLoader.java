@@ -41,7 +41,7 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
     }
 
 
-
+    @SuppressWarnings("unchecked")
     private boolean accept(T instance, Param_Type param) {
         Class tClass = instance.getClass();
         Class paramClass = param == null ? null : param.getClass();

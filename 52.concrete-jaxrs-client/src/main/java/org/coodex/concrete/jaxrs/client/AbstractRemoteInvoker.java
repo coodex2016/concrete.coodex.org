@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
+
 /**
  * Created by davidoff shen on 2016-12-07.
  */
@@ -82,7 +84,7 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
         return new ClientMethodInvocation(instance, unit, args) {
             @Override
             public Object proceed() throws Throwable {
-                if (ClassGenerator.FRONTEND_DEV_MODE) {
+                if (isDevModel("jaxrs.client")) {
                     return MockerFacade.mock(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
                 } else {
 

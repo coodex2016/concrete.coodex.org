@@ -31,4 +31,9 @@ public class SubscriberImpl<T> implements Subscriber<T> {
     public Subscription<T> getSubscription() {
         return subscription;
     }
+
+    @Override
+    public void cancel() {
+        MessageHelper.getPostOffice().cancel(this);
+    }
 }

@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 /**
  * Created by davidoff shen on 2017-03-21.
  */
+@Deprecated
 public class PageCopier {
 
     @Deprecated

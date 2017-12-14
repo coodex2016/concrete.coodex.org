@@ -17,12 +17,19 @@
 package org.coodex.concrete.core.messages;
 
 import org.coodex.concrete.common.messages.MessageFilter;
+import org.coodex.concrete.common.messages.Subscriber;
 import org.coodex.concrete.common.messages.Subscription;
 
 public abstract class AbstractSubscription<T> implements Subscription<T> {
     private final String subject;
     private final MessageFilter<T> filter;
+    protected Subscriber<T> subscriber;
 
+
+    @Override
+    public void setSubscriber(Subscriber<T> subscriber) {
+        this.subscriber = subscriber;
+    }
 
     public AbstractSubscription(String subject, MessageFilter<T> filter) {
         this.subject = subject;

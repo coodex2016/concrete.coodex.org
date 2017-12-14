@@ -25,9 +25,10 @@ import org.coodex.concrete.rx.ReactiveExtensionFor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
+@SuppressWarnings("unchecked")
 public class WebSocketClientProvider implements RXClientProvider {
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getInstance(Class<T> clz, final ClientCommon.Domain domain, final String tokenManagerKey) {
         try {
 

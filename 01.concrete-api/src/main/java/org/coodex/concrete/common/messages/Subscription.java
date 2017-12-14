@@ -25,4 +25,6 @@ public interface Subscription<T> {
     void onMessage(Message<T> message);
 
     boolean isSame(Subscription anotherSubscription);
+
+    void setSubscriber(Subscriber<T> subscriber);
 }

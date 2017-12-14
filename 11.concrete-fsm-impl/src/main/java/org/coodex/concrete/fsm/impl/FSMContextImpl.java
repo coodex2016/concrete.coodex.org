@@ -45,11 +45,13 @@ public class FSMContextImpl implements FSMContext {
     static ClosureContext<Context> closureContext = new StackClosureContext<Context>();
 
     @Override
+    @SuppressWarnings("unchecked")
     public <S extends State> S getState() {
         return (S) closureContext.get().getState();
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <FSM extends FiniteStateMachine> FSM getMachine() {
         return (FSM) closureContext.get().getMachine();
     }

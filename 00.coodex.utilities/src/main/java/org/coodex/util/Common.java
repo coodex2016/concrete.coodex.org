@@ -35,6 +35,7 @@ public class Common {
     public static final String FILE_SEPARATOR = System
             .getProperty("file.separator");
 
+    @SuppressWarnings("unchecked")
     public static <T> Set<T> arrayToSet(T[] array) {
         Set<T> set = new HashSet<T>();
         for (T t : array) {
@@ -226,6 +227,7 @@ public class Common {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     private static <T, C extends Collection<T>> C join(C instance, Collection... collections) {
         if (collections != null && collections.length > 0) {
             for (Collection c : collections) {
@@ -407,8 +409,10 @@ public class Common {
     }
 
     public static String[] toArray(String str, String delim, String[] v) {
-        return toArray(str, delim, v == null ? new ArrayList<String>() : Arrays.asList(v))
-                .toArray(new String[0]);
+        List<String> list = toArray(str, delim, v == null ? null : Arrays.asList(v));
+        return list == null ? null : list.toArray(new String[0]);
+//        return toArray(str, delim, v == null ? new ArrayList<String>() : Arrays.asList(v))
+//                .toArray(new String[0]);
     }
 
     private static boolean inArray(char ch, char[] chars) {
@@ -573,6 +577,7 @@ public class Common {
 
     /**
      * http://www.cnblogs.com/yujunyong/articles/2004724.html
+     *
      * @param strA
      * @param strB
      * @return
@@ -600,15 +605,18 @@ public class Common {
 
     /**
      * 两个字符串的相似度
+     *
      * @param s1
      * @param s2
      * @return
      */
-    public static double similarity(String s1, String s2){
-        if(s1 == null || s2 == null) return 0.0f;
-        if(s1.equals(s2)) return 1.0f;
-        return 1.0f - calculateStringDistance(s1, s2)/(Math.max(s1.length(), s2.length()) * 1.0f);
+    public static double similarity(String s1, String s2) {
+        if (s1 == null || s2 == null) return 0.0f;
+        if (s1.equals(s2)) return 1.0f;
+        return 1.0f - calculateStringDistance(s1, s2) / (Math.max(s1.length(), s2.length()) * 1.0f);
     }
 
-//    public static Locale
+    public static void main(String [] args){
+        System.out.println(Profile.getProfile("a.properties").getStrList("aaa"));
+    }
 }

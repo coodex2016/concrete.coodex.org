@@ -77,6 +77,7 @@ public class PojoProperty {
         return name;
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         if (annotationClass == null) return null;
         for(Annotation annotation: getAnnotations()) {

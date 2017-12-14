@@ -28,6 +28,7 @@ import java.util.Hashtable;
 * @author Happy Fish / YuQing
 * @version Version 1.0
 */
+@SuppressWarnings("unchecked")
 public class IniFileReader
 {
 	private Hashtable paramTable;
@@ -136,7 +137,7 @@ public class IniFileReader
 		System.arraycopy(objs, 0, values, 0, objs.length);
 		return values;
 	}
-	
+
 	private void loadFromFile(String conf_filename) throws FileNotFoundException, IOException
 	{
 		FileReader fReader;

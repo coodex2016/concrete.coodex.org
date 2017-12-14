@@ -70,6 +70,7 @@ public class DefaultSignatureSerializer implements SignatureSerializer {
             return toSign(values).getBytes();
     }
 
+    @SuppressWarnings("unchecked")
     private String joint(String key, Object o, boolean first) {
         if (o == null)
             return null;

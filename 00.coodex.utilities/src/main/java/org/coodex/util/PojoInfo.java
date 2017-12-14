@@ -110,6 +110,7 @@ public class PojoInfo {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private boolean isReadOnly(Method method) {
         try {
             rowType.getMethod(

@@ -25,6 +25,135 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2017-12-14
+
+- jaxrs: 规范tokenKey的header，使用`-`替换`_`
+- 修复devMode下，String类型containType不正确的问题
+- api-tools: angular api的Broadcast服务增加doPolling()接口，用于断线重连
+- 增加javaclient对消息推送的支持:
+    - 使用`org.coodex.concrete.client.MessageSubscriber.subscribe(String subject, MessageListener<T> listener)`进行订阅
+    - 原WebSocket的收发代码模式废弃
+
+## 2017-12-06
+
+- bugfix: coodex-utilities, Profile的getStrList接口默认值为null但是返回零长度数组的问题
+
+## 2017-11-27
+
+- concrete-commons-spring-data: SpecCommon增加表达式相关的接口，原SpecCommon.spec接口声明作废，
+
+## 2017-11-24
+
+- 调整模拟数据的参数，优先级为org.coodex.concrete.XXXX.devMode > org.coodex.concrete.devMode, XXXX可选范围如下：
+    - jaxrs: jsr311/339 support
+    - websocket: jsr356 support
+    - jaxrs.client: jaxrs java客户端
+    - websocket.client: websocket java 客户端
+- jaxrs-support: Polling模块自动加载，无需额外注册
+
+## 2017-11-22
+
+- concrete-api: 
+    - 增加消息推送模型
+- concrete-core: 
+    - 增加消息推送模型的实现，提供基于Token的消息过滤器，提供LocalPostOffice，集群应用时，可自行基于JMS或者其他消息通信方式实现跨主机的PostOffice，只需在消息到达时调用AbstractPostOffice的分发功能即可；
+    - 【BUG FIXED】 
+        - bug: 因为PriorityBlockingQueue是无界的，最大值无效，所以，concrete默认是单线程再跑服务 - -#
+        - 修改业务线程池模型，只要线程池还有空闲线程就执行任务，线程池满时才放入优先级队列等待资源。因为concrete大量使用了本地线程变量，此模型较java本身的无界队列线程池模型保障了可用性的前提下更有利于资源回收
+- concrete-support-websocket: 
+    - 支持消息推送模型，deprecated原推送接口
+- concrete-support-jaxrs: 
+    - 支持消息推送模型，基于token过滤消息，服务端消息缓存5分钟。提供Polling接口，客户端可指定轮询超时时间，单位为秒，jsr339支持后端非阻塞获取消息，不占用业务线程池资源
+- concrete-api-tools: 
+    - 增加jQuery jaxrs对消息推送模型的支持，订阅消息通过configuration的onBroadcast(msgId, host, subject, content)达到，轮询需要至少调用一次concrete.polling()，建议在订阅好消息以后在开始轮询，否则可能出现token覆盖问题；jQuery websocket同时增加concrete.polling接口，无任何效果，为的是一份代码可以无缝支持多个传输协议
+    - 增加Angular jaxrs对消息模型推送的支持，订阅消息通过注入Broadcast服务实例来subscribe；同步修改Angular webSocket的订阅方式
+- 增加Java/RX client对消息推送的支持【todo】
+
+## 2017-11-19
+
+- 客户端共享token
+    - jaxrs支持不再通过cookie传递TokenId，使用Header
+    - websocket支持增加对tokenId的支持
+    - java client和RX client获取实例时，可以定制token的作用域，tokenManagerKey非空且相同的，则在client端共享token
+    - jQuery jaxrs/websocket 选用localStorage支持共享token，指定configuration.globalTokenKey非空且相同的共享token
+    - Angular jaxrs/websocket 选用localStorage支持共享token，指定RuntimeContext 的 globalTokenKey非空且相同的共享token
+- 修改Angular jaxrs/websocket指定服务位置的方式：指定RuntimeContext的root
+- 服务端跨域设置如下
+```properties
+    # cors_settings.properties
+    allowOrigin = *
+    exposeHeaders = concrete_token_id,concrete-error-occurred
+    allowMethod = POST,OPTIONS,GET,DELETE,PUT,PATCH
+    allowHeaders = CONCRETE_TOKEN_ID,CONTENT-TYPE,X-CLIENT-PROVIDER
+    allowCredentials = true
+```
+        
+
+## 2017-11-18
+
+- 增加状态容器，容器中的状态基于id最多仅允许存在一份，防止出现多个线程操作相同id但实例不同的状态
+- 增加带信号的状态以及带信号的状态检测器，只需指定允许哪些信号状态进入即可，无需为每个状态转移编写StateCondition，简化开发
+
+```java
+package test.org.coodex.concrete.fsm.signaledfsm;
+
+import org.coodex.concrete.fsm.SignaledState;
+
+public class DemoSignaledState implements SignaledState {
+    private int value;
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public long getSignal() {
+        return value;
+    }
+}
+```
+
+```java
+package test.org.coodex.concrete.fsm.signaledfsm;
+
+import org.coodex.concrete.fsm.FiniteStateMachine;
+import org.coodex.concrete.fsm.SignaledGuard;
+
+public interface FSMDemo2 extends FiniteStateMachine<DemoSignaledState> {
+
+    @SignaledGuard(allowed = 3)
+    void toZero();
+    @SignaledGuard(allowed = 0)
+    void toOne();
+    @SignaledGuard(allowed = 1)
+    void toTwo();
+    @SignaledGuard(allowed = 2)
+    void toThree();
+}
+```
+
+## 2017-11-17
+
+- 增加一个轻量级有限状态机框架
+    - State在FSM中的操作是线程安全的
+    - 自行定义FSM的状态转移
+    - 以目标状态为视角，通过StateCondition确定是否可以从当前状态转移到目标状态
+    - 提供一个基于java动态代理和ConcreteServiceLoader的Provider
+    - 示例：状态为仅包含一个数的模型，转移条件为从0-3循环，及0->1->2->3->0，Runner的main方法模拟300个线程并发进行状态迁移
+    - 示例代码参见concrete-fms-impl的test代码 https://github.com/coodex2016/concrete.coodex.org/tree/0.2.1/11.concrete-fsm-impl/src/test
+    - 目前的实现基于java动态代理，因此，有几个要求如下：
+        - State必须是个贫血模型，并且每个属性都可以set，用以达到事务控制；为了支持deepCopy，State还必须要有public无参数的构造方法
+        - 如果需要自身调用状态转移时，状态机需要继承AbstractFSM，并且使用getSelf()来执行状态转换
+        
+
+## 2017-10-16
+
+- bug fixed: 当服务产生异常时，sendError报The remote endpoint was in state [TEXT_FULL_WRITING] which is an invalid state for called method
+
 ## 2017-09-27
 
 - jaxrs: 

@@ -53,6 +53,7 @@ public abstract class AbstractMessage<T> implements Message<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T getBody() {
         try {
             if (body instanceof Serializable)

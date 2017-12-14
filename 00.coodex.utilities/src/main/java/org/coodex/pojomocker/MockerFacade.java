@@ -31,6 +31,7 @@ import static org.coodex.util.TypeHelper.toTypeReference;
 /**
  * Created by davidoff shen on 2017-05-13.
  */
+@SuppressWarnings("unchecked")
 public class MockerFacade {
 
     private final static Logger log = LoggerFactory.getLogger(MockerFacade.class);
@@ -71,11 +72,11 @@ public class MockerFacade {
     }
 
     public static <T> T mock(Type type) {
-        return mock(type, null);
+        return mock(type, (Class[]) null);
     }
 
     public static <T> T mock(Method method) {
-        return mock(method, null);
+        return mock(method, (Class[])null);
     }
 
     public static <T> T mock(final Method method, Class... context) {
@@ -171,6 +172,7 @@ public class MockerFacade {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private static final <T> T mockParameterizedType(
             ParameterizedType type, PojoProperty property, int dimension, Stack<String> stack, Type... context)
             throws MaxDeepException {
@@ -184,6 +186,7 @@ public class MockerFacade {
         return mockPojo(new PojoInfo(type, context), property, stack, context);
     }
 
+    @SuppressWarnings("unchecked")
     private static final <T> T mockGenericArray(
             GenericArrayType type, PojoProperty property,
             int dimension, Stack<String> stack, Type... context)
@@ -234,6 +237,7 @@ public class MockerFacade {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private static final <T> T mockClass(
             Class clazz, PojoProperty property, int dimension, Stack<String> stack, Type... context)
             throws MaxDeepException {

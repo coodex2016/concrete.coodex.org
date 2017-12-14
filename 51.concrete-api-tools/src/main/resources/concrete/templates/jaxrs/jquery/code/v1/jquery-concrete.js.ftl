@@ -93,7 +93,7 @@
 
             var headers = { 'X-CLIENT-PROVIDER': 'CONCRETE-jQuery' };
             var tokenId = getTokenId();
-            if(tokenId)headers["CONCRETE_TOKEN_ID"] = tokenId;
+            if(tokenId)headers["CONCRETE-TOKEN-ID"] = tokenId;
 
             return $.ajax($.extend({}, data, {
                 url: configuration.root + url,
@@ -106,7 +106,7 @@
                     withCredentials: true
                 },
                 success: function(data, textStatus, request){
-                    setTokenId(request.getResponseHeader('CONCRETE_TOKEN_ID'));
+                    setTokenId(request.getResponseHeader('CONCRETE-TOKEN-ID'));
                 }
             })).error(function (jx) {
                 if (configuration.onError) {

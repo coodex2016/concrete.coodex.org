@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.jaxrs;
 
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.struct.Module;
 
 /**
@@ -23,8 +24,8 @@ import org.coodex.concrete.jaxrs.struct.Module;
  */
 public interface ClassGenerator {
 
-    boolean FRONTEND_DEV_MODE =
-            System.getProperty(ClassGenerator.class.getPackage().getName() + ".devMode") != null;
+//    @Deprecated
+//    boolean FRONTEND_DEV_MODE = ConcreteHelper.isDevModel()            ;
 
     boolean isAccept(String desc);
 

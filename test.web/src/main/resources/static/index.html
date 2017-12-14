@@ -105,16 +105,21 @@
 
         $(document).ready(function () {
             concrete.configure({
+                "onBroadcast": function(msgId, host, subject, msg){
+                  console.log([msgId, msg]);
+                },
+//                "globalTokenKey":"sdfa",
                 "root": "/jaxrs"
 //                "root": "ws://localhost:8080/WebSocket"
             });
 
             var module = concrete.module("org.coodex.practice.jaxrs.api.ServiceExample");
             var saasExample = concrete.module("SaaSExample");
-            concrete.polling();
+
 
             $("#subscribe").click(function () {
                 module.subscribe().done(function(){
+                    concrete.polling();
                 });
             })
 
@@ -324,6 +329,8 @@
         <input type="file" name="toUpload">
         <button type="submit">submit</button>
     </form>
+
+
 
 </pathParam>
 </html>

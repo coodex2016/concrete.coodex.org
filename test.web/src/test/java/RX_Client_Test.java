@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
+import com.alibaba.fastjson.JSON;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import org.coodex.concrete.client.MessageListener;
+import org.coodex.concrete.client.MessageSubscriber;
 import org.coodex.concrete.rx.RXClient;
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.practice.jaxrs.pojo.Book;
 import rx.org.coodex.practice.jaxrs.api.ServiceExample_RX;
 
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class RX_Client_Test {
@@ -49,6 +54,7 @@ public class RX_Client_Test {
 //        System.out.println(JSONSerializerFactory.getInstance().parse("ddd", int.class));
 //        if(true) return;
         String [] domains = {"http://localhost:8080/jaxrs", "ws://localhost:8080/WebSocket"};
+
 //        ServiceExample_RX serviceExample_rx = RXClient.getInstance(ServiceExample_RX.class, "ws://localhost:8080/WebSocket");
 //        serviceExample_rx.add(1,2).subscribe(new Observer<Integer>() {
 //            @Override
@@ -93,29 +99,41 @@ public class RX_Client_Test {
 //
 //            }
 //        });
+        MessageSubscriber.subscribe("abcd", new MessageListener<List<Book>>() {
+            @Override
+            public void onMessage(List<Book> message) {
+                System.out.println(JSON.toJSONString(message));
+            }
+        });
+
         for(final String domain: domains) {
-            ServiceExample_RX rx = RXClient.getInstance(ServiceExample_RX.class, domain, "XXX");
+            ServiceExample_RX rx = RXClient.getInstance(ServiceExample_RX.class, domain);
             for(int i = 0; i < 3; i ++) {
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                rx.tokenId().subscribe(new Observer<String>() {
+                rx.subscribe().subscribe(new Observer<Void>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                     }
 
                     @Override
-                    public void onNext(String tokenId) {
-                        synchronized (RX_Client_Test.class) {
-                            System.out.println(tokenId);
-//                        System.out.println(domain);
-//                        for (Book book : books) {
-//                            System.out.println(book);
-//                        }
-                        }
+                    public void onNext(Void aVoid) {
+
                     }
+
+//                    @Override
+//                    public void onNext(String tokenId) {
+//                        synchronized (RX_Client_Test.class) {
+//                            System.out.println(tokenId);
+////                        System.out.println(domain);
+////                        for (Book book : books) {
+////                            System.out.println(book);
+////                        }
+//                        }
+//                    }
 
                     @Override
                     public void onError(Throwable e) {
