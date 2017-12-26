@@ -27,6 +27,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 
+import static org.coodex.util.ReflectHelper.foreachClass;
+
 /**
  * Created by davidoff shen on 2016-09-02.
  */
@@ -109,6 +111,42 @@ public class ConcreteHelper {
         ReflectHelper.foreachClass(processor, CONCRETE_SERVICE_INTERFACE_FILTER, packages);
     }
 
+    public static void foreachClassInPackages(ReflectHelper.Processor processor, String... packages) {
+        if (packages == null || packages.length == 0) {
+            packages = getApiPackages();
+        }
+        // 排序
+        for (int i = 0, l = packages.length; i < l; i++) {
+            for (int j = i + 1; j < l; j++) {
+                String p1 = packages[i];
+                String p2 = packages[j];
+                if (p1.length() > p2.length()) {
+                    packages[i] = p2;
+                    packages[j] = p1;
+                }
+            }
+        }
+        // 合并
+        List<String> forSearch = new ArrayList<String>();
+
+        packageCycle:
+        for (String pkg : packages) {
+            for (String searchPath : forSearch) {
+                if (Common.isBlank(searchPath) || pkg.equals(searchPath) || pkg.startsWith(searchPath + ".")) {
+                    continue packageCycle;
+                }
+            }
+            forSearch.add(pkg);
+        }
+        // 注册
+        foreachClass(processor, new ConcreteClassFilter() {
+            @Override
+            protected boolean accept(Class<?> clazz) {
+                return ConcreteHelper.isConcreteService(clazz) || AbstractErrorCodes.class.isAssignableFrom(clazz);
+            }
+        }, forSearch.toArray(new String[0]));
+    }
+
 
     private final static ServiceLoader<ModuleMaker> MODULE_MAKERS = new ConcreteServiceLoader<ModuleMaker>() {
     };
@@ -118,16 +156,17 @@ public class ConcreteHelper {
     public final static <MODULE extends AbstractModule> List<MODULE> loadModules(
             String desc, String... packages) {
 
-        if (MODULE_MAKERS.getAllInstances().size() == 0)
-            throw new RuntimeException("No service provider for " + ModuleMaker.class.getName());
+//        if (MODULE_MAKERS.getAllInstances().size() == 0)
+//            throw new RuntimeException("No service provider for " + ModuleMaker.class.getName());
 
-        for (ModuleMaker moduleMaker : MODULE_MAKERS.getAllInstances()) {
-            if (moduleMaker.isAccept(desc)) {
-                return loadModules(moduleMaker, packages);
-            }
-        }
-
-        throw new RuntimeException("No service provider supported '" + desc + "' ");
+//        for (ModuleMaker moduleMaker : MODULE_MAKERS.getAllInstances()) {
+//            if (moduleMaker.isAccept(desc)) {
+//                return loadModules(moduleMaker, packages);
+//            }
+//        }
+//
+//        throw new RuntimeException("No service provider supported '" + desc + "' ");
+        return loadModules(getInstance(desc), packages);
     }
 
     public static boolean isConcreteService(Class<?> clz) {
@@ -136,6 +175,28 @@ public class ConcreteHelper {
                 && clz.getAnnotation(Abstract.class) == null;
     }
 
+    private static ModuleMaker getInstance(String desc) {
+        if (MODULE_MAKERS.getAllInstances().size() == 0)
+            throw new RuntimeException("No service provider for " + ModuleMaker.class.getName());
+
+        for (ModuleMaker moduleMaker : MODULE_MAKERS.getAllInstances()) {
+            if (moduleMaker.isAccept(desc)) {
+                return moduleMaker;
+            }
+        }
+        throw new RuntimeException("No service provider supported '" + desc + "' ");
+    }
+
+    public static <MODULE extends AbstractModule> MODULE loadModule(
+            String desc, Class<? extends ConcreteService> serviceClass) {
+        return (MODULE) loadModule(getInstance(desc), serviceClass);
+    }
+
+    public static <MODULE extends AbstractModule> MODULE loadModule(
+            ModuleMaker<MODULE> moduleMaker, Class<? extends ConcreteService> serviceClass) {
+
+        return moduleMaker.make(serviceClass);
+    }
 
     @SuppressWarnings("unchecked")
     private static <MODULE extends AbstractModule> List<MODULE> loadModules(

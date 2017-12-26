@@ -19,6 +19,7 @@ package test.org.coodex.concrete.impl;
 import org.coodex.commons.jpa.criteria.Operators.Logical;
 import org.coodex.commons.jpa.springdata.AbstractSpecificationsMaker;
 import org.coodex.commons.jpa.springdata.SpecCommon;
+import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.test.ConcreteTestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,6 +79,7 @@ public class TestCase extends ConcreteTestCase {
         // between
         testRepo.findAll(
                 SpecCommon.<TestEntity, Integer>between("intAttr", 1, 2));
+
     }
 
     @Test

@@ -17,9 +17,12 @@
 package org.coodex.practice.jaxrs.starter;
 
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
+import org.coodex.concrete.support.jsr339.ConcreteJaxrs339Application;
 import org.coodex.concrete.support.websocket.CallerHackFilter;
 import org.coodex.practice.jaxrs.jersey.ExampleApplication;
 import org.coodex.servlet.cors.CorsFilter;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 import org.springframework.boot.SpringApplication;
@@ -50,6 +53,14 @@ import java.util.Arrays;
 @Import(ConcreteSpringConfiguration.class)
 @ImportResource({"classpath:example.xml"})
 public class Starter extends SpringBootServletInitializer {
+    public static class ApplicationExample extends ConcreteJaxrs339Application{
+
+        public ApplicationExample() {
+            super();
+            register(JacksonFeature.class, LoggingFeature.class);
+            registerPackage();
+        }
+    }
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
@@ -66,10 +77,14 @@ public class Starter extends SpringBootServletInitializer {
 
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(
                 getServletContainer(), "/jaxrs/*");
+//        registrationBean.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
+//                ExampleApplication.class.getName());
+
         registrationBean.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
-                ExampleApplication.class.getName());
+                ApplicationExample.class.getName());
         registrationBean.setName("test");
         registrationBean.setAsyncSupported(true);
+        registrationBean.setLoadOnStartup(1);
         return registrationBean;
     }
 

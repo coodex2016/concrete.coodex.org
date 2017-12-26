@@ -16,25 +16,57 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.ErrorCodes;
-import org.coodex.concrete.common.ErrorInfo;
+import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.common.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 
 /**
  * Created by davidoff shen on 2016-11-01.
  */
+@Provider
 public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
 
+
     private final static Logger log = LoggerFactory.getLogger(ConcreteExceptionMapper.class);
+    private final static ConcreteServiceLoader<ErrorCodeMapper> CODE_MAPPER_SERVICE_LOADER = new ConcreteServiceLoader<ErrorCodeMapper>() {
+        private ErrorCodeMapper errorCodeMapper = new ErrorCodeMapper() {
+            @Override
+            public Response.Status toStatus(int errorCode) {
+                switch (errorCode) {
+                    case ErrorCodes.UNKNOWN_ERROR:
+                    case ErrorCodes.MODULE_DEFINITION_NOT_FOUND:
+                    case ErrorCodes.UNIT_DEFINITION_NOT_FOUND:
+                    case ErrorCodes.NO_BEAN_PROVIDER_FOUND:
+                    case ErrorCodes.NO_SERVICE_INSTANCE_FOUND:
+                    case ErrorCodes.BEAN_CONFLICT:
+                        return Response.Status.INTERNAL_SERVER_ERROR;
+                    case ErrorCodes.NONE_TOKEN:
+                    case ErrorCodes.TOKEN_INVALIDATE:
+                        return Response.Status.UNAUTHORIZED;
+                    case ErrorCodes.UNTRUSTED_ACCOUNT:
+                    case ErrorCodes.NO_AUTHORIZATION:
+                        return Response.Status.FORBIDDEN;
+                    case ErrorCodes.OVERRUN:
+                        return Response.Status.SERVICE_UNAVAILABLE;
+                    default:
+                        return Response.Status.BAD_REQUEST;
+                }
+            }
+        };
+
+        @Override
+        protected ErrorCodeMapper getConcreteDefaultProvider() {
+            return errorCodeMapper;
+        }
+    };
 
 
     /**
@@ -44,25 +76,7 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
      * @return
      */
     protected Response.Status getStatus(int errorCode) {
-        switch (errorCode) {
-            case ErrorCodes.UNKNOWN_ERROR:
-            case ErrorCodes.MODULE_DEFINITION_NOT_FOUND:
-            case ErrorCodes.UNIT_DEFINITION_NOT_FOUND:
-            case ErrorCodes.NO_BEAN_PROVIDER_FOUND:
-            case ErrorCodes.NO_SERVICE_INSTANCE_FOUND:
-            case ErrorCodes.BEAN_CONFLICT:
-                return Response.Status.INTERNAL_SERVER_ERROR;
-            case ErrorCodes.NONE_TOKEN:
-            case ErrorCodes.TOKEN_INVALIDATE:
-                return Response.Status.UNAUTHORIZED;
-            case ErrorCodes.UNTRUSTED_ACCOUNT:
-            case ErrorCodes.NO_AUTHORIZATION:
-                return Response.Status.FORBIDDEN;
-            case ErrorCodes.OVERRUN:
-                return Response.Status.SERVICE_UNAVAILABLE;
-            default:
-                return Response.Status.BAD_REQUEST;
-        }
+        return CODE_MAPPER_SERVICE_LOADER.getInstance().toStatus(errorCode);
     }
 
 

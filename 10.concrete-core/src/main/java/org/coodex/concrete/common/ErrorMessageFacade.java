@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,12 +42,15 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
 
 
 
+    private final static Set<Class<? extends AbstractErrorCodes>> REGISTERED = new HashSet<Class<? extends AbstractErrorCodes>>();
 
     private final static Map<Integer, Field> errorCodes = new HashMap<Integer, Field>();
 
 
     private static void registerClass(Class<? extends AbstractErrorCodes> clz) {
         if (clz == null) return;
+        if(REGISTERED.contains(clz)) return;
+
         synchronized (errorCodes) {
             for (Field f : clz.getDeclaredFields()) {
 
@@ -73,6 +77,7 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
                 }
             }
         }
+        REGISTERED.add(clz);
     }
 
     @SuppressWarnings("unchecked")

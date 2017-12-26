@@ -31,12 +31,12 @@
     <bean class="org.coodex.concrete.spring.aspects.ServiceTimingAspect"></bean>
     <bean class="org.coodex.practice.jaxrs.impl.SignatureAspect"></bean>
     <bean class="org.coodex.concrete.spring.aspects.OperationLogAspect"></bean>
-    <!--<bean class="RBAC_Aspect"></bean>-->
+    <bean class="org.coodex.concrete.spring.aspects.RBAC_Aspect"></bean>
 
     <bean class="org.coodex.concrete.attachments.repo.FastDFSRepository"></bean>
     <bean class="org.coodex.concrete.attachments.client.ClientServiceImpl"></bean>
     <bean class="org.coodex.concrete.attachments.server.AttachmentInfoServiceImpl"></bean>
 
-    <bean class="org.coodex.concrete.jaxrs.PollingImpl"/>
+    <bean class="org.coodex.concrete.support.jsr311.PollingImpl"/>
 
 </beans>

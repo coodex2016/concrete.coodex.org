@@ -20,6 +20,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import test.org.coodex.concrete.entities.TestEntity;
 
+import java.util.Set;
+
 /**
  * Created by davidoff shen on 2017-03-17.
  */

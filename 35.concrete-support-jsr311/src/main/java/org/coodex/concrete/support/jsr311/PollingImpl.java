@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.websocket;
+package org.coodex.concrete.support.jsr311;
 
-import org.coodex.concrete.common.ModuleMaker;
+import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.concrete.jaxrs.JaxRSCourier;
+import org.coodex.concrete.jaxrs.Polling;
 
-public class WebSocketModuleMaker implements ModuleMaker<WebSocketModule> {
-    public final static String WEB_SOCKET_SUPPORT = "WebSocket." ;
 
+public class PollingImpl implements Polling {
     @Override
-    public boolean isAccept(String desc) {
-        return accept(desc);
-    }
-
-    @Override
-    public WebSocketModule make(Class<?> interfaceClass) {
-        return new WebSocketModule(interfaceClass);
-    }
-
-//    @Override
-    public boolean accept(String desc) {
-        return desc != null && desc.toLowerCase().startsWith(WEB_SOCKET_SUPPORT.toLowerCase());
+    public Object polling(Integer timeOut) {
+        timeOut = timeOut == null ? 15 : Math.min(timeOut, 30);
+        return JaxRSCourier.getMessage(TokenWrapper.getInstance().getTokenId(), timeOut * 1000);
     }
 }

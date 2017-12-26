@@ -29,7 +29,7 @@ public class JerseyResource extends ResourceConfig {
 
     public JerseyResource() {
         registerClasses(ConcreteExceptionMapper.class);
-        registerClasses(JaxRSServiceHelper.generate(ReverseClassGenerator.GENERATOR_NAME,
+        registerClasses(JaxRSServiceHelper.generateByPackages(ReverseClassGenerator.GENERATOR_NAME,
                 SaaSExample.class.getPackage().getName()));
     }
 }

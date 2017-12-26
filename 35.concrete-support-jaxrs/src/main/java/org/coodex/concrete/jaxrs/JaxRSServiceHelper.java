@@ -35,6 +35,9 @@ public class JaxRSServiceHelper {
     private static final ConcreteServiceLoader<ClassGenerator> CLASS_GENERATORS = new ConcreteServiceLoader<ClassGenerator>() {
     };
 
+
+    private static final Set<Class> REGISTERED = new HashSet<Class>();
+
     private static ClassGenerator getGenerator(String desc) {
         for (ClassGenerator classGenerator : CLASS_GENERATORS.getAllInstances()) {
             if (classGenerator.isAccept(desc))
@@ -49,7 +52,48 @@ public class JaxRSServiceHelper {
         return set.toArray(new String[0]);
     }
 
+    @Deprecated
     public synchronized static Set<Class<?>> generate(String desc, String... packages) {
+        return generateByPackages(desc, packages);
+    }
+
+    private static Class<?> buildServiceImpl(String desc, Class<? extends ConcreteService> serviceClass) {
+        try {
+            return getGenerator(desc).generatesImplClass((Module) ConcreteHelper.loadModule(desc, Polling.class));
+        } catch (RuntimeException th) {
+            throw th;
+        } catch (Throwable throwable) {
+            throw new RuntimeException(throwable);
+        }
+    }
+
+    public synchronized static Set<Class<?>> generateByClasses(String desc, Class<?>... classes) {
+        if (classes == null || classes.length == 0)
+            return generateByPackages(desc);
+
+        Set<Class<?>> result = new HashSet<Class<?>>();
+        Set<Class> set = new HashSet<Class>();
+        if (!REGISTERED.contains(Polling.class)) {
+            result.add(buildServiceImpl(desc, Polling.class));
+            set.add(Polling.class);
+        }
+        for (Class<?> clz : classes) {
+            if (AbstractErrorCodes.class.isAssignableFrom(clz)) {
+                ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) clz);
+            } else if (ConcreteHelper.isConcreteService(clz)) {
+                if (!REGISTERED.contains(clz) && !set.contains(clz)) {
+                    result.add(buildServiceImpl(desc, (Class<? extends ConcreteService>) clz));
+                    set.add(clz);
+                }
+            } else {
+                throw new RuntimeException("unable register class: " + clz.getName());
+            }
+        }
+        REGISTERED.addAll(set);
+        return result;
+    }
+
+    public synchronized static Set<Class<?>> generateByPackages(String desc, String... packages) {
         if (packages == null || packages.length == 0) {
             packages = ConcreteHelper.getApiPackages();
         }
@@ -65,9 +109,14 @@ public class JaxRSServiceHelper {
         List<Module> modules = ConcreteHelper.loadModules(desc, packages);
 
         try {
+            Set<Class> set = new HashSet<Class>();
             for (Module module : modules) {
-                classes.add(classGenerator.generatesImplClass(module));
+                if (!REGISTERED.contains(module.getInterfaceClass()) && !set.contains(module.getInterfaceClass())) {
+                    classes.add(classGenerator.generatesImplClass(module));
+                    set.add(module.getInterfaceClass());
+                }
             }
+            REGISTERED.addAll(set);
             return classes;
         } catch (Throwable th) {
             throw new RuntimeException(th);

@@ -146,6 +146,28 @@ public class RX_Client_Test {
                     }
                 });
             }
+
+            rx.checkRole().subscribe(new Observer<String>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onNext(String s) {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    System.out.println(e.getLocalizedMessage());
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            });
         }
     }
 }

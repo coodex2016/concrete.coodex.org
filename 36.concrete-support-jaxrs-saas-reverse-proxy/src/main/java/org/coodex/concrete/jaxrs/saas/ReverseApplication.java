@@ -14,15 +14,27 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.jaxrs;
+package org.coodex.concrete.jaxrs.saas;
 
-import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.concrete.jaxrs.ClassGenerator;
+import org.coodex.concrete.jaxrs.ConcreteJaxrsApplication;
+import org.coodex.concrete.jaxrs.saas.javassist.ReverseClassGenerator;
 
+import javax.ws.rs.core.Application;
 
-public class PollingImpl implements Polling {
+public class ReverseApplication extends ConcreteJaxrsApplication {
+
+    public ReverseApplication() {
+    }
+
+    public ReverseApplication(Application application) {
+        super(application);
+    }
+
+    private static ReverseClassGenerator classGenerator = new ReverseClassGenerator();
+
     @Override
-    public Object polling(Integer timeOut) {
-        timeOut = timeOut == null ? 15 : Math.min(timeOut, 30);
-        return JaxRSCourier.getMessage(TokenWrapper.getInstance().getTokenId(), timeOut * 1000);
+    protected ClassGenerator getClassGenerator() {
+        return classGenerator;
     }
 }

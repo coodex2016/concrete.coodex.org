@@ -21,7 +21,6 @@ import org.coodex.concrete.attachments.server.UploadByFormResource;
 import org.coodex.concrete.jaxrs.ConcreteExceptionMapper;
 import org.coodex.concrete.jaxrs.CreatedByConcrete;
 import org.coodex.concrete.jaxrs.JaxRSServiceHelper;
-import org.coodex.concrete.jaxrs.Polling;
 import org.coodex.concrete.support.jsr339.javassist.JSR339ClassGenerator;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
@@ -47,7 +46,7 @@ public class ExampleApplication extends ResourceConfig {
 //        super(JSR339ClassGenerator.generates("org.coodex.practice.jarxs.api"));
         registerClasses(JacksonFeature.class, LoggingFeature.class, ConcreteExceptionMapper.class,
                 DownloadResource.class, UploadByFormResource.class);
-        Set<Class<?>> classes = JaxRSServiceHelper.generate(GENERATOR_NAME);
+        Set<Class<?>> classes = JaxRSServiceHelper.generateByPackages(GENERATOR_NAME);
 //        registerClasses(JaxRSHelper.generate(GENERATOR_NAME, "org.coodex.practice.jaxrs.api"));
 
         log.info("{} classes created.", classes.size());
@@ -75,7 +74,7 @@ public class ExampleApplication extends ResourceConfig {
 
     //
     public static void main(String[] args) {
-        Set<Class<?>> classes = JaxRSServiceHelper.generate(GENERATOR_NAME, "org.coodex.practice.jaxrs.api");
+        Set<Class<?>> classes = JaxRSServiceHelper.generateByPackages(GENERATOR_NAME, "org.coodex.practice.jaxrs.api");
         log.debug("{} classes created.", classes.size());
         for (Class<?> clz : classes) {
             log.debug("class: {}, Annotation:{}", clz, clz.getAnnotations());

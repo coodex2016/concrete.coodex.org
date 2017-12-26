@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.support.websocket;
 
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.messages.Message;
 import org.coodex.concrete.common.struct.AbstractParam;
@@ -27,6 +28,7 @@ import org.coodex.concurrent.components.PriorityRunnable;
 import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
 import org.coodex.util.GenericType;
+import org.coodex.util.ReflectHelper;
 import org.coodex.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.common.ConcreteContext.runWithContext;
+import static org.coodex.concrete.common.ConcreteHelper.foreachClassInPackages;
 import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 import static org.coodex.concrete.support.websocket.CallerHackConfigurator.WEB_SOCKET_CALLER_INFO;
 import static org.coodex.concrete.websocket.Constants.*;
@@ -58,10 +61,11 @@ class WebSocketServerHandle /*extends WebSocket*/ implements ConcreteWebSocketEn
 
     @Deprecated
     public WebSocketServerHandle(String endPoint) {
-//        registerEndPoint(endPoint, this);
+        registerPackage(ErrorCodes.class.getPackage().getName());
     }
 
     public WebSocketServerHandle() {
+        registerPackage(ErrorCodes.class.getPackage().getName());
     }
 
     @Override
@@ -204,17 +208,35 @@ class WebSocketServerHandle /*extends WebSocket*/ implements ConcreteWebSocketEn
     }
 
     public final void registerPackage(String... packages) {
-        if (packages == null || packages.length == 0) {
-            packages = ConcreteHelper.getApiPackages();
-        }
-        List<WebSocketModule> modules = ConcreteHelper.loadModules(WebSocketModuleMaker.WEB_SOCKET_SUPPORT, packages);
-        for (WebSocketModule module : modules) {
-            appendUnits(module);
+        foreachClassInPackages(new ReflectHelper.Processor() {
+            @Override
+            public void process(Class<?> serviceClass) {
+                registerClasses(serviceClass);
+            }
+        }, packages);
+//        if (packages == null || packages.length == 0) {
+//            packages = ConcreteHelper.getApiPackages();
+//        }
+//        List<WebSocketModule> modules = ConcreteHelper.loadModules(WebSocketModuleMaker.WEB_SOCKET_SUPPORT, packages);
+//        for (WebSocketModule module : modules) {
+//            appendUnits(module);
+//        }
+    }
+
+    public final void registerClasses(Class<?>... classes) {
+        for (final Class<?> clz : classes) {
+            if (AbstractErrorCodes.class.isAssignableFrom(clz)) {
+                ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) clz);
+            } else if (ConcreteHelper.isConcreteService(clz)) {
+                appendUnits(new WebSocketModule(clz));
+            } else {
+                throw new RuntimeException("cannot register class:" + clz.getName());
+            }
         }
     }
 
-    public final void registerService(Class<?>... serviceClasses) {
-        for (Class<?> clz : serviceClasses) {
+    public final void registerService(Class<? extends ConcreteService>... serviceClasses) {
+        for (Class<? extends ConcreteService> clz : serviceClasses) {
             if (ConcreteHelper.isConcreteService(clz)) {
                 appendUnits(new WebSocketModule(clz));
             }

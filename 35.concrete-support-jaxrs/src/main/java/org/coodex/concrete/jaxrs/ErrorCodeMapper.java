@@ -14,25 +14,11 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.websocket;
+package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.common.ModuleMaker;
+import javax.ws.rs.core.Response;
 
-public class WebSocketModuleMaker implements ModuleMaker<WebSocketModule> {
-    public final static String WEB_SOCKET_SUPPORT = "WebSocket." ;
+public interface ErrorCodeMapper {
 
-    @Override
-    public boolean isAccept(String desc) {
-        return accept(desc);
-    }
-
-    @Override
-    public WebSocketModule make(Class<?> interfaceClass) {
-        return new WebSocketModule(interfaceClass);
-    }
-
-//    @Override
-    public boolean accept(String desc) {
-        return desc != null && desc.toLowerCase().startsWith(WEB_SOCKET_SUPPORT.toLowerCase());
-    }
+    Response.Status toStatus(int errorCode);
 }

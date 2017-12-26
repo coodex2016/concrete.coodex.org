@@ -30,6 +30,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -38,6 +39,7 @@ import java.io.IOException;
 public abstract class AbstractJavassistClassGenerator implements ClassGenerator {
 
     protected final static String BYTE_CODE_TOOLS_NAME = "javassist";
+    protected final static AtomicInteger index = new AtomicInteger(0);
 
     private int ref = 0;
 
@@ -76,7 +78,7 @@ public abstract class AbstractJavassistClassGenerator implements ClassGenerator 
         Class<?> serviceClass = module.getInterfaceClass();
 
         CGContext context = new CGContext(serviceClass, getSuperClass(),
-                serviceClass.getName() + getImplPostfix());
+                serviceClass.getName() + getImplPostfix() + String.format("$%04X", index.incrementAndGet()));
 
         // 定义类泛型参数
         context.getNewClass().setGenericSignature(new SignatureAttribute.ClassSignature(null,

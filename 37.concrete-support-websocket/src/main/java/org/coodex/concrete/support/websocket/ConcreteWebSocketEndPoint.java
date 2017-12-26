@@ -58,8 +58,8 @@ public abstract class ConcreteWebSocketEndPoint/* implements ConcreteWebSocketEn
         handle.onMessage(message, session);
     }
 
-    public final void registerService(Class<?>... serviceClasses) {
-        handle.registerService(serviceClasses);
+    public final void registerClasses(Class<?>... serviceClasses) {
+        handle.registerClasses(serviceClasses);
     }
 
     public final void registerPackage(String... packages) {

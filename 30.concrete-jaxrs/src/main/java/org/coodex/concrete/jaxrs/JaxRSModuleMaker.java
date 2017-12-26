@@ -26,11 +26,16 @@ public class JaxRSModuleMaker implements ModuleMaker<Module> {
 
     public static final String JAX_RS_PREV = "JaxRS";
 
-    @Override
-    public boolean isAccept(String desc) {
+//    @Override
+    public boolean accept(String desc) {
         return desc != null
                 && desc.length() >= JAX_RS_PREV.length()
                 && JAX_RS_PREV.equalsIgnoreCase(desc.substring(0, JAX_RS_PREV.length()));
+    }
+
+    @Override
+    public boolean isAccept(String desc) {
+        return accept(desc);
     }
 
     @Override

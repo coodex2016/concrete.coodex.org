@@ -616,6 +616,18 @@ public class Common {
         return 1.0f - calculateStringDistance(s1, s2) / (Math.max(s1.length(), s2.length()) * 1.0f);
     }
 
+    public static <T> Map<String, T> subMap(String prefix, Map<String, T> map){
+        Map<String, T> subMap = new HashMap<String, T>();
+        String prefixKey = prefix.endsWith(".") ? prefix : (prefix + '.');
+        int length = prefixKey.length();
+        for(String key: map.keySet()){
+            if(key.startsWith(prefixKey) && key.length() > length){
+                subMap.put(key.substring(length), map.get(prefixKey));
+            }
+        }
+        return subMap;
+    }
+
     public static void main(String [] args){
         System.out.println(Profile.getProfile("a.properties").getStrList("aaa"));
     }
