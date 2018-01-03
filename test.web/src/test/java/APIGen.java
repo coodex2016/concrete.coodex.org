@@ -15,6 +15,7 @@
  */
 
 import org.coodex.concrete.apitools.API;
+import org.coodex.concrete.apitools.jaxrs.angular.AngularCodeRenderV2;
 import org.coodex.concrete.apitools.jaxrs.angular.AngularCodeRender;
 import org.coodex.concrete.apitools.jaxrs.jquery.JQueryDocRender;
 import org.coodex.concrete.apitools.jaxrs.jquery.JQueryPromisesCodeRender;
@@ -75,6 +76,10 @@ public class APIGen {
 
         API.generate(AngularWebSocketCodeRender.RENDER_NAME + ".websocket",
                 "D:\\Projects\\front_ends\\ng2-admin\\src",
+                ServiceExample.class.getPackage().getName());
+
+        API.generate(AngularCodeRenderV2.RENDER_NAME,
+                "D:\\Projects\\front_ends\\concrete-demo\\src",
                 ServiceExample.class.getPackage().getName());
 //        } finally {
 //            ExecutorsHelper.shutdownAllNOW();

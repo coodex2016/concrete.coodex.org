@@ -25,6 +25,12 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-01-03
+
+- api-tools: 生成angular SDK时，增加了模块化定义，简化项目代码; 生成的service依赖改为相对路径，不再需要在tsconfig.json里添加baseUrl。
+- api-tools: 新增AngularCodeRenderV2，使用Angular 4.3的新模块HttpClient模块替代Http模块，推荐Angular版本高于4.3的使用
+
+
 ## 2017-12-26
 
 - jaxrs: 调整jaxrs的使用方式，实现上不在需要基于明确的jaxrs实现，也不再需要使用蹩脚的JaxRSServiceHelper.generate。

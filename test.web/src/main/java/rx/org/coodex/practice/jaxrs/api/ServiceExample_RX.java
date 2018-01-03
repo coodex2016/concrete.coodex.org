@@ -35,7 +35,7 @@ public interface ServiceExample_RX {
 
     Observable<GenericPojo<GenericPojo<Book>>> g6(GenericPojo<GenericPojo<Book>> gp);
 
-    Observable<String> bigStringTest(String arg0, String arg1);
+    Observable<String> bigStringTest(String pathParam, String toPost);
 
     Observable<List<Book>> findByAuthorLike(String author);
 

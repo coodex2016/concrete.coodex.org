@@ -78,6 +78,11 @@ public class AngularWebSocketCodeRender extends AbstractAngularRender<WebSocketU
 
 
     @Override
+    protected String getModuleType() {
+        return "WebSocket";
+    }
+
+    @Override
     protected String getMethodPath(AbstractModule<WebSocketUnit> module, WebSocketUnit unit) {
         return unit.getKey();
     }

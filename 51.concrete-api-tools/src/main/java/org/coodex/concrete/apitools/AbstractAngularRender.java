@@ -41,6 +41,8 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
         return methodName;
     }
 
+    protected abstract String getModuleType();
+
     protected static final ThreadLocal<Map<String, Map<Class, TSClass>>> CLASSES = new ThreadLocal<Map<String, Map<Class, TSClass>>>();
 
     private Map<String, Map<Class, TSClass>> getClasses() {
@@ -51,21 +53,39 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
         return moduleName.charAt(0) == '@' ? moduleName : ("@" + moduleName);
     }
 
+    private String getContextPath(String key) {
+        StringBuilder builder = new StringBuilder();
+        for (char ch : key.toCharArray()) {
+            if (ch == '/') builder.append("../");
+        }
+        return builder.toString();
+    }
+
     protected void packages(String contextPath) throws IOException {
+        Map<String, Set<String>> services = new HashMap<String, Set<String>>();
+        Set<String> providers = new HashSet<String>();
+        Set<String> packages = new HashSet<String>();
+
         for (String key : getClasses().keySet()) {
+            packages.add(key);
             Map<Class, TSClass> map = getClasses().get(key);
             Map<String, Object> toWrite = new HashMap<String, Object>();
-            toWrite.put("contextPath", contextPath);
+            toWrite.put("contextPath", getContextPath(key));
             Set<Class> classSet = new HashSet<Class>();
             for (Class clz : map.keySet()) {
-                if (ConcreteService.class.isAssignableFrom(clz))
+                if (ConcreteService.class.isAssignableFrom(clz)) {
                     toWrite.put("includeServices", Boolean.TRUE);
+                    providers.add(map.get(clz).getClassName());
+                    Set<String> set = services.containsKey(key) ? services.get(key) : new HashSet<String>();
+                    set.add(map.get(clz).getClassName());
+                    services.put(key, set);
+                }
                 classSet.addAll(map.get(clz).getImports());
             }
 
             Map<String, TSImport> imports = new HashMap<String, TSImport>();
             for (Class clz : classSet) {
-                String packageName = clz.getPackage().getName().replace('.', '/');
+                String packageName = getPackageKey(clz);
                 if (key.equals(packageName)) continue;
                 TSImport importSet = imports.get(packageName);
                 if (importSet == null) {
@@ -82,6 +102,16 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
                     "tspackage.ftl",
                     toWrite);
         }
+        Map<String, Object> toWrite = new HashMap<String, Object>();
+        toWrite.put("services", services);
+        toWrite.put("providers", providers);
+        toWrite.put("packages", packages);
+        toWrite.put("moduleType", getModuleType());
+        writeTo(contextPath + "Concrete" + getModuleType() + "Module.ts", "concrete.ftl", toWrite);
+    }
+
+    private String getPackageKey(Class clz) {
+        return clz.getPackage().getName().replace('.', '/');
     }
 
     private Collection<TSClass> sort(Map<Class, TSClass> classes) {
@@ -225,7 +255,7 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
             return "any[]";
         } else if (Map.class.isAssignableFrom(c)) {
             return "Map<any, any>";
-        } else if(Object.class.equals(c)){
+        } else if (Object.class.equals(c)) {
             return "any";
         } else {
             clz.getImports().add(c);
@@ -242,7 +272,7 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
         TSPojo pojo = new TSPojo(c);
         map.put(c, pojo);
 
-        if(Object.class.equals(c)){
+        if (Object.class.equals(c)) {
             return pojo;
         }
 
