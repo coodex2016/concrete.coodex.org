@@ -62,7 +62,7 @@ public class Throttler<T> extends AbstractCoalition<T> {
            if (next == 0) {
                 runnable.run();
             } else
-                prevFuture = scheduledExecutorService.schedule(runnable, interval, TimeUnit.MILLISECONDS);
+                prevFuture = scheduledExecutorService.schedule(runnable, interval /2, TimeUnit.MILLISECONDS);
         }
     }
 
