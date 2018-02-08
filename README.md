@@ -25,6 +25,12 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-02-08
+
+- coodex-utilities: 增加Debounce跟Throttle
+- bug fixed:
+    - java-client: 修复不带domain请求时concrete.client.domain设为local不可用的缺陷
+
 ## 2018-01-03
 
 - api-tools: 生成angular SDK时，增加了模块化定义，简化项目代码; 生成的service依赖改为相对路径，不再需要在tsconfig.json里添加baseUrl。

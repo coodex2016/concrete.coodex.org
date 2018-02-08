@@ -69,7 +69,7 @@ public abstract class AbstractClientInstanceFactory implements ClientInstanceFac
 
     @Override
     public final Invoker getInvoker(String domain, String tokenManagerKey) {
-        return isLocal(domain) ? LOCAL_INVOKER_FACTORY.getInvoker(domain,tokenManagerKey) : getRemoteInvoker(domain,tokenManagerKey);
+        return isLocal(ClientCommon.getDomain(domain).getIdentify()) ? LOCAL_INVOKER_FACTORY.getInvoker(domain,tokenManagerKey) : getRemoteInvoker(domain,tokenManagerKey);
     }
 
 //    protected abstract Invoker getRemoteInvoker(String domain);
