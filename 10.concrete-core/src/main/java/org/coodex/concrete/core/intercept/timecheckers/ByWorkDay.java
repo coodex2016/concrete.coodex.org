@@ -49,6 +49,18 @@ public class ByWorkDay implements ServiceTimingChecker {
 
     private String workday = null;
 
+    public void setWeekday(String weekday) {
+        this.weekday = weekday;
+    }
+
+    public void setRestDay(String restDay) {
+        this.restDay = restDay;
+    }
+
+    public void setWorkday(String workday) {
+        this.workday = workday;
+    }
+
     private boolean inWorkday(String now) {
         return inList(now, workday);
     }
