@@ -20,16 +20,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <name>concrete</name>
+    <description>concrete service definition spec.</description>
+    <url>https://concrete.coodex.org</url>
     <groupId>org.coodex</groupId>
     <artifactId>concrete.pom</artifactId>
-    <version>0.2.1-SNAPSHOT</version>
+    <version>0.2.1</version>
     <packaging>pom</packaging>
-
-    <!--<parent>-->
-    <!--<groupId>org.sonatype.oss</groupId>-->
-    <!--<artifactId>oss-parent</artifactId>-->
-    <!--<version>7</version>-->
-    <!--</parent>-->
 
     <scm>
         <connection>scm:git:https://github.com/coodex2016/concrete.coodex.org.git</connection>
@@ -49,10 +46,10 @@
         <developer>
             <id>shenhainan</id>
             <name>Shen Hainan</name>
-            <url>http://coodex.org</url>
+            <url>https://coodex.org</url>
             <email>jujus.shen@126.com</email>
             <organization>coodex.org</organization>
-            <organizationUrl>http://coodex.org</organizationUrl>
+            <organizationUrl>https://coodex.org</organizationUrl>
         </developer>
     </developers>
 
@@ -151,40 +148,22 @@
     </properties>
 
     <profiles>
-        <!--<profile>-->
-            <!--<id>private.distribution</id>-->
-            <!--<distributionManagement>-->
-                <!--&lt;!&ndash; local repository &ndash;&gt;-->
-                <!--<snapshotRepository>-->
-                    <!--<id>private</id>-->
-                    <!--<url>http://10.10.50.54:8081/repository/maven-snapshots/</url>-->
-                <!--</snapshotRepository>-->
-                <!--<repository>-->
-                    <!--<id>private</id>-->
-                    <!--<url>http://10.10.50.54:8081/repository/maven-releases/</url>-->
-                <!--</repository>-->
-
-            <!--</distributionManagement>-->
-        <!--</profile>-->
-
-        <!--<profile>-->
-            <!--<id>dcsoft.distribution</id>-->
-            <!--<distributionManagement>-->
-                <!--&lt;!&ndash; local repository &ndash;&gt;-->
-                <!--<snapshotRepository>-->
-                    <!--<id>dcsoft</id>-->
-                    <!--<url>http://172.168.2.160/content/repositories/snapshots/</url>-->
-                <!--</snapshotRepository>-->
-                <!--<repository>-->
-                    <!--<id>dcsoft</id>-->
-                    <!--<url>http://172.168.2.160/content/repositories/releases/</url>-->
-                <!--</repository>-->
-            <!--</distributionManagement>-->
-        <!--</profile>-->
+        <profile>
+            <id>disable-javadoc-doclint</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <properties>
+                <additionalparam>-Xdoclint:none</additionalparam>
+            </properties>
+        </profile>
 
         <profile>
             <id>oss.distribution</id>
-
+            <properties>
+                <gpg.executable>gpg2</gpg.executable>
+                <gpg.useagent>true</gpg.useagent>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -192,7 +171,6 @@
                         <artifactId>maven-source-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>attach-sources</id>
                                 <goals>
                                     <goal>jar-no-fork</goal>
                                 </goals>
@@ -203,21 +181,23 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.3</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <phase>deploy</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
+                        <version>2.10.4</version>
                         <configuration>
                             <encoding>UTF-8</encoding>
                             <charset>UTF-8</charset>
-                            <additionalparam>-Xdoclint:none</additionalparam>
+                            <aggregate>true</aggregate>
+                            <docencoding>UTF-8</docencoding>
                         </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
 
                     <plugin>
@@ -226,13 +206,24 @@
                         <version>1.6</version>
                         <executions>
                             <execution>
-                                <id>sign-artifacts</id>
-                                <phase>deploy</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.7</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>oss</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -272,41 +263,6 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>2.3</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
-                <configuration>
-                    <attach>true</attach>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>oss</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -457,14 +413,6 @@
             </dependency>
 
 
-            <!-- https://mvnrepository.com/artifact/org.apache.thrift/libthrift -->
-            <!--<dependency>-->
-            <!--<groupId>org.apache.thrift</groupId>-->
-            <!--<artifactId>libthrift</artifactId>-->
-            <!--<version>${thrift.version}</version>-->
-            <!--</dependency>-->
-
-
             <!-- providers -->
             <!-- jersey -->
             <dependency>
@@ -485,7 +433,6 @@
             </dependency>
 
 
-            <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
@@ -504,20 +451,8 @@
                 <artifactId>rxjava</artifactId>
                 <version>${rxjava.vesion}</version>
             </dependency>
-
-
-            <!-- 高性能连接池 -->
-            <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
-            <!--<dependency>-->
-            <!--<groupId>com.zaxxer</groupId>-->
-            <!--<artifactId>HikariCP</artifactId>-->
-            <!--<version>2.5.0</version>-->
-            <!--</dependency>-->
-
-
         </dependencies>
 
     </dependencyManagement>
-
 
 </project>
