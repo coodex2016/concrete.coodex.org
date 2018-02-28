@@ -178,10 +178,11 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
         if (!Common.isBlank(tokenId)) {
             String tokenKey = Common.isBlank(tokenManagerKey) ? domain : tokenManagerKey;
             ClientCommon.setTokenId(tokenKey, tokenId);
+//            // polling
+//            polling();
         }
         getCookieManager(domain).store(response.getCookies().values());
-        // polling
-        polling();
+
         String body = response.readEntity(String.class);
         return processResult(response.getStatus(), body, unit,
                 response.getHeaders().keySet().contains(HEADER_ERROR_OCCURRED), url);

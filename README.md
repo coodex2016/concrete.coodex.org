@@ -27,9 +27,11 @@ public interface SomeService extends ConcreteService{
 
 ## 2018-02-28
 
+- 0.2.2-SNAPSHOT
 - bugfix: 
     - 根据https://stackoverflow.com/questions/27513994/chrome-stalls-when-making-multiple-requests-to-same-resource，修改浏览器端api的headers
     - jaxrs2.0 Polling线程池有可能为空的问题
+- java-client移除了自动polling的机制
 
 ## 2018-02-08
 
@@ -105,11 +107,11 @@ public interface SomeService extends ConcreteService{
 - 服务端跨域设置如下
 ```properties
     # cors_settings.properties
-    allowOrigin = *
-    exposeHeaders = concrete_token_id,concrete-error-occurred
-    allowMethod = POST,OPTIONS,GET,DELETE,PUT,PATCH
-    allowHeaders = CONCRETE_TOKEN_ID,CONTENT-TYPE,X-CLIENT-PROVIDER
-    allowCredentials = true
+    allowOrigin=*
+    exposeHeaders=concrete-token-id,concrete-error-occurred
+    allowMethod=POST,OPTIONS,GET,DELETE,PUT,PATCH
+    allowHeaders=CONCRETE-TOKEN-ID,CONTENT-TYPE,X-CLIENT-PROVIDER
+    allowCredentials=true
 ```
         
 
