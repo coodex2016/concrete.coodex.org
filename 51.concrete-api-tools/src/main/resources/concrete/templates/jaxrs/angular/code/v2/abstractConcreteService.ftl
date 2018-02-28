@@ -86,6 +86,7 @@ export abstract class AbstractConcreteService {
 export class ConcreteHeadersInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         let concreteHeaders = req.headers.set('content-type', 'application/json')
+            .set('Cache-Control','no-cache, no-store')
             .set('X-CLIENT-PROVIDER', 'CONCRETE-ANGULAR');
         const tokenId = runtimeContext.getTokenId();
         if (tokenId) {

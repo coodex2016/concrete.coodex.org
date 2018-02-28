@@ -91,7 +91,11 @@
                 }
             }
 
-            var headers = { 'X-CLIENT-PROVIDER': 'CONCRETE-jQuery' };
+            var headers = {
+                'X-CLIENT-PROVIDER': 'CONCRETE-jQuery',
+                'Cache-Control': 'no-cache, no-store'
+            };
+
             var tokenId = getTokenId();
             if(tokenId)headers["CONCRETE-TOKEN-ID"] = tokenId;
 

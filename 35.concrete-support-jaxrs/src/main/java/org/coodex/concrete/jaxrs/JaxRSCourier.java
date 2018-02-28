@@ -58,11 +58,17 @@ public class JaxRSCourier implements Courier {
 
     private static ScheduledExecutorService scheduledExecutorService;
 
+    private static synchronized ScheduledExecutorService getScheduledExecutorService(){
+        if (scheduledExecutorService == null)
+            scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
+        return scheduledExecutorService;
+    }
+
     public JaxRSCourier() {
-        synchronized (JaxRSCourier.class) {
-            if (scheduledExecutorService == null)
-                scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
-        }
+//        synchronized (JaxRSCourier.class) {
+//            if (scheduledExecutorService == null)
+//                scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
+//        }
     }
 
     private static Queue<MessageWithArrived> getQueue(String tokenId) {
@@ -78,7 +84,7 @@ public class JaxRSCourier implements Courier {
 
     private static void clean(final Queue<MessageWithArrived> queue, final long deathLine) {
         long time = Math.max(deathLine - System.currentTimeMillis(), 1000);
-        scheduledExecutorService.schedule(new Runnable() {
+        getScheduledExecutorService().schedule(new Runnable() {
             @Override
             public void run() {
                 synchronized (queue) {

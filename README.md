@@ -25,6 +25,12 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-02-28
+
+- bugfix: 
+    - 根据https://stackoverflow.com/questions/27513994/chrome-stalls-when-making-multiple-requests-to-same-resource，修改浏览器端api的headers
+    - jaxrs2.0 Polling线程池有可能为空的问题
+
 ## 2018-02-08
 
 - coodex-utilities: 增加Debounce跟Throttle

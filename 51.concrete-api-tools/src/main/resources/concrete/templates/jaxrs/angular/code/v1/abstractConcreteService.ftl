@@ -42,7 +42,8 @@ export abstract class AbstractConcreteService {
         const headers = new Headers({
             'content-type': 'application/json',
             // 自行添加
-            'X-CLIENT-PROVIDER': 'CONCRETE-ANGULAR'
+            'X-CLIENT-PROVIDER': 'CONCRETE-ANGULAR',
+            'Cache-Control': 'no-cache, no-store'
         });
         if (tokenId) {
             headers.append('CONCRETE-TOKEN-ID', tokenId);
