@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean class="org.coodex.concrete.spring.SpringBeanProvider"/>
+    <bean class="org.coodex.concrete.core.token.TokenWrapper"/>
+    <!-- token 选择 -->
+    <bean class="org.coodex.concrete.core.token.local.LocalTokenManager"/>
+    <!-- SaaS 账户匹配 -->
+    <bean class="org.coodex.concrete.accounts.SaaSTenantBuilder"/>
+
+    <!-- AccountFactories -->
+    <bean class="org.coodex.concrete.common.AccountFactoryAggregation"/>
+    <bean class="org.coodex.concrete.accounts.AdministratorFromProfileFactory"/>
+    <bean class="org.coodex.concrete.common.conflictsolutions.AccountFactoryAggregationFilter"/>
+
+    <!-- aspect -->
+    <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+    <bean class="org.coodex.concrete.spring.aspects.OperationLogAspect"/>
+    <bean class="org.coodex.concrete.spring.aspects.RBAC_Aspect"/>
+
+    <!-- tenant checker -->
+    <bean class="org.coodex.concrete.accounts.NoneTenantArchitecture"/>
+
+    <!-- 带默认值的PropertyPlaceholderConfigurer -->
+    <bean id="concreteProfile" class="org.coodex.concrete.spring.CoodexPropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>concrete.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- dataSource -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init"
+          destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url"
+                  value="jdbc:mysql://localhost:3306/concrete?useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="username" value="concrete-user"/>
+        <property name="password" value="pwd"/>
+        <property name="initialSize" value="1"/>
+        <property name="minIdle" value="1"/>
+        <property name="maxActive" value="20"/>
+    </bean>
+
+
+    <!-- accounts-organization所需要的数据源 -->
+    <alias name="dataSource" alias="organizationAccountsReferenceDataSource"/>
+
+    <import resource="classpath*:spring_hibernate/accounts-organization.xml"></import>
+
+</beans>

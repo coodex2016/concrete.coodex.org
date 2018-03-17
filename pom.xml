@@ -54,51 +54,70 @@
     </developers>
 
     <modules>
-        <module>00.coodex.utilities</module>
-        <module>00.coodex.utilities.servlet</module>
+        <module>00.coodexCommon/coodex.utilities</module>
+        <module>00.coodexCommon/coodex.utilities.servlet</module>
+        <module>00.coodexCommon/coodex.sharedcache</module>
+        <module>00.coodexCommon/coodex.sharedcache.jedis</module>
+        <module>00.coodexCommon/coodex.sharedcache.memcached</module>
 
-        <module>00.coodex.sharedcache</module>
-        <module>00.coodex.sharedcache.jedis</module>
-        <module>00.coodex.sharedcache.memcached</module>
+        <module>01.spec/concrete-api</module>
+        <module>01.spec/concrete-fsm</module>
+        <module>01.spec/concrete-rx</module>
 
-        <module>01.concrete-api</module>
-        <module>02.concrete-fsm</module>
+        <module>10.core/concrete-core</module>
+        <module>10.core/concrete-websocket</module>
+        <module>10.core/concrete-test</module>
+        <module>10.core/concrete-fsm-impl</module>
+        <module>10.core/concrete-jaxrs</module>
 
-        <module>10.concrete-core</module>
-        <module>10.concrete-test</module>
-        <module>10.concrete-core-spring</module>
-        <module>11.concrete-fsm-impl</module>
+        <module>20.service.support/concrete-support-jaxrs</module>
+        <module>20.service.support/concrete-support-jsr311</module>
+        <module>20.service.support/concrete-support-jsr339</module>
+        <module>20.service.support/concrete-support-jaxrs-saas-reverse-proxy</module>
+        <module>20.service.support/concrete-support-websocket</module>
 
-        <module>30.concrete-jaxrs</module>
+        <module>30.spring/concrete-core-spring</module>
+        <module>30.spring/concrete-commons-spring-data</module>
 
-        <module>35.concrete-support-jaxrs</module>
-        <module>35.concrete-support-jsr311</module>
-        <module>35.concrete-support-jsr339</module>
-        <module>36.concrete-support-jaxrs-saas-reverse-proxy</module>
+        <module>50.clients/concrete-api-tools</module>
+        <module>50.clients/concrete-jaxrs-client</module>
+        <module>50.clients/concrete-jaxrs-client-rx</module>
+        <module>50.clients/concrete-jaxrs-invoker-okhttp3</module>
+        <module>50.clients/concrete-rx-client</module>
+        <module>50.clients/concrete-websocket-client-rx</module>
 
-        <module>50.concrete-rx</module>
-        <module>51.concrete-api-tools</module>
-        <module>52.concrete-rx-client</module>
-        <module>52.concrete-jaxrs-client</module>
-        <module>52.concrete-jaxrs-client-rx</module>
-        <module>52.concrete-jaxrs-invoker-okhttp3</module>
+        <module>60.attachments/concrete-attachments</module>
+        <module>60.attachments/concrete-attachments-jaxrs</module>
+        <module>60.attachments/concrete-attachments-repo-fastdfs</module>
 
-        <module>60.concrete-attachments</module>
-        <module>61.concrete-attachments-jaxrs</module>
-        <module>62.concrete-attachments-repo-fastdfs</module>
-        <module>81.concrete-commons-spring-data</module>
+        <module>61.accounts</module>
 
-        <module>99.concrete-bom</module>
+        <!--&lt;!&ndash; 组织结构的api &ndash;&gt;-->
+        <!--<module>61.accounts/organization/api</module>-->
+        <!--&lt;!&ndash; 数据模块 &ndash;&gt;-->
+        <!--<module>61.accounts/organization/data</module>-->
+        <!--&lt;!&ndash; 实现模块 &ndash;&gt;-->
+        <!--<module>61.accounts/organization/impl</module>-->
+        <!--&lt;!&ndash; 参考实现模块 &ndash;&gt;-->
+        <!--<module>61.accounts/organization/impl-reference</module>-->
+        <!-- 通用模块，比如登录、验证等 -->
+        <!--<module>61.accounts/common</module>-->
+        <!--<module>61.accounts/common-tools</module>-->
+        <!--<module>61.accounts/tenant/api</module>-->
+        <!--<module>61.accounts/tenant/data</module>-->
+        <!--<module>61.accounts/tenant/impl</module>-->
+        <!--<module>61.accounts/tenant/impl-reference</module>-->
+        <!--<module>61.accounts/simple/api</module>-->
+        <!--<module>61.accounts/simple/impl</module>-->
 
-        <module>plugins.concrete-formatters-freemarker</module>
+        <module>concrete-bom</module>
+
+        <module>plugins/plugins.concrete-formatters-freemarker</module>
+        <module>plugins/plugins.concrete-serializer-jackson2</module>
+        <module>plugins/plugins.concrete-serializer-jsonb-jdk8</module>
 
         <module>test.reverse.proxy</module>
         <module>test.web</module>
-        <module>37.concrete-support-websocket</module>
-        <module>31.concrete-websocket</module>
-        <module>53.concrete-websocket-client-rx</module>
-        <module>plugins.concrete-serializer-jackson2</module>
-        <module>plugins.concrete-serializer-jsonb-jdk8</module>
         <module>test-json</module>
 
     </modules>

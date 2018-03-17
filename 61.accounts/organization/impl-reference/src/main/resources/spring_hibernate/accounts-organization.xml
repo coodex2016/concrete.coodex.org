@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+
+    <context:component-scan base-package="org.coodex.concrete.accounts.organization.reference.impl"></context:component-scan>
+
+
+    <!-- entity manager -->
+    <bean id="organizationAccountsReferenceEntityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+
+        <property name="dataSource" ref="organizationAccountsReferenceDataSource"/>
+
+        <!-- use hibernate -->
+        <property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter"/>
+        <!-- 指定Entity实体类包路径 -->
+        <property name="packagesToScan">
+            <array>
+                <value>org.coodex.concrete.accounts.organization.reference.data.entities</value>
+                <value>org.coodex.concrete.accounts.organization.entities</value>
+            </array>
+        </property>
+
+        <!-- JPA Vendor Settings : for hibernate -->
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">${org.coodex.concrete.accounts|hibernate.dialect:org.hibernate.dialect.MySQL5Dialect}</prop>
+                <prop key="hibernate.cache.provider_class">${org.coodex.concrete.accounts|hibernate.cache.provider_class:org.hibernate.cache.NoCacheProvider}</prop>
+                <prop key="hibernate.show_sql">${org.coodex.concrete.accounts|hibernate.show_sql:false}</prop>
+                <prop key="hibernate.format_sql">${org.coodex.concrete.accounts|hibernate.format_sql:true}</prop>
+                <prop key="hibernate.hbm2ddl.auto">${org.coodex.concrete.accounts|hibernate.hbm2ddl.auto:update}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- JPA Vendor - Hibernate -->
+    <bean id="hibernateJpaVendorAdapter"
+          class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+
+    <!-- transaction manager -->
+    <bean id="accountsOrganizationTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="organizationAccountsReferenceEntityManagerFactory" />
+    </bean>
+    <tx:annotation-driven transaction-manager="accountsOrganizationTransactionManager" />
+
+    <jpa:repositories
+            entity-manager-factory-ref="organizationAccountsReferenceEntityManagerFactory"
+            transaction-manager-ref="accountsOrganizationTransactionManager"
+            base-package="org.coodex.concrete.accounts.organization.reference.data.repositories">
+    </jpa:repositories>
+
+    <jpa:repositories
+            entity-manager-factory-ref="organizationAccountsReferenceEntityManagerFactory"
+            transaction-manager-ref="accountsOrganizationTransactionManager"
+            base-package="org.coodex.concrete.accounts.organization.repositories">
+    </jpa:repositories>
+</beans>

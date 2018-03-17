@@ -25,6 +25,11 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-3-18
+
+- bugfix: 业务线程池模型缺陷修复
+- 重构代码结构
+
 ## 2018-02-28
 
 - 0.2.2-SNAPSHOT
