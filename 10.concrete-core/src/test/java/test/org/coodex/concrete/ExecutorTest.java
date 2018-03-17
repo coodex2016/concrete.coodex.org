@@ -21,31 +21,119 @@ import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.util.Common;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class ExecutorTest {
-    public static void main(String [] args) throws InterruptedException {
-        ThreadPoolExecutor executorService = (ThreadPoolExecutor) ExecutorsHelper.newPriorityThreadPool(5,10);
+    static boolean error = false;
 
-        for(int i = 0; i < 1000; i ++){
-            executorService.execute(new Runnable() {
-                @Override
-                public void run() {
+    public static void main(String[] args) throws InterruptedException {
+        final ThreadPoolExecutor executorService = (ThreadPoolExecutor) ExecutorsHelper.newPriorityThreadPool(20, 80);
+//        test1(executorService);
+//        test2(executorService);
+        test3(executorService);
+
+
+        while (true) {
+            System.out.println(executorService);
+            Thread.sleep(1000);
+        }
+//        Thread.sleep(5000);
+//        System.out.println(executorService);
+//        executorService.shutdown();
+//        executorService.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    Thread.sleep(Common.random(1000,10000));
+////                        System.out.println("threadId: " + Thread.currentThread().getId());
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+
+
+    }
+    private static void test3(final ThreadPoolExecutor executorService) throws InterruptedException {
+        new Thread(){
+
+            @Override
+            public void run() {
+                test1(executorService);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                while(executorService.getActiveCount() > 0){
                     try {
-                        Thread.sleep(Common.random(10,100));
-//                        System.out.println("threadId: " + Thread.currentThread().getId());
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
-            });
+                try {
+                    Thread.sleep(executorService.getKeepAliveTime(TimeUnit.MILLISECONDS) + 1500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                test1(executorService);
+            }
+        }.start();
+
+    }
+
+    private static void test1(final ThreadPoolExecutor executorService) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 0; i < 100; i ++){
+                    try {
+                        for(int x = 0; x < 100; x ++) {
+                            postTask(executorService);
+                        }
+                    }catch (RejectedExecutionException e){
+                        e.printStackTrace();
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException ie) {
+                            e.printStackTrace();
+                        }
+                    }
+                    try {
+                        Thread.sleep(Common.random(1,50));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+
+    private static void postTask(ThreadPoolExecutor executorService) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(Common.random(10, 200));
+                    if (error) {
+                        Thread.sleep(1000000000);
+                    }
+//                        System.out.println("threadId: " + Thread.currentThread().getId());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+
+                }
+            }
+
+        });
+    }
+
+    private static void test2(ThreadPoolExecutor executorService) {
+        for (int i = 0; i < 10000; i++) {
+            postTask(executorService);
         }
-
-        while(true){
-            System.out.println(String.format("poolSize: %d; activedCount: %d", executorService.getPoolSize(), executorService.getActiveCount()));
-            Thread.sleep(5000);
-        }
-
-
     }
 }

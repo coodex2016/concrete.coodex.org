@@ -58,7 +58,7 @@ public class JaxRSCourier implements Courier {
 
     private static ScheduledExecutorService scheduledExecutorService;
 
-    private static synchronized ScheduledExecutorService getScheduledExecutorService(){
+    private static synchronized ScheduledExecutorService getScheduledExecutorService() {
         if (scheduledExecutorService == null)
             scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
         return scheduledExecutorService;
@@ -71,13 +71,11 @@ public class JaxRSCourier implements Courier {
 //        }
     }
 
-    private static Queue<MessageWithArrived> getQueue(String tokenId) {
-        synchronized (queueMap) {
-            if (!queueMap.containsKey(tokenId)) {
-                Queue<MessageWithArrived> queue = new LinkedBlockingQueue<MessageWithArrived>();
-                queueMap.put(tokenId, queue);
-                clean(queue, System.currentTimeMillis() + MAX_LIFE);
-            }
+    private static synchronized Queue<MessageWithArrived> getQueue(String tokenId) {
+        if (!queueMap.containsKey(tokenId)) {
+            Queue<MessageWithArrived> queue = new LinkedBlockingQueue<MessageWithArrived>();
+            queueMap.put(tokenId, queue);
+            clean(queue, System.currentTimeMillis() + MAX_LIFE);
         }
         return queueMap.get(tokenId);
     }
@@ -105,31 +103,24 @@ public class JaxRSCourier implements Courier {
     public static void asyncMessageReceive(String tokenId, AsyncMessageReceiver asyncMessageReceiver) {
         Queue<MessageWithArrived> queue = getQueue(tokenId);
 
-        synchronized (ASYNC_MESSAGE_GETTER_MAP) {
-            Set<AsyncMessageReceiver> asyncMessageReceiverSet = getAsyncMessageReceivers(queue);
-            synchronized (asyncMessageReceiverSet) {
-                if (!asyncMessageReceiverSet.contains(asyncMessageReceiver)) {
-                    List<Message> messages = getMessage(tokenId, -1);
-                    if (messages.size() > 0) {
-                        asyncMessageReceiver.resume(messages);
-                    } else {
-                        asyncMessageReceiverSet.add(asyncMessageReceiver);
-                    }
+        Set<AsyncMessageReceiver> asyncMessageReceiverSet = getAsyncMessageReceivers(queue);
+        synchronized (asyncMessageReceiverSet) {
+            if (!asyncMessageReceiverSet.contains(asyncMessageReceiver)) {
+                List<Message> messages = getMessage(tokenId, -1);
+                if (messages.size() > 0) {
+                    asyncMessageReceiver.resume(messages);
+                } else {
+                    asyncMessageReceiverSet.add(asyncMessageReceiver);
                 }
             }
         }
     }
 
-    private static Set<AsyncMessageReceiver> getAsyncMessageReceivers(Queue<MessageWithArrived> queue) {
-        Set<AsyncMessageReceiver> asyncMessageReceiverSet = null;
-        synchronized (ASYNC_MESSAGE_GETTER_MAP) {
-            if (!ASYNC_MESSAGE_GETTER_MAP.containsKey(queue)) {
-                asyncMessageReceiverSet = new HashSet<AsyncMessageReceiver>();
-                ASYNC_MESSAGE_GETTER_MAP.put(queue, asyncMessageReceiverSet);
-            }
-            asyncMessageReceiverSet = ASYNC_MESSAGE_GETTER_MAP.get(queue);
+    private static synchronized Set<AsyncMessageReceiver> getAsyncMessageReceivers(Queue<MessageWithArrived> queue) {
+        if (!ASYNC_MESSAGE_GETTER_MAP.containsKey(queue)) {
+            ASYNC_MESSAGE_GETTER_MAP.put(queue, new HashSet<AsyncMessageReceiver>());
         }
-        return asyncMessageReceiverSet;
+        return ASYNC_MESSAGE_GETTER_MAP.get(queue);
     }
 
 
@@ -169,17 +160,14 @@ public class JaxRSCourier implements Courier {
         synchronized (queue) {
             boolean handle = false;
             try {
-                synchronized (ASYNC_MESSAGE_GETTER_MAP) {
-                    for (AsyncMessageReceiver receiver : getAsyncMessageReceivers(queue)) {
-                        try {
-                            handle = true;
-                            receiver.resume(Arrays.asList((Message) message));
-                        } catch (Throwable throwable) {
-                            log.warn("{}", throwable.getLocalizedMessage(), throwable);
-                        }
+                for (AsyncMessageReceiver receiver : getAsyncMessageReceivers(queue)) {
+                    try {
+                        handle = true;
+                        receiver.resume(Arrays.asList((Message) message));
+                    } catch (Throwable throwable) {
+                        log.warn("{}", throwable.getLocalizedMessage(), throwable);
                     }
                 }
-
             } finally {
                 if (!handle) {
                     queue.add(new MessageWithArrived(message));

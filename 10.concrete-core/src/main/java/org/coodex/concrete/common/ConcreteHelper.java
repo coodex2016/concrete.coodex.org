@@ -46,7 +46,8 @@ public class ConcreteHelper {
         if (executorService == null) {
             executorService = ExecutorsHelper.newPriorityThreadPool(
                     getProfile().getInt("service.executor.corePoolSize", 0),
-                    getProfile().getInt("service.executor.maximumPoolSize", Integer.MAX_VALUE)
+                    getProfile().getInt("service.executor.maximumPoolSize", Integer.MAX_VALUE),
+                    getProfile().getInt("service.executor.keepAliveTime", 60)
             );
         }
         return executorService;
