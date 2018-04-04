@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.security.cert.X509Certificate;
  * 信任所有server证书，不建议使用，无法抵御中间人攻击
  * Created by davidoff shen on 2017-03-27.
  */
+@Deprecated
 public class AllTrustedSSLContextFactory implements SSLContextFactory {
     @Override
     public SSLContext getSSLContext(String domain) throws Throwable {

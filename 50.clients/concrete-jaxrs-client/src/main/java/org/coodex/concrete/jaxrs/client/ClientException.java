@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,34 @@
 
 package org.coodex.concrete.jaxrs.client;
 
-import org.coodex.concrete.common.AbstractClientException;
+import org.coodex.concrete.client.jaxrs.JaxRSClientException;
 
 /**
  * Created by davidoff shen on 2016-12-07.
  */
-public class ClientException extends AbstractClientException {
-
-    private final String path;
-    private final String method;
+public class ClientException extends JaxRSClientException{
 
     public ClientException(int code, String msg, String path, String method) {
-        super(code, msg);
-        this.path = path;
-        this.method = method;
+        super(code, msg, path, method);
     }
-
-    public String getPath() {
-        return path;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
 }
+//        extends AbstractClientException {
+//
+//    private final String path;
+//    private final String method;
+//
+//    public ClientException(int code, String msg, String path, String method) {
+//        super(code, msg);
+//        this.path = path;
+//        this.method = method;
+//    }
+//
+//    public String getPath() {
+//        return path;
+//    }
+//
+//    public String getMethod() {
+//        return method;
+//    }
+//
+//}

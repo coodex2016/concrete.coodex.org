@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.coodex.sharedcache;
 
+import org.coodex.util.Singleton;
+
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
@@ -25,11 +27,22 @@ import java.util.ServiceLoader;
 public class SharedCacheClientManager {
 
 
-    private static ServiceLoader<SharedCacheClientFactory> factoryProviders;
-
-    private static synchronized void load() {
-        if (factoryProviders == null)
-            factoryProviders = ServiceLoader.load(SharedCacheClientFactory.class);
+//    private static ServiceLoader<SharedCacheClientFactory> factoryProviders;
+    private static Singleton<ServiceLoader<SharedCacheClientFactory>> factoryProviders =
+        new Singleton<ServiceLoader<SharedCacheClientFactory>>(new Singleton.Builder<ServiceLoader<SharedCacheClientFactory>>() {
+            @Override
+            public ServiceLoader<SharedCacheClientFactory> build() {
+                return ServiceLoader.load(SharedCacheClientFactory.class);
+            }
+        });
+    private static void load() {
+            factoryProviders.getInstance();
+//        if (factoryProviders == null) {
+//            synchronized (SharedCacheClientManager.class) {
+//                if (factoryProviders == null)
+//                    factoryProviders = ServiceLoader.load(SharedCacheClientFactory.class);
+//            }
+//        }
     }
 
     public static SharedCacheClient getClient(String driverName) {
@@ -37,7 +50,7 @@ public class SharedCacheClientManager {
 
         load();
 
-        Iterator<SharedCacheClientFactory> factories = factoryProviders.iterator();
+        Iterator<SharedCacheClientFactory> factories = factoryProviders.getInstance().iterator();
         while (factories.hasNext()) {
             SharedCacheClientFactory factory = factories.next();
             if (factory.isAccepted(driverName)) {

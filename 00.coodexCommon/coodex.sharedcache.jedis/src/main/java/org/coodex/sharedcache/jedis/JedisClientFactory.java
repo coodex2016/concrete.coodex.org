@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.coodex.sharedcache.SharedCacheClient;
 import org.coodex.sharedcache.SharedCacheClientFactory;
 import org.coodex.util.Profile;
+import org.coodex.util.Singleton;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPool;
@@ -35,7 +36,7 @@ public class JedisClientFactory implements SharedCacheClientFactory {
 
     public static final int DEFAULT_PORT = 6379;
 
-    private static AbstractJedisClient client;
+//    private static AbstractJedisClient client;
 
     private static Profile profile;
 
@@ -45,7 +46,7 @@ public class JedisClientFactory implements SharedCacheClientFactory {
         return JEDIS_DRIVER_NAME.equalsIgnoreCase(driverName.trim());
     }
 
-    private HostAndPort toHostAndPort(String desc) {
+    private static HostAndPort toHostAndPort(String desc) {
         int index = desc.indexOf(':');
         if (index < 0) return new HostAndPort(desc, DEFAULT_PORT);
         String host = desc.substring(0, index).trim();
@@ -53,45 +54,86 @@ public class JedisClientFactory implements SharedCacheClientFactory {
         return new HostAndPort(host, port);
     }
 
-    @Override
-    public SharedCacheClient getClientInstance() {
-        synchronized (JedisClientFactory.class) {
-            if (client == null) {
-                profile = Profile.getProfile("sharedcache-jedis.properties");
-                String[] redisServers = profile.getStrList("redisServers");
-                if (redisServers == null) throw new RuntimeException("no redis server defined.");
+    private static Singleton<AbstractJedisClient> client = new Singleton<AbstractJedisClient>(
+            new Singleton.Builder<AbstractJedisClient>() {
+                @Override
+                public AbstractJedisClient build() {
+                    profile = Profile.getProfile("sharedcache-jedis.properties");
+                    String[] redisServers = profile.getStrList("redisServers");
+                    if (redisServers == null) throw new RuntimeException("no redis server defined.");
 
 
-                Set<HostAndPort> servers = new HashSet<HostAndPort>();
-                for (String server : redisServers) {
-                    try {
-                        servers.add(toHostAndPort(server));
-                    } catch (Throwable e) {
-                        throw new RuntimeException("unknown redis server: " + server, e);
+                    Set<HostAndPort> servers = new HashSet<HostAndPort>();
+                    for (String server : redisServers) {
+                        try {
+                            servers.add(toHostAndPort(server));
+                        } catch (Throwable e) {
+                            throw new RuntimeException("unknown redis server: " + server, e);
+                        }
+                    }
+
+                    GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+
+                    poolConfig.setMinIdle(profile.getInt("pool.minIdle", GenericObjectPoolConfig.DEFAULT_MIN_IDLE));
+                    poolConfig.setMaxIdle(profile.getInt("pool.maxIdle", GenericObjectPoolConfig.DEFAULT_MAX_IDLE));
+                    poolConfig.setMaxTotal(profile.getInt("pool.maxTotal", GenericObjectPoolConfig.DEFAULT_MAX_TOTAL));
+
+                    // TODO 安全认证
+
+
+                    if (servers.size() == 0) throw new RuntimeException("no redis server defined.");
+                    long defaultMaxCacheTime = profile.getLong("defaultMaxCacheTime", DEFAULT_MAX_CACHED_SECENDS) * 1000;
+
+                    if (servers.size() == 1) {
+                        HostAndPort server = servers.iterator().next();
+                        return new JedisSingleNodeClient(new JedisPool(poolConfig, server.getHost(), server.getPort()), defaultMaxCacheTime);
+                    } else {
+                        return new JedisClusterClient(new JedisCluster(servers, poolConfig), defaultMaxCacheTime);
                     }
                 }
-
-                GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
-
-                poolConfig.setMinIdle(profile.getInt("pool.minIdle", GenericObjectPoolConfig.DEFAULT_MIN_IDLE));
-                poolConfig.setMaxIdle(profile.getInt("pool.maxIdle", GenericObjectPoolConfig.DEFAULT_MAX_IDLE));
-                poolConfig.setMaxTotal(profile.getInt("pool.maxTotal", GenericObjectPoolConfig.DEFAULT_MAX_TOTAL));
-
-                // TODO 安全认证
-
-
-                if (servers.size() == 0) throw new RuntimeException("no redis server defined.");
-                long defaultMaxCacheTime = profile.getLong("defaultMaxCacheTime", DEFAULT_MAX_CACHED_SECENDS) * 1000;
-
-                if (servers.size() == 1) {
-                    HostAndPort server = servers.iterator().next();
-                    client = new JedisSingleNodeClient(new JedisPool(poolConfig, server.getHost(), server.getPort()), defaultMaxCacheTime);
-                } else {
-                    client = new JedisClusterClient(new JedisCluster(servers, poolConfig), defaultMaxCacheTime);
-
-                }
             }
-        }
-        return client;
+    );
+
+    @Override
+    public SharedCacheClient getClientInstance() {
+//        synchronized (JedisClientFactory.class) {
+//            if (client == null) {
+//                profile = Profile.getProfile("sharedcache-jedis.properties");
+//                String[] redisServers = profile.getStrList("redisServers");
+//                if (redisServers == null) throw new RuntimeException("no redis server defined.");
+//
+//
+//                Set<HostAndPort> servers = new HashSet<HostAndPort>();
+//                for (String server : redisServers) {
+//                    try {
+//                        servers.add(toHostAndPort(server));
+//                    } catch (Throwable e) {
+//                        throw new RuntimeException("unknown redis server: " + server, e);
+//                    }
+//                }
+//
+//                GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+//
+//                poolConfig.setMinIdle(profile.getInt("pool.minIdle", GenericObjectPoolConfig.DEFAULT_MIN_IDLE));
+//                poolConfig.setMaxIdle(profile.getInt("pool.maxIdle", GenericObjectPoolConfig.DEFAULT_MAX_IDLE));
+//                poolConfig.setMaxTotal(profile.getInt("pool.maxTotal", GenericObjectPoolConfig.DEFAULT_MAX_TOTAL));
+//
+//                // TODO 安全认证
+//
+//
+//                if (servers.size() == 0) throw new RuntimeException("no redis server defined.");
+//                long defaultMaxCacheTime = profile.getLong("defaultMaxCacheTime", DEFAULT_MAX_CACHED_SECENDS) * 1000;
+//
+//                if (servers.size() == 1) {
+//                    HostAndPort server = servers.iterator().next();
+//                    client = new JedisSingleNodeClient(new JedisPool(poolConfig, server.getHost(), server.getPort()), defaultMaxCacheTime);
+//                } else {
+//                    client = new JedisClusterClient(new JedisCluster(servers, poolConfig), defaultMaxCacheTime);
+//
+//                }
+//            }
+//        }
+//        return client;
+        return client.getInstance();
     }
 }

@@ -25,6 +25,56 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-04-04
+
+- coodex-utilities提供`Singleton<T>`和`SingletonMap<K,V>`，通过双重校验锁的模式，减少同步锁的开销，Concrete相关单例模式依此更改
+- 重构java client，作废原java client代码，新旧版本java client不保证行为一致
+    - 作废org.coodex.concrete.jaxrs.Client
+    - 提供org.coodex.concrete.Client作为获取Client的统一入口
+    - IoC容器中，支持JSR330规范；支持ConcreteService和RX_ConcreteService
+    ```java
+        @Inject @ConcreteClient("TARGET")
+        private SomeService someService;
+    ```
+    - 配置调整为
+    ```properties
+      # 优先级为
+      # client.模块名.properties
+      # location: 服务注册端点，不得为空, local表示本地调用；alias:其它模块名,表示该模块同目的模块
+      # tokenTransfer: 布尔值，默认为否，表示是否需要从当前系统传递token到远端。当前系统与远端模块共享token时使用
+      # tokenManagerKey：作为客户端，使用哪个key来保存跟远端之间的token，相同key的则说明使用同一份token。tokenTransfor为真时，此属性无效
+      # 高于
+      # client.properties
+      # 模块名.location
+      # 模块名.tokenTransfer
+      # 模块名.tokenManagerKey
+      # 高于
+      # location
+      # tokenTransfer
+      # tokenManagerKey
+      # 高于
+      # concrete.properties
+      # client.模块名.location
+      # client.模块名.tokenTransfer
+      # client.模块名.tokenManagerKey
+      # 高于
+      # client.location
+      # client.tokenTransfer
+      # client.tokenManagerKey
+    ```
+    - 适配java client，签名切片调整。当一个系统需要对接多个远端模块时，可以使用signature.模块名.properties来区分设置
+    - 重构SSLContextFactory，根据ssl描述生成SSLContext
+        - AllTrusted，AllTrustedSSLContextFactory，信任所有证书
+        - 为空或者Default，JSSEDefaultSSLContextFactory，使用JSSE环境的默认sslContext
+        - certPath:证书路径，使用`;`分隔，X509CertsSSLContextFactory，信任提供的证书路径中的证书，证书路径须指向具体的证书文件。单个path中使用classpath:多个path时，使用`,`分割
+    - 重构jaxrs客户端调用
+    - 重构Websocket客户端调用，增加Websocket客户端的同步调用模式
+- next feature:
+    - 服务、客户端增加dubbo支持
+    - 服务、客户端增加socket支持
+    - 增加JWT支持
+    
+
 ## 2018-3-18
 
 - bugfix: 业务线程池模型缺陷修复
@@ -34,7 +84,7 @@ public interface SomeService extends ConcreteService{
 
 - 0.2.2-SNAPSHOT
 - bugfix: 
-    - 根据https://stackoverflow.com/questions/27513994/chrome-stalls-when-making-multiple-requests-to-same-resource，修改浏览器端api的headers
+    - 根据https://stackoverflow.com/questions/27513994/chrome-stalls-when-making-multiple-requests-to-same-resource 修改浏览器端api的headers
     - jaxrs2.0 Polling线程池有可能为空的问题
 - java-client移除了自动polling的机制
 

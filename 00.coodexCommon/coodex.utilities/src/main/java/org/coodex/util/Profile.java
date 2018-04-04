@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,19 +55,30 @@ import static org.coodex.util.Common.*;
  * @author davidoff
  * @version v1.0 2014-03-18
  */
-public class Profile implements StringMap{
+public class Profile implements StringMap {
 
-    private static ScheduledExecutorService RELOAD_POOL;
+    //    private static ScheduledExecutorService RELOAD_POOL;
+    private static Singleton<ScheduledExecutorService> RELOAD_POOL =
+            new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
+                @Override
+                public ScheduledExecutorService build() {
+                    return ExecutorsHelper.newSingleThreadScheduledExecutor();
+                }
+            });
 
     private static final String RELOAD_INTERVAL = System.getProperty("Profile.reloadInterval");
 
     private static final Logger log = LoggerFactory.getLogger(Profile.class);
 
-    private static synchronized ScheduledExecutorService getReloadPool() {
-        if (RELOAD_POOL == null) {
-            RELOAD_POOL = ExecutorsHelper.newSingleThreadScheduledExecutor();
-        }
-        return RELOAD_POOL;
+    private static ScheduledExecutorService getReloadPool() {
+//        if (RELOAD_POOL == null) {
+//            synchronized (Profile.class) {
+//                if (RELOAD_POOL == null)
+//                    RELOAD_POOL = ExecutorsHelper.newSingleThreadScheduledExecutor();
+//            }
+//        }
+//        return RELOAD_POOL;
+        return RELOAD_POOL.getInstance();
     }
 
     private static final Map<String, Profile> profiles = new HashMap<String, Profile>();
@@ -173,7 +184,7 @@ public class Profile implements StringMap{
 
     public static InputStream getResourceAsStream(String resourcePath) throws IOException {
         URL url = getResource(Common.trim(resourcePath, '/'));
-        return url ==null ? new FileInputStream(resourcePath) : url.openStream();
+        return url == null ? new FileInputStream(resourcePath) : url.openStream();
     }
 
     static public URL getResource(String resource) {
@@ -208,7 +219,6 @@ public class Profile implements StringMap{
         check();
         return p;
     }
-
 
 
     private synchronized void check() {

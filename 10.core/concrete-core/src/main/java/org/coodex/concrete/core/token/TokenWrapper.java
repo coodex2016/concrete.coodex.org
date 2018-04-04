@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,8 +96,14 @@ public class TokenWrapper implements Token {
     }
 
     @Override
+    @Deprecated
     public <T> T getAttribute(String key) {
         return getToken().getAttribute(key);
+    }
+
+    @Override
+    public <T> T getAttribute(String key, Class<T> clz) {
+        return getToken().getAttribute(key, clz);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +17,49 @@
 package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.api.Signable;
-import org.coodex.concrete.common.ConcreteServiceLoader;
-import org.coodex.concrete.common.DefinitionContext;
-import org.coodex.concrete.common.IronPenFactory;
-import org.coodex.concrete.common.SignatureSerializer;
+import org.coodex.concrete.client.ClientServiceContext;
+import org.coodex.concrete.common.*;
 import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
 import org.coodex.util.ServiceLoader;
+
+import static org.coodex.concrete.common.ConcreteHelper.getProfile;
 
 /**
  * Created by davidoff shen on 2017-04-21.
  */
 public class SignUtil {
 
+    private static final String TAG_SIGNATRUE = "signature";
 
-    public static final Profile PROFILE = Profile.getProfile("signature.properties");
+    public static final Profile PROFILE = getProfile(TAG_SIGNATRUE);
+
+    private static String getString(Profile profile, String key, String paperName) {
+        return Common.isBlank(paperName) ? profile.getString(key) : profile.getString(key + "." + paperName);
+//        if (Common.isBlank(paperName))
+//            return profile.getString(key);
+//        String s = profile.getString(key + "." + paperName);
+//        return s == null ? getString(profile, key, null) : s;
+    }
 
 
     public static String getString(String key, String paperName, String defaultValue) {
-        if (Common.isBlank(paperName))
-            return PROFILE.getString(key, defaultValue);
-        String s = PROFILE.getString(key + "." + paperName, defaultValue);
-        return s == null ? getString(key, null, defaultValue) : s;
+        ServiceContext serviceContext = ConcreteContext.getServiceContext();
+        String value = null;
+        if (serviceContext instanceof ClientServiceContext) {
+            String module = ((ClientServiceContext) serviceContext).getDestination().getIdentify();
+            if (!Common.isBlank(module)) {
+                value = getString(getProfile(TAG_SIGNATRUE, module), key, paperName);
+            }
+        }
+        if (value == null)
+            value = getString(getProfile(TAG_SIGNATRUE), key, paperName);
+        return value == null ? defaultValue : value;
+//        if (Common.isBlank(paperName))
+//            return PROFILE.getString(key, defaultValue);
+//        String s = PROFILE.getString(key + "." + paperName, defaultValue);
+//        return s == null ? getString(key, null, defaultValue) : s;
     }
 
     public static class HowToSign {

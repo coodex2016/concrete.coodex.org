@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -50,7 +51,7 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
 
     @Override
     public <T> Map<String, T> getBeansOfType(Class<T> type) {
-        return context.getBeansOfType(type);
+        return (context == null) ? new HashMap<String, T>() : context.getBeansOfType(type);
     }
 
 }

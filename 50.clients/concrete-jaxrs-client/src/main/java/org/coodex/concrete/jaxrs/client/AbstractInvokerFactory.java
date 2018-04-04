@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import java.util.Map;
 /**
  * Created by davidoff shen on 2017-03-27.
  */
+@Deprecated
 public abstract class AbstractInvokerFactory<T extends Invoker> implements InvokerFactory {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractInvokerFactory.class);

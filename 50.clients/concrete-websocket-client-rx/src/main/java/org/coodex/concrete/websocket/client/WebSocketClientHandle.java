@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import static org.coodex.concrete.common.ConcreteContext.runWithContext;
 import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 import static org.coodex.concrete.websocket.Constants.*;
 
+@Deprecated
 @ClientEndpoint(configurator = SetUserAgentConfigurator.class)
 public class WebSocketClientHandle {
 
@@ -194,26 +195,27 @@ public class WebSocketClientHandle {
 
     @SuppressWarnings("unchecked")
     private RequestPackage buildRequest(String msgId, WebSocketUnit unit, Object[] args) {
-        RequestPackage requestPackage = new RequestPackage();
-        requestPackage.setMsgId(msgId);
-        requestPackage.setServiceId(unit.getKey());
-
-        AbstractParam[] parameters = unit.getParameters();
-        switch (parameters.length) {
-            case 0:
-                break;
-            case 1:
-                requestPackage.setContent(args[0]);
-                break;
-            default:
-                Map<String, Object> toSend = new HashMap<String, Object>();
-                for (int i = 0; i < parameters.length; i++) {
-                    toSend.put(parameters[i].getName(), args[i]);
-                }
-                requestPackage.setContent(toSend);
-                break;
-        }
-        return requestPackage;
+//        RequestPackage requestPackage = new RequestPackage();
+//        requestPackage.setMsgId(msgId);
+//        requestPackage.setServiceId(unit.getKey());
+//
+//        AbstractParam[] parameters = unit.getParameters();
+//        switch (parameters.length) {
+//            case 0:
+//                break;
+//            case 1:
+//                requestPackage.setContent(args[0]);
+//                break;
+//            default:
+//                Map<String, Object> toSend = new HashMap<String, Object>();
+//                for (int i = 0; i < parameters.length; i++) {
+//                    toSend.put(parameters[i].getName(), args[i]);
+//                }
+//                requestPackage.setContent(toSend);
+//                break;
+//        }
+//        return requestPackage;
+        return WebSocketHelper.buildRequest(msgId, unit, args);
     }
 
     private String toJson(Object o) {

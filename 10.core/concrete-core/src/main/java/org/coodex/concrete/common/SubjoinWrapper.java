@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public class SubjoinWrapper implements Subjoin {
     private Subjoin getSubjoin() {
 //        return SUBJOIN.get() == null ? DEFAULT_SUBJOIN : SUBJOIN.get();
         Subjoin subjoin = getServiceContext().getSubjoin();
-        return subjoin == null ? new DefaultSubjoin() : subjoin;
+        return subjoin == null || subjoin == this ? new DefaultSubjoin() : subjoin;
     }
 
     @Override

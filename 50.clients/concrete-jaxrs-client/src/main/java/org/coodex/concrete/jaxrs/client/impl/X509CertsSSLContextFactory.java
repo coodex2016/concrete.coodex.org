@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import java.util.Enumeration;
  * 根据concrete.properties中trusted.certs.path.domain.port配置的
  * Created by davidoff shen on 2017-03-27.
  */
+@Deprecated
 public class X509CertsSSLContextFactory implements SSLContextFactory {
     private final static Logger log = LoggerFactory.getLogger(X509CertsSSLContextFactory.class);
 
@@ -137,120 +138,8 @@ public class X509CertsSSLContextFactory implements SSLContextFactory {
         }
     }
 
-    static class SavingTrustManager implements X509TrustManager {
 
-        private X509Certificate[] chain;
 
-        public X509Certificate[] getAcceptedIssuers() {
-            throw new UnsupportedOperationException();
-        }
 
-        public void checkClientTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
-            throw new UnsupportedOperationException();
-        }
-
-        public void checkServerTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
-            this.chain = chain;
-//            tm.checkServerTrusted(chain, authType);
-        }
-    }
-
-    public static void saveCertificateFromServer(String host, int port, String storePath) throws NoSuchAlgorithmException, KeyManagementException, IOException, CertificateEncodingException {
-
-        SSLContext context = SSLContext.getInstance("SSL");
-        SavingTrustManager tm = new SavingTrustManager();
-        context.init(null, new TrustManager[]{tm}, new SecureRandom());
-        SSLSocketFactory factory = context.getSocketFactory();
-        System.out
-                .println("Opening connection to " + host + ":" + port + "...");
-        SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
-        socket.setSoTimeout(10000);
-        try {
-            socket.startHandshake();
-            socket.close();
-        } catch (Throwable th) {
-        }
-        if (tm.chain == null || tm.chain.length == 0) {
-            System.out.println("Could not obtain server certificate chain");
-        }
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                System.in));
-
-        System.out.println();
-        System.out.println("Server sent " + tm.chain.length + " certificate(s):");
-        System.out.println();
-        MessageDigest sha1 = MessageDigest.getInstance("SHA1");
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
-        for (int i = 0; i < tm.chain.length; i++) {
-            X509Certificate cert = tm.chain[i];
-            System.out.println(" " + (i + 1) + " Subject "
-                    + cert.getSubjectDN());
-            System.out.println("   Issuer  " + cert.getIssuerDN());
-            sha1.update(cert.getEncoded());
-            System.out.println("   sha1    " + toHexString(sha1.digest()));
-            md5.update(cert.getEncoded());
-            System.out.println("   md5     " + toHexString(md5.digest()));
-            System.out.println();
-        }
-
-        System.out
-                .println("Enter certificate to add to trusted keystore or 'q' to quit: [1]");
-        String line = reader.readLine().trim();
-        int k;
-        try {
-            k = (line.length() == 0) ? 0 : Integer.parseInt(line) - 1;
-        } catch (NumberFormatException e) {
-            return;
-        }
-        if (k >= tm.chain.length || k < 0) return;
-
-        X509Certificate cert = tm.chain[k];
-        String name = host + "." + port;
-        while (storePath.endsWith("/") || storePath.endsWith("\\")){
-            storePath = storePath.substring(0, storePath.length() - 1);
-        }
-        int index = 0;
-        while (isExists(storePath + File.separatorChar + name + ".cer")) {
-            name = host + "." + port + "-" + ++index;
-        }
-        File x = Common.getNewFile(storePath + File.separatorChar + name + ".cer");
-        OutputStream os = new FileOutputStream(x);
-        try {
-            os.write(cert.getEncoded());
-            os.flush();
-        } finally {
-            os.close();
-        }
-        System.out.println("certificate saved: " + x.getAbsolutePath());
-    }
-
-    private static boolean isExists(String name) {
-        File f = new File(name);
-        return f.exists();
-    }
-
-    private static final char[] HEXDIGITS = "0123456789abcdef".toCharArray();
-
-    private static String toHexString(byte[] bytes) {
-        StringBuilder sb = new StringBuilder(bytes.length * 3);
-        for (int b : bytes) {
-            b &= 0xff;
-            sb.append(HEXDIGITS[b >> 4]);
-            sb.append(HEXDIGITS[b & 15]);
-            sb.append(' ');
-        }
-        return sb.toString();
-    }
-
-//    public static void main(String[] args) throws CertificateException, IOException, NoSuchAlgorithmException, KeyManagementException {
-//
-//        saveCertificateFromServer("docs.oracle.com", 443, "/");
-////        CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-//
-////        System.out.println(certificateFactory.generateCertificate(new FileInputStream("E:\\FiddlerRoot.cer")));
-//    }
 
 }

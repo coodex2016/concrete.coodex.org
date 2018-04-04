@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,23 +34,75 @@ import static org.coodex.util.ReflectHelper.foreachClass;
  */
 public class ConcreteHelper {
 
-    public static final String VERSION = "0.2.1-SNAPSHOT";
+    public static final String VERSION = "0.2.2-SNAPSHOT";
 
-    public static Profile getProfile() {
-        return Profile.getProfile("concrete.properties");
+    private static Profile getDefaultProfile(String tag) {
+        return Profile.getProfile(tag + ".properties");
     }
 
-    private static ExecutorService executorService = null;
+    public static Profile getProfile() {
+        return getProfile("concrete");
+    }
 
-    public synchronized static ExecutorService getExecutor() {
-        if (executorService == null) {
-            executorService = ExecutorsHelper.newPriorityThreadPool(
+    public static Profile getProfile(String tag) {
+        return getProfile(tag, null);
+    }
+
+    public static Profile getProfile(String tag, String sub) {
+        return Common.isBlank(sub) ?
+                getDefaultProfile(tag) :
+                Profile.getProfile(tag + "." + sub + ".properties");
+    }
+
+    public static String getString(String tag, String module, String key) {
+        Profile profile = getProfile(tag, module);
+        String value = profile.getString(key);
+        if (value == null && !Common.isBlank(module)) {
+            profile = getProfile(tag);
+            value = profile.getString(String.format("%s.%s", module, key));
+            if (value == null) {
+                value = profile.getString(key);
+            }
+        }
+        if (value == null) {
+            profile = getProfile();
+            if (!Common.isBlank(module)) {
+                value = profile.getString(String.format("%s.%s.%s", tag, module, key));
+            }
+            if (value == null) {
+                value = profile.getString(String.format("%s.%s", tag, key));
+            }
+        }
+        return value;
+    }
+
+
+    //    private static ExecutorService executorService;
+    private static Singleton<ExecutorService> executorService = new Singleton<ExecutorService>(new Singleton.Builder<ExecutorService>() {
+        @Override
+        public ExecutorService build() {
+            return ExecutorsHelper.newPriorityThreadPool(
                     getProfile().getInt("service.executor.corePoolSize", 0),
                     getProfile().getInt("service.executor.maximumPoolSize", Integer.MAX_VALUE),
                     getProfile().getInt("service.executor.keepAliveTime", 60)
             );
         }
-        return executorService;
+    });
+
+    public static ExecutorService getExecutor() {
+//        if (executorService == null) {
+//            synchronized (ConcreteHelper.class) {
+//                if (executorService == null) {
+//                    executorService = ExecutorsHelper.newPriorityThreadPool(
+//                            getProfile().getInt("service.executor.corePoolSize", 0),
+//                            getProfile().getInt("service.executor.maximumPoolSize", Integer.MAX_VALUE),
+//                            getProfile().getInt("service.executor.keepAliveTime", 60)
+//                    );
+//                }
+//            }
+//        }
+//        return executorService;
+        return executorService.getInstance();
     }
 
     public static Method[] getAllMethod(Class<?> serviceClass) {

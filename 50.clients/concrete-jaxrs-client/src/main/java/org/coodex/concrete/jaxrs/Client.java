@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,11 @@ import java.util.Map;
 /**
  * java client for concrete jaxrs service
  * <p>
- * Created by davidoff shen on 2016-12-07.
+ * Created by davidoff shen on 2016-12-07
+ *
+ * @deprecated 20180323, 使用org.coodex.concrete.client.Client替代.
  */
+@Deprecated
 public final class Client {
 
     private static final ServiceLoader<ClientInstanceFactory> BUILDER = new ConcreteServiceLoader<ClientInstanceFactory>() {
@@ -52,7 +55,7 @@ public final class Client {
     }
 
     public static <T extends ConcreteService> T getInstance(Class<? extends T> type, String domain) {
-        return getInstance(type, domain,null);
+        return getInstance(type, domain, null);
     }
 
     /**
@@ -82,7 +85,7 @@ public final class Client {
 
     @Deprecated
     public static <T extends ConcreteService> T getBean(Class<? extends T> type, String domain) {
-        return getInstance(type,domain);
+        return getInstance(type, domain);
     }
 
     @Deprecated

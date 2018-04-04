@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.coodex.concrete.jaxrs.client;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.coodex.concrete.client.jaxrs.JaxRSInvoker;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.common.JSONSerializer;
@@ -42,6 +43,7 @@ import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 /**
  * Created by davidoff shen on 2016-12-07.
  */
+@Deprecated
 public abstract class AbstractRemoteInvoker extends AbstractInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractRemoteInvoker.class);
@@ -115,23 +117,24 @@ public abstract class AbstractRemoteInvoker extends AbstractInvoker {
                     path = path + builder.toString();
 
                     // 找需要提交的对象
-                    Object toSubmit = null;
-                    Param[] pojoParams = unit.getPojo();
-                    if (args != null) {
-                        switch (pojoParams.length) {
-                            case 0:
-                                break;
-                            case 1:
-                                toSubmit = args[pojoParams[0].getIndex()];
-                                break;
-                            default:
-                                Map<String, Object> body = new HashMap<String, Object>();
-                                for (Param param : pojoParams) {
-                                    body.put(param.getName(), args[param.getIndex()]);
-                                }
-                                toSubmit = body;
-                        }
-                    }
+                    Object toSubmit = JaxRSInvoker.getSubmitObject(unit, args);
+//                            = null;
+//                    Param[] pojoParams = unit.getPojo();
+//                    if (args != null) {
+//                        switch (pojoParams.length) {
+//                            case 0:
+//                                break;
+//                            case 1:
+//                                toSubmit = args[pojoParams[0].getIndex()];
+//                                break;
+//                            default:
+//                                Map<String, Object> body = new HashMap<String, Object>();
+//                                for (Param param : pojoParams) {
+//                                    body.put(param.getName(), args[param.getIndex()]);
+//                                }
+//                                toSubmit = body;
+//                        }
+//                    }
                     try {
                         return invoke(path, unit, toSubmit);
                     }catch (ClientException clientEx){

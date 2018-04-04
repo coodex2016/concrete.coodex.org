@@ -1,0 +1,210 @@
+/*
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.coodex.concrete.spring.components;
+
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.Modifier;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.ConstPool;
+import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.StringMemberValue;
+import org.coodex.concrete.Client;
+import org.coodex.concrete.ConcreteClient;
+import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
+import org.coodex.util.Common;
+import org.coodex.util.ReflectHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.coodex.concrete.ClientHelper.isConcreteService;
+import static org.coodex.concrete.common.AbstractBeanProvider.CREATE_BY_CONCRETE;
+
+@Named
+public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter {
+
+    private final static Logger log = LoggerFactory.getLogger(ConcreteClientBeanPostProcessor.class);
+
+    private final static String GET_INSTANCE = "__getConcreteServiceInstance";
+
+    @Inject
+    private DefaultListableBeanFactory defaultListableBeanFactory;
+
+
+    private Set<String> registered = new HashSet<String>();
+    private Map<String, Integer> moduleMap = new HashMap<String, Integer>();
+    private AtomicInteger atomicInteger = new AtomicInteger(1);
+
+    private void scan(java.lang.annotation.Annotation[][] annotations, Class[] parameters) {
+        for (int i = 0; i < annotations.length; i++) {
+            if (annotations[i] == null) continue;
+            for (java.lang.annotation.Annotation annotation : annotations[i]) {
+                if (annotation instanceof ConcreteClient) {
+                    register(parameters[i], (ConcreteClient) annotation);
+                }
+            }
+        }
+    }
+
+
+    @Override
+    public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
+
+        scanAndRegisterClientBean(beanClass);
+
+        return super.postProcessBeforeInstantiation(beanClass, beanName);
+    }
+
+    private void scanAndRegisterClientBean(Class<?> beanClass) {
+        for (Constructor constructor : beanClass.getConstructors()) {
+            scan(constructor.getParameterAnnotations(), constructor.getParameterTypes());
+        }
+
+        for (Method method : beanClass.getMethods()) {
+            scan(method.getParameterAnnotations(), method.getParameterTypes());
+        }
+
+        for (Field field : ReflectHelper.getAllDeclaredFields(beanClass)) {
+            ConcreteClient concreteClient = field.getAnnotation(ConcreteClient.class);
+            if (concreteClient != null) {
+                register(field.getType(), concreteClient);
+            }
+        }
+    }
+
+    @Override
+    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+        scanAndRegisterClientBean(bean.getClass());
+        return super.postProcessAfterInstantiation(bean, beanName);
+    }
+
+
+    private Integer getModuleIndex(String v) {
+        String hash = Common.sha1(v);
+        if (!moduleMap.containsKey(hash)) {
+            moduleMap.put(hash, atomicInteger.getAndIncrement());
+        }
+        return moduleMap.get(hash);
+    }
+
+
+    private Annotation concreteClient(ConcreteClient concreteClient, ConstPool constPool) {
+        Annotation annotation = new Annotation(ConcreteClient.class.getName(), constPool);
+        annotation.addMemberValue("value", new StringMemberValue(concreteClient.value(), constPool));
+        return annotation;
+    }
+
+    private CtClass[] getParameterTypes(Method method, ClassPool classPool) {
+        List<CtClass> list = new ArrayList<CtClass>();
+        for (Class c : method.getParameterTypes()) {
+            list.add(classPool.getOrNull(c.getName()));
+        }
+        return list.toArray(new CtClass[0]);
+    }
+
+
+    private synchronized void register(Class<?> concreteService, ConcreteClient concreteClient) {
+        Assert.not(isConcreteService(concreteService),
+                concreteService + "is NOT ConcreteService.");
+        ClassPool classPool = ClassPool.getDefault();
+        String className = concreteService.getName();
+        String newClassName = className + "$CBC$" + getModuleIndex(concreteClient.value());
+
+
+        if (registered.contains(newClassName)) return;
+
+        try {
+            CtClass ctClass = classPool.makeClass(newClassName);
+
+            ctClass.setInterfaces(new CtClass[]{
+                    classPool.getOrNull(concreteService.getName())
+            });
+            ClassFile classFile = ctClass.getClassFile();
+            ConstPool constPool = classFile.getConstPool();
+            classFile.setVersionToJava5();
+            classFile.addAttribute(
+                    JavassistHelper.aggregate(constPool, concreteClient(concreteClient, constPool))
+            );
+
+            // 1，添加方法，私有，__getConcreteServiceInstance
+            CtMethod ctMethod = new CtMethod(
+                    classPool.getOrNull(concreteService.getName()),
+                    GET_INSTANCE,
+                    new CtClass[0],
+                    ctClass
+            );
+            ctMethod.setModifiers(Modifier.PRIVATE);
+            String moduleForSrc = Common.isBlank(concreteClient.value()) ? "null" : ("\"" + concreteClient.value() + "\"");
+            ctMethod.setBody("return " + Client.class.getName() + ".getInstance(" +
+                    className + ".class, " + moduleForSrc + ");");
+            ctClass.addMethod(ctMethod);
+
+            // 2,增加接口实现
+            for (Method method : concreteService.getMethods()) {
+                Class returnType = method.getReturnType();
+                ctMethod = new CtMethod(
+                        classPool.getOrNull(returnType.getName()),
+                        method.getName(),
+                        getParameterTypes(method, classPool),
+                        ctClass
+                );
+                StringBuilder builder = new StringBuilder();
+                if (!void.class.equals(returnType))
+                    builder.append("return ");
+                builder.append(GET_INSTANCE).append("().").append(method.getName()).append("(");
+                if (method.getParameterTypes().length > 0) {
+                    builder.append("$$");
+                }
+                builder.append(");");
+                ctMethod.setBody(builder.toString());
+                ctClass.addMethod(ctMethod);
+            }
+
+            Class generated = ctClass.toClass();
+
+            BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(generated);
+            defaultListableBeanFactory.registerBeanDefinition(
+                    CREATE_BY_CONCRETE + Common.sha1(newClassName), beanDefinitionBuilder.getBeanDefinition());
+            registered.add(newClassName);
+            log.info("ConcreteClient Bean[className: {}, module: {}] registered.",
+                    newClassName, concreteClient.value()
+            );
+
+        } catch (Throwable throwable) {
+            throw new RuntimeException(throwable);
+        }
+
+
+    }
+
+
+}

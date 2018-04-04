@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package org.coodex.concrete.websocket.client;
 
-import org.coodex.concrete.common.AbstractClientException;
+import org.coodex.concrete.AbstractClientException;
 import org.coodex.concrete.common.ErrorInfo;
 
+@Deprecated
 public class WebSocketClientException extends AbstractClientException {
     public WebSocketClientException(ErrorInfo errorInfo) {
         super(errorInfo.getCode(), errorInfo.getMsg());

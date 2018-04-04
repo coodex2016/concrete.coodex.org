@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public abstract class AbstractToken implements Token {
 
     @Override
     public final void invalidate() {
-        runListeners(Event.INVALIDATED,true);
+        runListeners(Event.INVALIDATED, true);
         $invalidate();
         runListeners(Event.INVALIDATED, false);
     }
@@ -68,11 +68,19 @@ public abstract class AbstractToken implements Token {
 
     @Override
     public final void renew() {
-        if(isValid()) invalidate();
-        runListeners(Event.CREATED,true);
+        if (isValid()) invalidate();
+        runListeners(Event.CREATED, true);
         $renew();
         runListeners(Event.CREATED, false);
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    @Deprecated
+    public <T> T getAttribute(String key) {
+        return (T) getAttribute(key, null);
+    }
+
 
     protected abstract void $renew();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.coodex.concrete.fsm.IdentifiedStateContainer;
 import org.coodex.concrete.fsm.IdentifiedStateIsLockingException;
 import org.coodex.concrete.fsm.IdentifiedStateLoader;
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.util.Singleton;
 import org.coodex.util.TypeHelper;
 
 import java.io.Serializable;
@@ -53,12 +54,24 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
         }
     }
 
-    private static ScheduledExecutorService LOCK_FORCE_RELEASE = null;
+//    private static ScheduledExecutorService LOCK_FORCE_RELEASE = null;
 
-    private static synchronized ScheduledExecutorService getReleaseExecutor() {
-        if (LOCK_FORCE_RELEASE == null)
-            LOCK_FORCE_RELEASE = ExecutorsHelper.newSingleThreadScheduledExecutor();
-        return LOCK_FORCE_RELEASE;
+    private static Singleton<ScheduledExecutorService> LOCK_FORCE_RELEASE =
+            new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
+                @Override
+                public ScheduledExecutorService build() {
+                    return ExecutorsHelper.newSingleThreadScheduledExecutor();
+                }
+            });
+    private static ScheduledExecutorService getReleaseExecutor() {
+//        if (LOCK_FORCE_RELEASE == null)
+//            synchronized (SingletonIdentifiedStateContainer.class) {
+//                if (LOCK_FORCE_RELEASE == null) {
+//                    LOCK_FORCE_RELEASE = ExecutorsHelper.newSingleThreadScheduledExecutor();
+//                }
+//            }
+//        return LOCK_FORCE_RELEASE;
+        return LOCK_FORCE_RELEASE.getInstance();
     }
 
     private final static Map<Serializable, Lock> STATUS_MAP = new ConcurrentHashMap<Serializable, Lock>();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,8 @@
 
 package org.coodex.concrete.websocket.client;
 
-import javax.websocket.ClientEndpointConfig.Configurator;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
-import static org.coodex.concrete.common.ConcreteHelper.VERSION;
+@Deprecated
+public class SetUserAgentConfigurator extends org.coodex.concrete.client.websocket.SetUserAgentConfigurator {
 
-public class SetUserAgentConfigurator extends Configurator {
-    @Override
-    public void beforeRequest(Map<String, List<String>> headers) {
-        super.beforeRequest(headers);
-        headers.put("User-Agent", Arrays.asList("concrete-web-socket-client " + VERSION));
-        headers.put("X-CLIENT-PROVIDER", Arrays.asList("concrete-web-socket-client " + VERSION));
-    }
 }

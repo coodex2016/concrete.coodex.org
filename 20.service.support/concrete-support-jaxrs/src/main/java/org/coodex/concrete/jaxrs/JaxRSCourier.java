@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.coodex.concrete.common.Token;
 import org.coodex.concrete.common.messages.Message;
 import org.coodex.concrete.core.messages.Courier;
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,12 +57,24 @@ public class JaxRSCourier implements Courier {
     private final static Map<Queue<MessageWithArrived>, Set<AsyncMessageReceiver>> ASYNC_MESSAGE_GETTER_MAP
             = new HashMap<Queue<MessageWithArrived>, Set<AsyncMessageReceiver>>();
 
-    private static ScheduledExecutorService scheduledExecutorService;
+    //    private static ScheduledExecutorService scheduledExecutorService;
+    private static Singleton<ScheduledExecutorService> scheduledExecutorService =
+            new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
+                @Override
+                public ScheduledExecutorService build() {
+                    return ExecutorsHelper.newSingleThreadScheduledExecutor();
+                }
+            });
 
-    private static synchronized ScheduledExecutorService getScheduledExecutorService() {
-        if (scheduledExecutorService == null)
-            scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
-        return scheduledExecutorService;
+    private static ScheduledExecutorService getScheduledExecutorService() {
+//        if (scheduledExecutorService == null)
+//            synchronized (JaxRSCourier.class) {
+//                if(scheduledExecutorService == null) {
+//                    scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
+//                }
+//            }
+//        return scheduledExecutorService;
+        return scheduledExecutorService.getInstance();
     }
 
     public JaxRSCourier() {
@@ -71,6 +84,7 @@ public class JaxRSCourier implements Courier {
 //        }
     }
 
+    // TODO 性能优化
     private static synchronized Queue<MessageWithArrived> getQueue(String tokenId) {
         if (!queueMap.containsKey(tokenId)) {
             Queue<MessageWithArrived> queue = new LinkedBlockingQueue<MessageWithArrived>();
@@ -116,6 +130,7 @@ public class JaxRSCourier implements Courier {
         }
     }
 
+    // TODO 性能优化
     private static synchronized Set<AsyncMessageReceiver> getAsyncMessageReceivers(Queue<MessageWithArrived> queue) {
         if (!ASYNC_MESSAGE_GETTER_MAP.containsKey(queue)) {
             ASYNC_MESSAGE_GETTER_MAP.put(queue, new HashSet<AsyncMessageReceiver>());

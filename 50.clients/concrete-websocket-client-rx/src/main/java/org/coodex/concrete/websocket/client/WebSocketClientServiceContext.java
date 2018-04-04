@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.coodex.concrete.common.struct.AbstractUnit;
 
 import static org.coodex.concrete.common.ConcreteContext.SIDE_CLIENT;
 import static org.coodex.concrete.websocket.Constants.WEB_SOCKET_MODEL;
-
+@Deprecated
 public class WebSocketClientServiceContext extends ServiceContext {
 
     public WebSocketClientServiceContext(AbstractUnit unit, Subjoin subjoin) {

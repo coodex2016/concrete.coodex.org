@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,16 @@ package org.coodex.concrete.common;
 import org.coodex.concrete.common.conflictsolutions.ThrowException;
 import org.coodex.util.AcceptableServiceLoader;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by davidoff shen on 2016-12-03.
  */
 public abstract class AbstractBeanProvider implements BeanProvider {
+
+    public static final String CREATE_BY_CONCRETE ="cbc_";
 
     private static final ConflictSolution DEFAULT_CONFLICT_SOLUTION = new ThrowException();
 
@@ -68,6 +72,12 @@ public abstract class AbstractBeanProvider implements BeanProvider {
     @Override
     public final <T> T getBean(Class<T> type) {
         Map<String, T> instanceMap = getBeansOfType(type);
+        // remove create by concrete
+        Set<String> keySet = new HashSet<String>(instanceMap.keySet());
+        for(String name: keySet){
+            if(name.startsWith(CREATE_BY_CONCRETE))
+                instanceMap.remove(name);
+        }
         switch (instanceMap.size()) {
             case 0:
                 // no service instance found.

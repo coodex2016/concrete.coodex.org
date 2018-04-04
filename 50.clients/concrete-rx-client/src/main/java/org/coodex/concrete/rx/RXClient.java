@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.coodex.concrete.client.ClientCommon;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.util.AcceptableServiceLoader;
 
+@Deprecated
 public class RXClient {
 
 
@@ -35,6 +36,7 @@ public class RXClient {
         return getInstance(rxClass, domain, null);
     }
 
+    @Deprecated
     public static <T> T getInstance(Class<T> rxClass, String domain, String tokenManagerKey) {
         if (rxClass.getAnnotation(ReactiveExtensionFor.class) != null) {
             ClientCommon.Domain d = ClientCommon.getDomain(domain);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import javax.net.ssl.SSLContext;
 /**
  * Created by davidoff shen on 2017-03-27.
  */
+@Deprecated
 public interface SSLContextFactory {
 
     SSLContext getSSLContext(String domain) throws Throwable;

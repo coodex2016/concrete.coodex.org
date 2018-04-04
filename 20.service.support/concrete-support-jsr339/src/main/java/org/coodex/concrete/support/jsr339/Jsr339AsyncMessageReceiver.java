@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.coodex.concrete.jaxrs.AbstractJAXRSResource;
 import org.coodex.concrete.jaxrs.AsyncMessageReceiver;
 import org.coodex.concrete.jaxrs.JaxRSCourier;
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.util.Singleton;
 
 import javax.ws.rs.container.AsyncResponse;
 import java.util.ArrayList;
@@ -58,15 +59,24 @@ public class Jsr339AsyncMessageReceiver extends AsyncMessageReceiver {
         }, timeOut, TimeUnit.MILLISECONDS);
     }
 
-    private static ScheduledExecutorService scheduledExecutorService;
+//    private static ScheduledExecutorService scheduledExecutorService;
+
+    private static Singleton<ScheduledExecutorService> scheduledExecutorService =
+            new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
+                @Override
+                public ScheduledExecutorService build() {
+                    return ExecutorsHelper.newScheduledThreadPool(1);
+                }
+            });
 
     private static ScheduledExecutorService getScheduledExecutorService() {
-        synchronized (Jsr339AsyncMessageReceiver.class) {
-            if (scheduledExecutorService == null) {
-                scheduledExecutorService = ExecutorsHelper.newScheduledThreadPool(1);
-            }
-        }
-        return scheduledExecutorService;
+//        synchronized (Jsr339AsyncMessageReceiver.class) {
+//            if (scheduledExecutorService == null) {
+//                scheduledExecutorService = ExecutorsHelper.newScheduledThreadPool(1);
+//            }
+//        }
+//        return scheduledExecutorService;
+        return scheduledExecutorService.getInstance();
     }
 
     @Override

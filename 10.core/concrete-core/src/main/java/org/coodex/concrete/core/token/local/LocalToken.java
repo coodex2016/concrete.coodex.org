@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,9 +125,9 @@ class LocalToken /*implements Token*/ extends AbstractToken {
     }
 
 
+
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getAttribute(String key) {
+    public <T> T getAttribute(String key, Class<T> tClass ){
         return (T) attributes.get(key);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
+import org.coodex.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +51,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static org.coodex.concrete.client.jaxrs.JaxRSInvoker.buildHeaders;
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
@@ -57,6 +59,7 @@ import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 /**
  * Created by davidoff shen on 2017-04-15.
  */
+@Deprecated
 public class JaxRSClientInvoker extends AbstractRemoteInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(JaxRSClientInvoker.class);
@@ -189,6 +192,7 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
     }
 
 
+
     private Response request(String url, String method, Object body) throws URISyntaxException {
         URI uri = new URI(url);
         Invocation.Builder builder = client.target(url).request();
@@ -196,19 +200,20 @@ public class JaxRSClientInvoker extends AbstractRemoteInvoker {
         str.append("url: ").append(url).append("\n").append("method: ").append(method);
         Subjoin subjoin = getServiceContext() == null ? null : getServiceContext().getSubjoin();
         String tokenId = ClientCommon.getTokenId(Common.isBlank(tokenManagerKey) ? domain : tokenManagerKey);
-        if (subjoin != null || !Common.isBlank(tokenId)) {
-            str.append("\nheaders:");
-            if (subjoin != null) {
-                for (String key : subjoin.keySet()) {
-                    builder = builder.header(key, subjoin.get(key));
-                    str.append("\n\t").append(key).append(": ").append(subjoin.get(key));
-                }
-            }
-            if (!Common.isBlank(tokenId)) {
-                builder = builder.header(CONCRETE_TOKEN_ID_KEY, tokenId);
-                str.append("\n\t").append(CONCRETE_TOKEN_ID_KEY).append(": ").append(tokenId);
-            }
-        }
+//        if (subjoin != null || !Common.isBlank(tokenId)) {
+//            str.append("\nheaders:");
+//            if (subjoin != null) {
+//                for (String key : subjoin.keySet()) {
+//                    builder = builder.header(key, subjoin.get(key));
+//                    str.append("\n\t").append(key).append(": ").append(subjoin.get(key));
+//                }
+//            }
+//            if (!Common.isBlank(tokenId)) {
+//                builder = builder.header(CONCRETE_TOKEN_ID_KEY, tokenId);
+//                str.append("\n\t").append(CONCRETE_TOKEN_ID_KEY).append(": ").append(tokenId);
+//            }
+//        }
+        builder = buildHeaders(builder, str, subjoin, tokenId);
 
         StringBuilder cookies = new StringBuilder();
         for (Cookie cookie : getCookieManager(domain).load(uri.getPath())) {

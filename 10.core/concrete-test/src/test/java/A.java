@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,11 +50,11 @@ public class A extends ConcreteTestCase {
     @Test
     @TokenID("1")
     public void test2() {
-        System.out.println(token.getAttribute("test"));
+        System.out.println(token.getAttribute("test",String.class));
     }
 
     @Test
     public void test3() {
-        System.out.println(token.getAttribute("test"));
+        System.out.println(token.getAttribute("test", String.class));
     }
 }

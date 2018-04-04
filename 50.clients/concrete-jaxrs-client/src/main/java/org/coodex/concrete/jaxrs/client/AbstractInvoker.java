@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,17 @@
 package org.coodex.concrete.jaxrs.client;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.common.ConcreteClosure;
-import org.coodex.concrete.common.ConcreteServiceLoader;
-import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
 import org.coodex.concrete.jaxrs.struct.Unit;
-import org.coodex.util.ServiceLoader;
 
 import static org.coodex.concrete.common.ConcreteContext.runWithContext;
 
 /**
  * Created by davidoff shen on 2017-03-09.
  */
+@Deprecated
 public abstract class AbstractInvoker implements Invoker {
 
 
@@ -38,7 +37,7 @@ public abstract class AbstractInvoker implements Invoker {
     @Override
     public final Object invoke(final Unit unit, final Object[] args, final Object instance) throws Throwable {
         return
-                runWithContext(new JaxrsClientServiceContext(unit),new ConcreteClosure() {
+                runWithContext(new JaxRSClientServiceContext(unit),new ConcreteClosure() {
                     @Override
                     public Object concreteRun() throws Throwable {
                         return getInterceptorChain().invoke(getInvocation(unit, args, instance));
@@ -65,18 +64,20 @@ public abstract class AbstractInvoker implements Invoker {
     }
 
 
-    private static SyncInterceptorChain interceptors;
+//    private static SyncInterceptorChain interceptors;
 
-    private static synchronized SyncInterceptorChain getInterceptorChain() {
-        if (interceptors == null) {
-            ServiceLoader<ConcreteInterceptor> spiFacade = new ConcreteServiceLoader<ConcreteInterceptor>() {
-            };
-            interceptors = new SyncInterceptorChain();
-            for (ConcreteInterceptor interceptor : spiFacade.getAllInstances()) {
-                interceptors.add(interceptor);
-            }
-        }
-        return interceptors;
+    private static SyncInterceptorChain getInterceptorChain() {
+
+        return ClientHelper.getSyncInterceptorChain();
+//        if (interceptors == null) {
+//            ServiceLoader<ConcreteInterceptor> spiFacade = new ConcreteServiceLoader<ConcreteInterceptor>() {
+//            };
+//            interceptors = new SyncInterceptorChain();
+//            for (ConcreteInterceptor interceptor : spiFacade.getAllInstances()) {
+//                interceptors.add(interceptor);
+//            }
+//        }
+//        return interceptors;
     }
 
 

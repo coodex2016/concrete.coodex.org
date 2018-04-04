@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
@@ -95,7 +96,7 @@ public class CountFacadeProvider implements CountFacade {
         }
     }
 
-    private CounterChain getCounterChain(Class clz) throws IllegalAccessException, CannotCompileException, InstantiationException {
+    private CounterChain getCounterChain(Class clz) throws IllegalAccessException, CannotCompileException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         synchronized (chainMap) {
             if (!chainMap.keySet().contains(clz)) {
                 chainMap.put(clz, newCounterChain(clz));
@@ -104,7 +105,7 @@ public class CountFacadeProvider implements CountFacade {
         return chainMap.get(clz);
     }
 
-    private CounterChain newCounterChain(Class clz) throws CannotCompileException, IllegalAccessException, InstantiationException {
+    private CounterChain newCounterChain(Class clz) throws CannotCompileException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         ClassPool classPool = ClassPool.getDefault();
         String className = String.format("CounterChain$%s$%08X", clz.getSimpleName(), atomicInteger.incrementAndGet());
         CtClass newClass = classPool.makeClass(className,
@@ -127,7 +128,7 @@ public class CountFacadeProvider implements CountFacade {
 
         newClass.addConstructor(spiConstructor);
 
-        return (CounterChain) newClass.toClass().newInstance();
+        return (CounterChain) newClass.toClass().getConstructor(new Class[0]).newInstance();
     }
 
     public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE
@@ -136,10 +137,11 @@ public class CountFacadeProvider implements CountFacade {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends Countable> void count(final T value) {
-        synchronized (CountFacadeProvider.class) {
-            if (chainMap == null)
-                buildMap();
-        }
+        if (chainMap == null)
+            synchronized (CountFacadeProvider.class) {
+                if (chainMap == null)
+                    buildMap();
+            }
         if (value != null) {
             for (Class clz : chainMap.keySet()) {
                 if (clz.isAssignableFrom(value.getClass())) {

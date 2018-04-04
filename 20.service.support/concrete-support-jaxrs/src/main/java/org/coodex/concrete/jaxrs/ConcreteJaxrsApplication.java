@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.*;
 import static org.coodex.concrete.common.ConcreteHelper.foreachClassInPackages;
 import static org.coodex.util.ReflectHelper.foreachClass;
 
-public abstract class ConcreteJaxrsApplication extends Application {
+public abstract class ConcreteJaxrsApplication extends Application implements org.coodex.concrete.api.Application {
 
     protected Set<Class<? extends ConcreteService>> servicesClasses = new HashSet<Class<? extends ConcreteService>>();
     protected Set<Class<?>> jaxrsClasses = new HashSet<Class<?>>();
@@ -56,6 +56,7 @@ public abstract class ConcreteJaxrsApplication extends Application {
         registerPackage(ErrorCodes.class.getPackage().getName());
     }
 
+    @Override
     public void registerPackage(String... packages) {
 
         foreachClassInPackages(new ReflectHelper.Processor() {
@@ -66,7 +67,7 @@ public abstract class ConcreteJaxrsApplication extends Application {
         }, packages);
     }
 
-
+    @Override
     public void register(Class<?>... classes) {
         for (Class<?> clz : classes) {
             registerClass(clz);
