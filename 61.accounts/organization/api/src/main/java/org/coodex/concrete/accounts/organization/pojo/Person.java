@@ -16,9 +16,9 @@
 
 package org.coodex.concrete.accounts.organization.pojo;
 
+import org.coodex.concrete.accounts.AbstractPojo;
 import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.mockers.*;
-import org.coodex.concrete.accounts.AbstractPojo;
 import org.coodex.concrete.common.RelationPolicies;
 import org.coodex.pojomocker.Relation;
 import org.coodex.pojomocker.annotations.INTEGER;

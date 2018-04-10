@@ -302,9 +302,9 @@ public class ConcreteHelper {
 //    public static DefinitionContext getContextIfFound(Method method, Class<?> clz) {
 //        DefinitionContext context = getContext(method, clz);
 //
-//        Assert.is(context == null, ErrorCodes.MODULE_DEFINITION_NOT_FOUND,
+//        IF.is(context == null, ErrorCodes.MODULE_DEFINITION_NOT_FOUND,
 //                method.getName(), clz.getCanonicalName());
-//        Assert.is(context.getDeclaringMethod() == null,
+//        IF.is(context.getDeclaringMethod() == null,
 //                ErrorCodes.UNIT_DEFINITION_NOT_FOUND,
 //                getServiceName(clz), method.getName());
 //        return context;

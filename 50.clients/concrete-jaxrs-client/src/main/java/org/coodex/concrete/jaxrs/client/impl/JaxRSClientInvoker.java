@@ -30,7 +30,6 @@ import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
-import org.coodex.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +52,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.coodex.concrete.client.jaxrs.JaxRSInvoker.buildHeaders;
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
-import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 
 /**

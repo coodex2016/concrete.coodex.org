@@ -36,7 +36,6 @@
                 <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-
             </dependency>
 
             <!-- Spring framework -->
@@ -264,6 +263,18 @@
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-jaxrs-client-rx</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-dubbo-client</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-dubbo-client-rx</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 

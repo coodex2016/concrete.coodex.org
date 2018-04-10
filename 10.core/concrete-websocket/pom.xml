@@ -43,7 +43,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-core</artifactId>
+            <artifactId>concrete-core-java7</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 

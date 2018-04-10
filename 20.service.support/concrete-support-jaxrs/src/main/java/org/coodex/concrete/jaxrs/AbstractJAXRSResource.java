@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.jaxrs;
 
+import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.struct.AbstractUnit;
@@ -312,9 +313,9 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
                                         JaxRSHelper.getUnitFromContext(
                                                 ConcreteHelper.getContext(method, getInterfaceClass()))),
 
-                                new ConcreteClosure() {
+                                new CallableClosure() {
 
-                                    public Object concreteRun() throws Throwable {
+                                    public Object call() throws Throwable {
                                         if (!Polling.class.equals(method.getDeclaringClass()) && isDevModel()) {
                                             return void.class.equals(method.getGenericReturnType()) ? null :
                                                     MockerFacade.mock(method, getInterfaceClass());
@@ -330,6 +331,34 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
                                 }));
             }
         });
+//        return buildResponse(tokenId, method, params, new RunWithToken() {
+//            @Override
+//            public Object runWithToken(Token token) {
+//                return convert(
+//                        runWithContext(
+//                                buildContext(
+//                                        token,
+//                                        JaxRSHelper.getUnitFromContext(
+//                                                ConcreteHelper.getContext(method, getInterfaceClass()))),
+//
+//                                new ConcreteClosure() {
+//
+//                                    public Object concreteRun() throws Throwable {
+//                                        if (!Polling.class.equals(method.getDeclaringClass()) && isDevModel()) {
+//                                            return void.class.equals(method.getGenericReturnType()) ? null :
+//                                                    MockerFacade.mock(method, getInterfaceClass());
+//                                        } else {
+//                                            Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
+//                                            if (paramCount == 0)
+//                                                return method.invoke(instance);
+//                                            else
+//                                                return method.invoke(instance, params);
+//                                        }
+//
+//                                    }
+//                                }));
+//            }
+//        });
     }
 
     protected abstract Response.ResponseBuilder textType(Response.ResponseBuilder builder);

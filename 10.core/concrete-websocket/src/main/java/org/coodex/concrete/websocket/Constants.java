@@ -16,15 +16,15 @@
 
 package org.coodex.concrete.websocket;
 
-import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
+//import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 
 public class Constants {
     public static final String BROADCAST = "broadcast";
     public static final String SUBJECT = "subject";
     public static final String HOST_ID = "hostId";
-    public static final String LOCALE = "CONCRETE_LOCALE";
+//    public static final String LOCALE = "CONCRETE-LOCALE";
 
-    public static final String TOKEN_ID_KEY = CONCRETE_TOKEN_ID_KEY;
+//    public static final String TOKEN_ID_KEY = CONCRETE_TOKEN_ID_KEY;
 
     public static final String WEB_SOCKET_MODEL = "web_socket_model";
 }

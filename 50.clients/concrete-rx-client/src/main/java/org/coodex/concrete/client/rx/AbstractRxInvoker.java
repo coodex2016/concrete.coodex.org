@@ -22,17 +22,20 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import org.aopalliance.intercept.MethodInvocation;
+import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.AbstractInvoker;
-import org.coodex.concrete.common.ConcreteClosure;
 import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.concrete.rx.ReactiveExtensionFor;
 import org.coodex.concurrent.ExecutorsHelper;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 
@@ -115,22 +118,30 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
         final ServiceContext serviceContext = buildContext(runtimeContext.getDeclaringClass(), runtimeContext.getDeclaringMethod());
         final MethodInvocation invocation = new RXMethodInvocation(runtimeContext, args);
         // 调用前切片
-        ConcreteContext.runWithContext(serviceContext, new ConcreteClosure() {
+        ConcreteContext.runWithContext(serviceContext, new CallableClosure() {
             @Override
-            public Object concreteRun() throws Throwable {
+            public Object call() throws Throwable {
                 ClientHelper.getAsyncInterceptorChain().before(runtimeContext, invocation);
                 return null;
             }
         });
+
+//        ConcreteContext.runWithContext(serviceContext, new ConcreteClosure() {
+//            @Override
+//            public Object concreteRun() throws Throwable {
+//                ClientHelper.getAsyncInterceptorChain().before(runtimeContext, invocation);
+//                return null;
+//            }
+//        });
 
 
         return Observable.create(new ObservableOnSubscribe() {
             @Override
             public void subscribe(final ObservableEmitter emitter) throws Exception {
                 // 请求
-                ConcreteContext.runWithContext(serviceContext, new ConcreteClosure() {
+                ConcreteContext.runWithContext(serviceContext, new CallableClosure() {
                     @Override
-                    public Object concreteRun() throws Throwable {
+                    public Object call() throws Throwable {
                         invoke(runtimeContext, args).subscribe(new Observer() {
                             @Override
                             public void onSubscribe(Disposable d) {
@@ -139,9 +150,9 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
                             @Override
                             public void onNext(final Object o) {
                                 //响应后切片
-                                ConcreteContext.runWithContext(serviceContext, new ConcreteClosure() {
+                                ConcreteContext.runWithContext(serviceContext, new CallableClosure() {
                                     @Override
-                                    public Object concreteRun() throws Throwable {
+                                    public Object call() throws Throwable {
                                         ClientHelper.getAsyncInterceptorChain().after(runtimeContext, invocation, o);
                                         emitter.onNext(o);
                                         return null;
@@ -162,6 +173,40 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
                         return null;
                     }
                 });
+//                ConcreteContext.runWithContext(serviceContext, new ConcreteClosure() {
+//                    @Override
+//                    public Object concreteRun() throws Throwable {
+//                        invoke(runtimeContext, args).subscribe(new Observer() {
+//                            @Override
+//                            public void onSubscribe(Disposable d) {
+//                            }
+//
+//                            @Override
+//                            public void onNext(final Object o) {
+//                                //响应后切片
+//                                ConcreteContext.runWithContext(serviceContext, new ConcreteClosure() {
+//                                    @Override
+//                                    public Object concreteRun() throws Throwable {
+//                                        ClientHelper.getAsyncInterceptorChain().after(runtimeContext, invocation, o);
+//                                        emitter.onNext(o);
+//                                        return null;
+//                                    }
+//                                });
+//                            }
+//
+//                            @Override
+//                            public void onError(Throwable e) {
+//                                emitter.onError(e);
+//                            }
+//
+//                            @Override
+//                            public void onComplete() {
+//                                emitter.onComplete();
+//                            }
+//                        });
+//                        return null;
+//                    }
+//                });
             }
         });
     }

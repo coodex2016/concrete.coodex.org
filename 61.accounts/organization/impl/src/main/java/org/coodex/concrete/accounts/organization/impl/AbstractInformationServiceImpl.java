@@ -26,7 +26,7 @@ import org.coodex.concrete.accounts.organization.repositories.AbstractDepartment
 import org.coodex.concrete.accounts.organization.repositories.AbstractInstitutionRepo;
 import org.coodex.concrete.accounts.organization.repositories.AbstractPositionRepo;
 import org.coodex.concrete.api.pojo.StrID;
-import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.OrganizationErrorCodes;
 import org.coodex.concrete.common.TwoWayCopier;
 import org.springframework.data.domain.Sort;
@@ -82,7 +82,7 @@ public abstract class AbstractInformationServiceImpl<
     protected InstitutionFull<I, D, J, P> $getOneInstitutionFull(String id) {
 
         // TODO 需要考虑缓存
-        IE institutionEntity = Assert.isNull(institutionRepo.findOne(id), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
+        IE institutionEntity = IF.isNull(institutionRepo.findOne(id), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
         InstitutionFull<I, D, J, P> institutionFull = new InstitutionFull<I, D, J, P>();
         institutionFull.setId(institutionEntity.getId());
         institutionFull.setInstitution(institutionCopier.copyB2A(institutionEntity));
@@ -132,7 +132,7 @@ public abstract class AbstractInformationServiceImpl<
 
     protected DepartmentFull<D, J, P> $getOneDepartmentFull(String id) {
         // TODO 需要考虑缓存
-        DE departmentEntity = Assert.isNull(departmentRepo.findOne(id), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
+        DE departmentEntity = IF.isNull(departmentRepo.findOne(id), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
         DepartmentFull<D, J, P> departmentFull = new DepartmentFull<D, J, P>();
         departmentFull.setDepartment(departmentCopier.copyB2A(departmentEntity));
         departmentFull.setId(departmentEntity.getId());
@@ -150,7 +150,7 @@ public abstract class AbstractInformationServiceImpl<
     @Override
     public List<StrID<Organization>> getHigherLevelOrganizations(String id) {
         OrganizationEntity organizationEntity =
-                Assert.isNull(organizationRepo.findOne(id), OrganizationErrorCodes.NONE_THIS_ORGANIZATION).getHigherLevel();
+                IF.isNull(organizationRepo.findOne(id), OrganizationErrorCodes.NONE_THIS_ORGANIZATION).getHigherLevel();
 
         List<StrID<Organization>> organizationList = new ArrayList<StrID<Organization>>();
         while (organizationEntity != null) {
@@ -175,7 +175,7 @@ public abstract class AbstractInformationServiceImpl<
 
     @Override
     public StrID<I> getInstitution(String id) {
-        IE institutionEntity = Assert.isNull(institutionRepo.findOne(id), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
+        IE institutionEntity = IF.isNull(institutionRepo.findOne(id), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
         return new StrID<I>(institutionEntity.getId(), institutionCopier.copyB2A(institutionEntity));
     }
 
@@ -202,42 +202,42 @@ public abstract class AbstractInformationServiceImpl<
     @Override
     @Deprecated
     public List<StrID<D>> getDepartmentsOfInstitution(String institution) {
-        Assert.isNull(institutionRepo.findOne(institution), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
+        IF.isNull(institutionRepo.findOne(institution), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
         return $getDepartmentsOfOrganization(institution);
     }
 
     @Override
     @Deprecated
     public List<StrID<J>> getPositionsOfInstitution(String institution) {
-        Assert.isNull(institutionRepo.findOne(institution), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
+        IF.isNull(institutionRepo.findOne(institution), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
         return $getPositionsOfOrganization(institution);
     }
 
     @Override
     @Deprecated
     public List<StrID<P>> getPersonsOfInstitution(String institution) {
-        Assert.isNull(institutionRepo.findOne(institution), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
+        IF.isNull(institutionRepo.findOne(institution), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
         return $getPersonsOfOrganization(institution);
     }
 
     @Override
     @Deprecated
     public List<StrID<D>> getDepartmentsOfDepartment(String department) {
-        Assert.isNull(departmentRepo.findOne(department), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
+        IF.isNull(departmentRepo.findOne(department), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
         return $getDepartmentsOfOrganization(department);
     }
 
     @Override
     @Deprecated
     public List<StrID<J>> getPositionsOfDepartment(String department) {
-        Assert.isNull(departmentRepo.findOne(department), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
+        IF.isNull(departmentRepo.findOne(department), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
         return $getPositionsOfOrganization(department);
     }
 
     @Override
     @Deprecated
     public List<StrID<P>> getPersonsOfDepartment(String department) {
-        Assert.isNull(departmentRepo.findOne(department), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
+        IF.isNull(departmentRepo.findOne(department), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
         return $getPersonsOfOrganization(department);
     }
 
@@ -284,7 +284,7 @@ public abstract class AbstractInformationServiceImpl<
 
     @Override
     public List<StrID<I>> getInstitutionsOfPerson(String person) {
-        PE personEntity = Assert.isNull(personAccountRepo.findOne(person), OrganizationErrorCodes.PERSON_NOT_EXISTS);
+        PE personEntity = IF.isNull(personAccountRepo.findOne(person), OrganizationErrorCodes.PERSON_NOT_EXISTS);
         Set<String> institutions = new HashSet<String>();
         List<StrID<I>> institutionList = new ArrayList<StrID<I>>();
         for (JE positionEntity : personEntity.getPositions()) {
@@ -306,7 +306,7 @@ public abstract class AbstractInformationServiceImpl<
 
     @Override
     public List<StrID<D>> getDepartmentsOfPerson(String person) {
-        PE personEntity = Assert.isNull(personAccountRepo.findOne(person), OrganizationErrorCodes.PERSON_NOT_EXISTS);
+        PE personEntity = IF.isNull(personAccountRepo.findOne(person), OrganizationErrorCodes.PERSON_NOT_EXISTS);
         Set<String> departments = new HashSet<String>();
         List<StrID<D>> departmentList = new ArrayList<StrID<D>>();
         for (JE positionEntity : personEntity.getPositions()) {
@@ -330,7 +330,7 @@ public abstract class AbstractInformationServiceImpl<
 
     @Override
     public List<StrID<J>> getPositionsOfPerson(String person) {
-        PE personEntity = Assert.isNull(personAccountRepo.findOne(person), OrganizationErrorCodes.PERSON_NOT_EXISTS);
+        PE personEntity = IF.isNull(personAccountRepo.findOne(person), OrganizationErrorCodes.PERSON_NOT_EXISTS);
         List<StrID<J>> positionList = new ArrayList<StrID<J>>();
         for (JE positionEntity : personEntity.getPositions()) {
             positionList.add(new StrID<J>(positionEntity.getId(), positionCopier.copyB2A(positionEntity)));

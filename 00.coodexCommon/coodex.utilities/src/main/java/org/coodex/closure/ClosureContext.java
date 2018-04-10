@@ -25,5 +25,8 @@ public interface ClosureContext<T> {
 
     T get(T defaultValue);
 
+    @Deprecated
     Object run(T var, Closure runnable);
+
+    Object call(T var, CallableClosure callable) throws Throwable;
 }

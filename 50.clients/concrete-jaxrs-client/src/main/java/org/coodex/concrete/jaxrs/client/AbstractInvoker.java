@@ -17,8 +17,8 @@
 package org.coodex.concrete.jaxrs.client;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.ClientHelper;
-import org.coodex.concrete.common.ConcreteClosure;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
 import org.coodex.concrete.jaxrs.struct.Unit;
 
@@ -31,18 +31,23 @@ import static org.coodex.concrete.common.ConcreteContext.runWithContext;
 public abstract class AbstractInvoker implements Invoker {
 
 
-
     protected abstract MethodInvocation getInvocation(Unit unit, Object[] args, Object instance);
 
     @Override
     public final Object invoke(final Unit unit, final Object[] args, final Object instance) throws Throwable {
         return
-                runWithContext(new JaxRSClientServiceContext(unit),new ConcreteClosure() {
+                runWithContext(new JaxRSClientServiceContext(unit), new CallableClosure() {
                     @Override
-                    public Object concreteRun() throws Throwable {
+                    public Object call() throws Throwable {
                         return getInterceptorChain().invoke(getInvocation(unit, args, instance));
                     }
                 });
+//                runWithContext(new JaxRSClientServiceContext(unit),new ConcreteClosure() {
+//                    @Override
+//                    public Object concreteRun() throws Throwable {
+//                        return getInterceptorChain().invoke(getInvocation(unit, args, instance));
+//                    }
+//                });
 //                run(CURRENT_UNIT, unit,
 //                        run(MODEL, JaxRSHelper.JAXRS_MODEL,
 //                                run(SUBJOIN, DEFAULT_SUBJOIN,

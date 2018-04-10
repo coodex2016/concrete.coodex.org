@@ -26,8 +26,7 @@ import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.StringMemberValue;
 import org.coodex.concrete.Client;
 import org.coodex.concrete.ConcreteClient;
-import org.coodex.concrete.common.Assert;
-import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.util.Common;
 import org.coodex.util.ReflectHelper;
@@ -133,7 +132,7 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
 
 
     private synchronized void register(Class<?> concreteService, ConcreteClient concreteClient) {
-        Assert.not(isConcreteService(concreteService),
+        IF.not(isConcreteService(concreteService),
                 concreteService + "is NOT ConcreteService.");
         ClassPool classPool = ClassPool.getDefault();
         String className = concreteService.getName();

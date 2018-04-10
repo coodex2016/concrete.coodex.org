@@ -31,7 +31,10 @@ import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.util.Common;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.coodex.concrete.accounts.AccountsCommon.checkAuthCode;
 import static org.coodex.concrete.accounts.AccountsCommon.getAuthenticatorDesc;
@@ -72,7 +75,7 @@ public abstract class AbstractSelfManagementServiceImpl<
 //    @Override
     protected PE getCurrentAccountEntity() {
         Account<AccountIDImpl> currentAccount = token.currentAccount();
-        Assert.is(currentAccount.getId().getType() != AccountIDImpl.TYPE_ORGANIZATION, NOT_ORGANIZATION_ACCOUNT);
+        IF.is(currentAccount.getId().getType() != AccountIDImpl.TYPE_ORGANIZATION, NOT_ORGANIZATION_ACCOUNT);
         return personAccountRepo.findOne(currentAccount.getId().getId());
     }
 
@@ -148,8 +151,8 @@ public abstract class AbstractSelfManagementServiceImpl<
 
 //    protected PE getPersonEntityWithAuthCheck(String authCode) {
 //        PE personEntity = getCurrentAccountEntity();
-//        Assert.isNull(personEntity.getAuthCodeKeyActiveTime(), OrganizationErrorCodes.ACCOUNT_NOT_ACTIVED);
-//        Assert.not(TOTPAuthenticator.authenticate(authCode, personEntity.getAuthCodeKey()), OrganizationErrorCodes.AUTHORIZE_FAILED);
+//        IF.isNull(personEntity.getAuthCodeKeyActiveTime(), OrganizationErrorCodes.ACCOUNT_NOT_ACTIVED);
+//        IF.not(TOTPAuthenticator.authenticate(authCode, personEntity.getAuthCodeKey()), OrganizationErrorCodes.AUTHORIZE_FAILED);
 //        return personEntity;
 //    }
 
@@ -158,7 +161,7 @@ public abstract class AbstractSelfManagementServiceImpl<
         PE personEntity = checkAuthCode(authCode, getCurrentAccountEntity());
         if (!Common.isSameStr(cellPhone, personEntity.getCellphone())) {
             if (cellPhone != null) {
-                Assert.is(personAccountRepo.countByCellphoneAndTenant(cellPhone, getTenant()) != 0, OrganizationErrorCodes.CELL_PHONE_EXISTS);
+                IF.is(personAccountRepo.countByCellphoneAndTenant(cellPhone, getTenant()) != 0, OrganizationErrorCodes.CELL_PHONE_EXISTS);
             }
             personEntity.setCellphone(cellPhone);
             putLoggingData("cellPhone", cellPhone);
@@ -171,7 +174,7 @@ public abstract class AbstractSelfManagementServiceImpl<
         PE personEntity = checkAuthCode(authCode, getCurrentAccountEntity());
         if (!Common.isSameStr(email, personEntity.getEmail())) {
             if (email != null) {
-                Assert.is(personAccountRepo.countByEmailAndTenant(email, getTenant()) != 0, OrganizationErrorCodes.EMAIL_EXISTS);
+                IF.is(personAccountRepo.countByEmailAndTenant(email, getTenant()) != 0, OrganizationErrorCodes.EMAIL_EXISTS);
             }
             personEntity.setEmail(email);
             putLoggingData("email", email);
@@ -185,7 +188,7 @@ public abstract class AbstractSelfManagementServiceImpl<
         return getAuthenticatorDesc(getCurrentAccountEntity(), authCode);
 //        PE personEntity = getCurrentAccountEntity();
 //        if (personEntity.getAuthCodeKey() != null && personEntity.getAuthCodeKeyActiveTime() != null) {
-//            Assert.not(TOTPAuthenticator.authenticate(authCode, personEntity.getAuthCodeKey()), OrganizationErrorCodes.AUTHORIZE_FAILED);
+//            IF.not(TOTPAuthenticator.authenticate(authCode, personEntity.getAuthCodeKey()), OrganizationErrorCodes.AUTHORIZE_FAILED);
 //        }
 //        String authKey = TOTPAuthenticator.generateAuthKey();
 //        token.setAttribute("accounts.temp.authKey", authKey);
@@ -199,10 +202,10 @@ public abstract class AbstractSelfManagementServiceImpl<
 //        super.bindAuthKey(authCode);
         AccountsCommon.bindAuthKey(getCurrentAccountEntity(), authCode, personAccountRepo);
 //        Long validation = token.getAttribute("accounts.temp.authKey.validation");
-//        Assert.is(System.currentTimeMillis() > validation, OrganizationErrorCodes.AUTH_KEY_FAILURE);
+//        IF.is(System.currentTimeMillis() > validation, OrganizationErrorCodes.AUTH_KEY_FAILURE);
 //        String authKey = token.getAttribute("accounts.temp.authKey");
 //        token.removeAttribute("accounts.temp.authKey");
-//        Assert.not(TOTPAuthenticator.authenticate(authCode, authKey), OrganizationErrorCodes.AUTHORIZE_FAILED);
+//        IF.not(TOTPAuthenticator.authenticate(authCode, authKey), OrganizationErrorCodes.AUTHORIZE_FAILED);
 //
 //        PE personEntity = getCurrentAccountEntity();
 //        personEntity.setAuthCodeKey(authKey);

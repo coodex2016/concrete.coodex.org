@@ -37,6 +37,7 @@ public class LocalInvokerFactory implements InvokerFactory {
         protected MethodInvocation getInvocation(final Unit unit, final Object[] args, final Object instance) {
             return new ClientMethodInvocation(instance, unit, args) {
                 @Override
+                @Deprecated
                 public Object proceed() throws Throwable {
                     return runWithContext(
                             new JaxRSClientServiceContext(unit, SIDE_LOCAL_INVOKE),

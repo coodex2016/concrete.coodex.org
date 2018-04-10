@@ -17,16 +17,19 @@
 package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.api.ConcreteService;
-import org.coodex.concrete.common.*;
-import org.coodex.util.Common;
+import org.coodex.concrete.common.AbstractErrorCodes;
+import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.ErrorMessageFacade;
 import org.coodex.util.ReflectHelper;
 
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.coodex.concrete.common.ConcreteHelper.foreachClassInPackages;
-import static org.coodex.util.ReflectHelper.foreachClass;
 
 public abstract class ConcreteJaxrsApplication extends Application implements org.coodex.concrete.api.Application {
 

@@ -31,7 +31,6 @@ import org.coodex.util.ServiceLoader;
 import org.coodex.util.Singleton;
 
 import javax.net.ssl.SSLContext;
-
 import java.util.Set;
 
 public class ClientHelper {
@@ -148,7 +147,7 @@ public class ClientHelper {
 
     public static Destination getDestination(String module) {
         String location = getString(module, "location");
-        Assert.is(Common.isBlank(location), "location for [" + module + "] is NOT found.");
+        IF.is(Common.isBlank(location), "location for [" + module + "] is NOT found.");
         Destination destination = new Destination();
         destination.setIdentify(module);
         destination.setLocation(location);

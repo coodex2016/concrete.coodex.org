@@ -16,8 +16,8 @@
 
 package org.coodex.commons.jpa.springdata;
 
-import org.coodex.concrete.common.Assert;
 import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.IF;
 import org.springframework.data.jpa.domain.Specifications;
 
 import java.lang.reflect.Method;
@@ -37,7 +37,7 @@ public abstract class AbstractSpecificationsMaker<C, T> implements Specification
 
         name = name == null ? "" : name;
 
-        Assert.is(name.equals("make"), "Invalid SpecificationsMaker function name: make");
+        IF.is(name.equals("make"), "Invalid SpecificationsMaker function name: make");
 
         Method makerFunction = null;
         for (Method method : this.getClass().getMethods()) {
@@ -51,7 +51,7 @@ public abstract class AbstractSpecificationsMaker<C, T> implements Specification
         }
 
         try {
-            Method method = Assert.isNull(makerFunction, "SpecificationsMaker function not exists: " + name);
+            Method method = IF.isNull(makerFunction, "SpecificationsMaker function not exists: " + name);
             method.setAccessible(true);
             return (Specifications<T>) method.invoke(this, condition);
         } catch (Throwable th) {

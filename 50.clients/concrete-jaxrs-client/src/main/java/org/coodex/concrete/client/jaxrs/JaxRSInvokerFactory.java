@@ -27,6 +27,8 @@ public class JaxRSInvokerFactory implements InvokerFactory {
                 || isSSL(location);
     }
 
+//    private static SingletonMap<Destination, JaxRSInvoker> i
+
     public static boolean isSSL(String location) {
         return location.toLowerCase().startsWith("https://");
     }

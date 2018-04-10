@@ -21,8 +21,6 @@ import org.coodex.util.SingletonMap;
 
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class AModule extends AbstractModule<AUnit> {
 

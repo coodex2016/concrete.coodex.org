@@ -22,7 +22,6 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.client.ClientCommon;
 import org.coodex.concrete.client.MessageSubscriber;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.common.struct.AbstractParam;
 import org.coodex.concrete.core.intercept.AsyncInterceptorChain;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.websocket.*;
@@ -109,9 +108,9 @@ public class WebSocketClientHandle {
             @Override
             public void subscribe(ObservableEmitter e) throws Exception {
                 try {
-                    Assert.isNull(unit, WebSocketErrorCodes.UNIT_NOT_EXISTS, keyBase(serviceClass, method));
+                    IF.isNull(unit, WebSocketErrorCodes.UNIT_NOT_EXISTS, keyBase(serviceClass, method));
 
-                    final Session session = Assert.isNull(getSession(domain), WebSocketErrorCodes.CANNOT_OPEN_SESSION, domain);
+                    final Session session = IF.isNull(getSession(domain), WebSocketErrorCodes.CANNOT_OPEN_SESSION, domain);
 
                     final String msgId = Common.getUUIDStr();
                     final String tokenKey = Common.isBlank(tokenManagerKey) ? domain : tokenManagerKey;
@@ -348,7 +347,7 @@ public class WebSocketClientHandle {
     }
 
 //    WebSocketUnit getUnit(DefinitionContext definitionContext) {
-//        return Assert.isNull(
+//        return IF.isNull(
 //                unitMap.get(buildKey(definitionContext.getDeclaringClass(), definitionContext.getDeclaringMethod())),
 //                WebSocketErrorCodes.UNIT_NOT_EXISTS,
 //                keyBase(definitionContext.getDeclaringClass(), definitionContext.getDeclaringMethod())

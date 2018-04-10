@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.websocket;
 
-import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.common.IF;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,7 +29,7 @@ public class WebSocket {
     private final static Map<String, ConcreteWebSocketEndPoint> endPointMap = new HashMap<>();
 
     public static ConcreteWebSocketEndPoint getEndPoint(String endPoint) {
-        return Assert.isNull(endPointMap.get(endPoint), "Web socket endpoint not found: " + endPoint);
+        return IF.isNull(endPointMap.get(endPoint), "Web socket endpoint not found: " + endPoint);
     }
 
     protected static void registerEndPoint(String endPoint, ConcreteWebSocketEndPoint webSocketEndPoint) {

@@ -19,8 +19,6 @@ package org.coodex.concrete.websocket;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorInfo;
 
-import java.util.Arrays;
-
 public class InvalidRequest extends ErrorInfo {
 
     private String requestData;

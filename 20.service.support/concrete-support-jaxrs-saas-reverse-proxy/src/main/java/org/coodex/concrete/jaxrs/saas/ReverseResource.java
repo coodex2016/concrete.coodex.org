@@ -16,10 +16,10 @@
 
 package org.coodex.concrete.jaxrs.saas;
 
+import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.api.ConcreteService;
-import org.coodex.concrete.common.Assert;
-import org.coodex.concrete.common.ConcreteClosure;
 import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.ReverseProxyErrorCodes;
 import org.coodex.concrete.jaxrs.Client;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
@@ -55,7 +55,7 @@ public class ReverseResource<T extends ConcreteService> extends AbstractJSR339Re
 
                     Unit unit = JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())/*, params*/);
 
-                    String routeBy = Assert.isNull(unit.getAnnotation(RouteBy.class),
+                    String routeBy = IF.isNull(unit.getAnnotation(RouteBy.class),
                             //.getDeclaringModule().getDeclaredAnnotation(RouteBy.class),
                             ReverseProxyErrorCodes.ROUTE_BY_NOT_FOUND,
                             unit.getDeclaringModule().getInterfaceClass()).value();
@@ -73,12 +73,14 @@ public class ReverseResource<T extends ConcreteService> extends AbstractJSR339Re
                         }
                     }
                     final String sDomain = domain;
-                    Assert.not(found, ReverseProxyErrorCodes.ROUT_BY_PARAMETER_NOT_FOUND, unit, routeBy);
+                    IF.not(found, ReverseProxyErrorCodes.ROUT_BY_PARAMETER_NOT_FOUND, unit, routeBy);
 
                     // closure
-                    DeliveryContext.closureRun(deliveryContext, new ConcreteClosure() {
+                    DeliveryContext.closureRun(deliveryContext, new CallableClosure() {
                         @Override
-                        public Object concreteRun() throws Throwable {
+                        public Object call() throws Throwable {
+
+                            // todo....
                             ConcreteService client = sDomain == null ?
                                     Client.getInstance(getInterfaceClass()) :
                                     Client.getInstance(getInterfaceClass(), sDomain);
@@ -87,6 +89,18 @@ public class ReverseResource<T extends ConcreteService> extends AbstractJSR339Re
                             return null;
                         }
                     });
+
+//                    DeliveryContext.closureRun(deliveryContext, new ConcreteClosure() {
+//                        @Override
+//                        public Object concreteRun() throws Throwable {
+//                            ConcreteService client = sDomain == null ?
+//                                    Client.getInstance(getInterfaceClass()) :
+//                                    Client.getInstance(getInterfaceClass(), sDomain);
+//
+//                            method.invoke(client, params);
+//                            return null;
+//                        }
+//                    });
 
 
 //                    asyncResponse.resume(invokeByTokenId(tokenId, method, params));

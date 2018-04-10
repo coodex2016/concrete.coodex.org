@@ -23,9 +23,7 @@ import org.coodex.util.Parameter;
 
 import java.util.Set;
 
-import static org.coodex.concrete.accounts.AccountManagementRoles.ORGANIZATION_MANAGER;
-import static org.coodex.concrete.accounts.AccountManagementRoles.SYSTEM_MANAGER;
-import static org.coodex.concrete.accounts.AccountManagementRoles.TENANT_MANAGER;
+import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 
 /**
  * Created by davidoff shen on 2017-04-28.

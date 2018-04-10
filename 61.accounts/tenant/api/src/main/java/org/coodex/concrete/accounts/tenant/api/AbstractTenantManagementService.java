@@ -21,12 +21,9 @@ import org.coodex.concrete.accounts.tenant.pojo.TenantQuery;
 import org.coodex.concrete.api.*;
 import org.coodex.concrete.api.pojo.PageRequest;
 import org.coodex.concrete.api.pojo.PageResult;
-import org.coodex.concrete.api.pojo.SortedPageRequest;
 import org.coodex.concrete.api.pojo.StrID;
-import org.coodex.concrete.jaxrs.BigString;
 
 import static org.coodex.concrete.accounts.AccountManagementRoles.SYSTEM_MANAGER;
-import static org.coodex.concrete.accounts.AccountManagementRoles.TENANT_MANAGER;
 
 /**
  * 租户管理服务，放置于租户管理端。

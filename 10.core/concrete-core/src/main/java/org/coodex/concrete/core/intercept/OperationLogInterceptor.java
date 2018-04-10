@@ -17,6 +17,7 @@
 package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.api.LogAtomic;
 import org.coodex.concrete.api.OperationLog;
 import org.coodex.concrete.common.*;
@@ -91,12 +92,20 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
     @Override
     public Object around(final RuntimeContext context, final MethodInvocation joinPoint) throws Throwable {
         return runWithContext(new AtomServiceContext(getServiceContext()),
-                new ConcreteClosure() {
+//                new ConcreteClosure() {
+//                    @Override
+//                    public Object concreteRun() throws Throwable {
+//                        return $$after(context, joinPoint, joinPoint.proceed());
+//                    }
+//    },
+                new CallableClosure() {
                     @Override
-                    public Object concreteRun() throws Throwable {
+                    public Object call() throws Throwable {
                         return $$after(context, joinPoint, joinPoint.proceed());
                     }
-                });
+                }
+
+        );
 //        return LOGGING.run(new HashMap<String, Object>(), new ConcreteClosure() {
 //            @Override
 //            public Object concreteRun() throws Throwable {

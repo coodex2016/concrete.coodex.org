@@ -19,10 +19,10 @@ package org.coodex.concrete.client.rx;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.client.ClientServiceContext;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.ConcreteClosure;
 import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.common.ServiceContext;
@@ -65,9 +65,9 @@ public class SyncToRxInvoker extends AbstractRxInvoker {
                     public void run() {
                         try {
                             final Destination destination = getSyncDestination();
-                            Object result = ConcreteContext.runWithContext(clientServiceContext, new ConcreteClosure() {
+                            Object result = ConcreteContext.runWithContext(clientServiceContext, new CallableClosure() {
                                 @Override
-                                public Object concreteRun() throws Throwable {
+                                public Object call() throws Throwable {
                                     return ClientHelper.getInvokerFactoryProviders()
                                             .getServiceInstance(destination)
                                             .getInvoker(destination)
@@ -78,6 +78,19 @@ public class SyncToRxInvoker extends AbstractRxInvoker {
                                                     args);
                                 }
                             });
+//                            Object result = ConcreteContext.runWithContext(clientServiceContext, new ConcreteClosure() {
+//                                @Override
+//                                public Object concreteRun() throws Throwable {
+//                                    return ClientHelper.getInvokerFactoryProviders()
+//                                            .getServiceInstance(destination)
+//                                            .getInvoker(destination)
+//                                            .invoke(
+//                                                    buildSyncInstance(runtimeContext.getDeclaringClass()),
+//                                                    runtimeContext.getDeclaringClass(),
+//                                                    runtimeContext.getDeclaringMethod(),
+//                                                    args);
+//                                }
+//                            });
                             e.onNext(result);
                         } catch (Throwable th) {
                             e.onError(th);

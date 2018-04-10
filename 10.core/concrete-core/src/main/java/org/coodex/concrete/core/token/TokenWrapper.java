@@ -40,8 +40,8 @@ public class TokenWrapper implements Token {
 
     private Token getToken(boolean checkValidation) {
         Token token = getServiceContext().getToken();
-        Assert.isNull(token, ErrorCodes.NONE_TOKEN);
-        Assert.is(checkValidation && !token.isValid(), ErrorCodes.TOKEN_INVALIDATE, token.getTokenId());
+        IF.isNull(token, ErrorCodes.NONE_TOKEN);
+        IF.is(checkValidation && !token.isValid(), ErrorCodes.TOKEN_INVALIDATE, token.getTokenId());
         return token;
     }
 

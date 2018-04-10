@@ -17,7 +17,7 @@
 package org.coodex.concrete.fsm.impl;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.coodex.closure.Closure;
+import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.fsm.*;
 import org.coodex.util.Common;
@@ -82,11 +82,11 @@ class FSMInvocationHandle implements InvocationHandler {
             final State current = context == null ? state : context.getState();
 
 
-            return FSMContextImpl.closureContext.run(new FSMContextImpl.Context(Common.deepCopy(current), (FiniteStateMachine) proxy), new Closure() {
+            return FSMContextImpl.closureContext.call(new FSMContextImpl.Context(Common.deepCopy(current), (FiniteStateMachine) proxy), new CallableClosure() {
 
 
                 @Override
-                public Object run() {
+                public Object call() {
                     synchronized (state) {
                         try {
                             Class<? extends StateCondition> condition = getCondition(method);
@@ -148,6 +148,72 @@ class FSMInvocationHandle implements InvocationHandler {
 
                 }
             });
+//            return FSMContextImpl.closureContext.run(new FSMContextImpl.Context(Common.deepCopy(current), (FiniteStateMachine) proxy), new Closure() {
+//
+//
+//                @Override
+//                public Object run() {
+//                    synchronized (state) {
+//                        try {
+//                            Class<? extends StateCondition> condition = getCondition(method);
+//                            boolean isSignaledState = current instanceof SignaledState;
+//                            SignaledGuard signaledGuard = method.getAnnotation(SignaledGuard.class);
+//                            if (condition != null && !StateCondition.class.equals(condition)) {
+//                                StateCondition sc = CONDITIONS.getInstance(condition);
+//                                if (sc != null && !sc.allow(current)) {
+//                                    RuntimeException e = original.errorHandle(new WrongStateException(current));
+//                                    if (e != null) throw e;
+//                                }
+//                            }
+//
+//                            if (isSignaledState && signaledGuard != null && signaledGuard.allowed().length > 0) {
+//                                SignaledState signaledState = (SignaledState) current;
+//                                boolean allow = false;
+//                                long currentSignal = signaledState.getSignal();
+//                                for (long signal : signaledGuard.allowed()) {
+//                                    if (signal == currentSignal) {
+//                                        allow = true;
+//                                        break;
+//                                    }
+//                                }
+//                                if (!allow) {
+//                                    RuntimeException e = original.errorHandle(new WrongStateException(current));
+//                                    if (e != null) throw e;
+//                                }
+//                            }
+//
+//                            try {
+//                                Object o = method.invoke(original, args);
+//                                BeanUtils.copyProperties(current, FSMContextImpl.closureContext.get().getState());
+//                                return o;
+//                            } catch (IllegalAccessException e) {
+//                                throw new RuntimeException(e);
+//                            } catch (InvocationTargetException e) {
+//                                if (e.getTargetException() instanceof WrongStateException) {
+//                                    RuntimeException x = original.errorHandle((WrongStateException) e.getTargetException());
+//                                    if (x != null) throw x;
+//                                } else if (e.getTargetException() instanceof RuntimeException) {
+//                                    throw (RuntimeException) e.getTargetException();
+//                                }
+//                                throw new RuntimeException(e);
+//                            } finally {
+//
+//                            }
+//                        }finally {
+//                            try {
+//                                if (context == null && state instanceof IdentifiedState) {
+//                                    IdentifiedState identifiedState = (IdentifiedState) state;
+//                                    CONTAINER_SERVICE_LOADER.getInstance().release(identifiedState.getId());
+//                                }
+//                            } catch (Throwable th) {
+//                                log.warn(th.getLocalizedMessage(), th);
+//                            }
+//                        }
+//
+//                    }
+//
+//                }
+//            });
         }
 
     }

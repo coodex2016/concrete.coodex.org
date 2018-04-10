@@ -17,19 +17,13 @@
 package org.coodex.concrete.support.jaxrs.javassist;
 
 import javassist.CannotCompileException;
-import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.bytecode.SignatureAttribute;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concrete.jaxrs.ClassGenerator;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Unit;
-import org.coodex.util.Common;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 

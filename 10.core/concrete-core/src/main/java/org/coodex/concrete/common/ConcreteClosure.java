@@ -21,6 +21,7 @@ import org.coodex.closure.Closure;
 /**
  * Created by davidoff shen on 2016-09-06.
  */
+@Deprecated
 public abstract class ConcreteClosure implements Closure {
 
     public abstract Object concreteRun() throws Throwable;

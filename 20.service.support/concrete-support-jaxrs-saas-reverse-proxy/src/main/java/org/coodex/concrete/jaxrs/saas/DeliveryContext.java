@@ -17,7 +17,9 @@
 package org.coodex.concrete.jaxrs.saas;
 
 import org.coodex.closure.AbstractClosureContext;
+import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.common.ConcreteClosure;
+import org.coodex.concrete.common.ConcreteHelper;
 
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.MultivaluedMap;
@@ -45,8 +47,13 @@ public class DeliveryContext {
     private static class DeliveryContextClosure
             extends AbstractClosureContext<DeliveryContext> {
 
+        @Deprecated
         Object runWith(DeliveryContext context, ConcreteClosure runnable) {
             return closureRun(context, runnable);
+        }
+
+        Object runWith(DeliveryContext context, CallableClosure callable) throws Throwable {
+            return closureRun(context, callable);
         }
 
         DeliveryContext getContext() {
@@ -57,8 +64,17 @@ public class DeliveryContext {
 
     private final static DeliveryContextClosure DELIVERY_CONTEXT_CLOSURE = new DeliveryContextClosure();
 
+    @Deprecated
     public final static Object closureRun(DeliveryContext context, ConcreteClosure runnable) {
         return DELIVERY_CONTEXT_CLOSURE.runWith(context, runnable);
+    }
+
+    public final static Object closureRun(DeliveryContext context, CallableClosure runnable) {
+        try {
+            return DELIVERY_CONTEXT_CLOSURE.runWith(context, runnable);
+        } catch (Throwable throwable) {
+            throw ConcreteHelper.getException(throwable);
+        }
     }
 
     public final static DeliveryContext getContext() {

@@ -16,44 +16,37 @@
 
 package org.coodex.concrete.websocket;
 
-import org.coodex.concrete.common.AbstractSubjoin;
-import org.coodex.util.Common;
+import org.coodex.concrete.common.SubjoinBaseJava7;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
-import static org.coodex.concrete.websocket.Constants.LOCALE;
-
-public class WebSocketSubjoin extends AbstractSubjoin {
+public class WebSocketSubjoin extends SubjoinBaseJava7 {
 
 
     public WebSocketSubjoin(Map<String, String> map) {
-        super();
+        super(map);
 //        add(WEB_SOCKET_MODEL, "T");
-        if (map == null) return;
-
-        for (String key : map.keySet()) {
-            String v = map.get(key);
-            if (v == null) continue;
-
-            if (key.equalsIgnoreCase(LOCALE)) {
-                setLocale(Locale.forLanguageTag(v));
-            } else {
-                set(key, Common.toArray(v, "; ", new ArrayList<String>()));
-            }
-        }
+//        if (map == null) return;
+//
+//        for (String key : map.keySet()) {
+//            String v = map.get(key);
+//            if (v == null) continue;
+//
+//            if (key.equalsIgnoreCase(LOCALE)) {
+//                setLocale(Locale.forLanguageTag(v));
+//            } else {
+//                set(key, Common.toArray(v, "; ", new ArrayList<String>()));
+//            }
+//        }
     }
 
-    public Map<String, String> toMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put(LOCALE, getLocale().toLanguageTag());
-
-        for (String key : keySet()) {
-            map.put(key, get(key));
-        }
-        return map;
-    }
-
+//    @Override
+//    protected Locale forLanguageTag(String localeStr) {
+//        return Locale.forLanguageTag(localeStr);
+//    }
+//
+//    @Override
+//    protected String toLanguageTag() {
+//        return getLocale().toLanguageTag();
+//    }
 }

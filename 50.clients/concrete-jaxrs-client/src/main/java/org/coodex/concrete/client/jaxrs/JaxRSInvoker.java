@@ -22,7 +22,6 @@ import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.AbstractSyncInvoker;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
-import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.pojomocker.MockerFacade;
@@ -32,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -50,11 +48,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import static org.coodex.concrete.ClientHelper.getJSONSerializer;
-import static org.coodex.concrete.ClientHelper.getSSLContext;
-import static org.coodex.concrete.ClientHelper.getString;
+import static org.coodex.concrete.ClientHelper.*;
 import static org.coodex.concrete.client.jaxrs.JaxRSInvokerFactory.isSSL;
-import static org.coodex.concrete.common.ConcreteHelper.devModelKey;
 import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;

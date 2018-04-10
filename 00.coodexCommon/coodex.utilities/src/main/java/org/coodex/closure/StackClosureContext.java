@@ -35,6 +35,7 @@ public class StackClosureContext<VariantType> extends AbstractClosureContext<Sta
     }
 
     @Override
+    @Deprecated
     public Object run(VariantType variant, Closure runnable) {
         if (runnable == null) return null;
 
@@ -57,4 +58,26 @@ public class StackClosureContext<VariantType> extends AbstractClosureContext<Sta
         }
     }
 
+    @Override
+    public Object call(VariantType var, CallableClosure callable) throws Throwable {
+        if (callable == null) return null;
+
+        Stack<VariantType> stack = $getVariant();
+        if (stack == null) {
+            stack = new Stack<VariantType>();
+            stack.push(var);
+            try {
+                return closureRun(stack, callable);
+            } finally {
+                stack.clear();
+            }
+        } else {
+            stack.push(var);
+            try {
+                return callable.call();
+            } finally {
+                stack.pop();
+            }
+        }
+    }
 }

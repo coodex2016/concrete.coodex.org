@@ -16,12 +16,13 @@
 
 package org.coodex.concrete.accounts.tenant.impl;
 
-import org.coodex.concrete.accounts.AccountIDImpl;
 import org.coodex.concrete.accounts.AbstractTenantAccountFactory;
+import org.coodex.concrete.accounts.AccountIDImpl;
 import org.coodex.concrete.accounts.TenantAccount;
 import org.coodex.concrete.accounts.tenant.entities.AbstractTenantEntity;
 import org.coodex.concrete.accounts.tenant.repositories.AbstractTenantRepo;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.AbstractCopier;
+import org.coodex.concrete.common.Copier;
 
 import javax.inject.Inject;
 import java.util.Arrays;

@@ -18,10 +18,8 @@ package org.coodex.concurrent;
 
 import org.coodex.concurrent.components.PriorityRunnable;
 
-import java.util.AbstractQueue;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by davidoff shen on 2016-09-05.

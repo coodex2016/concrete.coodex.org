@@ -18,7 +18,7 @@ package org.coodex.concrete.client.websocket;
 
 import org.coodex.concrete.client.ClientServiceContext;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.concrete.websocket.Constants;
@@ -46,7 +46,7 @@ public class WSClientServiceContext extends ClientServiceContext {
     }
 
     static WebSocketUnit findUnit(RuntimeContext context) {
-        WebSocketModule module = Assert.isNull(getModule(context.getDeclaringClass()),
+        WebSocketModule module = IF.isNull(getModule(context.getDeclaringClass()),
                 context.getDeclaringClass() + "is not a concrete service.");
         Method method = context.getDeclaringMethod();
         for (WebSocketUnit unit : module.getUnits()) {

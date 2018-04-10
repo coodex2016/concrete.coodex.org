@@ -19,8 +19,8 @@ package org.coodex.concrete.core.intercept;
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.NotService;
 import org.coodex.concrete.api.ServiceTiming;
-import org.coodex.concrete.common.Assert;
 import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.common.ServiceTimingChecker;
 import org.coodex.concrete.core.intercept.timecheckers.ByTimeRange;
@@ -53,7 +53,7 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
 
     @Override
     public void before(RuntimeContext context, MethodInvocation joinPoint) {
-        Assert.not(getValidator(context.getAnnotation(ServiceTiming.class)).isAllowed(),
+        IF.not(getValidator(context.getAnnotation(ServiceTiming.class)).isAllowed(),
                 ErrorCodes.OUT_OF_SERVICE_TIME);
     }
 

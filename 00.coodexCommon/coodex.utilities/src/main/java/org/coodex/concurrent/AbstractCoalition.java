@@ -17,8 +17,6 @@
 package org.coodex.concurrent;
 
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractCoalition<T> implements Coalition<T> {
 

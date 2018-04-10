@@ -17,9 +17,9 @@
 package org.coodex.concrete.attachments.client;
 
 import org.coodex.concrete.attachments.AttachmentServiceHelper;
-import org.coodex.concrete.common.Assert;
 import org.coodex.concrete.common.BeanProviderFacade;
 import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concrete.core.token.TokenWrapper;
@@ -80,8 +80,8 @@ public class ClientServiceImpl implements ClientService {
 
     private Token getTokenById(String tokenId) {
         Token token = getTokenManager().getToken(tokenId);
-        Assert.isNull(token, ErrorCodes.NONE_TOKEN);
-        Assert.not(token.isValid(), ErrorCodes.TOKEN_INVALIDATE, tokenId);
+        IF.isNull(token, ErrorCodes.NONE_TOKEN);
+        IF.not(token.isValid(), ErrorCodes.TOKEN_INVALIDATE, tokenId);
         return token;
     }
 

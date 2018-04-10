@@ -88,12 +88,12 @@ public class RBACInterceptor extends AbstractInterceptor {
 //        if (acl != null) {//需要判定权限
 //            Account currentAccount = getCurrentAccount();//token.currentAccount();
 //            //用户未登录
-//            Assert.isNull(currentAccount, ErrorCodes.NONE_ACCOUNT, token);
+//            IF.isNull(currentAccount, ErrorCodes.NONE_ACCOUNT, token);
 //            //用户已失效
-//            Assert.not(currentAccount.isValid(), ErrorCodes.ACCOUNT_INVALIDATE);
+//            IF.not(currentAccount.isValid(), ErrorCodes.ACCOUNT_INVALIDATE);
 //            if (safely) {
 //                //用户不可信
-//                Assert.not(token.isAccountCredible(), ErrorCodes.UNTRUSTED_ACCOUNT);
+//                IF.not(token.isAccountCredible(), ErrorCodes.UNTRUSTED_ACCOUNT);
 //            }
 //
 //            //从用户角色中过滤出匹配domain的角色
@@ -103,7 +103,7 @@ public class RBACInterceptor extends AbstractInterceptor {
 //            if (accountDomainRoles.contains(AccessAllow.PREROGATIVE)) return;
 //
 //            Set<String> roles = Common.arrayToSet(acl);
-//            Assert.is(accountDomainRoles.size() == 0 ||
+//            IF.is(accountDomainRoles.size() == 0 ||
 //                    Common.intersection(roles, accountDomainRoles).size() == 0, ErrorCodes.NO_AUTHORIZATION);
 //        }
     }

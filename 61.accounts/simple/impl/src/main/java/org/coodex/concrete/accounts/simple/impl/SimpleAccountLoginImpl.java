@@ -20,7 +20,7 @@ import org.coodex.concrete.accounts.AccountIDImpl;
 import org.coodex.concrete.accounts.TOTPAuthenticator;
 import org.coodex.concrete.accounts.simple.api.Login;
 import org.coodex.concrete.common.AccountsErrorCodes;
-import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.util.Profile;
@@ -45,16 +45,16 @@ public class SimpleAccountLoginImpl implements Login {
     public String login(String account, String password, String authCode) {
 
         AccountIDImpl accountId = new AccountIDImpl(TYPE_SIMPLE, account);
-        Assert.not(accountFactory.accept(accountId), AccountsErrorCodes.NONE_THIS_ACCOUNT);
+        IF.not(accountFactory.accept(accountId), AccountsErrorCodes.NONE_THIS_ACCOUNT);
 
         SimpleAccount simpleAccount = (SimpleAccount) accountFactory.getAccountByID(accountId);
         if (profile.getBool("password", true)) {
-            Assert.is(password == null || !password.equals(simpleAccount.getPassword()),
+            IF.is(password == null || !password.equals(simpleAccount.getPassword()),
                     AccountsErrorCodes.LOGIN_FAILED);
         }
 
         if (profile.getBool("authCode", true)) {
-            Assert.is(authCode == null || !TOTPAuthenticator.authenticate(
+            IF.is(authCode == null || !TOTPAuthenticator.authenticate(
                     authCode, simpleAccount.getAuthKey()),
                     AccountsErrorCodes.LOGIN_FAILED);
         }

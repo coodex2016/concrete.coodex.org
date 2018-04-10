@@ -17,7 +17,6 @@
 package org.coodex.concrete.support.jsr311;
 
 
-import javassist.CannotCompileException;
 import org.coodex.concrete.jaxrs.ClassGenerator;
 import org.coodex.concrete.jaxrs.ConcreteJaxrsApplication;
 import org.coodex.concrete.support.jsr311.javassist.JSR311ClassGenerator;

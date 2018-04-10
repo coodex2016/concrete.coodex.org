@@ -18,17 +18,17 @@ package org.coodex.concrete.client.jaxrs;
 
 import org.coodex.concrete.client.ClientServiceContext;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.Caller;
+import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.SubjoinWrapper;
 import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Unit;
 
 import javax.ws.rs.core.HttpHeaders;
-
 import java.lang.reflect.Method;
 
-import static org.coodex.concrete.common.ConcreteContext.SIDE_CLIENT;
 import static org.coodex.concrete.common.ConcreteHelper.VERSION;
 
 public class JaxRSClientContext extends ClientServiceContext {

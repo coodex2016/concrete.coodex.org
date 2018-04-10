@@ -16,8 +16,7 @@
 
 package org.coodex.concrete.support.websocket;
 
-import org.coodex.concrete.common.Assert;
-//import org.coodex.concrete.websocket.WebSocket;
+import org.coodex.concrete.common.IF;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -26,12 +25,14 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 
+//import org.coodex.concrete.websocket.WebSocket;
+
 public abstract class ConcreteWebSocketEndPoint/* implements ConcreteWebSocketEndPoint */ {
 
     private WebSocketServerHandle handle;
 
     public ConcreteWebSocketEndPoint() {
-        ServerEndpoint serverEndpoint = Assert.isNull(getClass().getAnnotation(ServerEndpoint.class), "use ServerEndpoint plz.");
+        ServerEndpoint serverEndpoint = IF.isNull(getClass().getAnnotation(ServerEndpoint.class), "use ServerEndpoint plz.");
 //        String endPoint = serverEndpoint.value();
         synchronized (ConcreteWebSocketEndPoint.class) {
             handle = new WebSocketServerHandle();

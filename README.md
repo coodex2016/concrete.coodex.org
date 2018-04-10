@@ -25,6 +25,12 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+
+## 2018-？？-？？
+
+- org.coodex.concrete.coomon.Assert声明作废，使用org.coodex.concrete.common.IF替代
+- 切换工作环境，暂存下
+
 ## 2018-04-04
 
 - coodex-utilities提供`Singleton<T>`和`SingletonMap<K,V>`，通过双重校验锁的模式，减少同步锁的开销，Concrete相关单例模式依此更改

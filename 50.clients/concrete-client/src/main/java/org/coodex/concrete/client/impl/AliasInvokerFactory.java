@@ -20,7 +20,7 @@ import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.Invoker;
 import org.coodex.concrete.client.InvokerFactory;
-import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.common.IF;
 import org.coodex.util.Common;
 
 import java.util.Stack;
@@ -49,7 +49,7 @@ public class AliasInvokerFactory implements InvokerFactory {
                 builder.append(" -> ");
             }
             builder.append(".");
-            Assert.is(true, builder.toString());
+            IF.is(true, builder.toString());
         }
         stack.push(destination.getIdentify());
         try {

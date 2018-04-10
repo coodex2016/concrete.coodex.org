@@ -50,15 +50,15 @@ public class RBACHelper {
             Account currentAccount = getCurrentAccount();
             Token token = TokenWrapper.getInstance();
             //用户未登录
-            Assert.isNull(currentAccount, ErrorCodes.NONE_ACCOUNT, token);
+            IF.isNull(currentAccount, ErrorCodes.NONE_ACCOUNT, token);
             //用户已失效
-            Assert.not(currentAccount.isValid(), ErrorCodes.ACCOUNT_INVALIDATE);
+            IF.not(currentAccount.isValid(), ErrorCodes.ACCOUNT_INVALIDATE);
             if (safely) {
                 //用户不可信
-                Assert.not(token.isAccountCredible(), ErrorCodes.UNTRUSTED_ACCOUNT);
+                IF.not(token.isAccountCredible(), ErrorCodes.UNTRUSTED_ACCOUNT);
             }
             Set<String> mathings = matching(account, acl, domain);
-            Assert.is(mathings.size() == 0, ErrorCodes.NO_AUTHORIZATION);
+            IF.is(mathings.size() == 0, ErrorCodes.NO_AUTHORIZATION);
         }
     }
 

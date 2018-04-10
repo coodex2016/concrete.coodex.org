@@ -21,17 +21,14 @@ import org.coodex.concrete.accounts.TenantAccount;
 import org.coodex.concrete.accounts.TenantRPCService;
 import org.coodex.concrete.accounts.tenant.entities.AbstractTenantEntity;
 import org.coodex.concrete.accounts.tenant.repositories.AbstractTenantRepo;
-import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.common.IF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-
 import java.util.Calendar;
 
-import static org.coodex.concrete.accounts.AccountsCommon.checkPassword;
-import static org.coodex.concrete.accounts.AccountsCommon.getAuthenticatorDesc;
-import static org.coodex.concrete.accounts.AccountsCommon.isCredible;
+import static org.coodex.concrete.accounts.AccountsCommon.*;
 import static org.coodex.concrete.common.AccountsErrorCodes.TENANT_NOT_EXISTS;
 import static org.coodex.concrete.common.AccountsErrorCodes.TENANT_UNAVAILABLE;
 
@@ -49,14 +46,14 @@ public abstract class AbstractTenantRPCServiceImpl<E extends AbstractTenantEntit
     protected AbstractServerSideTenantAccountFactory<E> accountFactory;
 
     protected E getTenantEntity(String tenantAccountName) {
-        return Assert.isNull(repo.findFirstByAccountName(tenantAccountName), TENANT_NOT_EXISTS);
+        return IF.isNull(repo.findFirstByAccountName(tenantAccountName), TENANT_NOT_EXISTS);
     }
 
     @Override
     public void checkTenant(String tenantAccountName) {
         E tenantEntity = getTenantEntity(tenantAccountName);
         Calendar calendar = tenantEntity.getValidation();
-        Assert.not(
+        IF.not(
                 tenantEntity.isUsing() && calendar != null &&
                         calendar.getTimeInMillis() >= System.currentTimeMillis()
                 , TENANT_UNAVAILABLE);
@@ -69,7 +66,7 @@ public abstract class AbstractTenantRPCServiceImpl<E extends AbstractTenantEntit
 
     @Override
     public TenantAccount getTenantAccountById(String id) {
-        return accountFactory.newAccount(Assert.isNull(repo.findOne(id), TENANT_NOT_EXISTS).getId());
+        return accountFactory.newAccount(IF.isNull(repo.findOne(id), TENANT_NOT_EXISTS).getId());
     }
 
     @Override

@@ -16,10 +16,10 @@
 
 package org.coodex.concrete.core.signature;
 
-import org.coodex.concrete.common.Assert;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.IF;
 import org.coodex.util.DigestHelper;
 import org.coodex.util.ServiceLoader;
 
@@ -79,7 +79,7 @@ public class HmacPen extends AbstractIronPen {
 
     @Override
     public byte[] sign(byte[] content, String algorithm, String keyId) {
-        return sign(content, Assert.isNull(getHmacKey(keyId)
+        return sign(content, IF.isNull(getHmacKey(keyId)
                 , ErrorCodes.SIGNING_FAILED, "invalid HMAC Key"), algorithm);
     }
 
@@ -96,7 +96,7 @@ public class HmacPen extends AbstractIronPen {
     public boolean verify(byte[] content, byte[] signature, String algorithm, String keyId) {
         return Arrays.equals(signature,
                 sign(content,
-                        Assert.isNull(getHmacKey(keyId),
+                        IF.isNull(getHmacKey(keyId),
                                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
                                 "invalid HMAC Key"),
                         algorithm));

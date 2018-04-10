@@ -34,6 +34,10 @@ public class SingletonMap<K, V> {
 
     private Map<K, V> map = new ConcurrentHashMap<K, V>();
 
+    public boolean containsKey(Object key) {
+        return map.containsKey(key);
+    }
+
     public V getInstance(K key) {
         if (!map.containsKey(key)) {
             synchronized (map) {

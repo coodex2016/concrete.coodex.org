@@ -16,8 +16,8 @@
 
 package org.coodex.concrete.accounts.organization.pojo;
 
-import org.coodex.concrete.api.Description;
 import org.coodex.concrete.accounts.AbstractPojo;
+import org.coodex.concrete.api.Description;
 
 /**
  * Created by davidoff shen on 2017-04-28.

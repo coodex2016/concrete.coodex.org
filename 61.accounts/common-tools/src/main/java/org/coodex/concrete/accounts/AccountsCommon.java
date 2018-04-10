@@ -98,8 +98,8 @@ public class AccountsCommon {
      * @return
      */
     public static <E extends CanLoginEntity> E checkAuthCode(String authCode, E entity) {
-        Assert.isNull(entity.getAuthCodeKeyActiveTime(), ACCOUNT_NOT_ACTIVED);
-        Assert.not(TOTPAuthenticator.authenticate(authCode, entity.getAuthCodeKey()), AUTHORIZE_FAILED);
+        IF.isNull(entity.getAuthCodeKeyActiveTime(), ACCOUNT_NOT_ACTIVED);
+        IF.not(TOTPAuthenticator.authenticate(authCode, entity.getAuthCodeKey()), AUTHORIZE_FAILED);
         return entity;
     }
 
@@ -128,7 +128,7 @@ public class AccountsCommon {
      */
     public static String getAuthenticatorDesc(CanLoginEntity entity, String authCode) {
         if (entity.getAuthCodeKey() != null && entity.getAuthCodeKeyActiveTime() != null) {
-            Assert.not(TOTPAuthenticator.authenticate(authCode, entity.getAuthCodeKey()), AUTHORIZE_FAILED);
+            IF.not(TOTPAuthenticator.authenticate(authCode, entity.getAuthCodeKey()), AUTHORIZE_FAILED);
         }
         String authKey = TOTPAuthenticator.generateAuthKey();
         Token token = TokenWrapper.getInstance();
@@ -149,11 +149,11 @@ public class AccountsCommon {
     public static <E extends CanLoginEntity> void bindAuthKey(E entity, String authCode, CrudRepository<E, String> repo) {
         Token token = TokenWrapper.getInstance();
         Long validation = token.getAttribute("accounts.temp.authKey.validation." + entity.getId());
-        Assert.is(System.currentTimeMillis() > validation, AUTH_KEY_FAILURE);
+        IF.is(System.currentTimeMillis() > validation, AUTH_KEY_FAILURE);
         String authKey = token.getAttribute("accounts.temp.authKey." + entity.getId());
         token.removeAttribute("accounts.temp.authKey.validation." + entity.getId());
         token.removeAttribute("accounts.temp.authKey." + entity.getId());
-        Assert.not(TOTPAuthenticator.authenticate(authCode, authKey), AUTHORIZE_FAILED);
+        IF.not(TOTPAuthenticator.authenticate(authCode, authKey), AUTHORIZE_FAILED);
         entity.setAuthCodeKey(authKey);
         entity.setAuthCodeKeyActiveTime(Calendar.getInstance());
 
@@ -170,7 +170,7 @@ public class AccountsCommon {
      * @param personEntity
      */
     public static void checkPassword(String password, CanLoginEntity personEntity) {
-        Assert.not(
+        IF.not(
                 getEncodedPassword(password).equals(personEntity.getPassword()),
                 LOGIN_FAILED);
     }
@@ -204,7 +204,7 @@ public class AccountsCommon {
 
     public static boolean isCredible(String authCode, CanLoginEntity entity) {
         if (entity.getAuthCodeKey() != null) {
-            Assert.not(TOTPAuthenticator.authenticate(
+            IF.not(TOTPAuthenticator.authenticate(
                     authCode, entity.getAuthCodeKey()), LOGIN_FAILED);
             return true;
         } else {

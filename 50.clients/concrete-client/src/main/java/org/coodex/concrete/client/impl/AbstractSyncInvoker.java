@@ -16,12 +16,11 @@
 
 package org.coodex.concrete.client.impl;
 
+import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.client.ClientMethodInvocation;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.ConcreteClosure;
 import org.coodex.concrete.common.ConcreteContext;
-import org.coodex.concrete.common.ServiceContext;
 
 import java.lang.reflect.Method;
 
@@ -35,13 +34,12 @@ public abstract class AbstractSyncInvoker extends AbstractInvoker {
     protected abstract Object execute(Class clz, Method method, Object[] args) throws Throwable;
 
 
-
     @Override
     public Object invoke(final Object instance, final Class clz, final Method method, final Object... args) {
 
-        return ConcreteContext.runWithContext(buildContext(clz, method), new ConcreteClosure() {
+        return ConcreteContext.runWithContext(buildContext(clz, method), new CallableClosure() {
             @Override
-            public Object concreteRun() throws Throwable {
+            public Object call() throws Throwable {
                 return ClientHelper.getSyncInterceptorChain().invoke(new ClientMethodInvocation(instance, clz, method, args) {
                     @Override
                     public Object proceed() throws Throwable {
@@ -50,5 +48,16 @@ public abstract class AbstractSyncInvoker extends AbstractInvoker {
                 });
             }
         });
+//        return ConcreteContext.runWithContext(buildContext(clz, method), new ConcreteClosure() {
+//            @Override
+//            public Object concreteRun() throws Throwable {
+//                return ClientHelper.getSyncInterceptorChain().invoke(new ClientMethodInvocation(instance, clz, method, args) {
+//                    @Override
+//                    public Object proceed() throws Throwable {
+//                        return execute(clz, method, args);
+//                    }
+//                });
+//            }
+//        });
     }
 }

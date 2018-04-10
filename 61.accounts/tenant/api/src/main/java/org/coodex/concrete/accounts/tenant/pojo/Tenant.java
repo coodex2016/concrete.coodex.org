@@ -16,9 +16,9 @@
 
 package org.coodex.concrete.accounts.tenant.pojo;
 
+import org.coodex.concrete.accounts.AbstractPojo;
 import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.mockers.DateTime;
-import org.coodex.concrete.accounts.AbstractPojo;
 
 /**
  * Created by davidoff shen on 2017-05-25.

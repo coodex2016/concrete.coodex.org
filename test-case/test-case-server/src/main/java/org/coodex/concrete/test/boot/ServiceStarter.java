@@ -16,14 +16,17 @@
 
 package org.coodex.concrete.test.boot;
 
+import com.alibaba.dubbo.config.RegistryConfig;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concrete.core.token.local.LocalTokenManager;
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
+import org.coodex.concrete.support.dubbo.DubboApplication;
 import org.coodex.concrete.support.jsr339.ConcreteJaxrs339Application;
 import org.coodex.concrete.support.websocket.CallerHackConfigurator;
 import org.coodex.concrete.support.websocket.ConcreteWebSocketApplication;
 import org.coodex.concrete.test.api.Test;
 import org.coodex.concrete.test.impl.TestImpl;
+import org.coodex.util.Profile;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -43,12 +46,15 @@ import javax.servlet.ServletException;
 import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpoint;
+import java.util.Arrays;
 
 @SpringBootApplication
 @Configuration
 @EnableAspectJAutoProxy
 @Import(ConcreteSpringConfiguration.class)
 public class ServiceStarter {
+
+    private static Profile profile = Profile.getProfile("env.properties");
 
     public static class JaxRSApplication extends ConcreteJaxrs339Application {
         public JaxRSApplication() {
@@ -111,6 +117,17 @@ public class ServiceStarter {
         return registrationBean;
     }
 
+    @Bean
+    public DubboApplication dubboApplication() {
+        RegistryConfig registryConfig = new RegistryConfig();
+        registryConfig.setAddress(profile.getString("registry"));
+        DubboApplication dubboApplication = new DubboApplication(
+                "test", Arrays.asList(registryConfig)
+        );
+        dubboApplication.register(Test.class);
+        return dubboApplication;
+    }
+
 
     @Bean
     public TokenManager tokenManager() {
@@ -123,7 +140,7 @@ public class ServiceStarter {
     }
 
 
-    public static void main(String [] args){
+    public static void main(String[] args) {
         SpringApplication.run(ServiceStarter.class);
     }
 

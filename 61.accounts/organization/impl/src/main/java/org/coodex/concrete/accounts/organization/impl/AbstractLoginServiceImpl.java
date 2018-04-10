@@ -16,14 +16,20 @@
 
 package org.coodex.concrete.accounts.organization.impl;
 
-import org.coodex.concrete.accounts.*;
+import org.coodex.concrete.accounts.AbstractAdministratorFactory;
+import org.coodex.concrete.accounts.AccountIDImpl;
+import org.coodex.concrete.accounts.AccountsCommon;
+import org.coodex.concrete.accounts.TenantRPCServiceClient;
 import org.coodex.concrete.accounts.organization.api.AbstractLoginService;
 import org.coodex.concrete.accounts.organization.entities.AbstractPersonAccountEntity;
 import org.coodex.concrete.accounts.organization.entities.AbstractPositionEntity;
 import org.coodex.concrete.accounts.organization.entities.LoginCacheEntryEntity;
 import org.coodex.concrete.accounts.organization.repositories.AbstractPersonAccountRepo;
 import org.coodex.concrete.accounts.organization.repositories.LoginCacheEntryRepo;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.AccountsErrorCodes;
+import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.IF;
+import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.util.Common;
 
@@ -66,7 +72,7 @@ public abstract class AbstractLoginServiceImpl
             administratorLogin(tenant, password, authCode);
             return null;
         } else {
-            PE personEntity = Assert.isNull(
+            PE personEntity = IF.isNull(
                     getPersonEntity(account, tenant), AccountsErrorCodes.NONE_THIS_ACCOUNT);
 
             checkPassword(password, personEntity);
@@ -216,9 +222,9 @@ public abstract class AbstractLoginServiceImpl
     @Override
     public void loginWith(String credential) {
         LoginCacheEntryEntity loginCacheEntryEntity =
-                Assert.isNull(
+                IF.isNull(
                         loginCacheEntryRepo.findFirstByCredential(credential), NONE_THIS_CREDENTIAL);
-        PE personEntity = Assert.isNull(
+        PE personEntity = IF.isNull(
                 personAccountRepo.findOne(loginCacheEntryEntity.getAccountId()), NONE_THIS_ACCOUNT);
         tenantRPCServiceClient.checkTenant(personEntity.getTenant());
         token.setAccount(
@@ -231,7 +237,7 @@ public abstract class AbstractLoginServiceImpl
     @Override
     public String identification(String authCode) {
         // TODO: 丑陋
-        PE personEntity = Assert.isNull(
+        PE personEntity = IF.isNull(
                 personAccountRepo.findOne(((AccountIDImpl) (token.currentAccount().getId())).getId()),
                 NONE_THIS_ACCOUNT);
         String credential = null;

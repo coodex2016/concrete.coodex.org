@@ -18,10 +18,12 @@ package org.coodex.concrete.client.impl;
 
 import org.coodex.concrete.client.ClientServiceContext;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.AModule;
+import org.coodex.concrete.common.ConcreteContext;
+import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.ServiceContext;
 import org.coodex.concrete.common.struct.AbstractUnit;
 
-import static org.coodex.concrete.common.AModule.getUnit;
 import static org.coodex.concrete.common.ConcreteContext.SIDE_LOCAL_INVOKE;
 
 

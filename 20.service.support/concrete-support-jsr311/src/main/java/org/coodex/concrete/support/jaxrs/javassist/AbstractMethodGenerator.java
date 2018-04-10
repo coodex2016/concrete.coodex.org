@@ -34,10 +34,11 @@ import javax.ws.rs.PathParam;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.coodex.concrete.support.jaxrs.javassist.CGContext.CLASS_POOL;
+
 //import static org.coodex.concrete.jaxrs.ClassGenerator.FRONTEND_DEV_MODE;
 //import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 //import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
-import static org.coodex.concrete.support.jaxrs.javassist.CGContext.CLASS_POOL;
 
 
 /**

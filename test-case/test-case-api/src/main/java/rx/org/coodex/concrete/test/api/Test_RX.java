@@ -1,9 +1,7 @@
 package rx.org.coodex.concrete.test.api;
 
-import org.coodex.concrete.rx.ReactiveExtensionFor;
-
 import io.reactivex.Observable;
-
+import org.coodex.concrete.rx.ReactiveExtensionFor;
 import org.coodex.concrete.test.api.Test;
 
 /**

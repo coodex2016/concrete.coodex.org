@@ -152,7 +152,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     private void serverSide_Verify(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
         Map<String, Object> content = buildContent(
                 getServiceContext().getCurrentUnit(), joinPoint.getArguments());
-        Assert.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
+        IF.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
                 KEY_FIELD_NOISE + " MUST NOT null.");
 
@@ -161,7 +161,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         String keyId = getKeyField(content, KEY_FIELD_KEY_ID, null);
         IronPen ironPen = howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName());
         SignatureSerializer serializer = howToSign.getSerializer();
-        Assert.not(ironPen.verify(serializer.serialize(content),
+        IF.not(ironPen.verify(serializer.serialize(content),
                 Base64.decodeBase64(getSignature(content)),
                 algorithm, keyId),
                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED, "server side verify failed.");
@@ -193,7 +193,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 //        try {
 //            // 0 验签
 //            Map<String, Object> content = buildContent(CURRENT_UNIT.get(), joinPoint.getArguments());
-//            Assert.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
+//            IF.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
 //                    ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
 //                    KEY_FIELD_NOISE + " MUST NOT null.");
 //
@@ -202,7 +202,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 //            String keyId = getKeyField(content, KEY_FIELD_KEY_ID, null);
 //            IronPen ironPen = howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName());
 //            SignatureSerializer serializer = howToSign.getSerializer();
-//            Assert.not(ironPen.verify(serializer.serialize(content),
+//            IF.not(ironPen.verify(serializer.serialize(content),
 //                    Base64.decodeBase64(getSignature(content)),
 //                    algorithm, keyId),
 //                    ErrorCodes.SIGNATURE_VERIFICATION_FAILED, "server side verify failed.");
@@ -266,7 +266,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         String propertySign = getPropertyName(KEY_FIELD_SIGN);
         String signStr = (String) content.remove(propertySign);
         if (signStr == null) {
-            signStr = Assert.isNull(getServiceContext().getSubjoin().get(propertySign),
+            signStr = IF.isNull(getServiceContext().getSubjoin().get(propertySign),
                     ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
                     "no signature found");
         }
@@ -402,7 +402,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 //    }
 
     private void clientVerify(SignUtil.HowToSign howToSign, Signature signature, String algorithm, String keyId) throws IllegalAccessException {
-        Assert.not(howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName())
+        IF.not(howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName())
                 .verify(howToSign.getSerializer().serialize(signatureToMap(signature)),
                         Base64.decodeBase64(signature.getSign()),
                         algorithm, keyId), ErrorCodes.SIGNATURE_VERIFICATION_FAILED, "client side verify failed.");

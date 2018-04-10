@@ -100,6 +100,11 @@
         <module>plugins/plugins.concrete-serializer-jsonb-jdk8</module>
         <module>test-case/test-case-api</module>
         <module>test-case/test-case-server</module>
+        <module>10.core/concrete-dubbo</module>
+        <module>20.service.support/concrete-support-dubbo</module>
+        <module>10.core/concrete-core-java7</module>
+        <module>50.clients/concrete-dubbo-client</module>
+        <module>50.clients/concrete-dubbo-client-rx</module>
 
     </modules>
 
@@ -115,6 +120,8 @@
         <jsr-349.version>1.1.0.Final</jsr-349.version>
         <jsr-311.version>1.1.1</jsr-311.version>
         <jsr-339.version>1.0.0.Final</jsr-339.version>
+
+        <dubbo.version>2.6.1</dubbo.version>
 
         <slf4j.version>1.7.25</slf4j.version>
         <aspectj.version>1.8.10</aspectj.version>
@@ -289,6 +296,12 @@
     <dependencyManagement>
         <dependencies>
 
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>dubbo</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+
             <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
             <dependency>
                 <groupId>commons-beanutils</groupId>
@@ -394,12 +407,12 @@
                 <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-logging</artifactId>
-                    </exclusion>
-                </exclusions>
+                <!--<exclusions>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>org.springframework.boot</groupId>-->
+                        <!--<artifactId>spring-boot-starter-logging</artifactId>-->
+                    <!--</exclusion>-->
+                <!--</exclusions>-->
             </dependency>
             <!-- guice IoC -->
             <!--<dependency>-->

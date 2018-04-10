@@ -34,8 +34,6 @@ import org.slf4j.LoggerFactory;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import static org.coodex.concrete.common.ConcreteHelper.isDevModel;

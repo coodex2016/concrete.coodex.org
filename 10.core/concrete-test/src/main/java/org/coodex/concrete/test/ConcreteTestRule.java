@@ -16,7 +16,11 @@
 
 package org.coodex.concrete.test;
 
-import org.coodex.concrete.common.*;
+import org.coodex.closure.CallableClosure;
+import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.Subjoin;
+import org.coodex.concrete.common.SubjoinWrapper;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -39,13 +43,24 @@ public class ConcreteTestRule implements TestRule {
                             new TestServiceContext(
                                     ConcreteTokenProvider.getToken(description),
                                     getSubjoin()),
-                            new ConcreteClosure() {
+                            new CallableClosure() {
                                 @Override
-                                public Object concreteRun() throws Throwable {
+                                public Object call() throws Throwable {
                                     base.evaluate();
                                     return null;
                                 }
                             });
+//                    runWithContext(
+//                            new TestServiceContext(
+//                                    ConcreteTokenProvider.getToken(description),
+//                                    getSubjoin()),
+//                            new ConcreteClosure() {
+//                                @Override
+//                                public Object concreteRun() throws Throwable {
+//                                    base.evaluate();
+//                                    return null;
+//                                }
+//                            });
 //                    runWith("TEST", getSubjoin(),
 //                            ConcreteTokenProvider.getToken(description),
 //                            ConcreteContext.run(SIDE, SIDE_TEST, new ConcreteClosure() {

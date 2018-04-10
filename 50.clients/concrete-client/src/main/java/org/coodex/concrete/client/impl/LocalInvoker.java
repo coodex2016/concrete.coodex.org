@@ -16,14 +16,14 @@
 
 package org.coodex.concrete.client.impl;
 
-import org.coodex.concrete.client.ClientMethodInvocation;
+import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.client.Invoker;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.BeanProviderFacade;
+import org.coodex.concrete.common.ConcreteContext;
+import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.ServiceContext;
 
 import java.lang.reflect.Method;
-
-import static org.coodex.concrete.common.AModule.getUnit;
 
 public class LocalInvoker extends AbstractSyncInvoker {
 
@@ -59,13 +59,22 @@ public class LocalInvoker extends AbstractSyncInvoker {
 
         return ConcreteContext.runWithContext(
                 buildContext(clz, method),
-                new ConcreteClosure() {
+                new CallableClosure() {
                     @Override
-                    public Object concreteRun() throws Throwable {
+                    public Object call() throws Throwable {
                         return execute(clz, method, args);
                     }
                 }
         );
+//        return ConcreteContext.runWithContext(
+//                buildContext(clz, method),
+//                new ConcreteClosure() {
+//                    @Override
+//                    public Object concreteRun() throws Throwable {
+//                        return execute(clz, method, args);
+//                    }
+//                }
+//        );
     }
 
 }

@@ -21,9 +21,9 @@ import org.coodex.concrete.attachments.AttachmentInfo;
 import org.coodex.concrete.attachments.AttachmentServiceHelper;
 import org.coodex.concrete.attachments.Repository;
 import org.coodex.concrete.attachments.client.ClientService;
-import org.coodex.concrete.common.Assert;
 import org.coodex.concrete.common.AttachmentInfoErrorCodes;
 import org.coodex.concrete.common.BeanProviderFacade;
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.jaxrs.Client;
 
 import java.io.InputStream;
@@ -37,11 +37,11 @@ public class AbstractUploadResource {
 
     protected final AttachmentEntityInfo saveToRepo(String clientId, String tokenId, AttachmentInfo attachmentInfo, InputStream inputStream) {
 
-        Assert.is(AttachmentServiceHelper.ATTACHMENT_PROFILE.getBool(clientId + ".readonly", true), AttachmentInfoErrorCodes.NO_WRITE_PRIVILEGE);
+        IF.is(AttachmentServiceHelper.ATTACHMENT_PROFILE.getBool(clientId + ".readonly", true), AttachmentInfoErrorCodes.NO_WRITE_PRIVILEGE);
 
         ClientService clientService = Client.getInstance(ClientService.class,
                 AttachmentServiceHelper.ATTACHMENT_PROFILE.getString(clientId + ".location"));
-        Assert.not(clientService.writable(tokenId), AttachmentInfoErrorCodes.NO_WRITE_PRIVILEGE);
+        IF.not(clientService.writable(tokenId), AttachmentInfoErrorCodes.NO_WRITE_PRIVILEGE);
         attachmentInfo.setLastUsed(System.currentTimeMillis());
         AttachmentEntityInfo entityInfo = repository.put(inputStream, attachmentInfo);
 

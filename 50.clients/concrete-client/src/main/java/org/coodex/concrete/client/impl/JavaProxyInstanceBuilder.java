@@ -19,7 +19,7 @@ package org.coodex.concrete.client.impl;
 import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.InstanceBuilder;
-import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.common.IF;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -42,7 +42,7 @@ public class JavaProxyInstanceBuilder implements InstanceBuilder {
                             return method.invoke(this, args);
 
 
-                        return Assert.isNull(ClientHelper.getInvokerFactoryProviders().getServiceInstance(destination),
+                        return IF.isNull(ClientHelper.getInvokerFactoryProviders().getServiceInstance(destination),
                                 "Cannot found InvokerFactory for "+ destination.toString())
                                 .getInvoker(destination).invoke(proxy, clazz, method, args);
                     }

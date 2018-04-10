@@ -16,11 +16,8 @@
 
 package org.coodex.concrete.test.client;
 
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 import org.coodex.concrete.Client;
 import org.coodex.concrete.test.api.Test;
-import rx.org.coodex.concrete.test.api.Test_RX;
 
 public class ClientInvoker {
 

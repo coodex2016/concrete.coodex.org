@@ -41,7 +41,7 @@ public abstract class AbstractTenantAccountFactory implements AcceptableAccountF
 
     @Override
     public <ID extends AccountID> Account<ID> getAccountByID(ID id) {
-        return (Account<ID>) Assert.isNull(accountCache.get(((AccountIDImpl) id).getId()), NONE_THIS_ACCOUNT);
+        return (Account<ID>) IF.isNull(accountCache.get(((AccountIDImpl) id).getId()), NONE_THIS_ACCOUNT);
     }
 
     @Override

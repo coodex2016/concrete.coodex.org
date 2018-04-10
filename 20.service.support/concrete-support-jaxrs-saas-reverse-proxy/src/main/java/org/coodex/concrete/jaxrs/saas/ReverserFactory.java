@@ -16,8 +16,8 @@
 
 package org.coodex.concrete.jaxrs.saas;
 
-import org.coodex.concrete.common.Assert;
 import org.coodex.concrete.common.ConcreteServiceLoader;
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.ReverseProxyErrorCodes;
 import org.coodex.util.AcceptableServiceLoader;
 
@@ -32,7 +32,7 @@ public class ReverserFactory {
 
 
     public static final Reverser getReverser(String propertyName) {
-        return Assert.isNull(REVERSER_FACTORY.getServiceInstance(propertyName),
+        return IF.isNull(REVERSER_FACTORY.getServiceInstance(propertyName),
                 ReverseProxyErrorCodes.REVERSER_NOT_FOUND, propertyName);
     }
 }

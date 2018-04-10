@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.support.websocket;
 
+import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.messages.Message;
@@ -286,7 +287,7 @@ class WebSocketServerHandle /*extends WebSocket*/ implements ConcreteWebSocketEn
     private void invokeService(final RequestPackage<Object> requestPackage, final Session session) {
 
         //1 找到方法
-        final WebSocketUnit unit = Assert.isNull(unitMap.get(requestPackage.getServiceId()),
+        final WebSocketUnit unit = IF.isNull(unitMap.get(requestPackage.getServiceId()),
                 WebSocketErrorCodes.SERVICE_ID_NOT_EXISTS, requestPackage.getServiceId());
 
         //2 解析数据
@@ -314,11 +315,12 @@ class WebSocketServerHandle /*extends WebSocket*/ implements ConcreteWebSocketEn
                         token, getSubjoin(requestPackage.getSubjoin()), unit,
                         (Caller) session.getUserProperties().get(WEB_SOCKET_CALLER_INFO));
                 try {
+
                     Object result = runWithContext(
                             context,
-                            new ConcreteClosure() {
+                            new CallableClosure() {
 
-                                public Object concreteRun() throws Throwable {
+                                public Object call() throws Throwable {
                                     if (isDevModel("websocket")) {
                                         return void.class.equals(unit.getGenericReturnType()) ?
                                                 null :
@@ -333,6 +335,25 @@ class WebSocketServerHandle /*extends WebSocket*/ implements ConcreteWebSocketEn
 
                                 }
                             });
+//                    Object result = runWithContext(
+//                            context,
+//                            new ConcreteClosure() {
+//
+//                                public Object concreteRun() throws Throwable {
+//                                    if (isDevModel("websocket")) {
+//                                        return void.class.equals(unit.getGenericReturnType()) ?
+//                                                null :
+//                                                MockerFacade.mock(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
+//                                    } else {
+//                                        Object instance = BeanProviderFacade.getBeanProvider().getBean(unit.getDeclaringModule().getInterfaceClass());
+//                                        if (objects == null)
+//                                            return method.invoke(instance);
+//                                        else
+//                                            return method.invoke(instance, objects);
+//                                    }
+//
+//                                }
+//                            });
 
                     ResponsePackage responsePackage = new ResponsePackage();
                     if (isNew)
@@ -342,13 +363,20 @@ class WebSocketServerHandle /*extends WebSocket*/ implements ConcreteWebSocketEn
                     responsePackage.setContent(result);
                     sendText(JSONSerializerFactory.getInstance().toJson(responsePackage), session);
                 } catch (final Throwable th) {
-                    runWithContext(context, new ConcreteClosure() {
+                    runWithContext(context, new CallableClosure() {
                         @Override
-                        public Object concreteRun() throws Throwable {
+                        public Object call() throws Throwable {
                             sendError(requestPackage.getMsgId(), ConcreteHelper.getException(th), session);
                             return null;
                         }
                     });
+//                    runWithContext(context, new ConcreteClosure() {
+//                        @Override
+//                        public Object concreteRun() throws Throwable {
+//                            sendError(requestPackage.getMsgId(), ConcreteHelper.getException(th), session);
+//                            return null;
+//                        }
+//                    });
 
                 }
 

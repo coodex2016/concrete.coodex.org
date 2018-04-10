@@ -33,6 +33,7 @@ public class MapClosureContext<K, V> extends AbstractClosureContext<Map<K, V>> {
         return map == null ? null : map.get(key);
     }
 
+    @Deprecated
     public Object runWith(K key, V v, Closure runnable) {
         if (runnable == null) return null;
 

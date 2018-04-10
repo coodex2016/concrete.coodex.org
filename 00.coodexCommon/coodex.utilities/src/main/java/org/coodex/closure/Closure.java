@@ -19,6 +19,7 @@ package org.coodex.closure;
 /**
  * Created by davidoff shen on 2016-11-25.
  */
+@Deprecated
 public interface Closure {
 
     Object run();

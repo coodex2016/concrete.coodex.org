@@ -18,12 +18,10 @@ package org.coodex.concrete;
 
 
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.Assert;
 import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.IF;
 
-import static org.coodex.concrete.ClientHelper.getDestination;
-import static org.coodex.concrete.ClientHelper.getInstanceBuilder;
-import static org.coodex.concrete.ClientHelper.isReactiveExtension;
+import static org.coodex.concrete.ClientHelper.*;
 
 
 public class Client {
@@ -34,7 +32,7 @@ public class Client {
 
     public static <T> T getInstance(Class<T> concreteServiceClass, String module) {
         boolean sync = ConcreteHelper.isConcreteService(concreteServiceClass);
-        Assert.not(sync || isReactiveExtension(concreteServiceClass),
+        IF.not(sync || isReactiveExtension(concreteServiceClass),
                 concreteServiceClass + "is NOT ConcreteService.");
         Destination destination = getDestination(module);
         destination.setAsync(!sync);

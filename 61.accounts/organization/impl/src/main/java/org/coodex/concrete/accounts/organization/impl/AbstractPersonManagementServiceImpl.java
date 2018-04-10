@@ -17,19 +17,16 @@
 package org.coodex.concrete.accounts.organization.impl;
 
 import org.coodex.concrete.accounts.AccountsCommon;
-import org.coodex.concrete.accounts.CanLoginEntity;
-import org.coodex.concrete.accounts.Constants;
 import org.coodex.concrete.accounts.organization.api.AbstractPersonManagementService;
 import org.coodex.concrete.accounts.organization.entities.AbstractPersonAccountEntity;
 import org.coodex.concrete.accounts.organization.entities.AbstractPositionEntity;
 import org.coodex.concrete.accounts.organization.pojo.Person;
 import org.coodex.concrete.accounts.organization.repositories.AbstractPersonAccountRepo;
 import org.coodex.concrete.api.pojo.StrID;
-import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.OrganizationErrorCodes;
 import org.coodex.concrete.common.TwoWayCopier;
 import org.coodex.util.Common;
-import org.springframework.data.repository.CrudRepository;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -58,13 +55,13 @@ public abstract class AbstractPersonManagementServiceImpl
     @Override
     public StrID<P> save(P person, String[] positions) {
         if (person.getCellphone() != null) {
-            Assert.is(personAccountRepo.countByCellphoneAndTenant(person.getCellphone(), getTenant()) != 0, OrganizationErrorCodes.CELL_PHONE_EXISTS);
+            IF.is(personAccountRepo.countByCellphoneAndTenant(person.getCellphone(), getTenant()) != 0, OrganizationErrorCodes.CELL_PHONE_EXISTS);
         }
         if (person.getIdCardNo() != null) {
-            Assert.is(personAccountRepo.countByIdCardNoAndTenant(person.getIdCardNo(), getTenant()) != 0, OrganizationErrorCodes.ID_CARD_NO_EXISTS);
+            IF.is(personAccountRepo.countByIdCardNoAndTenant(person.getIdCardNo(), getTenant()) != 0, OrganizationErrorCodes.ID_CARD_NO_EXISTS);
         }
         if (person.getEmail() != null) {
-            Assert.is(personAccountRepo.countByEmailAndTenant(person.getEmail(), getTenant()) != 0, OrganizationErrorCodes.EMAIL_EXISTS);
+            IF.is(personAccountRepo.countByEmailAndTenant(person.getEmail(), getTenant()) != 0, OrganizationErrorCodes.EMAIL_EXISTS);
         }
         E personEntity = personCopier.copyA2B(person);
         personEntity.setPositions(getPositionsWithPermissionCheck(positions));
@@ -76,7 +73,7 @@ public abstract class AbstractPersonManagementServiceImpl
     protected Set<J> getPositionsWithPermissionCheck(String[] positions) {
         Set<J> positionEntities = new HashSet<J>();
         for (String positionId : positions) {
-            J positionEntity = Assert.isNull(positionRepo.findOne(positionId), POSITION_NOT_EXISTS);
+            J positionEntity = IF.isNull(positionRepo.findOne(positionId), POSITION_NOT_EXISTS);
             checkManagementPermission(positionEntity.getBelong());
             positionEntities.add(positionEntity);
         }
@@ -85,7 +82,7 @@ public abstract class AbstractPersonManagementServiceImpl
 
 
     protected E getPersonEntity(String id) {
-        return Assert.isNull(personAccountRepo.findOne(id), PERSON_NOT_EXISTS);
+        return IF.isNull(personAccountRepo.findOne(id), PERSON_NOT_EXISTS);
     }
 
 
@@ -93,13 +90,13 @@ public abstract class AbstractPersonManagementServiceImpl
     public void update(String id, P person) {
         E personEntity = getPersonEntityWithPermissionCheck(id);
         if (!Common.isSameStr(person.getCellphone(), personEntity.getCellphone()) && person.getCellphone() != null) {
-            Assert.is(personAccountRepo.countByCellphoneAndTenant(person.getCellphone(), getTenant()) != 0, OrganizationErrorCodes.CELL_PHONE_EXISTS);
+            IF.is(personAccountRepo.countByCellphoneAndTenant(person.getCellphone(), getTenant()) != 0, OrganizationErrorCodes.CELL_PHONE_EXISTS);
         }
         if (!Common.isSameStr(person.getIdCardNo(), personEntity.getIdCardNo()) && person.getIdCardNo() != null) {
-            Assert.is(personAccountRepo.countByIdCardNoAndTenant(person.getIdCardNo(), getTenant()) != 0, OrganizationErrorCodes.ID_CARD_NO_EXISTS);
+            IF.is(personAccountRepo.countByIdCardNoAndTenant(person.getIdCardNo(), getTenant()) != 0, OrganizationErrorCodes.ID_CARD_NO_EXISTS);
         }
         if (!Common.isSameStr(person.getEmail(), personEntity.getEmail()) && person.getEmail() != null) {
-            Assert.is(personAccountRepo.countByEmailAndTenant(person.getEmail(), getTenant()) != 0, OrganizationErrorCodes.EMAIL_EXISTS);
+            IF.is(personAccountRepo.countByEmailAndTenant(person.getEmail(), getTenant()) != 0, OrganizationErrorCodes.EMAIL_EXISTS);
         }
         E old = deepCopy(personEntity);
         putLoggingData("old", deepCopy(personEntity));

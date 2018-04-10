@@ -18,11 +18,7 @@ package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.MicroService;
-import org.coodex.concrete.api.Priority;
-import org.coodex.concrete.common.messages.Message;
 import org.coodex.util.Parameter;
-
-import java.util.List;
 
 @MicroService("Concrete")
 public interface Polling extends ConcreteService {

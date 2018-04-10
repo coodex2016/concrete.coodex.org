@@ -17,12 +17,15 @@
 package org.coodex.concrete.accounts.organization.impl;
 
 import org.coodex.commons.jpa.springdata.SpecCommon;
-import org.coodex.concrete.accounts.organization.entities.*;
-import org.coodex.concrete.accounts.organization.repositories.AbstractPositionRepo;
-import org.coodex.concrete.common.Assert;
 import org.coodex.concrete.accounts.AuthorizableEntity;
+import org.coodex.concrete.accounts.organization.entities.AbstractEntity;
+import org.coodex.concrete.accounts.organization.entities.AbstractPersonAccountEntity;
+import org.coodex.concrete.accounts.organization.entities.AbstractPositionEntity;
+import org.coodex.concrete.accounts.organization.entities.OrganizationEntity;
+import org.coodex.concrete.accounts.organization.repositories.AbstractPositionRepo;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.IF;
 import org.coodex.util.Common;
 import org.springframework.data.repository.CrudRepository;
 
@@ -73,7 +76,7 @@ public abstract class AbstractManagementService<
 
 
     protected J deletePosition(J positionEntity) {
-        Assert.is(personAccountRepo.count(
+        IF.is(personAccountRepo.count(
                 SpecCommon.<P, J>memberOf("positions", positionEntity)) > 0,
                 POSITION_CANNOT_DELETE);
         positionRepo.delete(positionEntity);

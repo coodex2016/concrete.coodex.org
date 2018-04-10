@@ -24,7 +24,7 @@ import org.coodex.concrete.accounts.organization.entities.OrganizationEntity;
 import org.coodex.concrete.accounts.organization.pojo.Institution;
 import org.coodex.concrete.accounts.organization.repositories.AbstractInstitutionRepo;
 import org.coodex.concrete.api.pojo.StrID;
-import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.TwoWayCopier;
 import org.coodex.util.Common;
 
@@ -67,8 +67,8 @@ public abstract class AbstractInstitutionManagementServiceImpl
     }
 
     private E getInstitutionEntity(String id) {
-        Assert.isNull(id, NONE_THIS_INSTITUTION);
-        return Assert.isNull(institutionRepo.findOne(id), NONE_THIS_INSTITUTION);
+        IF.isNull(id, NONE_THIS_INSTITUTION);
+        return IF.isNull(institutionRepo.findOne(id), NONE_THIS_INSTITUTION);
     }
 
     @Override

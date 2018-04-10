@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

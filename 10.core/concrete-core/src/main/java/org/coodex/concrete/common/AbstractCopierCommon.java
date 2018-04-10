@@ -48,7 +48,7 @@ public abstract class AbstractCopierCommon<A, B> {
         synchronized (this) {
             if (classes[index.getIndex()] == null) {
                 TypeVariable t = AbstractCopierCommon.class.getTypeParameters()[index.getIndex()];
-                classes[index.getIndex()] = Assert.isNull(
+                classes[index.getIndex()] = IF.isNull(
                         typeToClass(solve(t, getClass())), ErrorCodes.UNKNOWN_CLASS, t);
             }
         }

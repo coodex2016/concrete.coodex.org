@@ -22,7 +22,7 @@ import org.coodex.concrete.accounts.organization.entities.AbstractPositionEntity
 import org.coodex.concrete.accounts.organization.entities.OrganizationEntity;
 import org.coodex.concrete.accounts.organization.pojo.Position;
 import org.coodex.concrete.api.pojo.StrID;
-import org.coodex.concrete.common.Assert;
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.OrganizationErrorCodes;
 import org.coodex.concrete.common.TwoWayCopier;
 import org.coodex.util.Common;
@@ -59,7 +59,7 @@ public abstract class AbstractPositionManagementServiceImpl
     }
 
     protected E getPositionEntity(String id) {
-        return Assert.isNull(positionRepo.findOne(id), OrganizationErrorCodes.POSITION_NOT_EXISTS);
+        return IF.isNull(positionRepo.findOne(id), OrganizationErrorCodes.POSITION_NOT_EXISTS);
     }
 
     protected E getPositionWithPermissionCheck(String id) {

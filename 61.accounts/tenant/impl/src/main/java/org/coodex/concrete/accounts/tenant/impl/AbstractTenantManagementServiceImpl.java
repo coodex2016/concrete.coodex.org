@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.accounts.tenant.impl;
 
-import org.coodex.commons.jpa.criteria.Operators;
 import org.coodex.commons.jpa.springdata.PageHelper;
 import org.coodex.commons.jpa.springdata.SpecCommon;
 import org.coodex.concrete.accounts.AccountsCommon;
@@ -63,12 +62,12 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
 
 
     protected E getTenantEntity(String tenant) {
-        return Assert.isNull(tenantRepo.findFirstByAccountName(tenant), AccountsErrorCodes.TENANT_NOT_EXISTS);
+        return IF.isNull(tenantRepo.findFirstByAccountName(tenant), AccountsErrorCodes.TENANT_NOT_EXISTS);
     }
 
     @Override
     public StrID<T> save(String tenant, T tenantInfo) {
-        Assert.notNull(tenantRepo.findFirstByAccountName(tenant), AccountsErrorCodes.TENANT_ALREADY_EXISTS);
+        IF.notNull(tenantRepo.findFirstByAccountName(tenant), AccountsErrorCodes.TENANT_ALREADY_EXISTS);
         tenantInfo.setAccountName(tenant);
         E tenantEntity = tenantRepo.save(copier.copyA2B(tenantInfo));
         putLoggingData("new", tenantEntity);
@@ -126,12 +125,12 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
     public void delete(String tenant) {
         E tenantEntity = getTenantEntity(tenant);
         ConcreteException cannotDelete = new ConcreteException(AccountsErrorCodes.TENANT_CANNOT_DELETE);
-        Assert.not(tenantEntity.isUsing(), cannotDelete);
+        IF.not(tenantEntity.isUsing(), cannotDelete);
         Calendar validation = tenantEntity.getValidation();
         if (validation != null) {
             // TODO 配置化
             validation = getValidation(validation, 2, 3);// 两年
-            Assert.is(System.currentTimeMillis() < validation.getTimeInMillis(), cannotDelete);
+            IF.is(System.currentTimeMillis() < validation.getTimeInMillis(), cannotDelete);
         }
 
         tenantRepo.delete(tenantEntity);
@@ -177,7 +176,7 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
         E tenantEntity = getTenantEntity(tenant);
         Calendar validation = tenantEntity.getValidation();
         long now = System.currentTimeMillis();
-        Assert.not(tenantEntity.isUsing() && validation != null &&
+        IF.not(tenantEntity.isUsing() && validation != null &&
                         validation.getTimeInMillis() >= now,
                 AccountsErrorCodes.TENANT_UNAVAILABLE);
         long remainder = validation.getTimeInMillis() - now;
@@ -191,7 +190,7 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
     public void desterilize(String tenant) {
         E tenantEntity = getTenantEntity(tenant);
         long now = System.currentTimeMillis();
-        Assert.is(tenantEntity.isUsing(), AccountsErrorCodes.TENANT_IN_USING);
+        IF.is(tenantEntity.isUsing(), AccountsErrorCodes.TENANT_IN_USING);
         Calendar validation = Calendar.getInstance();
         validation.setTimeInMillis(now + tenantEntity.getSurplus());
         tenantEntity.setSurplus(0l);

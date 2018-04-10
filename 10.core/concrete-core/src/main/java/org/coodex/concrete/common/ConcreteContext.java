@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.common;
 
+import org.coodex.closure.CallableClosure;
 import org.coodex.closure.ClosureContext;
 import org.coodex.closure.StackClosureContext;
 
@@ -35,7 +36,7 @@ public final class ConcreteContext {
 
     private static final ClosureContext<ServiceContext> CONTEXT = new StackClosureContext<ServiceContext>();
 
-    public static final ServiceContext getServiceContext(){
+    public static final ServiceContext getServiceContext() {
         return CONTEXT.get();
     }
 
@@ -80,6 +81,8 @@ public final class ConcreteContext {
         return CONTEXT.get().getLogging();
     }
 
+
+    @Deprecated
     public static final Object runWithContext(final ServiceContext context, final ConcreteClosure runnable) {
         return new ConcreteClosure() {
             @Override
@@ -87,6 +90,20 @@ public final class ConcreteContext {
                 return CONTEXT.run(context, runnable);
             }
         }.run();
+    }
+
+    public static final Object runWithContext(final ServiceContext context, final CallableClosure callable) {
+        try {
+            return CONTEXT.call(context, callable);
+        } catch (Throwable throwable) {
+            throw ConcreteHelper.getException(throwable);
+        }
+//        return new ConcreteClosure() {
+//            @Override
+//            public Object concreteRun() throws Throwable {
+//                return CONTEXT.run(context, runnable);
+//            }
+//        }.run();
     }
 
 //    @Deprecated

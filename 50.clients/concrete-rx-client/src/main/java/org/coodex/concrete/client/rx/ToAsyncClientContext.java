@@ -23,9 +23,6 @@ import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.concrete.common.struct.AbstractUnit;
 
-import static org.coodex.concrete.common.ConcreteContext.SIDE_CLIENT;
-import static org.coodex.concrete.common.ConcreteContext.SIDE_LOCAL_INVOKE;
-
 public final class ToAsyncClientContext extends ClientServiceContext {
 
     public ToAsyncClientContext(Destination destination, RuntimeContext context) {

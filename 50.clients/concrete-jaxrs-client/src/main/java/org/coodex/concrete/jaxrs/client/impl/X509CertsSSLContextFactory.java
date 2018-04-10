@@ -18,21 +18,24 @@ package org.coodex.concrete.jaxrs.client.impl;
 
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.client.SSLContextFactory;
-import org.coodex.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.*;
-import java.io.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.security.*;
-import java.security.cert.CertificateEncodingException;
+import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 
 /**

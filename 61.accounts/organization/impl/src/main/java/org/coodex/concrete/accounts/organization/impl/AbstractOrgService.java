@@ -33,9 +33,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.Set;
 
-import static org.coodex.concrete.accounts.AccountManagementRoles.ORGANIZATION_MANAGER;
-import static org.coodex.concrete.accounts.AccountManagementRoles.SYSTEM_MANAGER;
-import static org.coodex.concrete.accounts.AccountManagementRoles.TENANT_MANAGER;
+import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 import static org.coodex.concrete.accounts.AccountsCommon.getTenant;
 import static org.coodex.concrete.common.OrganizationErrorCodes.NONE_THIS_ORGANIZATION;
 
@@ -120,7 +118,7 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
     protected void circleCheck(OrganizationEntity higherLevelEntity, String id) {
         OrganizationEntity organizationEntity = higherLevelEntity;
         while (organizationEntity != null) {
-            Assert.is(id.equals(organizationEntity.getId()), OrganizationErrorCodes.HIGHER_LEVEL_CIRCULATION);
+            IF.is(id.equals(organizationEntity.getId()), OrganizationErrorCodes.HIGHER_LEVEL_CIRCULATION);
             organizationEntity = organizationEntity.getHigherLevel();
         }
     }
@@ -134,10 +132,10 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
      */
     protected void checkDuplication(String higherLevel, String name, String id) {
         if (id == null) {
-            Assert.notNull(organizationRepo.findOneByTenantAndNameAndHigherLevelId(
+            IF.notNull(organizationRepo.findOneByTenantAndNameAndHigherLevelId(
                     getTenant(), name, higherLevel), OrganizationErrorCodes.DUPLICATED_NAME);
         } else {
-            Assert.notNull(organizationRepo.findOneByTenantAndNameAndHigherLevelIdAndIdNot(
+            IF.notNull(organizationRepo.findOneByTenantAndNameAndHigherLevelIdAndIdNot(
                     getTenant(), name, higherLevel, id), OrganizationErrorCodes.DUPLICATED_NAME);
         }
     }
@@ -148,7 +146,7 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
      * @param belongTo
      */
     protected OrganizationEntity checkBelongToExists(String belongTo) {
-        Assert.isNull(belongTo, NONE_THIS_ORGANIZATION);
-        return Assert.isNull(organizationRepo.findOne(belongTo), NONE_THIS_ORGANIZATION);
+        IF.isNull(belongTo, NONE_THIS_ORGANIZATION);
+        return IF.isNull(organizationRepo.findOne(belongTo), NONE_THIS_ORGANIZATION);
     }
 }

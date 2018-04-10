@@ -16,6 +16,7 @@
 
 package org.coodex.closure;
 
+
 /**
  * Created by davidoff shen on 2016-09-04.
  */
@@ -28,11 +29,22 @@ public abstract class AbstractClosureContext<VariantType> {
         return threadLocal.get();
     }
 
+    @Deprecated
     protected final Object closureRun(VariantType variant, Closure runnable) {
         if (runnable == null) return null;
         threadLocal.set(variant);
         try {
             return runnable.run();
+        } finally {
+            threadLocal.remove();
+        }
+    }
+
+    protected final Object closureRun(VariantType variant, CallableClosure callable) throws Throwable {
+        if (callable == null) return null;
+        threadLocal.set(variant);
+        try {
+            return callable.call();
         } finally {
             threadLocal.remove();
         }
