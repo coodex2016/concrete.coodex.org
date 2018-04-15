@@ -24,8 +24,8 @@ public class ClientInvoker {
     public static void main(String [] args){
 //        Test test = Client.getInstance(Test.class,"websocket");
         Test test = Client.getInstance(Test.class,"remote");
-        test.add(1,2);
-        test.sayHello("Davidoff");
+        System.out.println(String.format("1 + 2 = %d", test.add(1,2)));
+        System.out.println(test.sayHello("Davidoff"));
 //        System.out.println(test.add(1,2));
 
 //        Test_RX test = Client.getInstance(Test_RX.class,"websocket");

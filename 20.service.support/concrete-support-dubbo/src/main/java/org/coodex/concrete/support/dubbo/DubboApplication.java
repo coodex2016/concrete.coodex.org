@@ -25,7 +25,7 @@ import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.api.Application;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenManager;
-import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.concrete.dubbo.ProxyFor;
 import org.coodex.util.Common;
 import org.coodex.util.GenericType;
 import org.coodex.util.ReflectHelper;
@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.coodex.concrete.common.AModule.getUnit;
 import static org.coodex.concrete.dubbo.DubboHelper.*;
@@ -45,7 +46,7 @@ import static org.coodex.concrete.dubbo.DubboHelper.*;
 public class DubboApplication implements Application {
 
 
-
+    private static final InvokerBuilder invokerBuilder = new InvokerBuilder();
     private static SingletonMap<Integer, ProtocolConfig> protocals =
             new SingletonMap<Integer, ProtocolConfig>(
                     new SingletonMap.Builder<Integer, ProtocolConfig>() {
@@ -60,7 +61,61 @@ public class DubboApplication implements Application {
                         }
                     }
             );
+    private final String name;
+    private final List<RegistryConfig> registryConfig;
+    private final int[] ports;
+    private Set<Class<?>> registered = new ConcurrentHashSet<Class<?>>();
 
+    public DubboApplication(String name, List<RegistryConfig> registryConfig, int... ports) {
+        this.name = name;
+        this.ports = ports == null || ports.length == 0 ? new int[]{-1} : ports;
+        if (registryConfig == null || registryConfig.size() == 0) {
+            throw new RuntimeException("no registry for " + name);
+        }
+        this.registryConfig = registryConfig;
+    }
+
+    private static String objectToStr(Object o) {
+        return JSONSerializerFactory.getInstance().toJson(o);
+    }
+
+    @Override
+    public void registerPackage(String... packages) {
+        ConcreteHelper.foreachService(new ReflectHelper.Processor() {
+            @Override
+            public void process(Class<?> serviceClass) {
+                registerClass(serviceClass);
+            }
+        }, packages);
+    }
+
+    @Override
+    public void register(Class<?>... classes) {
+        for (Class<?> clz : classes)
+            registerClass(clz);
+    }
+
+    private void registerClass(Class<?> concreteClass) {
+        IF.not(ConcreteHelper.isConcreteService(concreteClass), concreteClass + " NOT concrete service.");
+
+        concreteClass = getDubboInterface(concreteClass);
+        if (!registered.contains(concreteClass)) {
+
+            ServiceConfig serviceConfig = new ServiceConfig();
+            serviceConfig.setApplication(applications.getInstance(name));
+            serviceConfig.setRegistries(registryConfig);
+            List<ProtocolConfig> protocolConfigs = new ArrayList<ProtocolConfig>();
+            for (int port : ports) {
+                protocolConfigs.add(protocals.getInstance(port));
+            }
+            serviceConfig.setProtocols(protocolConfigs);
+            serviceConfig.setInterface(concreteClass);
+            serviceConfig.setRef(invokerBuilder.build(concreteClass));
+            serviceConfig.export();
+            registered.add(concreteClass);
+        }
+
+    }
 
     private static class DubboCaller implements Caller {
         public static final String UNKNOWN = "unknown";
@@ -84,22 +139,20 @@ public class DubboApplication implements Application {
         }
     }
 
-
     private static class InvokerBuilder implements SingletonMap.Builder<Class, Object> {
         @Override
         public Object build(Class key) {
-            if (ConcreteHelper.isConcreteService(key)) {
-                return buildConcreteServiceImpl(key);
-            } else {
-                throw new RuntimeException(key + " NOT compatible class.");
-            }
+            return buildConcreteServiceImpl(key);
         }
 
 
-        private Object buildConcreteServiceImpl(final Class concreteClass) {
+        private Object buildConcreteServiceImpl(final Class dpClass) {
+
+            final Class concreteClass = ((Class<?>) dpClass).getAnnotation(ProxyFor.class).value();
 
             return Proxy.newProxyInstance(DubboApplication.class.getClassLoader(),
-                    new Class[]{concreteClass}, new InvocationHandler() {
+                    new Class[]{dpClass}, new InvocationHandler() {
+
 
                         private Method findActualMethod(Method methodOfProxy) throws NoSuchMethodException {
                             return methodOfProxy.getParameterTypes().length == 0 ?
@@ -107,11 +160,13 @@ public class DubboApplication implements Application {
                                     concreteClass.getMethod(methodOfProxy.getName(), methodOfProxy.getParameterTypes());
                         }
 
+
                         @Override
                         public Object invoke(Object o, Method method, final Object[] objects) throws Throwable {
                             if (method.getDeclaringClass().equals(Object.class)) {
                                 return method.invoke(this, objects);
                             }
+
                             final Method m = findActualMethod(method);
                             String clientIP = RpcContext.getContext().getRemoteHost();
                             Map<String, String> map = JSONSerializerFactory.getInstance().parse(
@@ -123,12 +178,17 @@ public class DubboApplication implements Application {
                             String agent = RpcContext.getContext().getAttachment(AGENT);
                             RpcContext.getContext().removeAttachment(Token.CONCRETE_TOKEN_ID_KEY)
                                     .removeAttachment(AGENT).removeAttachment(SUBJOIN);
+                            TokenManager tokenManager = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
+                            Token token = Common.isBlank(tokenId) ? null : tokenManager.getToken(tokenId, false);
+                            if (token == null || !token.isValid()) {
+                                token = tokenManager.getToken(Common.getUUIDStr(), true);
+                            }
                             try {
                                 Object result = ConcreteContext.runWithContext(
                                         new DubboServiceContext(
                                                 new DubboCaller(clientIP, agent), getUnit(concreteClass, m),
                                                 subjoin,
-                                                tokenId == null ? null : BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(tokenId)
+                                                token
                                         ),
                                         new CallableClosure() {
                                             @Override
@@ -137,78 +197,27 @@ public class DubboApplication implements Application {
                                                         .getBean(concreteClass), objects);
                                             }
                                         });
+                                Map<String, String> toClient = new ConcurrentHashMap<String, String>();
+                                Map<String, String> subjoinMap = subjoin.toMap();
+                                if (subjoinMap.size() > 0)
+                                    toClient.put(SUBJOIN, objectToStr(subjoin.toMap()));
+
                                 try {
-                                    String newTokenId = TokenWrapper.getInstance().getTokenId();
+                                    String newTokenId = token.getTokenId();
                                     if (!Common.isBlank(newTokenId) && !Common.isSameStr(newTokenId, tokenId)) {
-                                        RpcContext.getContext().setAttachment(Token.CONCRETE_TOKEN_ID_KEY, newTokenId);
+                                        toClient.put(Token.CONCRETE_TOKEN_ID_KEY, newTokenId);
                                     }
                                 } catch (Throwable th) {
                                 }
-                                RpcContext.getContext().setAttachment(SUBJOIN,
-                                        JSONSerializerFactory.getInstance().toJson(subjoin.toMap()));
-                                // todo 确认是否回传
-                                return result;
+                                if (result != null)
+                                    toClient.put(RESULT, objectToStr(result));
+                                return toClient;
                             } catch (Throwable th) {
                                 throw th;
                             }
                         }
                     });
 
-        }
-
-    }
-
-
-    private final String name;
-    private final List<RegistryConfig> registryConfig;
-    private final int[] ports;
-
-    public DubboApplication(String name, List<RegistryConfig> registryConfig, int... ports) {
-        this.name = name;
-        this.ports = ports == null || ports.length == 0 ? new int[]{-1} : ports;
-        if (registryConfig == null || registryConfig.size() == 0) {
-            throw new RuntimeException("no registry for " + name);
-        }
-        this.registryConfig = registryConfig;
-    }
-
-
-    @Override
-    public void registerPackage(String... packages) {
-        ConcreteHelper.foreachService(new ReflectHelper.Processor() {
-            @Override
-            public void process(Class<?> serviceClass) {
-                registerClass(serviceClass);
-            }
-        }, packages);
-    }
-
-    @Override
-    public void register(Class<?>... classes) {
-        for (Class<?> clz : classes)
-            registerClass(clz);
-    }
-
-    private Set<Class<?>> registered = new ConcurrentHashSet<Class<?>>();
-
-    private static final InvokerBuilder invokerBuilder = new InvokerBuilder();
-
-    private void registerClass(Class<?> concreteClass) {
-        IF.not(ConcreteHelper.isConcreteService(concreteClass), concreteClass + " NOT concrete service.");
-        if (!registered.contains(concreteClass)) {
-
-            ServiceConfig serviceConfig = new ServiceConfig();
-            serviceConfig.setApplication(applications.getInstance(name));
-            serviceConfig.setRegistries(registryConfig);
-            List<ProtocolConfig> protocolConfigs = new ArrayList<ProtocolConfig>();
-            for (int port : ports) {
-                protocolConfigs.add(protocals.getInstance(port));
-            }
-            serviceConfig.setProtocols(protocolConfigs);
-            serviceConfig.setInterface(concreteClass);
-            serviceConfig.setRef(invokerBuilder.build(concreteClass));
-            serviceConfig.export();
-            registered.add(concreteClass);
         }
 
     }

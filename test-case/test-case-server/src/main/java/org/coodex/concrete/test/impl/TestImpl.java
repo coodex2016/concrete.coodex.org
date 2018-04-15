@@ -19,6 +19,8 @@ package org.coodex.concrete.test.impl;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import org.coodex.concrete.ConcreteClient;
+import org.coodex.concrete.common.Token;
+import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.concrete.test.api.Test;
 import org.coodex.util.Common;
 import org.slf4j.Logger;
@@ -30,6 +32,8 @@ import javax.inject.Inject;
 public class TestImpl implements Test {
 
     private final static Logger log = LoggerFactory.getLogger(TestImpl.class);
+
+    private Token token = TokenWrapper.getInstance();
 
 
     @Inject
@@ -59,6 +63,7 @@ public class TestImpl implements Test {
 
     @Override
     public int add(int x1, int x2) {
+        token.setAttribute("a", "sdf");
         return x1 + x2;
     }
 

@@ -26,10 +26,17 @@ public interface SomeService extends ConcreteService{
 看[书](https://concrete.coodex.org)，多练
 
 
-## 2018-？？-？？
+## 2018-04-14
 
 - org.coodex.concrete.coomon.Assert声明作废，使用org.coodex.concrete.common.IF替代
-- 切换工作环境，暂存下
+- 服务端增加dubbo支持
+- 客户端增加dubbo支持
+```properties
+location=dubbo
+# 客户端额外增加registry配置项
+registry=protocal://user:pwd@ip:port, .....
+```
+- 发布0.2.2
 
 ## 2018-04-04
 

@@ -48,6 +48,9 @@ import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpoint;
 import java.util.Arrays;
 
+import static org.coodex.concrete.dubbo.DubboHelper.buildRegistryConfig;
+import static org.coodex.concrete.dubbo.DubboHelper.buildRegistryConfigs;
+
 @SpringBootApplication
 @Configuration
 @EnableAspectJAutoProxy
@@ -119,10 +122,8 @@ public class ServiceStarter {
 
     @Bean
     public DubboApplication dubboApplication() {
-        RegistryConfig registryConfig = new RegistryConfig();
-        registryConfig.setAddress(profile.getString("registry"));
         DubboApplication dubboApplication = new DubboApplication(
-                "test", Arrays.asList(registryConfig)
+                "test", buildRegistryConfigs(new String[]{profile.getString("registry")})
         );
         dubboApplication.register(Test.class);
         return dubboApplication;

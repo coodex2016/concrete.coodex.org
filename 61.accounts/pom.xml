@@ -46,11 +46,11 @@
     <parent>
         <artifactId>concrete.pom</artifactId>
         <groupId>org.coodex</groupId>
-        <version>0.2.2-SNAPSHOT</version>
+        <version>0.2.2</version>
     </parent>
 
     <artifactId>concrete-accounts</artifactId>
-    <version>0.2.2-SNAPSHOT</version>
+    <version>0.2.2</version>
 
 
 </project>
