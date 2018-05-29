@@ -20,6 +20,6 @@ package org.coodex.concrete.common;
  * Created by davidoff shen on 2017-05-08.
  */
 public interface OperationLogger {
-    
+
     void log(String accountId, String accountName, String category, String subClass, String message);
 }

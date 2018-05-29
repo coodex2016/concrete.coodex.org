@@ -52,7 +52,7 @@ public class VehicleNumMocker extends AbstractMocker<VehicleNum> {
             //
             if (alhpabetCount < 2 && Math.random() < 0.1) {
                 builder.append(randomChar(alphabets));
-                alhpabetCount ++;
+                alhpabetCount++;
             } else {
                 builder.append(randomChar(numbers));
             }

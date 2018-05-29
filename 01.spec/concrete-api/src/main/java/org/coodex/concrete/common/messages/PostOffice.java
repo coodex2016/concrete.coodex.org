@@ -16,9 +16,10 @@
 
 package org.coodex.concrete.common.messages;
 
+@Deprecated
 public interface PostOffice {
 
-    <T> void postMessage(String subject,T body);
+    <T> void postMessage(String subject, T body);
 
     <T> Subscriber<T> subscribe(Subscription<T> subscription);
 

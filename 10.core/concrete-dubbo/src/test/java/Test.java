@@ -17,7 +17,7 @@
 import org.coodex.concrete.dubbo.DubboHelper;
 
 public class Test {
-    public static void main(String [] args){
+    public static void main(String[] args) {
         DubboHelper.getDubboInterface(TestApi.class);
     }
 }

@@ -80,6 +80,7 @@ public class IF {
         return isNull(o, ConcreteHelper.getException(new RuntimeException(message)));
     }
 
+
     /**
      * 当对象o不为null时，抛出code异常
      *

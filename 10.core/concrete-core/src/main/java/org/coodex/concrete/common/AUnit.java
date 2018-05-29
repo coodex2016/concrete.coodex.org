@@ -48,7 +48,7 @@ public class AUnit extends AbstractUnit<AParam, AModule> {
 
     @Override
     protected DefinitionContext toContext() {
-        return ConcreteHelper.getContext(getMethod(),getDeclaringModule().getInterfaceClass());
+        return ConcreteHelper.getContext(getMethod(), getDeclaringModule().getInterfaceClass());
     }
 
     @Override

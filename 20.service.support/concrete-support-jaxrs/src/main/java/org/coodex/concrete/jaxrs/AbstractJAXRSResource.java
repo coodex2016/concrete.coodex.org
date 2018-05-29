@@ -19,8 +19,6 @@ package org.coodex.concrete.jaxrs;
 import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.common.struct.AbstractUnit;
-import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
 
@@ -31,10 +29,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import static org.coodex.concrete.common.ConcreteContext.KEY_TOKEN;
 import static org.coodex.concrete.common.ConcreteContext.runWithContext;
-import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
+import static org.coodex.concrete.jaxrs.JaxRSHelper.KEY_CLIENT_PROVIDER;
 import static org.coodex.util.TypeHelper.solve;
 import static org.coodex.util.TypeHelper.typeToClass;
 
@@ -46,16 +47,14 @@ import static org.coodex.util.TypeHelper.typeToClass;
 public abstract class AbstractJAXRSResource<T extends ConcreteService> {
 
 
-    public static final String TOKEN_ID_IN_COOKIE = CONCRETE_TOKEN_ID_KEY;
+//    public static final String TOKEN_ID_IN_COOKIE = CONCRETE_TOKEN_ID_KEY;
 
     private final Class<T> clz = getInterfaceClass();
-
+    private final Map<String, Method> methodMap = new HashMap<String, Method>();
     @Context
     protected UriInfo uriInfo;
-
     @Context
     protected HttpHeaders httpHeaders;
-
     @Context
     protected HttpServletRequest httpRequest;
 
@@ -63,60 +62,33 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         return ConcreteHelper.isDevModel("jaxrs");
     }
 
-    @SuppressWarnings("unchecked")
-    private <R> R convert(R result) {
-//        if (result == null) return null;
-//        if (result instanceof String && ConcreteHelper.getProfile().getBool("service.result.quoteSingleStr", false)) {
-//            return (R) JSONSerializerFactory.getInstance().toJson(result);
-//        }
-        return result;
-    }
-
-    protected int getPriority(Method method) {
-        return ConcreteHelper.getPriority(method, clz);
-//        DefinitionContext context = ConcreteHelper.getContext(method, clz);
-//        Priority priority = context.getAnnotation(Priority.class);
-////                method.getAnnotation(Priority.class);
-////        if (priority == null) {
-////            priority = getInterfaceClass().getAnnotation(Priority.class);
-////        }
-//        return priority == null ?
-//                Thread.NORM_PRIORITY :
-//                Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY, priority.value()));
-    }
-
-    private Token getToken(String tokenId, boolean force) {
-        return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(tokenId, force);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected Class<T> getInterfaceClass() {
-        return (Class<T>) typeToClass(solve(AbstractJAXRSResource.class.getTypeParameters()[0], getClass()));
-    }
-
     private static String getMethodNameInStack(int deep) {
         // getStackTrace +1, getMethodInStack +2
         return Thread.currentThread().getStackTrace()[deep + 2].getMethodName();
     }
 
-//    protected final Object mockResult(String methodName) {
-//        return __mockResult(methodName);
+    @SuppressWarnings("unchecked")
+    private <R> R convert(R result) {
+        return result;
+    }
+
+    protected int getPriority(Method method) {
+        return ConcreteHelper.getPriority(method, clz);
+    }
+
+    //    private Token getToken(String tokenId, boolean force) {
+//        return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(tokenId, force);
+//    }
+//    private Token getToken(String tokenId) {
+//        return tokenId == null ? null :
+//                BeanProviderFacade.getBeanProvider().getBean(TokenManager.class)
+//                        .getToken(tokenId);
 //    }
 
-//    private Object __mockResult(String methodName) {
-//        try {
-//            Method method = findMethod(methodName, null);
-//            if (method.getReturnType() == void.class)
-//                return null;
-//            else
-//                return convert(MockerFacade.mock(method, getInterfaceClass()));
-//        } catch (Throwable th) {
-//            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
-//        }
-//    }
-
-    private final Map<String, Method> methodMap = new HashMap<String, Method>();
-
+    @SuppressWarnings("unchecked")
+    protected Class<T> getInterfaceClass() {
+        return (Class<T>) typeToClass(solve(AbstractJAXRSResource.class.getTypeParameters()[0], getClass()));
+    }
 
     protected Method findMethod(String methodName, Class<?> c) {
         String methodKey = getMethodNameInStack(3);
@@ -180,7 +152,7 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         }
     }
 
-    protected ServiceContext buildContext(Token token, AbstractUnit unit) {
+    protected ServiceContext buildContext(String tokenId/*,Token token, AbstractUnit unit*/) {
 
         return new JAXRSServiceContext(new Caller() {
             @Override
@@ -192,32 +164,40 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
                 return httpRequest.getRemoteAddr();
             }
 
+
             @Override
-            public String getAgent() {
-                return httpHeaders.getHeaderString(HttpHeaders.USER_AGENT);
+            public String getClientProvider() {
+                return String.format("%s; %s",
+                        httpHeaders.getHeaderString(KEY_CLIENT_PROVIDER),
+                        httpHeaders.getHeaderString(HttpHeaders.USER_AGENT));
             }
-        }, token, unit, getSubjoin());
+        }, getSubjoin(), getRequestLocal(), tokenId);
     }
 
-    public interface RunWithToken {
-        Object runWithToken(Token token);
+    private Locale getRequestLocal() {
+        List<Locale> locales = httpHeaders.getAcceptableLanguages();
+        return locales == null || locales.size() == 0 ?
+                null : locales.get(0);
     }
 
-    protected Response buildResponse(String tokenId, final Method method, final Object[] params, RunWithToken runWithToken) {
+    protected Response buildResponse(String tokenId, final Method method, final Object[] params, /*RunWithToken runWithToken*/ CallableClosure callable) {
 //        final int paramCount = params == null ? 0 : params.length;
-        boolean newToken = false;
-        Token token = Common.isBlank(tokenId) ? null : getToken(tokenId, false);
-        if (token == null || !token.isValid()) {
-            token = getToken(Common.getUUIDStr(), true);
-            newToken = true;
-        }
+//        boolean newToken = false;
+//        Token token = Common.isBlank(tokenId) ? null : getToken(tokenId, false);
+//        if (token == null || !token.isValid()) {
+//            token = getToken(Common.getUUIDStr(), true);
+//            newToken = true;
+//        }
+//        Token token
 
-        Object result = runWithToken.runWithToken(token);
+//        Object result = runWithToken.runWithToken(getToken(tokenId));
+        ServiceContext serviceContext = buildContext(tokenId);
+        Object result = runWithContext(serviceContext, callable);
 
         Response.ResponseBuilder builder = result == null ? Response.noContent() : Response.ok();
-
-        if (newToken) {
-            builder = setTokenInfo(token, builder);
+        String tokenIdAfterInvoke = serviceContext.getTokenId();
+        if (!Common.isSameStr(tokenId, tokenIdAfterInvoke) && !Common.isBlank(tokenIdAfterInvoke)) {
+            builder = setTokenInfo(tokenIdAfterInvoke, builder);
         }
 
         if (result != null) {
@@ -232,118 +212,41 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         return builder.build();
     }
 
-    public class ResponseBuilder {
-        private final String tokenId;
-        private final Method method;
-        private final Object[] params;
-
-        public ResponseBuilder(String tokenId, Method method, Object[] params) {
-            this.tokenId = tokenId;
-            this.method = method;
-            this.params = params;
-        }
-
-        public Response build(RunWithToken runWithToken) {
-            return buildResponse(tokenId, method, params, runWithToken);
-        }
-
-        public String getTokenId() {
-            return tokenId;
-        }
-
-        public Method getMethod() {
-            return method;
-        }
-
-        public Object[] getParams() {
-            return params;
-        }
-    }
-
-    protected Response invokeByTokenId(String tokenId, final Method method, final Object[] params) {
+    protected Response invokeByTokenId(final String tokenId, final Method method, final Object[] params) {
         final int paramCount = params == null ? 0 : params.length;
-//        boolean newToken = false;
-//        Token token = Common.isBlank(tokenId) ? null : getToken(tokenId, false);
-//        if (token == null || !token.isValid()) {
-//            token = getToken(Common.getUUIDStr(), true);
-//            newToken = true;
-//        }
 
-//        Object result = convert(
-//                runWithContext(
-//                        buildContext(
-//                                token,
-//                                JaxRSHelper.getUnitFromContext(
-//                                        ConcreteHelper.getContext(method, getInterfaceClass()))),
-//
-//                        new ConcreteClosure() {
-//
-//                            public Object concreteRun() throws Throwable {
-//
-//                                Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
-//                                if (paramCount == 0)
-//                                    return method.invoke(instance);
-//                                else
-//                                    return method.invoke(instance, params);
-//
-//                            }
-//                        }));
+        return buildResponse(tokenId, method, params,
+                new CallableClosure() {
 
-//        Response.ResponseBuilder builder = result == null ? Response.noContent() : Response.ok();
-//
-//        if (newToken) {
-//            builder = setTokenInfo(token, builder);
-//        }
-//
-//        if (result != null) {
-//            builder = builder.entity(result);
-//            if (result instanceof String) {
-//                builder = textType(builder);
-//            }
-//        }
+                    @Override
+                    public Object call() throws Throwable {
+                        if (!Polling.class.equals(method.getDeclaringClass()) && isDevModel()) {
+                            return void.class.equals(method.getGenericReturnType()) ? null :
+                                    MockerFacade.mock(method, getInterfaceClass());
+                        } else {
+                            Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
+                            if (paramCount == 0)
+                                return method.invoke(instance);
+                            else
+                                return method.invoke(instance, params);
+                        }
 
-//        return builder.build();
-        return buildResponse(tokenId, method, params, new RunWithToken() {
-            @Override
-            public Object runWithToken(Token token) {
-                return convert(
-                        runWithContext(
-                                buildContext(
-                                        token,
-                                        JaxRSHelper.getUnitFromContext(
-                                                ConcreteHelper.getContext(method, getInterfaceClass()))),
+                    }
+                });
 
-                                new CallableClosure() {
-
-                                    public Object call() throws Throwable {
-                                        if (!Polling.class.equals(method.getDeclaringClass()) && isDevModel()) {
-                                            return void.class.equals(method.getGenericReturnType()) ? null :
-                                                    MockerFacade.mock(method, getInterfaceClass());
-                                        } else {
-                                            Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
-                                            if (paramCount == 0)
-                                                return method.invoke(instance);
-                                            else
-                                                return method.invoke(instance, params);
-                                        }
-
-                                    }
-                                }));
-            }
-        });
 //        return buildResponse(tokenId, method, params, new RunWithToken() {
 //            @Override
 //            public Object runWithToken(Token token) {
 //                return convert(
 //                        runWithContext(
 //                                buildContext(
-//                                        token,
+//                                        tokenId,
 //                                        JaxRSHelper.getUnitFromContext(
 //                                                ConcreteHelper.getContext(method, getInterfaceClass()))),
 //
-//                                new ConcreteClosure() {
+//                                new CallableClosure() {
 //
-//                                    public Object concreteRun() throws Throwable {
+//                                    public Object call() throws Throwable {
 //                                        if (!Polling.class.equals(method.getDeclaringClass()) && isDevModel()) {
 //                                            return void.class.equals(method.getGenericReturnType()) ? null :
 //                                                    MockerFacade.mock(method, getInterfaceClass());
@@ -359,6 +262,7 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
 //                                }));
 //            }
 //        });
+
     }
 
     protected abstract Response.ResponseBuilder textType(Response.ResponseBuilder builder);
@@ -369,26 +273,41 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         return new JaxRSSubjoin(httpHeaders);
     }
 
-    protected Response.ResponseBuilder setTokenInfo(Token token, Response.ResponseBuilder builder) {
-        return builder.header(TOKEN_ID_IN_COOKIE, token.getTokenId());
+    protected Response.ResponseBuilder setTokenInfo(String tokenId, Response.ResponseBuilder builder) {
+        return builder.header(KEY_TOKEN, tokenId);
     }
 
-//    /**
-//     * 不再使用cookie传递token信息
-//     * @param token
-//     * @param builder
-//     * @return
-//     */
-//    @Deprecated
-//    protected Response.ResponseBuilder setCookie(Token token, Response.ResponseBuilder builder) {
-//        URI root = uriInfo.getBaseUri();
-//        String cookiePath = ConcreteHelper.getProfile().getString("jaxrs.token.cookie.path");
-//        builder = builder.cookie(new NewCookie(new Cookie(
-//                TOKEN_ID_IN_COOKIE, token.getTokenId(),
-//                Common.isBlank(cookiePath) ? root.getPath() : cookiePath, null)));
-//
-//        return builder;
-//    }
+    public interface RunWithToken {
+        Object runWithToken(Token token);
+    }
+
+    public class ResponseBuilder {
+        private final String tokenId;
+        private final Method method;
+        private final Object[] params;
+
+        public ResponseBuilder(String tokenId, Method method, Object[] params) {
+            this.tokenId = tokenId;
+            this.method = method;
+            this.params = params;
+        }
+
+        public Response build(/*RunWithToken runWithToken*/ CallableClosure callable) {
+            return buildResponse(tokenId, method, params, callable);
+        }
+
+        public String getTokenId() {
+            return tokenId;
+        }
+
+        public Method getMethod() {
+            return method;
+        }
+
+        public Object[] getParams() {
+            return params;
+        }
+    }
 
 
 }

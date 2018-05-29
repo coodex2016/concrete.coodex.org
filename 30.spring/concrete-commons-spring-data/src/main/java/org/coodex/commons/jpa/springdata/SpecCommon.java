@@ -127,6 +127,7 @@ public class SpecCommon {
 
     /**
      * where attr in E.attribute
+     *
      * @param attributeName
      * @param attr
      * @param <ENTITY>
@@ -300,7 +301,7 @@ public class SpecCommon {
      * @param <A>
      * @return
      */
-    public static <E, A> Specification<E> in(String attributeName, A ... values) {
+    public static <E, A> Specification<E> in(String attributeName, A... values) {
         return $spec(Operators.Logical.IN, attributeName, values);
     }
 
@@ -313,12 +314,13 @@ public class SpecCommon {
      * @param <A>
      * @return
      */
-    public static <E, A> Specification<E> notIn(String attributeName, A ... values) {
+    public static <E, A> Specification<E> notIn(String attributeName, A... values) {
         return $spec(Operators.Logical.NOT_IN, attributeName, values);
     }
 
     /**
      * where E.attribute between min and max
+     *
      * @param attributeName
      * @param min
      * @param max
@@ -329,7 +331,6 @@ public class SpecCommon {
     public static <E, A> Specification<E> between(String attributeName, A min, A max) {
         return $spec(Operators.Logical.BETWEEN, attributeName, min, max);
     }
-
 
 
     public static <ENTITY> Specifications<ENTITY> wrapper(Specifications<ENTITY> specifications) {

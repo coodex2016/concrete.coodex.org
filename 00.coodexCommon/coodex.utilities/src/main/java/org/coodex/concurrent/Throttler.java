@@ -22,17 +22,34 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class Throttler<T> extends AbstractCoalition<T> {
+    private ScheduledFuture prevFuture = null;
+    private long prevTime = 0;
+
+
     public Throttler(Callback<T> c, int interval, ScheduledExecutorService scheduledExecutorService) {
         super(c, interval, scheduledExecutorService);
     }
-
     public Throttler(Callback<T> c, int interval) {
         super(c, interval);
     }
 
+    public static void main(String[] args) throws InterruptedException {
+        Throttler<String> throttler = new Throttler<String>(new Coalition.Callback<String>() {
+            @Override
+            public void call(String arg) {
+                System.out.println(arg);
+            }
+        }, 200);
 
-    private ScheduledFuture prevFuture = null;
-    private long prevTime = 0;
+        for (int i = 0; i < 410; i++) {
+            Thread.sleep(20);
+            throttler.call(String.format("%d", i));
+        }
+
+
+        Thread.sleep(200);
+        throttler.terminate();
+    }
 
     private long getNextThrottle() {
         long l = System.currentTimeMillis() - prevTime;
@@ -58,28 +75,10 @@ public class Throttler<T> extends AbstractCoalition<T> {
             };
 
 
-           if (next == 0) {
+            if (next == 0) {
                 runnable.run();
             } else
-                prevFuture = scheduledExecutorService.schedule(runnable, interval /2, TimeUnit.MILLISECONDS);
+                prevFuture = scheduledExecutorService.schedule(runnable, interval / 2, TimeUnit.MILLISECONDS);
         }
-    }
-
-    public static void main(String[] args) throws InterruptedException {
-        Throttler<String> throttler = new Throttler<String>(new Coalition.Callback<String>() {
-            @Override
-            public void call(String arg) {
-                System.out.println(arg);
-            }
-        }, 200);
-
-        for (int i = 0; i < 410; i++) {
-            Thread.sleep(20);
-            throttler.call(String.format("%d", i));
-        }
-
-
-        Thread.sleep(200);
-        throttler.terminate();
     }
 }

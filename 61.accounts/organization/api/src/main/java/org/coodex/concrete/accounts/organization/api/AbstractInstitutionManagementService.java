@@ -29,7 +29,7 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.*;
  */
 @MicroService("institutions")
 @Abstract
-@AccessAllow(roles = {SYSTEM_MANAGER,TENANT_MANAGER, ORGANIZATION_MANAGER})
+@AccessAllow(roles = {SYSTEM_MANAGER, TENANT_MANAGER, ORGANIZATION_MANAGER})
 @Safely
 public interface AbstractInstitutionManagementService<I extends Institution> extends ConcreteService {
     @Description(name = "新建单位", description = "LOGGING: new 新建单位的实体数据")

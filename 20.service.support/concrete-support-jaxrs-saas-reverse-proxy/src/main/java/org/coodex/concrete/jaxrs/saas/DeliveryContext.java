@@ -18,7 +18,6 @@ package org.coodex.concrete.jaxrs.saas;
 
 import org.coodex.closure.AbstractClosureContext;
 import org.coodex.closure.CallableClosure;
-import org.coodex.concrete.common.ConcreteClosure;
 import org.coodex.concrete.common.ConcreteHelper;
 
 import javax.ws.rs.container.AsyncResponse;
@@ -28,45 +27,13 @@ import javax.ws.rs.core.MultivaluedMap;
  * Created by davidoff shen on 2017-03-22.
  */
 public class DeliveryContext {
+    private final static DeliveryContextClosure DELIVERY_CONTEXT_CLOSURE = new DeliveryContextClosure();
     private final AsyncResponse response;
     private final MultivaluedMap<String, String> requestHeaders;
 
     public DeliveryContext(AsyncResponse response, MultivaluedMap<String, String> requestHeaders) {
         this.response = response;
         this.requestHeaders = requestHeaders;
-    }
-
-    public AsyncResponse getResponse() {
-        return response;
-    }
-
-    public MultivaluedMap getRequestHeaders() {
-        return requestHeaders;
-    }
-
-    private static class DeliveryContextClosure
-            extends AbstractClosureContext<DeliveryContext> {
-
-        @Deprecated
-        Object runWith(DeliveryContext context, ConcreteClosure runnable) {
-            return closureRun(context, runnable);
-        }
-
-        Object runWith(DeliveryContext context, CallableClosure callable) throws Throwable {
-            return closureRun(context, callable);
-        }
-
-        DeliveryContext getContext() {
-            return $getVariant();
-        }
-
-    }
-
-    private final static DeliveryContextClosure DELIVERY_CONTEXT_CLOSURE = new DeliveryContextClosure();
-
-    @Deprecated
-    public final static Object closureRun(DeliveryContext context, ConcreteClosure runnable) {
-        return DELIVERY_CONTEXT_CLOSURE.runWith(context, runnable);
     }
 
     public final static Object closureRun(DeliveryContext context, CallableClosure runnable) {
@@ -79,5 +46,36 @@ public class DeliveryContext {
 
     public final static DeliveryContext getContext() {
         return DELIVERY_CONTEXT_CLOSURE.getContext();
+    }
+
+    public AsyncResponse getResponse() {
+        return response;
+    }
+
+//    @Deprecated
+//    public final static Object closureRun(DeliveryContext context, ConcreteClosure runnable) {
+//        return DELIVERY_CONTEXT_CLOSURE.runWith(context, runnable);
+//    }
+
+    public MultivaluedMap getRequestHeaders() {
+        return requestHeaders;
+    }
+
+    private static class DeliveryContextClosure
+            extends AbstractClosureContext<DeliveryContext> {
+
+//        @Deprecated
+//        Object runWith(DeliveryContext context, ConcreteClosure runnable) {
+//            return closureRun(context, runnable);
+//        }
+
+        Object runWith(DeliveryContext context, CallableClosure callable) throws Throwable {
+            return closureRun(context, callable);
+        }
+
+        DeliveryContext getContext() {
+            return $getVariant();
+        }
+
     }
 }

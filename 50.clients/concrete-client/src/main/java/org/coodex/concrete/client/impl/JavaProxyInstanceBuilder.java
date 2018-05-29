@@ -43,7 +43,7 @@ public class JavaProxyInstanceBuilder implements InstanceBuilder {
 
 
                         return IF.isNull(ClientHelper.getInvokerFactoryProviders().getServiceInstance(destination),
-                                "Cannot found InvokerFactory for "+ destination.toString())
+                                "Cannot found InvokerFactory for " + destination.toString())
                                 .getInvoker(destination).invoke(proxy, clazz, method, args);
                     }
                 });

@@ -48,16 +48,13 @@ public class FSMProvider implements FiniteStateMachineProvider {
 
 class FSMInvocationHandle implements InvocationHandler {
     private final static Logger log = LoggerFactory.getLogger(FSMProvider.class);
-
-    private final State state;
-    private final FiniteStateMachine original;
-
     private final static ServiceLoader<StateCondition> CONDITIONS = new ConcreteServiceLoader<StateCondition>() {
     };
-
     private final static ServiceLoader<IdentifiedStateContainer> CONTAINER_SERVICE_LOADER
             = new ConcreteServiceLoader<IdentifiedStateContainer>() {
     };
+    private final State state;
+    private final FiniteStateMachine original;
 
 
     FSMInvocationHandle(State state, FiniteStateMachine original) {
@@ -65,10 +62,10 @@ class FSMInvocationHandle implements InvocationHandler {
         this.original = original;
     }
 
-//    @SuppressWarnings("unchecked")
+    //    @SuppressWarnings("unchecked")
     private Class<? extends StateCondition> getCondition(Method action) {
         Guard guard = action.getAnnotation(Guard.class);
-        return (guard != null) ? guard.value(): null;
+        return (guard != null) ? guard.value() : null;
 //        StateTransfer transfer = action.getAnnotation(StateTransfer.class);
 //        return transfer == null ? null : transfer.value();
     }
@@ -133,7 +130,7 @@ class FSMInvocationHandle implements InvocationHandler {
                             } finally {
 
                             }
-                        }finally {
+                        } finally {
                             try {
                                 if (context == null && state instanceof IdentifiedState) {
                                     IdentifiedState identifiedState = (IdentifiedState) state;

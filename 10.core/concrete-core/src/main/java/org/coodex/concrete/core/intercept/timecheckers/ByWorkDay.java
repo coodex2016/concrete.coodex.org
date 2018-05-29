@@ -49,10 +49,6 @@ public class ByWorkDay implements ServiceTimingChecker {
 
     private String workday = null;
 
-    public void setWeekday(String weekday) {
-        this.weekday = weekday;
-    }
-
     public void setRestDay(String restDay) {
         this.restDay = restDay;
     }
@@ -102,6 +98,9 @@ public class ByWorkDay implements ServiceTimingChecker {
         return weekday[c.get(Calendar.DAY_OF_WEEK) - 1];
     }
 
+    public void setWeekday(String weekday) {
+        this.weekday = weekday;
+    }
 
     @Override
     public boolean isAllowed() {

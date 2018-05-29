@@ -38,96 +38,12 @@ import java.util.zip.ZipFile;
  */
 public class ReflectHelper {
 
-    public interface Processor {
-        void process(Class<?> serviceClass);
-    }
+    public static final ClassDecision NOT_NULL = new NotNullDecision();
+    public static final ClassDecision ALL_OBJECT = new AllObjectDecision();
+    public static final ClassDecision ALL_OBJECT_EXCEPT_JDK = new AllObjectExceptJavaSDK();
+    private static Logger log = LoggerFactory.getLogger(ReflectHelper.class);
 
-
-    public static class MethodParameter {
-
-        private final Method method;
-        private final int index;
-        private String name;
-        private Annotation[] annotations;
-        private Class<?> type;
-        private Type genericType;
-
-
-        public MethodParameter(Method method, int index) {
-            this.method = method;
-            this.index = index;
-
-            annotations = method.getParameterAnnotations()[index];
-            type = method.getParameterTypes()[index];
-            genericType = method.getGenericParameterTypes()[index];
-
-            name = getParameterName(method, index, "p");
-//            try {
-//                getName = getParameterName();
-//            } catch (Throwable th) {
-//            }
-//            if (Common.isBlank(getName))
-//                getName = "arg" + index;
-
-        }
-
-//        /**
-//         * 使用java 8的getParameters来获取参数名，编译时，使用jdk的javac，-parameters。在java8环境中运行有效
-//         *
-//         * @return
-//         * @throws NoSuchMethodException
-//         * @throws InvocationTargetException
-//         * @throws IllegalAccessException
-//         * @throws ClassNotFoundException
-//         */
-//        private String getParameterName() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
-//            return ReflectHelper.getParameterName(method, index);
-////
-////            Method getParameters = Method.class.getMethod("getParameters");
-////            Object[] parameters = (Object[]) getParameters.invoke(getMethod());
-////            if (parameters != null) {
-////                Class<?> methodParameterClass = Class.forName("java.lang.reflect.Parameter");
-////                Method getName = methodParameterClass.getMethod("getName");
-////                return (String) getName.invoke(parameters[index]);
-////            }
-////            return null;
-//        }
-
-        public Class<?> getType() {
-            return type;
-        }
-
-        public Type getGenericType() {
-            return genericType;
-        }
-
-        public Method getMethod() {
-            return method;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Annotation[] getAnnotations() {
-            return annotations;
-        }
-
-
-        @SuppressWarnings("unchecked")
-        public <T> T getAnnotation(Class<T> annotationClass) {
-            if (annotationClass == null) throw new IllegalArgumentException("annotationClass is NULL.");
-            if (annotations == null) return null;
-            for (Annotation annotation : annotations) {
-                if (annotationClass.isAssignableFrom(annotation.getClass()))
-                    return (T) annotation;
-            }
-            return null;
-        }
+    private ReflectHelper() {
     }
 
     public static String getParameterName(Method method, int index, String prefix) {
@@ -188,43 +104,6 @@ public class ReflectHelper {
             return (String) getName.invoke(parameters[index]);
         }
         return null;
-    }
-
-
-    private ReflectHelper() {
-    }
-
-    private static Logger log = LoggerFactory.getLogger(ReflectHelper.class);
-
-    public static final ClassDecision NOT_NULL = new NotNullDecision();
-    public static final ClassDecision ALL_OBJECT = new AllObjectDecision();
-    public static final ClassDecision ALL_OBJECT_EXCEPT_JDK = new AllObjectExceptJavaSDK();
-
-    public interface ClassDecision {
-        boolean determine(Class<?> clz);
-    }
-
-    private static class NotNullDecision implements ClassDecision {
-        //      @Override
-        public boolean determine(Class<?> clz) {
-            return clz != null;
-        }
-    }
-
-    private static class AllObjectDecision implements ClassDecision {
-        //      @Override
-        public boolean determine(Class<?> clz) {
-            return clz != null && clz != Object.class;
-        }
-
-    }
-
-    private static class AllObjectExceptJavaSDK implements ClassDecision {
-        //      @Override
-        public boolean determine(Class<?> clz) {
-            return clz != null && !clz.getPackage().getName().startsWith("java");
-        }
-
     }
 
     public static Field[] getAllDeclaredFields(Class<?> clz) {
@@ -423,7 +302,6 @@ public class ReflectHelper {
         }
     }
 
-
     @SuppressWarnings("unchecked")
     public static <T> T throwExceptionObject(Class<T> interfaceClass, final Throwable th) {
         return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[]{interfaceClass}, new InvocationHandler() {
@@ -431,6 +309,124 @@ public class ReflectHelper {
                 throw th;
             }
         });
+    }
+
+    public interface Processor {
+        void process(Class<?> serviceClass);
+    }
+
+    public interface ClassDecision {
+        boolean determine(Class<?> clz);
+    }
+
+    public static class MethodParameter {
+
+        private final Method method;
+        private final int index;
+        private String name;
+        private Annotation[] annotations;
+        private Class<?> type;
+        private Type genericType;
+
+
+        public MethodParameter(Method method, int index) {
+            this.method = method;
+            this.index = index;
+
+            annotations = method.getParameterAnnotations()[index];
+            type = method.getParameterTypes()[index];
+            genericType = method.getGenericParameterTypes()[index];
+
+            name = getParameterName(method, index, "p");
+//            try {
+//                getName = getParameterName();
+//            } catch (Throwable th) {
+//            }
+//            if (Common.isBlank(getName))
+//                getName = "arg" + index;
+
+        }
+
+//        /**
+//         * 使用java 8的getParameters来获取参数名，编译时，使用jdk的javac，-parameters。在java8环境中运行有效
+//         *
+//         * @return
+//         * @throws NoSuchMethodException
+//         * @throws InvocationTargetException
+//         * @throws IllegalAccessException
+//         * @throws ClassNotFoundException
+//         */
+//        private String getParameterName() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+//            return ReflectHelper.getParameterName(method, index);
+////
+////            Method getParameters = Method.class.getMethod("getParameters");
+////            Object[] parameters = (Object[]) getParameters.invoke(getMethod());
+////            if (parameters != null) {
+////                Class<?> methodParameterClass = Class.forName("java.lang.reflect.Parameter");
+////                Method getName = methodParameterClass.getMethod("getName");
+////                return (String) getName.invoke(parameters[index]);
+////            }
+////            return null;
+//        }
+
+        public Class<?> getType() {
+            return type;
+        }
+
+        public Type getGenericType() {
+            return genericType;
+        }
+
+        public Method getMethod() {
+            return method;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Annotation[] getAnnotations() {
+            return annotations;
+        }
+
+
+        @SuppressWarnings("unchecked")
+        public <T> T getAnnotation(Class<T> annotationClass) {
+            if (annotationClass == null) throw new IllegalArgumentException("annotationClass is NULL.");
+            if (annotations == null) return null;
+            for (Annotation annotation : annotations) {
+                if (annotationClass.isAssignableFrom(annotation.getClass()))
+                    return (T) annotation;
+            }
+            return null;
+        }
+    }
+
+    private static class NotNullDecision implements ClassDecision {
+        //      @Override
+        public boolean determine(Class<?> clz) {
+            return clz != null;
+        }
+    }
+
+    private static class AllObjectDecision implements ClassDecision {
+        //      @Override
+        public boolean determine(Class<?> clz) {
+            return clz != null && clz != Object.class;
+        }
+
+    }
+
+    private static class AllObjectExceptJavaSDK implements ClassDecision {
+        //      @Override
+        public boolean determine(Class<?> clz) {
+            return clz != null && !clz.getPackage().getName().startsWith("java");
+        }
+
     }
 
 }

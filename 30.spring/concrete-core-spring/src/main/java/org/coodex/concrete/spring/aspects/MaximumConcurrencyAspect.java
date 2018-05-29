@@ -23,4 +23,5 @@ import org.coodex.concrete.core.intercept.MaximumConcurrencyInterceptor;
  * Created by davidoff shen on 2017-04-10.
  */
 @Aspect
-public class MaximumConcurrencyAspect extends AbstractConcreteAspect<MaximumConcurrencyInterceptor> {}
+public class MaximumConcurrencyAspect extends AbstractConcreteAspect<MaximumConcurrencyInterceptor> {
+}

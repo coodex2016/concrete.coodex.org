@@ -47,7 +47,7 @@ public class CoodexPropertyPlaceholderConfigurer extends PropertyPlaceholderConf
 
         //分离namespace
         index = key.indexOf('|');
-        if(index > 0){
+        if (index > 0) {
             namespace = key.substring(0, index);
             key = key.substring(index + 1);
         }

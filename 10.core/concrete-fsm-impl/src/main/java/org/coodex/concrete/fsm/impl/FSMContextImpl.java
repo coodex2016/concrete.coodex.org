@@ -24,6 +24,20 @@ import org.coodex.concrete.fsm.State;
 
 public class FSMContextImpl implements FSMContext {
 
+    static ClosureContext<Context> closureContext = new StackClosureContext<Context>();
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <S extends State> S getState() {
+        return (S) closureContext.get().getState();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <FSM extends FiniteStateMachine> FSM getMachine() {
+        return (FSM) closureContext.get().getMachine();
+    }
+
     public static class Context {
         private final State state;
         private final FiniteStateMachine machine;
@@ -40,19 +54,5 @@ public class FSMContextImpl implements FSMContext {
         public FiniteStateMachine getMachine() {
             return machine;
         }
-    }
-
-    static ClosureContext<Context> closureContext = new StackClosureContext<Context>();
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <S extends State> S getState() {
-        return (S) closureContext.get().getState();
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <FSM extends FiniteStateMachine> FSM getMachine() {
-        return (FSM) closureContext.get().getMachine();
     }
 }

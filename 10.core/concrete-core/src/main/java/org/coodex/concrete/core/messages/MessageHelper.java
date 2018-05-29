@@ -20,6 +20,7 @@ import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.messages.PostOffice;
 import org.coodex.util.ServiceLoader;
 
+@Deprecated
 public class MessageHelper {
 
     private static final PostOffice localPostOffice = new LocalPostOffice();

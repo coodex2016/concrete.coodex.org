@@ -16,44 +16,50 @@
 
 package org.coodex.concrete.test;
 
+import org.coodex.concrete.common.AbstractContainerContext;
 import org.coodex.concrete.common.Caller;
-import org.coodex.concrete.common.ServiceContext;
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.common.Token;
 import org.coodex.util.Common;
+import org.coodex.util.SingletonMap;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
-import static org.coodex.concrete.common.ConcreteContext.SIDE_TEST;
 import static org.coodex.concrete.common.ConcreteHelper.VERSION;
+import static org.coodex.concrete.core.token.TokenWrapper.newToken;
 
-public class TestServiceContext extends ServiceContext {
+public class TestServiceContext extends AbstractContainerContext {
 
-    private class TestCaller implements Caller{
-        @Override
-        public String getAddress() {
-            return getIp(token);
-        }
 
-        @Override
-        public String getAgent() {
-            return "concrete-test " + VERSION;
-        }
+    private static SingletonMap<String, Token> tokens =
+            new SingletonMap<String, Token>(new SingletonMap.Builder<String, Token>() {
+                @Override
+                public Token build(final String key) {
+                    final Token newToken = newToken();
+                    return (Token) Proxy.newProxyInstance(
+                            Token.class.getClassLoader(),
+                            new Class[]{Token.class},
+                            new InvocationHandler() {
+                                @Override
+                                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                                    if (method.getName().equals("getTokenId")) {
+                                        return key;
+                                    } else {
+                                        return method.invoke(newToken, args);
+                                    }
+                                }
+                            }
+                    );
+                }
+            });
+
+    public TestServiceContext(String tokenId, Subjoin subjoin) {
+        super(new TestCaller(), getTestToken(tokenId), subjoin, null);
     }
 
-    private static Map<String, String> address = new HashMap<String, String>();
-
-    private synchronized String getIp(Token token) {
-        String ip = address.get(token.getTokenId());
-        if (ip == null) {
-            ip = mockIp();
-            address.put(token.getTokenId(), ip);
-        }
-        return ip;
-    }
-
-    private String mockIp() {
+    private static String mockIp() {
         return String.format("%d.%d.%d.%d",
                 Common.random(1, 254),
                 Common.random(1, 254),
@@ -61,11 +67,20 @@ public class TestServiceContext extends ServiceContext {
                 Common.random(1, 254));
     }
 
-    public TestServiceContext(Token token, Subjoin subjoin) {
-        this.token = token;
-        this.model = "TEST";
-        this.caller = new TestCaller();
-        this.side = SIDE_TEST;
-        this.subjoin = subjoin;
+    private static Token getTestToken(String tokenId) {
+        return Common.isBlank(tokenId) ? newToken()
+                : tokens.getInstance(tokenId);
+    }
+
+    private static class TestCaller implements Caller {
+        @Override
+        public String getAddress() {
+            return mockIp();
+        }
+
+        @Override
+        public String getClientProvider() {
+            return "concrete-test " + VERSION;
+        }
     }
 }

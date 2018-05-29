@@ -27,6 +27,14 @@ import java.lang.annotation.*;
 @Overlay(definition = false)
 public @interface LogAtomic {
 
+    String category() default "";
+
+    String subClass() default "";
+
+    String message() default "";
+
+    LoggingType loggingType() default LoggingType.DATA;
+
     /**
      * ALWAYS: 一直记录
      * DATA: 当有数据时进行记录
@@ -35,14 +43,6 @@ public @interface LogAtomic {
     enum LoggingType {
         ALWAYS, DATA, NO
     }
-
-    String category() default "";
-
-    String subClass() default "";
-
-    String message() default "";
-
-    LoggingType loggingType() default LoggingType.DATA;
 
 //    Class<? extends OperationLogger> loggerClass() default OperationLogger.class;
 }

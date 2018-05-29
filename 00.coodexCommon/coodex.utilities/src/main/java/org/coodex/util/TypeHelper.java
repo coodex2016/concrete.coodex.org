@@ -31,213 +31,29 @@ import java.util.List;
  */
 public class TypeHelper {
 
-    public /* static */ interface ExceptClassFilter {
-        boolean except(Class<?> c);
-    }
-
-    private static class JavaLangExceptFilter implements ExceptClassFilter {
-        //      @Override
-        public boolean except(Class<?> c) {
-            return c.getPackage().getName().startsWith("java.lang");
-        }
-    }
-
     private final static ExceptClassFilter javaLangExceptFilter = new JavaLangExceptFilter();
+    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
+            String.class,
+            Boolean.class,
+            Character.class,
+            Byte.class,
+            Short.class,
+            Integer.class,
+            Long.class,
+            Float.class,
+            Double.class,
+            Void.class,
+            boolean.class,
+            char.class,
+            byte.class,
+            short.class,
+            int.class,
+            long.class,
+            float.class,
+            double.class,
+            void.class,
+    };
 
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public static Type findActualClassFrom(TypeVariable type, Type instanceClass) {
-        return findActualClassFromInstanceClass(type, instanceClass);
-    }
-
-
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public static Type findActualClassFromInstanceClass(
-            TypeVariable<Class<?>> type, Type instancedClass) {
-        return findActualClassFromInstanceClass(type, instancedClass, null);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public static Type findActualClassFromInstanceClass(
-            TypeVariable<Class<?>> type, Type instancedClass,
-            ExceptClassFilter filter) {
-        Type t = type;
-        do {
-            t = searchActualType((TypeVariable<Class<?>>) t, instancedClass,
-                    filter);
-        } while (t instanceof TypeVariable);
-
-        return t;
-    }
-
-    @Deprecated
-    private static Type searchActualTypeInParameterizedType(
-            TypeVariable<Class<?>> type, ParameterizedType pt,
-            ExceptClassFilter filter) {
-
-        Type result = null;
-        Class<?> declaringClass = type.getGenericDeclaration();
-
-        if (pt.getRawType() == declaringClass) {
-
-            Type[] t = declaringClass.getTypeParameters();
-            for (int i = 0; i < t.length; i++)
-                if (type == t[i]) {
-                    result = pt.getActualTypeArguments()[i];
-                    break;
-                }
-        } else {
-//            Type[] types = pt.getActualTypeArguments();
-//            for (int i = 0; i < types.length; i++) {
-            for (Type $ : pt.getActualTypeArguments()) {
-                result = searchActualType(type, $/*types[i]*/, filter);
-                if (result != null)
-                    break;
-            }
-//            }
-        }
-        return result;
-    }
-
-    @Deprecated
-    public static Type searchActualType(TypeVariable<Class<?>> type,
-                                        Type instancedInfo) {
-        return searchActualType(type, instancedInfo, javaLangExceptFilter);
-    }
-
-    @Deprecated
-    public static Type searchActualType(TypeVariable<Class<?>> type,
-                                        Type instancedInfo, ExceptClassFilter filter) {
-
-        if (type == null || instancedInfo == null)
-            return null;
-
-        Type result = null;
-
-        if (instancedInfo instanceof ParameterizedType) {
-
-            result = searchActualTypeInParameterizedType(type,
-                    (ParameterizedType) instancedInfo, filter);
-
-        } else if (instancedInfo instanceof Class) {
-            result = searchActualTypeInClass(type, (Class<?>) instancedInfo,
-                    filter);
-
-        } else if (instancedInfo instanceof GenericArrayType) {
-
-            result = searchActualType(type,
-                    ((GenericArrayType) instancedInfo).getGenericComponentType(),
-                    filter);
-        }
-
-        return result;
-    }
-
-    @Deprecated
-    private static Type searchActualTypeInClass(TypeVariable<Class<?>> type,
-                                                Class<?> instancedInfo, ExceptClassFilter filter) {
-        if (filter != null && filter.except(instancedInfo)
-                || javaLangExceptFilter.except(instancedInfo))
-            return null;
-
-        Type result;
-        // search in genericSuperClass
-        result = searchActualType(type, instancedInfo.getGenericSuperclass(),
-                filter);
-
-        // search in genericInterfaces
-        if (result == null) {
-            Type[] interfaces = instancedInfo.getGenericInterfaces();
-            for (Type $ : interfaces) {
-                result = searchActualType(type, $, filter);
-                if (result != null)
-                    break;
-            }
-        }
-
-        // search in super class
-        if (result == null)
-            result = searchActualType(type, instancedInfo.getSuperclass(), filter);
-
-        // search in interfaces
-        if (result == null) {
-            Class<?>[] interfaces = instancedInfo.getInterfaces();
-            for (Class<?> $ : interfaces) {
-                result = searchActualType(type, $, filter);
-                if (result != null)
-                    break;
-            }
-        }
-        return result;
-    }
-
-    private static class $$GenericArrayType implements GenericArrayType {
-        private final Type genericComponentType;
-
-        private $$GenericArrayType(GenericArrayType type, Type... contextClass) {
-            this.genericComponentType = toTypeReference(type.getGenericComponentType(), contextClass);
-        }
-
-        public Type getGenericComponentType() {
-            return genericComponentType;
-        }
-
-        @Override
-        public String toString() {
-            return genericComponentType.toString() + "[]";
-        }
-    }
-
-
-    private static class $$ParameterizedType implements ParameterizedType {
-        private final ParameterizedType type;
-        private List<Type> types = new ArrayList<Type>();
-
-        $$ParameterizedType(ParameterizedType type, Type... contextClass) {
-            this.type = type;
-            for (int i = 0; i < type.getActualTypeArguments().length; i++) {
-                Type $ = type.getActualTypeArguments()[i];
-                types.add(toTypeReference($, contextClass));
-            }
-        }
-
-        public Type[] getActualTypeArguments() {
-            return types.toArray(new Type[0]);
-        }
-
-        public Type getRawType() {
-            return type.getRawType();
-        }
-
-        public Type getOwnerType() {
-            return type.getOwnerType();
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder builder = new StringBuilder(((Class) getRawType()).getName());
-            if (types.size() > 0) {
-                builder.append("<");
-
-                for (int i = 0; i < types.size(); i++) {
-                    if (i > 0) builder.append(',');
-                    builder.append(types.get(i).toString());
-                }
-                builder.append(">");
-            }
-            return builder.toString();
-        }
-    }
-
-    /////////////////////////
-    // 2017-05-12 彻底重构
-    /////////////////////////
-
-//    public static boolean isAssignable(Class superClass, Type test){
-//        superClass.isAssignableFrom()
-//    }
 
     public static Class typeToClass(Type type) {
         if (type instanceof Class) {
@@ -263,12 +79,20 @@ public class TypeHelper {
     public static Type solve(TypeVariable variable, Type... types) {
         if (types == null || types.length == 0) return null;
         if (variable.getGenericDeclaration() instanceof Class) {
-            Type t = solveClassTypeVariable(variable, types);
+            Type t = toTypeReference(solveClassTypeVariable(variable, types), types);
             return t == null ? variable : t;
         } else { // Method 等怎么搞？
             return variable;
         }
     }
+
+    /////////////////////////
+    // 2017-05-12 彻底重构
+    /////////////////////////
+
+//    public static boolean isAssignable(Class superClass, Type test){
+//        superClass.isAssignableFrom()
+//    }
 
     // 查找定义在Class中的TypeVariable
     private static Type solveClassTypeVariable(TypeVariable variable, Type... types) {
@@ -311,7 +135,8 @@ public class TypeHelper {
             return null;
 
         // search in genericSuperClass
-        Type result = solveInSuper(variable, c.getGenericSuperclass());
+        Type result = toTypeReference(
+                solveInSuper(variable, c.getGenericSuperclass()), c);
 
         // search in genericInterfaces
         if (result == null) {
@@ -364,7 +189,6 @@ public class TypeHelper {
         return null;
     }
 
-
     private static Type isSuper(Class<?> c, Type toTest) {
         if (toTest == null || c == null) return null;
         if (toTest instanceof Class) {
@@ -379,31 +203,94 @@ public class TypeHelper {
         return null;
     }
 
-
-    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
-            String.class,
-            Boolean.class,
-            Character.class,
-            Byte.class,
-            Short.class,
-            Integer.class,
-            Long.class,
-            Float.class,
-            Double.class,
-            Void.class,
-            boolean.class,
-            char.class,
-            byte.class,
-            short.class,
-            int.class,
-            long.class,
-            float.class,
-            double.class,
-            void.class,
-    };
-
     public static boolean isPrimitive(Class c) {
         return Common.inArray(c, PRIMITIVE_CLASSES);
+    }
+
+    public /* static */ interface ExceptClassFilter {
+        boolean except(Class<?> c);
+    }
+
+    private static class JavaLangExceptFilter implements ExceptClassFilter {
+        //      @Override
+        public boolean except(Class<?> c) {
+            return c.getPackage().getName().startsWith("java.lang");
+        }
+    }
+
+    private static class $$GenericArrayType implements GenericArrayType {
+        private final Type genericComponentType;
+
+        private $$GenericArrayType(GenericArrayType type, Type... contextClass) {
+            this.genericComponentType = toTypeReference(type.getGenericComponentType(), contextClass);
+        }
+
+        public Type getGenericComponentType() {
+            return genericComponentType;
+        }
+
+        @Override
+        public String toString() {
+            return genericComponentType.toString() + "[]";
+        }
+    }
+
+    private static class $$ParameterizedType implements ParameterizedType {
+        private final ParameterizedType type;
+        private List<Type> types = new ArrayList<Type>();
+
+        $$ParameterizedType(ParameterizedType type, Type... contextClass) {
+            this.type = type;
+            for (int i = 0; i < type.getActualTypeArguments().length; i++) {
+                Type $ = type.getActualTypeArguments()[i];
+                types.add(toTypeReference($, contextClass));
+            }
+        }
+
+        public Type[] getActualTypeArguments() {
+            return types.toArray(new Type[0]);
+        }
+
+        public Type getRawType() {
+            return type.getRawType();
+        }
+
+        public Type getOwnerType() {
+            return type.getOwnerType();
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder(((Class) getRawType()).getName());
+            if (types.size() > 0) {
+                builder.append("<");
+
+                for (int i = 0; i < types.size(); i++) {
+                    if (i > 0) builder.append(',');
+                    builder.append(types.get(i).toString());
+                }
+                builder.append(">");
+            }
+            return builder.toString();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            $$ParameterizedType that = ($$ParameterizedType) o;
+
+            if (type != null ? !type.equals(that.type) : that.type != null) return false;
+            return types != null ? types.equals(that.types) : that.types == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = type != null ? type.hashCode() : 0;
+            result = 31 * result + (types != null ? types.hashCode() : 0);
+            return result;
+        }
     }
 
 }

@@ -16,20 +16,15 @@
 
 package org.coodex.concrete.core.messages;
 
-import org.coodex.concrete.client.MessageSubscriber;
-import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.messages.Message;
 import org.coodex.concrete.common.messages.MessageFilter;
 import org.coodex.concrete.common.messages.Subscription;
-import org.coodex.concrete.core.token.TokenManager;
-import org.coodex.concrete.core.token.TokenWrapper;
 
-import static org.coodex.concrete.common.ConcreteContext.SIDE_LOCAL_INVOKE;
-
+@Deprecated
 public class TokenBaseSubscription<T> extends AbstractSubscription<T> {
 
-    private final String tokenId;
-    private final Courier courier;
+//    private final String tokenId;
+//    private final Courier courier;
 
 
     public TokenBaseSubscription(String subject) {
@@ -38,20 +33,20 @@ public class TokenBaseSubscription<T> extends AbstractSubscription<T> {
 
     public TokenBaseSubscription(String subject, TokenBaseMessageFilter<T> filter) {
         super(subject, filter);
-        ServiceContext context = ConcreteContext.getServiceContext();
-        if (context.getSide() == SIDE_LOCAL_INVOKE) {
-            tokenId = null;
-        } else {
-            Token token = TokenWrapper.getInstance();
-            if (token == null || !token.isValid()) {
-                throw new RuntimeException("invalid token.");
-            }
-            tokenId = token.getTokenId();
-            if (context.getCourier() == null)
-                throw new RuntimeException("no courier found.");
-        }
-
-        this.courier = context.getCourier();
+//        ServiceContext context = ConcreteContext.getServiceContext();
+//        if (context.getSide() == SIDE_LOCAL_INVOKE) {
+//            tokenId = null;
+//        } else {
+//            Token token = TokenWrapper.getInstance();
+//            if (token == null || !token.isValid()) {
+//                throw new RuntimeException("invalid token.");
+//            }
+//            tokenId = token.getTokenId();
+//            if (context.getCourier() == null)
+//                throw new RuntimeException("no courier found.");
+//        }
+//
+//        this.courier = context.getCourier();
     }
 
     @Override
@@ -61,31 +56,31 @@ public class TokenBaseSubscription<T> extends AbstractSubscription<T> {
 
     @Override
     public void onMessage(Message<T> message) {
-        if (tokenId != null) {
-            Token token = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(tokenId, false);
-            if (token == null || !token.isValid()) {
-                if (subscriber != null) {
-                    subscriber.cancel();
-                }
-                return;
-            }
-            synchronized (token) {
-                this.courier.pushTo(message, token);
-            }
-        } else { // local invoke
-            MessageSubscriber.next(message.getSubject(),
-                    JSONSerializerFactory.getInstance().toJson(message.getBody())
-            );
-        }
+//        if (tokenId != null) {
+//            Token token = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(tokenId, false);
+//            if (token == null || !token.isValid()) {
+//                if (subscriber != null) {
+//                    subscriber.cancel();
+//                }
+//                return;
+//            }
+//            synchronized (token) {
+//                this.courier.pushTo(message, token);
+//            }
+//        } else { // local invoke
+//            MessageSubscriber.next(message.getSubject(),
+//                    JSONSerializerFactory.getInstance().toJson(message.getBody())
+//            );
+//        }
     }
 
     @Override
     public boolean isSame(Subscription anotherSubscription) {
-        if (!(anotherSubscription instanceof TokenBaseSubscription)) return false;
-        TokenBaseSubscription that = (TokenBaseSubscription) anotherSubscription;
-        if (tokenId != null ? !tokenId.equals(that.tokenId)
-                : that.tokenId != null) return false;
-        if (!this.courier.getType().equals(that.courier.getType())) return false;
+//        if (!(anotherSubscription instanceof TokenBaseSubscription)) return false;
+//        TokenBaseSubscription that = (TokenBaseSubscription) anotherSubscription;
+//        if (tokenId != null ? !tokenId.equals(that.tokenId)
+//                : that.tokenId != null) return false;
+//        if (!this.courier.getType().equals(that.courier.getType())) return false;
         return super.isSame(anotherSubscription);
     }
 }

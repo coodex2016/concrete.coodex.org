@@ -39,19 +39,8 @@ public abstract class AbstractOrganizationAccountFactory
                 P extends AbstractPersonAccountEntity<J>>
         implements AcceptableAccountFactory<AccountIDImpl> {
 
-    private ConcreteCache<String, OrganizationAccount> accountCache = new ConcreteCache<String, OrganizationAccount>() {
-        @Override
-        protected OrganizationAccount load(String key) {
-            P person = accountRepo.findOne(key);
-            return person == null ? null : accountCopier.copy(person);
-        }
-
-        @Override
-        protected String getRule() {
-            return AbstractOrganizationAccountFactory.class.getPackage().getName();
-        }
-    };
-
+    @Inject
+    protected AbstractPersonAccountRepo<P> accountRepo;
     private Copier<P, OrganizationAccount> accountCopier = new AbstractCopier<P, OrganizationAccount>() {
         @Override
         public OrganizationAccount copy(P p, OrganizationAccount organizationAccount) {
@@ -64,6 +53,18 @@ public abstract class AbstractOrganizationAccountFactory
         }
 
 
+    };
+    private ConcreteCache<String, OrganizationAccount> accountCache = new ConcreteCache<String, OrganizationAccount>() {
+        @Override
+        protected OrganizationAccount load(String key) {
+            P person = accountRepo.findOne(key);
+            return person == null ? null : accountCopier.copy(person);
+        }
+
+        @Override
+        protected String getRule() {
+            return AbstractOrganizationAccountFactory.class.getPackage().getName();
+        }
     };
 
     public static Set<String> getAllRoles(AbstractPersonAccountEntity<? extends AbstractPositionEntity> p) {
@@ -99,9 +100,6 @@ public abstract class AbstractOrganizationAccountFactory
         }
         return domain.toString();
     }
-
-    @Inject
-    protected AbstractPersonAccountRepo<P> accountRepo;
 
     @Override
     public boolean accept(AccountIDImpl accountID) {

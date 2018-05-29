@@ -22,7 +22,6 @@ import java.util.Map;
 public interface Settings {
 
 
-
     Boolean getBool(String key);
 
     Integer getInt(String key);

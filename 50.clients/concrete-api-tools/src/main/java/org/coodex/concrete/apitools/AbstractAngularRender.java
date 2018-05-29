@@ -30,6 +30,11 @@ import java.util.*;
 
 public abstract class AbstractAngularRender<U extends AbstractUnit> extends AbstractRender {
 
+    protected static final ThreadLocal<Map<String, Map<Class, TSClass>>> CLASSES = new ThreadLocal<Map<String, Map<Class, TSClass>>>();
+    private static final Class[] NUMBERS = new Class[]{
+            byte.class, int.class, short.class, long.class, float.class, double.class
+    };
+
     /// TODO: 处理方式不妥。如果Service method定义变换顺序后，会导致基于原版本的code全部出问题
     protected String getMethodName(String name, Set<String> methods) {
         String methodName = name;
@@ -42,8 +47,6 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
     }
 
     protected abstract String getModuleType();
-
-    protected static final ThreadLocal<Map<String, Map<Class, TSClass>>> CLASSES = new ThreadLocal<Map<String, Map<Class, TSClass>>>();
 
     private Map<String, Map<Class, TSClass>> getClasses() {
         return CLASSES.get();
@@ -140,7 +143,6 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
         return true;
     }
 
-
     protected void process(String moduleName, AbstractModule<U> module) {
         Class<?> clz = module.getInterfaceClass();
         Map<Class, TSClass> moduleMap = getTSClassMap(clz);
@@ -169,7 +171,6 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
     }
 
     protected abstract String getMethodPath(AbstractModule<U> module, U unit);
-
 
     private List<TSParam> getParams(U unit, TSClass clz) {
         List<TSParam> fieldList = new ArrayList<TSParam>();
@@ -237,10 +238,6 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
             return builder.toString();
         }
     }
-
-    private static final Class[] NUMBERS = new Class[]{
-            byte.class, int.class, short.class, long.class, float.class, double.class
-    };
 
     private String getClassType(Class c, TSClass clz) {
         if (void.class.equals(c) || Void.class.equals(c)) {

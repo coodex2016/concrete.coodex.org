@@ -23,12 +23,6 @@ import java.lang.reflect.Constructor;
  */
 public class Test {
 
-    public static class X {
-        public X(@Parameter("x1") String x1, String kkkk){}
-
-        public void abcd(@Parameter("ddd") String ddd, @Parameter("ok") String ok){}
-    }
-
     public static void main(String[] args) throws NoSuchMethodException {
 
         Class x = X.class;
@@ -49,6 +43,14 @@ public class Test {
 //            }), true));
 ////            System.out.println();
 //        }
+    }
+
+    public static class X {
+        public X(@Parameter("x1") String x1, String kkkk) {
+        }
+
+        public void abcd(@Parameter("ddd") String ddd, @Parameter("ok") String ok) {
+        }
     }
 }
 

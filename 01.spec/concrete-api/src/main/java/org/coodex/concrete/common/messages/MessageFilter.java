@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.common.messages;
 
+@Deprecated
 public interface MessageFilter<T> {
 
     boolean iWantIt(Message<? extends T> message);

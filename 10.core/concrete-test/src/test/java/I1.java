@@ -21,5 +21,6 @@ import org.coodex.concrete.api.ConcreteService;
  */
 public interface I1 extends ConcreteService {
     void i11();
+
     void i12();
 }

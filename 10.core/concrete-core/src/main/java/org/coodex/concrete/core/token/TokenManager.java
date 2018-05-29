@@ -24,6 +24,7 @@ import org.coodex.concrete.common.Token;
 public interface TokenManager {
 
     long DEFAULT_MAX_IDLE = 60; //默认60分钟
+
     /**
      * 获取一个已存在的令牌，令牌不存在返回空值
      *
@@ -39,5 +40,13 @@ public interface TokenManager {
      * @param force
      * @return
      */
+    @Deprecated
     Token getToken(String id, boolean force);
+
+    /**
+     * 新建一个Token
+     *
+     * @return
+     */
+    Token newToken();
 }

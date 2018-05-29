@@ -16,7 +16,7 @@
 
 package test.org.coodex.concrete.fsm;
 
-public class FSMDemoImpl extends AbstractFSMDemoImpl<NumericState, FSMDemo> implements FSMDemo{
+public class FSMDemoImpl extends AbstractFSMDemoImpl<NumericState, FSMDemo> implements FSMDemo {
 
     @Override
     public void init() {

@@ -20,7 +20,7 @@ import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ReferenceConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.rpc.RpcContext;
-import org.coodex.concrete.client.ClientServiceContext;
+import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.ClientTokenManagement;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.AbstractSyncInvoker;
@@ -47,9 +47,11 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
     private final static String CLIENT_AGENT = "concrete-dubbo-client-" + VERSION;
 
     private final static Logger log = LoggerFactory.getLogger(DubboClientInvoker.class);
+    @SuppressWarnings({"unsafe", "unchecked"})
     private static SingletonMap<DubboCacheKey, Object> dubboClientInstances =
             new SingletonMap<DubboCacheKey, Object>(new SingletonMap.Builder<DubboCacheKey, Object>() {
                 @Override
+
                 public Object build(DubboCacheKey key) {
                     Destination destination = key.getDestination();
                     String registries = getString(destination.getIdentify(), "registry");
@@ -75,7 +77,7 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
     }
 
     private static String mapToStr(Map<String, String> map) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (String key : map.keySet()) {
             buffer.append("\n\t").append(key).append(": ").append(map.get(key));
         }
@@ -102,7 +104,7 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
 
     @Override
     protected Object execute(Class clz, Method method, Object[] args) throws Throwable {
-        ClientServiceContext context = (ClientServiceContext) ConcreteContext.getServiceContext();
+        ClientSideContext context = (ClientSideContext) ConcreteContext.getServiceContext();
         String tokenId = ClientTokenManagement.getTokenId(getDestination(), context.getTokenId());
         if (!Common.isBlank(tokenId)) {
             RpcContext.getContext().setAttachment(Token.CONCRETE_TOKEN_ID_KEY, tokenId);
@@ -110,10 +112,10 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
         RpcContext.getContext().setAttachment(AGENT, CLIENT_AGENT);
         RpcContext.getContext().setAttachment(SUBJOIN,
                 JSONSerializerFactory.getInstance().toJson(context.getSubjoin()));
-
+        RpcContext.getContext().setAttachment(LOCATE, context.getLocale().toLanguageTag());
         if (log.isDebugEnabled()) {
             Map<String, String> map = subjoinToMap(context.getSubjoin());
-            if(!Common.isBlank(tokenId))
+            if (!Common.isBlank(tokenId))
                 map.put(Token.CONCRETE_TOKEN_ID_KEY, tokenId);
             log.debug("subjoin before invoke: {}",
                     mapToStr(map));

@@ -65,7 +65,7 @@ public class NoneTenantArchitecture implements TenantRPCServiceClient {
     }
 
     @Override
-    public <T extends Serializable>void sendMessage(String msgName, T msgBody) {
+    public <T extends Serializable> void sendMessage(String msgName, T msgBody) {
         // do nothing
     }
 }

@@ -18,10 +18,9 @@ package org.coodex.concrete.common;
 
 public interface Caller {
 
-    String LOCAL_CALLER = "LOCAL";
-
     String getAddress();
 
-    String getAgent();
+
+    String getClientProvider();
 
 }

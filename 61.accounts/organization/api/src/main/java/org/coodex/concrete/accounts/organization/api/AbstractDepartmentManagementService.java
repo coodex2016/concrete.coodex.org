@@ -29,7 +29,7 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.*;
  */
 @Abstract
 @MicroService("departments")
-@AccessAllow(roles = {SYSTEM_MANAGER,TENANT_MANAGER, ORGANIZATION_MANAGER})
+@AccessAllow(roles = {SYSTEM_MANAGER, TENANT_MANAGER, ORGANIZATION_MANAGER})
 @Safely
 public interface AbstractDepartmentManagementService<D extends Department> extends ConcreteService {
 

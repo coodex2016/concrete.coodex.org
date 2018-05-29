@@ -21,6 +21,9 @@ import io.reactivex.disposables.Disposable;
 import org.coodex.concrete.ConcreteClient;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.concrete.message.MessageFilter;
+import org.coodex.concrete.message.TokenBasedTopic;
+import org.coodex.concrete.message.Topic;
 import org.coodex.concrete.test.api.Test;
 import org.coodex.util.Common;
 import org.slf4j.Logger;
@@ -28,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import rx.org.coodex.concrete.test.api.Test_RX;
 
 import javax.inject.Inject;
+import java.util.Set;
 
 public class TestImpl implements Test {
 
@@ -35,6 +39,16 @@ public class TestImpl implements Test {
 
     private Token token = TokenWrapper.getInstance();
 
+    private Topic<String> x;
+
+    private Topic<Set<String>> y;
+
+
+    private TokenBasedTopic<TestSubject> tokenBasedTopic;
+
+//    @Inject
+//    @Queue("test")
+//    private Topic<String> z;
 
     @Inject
     @ConcreteClient("local")
@@ -61,14 +75,53 @@ public class TestImpl implements Test {
     private Test_RX websocketRx;
 
 
+    private boolean pushStart = false;
+
+
+    private void startPush(){
+        if(!pushStart){
+            synchronized (this){
+                if(!pushStart){
+                    pushStart = true;
+                    for(int i = 0; i < 10; i ++){
+                        final int finalI = i;
+                        new Thread(){
+                            @Override
+                            public void run() {
+                                while(true) {
+                                    tokenBasedTopic.publish(new TestSubject(finalI));
+                                    try {
+                                        Thread.sleep(Common.random(2000, 4000));
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }.start();
+                    }
+                }
+            }
+        }
+    }
+
     @Override
-    public int add(int x1, int x2) {
+    public int add(final int x1, int x2) {
         token.setAttribute("a", "sdf");
+        log.debug("tokenId: {}", token.getTokenId());
+        tokenBasedTopic.subscribe(new MessageFilter<TestSubject>() {
+            @Override
+            public boolean handle(TestSubject message) {
+                return message.getNumber() == x1;
+            }
+        });
+
+        startPush();
         return x1 + x2;
     }
 
     @Override
     public String sayHello(String name) {
+//        x.publish("hello");
         invokeSync(local, "local");
         invokeSync(jaxrs, "jaxrs");
         invokeSync(websocket, "websocket");

@@ -16,76 +16,31 @@
 
 package org.coodex.concrete.common;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
-import static org.coodex.util.Common.concat;
 
 /**
  * Created by davidoff shen on 2017-04-20.
  */
 public class SubjoinWrapper implements Subjoin {
 
-    public static class DefaultSubjoin implements Subjoin {
-
-        private Map<String, List<String>> subjoin = new HashMap<String, List<String>>();
-
-        @Override
-        public Locale getLocale() {
-            return Locale.getDefault();
-        }
-
-        @Override
-        public String get(String name) {
-            return get(name, "; ");
-        }
-
-        @Override
-        public String get(String name, String split) {
-            return concat(subjoin.get(name), split);
-        }
-
-
-        @Override
-        public List<String> getList(String name) {
-            return subjoin.get(name);
-        }
-
-        @Override
-        public Set<String> keySet() {
-            return subjoin.keySet();
-        }
-
-        @Override
-        public void set(String name, List<String> values) {
-            subjoin.put(name, values);
-        }
-
-        @Override
-        public void add(String name, String value) {
-            List<String> list = getList(name);
-            if (list == null) {
-                list = new ArrayList<String>();
-                subjoin.put(name, list);
-            }
-            list.add(value);
-        }
-    };
-
     private static Subjoin instance = new SubjoinWrapper();
-    public static Subjoin getInstance(){
+
+
+    public static Subjoin getInstance() {
         return instance;
     }
 
     private Subjoin getSubjoin() {
-//        return SUBJOIN.get() == null ? DEFAULT_SUBJOIN : SUBJOIN.get();
-        Subjoin subjoin = getServiceContext().getSubjoin();
+        ServiceContext serviceContext = getServiceContext();
+        Subjoin subjoin = null;
+        if (serviceContext != null) {
+            subjoin = serviceContext.getSubjoin();
+        }
         return subjoin == null || subjoin == this ? new DefaultSubjoin() : subjoin;
-    }
-
-    @Override
-    public Locale getLocale() {
-        return getSubjoin().getLocale();
     }
 
     @Override
@@ -109,6 +64,11 @@ public class SubjoinWrapper implements Subjoin {
     }
 
     @Override
+    public Set<String> updatedKeySet() {
+        return getSubjoin().updatedKeySet();
+    }
+
+    @Override
     public void set(String name, List<String> values) {
         getSubjoin().set(name, values);
     }
@@ -116,5 +76,12 @@ public class SubjoinWrapper implements Subjoin {
     @Override
     public void add(String name, String value) {
         getSubjoin().add(name, value);
+    }
+
+    public static class DefaultSubjoin extends AbstractSubjoin {
+        @Override
+        protected Collection<String> skipKeys() {
+            return null;
+        }
     }
 }

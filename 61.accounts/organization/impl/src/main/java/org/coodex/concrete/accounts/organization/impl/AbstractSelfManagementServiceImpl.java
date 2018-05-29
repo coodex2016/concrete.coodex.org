@@ -72,7 +72,7 @@ public abstract class AbstractSelfManagementServiceImpl<
         return TenantBuilderWrapper.getInstance().getTenant();
     }
 
-//    @Override
+    //    @Override
     protected PE getCurrentAccountEntity() {
         Account<AccountIDImpl> currentAccount = token.currentAccount();
         IF.is(currentAccount.getId().getType() != AccountIDImpl.TYPE_ORGANIZATION, NOT_ORGANIZATION_ACCOUNT);

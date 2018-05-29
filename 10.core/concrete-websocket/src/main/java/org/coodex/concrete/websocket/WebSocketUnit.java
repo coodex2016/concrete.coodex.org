@@ -40,10 +40,10 @@ public class WebSocketUnit extends AbstractUnit<AbstractParam, WebSocketModule> 
         return getMethod().getName();
     }
 
-    public synchronized String getKey(){
-        if(key == null){
+    public synchronized String getKey() {
+        if (key == null) {
             key = Common.sha1(String.format("%s:%s(%d)",
-                    getDeclaringModule().getInterfaceClass().getName() ,
+                    getDeclaringModule().getInterfaceClass().getName(),
                     getName(),
                     getParameters().length));
         }

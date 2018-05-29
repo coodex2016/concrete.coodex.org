@@ -27,22 +27,22 @@ import org.springframework.context.annotation.Configuration;
 public class ConcreteSpringConfiguration {
 
     @Bean
-    public BeanProvider springBeanProvider(){
+    public BeanProvider springBeanProvider() {
         return new SpringBeanProvider();
     }
 
     @Bean
-    public Token tokenWrapper(){
+    public Token tokenWrapper() {
         return TokenWrapper.getInstance();
     }
 
     @Bean
-    public Caller callerWrapper(){
+    public Caller callerWrapper() {
         return CallerWrapper.getInstance();
     }
 
     @Bean
-    public Subjoin subjoinWrapper(){
+    public Subjoin subjoinWrapper() {
         return SubjoinWrapper.getInstance();
     }
 }

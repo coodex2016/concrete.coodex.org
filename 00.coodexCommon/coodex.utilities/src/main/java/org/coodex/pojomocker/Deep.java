@@ -25,13 +25,14 @@ import java.lang.annotation.Target;
  * 循环深度，针对相同的POJO类型，模拟深度
  * 例如：
  * <code>
- *     class A{
- *         @Deep(min =5, max=5)
- *         public A a;
- *     }
+ * class A{
  *
- *     A pojo = mocker(A.class);
- *     // 最多mock出pojo.a.a.a.a.a
+ * @Deep(min =5, max=5)
+ * public A a;
+ * }
+ * <p>
+ * A pojo = mocker(A.class);
+ * // 最多mock出pojo.a.a.a.a.a
  * </code>
  * Created by davidoff shen on 2017-05-11.
  */

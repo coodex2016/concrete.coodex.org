@@ -41,9 +41,17 @@ public class TenantAccount implements SaaSAccount<AccountIDImpl>, NamedAccount<A
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String getTenant() {
         return tenant;
+    }
+
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
     }
 
     @Override
@@ -71,14 +79,6 @@ public class TenantAccount implements SaaSAccount<AccountIDImpl>, NamedAccount<A
 
     public void setValid(boolean valid) {
         this.valid = valid;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setTenant(String tenant) {
-        this.tenant = tenant;
     }
 
     public String getAppSet() {

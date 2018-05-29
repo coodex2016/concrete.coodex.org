@@ -48,7 +48,7 @@ public class Jackson2Serializer extends AbstractJsonSerializer {
                 return getMapper().readValue(json, TypeFactory.defaultInstance().constructType(t));
             }
         } catch (Throwable th) {
-                throw th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th);
+            throw th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th);
         }
     }
 

@@ -33,11 +33,11 @@ import java.util.Map;
 public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
 
 
+    private boolean init = false;
+
     protected ConcreteServiceLoader() {
         super();
     }
-
-    private boolean init = false;
 
     @Override
     protected void loadInstances() {
@@ -81,7 +81,7 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
         return instances.containsKey(key) ? instances.get(key) : null;
     }
 
-    protected T getConcreteDefaultProvider(){
+    protected T getConcreteDefaultProvider() {
         return super.getDefaultProvider();
     }
 

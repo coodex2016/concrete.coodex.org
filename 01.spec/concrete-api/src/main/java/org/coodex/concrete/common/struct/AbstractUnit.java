@@ -32,10 +32,10 @@ import java.util.List;
  */
 public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends AbstractModule> implements Annotated, Comparable<AbstractUnit> {
 
+    private final boolean deprecated;
     private Method method;
     private MODULE declaringModule;
     private DefinitionContext context;
-    private final boolean deprecated;
     private List<PARAM> params = new ArrayList<PARAM>();
 
     public AbstractUnit(Method method, MODULE module) {
@@ -43,13 +43,14 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
         this.declaringModule = module;
         this.deprecated = method.getAnnotation(Deprecated.class) != null;
 
-        for(int i = 0, j = method.getParameterTypes().length; i < j; i ++){
+        for (int i = 0, j = method.getParameterTypes().length; i < j; i++) {
             params.add(buildParam(method, i));
         }
         afterInit();
     }
 
-    protected void afterInit(){}
+    protected void afterInit() {
+    }
 
     public MODULE getDeclaringModule() {
         return declaringModule;
@@ -156,6 +157,7 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
     public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
         return method.getAnnotation(annotationClass);
     }
+
     @SuppressWarnings("unchecked")
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         T annotation = getDeclaredAnnotation(annotationClass);
@@ -174,7 +176,7 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
      *
      * @return
      */
-    public final PARAM[] getParameters(){
+    public final PARAM[] getParameters() {
         return toArrays(params);
     }
 

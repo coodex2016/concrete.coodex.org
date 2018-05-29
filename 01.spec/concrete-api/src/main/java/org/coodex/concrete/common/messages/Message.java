@@ -19,6 +19,7 @@ package org.coodex.concrete.common.messages;
 /**
  *
  */
+@Deprecated
 public interface Message<T> {
 
     String getSubject();

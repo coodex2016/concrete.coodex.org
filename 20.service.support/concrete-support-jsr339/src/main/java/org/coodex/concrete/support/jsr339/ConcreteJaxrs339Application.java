@@ -25,8 +25,14 @@ import java.util.Map;
 
 public class ConcreteJaxrs339Application extends ConcreteJaxrsApplication {
 
+    private static JSR339ClassGenerator classGenerator = new JSR339ClassGenerator();
+
     public ConcreteJaxrs339Application() {
         super();
+    }
+
+    public ConcreteJaxrs339Application(Application application) {
+        super(application);
     }
 
     @Override
@@ -34,16 +40,8 @@ public class ConcreteJaxrs339Application extends ConcreteJaxrsApplication {
         return classGenerator;
     }
 
-    public ConcreteJaxrs339Application(Application application) {
-        super(application);
-    }
-
-
-    private static JSR339ClassGenerator classGenerator = new JSR339ClassGenerator();
-
-
     @Override
     public Map<String, Object> getProperties() {
-        return application != null ? application.getProperties() : super.getProperties();
+        return getApplication() != null ? getApplication().getProperties() : super.getProperties();
     }
 }

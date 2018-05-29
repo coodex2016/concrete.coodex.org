@@ -25,20 +25,20 @@ import javax.ws.rs.core.Application;
 
 public class ConcreteJaxrs311Application extends ConcreteJaxrsApplication {
 
+    private static JSR311ClassGenerator classGenerator = new JSR311ClassGenerator();
+
     public ConcreteJaxrs311Application() {
         super();
-    }
-
-    @Override
-    protected ClassGenerator getClassGenerator() {
-        return classGenerator;
     }
 
     public ConcreteJaxrs311Application(Application application) {
         super(application);
     }
 
-    private static JSR311ClassGenerator classGenerator = new JSR311ClassGenerator();
+    @Override
+    protected ClassGenerator getClassGenerator() {
+        return classGenerator;
+    }
 
 
 }

@@ -28,6 +28,9 @@ import java.lang.reflect.Method;
  */
 public class RuntimeContext extends DefinitionContextImpl {
 
+    private Class<? extends ConcreteService> actualClass;
+    private Method actualMethod;
+
     private RuntimeContext() {
     }
 
@@ -44,21 +47,16 @@ public class RuntimeContext extends DefinitionContextImpl {
         return runtimeContext;
     }
 
-    private Class<? extends ConcreteService> actualClass;
-
-    private Method actualMethod;
-
     public Class<? extends ConcreteService> getActualClass() {
         return actualClass;
     }
 
+    void setActualClass(Class<? extends ConcreteService> actualClass) {
+        this.actualClass = actualClass;
+    }
 
     public Method getActualMethod() {
         return actualMethod;
-    }
-
-    void setActualClass(Class<? extends ConcreteService> actualClass) {
-        this.actualClass = actualClass;
     }
 
     void setActualMethod(Method actualMethod) {
@@ -94,7 +92,6 @@ public class RuntimeContext extends DefinitionContextImpl {
 //        return annotation == null ? super.getAnnotation(annotationClass) : annotation;
         return annotation == null ? super.getAnnotation(annotationClass) : annotation;
     }
-
 
 
     private <T extends Annotation> T getAnnotationFromImpl(Class<T> annotationClass) {

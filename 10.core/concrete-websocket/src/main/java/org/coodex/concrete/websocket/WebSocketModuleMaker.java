@@ -19,7 +19,7 @@ package org.coodex.concrete.websocket;
 import org.coodex.concrete.common.ModuleMaker;
 
 public class WebSocketModuleMaker implements ModuleMaker<WebSocketModule> {
-    public final static String WEB_SOCKET_SUPPORT = "WebSocket." ;
+    public final static String WEB_SOCKET_SUPPORT = "WebSocket.";
 
     @Override
     public boolean isAccept(String desc) {
@@ -31,7 +31,7 @@ public class WebSocketModuleMaker implements ModuleMaker<WebSocketModule> {
         return new WebSocketModule(interfaceClass);
     }
 
-//    @Override
+    //    @Override
     public boolean accept(String desc) {
         return desc != null && desc.toLowerCase().startsWith(WEB_SOCKET_SUPPORT.toLowerCase());
     }

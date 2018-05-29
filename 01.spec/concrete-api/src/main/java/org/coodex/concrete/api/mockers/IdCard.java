@@ -31,6 +31,16 @@ import java.lang.annotation.Target;
 @Mock
 public @interface IdCard {
 
+    Specification specification() default Specification.S18;
+
+    String[] divisions() default {};
+
+    int minAge() default 5;
+
+    int maxAge() default 90;
+
+    Sex sex() default Sex.RANDOM;
+
     enum Specification {
         RANDOM(-1), S15(15), S18(18);
 
@@ -65,15 +75,5 @@ public @interface IdCard {
             return sex;
         }
     }
-
-    Specification specification() default Specification.S18;
-
-    String[] divisions() default {};
-
-    int minAge() default 5;
-
-    int maxAge() default 90;
-
-    Sex sex() default Sex.RANDOM;
 
 }

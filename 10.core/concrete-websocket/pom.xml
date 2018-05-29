@@ -21,7 +21,7 @@
     <parent>
         <artifactId>concrete.pom</artifactId>
         <groupId>org.coodex</groupId>
-        <version>0.2.2</version>
+        <version>0.2.3-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -43,7 +43,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-core-java7</artifactId>
+            <artifactId>concrete-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 

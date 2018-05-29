@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.test.boot;
 
-import com.alibaba.dubbo.config.RegistryConfig;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concrete.core.token.local.LocalTokenManager;
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
@@ -46,9 +45,7 @@ import javax.servlet.ServletException;
 import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpoint;
-import java.util.Arrays;
 
-import static org.coodex.concrete.dubbo.DubboHelper.buildRegistryConfig;
 import static org.coodex.concrete.dubbo.DubboHelper.buildRegistryConfigs;
 
 @SpringBootApplication
@@ -59,21 +56,14 @@ public class ServiceStarter {
 
     private static Profile profile = Profile.getProfile("env.properties");
 
-    public static class JaxRSApplication extends ConcreteJaxrs339Application {
-        public JaxRSApplication() {
-            register(JacksonFeature.class,
-                    LoggingFeature.class,
-                    Test.class);
-        }
+    public static void main(String[] args) {
+        SpringApplication.run(ServiceStarter.class);
     }
 
-    @ServerEndpoint(value = "/WebSocket", configurator = CallerHackConfigurator.class)
-    public static class WebsocketApplication extends ConcreteWebSocketApplication {
-        public WebsocketApplication() {
-            super();
-            register(Test.class);
-        }
-    }
+//    @Bean
+//    public TestTopic getTestTopic(){
+//        return new TestTopic();
+//    }
 
     @Bean
     public ServletRegistrationBean jaxrsServlet() {
@@ -129,7 +119,6 @@ public class ServiceStarter {
         return dubboApplication;
     }
 
-
     @Bean
     public TokenManager tokenManager() {
         return new LocalTokenManager();
@@ -140,9 +129,20 @@ public class ServiceStarter {
         return new TestImpl();
     }
 
+    public static class JaxRSApplication extends ConcreteJaxrs339Application {
+        public JaxRSApplication() {
+            register(JacksonFeature.class,
+                    LoggingFeature.class,
+                    Test.class);
+        }
+    }
 
-    public static void main(String[] args) {
-        SpringApplication.run(ServiceStarter.class);
+    @ServerEndpoint(value = "/WebSocket", configurator = CallerHackConfigurator.class)
+    public static class WebsocketApplication extends ConcreteWebSocketApplication {
+        public WebsocketApplication() {
+            super();
+            register(Test.class);
+        }
     }
 
 

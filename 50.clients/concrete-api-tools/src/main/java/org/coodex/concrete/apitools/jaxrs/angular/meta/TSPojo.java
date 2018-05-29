@@ -24,14 +24,13 @@ import java.util.List;
  */
 public class TSPojo extends TSClass {
 
+    private List<TSField> fields = new ArrayList<TSField>();
+    private String superClass;
+    private Class superType;
     public TSPojo(Class c) {
         super(CLASS_TYPE_POJO, c);
         this.superType = c.getSuperclass();
     }
-
-    private List<TSField> fields = new ArrayList<TSField>();
-    private String superClass;
-    private Class superType;
 
     public List<TSField> getFields() {
         return fields;

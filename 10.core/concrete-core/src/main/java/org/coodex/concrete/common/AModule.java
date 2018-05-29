@@ -34,6 +34,10 @@ public class AModule extends AbstractModule<AUnit> {
             }
     );
 
+    public AModule(Class<?> interfaceClass) {
+        super(interfaceClass);
+    }
+
     private static final AModule getModule(Class clz) {
 //        if (!modules.containsKey(clz)) {
 //            synchronized (AModule.class) {
@@ -52,10 +56,6 @@ public class AModule extends AbstractModule<AUnit> {
             if (unit.getMethod().equals(method)) return unit;
         }
         throw new RuntimeException("no method found." + clz.getName() + "::" + method.getName());
-    }
-
-    public AModule(Class<?> interfaceClass) {
-        super(interfaceClass);
     }
 
     @Override

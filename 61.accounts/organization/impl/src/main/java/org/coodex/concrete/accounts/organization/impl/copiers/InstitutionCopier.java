@@ -25,7 +25,7 @@ import static org.coodex.concrete.accounts.organization.pojo.Organization.TYPE_I
  * Created by davidoff shen on 2017-05-11.
  */
 public abstract class InstitutionCopier<T extends Institution, E extends AbstractInstitutionEntity>
-        extends OrganizationCopier<T, E>{
+        extends OrganizationCopier<T, E> {
 
     @Override
     public E copyA2B(T t, E e) {

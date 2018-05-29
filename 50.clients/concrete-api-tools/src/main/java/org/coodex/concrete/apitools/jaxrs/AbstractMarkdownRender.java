@@ -26,6 +26,6 @@ public abstract class AbstractMarkdownRender extends AbstractRender {
 
 }
 
-class MetaData{
+class MetaData {
 
 }

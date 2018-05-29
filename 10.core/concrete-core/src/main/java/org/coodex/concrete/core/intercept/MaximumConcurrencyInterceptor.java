@@ -34,6 +34,19 @@ import static org.coodex.concrete.core.intercept.InterceptOrders.LIMITING;
  * Created by davidoff shen on 2017-04-10.
  */
 public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
+    private static final Profile MC_PROFILE = Profile.getProfile("limiting.maximum.concurrency.properties");
+    private static final Map<String, ConcurrencyStrategy> STRATEGIES = new HashMap<String, ConcurrencyStrategy>();
+
+    private static ConcurrencyStrategy getStrategy(String strategyName) {
+        synchronized (STRATEGIES) {
+            if (!STRATEGIES.containsKey(strategyName)) {
+                ConcurrencyStrategy strategy = new ConcurrencyStrategy(strategyName);
+                STRATEGIES.put(strategyName, strategy);
+            }
+        }
+        return STRATEGIES.get(strategyName);
+    }
+
     @Override
     public int getOrder() {
         return LIMITING;
@@ -45,31 +58,12 @@ public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
                 && (context.getAnnotation(Limiting.class) != null);
     }
 
-
     @Override
     public void before(RuntimeContext context, MethodInvocation joinPoint) {
         ConcurrencyStrategy strategy = getConcurrencyStrategy(context);
 
         if (strategy != null && !strategy.alloc())
             throw new ConcreteException(ErrorCodes.OVERRUN);
-    }
-
-    @Override
-    public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
-        release(context);
-        return super.after(context, joinPoint, result);
-    }
-
-    private void release(RuntimeContext context) {
-        ConcurrencyStrategy strategy = getConcurrencyStrategy(context);
-        if (strategy != null)
-            strategy.release();
-    }
-
-    @Override
-    public Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
-        release(context);
-        return super.onError(context, joinPoint, th);
     }
 
 //    @Override
@@ -91,6 +85,24 @@ public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
 //        }
 //    }
 
+    @Override
+    public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+        release(context);
+        return super.after(context, joinPoint, result);
+    }
+
+    private void release(RuntimeContext context) {
+        ConcurrencyStrategy strategy = getConcurrencyStrategy(context);
+        if (strategy != null)
+            strategy.release();
+    }
+
+    @Override
+    public Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
+        release(context);
+        return super.onError(context, joinPoint, th);
+    }
+
     private ConcurrencyStrategy getConcurrencyStrategy(RuntimeContext context) {
         ConcurrencyStrategy strategy = null;
         Limiting limiting = context.getAnnotation(Limiting.class);
@@ -101,8 +113,6 @@ public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
             strategy = getStrategy(limiting.strategy());
         return strategy;
     }
-
-    private static final Profile MC_PROFILE = Profile.getProfile("limiting.maximum.concurrency.properties");
 
     static class ConcurrencyStrategy {
         // 计数器
@@ -131,18 +141,6 @@ public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
             return MC_PROFILE.getInt(strategyName + ".max",
                     MC_PROFILE.getInt("max", Integer.MAX_VALUE));
         }
-    }
-
-    private static final Map<String, ConcurrencyStrategy> STRATEGIES = new HashMap<String, ConcurrencyStrategy>();
-
-    private static ConcurrencyStrategy getStrategy(String strategyName) {
-        synchronized (STRATEGIES) {
-            if (!STRATEGIES.containsKey(strategyName)) {
-                ConcurrencyStrategy strategy = new ConcurrencyStrategy(strategyName);
-                STRATEGIES.put(strategyName, strategy);
-            }
-        }
-        return STRATEGIES.get(strategyName);
     }
 
 }

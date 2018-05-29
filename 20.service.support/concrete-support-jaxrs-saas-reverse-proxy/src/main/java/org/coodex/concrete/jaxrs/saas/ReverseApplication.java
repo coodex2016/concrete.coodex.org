@@ -24,14 +24,14 @@ import javax.ws.rs.core.Application;
 
 public class ReverseApplication extends ConcreteJaxrsApplication {
 
+    private static ReverseClassGenerator classGenerator = new ReverseClassGenerator();
+
     public ReverseApplication() {
     }
 
     public ReverseApplication(Application application) {
         super(application);
     }
-
-    private static ReverseClassGenerator classGenerator = new ReverseClassGenerator();
 
     @Override
     protected ClassGenerator getClassGenerator() {

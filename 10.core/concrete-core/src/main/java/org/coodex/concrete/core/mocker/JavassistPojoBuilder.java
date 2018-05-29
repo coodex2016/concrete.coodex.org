@@ -37,13 +37,17 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class JavassistPojoBuilder implements PojoBuilder {
 
-    public interface JavassistPojo {
-        String __key();
-    }
-
     private static final AtomicLong ATOMIC_LONG = new AtomicLong(0);
-
     private final Map<String, Class> classCache = new HashMap<String, Class>();
+
+    private static String upperFirstChar(String propertyName) {
+        char[] chars = propertyName.toCharArray();
+        if (chars.length > 0 && chars[0] <= 'z' && chars[0] >= 'a') {
+            chars[0] = (char) (chars[0] + 'A' - 'a');
+            return new String(chars);
+        }
+        return propertyName;
+    }
 
     private Class getClass(PojoInfo pojoInfo) throws CannotCompileException, NotFoundException, ClassNotFoundException {
         String key = pojoInfo.getType().toString();
@@ -120,16 +124,6 @@ public class JavassistPojoBuilder implements PojoBuilder {
         return "get" + upperFirstChar(propertyName);
     }
 
-    private static String upperFirstChar(String propertyName) {
-        char[] chars = propertyName.toCharArray();
-        if (chars.length > 0 && chars[0] <= 'z' && chars[0] >= 'a') {
-            chars[0] = (char) (chars[0] + 'A' - 'a');
-            return new String(chars);
-        }
-        return propertyName;
-    }
-
-
     private String getTypeName(Type type) {
         if (type instanceof Class) {
             Class c = (Class) type;
@@ -143,7 +137,6 @@ public class JavassistPojoBuilder implements PojoBuilder {
             throw new RuntimeException("unsupported type: " + type.toString());
         }
     }
-
 
     @Override
     public Object newInstance(PojoInfo pojoInfo) throws Throwable {
@@ -170,6 +163,10 @@ public class JavassistPojoBuilder implements PojoBuilder {
             return c.getMethod(getGetterName(property.getName())).invoke(instance);
         }
         return null;
+    }
+
+    public interface JavassistPojo {
+        String __key();
     }
 
 }

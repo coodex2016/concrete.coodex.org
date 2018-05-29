@@ -18,16 +18,11 @@ package org.coodex.util;
 
 public class Singleton<T> {
 
-    public interface Builder<T> {
-        T build();
-    }
-
+    private final Builder<T> builder;
     private T instance = null;
 
-    private final Builder<T> builder;
-
     public Singleton(Builder<T> builder) {
-        if(builder == null) throw new NullPointerException("builder MUST NOT be null.");
+        if (builder == null) throw new NullPointerException("builder MUST NOT be null.");
         this.builder = builder;
     }
 
@@ -40,5 +35,9 @@ public class Singleton<T> {
             }
         }
         return instance;
+    }
+
+    public interface Builder<T> {
+        T build();
     }
 }

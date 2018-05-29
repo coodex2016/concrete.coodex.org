@@ -28,7 +28,7 @@ public class DefaultCharMocker extends AbstractPrimitiveMocker<Character, CHAR> 
 
     static final String DEFAULT_RANGE_STR = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:;{}[]`!@#$%^&*()_+-='\",./<>?|\\";
 
-    static char[] getDefaultRange(){
+    static char[] getDefaultRange() {
         return Profile.getProfile("mock.properties").getString("default.chars.range", DEFAULT_RANGE_STR).toCharArray();
     }
 

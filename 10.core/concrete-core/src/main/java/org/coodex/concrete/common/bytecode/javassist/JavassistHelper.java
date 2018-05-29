@@ -16,10 +16,14 @@
 
 package org.coodex.concrete.common.bytecode.javassist;
 
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.LoaderClassPath;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
+import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,10 +53,34 @@ public class JavassistHelper {
 //        return null;
 //    }
 
+    private final static SingletonMap<ClassLoader, ClassPool> classPools =
+            new SingletonMap<ClassLoader, ClassPool>(new SingletonMap.Builder<ClassLoader, ClassPool>() {
+                @Override
+                public ClassPool build(ClassLoader key) {
+                    ClassPool classPool = new ClassPool(true);
+                    classPool.appendClassPath(new LoaderClassPath(key));
+                    return classPool;
+                }
+            });
+
+    public final static ClassPool getClassPool(Class clz) {
+        return clz == null ? ClassPool.getDefault() : classPools.getInstance(clz.getClassLoader());
+    }
+
     public static SignatureAttribute.ClassType classType(String className, String... arguments) {
         Collection<SignatureAttribute.TypeArgument> args = new ArrayList<SignatureAttribute.TypeArgument>();
         for (String arg : arguments) {
             args.add(new SignatureAttribute.TypeArgument(new SignatureAttribute.ClassType(arg)));
+        }
+        return new SignatureAttribute.ClassType(className, args.toArray(new SignatureAttribute.TypeArgument[0]));
+    }
+
+    public static SignatureAttribute.ClassType classType(String className, Type... arguments) {
+        Collection<SignatureAttribute.TypeArgument> args = new ArrayList<SignatureAttribute.TypeArgument>();
+        for (Type arg : arguments) {
+            args.add(
+                    new SignatureAttribute.TypeArgument(
+                            (SignatureAttribute.ObjectType) classType(arg, null)));
         }
         return new SignatureAttribute.ClassType(className, args.toArray(new SignatureAttribute.TypeArgument[0]));
     }
@@ -159,6 +187,15 @@ public class JavassistHelper {
                 attr.addAnnotation(annotation);
         }
         return attr;
+    }
+
+    public static CtClass[] toCtClass(Class<?>[] classes, ClassPool classPool) {
+        if (classes == null || classes.length == 0) return new CtClass[0];
+        CtClass[] ctClasses = new CtClass[classes.length];
+        for (int i = 0; i < classes.length; i++) {
+            ctClasses[i] = classPool.getOrNull(classes[i].getName());
+        }
+        return ctClasses;
     }
 
 

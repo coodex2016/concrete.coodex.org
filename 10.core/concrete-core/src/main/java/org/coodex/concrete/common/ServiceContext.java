@@ -16,69 +16,88 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.concrete.common.struct.AbstractUnit;
-import org.coodex.concrete.core.messages.Courier;
-import org.coodex.concrete.core.token.TokenWrapper;
-
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
-import static org.coodex.concrete.common.ConcreteContext.SIDE_SERVER;
+public interface ServiceContext {
 
-public abstract class ServiceContext {
+    /**
+     * @return 当前上下文中的附属信息
+     */
+    Subjoin getSubjoin();
 
-    protected Caller caller;
-    protected String model;
-    protected Integer side = SIDE_SERVER;
-    protected Subjoin subjoin = SubjoinWrapper.getInstance();
-    protected Token token = TokenWrapper.getInstance();
-    protected Map<String, Object> logging = new HashMap<String, Object>();
-    protected AbstractUnit currentUnit;
-    protected Courier courier;
+    /**
+     * @return 当前上下文的语言环境
+     */
+    Locale getLocale();
 
-    public Caller getCaller() {
-        return caller;
-    }
+//    /**
+//     * @return 当前上下文执行的服务定义相关上下文
+//     */
+//    DefinitionContext getDefinitionContext();
 
+    /**
+     * @return 当前上下文使用的TokenId
+     */
+    String getTokenId();
 
-    public String getModel() {
-        return model;
-    }
+//    Map<String, Object> getLogging
 
+//    protected Caller caller;
+//    protected String model;
+//    protected Integer side = SIDE_SERVER;
+//    protected Subjoin subjoin = SubjoinWrapper.getInstance();
+//    protected Token token; //TokenWrapper.getInstance();
+//    protected Map<String, Object> logging = new HashMap<String, Object>();
+//    protected U currentUnit;
+//    protected Courier courier;
 
-    public Integer getSide() {
-        return side;
-    }
+//    protected ServiceContext(Token token) {
+//        this.token = token;
+//    }
 
-
-    public Subjoin getSubjoin() {
-        return subjoin;
-    }
-
-
-    public Locale getLocale() {
-        return getSubjoin() == null ? Locale.getDefault() : getSubjoin().getLocale();
-    }
-
-    public Token getToken() {
-        return token;
-    }
-
-    public void setToken(Token token) {
-        this.token = token;
-    }
-
-    public Map<String, Object> getLogging() {
-        return logging;
-    }
+//    public Caller getCaller() {
+//        return caller;
+//    }
 
 
-    public AbstractUnit getCurrentUnit() {
-        return currentUnit;
-    }
+//    public String getModel() {
+//        return model;
+//    }
 
-    public Courier getCourier() {
-        return courier;
-    }
+
+//    public Integer getSide() {
+//        return side;
+//    }
+//
+//
+//    public Subjoin getSubjoin() {
+//        return subjoin;
+//    }
+//
+//
+//    public Locale getLocale() {
+//        return getSubjoin() == null ? Locale.getDefault() : getSubjoin().getLocale();
+//    }
+//
+//    public Token getToken() {
+//        if(token == null || !token.isValid()){
+//            token = BeanProviderFacade.getBeanProvider()
+//                    .getBean(TokenManager.class)
+//                    .newToken();
+//        }
+//        return token;
+//    }
+//
+//    public Map<String, Object> getLogging() {
+//        return logging;
+//    }
+//
+//
+//    public U getCurrentUnit() {
+//        return currentUnit;
+//    }
+//
+//    public Courier getCourier() {
+//        return courier;
+//    }
 }

@@ -31,6 +31,8 @@ import java.lang.annotation.Target;
 @Mock
 public @interface LONG {
     long min() default Long.MIN_VALUE;
+
     long max() default Long.MAX_VALUE;
-    long [] range() default {};
+
+    long[] range() default {};
 }

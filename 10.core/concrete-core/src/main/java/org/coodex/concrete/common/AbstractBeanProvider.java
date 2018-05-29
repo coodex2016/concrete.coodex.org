@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public abstract class AbstractBeanProvider implements BeanProvider {
 
-    public static final String CREATE_BY_CONCRETE ="cbc_";
+    public static final String CREATE_BY_CONCRETE = "cbc_";
 
     private static final ConflictSolution DEFAULT_CONFLICT_SOLUTION = new ThrowException();
 
@@ -74,8 +74,8 @@ public abstract class AbstractBeanProvider implements BeanProvider {
         Map<String, T> instanceMap = getBeansOfType(type);
         // remove create by concrete
         Set<String> keySet = new HashSet<String>(instanceMap.keySet());
-        for(String name: keySet){
-            if(name.startsWith(CREATE_BY_CONCRETE))
+        for (String name : keySet) {
+            if (name.startsWith(CREATE_BY_CONCRETE))
                 instanceMap.remove(name);
         }
         switch (instanceMap.size()) {

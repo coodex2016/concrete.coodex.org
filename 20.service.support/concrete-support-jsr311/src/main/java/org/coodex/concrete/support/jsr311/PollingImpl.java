@@ -16,15 +16,15 @@
 
 package org.coodex.concrete.support.jsr311;
 
-import org.coodex.concrete.core.token.TokenWrapper;
-import org.coodex.concrete.jaxrs.JaxRSCourier;
 import org.coodex.concrete.jaxrs.Polling;
+import org.coodex.concrete.message.TBMContainer;
 
-
+//@Deprecated
 public class PollingImpl implements Polling {
     @Override
     public Object polling(Integer timeOut) {
         timeOut = timeOut == null ? 15 : Math.min(timeOut, 30);
-        return JaxRSCourier.getMessage(TokenWrapper.getInstance().getTokenId(), timeOut * 1000);
+//        return JaxRSCourier.getMessage(TokenWrapper.getInstance().getTokenId(), timeOut * 1000);
+        return TBMContainer.getInstance().getMessages(timeOut * 1000);
     }
 }

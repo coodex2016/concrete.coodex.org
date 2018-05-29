@@ -34,27 +34,26 @@ import static org.coodex.util.TypeHelper.typeToClass;
  */
 public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
 
+    private final static Logger log = LoggerFactory.getLogger(ServiceLoaderFacade.class);
+    private Map<String, T> instances = null;
+
     public ServiceLoaderFacade() {
 //        loadInstances();
     }
 
-    private void load(){
-        synchronized (this){
-            if(instances == null){
+    private void load() {
+        synchronized (this) {
+            if (instances == null) {
                 loadInstances();
             }
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ServiceLoaderFacade.class);
-
-    private Map<String, T> instances = null;
-
     @SuppressWarnings("unchecked")
 
     protected Class<T> getInterfaceClass() {
         load();
-        return typeToClass(solve(ServiceLoaderFacade.class.getTypeParameters()[0],getClass()));
+        return typeToClass(solve(ServiceLoaderFacade.class.getTypeParameters()[0], getClass()));
 //        Type t = TypeHelper.findActualClassFrom(
 //                ServiceLoaderFacade.class.getTypeParameters()[0],
 //                getClass());
@@ -95,7 +94,7 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
         return instances.values();
     }
 
-    protected Map<String, T> $getInstances(){
+    protected Map<String, T> $getInstances() {
         load();
         return instances;
     }
@@ -129,7 +128,7 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
 
     protected T conflict(Class<? extends T> providerClass, Map<String, T> map) {
         T t = getInstance(providerClass.getName());
-        if(t != null) return t;
+        if (t != null) return t;
 
         StringBuffer buffer = new StringBuffer(getInterfaceClass().getName());
         buffer.append("[providerClass: ").append(providerClass.getName()).append("]");

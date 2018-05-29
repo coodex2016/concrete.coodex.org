@@ -34,31 +34,10 @@ import java.util.Vector;
 public class SharedCacheToken /*implements Token*/ extends AbstractToken {
 
     private static final String PREFIX = SharedCacheToken.class.getCanonicalName();
-
-    static class Data implements Serializable {
-        long created = System.currentTimeMillis();
-        boolean valid = true;
-        Serializable currentAccountId = null;
-        boolean accountCredible = false;
-        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
-
-        @Override
-        public String toString() {
-            return "Data{" +
-                    "created=" + created +
-                    ", valid=" + valid +
-                    ", currentAccountId=" + currentAccountId +
-                    ", accountCredible=" + accountCredible +
-                    ", map=" + map +
-                    '}';
-        }
-    }
-
     private Data tokenData;
     private SharedCacheClient client;
     private String tokenId;
     private long maxIdleTime;
-
     private String cacheKey;
 
     SharedCacheToken(SharedCacheClient client, String tokenId, long maxIdleTime) {
@@ -69,7 +48,6 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
         init();
         runListeners(Event.CREATED, false);
     }
-
 
     private void write() {
         client.put(cacheKey, tokenData, maxIdleTime);
@@ -95,14 +73,12 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
         return tokenData.valid;
     }
 
-
     @Override
     protected void $invalidate() {
         tokenData.valid = false;
         tokenData.map.clear();
         client.remove(cacheKey);
     }
-
 
     @Override
     @SuppressWarnings("unchecked")
@@ -150,7 +126,6 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
         return (T) tokenData.map.get(key);
     }
 
-
     @Override
     public void setAttribute(String key, Serializable attribute) {
         if (isValid()) {
@@ -192,5 +167,24 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
                 ", maxIdleTime=" + maxIdleTime +
                 ", cacheKey='" + cacheKey + '\'' +
                 '}';
+    }
+
+    static class Data implements Serializable {
+        long created = System.currentTimeMillis();
+        boolean valid = true;
+        Serializable currentAccountId = null;
+        boolean accountCredible = false;
+        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+
+        @Override
+        public String toString() {
+            return "Data{" +
+                    "created=" + created +
+                    ", valid=" + valid +
+                    ", currentAccountId=" + currentAccountId +
+                    ", accountCredible=" + accountCredible +
+                    ", map=" + map +
+                    '}';
+        }
     }
 }

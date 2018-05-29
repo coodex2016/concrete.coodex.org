@@ -21,7 +21,7 @@
     <parent>
         <artifactId>concrete.pom</artifactId>
         <groupId>org.coodex</groupId>
-        <version>0.2.2</version>
+        <version>0.2.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -284,11 +284,6 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-jaxrs-invoker-okhttp3</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>

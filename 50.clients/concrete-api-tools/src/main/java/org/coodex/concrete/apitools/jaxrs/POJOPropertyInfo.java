@@ -29,6 +29,13 @@ import java.lang.reflect.Type;
 public class POJOPropertyInfo {
 
     @Deprecated
+    private static final int TO_LOWER = 'a' - 'A';
+    private final PojoProperty property;
+    private final String name;
+    private final Description description;
+    private final Type type;
+
+    @Deprecated
     public POJOPropertyInfo(Class<?> contextType, Method method) {
         String methodName = method.getName();
         int startIndex = methodName.startsWith("is") && method.getReturnType() == boolean.class ? 2 : 3;
@@ -47,16 +54,14 @@ public class POJOPropertyInfo {
         type = field.getGenericType();
         this.property = null;
     }
-
     public POJOPropertyInfo(PojoProperty property) {
         this.property = property;
         this.name = property.getName();
         this.description = property.getAnnotation(Description.class);
-        this.type= property.getType();
+        this.type = property.getType();
     }
 
-    @Deprecated
-    private static final int TO_LOWER = 'a' - 'A';
+//    private POJOTypeInfo pojoTypeInfo;
 
     @Deprecated
     static String lowerFirstChar(String string) {
@@ -68,15 +73,6 @@ public class POJOPropertyInfo {
         }
         return string;
     }
-
-    private final PojoProperty property;
-
-    private final String name;
-    private final Description description;
-
-//    private POJOTypeInfo pojoTypeInfo;
-
-    private final Type type;
 
     public String getName() {
         return name;
@@ -104,7 +100,7 @@ public class POJOPropertyInfo {
         return property;
     }
 
-    public boolean isDeprecated(){
+    public boolean isDeprecated() {
         return property.getAnnotation(Deprecated.class) != null;
     }
 

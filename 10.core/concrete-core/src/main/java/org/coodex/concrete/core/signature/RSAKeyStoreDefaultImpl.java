@@ -60,7 +60,7 @@ public class RSAKeyStoreDefaultImpl implements RSAKeyStore {
                             "rsa.privateKey." + paperName,
                             "rsa.privateKey." + keyId,
                             "rsa.privateKey"),
-                    Arrays.asList(paperName + "." + keyId + ".pem",paperName + ".pem"));
+                    Arrays.asList(paperName + "." + keyId + ".pem", paperName + ".pem"));
         } catch (Throwable th) {
             throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }

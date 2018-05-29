@@ -24,28 +24,9 @@ import java.util.*;
 public class AsyncInterceptorChain extends AbstractInterceptor implements Set<ConcreteInterceptor> {
 
 
+    private static Comparator<ConcreteInterceptor> comparatorAsc = new MyComparator(1);
+    private static Comparator<ConcreteInterceptor> comparatorDesc = new MyComparator(-1);
     private Set<ConcreteInterceptor> interceptors = new HashSet<ConcreteInterceptor>();
-
-    private static class MyComparator implements Comparator<ConcreteInterceptor> {
-
-        private final int sign;
-
-        public MyComparator(int sign) {
-            this.sign = sign;
-        }
-
-        public int $compare(ConcreteInterceptor o1, ConcreteInterceptor o2) {
-            if (o1 == o2) return 0;
-            if (o1 == null) return -1;
-            if (o2 == null) return 1;
-            return o1.getOrder() - o2.getOrder();
-        }
-
-        @Override
-        public int compare(ConcreteInterceptor o1, ConcreteInterceptor o2) {
-            return $compare(o1, o2) * sign;
-        }
-    }
 
     public AsyncInterceptorChain() {
     }
@@ -53,10 +34,6 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
     public AsyncInterceptorChain(List<ConcreteInterceptor> interceptors) {
         this.interceptors.addAll(interceptors);
     }
-
-    private static Comparator<ConcreteInterceptor> comparatorAsc = new MyComparator(1);
-
-    private static Comparator<ConcreteInterceptor> comparatorDesc = new MyComparator(-1);
 
     @Override
     public boolean accept(RuntimeContext context) {
@@ -106,12 +83,12 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
         return th;
     }
 
-    ///////////////////// 实现set接口
-
     @Override
     public int size() {
         return interceptors.size();
     }
+
+    ///////////////////// 实现set接口
 
     @Override
     public boolean isEmpty() {
@@ -171,6 +148,27 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
     @Override
     public void clear() {
         interceptors.clear();
+    }
+
+    private static class MyComparator implements Comparator<ConcreteInterceptor> {
+
+        private final int sign;
+
+        public MyComparator(int sign) {
+            this.sign = sign;
+        }
+
+        public int $compare(ConcreteInterceptor o1, ConcreteInterceptor o2) {
+            if (o1 == o2) return 0;
+            if (o1 == null) return -1;
+            if (o2 == null) return 1;
+            return o1.getOrder() - o2.getOrder();
+        }
+
+        @Override
+        public int compare(ConcreteInterceptor o1, ConcreteInterceptor o2) {
+            return $compare(o1, o2) * sign;
+        }
     }
 
 

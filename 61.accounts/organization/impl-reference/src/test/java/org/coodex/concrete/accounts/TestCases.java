@@ -75,7 +75,6 @@ public class TestCases extends ConcreteTestCase {
     private SelfManagementService selfManagementService;
 
 
-
     @Inject
     private LoginService loginService;
 
@@ -96,7 +95,7 @@ public class TestCases extends ConcreteTestCase {
         StrID<Position> job1 = positionService.save(MockerFacade.<Position>mock(Position.class), department.getId());
         positionService.grantTo(job1.getId(), new String[]{AccountManagementRoles.ORGANIZATION_MANAGER});
         StrID<Position> job2 = positionService.save(MockerFacade.<Position>mock(Position.class), top.getId());
-        StrID<Person> person = personService.save(MockerFacade.<Person>mock(Person.class),new String[]{job1.getId(), job2.getId()});
+        StrID<Person> person = personService.save(MockerFacade.<Person>mock(Person.class), new String[]{job1.getId(), job2.getId()});
         person.getPojo().setIdCardNo("430202197807306015");
         personService.update(person.getId(), person.getPojo());
         log.info("{}", JSON.toJSONString(informationService.get(), true));
@@ -136,7 +135,7 @@ public class TestCases extends ConcreteTestCase {
 
     }
 
-    protected String getAuthKeyFromTOTP(String totp){
+    protected String getAuthKeyFromTOTP(String totp) {
         return totp.substring(totp.indexOf("secret=") + 7, totp.indexOf("&issuer="));
 
     }
@@ -147,8 +146,6 @@ public class TestCases extends ConcreteTestCase {
         loginService.administratorLogin(null, AccountsCommon.getDefaultPassword(), authCode);
         Assert.assertTrue(token.isAccountCredible());
     }
-
-
 
 
 }

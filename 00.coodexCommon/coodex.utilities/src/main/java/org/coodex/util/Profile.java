@@ -57,6 +57,9 @@ import static org.coodex.util.Common.*;
  */
 public class Profile implements StringMap {
 
+    private static final String RELOAD_INTERVAL = System.getProperty("Profile.reloadInterval");
+    private static final Logger log = LoggerFactory.getLogger(Profile.class);
+    private static final Map<String, Profile> profiles = new HashMap<String, Profile>();
     //    private static ScheduledExecutorService RELOAD_POOL;
     private static Singleton<ScheduledExecutorService> RELOAD_POOL =
             new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
@@ -65,52 +68,12 @@ public class Profile implements StringMap {
                     return ExecutorsHelper.newSingleThreadScheduledExecutor();
                 }
             });
-
-    private static final String RELOAD_INTERVAL = System.getProperty("Profile.reloadInterval");
-
-    private static final Logger log = LoggerFactory.getLogger(Profile.class);
-
-    private static ScheduledExecutorService getReloadPool() {
-//        if (RELOAD_POOL == null) {
-//            synchronized (Profile.class) {
-//                if (RELOAD_POOL == null)
-//                    RELOAD_POOL = ExecutorsHelper.newSingleThreadScheduledExecutor();
-//            }
-//        }
-//        return RELOAD_POOL;
-        return RELOAD_POOL.getInstance();
-    }
-
-    private static final Map<String, Profile> profiles = new HashMap<String, Profile>();
-
-    public synchronized static Profile getProfile(String path) {
-        Profile p = profiles.get(path);
-        if (p == null) {
-            p = new Profile(path);
-            profiles.put(path, p);
-        }
-        return p;
-    }
-
+    protected Properties p = new Properties();
     private long lastModified = 0;
     private String resourcePath;
     private File f;
     private String location;
     private InputStream is;
-
-    protected Properties p = new Properties();
-
-
-    protected Profile(String path) {
-        this.resourcePath = path;
-        loadFromPath(path);
-        submitReloadTask();
-    }
-
-    private void loadFromPath(String path) {
-        loadFromPath(path, false);
-    }
-
     private Runnable reloadTask = new Runnable() {
         public void run() {
 
@@ -133,6 +96,64 @@ public class Profile implements StringMap {
         }
     };
 
+    protected Profile(String path) {
+        this.resourcePath = path;
+        loadFromPath(path);
+        submitReloadTask();
+    }
+
+    private static ScheduledExecutorService getReloadPool() {
+//        if (RELOAD_POOL == null) {
+//            synchronized (Profile.class) {
+//                if (RELOAD_POOL == null)
+//                    RELOAD_POOL = ExecutorsHelper.newSingleThreadScheduledExecutor();
+//            }
+//        }
+//        return RELOAD_POOL;
+        return RELOAD_POOL.getInstance();
+    }
+
+    public synchronized static Profile getProfile(String path) {
+        Profile p = profiles.get(path);
+        if (p == null) {
+            p = new Profile(path);
+            profiles.put(path, p);
+        }
+        return p;
+    }
+
+    public static InputStream getResourceAsStream(String resourcePath) throws IOException {
+        URL url = getResource(Common.trim(resourcePath, '/'));
+        return url == null ? new FileInputStream(resourcePath) : url.openStream();
+    }
+
+    static public URL getResource(String resource) {
+        ClassLoader classLoader = null;
+        URL url = null;
+
+        classLoader = Thread.currentThread().getContextClassLoader();
+        if (classLoader != null) {
+            url = classLoader.getResource(resource);
+            if (url != null) {
+                return url;
+            }
+        }
+
+        // We could not find resource. Ler us now try with the
+        // classloader that loaded this class.
+        classLoader = Profile.class.getClassLoader();
+        if (classLoader != null) {
+            url = classLoader.getResource(resource);
+            if (url != null) {
+                return url;
+            }
+        }
+        return ClassLoader.getSystemResource(resource);
+    }
+
+    private void loadFromPath(String path) {
+        loadFromPath(path, false);
+    }
 
     private void submitReloadTask() {
         long inteval = -1;
@@ -180,35 +201,6 @@ public class Profile implements StringMap {
             if (!reload)
                 log.warn("Profile [" + path + "] not found.");
         }
-    }
-
-    public static InputStream getResourceAsStream(String resourcePath) throws IOException {
-        URL url = getResource(Common.trim(resourcePath, '/'));
-        return url == null ? new FileInputStream(resourcePath) : url.openStream();
-    }
-
-    static public URL getResource(String resource) {
-        ClassLoader classLoader = null;
-        URL url = null;
-
-        classLoader = Thread.currentThread().getContextClassLoader();
-        if (classLoader != null) {
-            url = classLoader.getResource(resource);
-            if (url != null) {
-                return url;
-            }
-        }
-
-        // We could not find resource. Ler us now try with the
-        // classloader that loaded this class.
-        classLoader = Profile.class.getClassLoader();
-        if (classLoader != null) {
-            url = classLoader.getResource(resource);
-            if (url != null) {
-                return url;
-            }
-        }
-        return ClassLoader.getSystemResource(resource);
     }
 
     public String getLocation() {

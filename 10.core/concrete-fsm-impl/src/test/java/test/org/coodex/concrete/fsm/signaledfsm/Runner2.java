@@ -52,7 +52,7 @@ public class Runner2 {
                         }
                     } catch (WrongStateException e) {
                         System.out.println(String.format("Wrong state [%d] to %d[thread: %d]",
-                                ((SignaledState)e.getState()).getSignal(), x, Thread.currentThread().getId()));
+                                ((SignaledState) e.getState()).getSignal(), x, Thread.currentThread().getId()));
                     }
                 }
             }.start();

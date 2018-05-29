@@ -24,7 +24,7 @@ import org.coodex.concrete.accounts.organization.pojo.Organization;
  * Created by davidoff shen on 2017-05-11.
  */
 public abstract class DepartmentCopier<T extends Department, E extends AbstractDepartmentEntity>
-        extends OrganizationCopier<T, E>{
+        extends OrganizationCopier<T, E> {
 
     @Override
     public E copyA2B(T t, E e) {

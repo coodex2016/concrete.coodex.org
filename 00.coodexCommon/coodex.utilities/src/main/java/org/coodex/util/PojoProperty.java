@@ -37,7 +37,7 @@ public class PojoProperty {
 
     private Annotation[] annotations = null;
 
-    protected PojoProperty(PojoProperty property, Type type){
+    protected PojoProperty(PojoProperty property, Type type) {
         this.method = property == null ? null : property.getMethod();
         this.field = property == null ? null : property.getField();
         this.readonly = property == null ? false : property.isReadonly();
@@ -80,8 +80,8 @@ public class PojoProperty {
     @SuppressWarnings("unchecked")
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         if (annotationClass == null) return null;
-        for(Annotation annotation: getAnnotations()) {
-            if(annotation.annotationType().equals(annotationClass))
+        for (Annotation annotation : getAnnotations()) {
+            if (annotation.annotationType().equals(annotationClass))
                 return (T) annotation;
         }
         return null;

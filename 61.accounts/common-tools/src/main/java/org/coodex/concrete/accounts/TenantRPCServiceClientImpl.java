@@ -16,11 +16,11 @@
 
 package org.coodex.concrete.accounts;
 
+import org.coodex.concrete.Client;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
-import org.coodex.concrete.jaxrs.Client;
 
 import java.io.Serializable;
 
@@ -40,7 +40,7 @@ public class TenantRPCServiceClientImpl implements TenantRPCServiceClient {
 
     protected TenantRPCService getRPCService() {
         return Client.getInstance(TenantRPCService.class,
-                ConcreteHelper.getProfile().getString("tenant.RPC.service", "local"));
+                ConcreteHelper.getProfile().getString("tenant.RPC.service"));
     }
 
     @Override

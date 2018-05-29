@@ -29,24 +29,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 public final class GetCert {
-    private static class SavingTrustManager implements X509TrustManager {
-
-        private X509Certificate[] chain;
-
-        public X509Certificate[] getAcceptedIssuers() {
-            throw new UnsupportedOperationException();
-        }
-
-        public void checkClientTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
-            throw new UnsupportedOperationException();
-        }
-
-        public void checkServerTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
-            this.chain = chain;
-        }
-    }
+    private static final char[] HEXDIGITS = "0123456789abcdef".toCharArray();
 
     public static void saveCertificateFromServer(String host, int port, String storePath) throws NoSuchAlgorithmException, KeyManagementException, IOException, CertificateEncodingException {
 
@@ -100,7 +83,7 @@ public final class GetCert {
 
         X509Certificate cert = tm.chain[k];
         String name = host + "." + port;
-        while (storePath.endsWith("/") || storePath.endsWith("\\")){
+        while (storePath.endsWith("/") || storePath.endsWith("\\")) {
             storePath = storePath.substring(0, storePath.length() - 1);
         }
         int index = 0;
@@ -123,8 +106,6 @@ public final class GetCert {
         return f.exists();
     }
 
-    private static final char[] HEXDIGITS = "0123456789abcdef".toCharArray();
-
     private static String toHexString(byte[] bytes) {
         StringBuilder sb = new StringBuilder(bytes.length * 3);
         for (int b : bytes) {
@@ -134,6 +115,25 @@ public final class GetCert {
             sb.append(' ');
         }
         return sb.toString();
+    }
+
+    private static class SavingTrustManager implements X509TrustManager {
+
+        private X509Certificate[] chain;
+
+        public X509Certificate[] getAcceptedIssuers() {
+            throw new UnsupportedOperationException();
+        }
+
+        public void checkClientTrusted(X509Certificate[] chain, String authType)
+                throws CertificateException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void checkServerTrusted(X509Certificate[] chain, String authType)
+                throws CertificateException {
+            this.chain = chain;
+        }
     }
 
 }

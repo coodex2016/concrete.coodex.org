@@ -25,7 +25,6 @@ import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ArrayMemberValue;
 import javassist.bytecode.annotation.IntegerMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
-import org.coodex.concrete.jaxrs.AbstractJAXRSResource;
 import org.coodex.concrete.jaxrs.CreatedByConcrete;
 import org.coodex.util.Common;
 
@@ -34,22 +33,14 @@ import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.coodex.concrete.common.ConcreteContext.KEY_TOKEN;
+
 /**
  * Created by davidoff shen on 2016-11-24.
  */
 public class CGContext {
 
-    protected final Class<?> serviceClass;
-    protected final CtClass newClass;
-    protected final ClassFile classFile;
-    protected final ConstPool constPool;
-
     public static final ClassPool CLASS_POOL = ClassPool.getDefault();
-
-    static {
-        CLASS_POOL.insertClassPath(new ClassClassPath(AbstractJavassistClassGenerator.class));
-    }
-
     private static final Class[] PRIMITIVE_CLASSES = new Class[]{
             String.class,
             Boolean.class,
@@ -71,10 +62,20 @@ public class CGContext {
             double.class,
             void.class,
     };
+    private static final String[] HTTP_METHODS =
+            {HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE};
+    private static final Class<?>[] JAXRS_METHOD_CLASS =
+            {GET.class, PUT.class, POST.class, DELETE.class};
 
-    public static boolean isPrimitive(Class c) {
-        return Common.inArray(c, PRIMITIVE_CLASSES);
+    static {
+        CLASS_POOL.insertClassPath(new ClassClassPath(AbstractJavassistClassGenerator.class));
     }
+
+    protected final Class<?> serviceClass;
+    protected final CtClass newClass;
+    protected final ClassFile classFile;
+    protected final ConstPool constPool;
+
 
     public CGContext(Class<?> serviceClass, Class<?> superClass, String newClassName) {
         super();
@@ -84,6 +85,9 @@ public class CGContext {
         constPool = getClassFile().getConstPool();
     }
 
+    public static boolean isPrimitive(Class c) {
+        return Common.inArray(c, PRIMITIVE_CLASSES);
+    }
 
     public Class<?> getServiceClass() {
         return serviceClass;
@@ -101,7 +105,6 @@ public class CGContext {
         return newClass;
     }
 
-
     public Annotation path(String path) {
         if (Common.isBlank(path)) return null;
         Annotation anno = new Annotation(Path.class.getName(), constPool);
@@ -116,12 +119,6 @@ public class CGContext {
                 new StringMemberValue(value, constPool));
         return anno;
     }
-
-
-    private static final String[] HTTP_METHODS =
-            {HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE};
-    private static final Class<?>[] JAXRS_METHOD_CLASS =
-            {GET.class, PUT.class, POST.class, DELETE.class};
 
     public Annotation httpMethod(String httpMethod) {
 //        int index = -1;
@@ -186,7 +183,7 @@ public class CGContext {
     public Annotation tokenParam() {
         Annotation anno = new Annotation(HeaderParam.class.getName(), constPool);
         anno.addMemberValue("value",
-                new StringMemberValue(AbstractJAXRSResource.TOKEN_ID_IN_COOKIE, constPool));
+                new StringMemberValue(KEY_TOKEN, constPool));
         return anno;
     }
 

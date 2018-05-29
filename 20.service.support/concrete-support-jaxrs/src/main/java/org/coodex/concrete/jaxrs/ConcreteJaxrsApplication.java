@@ -33,26 +33,46 @@ import static org.coodex.concrete.common.ConcreteHelper.foreachClassInPackages;
 
 public abstract class ConcreteJaxrsApplication extends Application implements org.coodex.concrete.api.Application {
 
-    protected Set<Class<? extends ConcreteService>> servicesClasses = new HashSet<Class<? extends ConcreteService>>();
-    protected Set<Class<?>> jaxrsClasses = new HashSet<Class<?>>();
-    protected Set<Object> singletonInstances = new HashSet<Object>();
-    protected Set<Class<?>> othersClasses = new HashSet<Class<?>>();
+    protected static final JaxRSModuleMaker moduleMaker = new JaxRSModuleMaker();
+    private Set<Class<? extends ConcreteService>> servicesClasses = new HashSet<Class<? extends ConcreteService>>();
+    private Set<Class<?>> jaxrsClasses = new HashSet<Class<?>>();
+    private Set<Object> singletonInstances = new HashSet<Object>();
+    private Set<Class<?>> othersClasses = new HashSet<Class<?>>();
+
+    private Application application = null;
 
     public ConcreteJaxrsApplication() {
         super();
         registerDefault();
     }
 
-    protected Application application = null;
-
-    protected static final JaxRSModuleMaker moduleMaker = new JaxRSModuleMaker();
-
-    protected abstract ClassGenerator getClassGenerator();
-
     public ConcreteJaxrsApplication(Application application) {
         this.application = application;
         registerDefault();
     }
+
+    @SuppressWarnings({"unsafe", "unchecked"})
+    public Set<Class<? extends ConcreteService>> getServicesClasses() {
+        return servicesClasses;
+    }
+
+    public Set<Class<?>> getJaxrsClasses() {
+        return jaxrsClasses;
+    }
+
+    public Set<Object> getSingletonInstances() {
+        return singletonInstances;
+    }
+
+    public Set<Class<?>> getOthersClasses() {
+        return othersClasses;
+    }
+
+    public Application getApplication() {
+        return application;
+    }
+
+    protected abstract ClassGenerator getClassGenerator();
 
     protected void registerDefault() {
         register(ConcreteExceptionMapper.class, Polling.class);
@@ -99,10 +119,10 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
         }
     }
 
-    protected Class<?> generateJaxrsClass(Class<?> concreteServiceClass){
+    protected Class<?> generateJaxrsClass(Class<?> concreteServiceClass) {
         try {
             return getClassGenerator().generatesImplClass(moduleMaker.make(concreteServiceClass));
-        }catch (RuntimeException t){
+        } catch (RuntimeException t) {
             throw t;
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);

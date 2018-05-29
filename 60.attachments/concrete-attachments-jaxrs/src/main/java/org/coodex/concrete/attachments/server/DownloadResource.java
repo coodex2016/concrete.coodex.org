@@ -28,7 +28,7 @@ import javax.ws.rs.container.Suspended;
 
 /**
  * 附件下载的一个参考实现，基于jaxrs2.0
- *
+ * <p>
  * /attachments/download/{attachmentId};c=clientId;t=tokenId
  * Created by davidoff shen on 2016-12-13.
  */

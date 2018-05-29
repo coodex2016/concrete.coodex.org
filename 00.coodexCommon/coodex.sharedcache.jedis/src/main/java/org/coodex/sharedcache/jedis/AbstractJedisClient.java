@@ -25,15 +25,15 @@ import java.io.*;
  */
 public abstract class AbstractJedisClient implements SharedCacheClient {
 
-    protected abstract JedisAdaptor getCommand();
+    private long default_max_cache_time;
 
 //    protected abstract void closeCommand(JedisAdaptor commands);
-
-    private long default_max_cache_time;
 
     public AbstractJedisClient(long default_max_cache_time) {
         this.default_max_cache_time = default_max_cache_time;
     }
+
+    protected abstract JedisAdaptor getCommand();
 
     protected void assertKey(String key) {
         if (key == null) throw new NullPointerException("cache key is null.");

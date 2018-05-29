@@ -38,7 +38,7 @@ public interface ConcreteAPIRender {
     /**
      * @param packages 检索的包
      */
-    void writeTo(String ... packages) throws IOException;
+    void writeTo(String... packages) throws IOException;
 
 
     void setRoot(String rootPath);

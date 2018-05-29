@@ -28,11 +28,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
+@Deprecated
 public abstract class AbstractPostOffice implements PostOffice {
 
-    private final ExecutorService executorService = ConcreteHelper.getExecutor();
     private final static Logger log = LoggerFactory.getLogger(AbstractPostOffice.class);
-
+    private final ExecutorService executorService = ConcreteHelper.getExecutor();
     private Set<SubscriberImpl> subscribers = new HashSet<SubscriberImpl>();
 
     @SuppressWarnings("unchecked")

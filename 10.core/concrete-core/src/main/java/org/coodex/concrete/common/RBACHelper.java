@@ -80,13 +80,12 @@ public class RBACHelper {
     }
 
 
-
     private static Account getCurrentAccount() {
         return TokenWrapper.getInstance().currentAccount();
     }
 
     private static Set<String> getAccountDomainRoles(String domain, Account account) {
-        if(account == null) throw new RuntimeException("account MUST be NOT NULL.");
+        if (account == null) throw new RuntimeException("account MUST be NOT NULL.");
 
         Set<String> accountDomainRoles = new HashSet<String>();
         @SuppressWarnings("unchecked")

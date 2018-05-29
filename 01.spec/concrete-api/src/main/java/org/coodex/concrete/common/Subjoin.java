@@ -17,7 +17,6 @@
 package org.coodex.concrete.common;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -25,7 +24,7 @@ import java.util.Set;
  */
 public interface Subjoin {
 
-    Locale getLocale();
+//    Locale getLocale();
 
     String get(String name);
 
@@ -34,6 +33,8 @@ public interface Subjoin {
     List<String> getList(String name);
 
     Set<String> keySet();
+
+    Set<String> updatedKeySet();
 
     void set(String name, List<String> values);
 

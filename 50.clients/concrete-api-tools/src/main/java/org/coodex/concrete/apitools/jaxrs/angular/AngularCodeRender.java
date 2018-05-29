@@ -99,7 +99,6 @@ public class AngularCodeRender extends AbstractAngularRender<Unit> {
     }
 
 
-
     @Override
     protected String getTemplatePath() {
         return RESOURCE_PACKAGE;

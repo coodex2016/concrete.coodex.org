@@ -25,7 +25,6 @@ import org.coodex.concrete.common.IronPenFactory;
 public class HmacPenFactory implements IronPenFactory {
 
 
-
     @Override
     public IronPen getIronPen(String paperName) {
         return new HmacPen(paperName);

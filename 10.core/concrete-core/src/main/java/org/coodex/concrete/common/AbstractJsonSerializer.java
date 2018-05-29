@@ -22,7 +22,7 @@ public abstract class AbstractJsonSerializer implements JSONSerializer {
 
     @Override
     @SuppressWarnings("unchecked")
-    public final  <T> T parse(Object jsonObject, Type t) {
-        return (T) (jsonObject instanceof String ? parse((String)jsonObject, t): parse(toJson(jsonObject), t));
+    public final <T> T parse(Object jsonObject, Type t) {
+        return (T) (jsonObject instanceof String ? parse((String) jsonObject, t) : parse(toJson(jsonObject), t));
     }
 }

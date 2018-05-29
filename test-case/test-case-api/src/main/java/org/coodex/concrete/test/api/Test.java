@@ -17,16 +17,21 @@
 package org.coodex.concrete.test.api;
 
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.MicroService;
 import org.coodex.util.Parameter;
 
 @MicroService
 public interface Test extends ConcreteService {
 
+    @Description(name = "求和")
     int add(
+            @Description(name = "被加数")
             @Parameter("x1") int x1,
+            @Description(name = "加数")
             @Parameter("x2") int x2);
 
     String sayHello(
             @Parameter("name") String name);
+
 }

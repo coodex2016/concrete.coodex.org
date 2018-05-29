@@ -18,7 +18,10 @@ package org.coodex.concrete.dubbo;
 
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
-import javassist.*;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.NotFoundException;
 import javassist.bytecode.*;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
@@ -51,6 +54,7 @@ public class DubboHelper {
 
     public static final String SUBJOIN = "subjoin";
     public static final String AGENT = "user-agent";
+    public static final String LOCATE = "locate";
     public static final String RESULT = "result";
 
     private static SignatureAttribute.Type returnType = JavassistHelper.classType(

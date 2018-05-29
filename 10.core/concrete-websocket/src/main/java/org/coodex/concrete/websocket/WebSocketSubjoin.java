@@ -16,37 +16,21 @@
 
 package org.coodex.concrete.websocket;
 
-import org.coodex.concrete.common.SubjoinBaseJava7;
+import org.coodex.concrete.common.AbstractSubjoin;
 
+import java.util.Collection;
 import java.util.Map;
 
-public class WebSocketSubjoin extends SubjoinBaseJava7 {
+public class WebSocketSubjoin extends AbstractSubjoin {
 
 
     public WebSocketSubjoin(Map<String, String> map) {
         super(map);
-//        add(WEB_SOCKET_MODEL, "T");
-//        if (map == null) return;
-//
-//        for (String key : map.keySet()) {
-//            String v = map.get(key);
-//            if (v == null) continue;
-//
-//            if (key.equalsIgnoreCase(LOCALE)) {
-//                setLocale(Locale.forLanguageTag(v));
-//            } else {
-//                set(key, Common.toArray(v, "; ", new ArrayList<String>()));
-//            }
-//        }
     }
 
-//    @Override
-//    protected Locale forLanguageTag(String localeStr) {
-//        return Locale.forLanguageTag(localeStr);
-//    }
-//
-//    @Override
-//    protected String toLanguageTag() {
-//        return getLocale().toLanguageTag();
-//    }
+    @Override
+    protected Collection<String> skipKeys() {
+        return null;
+    }
+
 }

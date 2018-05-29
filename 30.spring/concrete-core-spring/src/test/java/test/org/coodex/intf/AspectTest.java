@@ -30,7 +30,7 @@ import javax.validation.constraints.NotNull;
 @MicroService
 public interface AspectTest extends ConcreteService {
 
-//    @MicroService
+    //    @MicroService
 //    @NotService
     @ServiceTiming({"rule1"})
     void test1(

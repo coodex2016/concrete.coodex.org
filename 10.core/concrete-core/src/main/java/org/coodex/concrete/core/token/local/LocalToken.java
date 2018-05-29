@@ -125,9 +125,8 @@ class LocalToken /*implements Token*/ extends AbstractToken {
     }
 
 
-
     @Override
-    public <T> T getAttribute(String key, Class<T> tClass ){
+    public <T> T getAttribute(String key, Class<T> tClass) {
         return (T) attributes.get(key);
     }
 

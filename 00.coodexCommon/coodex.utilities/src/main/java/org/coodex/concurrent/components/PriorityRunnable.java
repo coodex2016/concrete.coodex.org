@@ -23,10 +23,9 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class PriorityRunnable implements Runnable, Comparable<PriorityRunnable> {
 
+    static final AtomicLong seq = new AtomicLong(0);
     private final int priority;
     private final Runnable task;
-
-    static final AtomicLong seq = new AtomicLong(0);
     private final long seqNum = seq.getAndIncrement();
 
     public PriorityRunnable(int priority, Runnable task) {

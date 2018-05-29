@@ -29,6 +29,7 @@ import static org.coodex.concrete.accounts.AccountIDImpl.TYPE_SIMPLE;
  */
 public class SimpleAccountFactory implements AcceptableAccountFactory<AccountIDImpl> {
     @Override
+    @SuppressWarnings("unchecked")
     public <ID extends AccountID> Account<ID> getAccountByID(ID id) {
         return (Account<ID>) new SimpleAccount((AccountIDImpl) id);
     }

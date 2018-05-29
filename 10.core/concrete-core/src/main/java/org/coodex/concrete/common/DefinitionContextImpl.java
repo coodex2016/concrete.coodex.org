@@ -35,14 +35,6 @@ public class DefinitionContextImpl implements DefinitionContext {
     DefinitionContextImpl() {
     }
 
-    void setDeclaringClass(Class<? extends ConcreteService> declaringClass) {
-        this.declaringClass = declaringClass;
-    }
-
-    void setDeclaringMethod(Method declaringMethod) {
-        this.declaringMethod = declaringMethod;
-    }
-
     /**
      * BizModule定义的class
      *
@@ -53,6 +45,10 @@ public class DefinitionContextImpl implements DefinitionContext {
         return declaringClass;
     }
 
+    void setDeclaringClass(Class<? extends ConcreteService> declaringClass) {
+        this.declaringClass = declaringClass;
+    }
+
     /**
      * 定义了BizUnit的method
      *
@@ -61,6 +57,10 @@ public class DefinitionContextImpl implements DefinitionContext {
     @Override
     public Method getDeclaringMethod() {
         return declaringMethod;
+    }
+
+    void setDeclaringMethod(Method declaringMethod) {
+        this.declaringMethod = declaringMethod;
     }
 
     @Override

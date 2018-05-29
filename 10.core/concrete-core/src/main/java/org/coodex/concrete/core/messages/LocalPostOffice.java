@@ -17,7 +17,7 @@
 package org.coodex.concrete.core.messages;
 
 
-
+@Deprecated
 public class LocalPostOffice extends AbstractPostOffice {
 
     @Override

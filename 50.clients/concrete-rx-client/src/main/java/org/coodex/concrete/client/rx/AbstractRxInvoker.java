@@ -44,6 +44,8 @@ import static org.coodex.concrete.common.ConcreteHelper.getProfile;
 public abstract class AbstractRxInvoker extends AbstractInvoker {
 
 
+    private static ExecutorService executorService;
+
     public AbstractRxInvoker(Destination destination) {
         super(destination);
     }
@@ -81,8 +83,6 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
         });
     }
 
-    private static ExecutorService executorService;
-
     protected static ExecutorService getExecutorService() {
         if (executorService == null) {
             synchronized (AbstractRxInvoker.class) {
@@ -114,6 +114,7 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
         return invokerWithAop(getRuntimeContext(clz, method), args);
     }
 
+    @SuppressWarnings({"unchecked", "unsafe"})
     Observable invokerWithAop(final RuntimeContext runtimeContext, final Object[] args) throws InvocationTargetException, IllegalAccessException {
         final ServiceContext serviceContext = buildContext(runtimeContext.getDeclaringClass(), runtimeContext.getDeclaringMethod());
         final MethodInvocation invocation = new RXMethodInvocation(runtimeContext, args);
@@ -141,6 +142,7 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
                 // 请求
                 ConcreteContext.runWithContext(serviceContext, new CallableClosure() {
                     @Override
+
                     public Object call() throws Throwable {
                         invoke(runtimeContext, args).subscribe(new Observer() {
                             @Override

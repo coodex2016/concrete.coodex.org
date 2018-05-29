@@ -76,7 +76,7 @@ public class AbstractMessageFacade {
     }
 
 
-    public static LogFormatter getLogFormatter(Class<? extends LogFormatter> formatterClass){
+    public static LogFormatter getLogFormatter(Class<? extends LogFormatter> formatterClass) {
         return formatterClass == null || formatterClass == LogFormatter.class ?
                 LOG_FORMATTER_SERVICE_LOADER.getInstance() :
                 LOG_FORMATTER_SERVICE_LOADER.getInstance(formatterClass);

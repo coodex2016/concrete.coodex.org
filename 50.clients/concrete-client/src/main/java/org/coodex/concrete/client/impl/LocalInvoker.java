@@ -20,7 +20,6 @@ import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.common.BeanProviderFacade;
 import org.coodex.concrete.common.ConcreteContext;
-import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.common.ServiceContext;
 
 import java.lang.reflect.Method;
@@ -28,7 +27,7 @@ import java.lang.reflect.Method;
 public class LocalInvoker extends AbstractSyncInvoker {
 
 
-    public LocalInvoker(Destination destination) {
+    LocalInvoker(Destination destination) {
         super(destination);
     }
 
@@ -40,8 +39,7 @@ public class LocalInvoker extends AbstractSyncInvoker {
 
     @Override
     public ServiceContext buildContext(Class concreteClass, Method method) {
-        return new LocalServiceContext(getDestination(),
-                RuntimeContext.getRuntimeContext(method, concreteClass));
+        return new LocalServiceContext();
     }
 
 

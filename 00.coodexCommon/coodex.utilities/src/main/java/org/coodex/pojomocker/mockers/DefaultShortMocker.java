@@ -26,13 +26,13 @@ import org.coodex.util.Common;
 public class DefaultShortMocker extends AbstractPrimitiveMocker<Short, SHORT> {
     @Override
     protected Object toPrimitive(Short aShort) {
-        return aShort == null ? (short)0 : aShort.shortValue();
+        return aShort == null ? (short) 0 : aShort.shortValue();
     }
 
     @Override
     protected Short $mock(SHORT mockAnnotation) {
         return (mockAnnotation.range() != null && mockAnnotation.range().length > 0) ?
-                Common.random(mockAnnotation.range()):
+                Common.random(mockAnnotation.range()) :
                 (short) Common.random(mockAnnotation.min(), mockAnnotation.max());
     }
 }

@@ -28,50 +28,6 @@ import java.util.*;
  */
 public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set<ConcreteInterceptor> {
 
-    @Override
-    public boolean accept(RuntimeContext context) {
-        return true;
-    }
-
-    private static class MethodInvocationChain implements MethodInvocation {
-
-        private final Queue<ConcreteSyncInterceptor> queue;
-        private final MethodInvocation invocation;
-
-        public MethodInvocationChain(Queue<ConcreteSyncInterceptor> queue, MethodInvocation invocation) {
-            this.queue = queue;
-            this.invocation = invocation;
-        }
-
-        @Override
-        public Method getMethod() {
-            return invocation.getMethod();
-        }
-
-        @Override
-        public Object[] getArguments() {
-            return invocation.getArguments();
-        }
-
-        @Override
-        public Object proceed() throws Throwable {
-            if (queue.isEmpty())
-                return invocation.proceed();
-            ConcreteSyncInterceptor interceptor = queue.poll();
-            return interceptor.invoke(new MethodInvocationChain(queue, invocation));
-        }
-
-        @Override
-        public Object getThis() {
-            return invocation.getThis();
-        }
-
-        @Override
-        public AccessibleObject getStaticPart() {
-            return invocation.getStaticPart();
-        }
-    }
-
     private static Comparator<ConcreteInterceptor> comparator = new Comparator<ConcreteInterceptor>() {
         @Override
         public int compare(ConcreteInterceptor o1, ConcreteInterceptor o2) {
@@ -81,12 +37,6 @@ public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set
             return o1.getOrder() - o2.getOrder();
         }
     };
-
-    @Override
-    public int getOrder() {
-        return -1;
-    }
-
     private Set<ConcreteInterceptor> interceptors = new HashSet<ConcreteInterceptor>();
 
     public SyncInterceptorChain() {
@@ -96,6 +46,15 @@ public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set
         this.interceptors.addAll(interceptors);
     }
 
+    @Override
+    public boolean accept(RuntimeContext context) {
+        return true;
+    }
+
+    @Override
+    public int getOrder() {
+        return -1;
+    }
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
@@ -118,15 +77,13 @@ public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set
         return queue;
     }
 
-
-
-
-    ///////////////////// 实现set接口
-
     @Override
     public int size() {
         return interceptors.size();
     }
+
+
+    ///////////////////// 实现set接口
 
     @Override
     public boolean isEmpty() {
@@ -186,6 +143,45 @@ public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set
     @Override
     public void clear() {
         interceptors.clear();
+    }
+
+    private static class MethodInvocationChain implements MethodInvocation {
+
+        private final Queue<ConcreteSyncInterceptor> queue;
+        private final MethodInvocation invocation;
+
+        public MethodInvocationChain(Queue<ConcreteSyncInterceptor> queue, MethodInvocation invocation) {
+            this.queue = queue;
+            this.invocation = invocation;
+        }
+
+        @Override
+        public Method getMethod() {
+            return invocation.getMethod();
+        }
+
+        @Override
+        public Object[] getArguments() {
+            return invocation.getArguments();
+        }
+
+        @Override
+        public Object proceed() throws Throwable {
+            if (queue.isEmpty())
+                return invocation.proceed();
+            ConcreteSyncInterceptor interceptor = queue.poll();
+            return interceptor.invoke(new MethodInvocationChain(queue, invocation));
+        }
+
+        @Override
+        public Object getThis() {
+            return invocation.getThis();
+        }
+
+        @Override
+        public AccessibleObject getStaticPart() {
+            return invocation.getStaticPart();
+        }
     }
 
 

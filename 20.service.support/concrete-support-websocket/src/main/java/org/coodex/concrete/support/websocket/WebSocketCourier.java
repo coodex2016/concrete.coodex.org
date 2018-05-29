@@ -20,6 +20,7 @@ import org.coodex.concrete.common.Token;
 import org.coodex.concrete.common.messages.Message;
 import org.coodex.concrete.core.messages.Courier;
 
+@Deprecated
 public class WebSocketCourier implements Courier {
     @Override
     public String getType() {

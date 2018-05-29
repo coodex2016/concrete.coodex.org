@@ -49,7 +49,7 @@ public class CallerHackFilter implements Filter {
                     }
 
                     @Override
-                    public String getAgent() {
+                    public String getClientProvider() {
                         return userAgent;
                     }
                 });

@@ -26,7 +26,7 @@ import java.util.Set;
  */
 @MappedSuperclass
 public abstract class AbstractPositionEntity extends AbstractEntity
-    implements AuthorizableEntity {
+        implements AuthorizableEntity {
 
     @Column(updatable = false, insertable = false)
     private String belong;
@@ -44,13 +44,17 @@ public abstract class AbstractPositionEntity extends AbstractEntity
         return belongTo;
     }
 
-    public String getBelong() {
-        return belong;
+    public void setBelongTo(OrganizationEntity belongTo) {
+        this.belongTo = belongTo;
     }
 //
 //    public void setBelong(String belong) {
 //        this.belong = belong;
 //    }
+
+    public String getBelong() {
+        return belong;
+    }
 
     @Override
     public Set<String> getRoles() {
@@ -60,9 +64,5 @@ public abstract class AbstractPositionEntity extends AbstractEntity
     @Override
     public void setRoles(Set<String> roles) {
         this.roles = roles;
-    }
-
-    public void setBelongTo(OrganizationEntity belongTo) {
-        this.belongTo = belongTo;
     }
 }

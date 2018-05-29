@@ -17,13 +17,16 @@
 package org.coodex.concrete.test;
 
 import org.coodex.closure.CallableClosure;
+import org.coodex.concrete.common.AbstractSubjoin;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.Subjoin;
-import org.coodex.concrete.common.SubjoinWrapper;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 import static org.coodex.concrete.common.ConcreteContext.runWithContext;
 
@@ -38,11 +41,11 @@ public class ConcreteTestRule implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
+                TokenID testToken = description.getAnnotation(TokenID.class);
+                String tokenId = testToken == null ? null : testToken.value();
                 try {
                     runWithContext(
-                            new TestServiceContext(
-                                    ConcreteTokenProvider.getToken(description),
-                                    getSubjoin()),
+                            new TestServiceContext(tokenId, getSubjoin(description)),
                             new CallableClosure() {
                                 @Override
                                 public Object call() throws Throwable {
@@ -50,26 +53,6 @@ public class ConcreteTestRule implements TestRule {
                                     return null;
                                 }
                             });
-//                    runWithContext(
-//                            new TestServiceContext(
-//                                    ConcreteTokenProvider.getToken(description),
-//                                    getSubjoin()),
-//                            new ConcreteClosure() {
-//                                @Override
-//                                public Object concreteRun() throws Throwable {
-//                                    base.evaluate();
-//                                    return null;
-//                                }
-//                            });
-//                    runWith("TEST", getSubjoin(),
-//                            ConcreteTokenProvider.getToken(description),
-//                            ConcreteContext.run(SIDE, SIDE_TEST, new ConcreteClosure() {
-//                                @Override
-//                                public Object concreteRun() throws Throwable {
-//                                    base.evaluate();
-//                                    return null;
-//                                }
-//                            }));
                 } catch (ConcreteException ce) {
                     throw (ce.getCause() != null && ce.getCode() == ErrorCodes.UNKNOWN_ERROR) ? ce.getCause() : ce;
                 }
@@ -77,9 +60,26 @@ public class ConcreteTestRule implements TestRule {
         };
     }
 
-    private Subjoin getSubjoin() {
-        return new SubjoinWrapper.DefaultSubjoin();
+    private Subjoin getSubjoin(Description description) {
+        Subjoin subjoin = new AbstractSubjoin() {
+            @Override
+            protected Collection<String> skipKeys() {
+                return null;
+            }
+        };
+        TestSubjoin testSubjoin = description.getAnnotation(TestSubjoin.class);
+        if (testSubjoin != null && testSubjoin.value().length > 0) {
+            for (TestSubjoinItem testSubjoinItem : testSubjoin.value()) {
+                subjoin.set(testSubjoinItem.key(), Arrays.asList(testSubjoinItem.value()));
+            }
+        }
+        return subjoin;
     }
+
+
+//    private Subjoin getSubjoin() {
+//        return new SubjoinWrapper.DefaultSubjoin();
+//    }
 
 
 }

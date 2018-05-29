@@ -64,7 +64,7 @@ public class TestCase extends ConcreteTestCase {
 
         // >=
         testRepo.findAll(
-                SpecCommon.<TestEntity, Integer>greaterThenEquals( "intAttr", 1));
+                SpecCommon.<TestEntity, Integer>greaterThenEquals("intAttr", 1));
 
         // not
         testRepo.findAll(
@@ -86,13 +86,13 @@ public class TestCase extends ConcreteTestCase {
                 SpecCommon.<TestEntity, String>equals("strAttr", "%"));
 
         testRepo.findAll(
-                SpecCommon.<TestEntity, String>lessThenEquals( "strAttr", "%"));
+                SpecCommon.<TestEntity, String>lessThenEquals("strAttr", "%"));
 
         testRepo.findAll(
                 SpecCommon.<TestEntity, String>in("strAttr", "%", "33"));
 
         testRepo.findAll(
-                SpecCommon.<TestEntity>like( "strAttr", "adsf"));
+                SpecCommon.<TestEntity>like("strAttr", "adsf"));
 
     }
 
@@ -103,12 +103,12 @@ public class TestCase extends ConcreteTestCase {
     }
 
     @Test
-    public void testNull(){
-        testRepo.findAll((Specifications<TestEntity>)null, new PageRequest(1,1));
+    public void testNull() {
+        testRepo.findAll((Specifications<TestEntity>) null, new PageRequest(1, 1));
     }
 
     @Test
-    public void testMaker(){
+    public void testMaker() {
         testRepo.findAll(abstractSpecificationsMaker.make(null, "aaa"));
         testRepo.findAll(abstractSpecificationsMaker.make(null, "a01"));
     }

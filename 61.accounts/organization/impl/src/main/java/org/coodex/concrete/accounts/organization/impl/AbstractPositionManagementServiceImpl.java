@@ -55,11 +55,11 @@ public abstract class AbstractPositionManagementServiceImpl
 
         putLoggingData("new", positionEntity);
         return new StrID<J>(positionEntity.getId(),
-                positionCopier.copyB2A(positionRepo.save(positionEntity), position));
+                positionCopier.copyB2A(getPositionRepo().save(positionEntity), position));
     }
 
     protected E getPositionEntity(String id) {
-        return IF.isNull(positionRepo.findOne(id), OrganizationErrorCodes.POSITION_NOT_EXISTS);
+        return IF.isNull(getPositionRepo().findOne(id), OrganizationErrorCodes.POSITION_NOT_EXISTS);
     }
 
     protected E getPositionWithPermissionCheck(String id) {
@@ -73,7 +73,7 @@ public abstract class AbstractPositionManagementServiceImpl
         E positionEntity = getPositionWithPermissionCheck(id);
 //        checkManagementPermission(positionEntity.getBelong());
         putLoggingData("old", deepCopy(positionEntity));
-        putLoggingData("new", positionRepo.save(positionCopier.copyA2B(position, positionEntity)));
+        putLoggingData("new", getPositionRepo().save(positionCopier.copyA2B(position, positionEntity)));
     }
 
     @Override
@@ -87,7 +87,7 @@ public abstract class AbstractPositionManagementServiceImpl
             putLoggingData("original", positionEntity.getBelongTo());
 
             positionEntity.setBelongTo(organizationEntity);
-            positionRepo.save(positionEntity);
+            getPositionRepo().save(positionEntity);
         }
 
     }
@@ -95,7 +95,7 @@ public abstract class AbstractPositionManagementServiceImpl
     @Override
     public void updateOrder(String id, Integer order) {
         E positionEntity = getPositionWithPermissionCheck(id);
-        updateOrder(order, positionEntity, positionRepo);
+        updateOrder(order, positionEntity, getPositionRepo());
     }
 
     @Override
@@ -105,7 +105,7 @@ public abstract class AbstractPositionManagementServiceImpl
 
     @Override
     public void grantTo(String id, String[] roles) {
-        grantTo(getPositionWithPermissionCheck(id), positionRepo, roles);
+        grantTo(getPositionWithPermissionCheck(id), getPositionRepo(), roles);
     }
 
     @Override

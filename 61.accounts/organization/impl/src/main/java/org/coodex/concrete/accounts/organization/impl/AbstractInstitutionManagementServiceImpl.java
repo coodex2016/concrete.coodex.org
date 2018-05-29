@@ -116,7 +116,6 @@ public abstract class AbstractInstitutionManagementServiceImpl
     }
 
 
-
     @Override
     public void delete(String id) {
         checkManagementPermission(id);

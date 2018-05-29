@@ -32,7 +32,7 @@ public class IdCardRelation extends AbstractRelationPolicy {
     }
 
     @RelationMethod(ID_CARD_TO_SEX)
-    public Integer toSex(String idCardNo){
+    public Integer toSex(String idCardNo) {
         if (idCardNo != null) {
             switch (idCardNo.length()) {
                 case 15:
@@ -45,7 +45,7 @@ public class IdCardRelation extends AbstractRelationPolicy {
     }
 
     @RelationMethod(ID_CARD_TO_BIRTHAY)
-    public String toBirthday(String idCardNo){
+    public String toBirthday(String idCardNo) {
         if (idCardNo != null) {
             switch (idCardNo.length()) {
                 case 15:

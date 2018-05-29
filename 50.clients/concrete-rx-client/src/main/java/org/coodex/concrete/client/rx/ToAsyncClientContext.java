@@ -16,30 +16,27 @@
 
 package org.coodex.concrete.client.rx;
 
-import org.coodex.concrete.client.ClientServiceContext;
+import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.RuntimeContext;
-import org.coodex.concrete.common.ServiceContext;
-import org.coodex.concrete.common.struct.AbstractUnit;
 
-public final class ToAsyncClientContext extends ClientServiceContext {
+public final class ToAsyncClientContext extends ClientSideContext {
 
     public ToAsyncClientContext(Destination destination, RuntimeContext context) {
         super(destination, context);
-        ServiceContext serviceContext = ConcreteContext.getServiceContext();
-        if(serviceContext != null) {
-            this.caller = serviceContext.getCaller();
-            this.courier = serviceContext.getCourier();
-            this.currentUnit = serviceContext.getCurrentUnit();
-            this.logging = serviceContext.getLogging();
-            this.model = serviceContext.getModel();
-            this.subjoin = serviceContext.getSubjoin();
-        }
+//        ServiceContext serviceContext = ConcreteContext.getServiceContext();
+//        if(serviceContext != null) {
+//            this.caller = serviceContext.getCaller();
+//            this.courier = serviceContext.getCourier();
+//            this.currentUnit = serviceContext.getCurrentUnit();
+//            this.logging = serviceContext.getLogging();
+//            this.model = serviceContext.getModel();
+//            this.subjoin = serviceContext.getSubjoin();
+//        }
     }
 
-    @Override
-    protected AbstractUnit getUnit(RuntimeContext context) {
-        return null;
-    }
+//    @Override
+//    protected AbstractUnit getUnit(RuntimeContext context) {
+//        return null;
+//    }
 }

@@ -39,7 +39,7 @@ public class ThrowException implements ConflictSolution {
     public <T> T conflict(Map<String, T> beans, Class<T> clz) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("bean conflict for ").append(clz.getName()).append(":");
-        for(String name: beans.keySet()){
+        for (String name : beans.keySet()) {
             stringBuilder.append("\n\t").append(name).append(", ").append(beans.get(name)).append(",")
                     .append(beans.get(name).getClass());
         }

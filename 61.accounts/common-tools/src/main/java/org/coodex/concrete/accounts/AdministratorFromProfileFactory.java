@@ -35,6 +35,54 @@ import java.util.Set;
  */
 public class AdministratorFromProfileFactory extends AbstractAdministratorFactory {
 
+    public static final Profile ADMINISTRATOR_INFO = Profile.getProfile("administrator.properties");
+
+    @Override
+    protected Administrator getAdministrator(String id) {
+        return new AdministratorFromProfile(id);
+    }
+
+//    private static final Administrator ADMINISTRATOR = new Administrator() {
+//
+//        @Override
+//        public boolean verify(String password, String authCode) {
+//            if (password == null || !password.equals(ADMINISTRATOR_INFO.getString("encoded.password",
+//                    AccountsCommon.getDefaultPassword()))) return false;
+//
+//            return TOTPAuthenticator.authenticate(authCode, ADMINISTRATOR_INFO.getString("authKey"));
+//        }
+//
+//        private AccountIDImpl id = new AccountIDImpl(AccountIDImpl.TYPE_ADMINISTRATOR, Common.getUUIDStr());
+//
+//        @Override
+//        public String getName() {
+//            return ADMINISTRATOR_INFO.getString("name", "administrator");
+//        }
+//
+//        @Override
+//        public AccountIDImpl getId() {
+//            return id;
+//        }
+//
+//        @Override
+//        public Set<String> getRoles() {
+//            return new HashSet<String>(Arrays.asList(
+//                    ADMINISTRATOR_INFO.getStrList("roles", ",",
+//                            new String[]{AccountManagementRoles.SYSTEM_MANAGER})
+//            ));
+//        }
+//
+//        @Override
+//        public boolean isValid() {
+//            return ADMINISTRATOR_INFO.getBool("valid", true);
+//        }
+//    };
+
+    @Override
+    protected Administrator getAdministrator(String id, String tenant) {
+        return new AdministratorFromProfile(id, tenant);
+    }
+
     private static class AdministratorFromProfile implements Administrator {
         private String uuid;
         private String tenant;
@@ -85,54 +133,5 @@ public class AdministratorFromProfileFactory extends AbstractAdministratorFactor
         public String getTenant() {
             return tenant;
         }
-    }
-
-    public static final Profile ADMINISTRATOR_INFO = Profile.getProfile("administrator.properties");
-
-//    private static final Administrator ADMINISTRATOR = new Administrator() {
-//
-//        @Override
-//        public boolean verify(String password, String authCode) {
-//            if (password == null || !password.equals(ADMINISTRATOR_INFO.getString("encoded.password",
-//                    AccountsCommon.getDefaultPassword()))) return false;
-//
-//            return TOTPAuthenticator.authenticate(authCode, ADMINISTRATOR_INFO.getString("authKey"));
-//        }
-//
-//        private AccountIDImpl id = new AccountIDImpl(AccountIDImpl.TYPE_ADMINISTRATOR, Common.getUUIDStr());
-//
-//        @Override
-//        public String getName() {
-//            return ADMINISTRATOR_INFO.getString("name", "administrator");
-//        }
-//
-//        @Override
-//        public AccountIDImpl getId() {
-//            return id;
-//        }
-//
-//        @Override
-//        public Set<String> getRoles() {
-//            return new HashSet<String>(Arrays.asList(
-//                    ADMINISTRATOR_INFO.getStrList("roles", ",",
-//                            new String[]{AccountManagementRoles.SYSTEM_MANAGER})
-//            ));
-//        }
-//
-//        @Override
-//        public boolean isValid() {
-//            return ADMINISTRATOR_INFO.getBool("valid", true);
-//        }
-//    };
-
-
-    @Override
-    protected Administrator getAdministrator(String id) {
-        return new AdministratorFromProfile(id);
-    }
-
-    @Override
-    protected Administrator getAdministrator(String id, String tenant) {
-        return new AdministratorFromProfile(id, tenant);
     }
 }

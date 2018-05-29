@@ -31,24 +31,11 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class ConcreteCache<K, V> {
 
-    static class Cached<V> {
-        V value;
-        ScheduledFuture future;
-
-        public Cached(V value, ScheduledFuture future) {
-            this.value = value;
-            this.future = future;
-        }
-    }
-
     private final static ScheduledExecutorService THREADS = ExecutorsHelper.newScheduledThreadPool(
             ConcreteHelper.getProfile().getInt("cache.thread.pool.size", 1)
     );
-
     private final static RecursivelyProfile RECURSIVELY_PROFILE = new RecursivelyProfile(ConcreteHelper.getProfile());
-
     private Map<K, Cached<V>> cache = new HashMap<K, Cached<V>>();
-
     //    private int time;
     private TimeUnit unit;
 
@@ -56,14 +43,6 @@ public abstract class ConcreteCache<K, V> {
         this(
 //                ConcreteHelper.getProfile().getInt("cache.object.life", 10),
                 TimeUnit.MINUTES);
-    }
-
-    protected String getRule(){
-        return null;
-    }
-
-    protected final long getCachingTime() {
-        return Common.toLong(RECURSIVELY_PROFILE.getString(getRule(), "cache.object.life"), 10);
     }
 
     /**
@@ -74,6 +53,14 @@ public abstract class ConcreteCache<K, V> {
     public ConcreteCache(/*int time,*/ TimeUnit unit) {
 //        this.time = time;
         this.unit = unit;
+    }
+
+    protected String getRule() {
+        return null;
+    }
+
+    protected final long getCachingTime() {
+        return Common.toLong(RECURSIVELY_PROFILE.getString(getRule(), "cache.object.life"), 10);
     }
 
     public V get(final K key) {
@@ -108,4 +95,14 @@ public abstract class ConcreteCache<K, V> {
     }
 
     protected abstract V load(K key);
+
+    static class Cached<V> {
+        V value;
+        ScheduledFuture future;
+
+        public Cached(V value, ScheduledFuture future) {
+            this.value = value;
+            this.future = future;
+        }
+    }
 }

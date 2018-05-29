@@ -1,4 +1,4 @@
-<#macro classNameList classes><#list classes?sort as clazz>${clazz}<#if clz_has_next>, </#if></#list></#macro>
+<#macro classNameList classes><#list classes?sort as clazz>${clazz}<#if clazz_has_next>, </#if></#list></#macro>
 import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
 <#list services?keys?sort as key>

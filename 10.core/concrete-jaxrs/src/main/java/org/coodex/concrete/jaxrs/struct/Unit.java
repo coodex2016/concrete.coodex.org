@@ -52,8 +52,8 @@ public class Unit extends AbstractUnit<Param, Module> {
         validation();
     }
 
-    private synchronized List<Param> _getPojo(){
-        if(pojo == null){
+    private synchronized List<Param> _getPojo() {
+        if (pojo == null) {
             pojo = new ArrayList<Param>();
         }
         return pojo;
@@ -180,12 +180,12 @@ public class Unit extends AbstractUnit<Param, Module> {
 
 //            parameters[i] = new Param(method, i);
 //            Param param = parameters[i];
-            if (!isPrimitive(param.getType()) ||
-                    (param.getType() == String.class
-                            && param.getDeclaredAnnotation(BigString.class) != null)) {
-                _getPojo().add(param);
-                param.setPathParam(false);
-            }
+        if (!isPrimitive(param.getType()) ||
+                (param.getType() == String.class
+                        && param.getDeclaredAnnotation(BigString.class) != null)) {
+            _getPojo().add(param);
+            param.setPathParam(false);
+        }
 //        }
         return param;
     }

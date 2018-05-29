@@ -24,30 +24,14 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class Debouncer<T> extends AbstractCoalition<T> {
+    private ScheduledFuture prevFuture = null;
+
     public Debouncer(Callback<T> c, int interval, ScheduledExecutorService scheduledExecutorService) {
         super(c, interval, scheduledExecutorService);
     }
 
     public Debouncer(Callback<T> c, int interval) {
         super(c, interval);
-    }
-
-    private ScheduledFuture prevFuture = null;
-
-    public synchronized void call(final T key) {
-
-        if (prevFuture != null)
-            prevFuture.cancel(true);
-
-        prevFuture = scheduledExecutorService.schedule(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (Debouncer.this) {
-                    callback.call(key);
-                    prevFuture = null;
-                }
-            }
-        }, interval, TimeUnit.MILLISECONDS);
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -70,5 +54,21 @@ public class Debouncer<T> extends AbstractCoalition<T> {
 
         Thread.sleep(100);
         debouncer.terminate();
+    }
+
+    public synchronized void call(final T key) {
+
+        if (prevFuture != null)
+            prevFuture.cancel(true);
+
+        prevFuture = scheduledExecutorService.schedule(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (Debouncer.this) {
+                    callback.call(key);
+                    prevFuture = null;
+                }
+            }
+        }, interval, TimeUnit.MILLISECONDS);
     }
 }

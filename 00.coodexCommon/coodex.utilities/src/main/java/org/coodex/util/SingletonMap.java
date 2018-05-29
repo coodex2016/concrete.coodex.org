@@ -21,18 +21,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SingletonMap<K, V> {
 
-    public interface Builder<K, V> {
-        V build(K key);
-    }
-
     private final Builder<K, V> builder;
+    private Map<K, V> map = new ConcurrentHashMap<K, V>();
 
     public SingletonMap(Builder<K, V> builder) {
         if (builder == null) throw new NullPointerException("builder MUST NOT be null.");
         this.builder = builder;
     }
-
-    private Map<K, V> map = new ConcurrentHashMap<K, V>();
 
     public boolean containsKey(Object key) {
         return map.containsKey(key);
@@ -57,6 +52,10 @@ public class SingletonMap<K, V> {
             }
         }
         return null;
+    }
+
+    public interface Builder<K, V> {
+        V build(K key);
     }
 
 

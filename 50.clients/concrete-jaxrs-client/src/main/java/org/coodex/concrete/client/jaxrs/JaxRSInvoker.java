@@ -53,6 +53,7 @@ import static org.coodex.concrete.client.jaxrs.JaxRSInvokerFactory.isSSL;
 import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
+import static org.coodex.concrete.jaxrs.JaxRSHelper.getUnitFromContext;
 
 public class JaxRSInvoker extends AbstractSyncInvoker {
 
@@ -61,17 +62,6 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
     private static ClientBuilder clientBuilder = ClientBuilder.newBuilder();
 
     private final Client client;
-
-    protected String getEncodingCharset() {
-        String charset = getString(getDestination().getIdentify(), "jaxrs.charset");
-        if (charset == null) charset = "utf-8";
-        try {
-            return Charset.forName(charset).displayName();
-        } catch (UnsupportedCharsetException e) {
-            log.warn("Unsupported charset: {}", charset);
-            return "utf-8";
-        }
-    }
 
     JaxRSInvoker(Destination destination) {
         super(destination);
@@ -85,6 +75,78 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                 clientBuilder.build();
     }
 
+    public static Invocation.Builder buildHeaders(Invocation.Builder builder, StringBuilder str, Subjoin subjoin, String tokenId) {
+        if (subjoin != null || !Common.isBlank(tokenId)) {
+            str.append("\nheaders:");
+            if (subjoin != null) {
+                for (String key : subjoin.keySet()) {
+                    builder = builder.header(key, subjoin.get(key));
+                    str.append("\n\t").append(key).append(": ").append(subjoin.get(key));
+                }
+            }
+            if (!Common.isBlank(tokenId)) {
+                builder = builder.header(CONCRETE_TOKEN_ID_KEY, tokenId);
+                str.append("\n\t").append(CONCRETE_TOKEN_ID_KEY).append(": ").append(tokenId);
+            }
+        }
+        return builder;
+    }
+
+    private static JaxRSClientException throwException(boolean errorOccurred, int code, String body, Unit unit, String url) {
+        if (errorOccurred) {
+            ErrorInfo errorInfo = getJSONSerializer().parse(body, ErrorInfo.class);
+            return new JaxRSClientException(errorInfo.getCode(), errorInfo.getMsg(), url, unit.getInvokeType());
+        } else {
+            return new JaxRSClientException(code, body, url, unit.getInvokeType());
+        }
+    }
+
+    public static Object processResult(int code, String body, Unit unit, boolean errorOccurred, String url) {
+
+
+        if (code >= 200 && code < 300) {
+            return void.class.equals(unit.getReturnType()) ?
+                    null :
+                    getJSONSerializer().parse(body,
+                            TypeHelper.toTypeReference(unit.getGenericReturnType(),
+                                    unit.getDeclaringModule().getInterfaceClass()));
+        } else {
+            throw throwException(errorOccurred, code, body, unit, url);
+        }
+    }
+
+    public static Object getSubmitObject(Unit unit, Object[] args) {
+        Object toSubmit = null;
+        Param[] pojoParams = unit.getPojo();
+        if (args != null) {
+            switch (pojoParams.length) {
+                case 0:
+                    break;
+                case 1:
+                    toSubmit = args[pojoParams[0].getIndex()];
+                    break;
+                default:
+                    Map<String, Object> body = new HashMap<String, Object>();
+                    for (Param param : pojoParams) {
+                        body.put(param.getName(), args[param.getIndex()]);
+                    }
+                    toSubmit = body;
+            }
+        }
+        return toSubmit;
+    }
+
+    protected String getEncodingCharset() {
+        String charset = getString(getDestination().getIdentify(), "jaxrs.charset");
+        if (charset == null) charset = "utf-8";
+        try {
+            return Charset.forName(charset).displayName();
+        } catch (UnsupportedCharsetException e) {
+            log.warn("Unsupported charset: {}", charset);
+            return "utf-8";
+        }
+    }
+
     protected String toStr(Object o) {
         if (o == null) return null;
         if (JaxRSHelper.isPrimitive(o.getClass())) return o.toString();
@@ -93,7 +155,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 
     @Override
     protected Object execute(Class clz, Method method, Object[] args) throws Throwable {
-        Unit unit = getContext().getJaxRSUnit();
+        Unit unit = getUnitFromContext(ConcreteHelper.getContext(method, clz));
         if (isDevModel("jaxrs.client")) {
             return MockerFacade.mock(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
         } else {
@@ -171,7 +233,6 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         }
     }
 
-
     private Response request(String url, String method, Object body) throws URISyntaxException {
         URI uri = new URI(url);
         Invocation.Builder builder = client.target(url).request();
@@ -197,70 +258,6 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                 builder.build(method, Entity.entity(body,
                         MediaType.APPLICATION_JSON_TYPE.withCharset(getEncodingCharset()))).invoke();
     }
-
-    public static Invocation.Builder buildHeaders(Invocation.Builder builder, StringBuilder str, Subjoin subjoin, String tokenId) {
-        if (subjoin != null || !Common.isBlank(tokenId)) {
-            str.append("\nheaders:");
-            if (subjoin != null) {
-                for (String key : subjoin.keySet()) {
-                    builder = builder.header(key, subjoin.get(key));
-                    str.append("\n\t").append(key).append(": ").append(subjoin.get(key));
-                }
-            }
-            if (!Common.isBlank(tokenId)) {
-                builder = builder.header(CONCRETE_TOKEN_ID_KEY, tokenId);
-                str.append("\n\t").append(CONCRETE_TOKEN_ID_KEY).append(": ").append(tokenId);
-            }
-        }
-        return builder;
-    }
-
-
-    private static JaxRSClientException throwException(boolean errorOccurred, int code, String body, Unit unit, String url) {
-        if (errorOccurred) {
-            ErrorInfo errorInfo = getJSONSerializer().parse(body, ErrorInfo.class);
-            return new JaxRSClientException(errorInfo.getCode(), errorInfo.getMsg(), url, unit.getInvokeType());
-        } else {
-            return new JaxRSClientException(code, body, url, unit.getInvokeType());
-        }
-    }
-
-    public static Object processResult(int code, String body, Unit unit, boolean errorOccurred, String url) {
-
-
-        if (code >= 200 && code < 300) {
-            return void.class.equals(unit.getReturnType()) ?
-                    null :
-                    getJSONSerializer().parse(body,
-                            TypeHelper.toTypeReference(unit.getGenericReturnType(),
-                                    unit.getDeclaringModule().getInterfaceClass()));
-        } else {
-            throw throwException(errorOccurred, code, body, unit, url);
-        }
-    }
-
-
-    public static Object getSubmitObject(Unit unit, Object[] args) {
-        Object toSubmit = null;
-        Param[] pojoParams = unit.getPojo();
-        if (args != null) {
-            switch (pojoParams.length) {
-                case 0:
-                    break;
-                case 1:
-                    toSubmit = args[pojoParams[0].getIndex()];
-                    break;
-                default:
-                    Map<String, Object> body = new HashMap<String, Object>();
-                    for (Param param : pojoParams) {
-                        body.put(param.getName(), args[param.getIndex()]);
-                    }
-                    toSubmit = body;
-            }
-        }
-        return toSubmit;
-    }
-
 
     @Override
     public ServiceContext buildContext(Class concreteClass, Method method) {

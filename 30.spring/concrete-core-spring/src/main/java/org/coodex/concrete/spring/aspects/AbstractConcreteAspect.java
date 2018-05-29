@@ -40,6 +40,7 @@ public abstract class AbstractConcreteAspect<T extends AbstractInterceptor> exte
 
     private ConcreteInterceptor interceptor;
 
+    @SuppressWarnings("unchecked")
     private synchronized ConcreteSyncInterceptor getInterceptor() {
         if (interceptor == null) {
             try {

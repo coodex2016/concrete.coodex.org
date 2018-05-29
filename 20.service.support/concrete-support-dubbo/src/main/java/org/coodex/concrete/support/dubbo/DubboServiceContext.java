@@ -17,36 +17,16 @@
 package org.coodex.concrete.support.dubbo;
 
 import org.coodex.concrete.common.Caller;
-import org.coodex.concrete.common.ServiceContext;
+import org.coodex.concrete.common.ServerSideContext;
 import org.coodex.concrete.common.Subjoin;
-import org.coodex.concrete.common.Token;
-import org.coodex.concrete.common.messages.Message;
-import org.coodex.concrete.common.struct.AbstractUnit;
-import org.coodex.concrete.core.messages.Courier;
 
-import static org.coodex.concrete.common.ConcreteContext.SIDE_SERVER;
-
-public class DubboServiceContext extends ServiceContext {
+import java.util.Locale;
 
 
-    public DubboServiceContext(Caller caller, AbstractUnit unit, Subjoin subjoin, Token token) {
-        this.caller = caller;
-        this.token = token;
-        this.currentUnit = unit;
-        this.subjoin = subjoin;
-        this.side = SIDE_SERVER;
-        this.model = "Dubbo";
-        this.courier = new Courier() {
-            @Override
-            public String getType() {
-                return "DUBBO_COURIER";
-            }
+public class DubboServiceContext extends ServerSideContext {
 
-            @Override
-            public <T> void pushTo(Message<T> message, Token token) {
-                // TODO
-                // do nothing
-            }
-        };
+
+    public DubboServiceContext(Caller caller, Subjoin subjoin, Locale locale, String tokenId) {
+        super(caller, subjoin, locale, tokenId);
     }
 }

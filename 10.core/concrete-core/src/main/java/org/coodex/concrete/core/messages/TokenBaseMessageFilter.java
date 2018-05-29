@@ -16,12 +16,13 @@
 
 package org.coodex.concrete.core.messages;
 
-import org.coodex.concrete.common.BeanProviderFacade;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.common.messages.Message;
 import org.coodex.concrete.common.messages.MessageFilter;
-import org.coodex.concrete.core.token.TokenManager;
 
+import static org.coodex.concrete.core.token.TokenWrapper.getToken;
+
+@Deprecated
 public abstract class TokenBaseMessageFilter<T> implements MessageFilter<T> {
 
     private final String tokenId;
@@ -32,13 +33,13 @@ public abstract class TokenBaseMessageFilter<T> implements MessageFilter<T> {
         tokenId = token.getTokenId();
     }
 
-    private Token getToken() {
-        return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(tokenId, false);
-    }
+//    private Token getToken() {
+//        return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(tokenId, false);
+//    }
 
     @Override
     public boolean iWantIt(Message<? extends T> message) {
-        Token token = getToken();
+        Token token = getToken(tokenId);
         if (token == null || !token.isValid()) return false;
         return iWantIt(message, token);
     }

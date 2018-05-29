@@ -25,6 +25,7 @@ import org.coodex.util.ServiceLoader;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 import static org.coodex.util.ReflectHelper.foreachClass;
@@ -34,7 +35,31 @@ import static org.coodex.util.ReflectHelper.foreachClass;
  */
 public class ConcreteHelper {
 
-    public static final String VERSION = "0.2.2";
+    public static final String VERSION = "0.2.3-SNAPSHOT";
+    private static final ClassNameFilter CONCRETE_SERVICE_INTERFACE_FILTER = new ConcreteClassFilter() {
+        @Override
+        protected boolean accept(Class<?> clazz) {
+            return clazz != null
+                    && clazz.isInterface() //是接口
+                    && ConcreteService.class.isAssignableFrom(clazz) //是ConcreteService
+                    && clazz.getAnnotation(MicroService.class) != null //定义了MicroService;
+                    && clazz.getAnnotation(Abstract.class) == null //非抽象
+                    ;
+        }
+    };
+    private final static ServiceLoader<ModuleMaker> MODULE_MAKERS = new ConcreteServiceLoader<ModuleMaker>() {
+    };
+    //    private static ExecutorService executorService;
+    private static Singleton<ExecutorService> executorService = new Singleton<ExecutorService>(new Singleton.Builder<ExecutorService>() {
+        @Override
+        public ExecutorService build() {
+            return ExecutorsHelper.newPriorityThreadPool(
+                    getProfile().getInt("service.executor.corePoolSize", 0),
+                    getProfile().getInt("service.executor.maximumPoolSize", Integer.MAX_VALUE),
+                    getProfile().getInt("service.executor.keepAliveTime", 60)
+            );
+        }
+    });
 
     private static Profile getDefaultProfile(String tag) {
         return Profile.getProfile(tag + ".properties");
@@ -52,6 +77,16 @@ public class ConcreteHelper {
         return Common.isBlank(sub) ?
                 getDefaultProfile(tag) :
                 Profile.getProfile(tag + "." + sub + ".properties");
+    }
+
+    public static Map<String, String> updatedMap(Subjoin subjoin) {
+        Map<String, String> map = new ConcurrentHashMap<String, String>();
+        if (subjoin != null && subjoin.updatedKeySet().size() > 0) {
+            for (String key : subjoin.updatedKeySet()) {
+                map.put(key, subjoin.get(key));
+            }
+        }
+        return map;
     }
 
     public static String getString(String tag, String module, String key) {
@@ -75,19 +110,6 @@ public class ConcreteHelper {
         }
         return value;
     }
-
-
-    //    private static ExecutorService executorService;
-    private static Singleton<ExecutorService> executorService = new Singleton<ExecutorService>(new Singleton.Builder<ExecutorService>() {
-        @Override
-        public ExecutorService build() {
-            return ExecutorsHelper.newPriorityThreadPool(
-                    getProfile().getInt("service.executor.corePoolSize", 0),
-                    getProfile().getInt("service.executor.maximumPoolSize", Integer.MAX_VALUE),
-                    getProfile().getInt("service.executor.keepAliveTime", 60)
-            );
-        }
-    });
 
     public static ExecutorService getExecutor() {
 //        if (executorService == null) {
@@ -127,7 +149,6 @@ public class ConcreteHelper {
 
     }
 
-
     public static String getServiceName(Class<?> clz) {
         if (clz == null || !ConcreteService.class.isAssignableFrom(clz)) return null;
         MicroService concreteService = clz.getAnnotation(MicroService.class);
@@ -145,20 +166,6 @@ public class ConcreteHelper {
         if (concreteService == null) return method.getName();
         return Common.isBlank(concreteService.value()) ? method.getName() : concreteService.value();
     }
-
-
-    private static final ClassNameFilter CONCRETE_SERVICE_INTERFACE_FILTER = new ConcreteClassFilter() {
-        @Override
-        protected boolean accept(Class<?> clazz) {
-            return clazz != null
-                    && clazz.isInterface() //是接口
-                    && ConcreteService.class.isAssignableFrom(clazz) //是ConcreteService
-                    && clazz.getAnnotation(MicroService.class) != null //定义了MicroService;
-                    && clazz.getAnnotation(Abstract.class) == null //非抽象
-                    ;
-        }
-    };
-
 
     public static void foreachService(ReflectHelper.Processor processor, String... packages) {
         ReflectHelper.foreachClass(processor, CONCRETE_SERVICE_INTERFACE_FILTER, packages);
@@ -199,11 +206,6 @@ public class ConcreteHelper {
             }
         }, forSearch.toArray(new String[0]));
     }
-
-
-    private final static ServiceLoader<ModuleMaker> MODULE_MAKERS = new ConcreteServiceLoader<ModuleMaker>() {
-    };
-
 
     @SuppressWarnings("unchecked")
     public final static <MODULE extends AbstractModule> List<MODULE> loadModules(

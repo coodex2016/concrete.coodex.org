@@ -23,7 +23,7 @@ import org.coodex.concrete.accounts.organization.pojo.Organization;
  * Created by davidoff shen on 2017-05-11.
  */
 public abstract class OrganizationCopier<T extends Organization, E extends OrganizationEntity>
-    extends PojoCopier<T, E>{
+        extends PojoCopier<T, E> {
 
     @Override
     public E copyA2B(T t, E e) {

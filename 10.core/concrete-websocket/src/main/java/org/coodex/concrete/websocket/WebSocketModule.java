@@ -46,7 +46,7 @@ public class WebSocketModule extends AbstractModule<WebSocketUnit> {
 
     @Override
     protected WebSocketUnit buildUnit(Method method) {
-        return new WebSocketUnit(method,this);
+        return new WebSocketUnit(method, this);
     }
 
     @Override

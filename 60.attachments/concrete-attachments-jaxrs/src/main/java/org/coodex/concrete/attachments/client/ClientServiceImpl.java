@@ -17,11 +17,9 @@
 package org.coodex.concrete.attachments.client;
 
 import org.coodex.concrete.attachments.AttachmentServiceHelper;
-import org.coodex.concrete.common.BeanProviderFacade;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.Token;
-import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.util.Common;
 
@@ -29,23 +27,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.coodex.concrete.core.token.TokenWrapper.getToken;
+
 /**
  * Created by davidoff shen on 2016-12-13.
  */
 public class ClientServiceImpl implements ClientService {
 
 
-    private TokenManager tokenManager;
+//    private TokenManager tokenManager;
     //= BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
-
-    private static final Token token = TokenWrapper.getInstance();
 
     public static final String ATTACHMENT_AUTHORIZATION_KEY = ClientServiceImpl.class.getName() + ".AUTHORIZATIONS";
     public static final String ATTACHMENT_WRITABLE_KEY = ClientServiceImpl.class.getName() + ".WRITABLE";
-
+    private static final Token token = TokenWrapper.getInstance();
 
     public static void allowWrite() {
-        if (token.getAttribute(ATTACHMENT_WRITABLE_KEY) == null)
+        if (token.getAttribute(ATTACHMENT_WRITABLE_KEY, Object.class) == null)
             token.setAttribute(ATTACHMENT_WRITABLE_KEY, "OK");
     }
 
@@ -54,10 +52,11 @@ public class ClientServiceImpl implements ClientService {
         allow(token, attachmentIds);
     }
 
+    @SuppressWarnings("unchecked")
     private static void allow(Token token, Set<String> attachmentIds) {
         HashMap<String, Long> attachments;
         synchronized (ClientServiceImpl.class) {
-            attachments = token.getAttribute(ATTACHMENT_AUTHORIZATION_KEY);
+            attachments = token.getAttribute(ATTACHMENT_AUTHORIZATION_KEY, HashMap.class);
             if (attachments == null) {
                 attachments = new HashMap<String, Long>();
                 token.setAttribute(ATTACHMENT_AUTHORIZATION_KEY, attachments);
@@ -74,21 +73,22 @@ public class ClientServiceImpl implements ClientService {
     }
 
     public static void allow(String... attachmentIds) {
-        allow((Set<String>) Common.arrayToSet(attachmentIds));
+        allow(Common.arrayToSet(attachmentIds));
     }
 
 
     private Token getTokenById(String tokenId) {
-        Token token = getTokenManager().getToken(tokenId);
+        Token token = getToken(tokenId);
         IF.isNull(token, ErrorCodes.NONE_TOKEN);
         IF.not(token.isValid(), ErrorCodes.TOKEN_INVALIDATE, tokenId);
         return token;
     }
 
-
+    @SuppressWarnings("unchecked")
     private boolean isAuthorized(String tokenId, String attachmentId) {
         Token token = getTokenById(tokenId);
-        HashMap<String, Long> authorizations = token.getAttribute(ATTACHMENT_AUTHORIZATION_KEY);
+        HashMap<String, Long> authorizations =
+                token.getAttribute(ATTACHMENT_AUTHORIZATION_KEY, HashMap.class);
         Long validity = authorizations.get(attachmentId);
         if (validity == null || validity.longValue() < System.currentTimeMillis()) {
             authorizations.remove(attachmentId);
@@ -106,7 +106,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public boolean writable(String token) {
-        return getTokenById(token).getAttribute(ATTACHMENT_WRITABLE_KEY) != null;
+        return getTokenById(token)
+                .getAttribute(ATTACHMENT_WRITABLE_KEY, Object.class) != null;
     }
 
 
@@ -117,7 +118,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void notify(String token, String attachmentId) {
-        Token t = getTokenManager().getToken(token);
+        Token t = getToken(token);
         if (t != null) {
             Set<String> set = new HashSet<String>();
             set.add(attachmentId);
@@ -125,9 +126,9 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
-    public TokenManager getTokenManager() {
-        if(tokenManager == null)
-            tokenManager = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
-        return tokenManager;
-    }
+//    public TokenManager getTokenManager() {
+//        if(tokenManager == null)
+//            tokenManager = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
+//        return tokenManager;
+//    }
 }

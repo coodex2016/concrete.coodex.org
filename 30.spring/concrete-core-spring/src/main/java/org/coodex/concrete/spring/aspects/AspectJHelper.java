@@ -32,6 +32,10 @@ public class AspectJHelper {
         return ((MethodSignature) sign).getMethod();
     }
 
+    static MethodInvocation proceedJoinPointToMethodInvocation(ProceedingJoinPoint joinPoint) {
+        return new ProceedJoinPointToMethodInvocation(joinPoint);
+    }
+
     private static class ProceedJoinPointToMethodInvocation implements MethodInvocation {
         private ProceedingJoinPoint joinPoint;
         private Method method = null;
@@ -42,11 +46,11 @@ public class AspectJHelper {
 
         @Override
         public synchronized Method getMethod() {
-            if(method == null) {
+            if (method == null) {
                 method = AspectJHelper.getMethod(joinPoint.getSignature());
                 int paramCount = method.getParameterTypes().length;
-                for(Method m: getThis().getClass().getMethods()){
-                    if(m.getName().equals(method.getName()) && m.getParameterTypes().length == paramCount){
+                for (Method m : getThis().getClass().getMethods()) {
+                    if (m.getName().equals(method.getName()) && m.getParameterTypes().length == paramCount) {
                         method = m;
                         break;
                     }
@@ -75,11 +79,6 @@ public class AspectJHelper {
             // 会不会有问题?
             return null;
         }
-    }
-
-
-    static MethodInvocation proceedJoinPointToMethodInvocation(ProceedingJoinPoint joinPoint){
-        return new ProceedJoinPointToMethodInvocation(joinPoint);
     }
 
 

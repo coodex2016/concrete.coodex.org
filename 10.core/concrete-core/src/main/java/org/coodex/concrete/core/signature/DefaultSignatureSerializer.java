@@ -61,6 +61,14 @@ public class DefaultSignatureSerializer implements SignatureSerializer {
             void.class,
     };
 
+    private static String encode(String s) {
+        try {
+            return URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            log.warn(e.getLocalizedMessage(), e);
+            return null;
+        }
+    }
 
     @Override
     public byte[] serialize(Map<String, Object> values) {
@@ -120,12 +128,12 @@ public class DefaultSignatureSerializer implements SignatureSerializer {
 
     private Object getValue(PojoProperty pojoProperty, Object o) throws InvocationTargetException, IllegalAccessException {
         Method method = pojoProperty.getMethod();
-        if(method != null){
+        if (method != null) {
             method.setAccessible(true);
             return method.invoke(o);
         }
         Field field = pojoProperty.getField();
-        if(field != null){
+        if (field != null) {
             field.setAccessible(true);
             return field.get(o);
         }
@@ -136,10 +144,10 @@ public class DefaultSignatureSerializer implements SignatureSerializer {
         Map<String, Object> map = new HashMap<String, Object>();
         // TODO : bug fix
         PojoInfo pojoInfo = new PojoInfo(o.getClass());
-        for(PojoProperty pojoProperty: pojoInfo.getProperties()){
+        for (PojoProperty pojoProperty : pojoInfo.getProperties()) {
             String propertyName = pojoProperty.getName();
             try {
-                map.put(propertyName,getValue(pojoProperty,o));
+                map.put(propertyName, getValue(pojoProperty, o));
             } catch (InvocationTargetException e) {
                 log.error("unable to get field value : {}", propertyName);
                 throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, e.getLocalizedMessage());
@@ -176,15 +184,6 @@ public class DefaultSignatureSerializer implements SignatureSerializer {
             }
         }
         return builder.toString();
-    }
-
-    private static String encode(String s) {
-        try {
-            return URLEncoder.encode(s, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            log.warn(e.getLocalizedMessage(), e);
-            return null;
-        }
     }
 
 }

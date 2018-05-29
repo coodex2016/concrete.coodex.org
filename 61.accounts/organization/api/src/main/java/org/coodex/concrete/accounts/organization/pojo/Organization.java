@@ -30,7 +30,6 @@ public abstract class Organization extends AbstractPojo {
     private int type;
 
 
-
     @Description(
             name = "描述",
             description = "用以说明该组织的职能等"

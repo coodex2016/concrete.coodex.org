@@ -41,6 +41,18 @@ public class IdCardMocker extends AbstractMocker<IdCard> {
 
     private final List<String> administrative_divisions = new ArrayList<String>();
 
+    public static char getVerifyChar(String idCardNumber) {
+        char pszSrc[] = idCardNumber.toCharArray();
+        int iS = 0;
+        int iW[] = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2};
+        char szVerCode[] = new char[]{'1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'};
+        for (int i = 0; i < 17; i++) {
+            iS += (pszSrc[i] - '0') * iW[i];
+        }
+        int iY = iS % 11;
+        return szVerCode[iY];
+    }
+
     @Override
     public Object mock(IdCard mockAnnotation, Class clazz) {
         synchronized (administrative_divisions) {
@@ -66,18 +78,6 @@ public class IdCardMocker extends AbstractMocker<IdCard> {
         String idCard = builder.toString();
 
         return size == 15 ? idCard : idCard + getVerifyChar(idCard);
-    }
-
-    public static char getVerifyChar(String idCardNumber) {
-        char pszSrc[] = idCardNumber.toCharArray();
-        int iS = 0;
-        int iW[] = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2};
-        char szVerCode[] = new char[]{'1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'};
-        for (int i = 0; i < 17; i++) {
-            iS += (pszSrc[i] - '0') * iW[i];
-        }
-        int iY = iS % 11;
-        return szVerCode[iY];
     }
 
     private String birthDay(IdCard mock) {

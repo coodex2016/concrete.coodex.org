@@ -37,6 +37,13 @@ public class JaxRSServiceHelper {
 
 
     private static final Set<Class> REGISTERED = new HashSet<Class>();
+    private static final ClassNameFilter CONCRETE_ERROR = new ConcreteClassFilter() {
+        @Override
+        protected boolean accept(Class<?> clazz) {
+            return clazz != null
+                    && AbstractErrorCodes.class.isAssignableFrom(clazz);
+        }
+    };
 
     private static ClassGenerator getGenerator(String desc) {
         for (ClassGenerator classGenerator : CLASS_GENERATORS.getAllInstances()) {
@@ -67,6 +74,7 @@ public class JaxRSServiceHelper {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public synchronized static Set<Class<?>> generateByClasses(String desc, Class<?>... classes) {
         if (classes == null || classes.length == 0)
             return generateByPackages(desc);
@@ -122,15 +130,6 @@ public class JaxRSServiceHelper {
             throw new RuntimeException(th);
         }
     }
-
-    private static final ClassNameFilter CONCRETE_ERROR = new ConcreteClassFilter() {
-        @Override
-        protected boolean accept(Class<?> clazz) {
-            return clazz != null
-                    && AbstractErrorCodes.class.isAssignableFrom(clazz);
-        }
-    };
-
 
     public static void foreachErrorClass(ReflectHelper.Processor processor, String... packages) {
         foreachClass(processor, CONCRETE_ERROR, packages);

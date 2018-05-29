@@ -32,11 +32,6 @@ import java.text.MessageFormat;
  */
 public class AspectTestImpl implements AspectTest {
 
-    @Override
-    public void test1(String a, BV bv) {
-        System.out.println("executing test1");
-    }
-
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
 
@@ -68,8 +63,8 @@ public class AspectTestImpl implements AspectTest {
 //            test.test1(null, null);
             test.test1("1", new BV(null));
             test.test1("1", new BV("2"));
-        }catch (ConcreteException ce){
-            System.out.println("errorCode: " + ce.getCode() );
+        } catch (ConcreteException ce) {
+            System.out.println("errorCode: " + ce.getCode());
         } catch (Throwable throwable) {
             System.out.println(throwable.getLocalizedMessage());
             throwable.printStackTrace();
@@ -77,5 +72,10 @@ public class AspectTestImpl implements AspectTest {
             ExecutorsHelper.shutdownAllNOW();
         }
 
+    }
+
+    @Override
+    public void test1(String a, BV bv) {
+        System.out.println("executing test1");
     }
 }

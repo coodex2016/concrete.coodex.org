@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.support.jsr339;
 
-import org.coodex.concrete.common.Token;
+import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.common.messages.Message;
 import org.coodex.concrete.jaxrs.AbstractJAXRSResource;
 import org.coodex.concrete.jaxrs.AsyncMessageReceiver;
@@ -31,7 +31,15 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@Deprecated
 public class Jsr339AsyncMessageReceiver extends AsyncMessageReceiver {
+    private static Singleton<ScheduledExecutorService> scheduledExecutorService =
+            new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
+                @Override
+                public ScheduledExecutorService build() {
+                    return ExecutorsHelper.newScheduledThreadPool(1);
+                }
+            });
     private final AsyncResponse asyncResponse;
     private final AbstractJAXRSResource.ResponseBuilder builder;
     private Future future;
@@ -46,12 +54,20 @@ public class Jsr339AsyncMessageReceiver extends AsyncMessageReceiver {
             public void run() {
                 try {
                     JaxRSCourier.deregister(getter);
-                    getter.asyncResponse.resume(builder.build(new AbstractJAXRSResource.RunWithToken() {
-                        @Override
-                        public Object runWithToken(Token token) {
-                            return new ArrayList<Message>();
-                        }
-                    }));
+                    getter.asyncResponse.resume(builder.build(
+//                            new AbstractJAXRSResource.RunWithToken() {
+//                        @Override
+//                        public Object runWithToken(Token token) {
+//                            return new ArrayList<Message>();
+//                        }
+//                    }
+                            new CallableClosure() {
+                                @Override
+                                public Object call() throws Throwable {
+                                    return new ArrayList<Message>();
+                                }
+                            }
+                    ));
                 } finally {
                     future = null;
                 }
@@ -59,23 +75,7 @@ public class Jsr339AsyncMessageReceiver extends AsyncMessageReceiver {
         }, timeOut, TimeUnit.MILLISECONDS);
     }
 
-//    private static ScheduledExecutorService scheduledExecutorService;
-
-    private static Singleton<ScheduledExecutorService> scheduledExecutorService =
-            new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
-                @Override
-                public ScheduledExecutorService build() {
-                    return ExecutorsHelper.newScheduledThreadPool(1);
-                }
-            });
-
     private static ScheduledExecutorService getScheduledExecutorService() {
-//        synchronized (Jsr339AsyncMessageReceiver.class) {
-//            if (scheduledExecutorService == null) {
-//                scheduledExecutorService = ExecutorsHelper.newScheduledThreadPool(1);
-//            }
-//        }
-//        return scheduledExecutorService;
         return scheduledExecutorService.getInstance();
     }
 
@@ -88,12 +88,20 @@ public class Jsr339AsyncMessageReceiver extends AsyncMessageReceiver {
             }
             this.future = null;
 
-            asyncResponse.resume(builder.build(new AbstractJAXRSResource.RunWithToken() {
-                @Override
-                public Object runWithToken(Token token) {
-                    return messages;
-                }
-            }));
+            asyncResponse.resume(builder.build(
+//                    new AbstractJAXRSResource.RunWithToken() {
+//                @Override
+//                public Object runWithToken(Token token) {
+//                    return messages;
+//                }
+//            }
+                    new CallableClosure() {
+                        @Override
+                        public Object call() throws Throwable {
+                            return messages;
+                        }
+                    }
+            ));
         }
     }
 

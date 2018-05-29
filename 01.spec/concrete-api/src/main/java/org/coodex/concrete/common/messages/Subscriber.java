@@ -17,6 +17,7 @@
 package org.coodex.concrete.common.messages;
 
 
+@Deprecated
 public interface Subscriber<T> {
 
     Subscription<T> getSubscription();

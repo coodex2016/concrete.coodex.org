@@ -34,6 +34,8 @@ public class Common {
             .getProperty("path.separator");
     public static final String FILE_SEPARATOR = System
             .getProperty("file.separator");
+    private static final int TO_LOWER = 'a' - 'A';
+    private final static String DEFAULT_DELIM = ".-_ /\\";
 
     @SuppressWarnings("unchecked")
     public static <T> Set<T> arrayToSet(T[] array) {
@@ -116,7 +118,6 @@ public class Common {
         return (int) random((long) min, (long) max);
     }
 
-
     public static long random(long min, long max) {
 
         if (min == max) return min;
@@ -126,7 +127,6 @@ public class Common {
         return (long) (_min + Math.random() * (_max - _min));
     }
 
-
     public static double random(double min, double max) {
 
         if (min == max) return min;
@@ -134,7 +134,6 @@ public class Common {
         double _max = Math.max(min, max);
         return _min + Math.random() * (_max - _min);
     }
-
 
     public static <K extends Serializable, V extends Serializable> void copyMap(
             Map<K, V> org, Map<K, V> target) {
@@ -227,6 +226,18 @@ public class Common {
         return result;
     }
 
+//    public static <T> List<T> joinList(List<T> ... lists) {
+////        List<T> result = new ArrayList<T>();
+////        if(lists != null && lists.length > 0){
+////            for(List<T> set : lists){
+////                if(set != null) result.addAll(set);
+////            }
+////        }
+////        result.addAll(ary1);
+////        result.addAll(ary2);
+//        return join(new ArrayList<T>(), lists);
+//    }
+
     @SuppressWarnings("unchecked")
     private static <T, C extends Collection<T>> C join(C instance, Collection... collections) {
         if (collections != null && collections.length > 0) {
@@ -254,19 +265,6 @@ public class Common {
 //        result.addAll(ary2);
         return join(new HashSet<T>(), sets);
     }
-
-//    public static <T> List<T> joinList(List<T> ... lists) {
-////        List<T> result = new ArrayList<T>();
-////        if(lists != null && lists.length > 0){
-////            for(List<T> set : lists){
-////                if(set != null) result.addAll(set);
-////            }
-////        }
-////        result.addAll(ary1);
-////        result.addAll(ary2);
-//        return join(new ArrayList<T>(), lists);
-//    }
-
 
     public static String native2AscII(String str) {
         if (str == null) return null;
@@ -305,7 +303,6 @@ public class Common {
         return f;
     }
 
-
     public static URL getResource(String resource, ClassLoader... classLoaders) {
         ClassLoader classLoader = null;
         URL url = null;
@@ -338,7 +335,6 @@ public class Common {
         }
         return ClassLoader.getSystemResource(resource);
     }
-
 
     public static <T> int indexOf(T[] array, T t) {
         if (array == null) throw new NullPointerException("indexOf: array must not be NULL.");
@@ -440,13 +436,11 @@ public class Common {
         return trim(str, toTrim.toCharArray());
     }
 
-
     public static boolean sameString(String str1, String str2) {
         if (str1 == null && str2 == null) return true;
         if (str1 == null || str2 == null) return false;
         return str1.equals(str2);
     }
-
 
     /**
      * 参考：http://tools.jb51.net/table/gb2312
@@ -513,20 +507,15 @@ public class Common {
         return builder.toString();
     }
 
-
     public static boolean isSameStr(String s1, String s2) {
         if (s1 == s2) return true;
         if (s1 == null || s2 == null) return false;
         return s1.equals(s2);
     }
 
-
     public static Calendar copy(Calendar calendar) {
         return calendar == null ? null : (Calendar) calendar.clone();
     }
-
-
-    private static final int TO_LOWER = 'a' - 'A';
 
     public static String lowerFirstChar(String string) {
         if (string == null) return string;
@@ -547,8 +536,6 @@ public class Common {
         }
         return string;
     }
-
-    private final static String DEFAULT_DELIM = ".-_ /\\";
 
     public static String camelCase(String s) {
         return camelCase(s, false);
@@ -616,19 +603,24 @@ public class Common {
         return 1.0f - calculateStringDistance(s1, s2) / (Math.max(s1.length(), s2.length()) * 1.0f);
     }
 
-    public static <T> Map<String, T> subMap(String prefix, Map<String, T> map){
+    public static <T> Map<String, T> subMap(String prefix, Map<String, T> map) {
         Map<String, T> subMap = new HashMap<String, T>();
         String prefixKey = prefix.endsWith(".") ? prefix : (prefix + '.');
         int length = prefixKey.length();
-        for(String key: map.keySet()){
-            if(key.startsWith(prefixKey) && key.length() > length){
+        for (String key : map.keySet()) {
+            if (key.startsWith(prefixKey) && key.length() > length) {
                 subMap.put(key.substring(length), map.get(prefixKey));
             }
         }
         return subMap;
     }
 
-    public static void main(String [] args){
+
+    public static RuntimeException runtimeException(Throwable th) {
+        return th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th.getLocalizedMessage(), th);
+    }
+
+    public static void main(String[] args) {
         System.out.println(Profile.getProfile("a.properties").getStrList("aaa"));
     }
 }

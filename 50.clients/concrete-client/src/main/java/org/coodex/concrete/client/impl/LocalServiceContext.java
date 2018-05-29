@@ -16,34 +16,96 @@
 
 package org.coodex.concrete.client.impl;
 
-import org.coodex.concrete.client.ClientServiceContext;
-import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.AModule;
-import org.coodex.concrete.common.ConcreteContext;
-import org.coodex.concrete.common.RuntimeContext;
-import org.coodex.concrete.common.ServiceContext;
-import org.coodex.concrete.common.struct.AbstractUnit;
+import org.coodex.concrete.common.*;
+import org.coodex.concrete.core.token.TokenProxy;
 
-import static org.coodex.concrete.common.ConcreteContext.SIDE_LOCAL_INVOKE;
+import java.util.Locale;
 
 
-public class LocalServiceContext extends ClientServiceContext {
-    public LocalServiceContext(Destination destination, RuntimeContext context) {
-        super(destination, context);
+public class LocalServiceContext extends AbstractServiceContext implements ContainerContext {
+
+    private static final Caller localCaller = new Caller() {
+        @Override
+        public String getAddress() {
+            return "local";
+        }
+
+        @Override
+        public String getClientProvider() {
+            return "local";
+        }
+    };
+
+    private Token token;
+
+    private Caller caller;
+
+    public LocalServiceContext() {
+
+        super(getSubjoinFromContext(), getLocaleFromContext());
         ServiceContext serviceContext = ConcreteContext.getServiceContext();
-        this.caller = serviceContext.getCaller();
-        this.courier = serviceContext.getCourier();
-        this.logging = serviceContext.getLogging();
-        this.model = serviceContext.getModel();
-        this.subjoin = serviceContext.getSubjoin();
-        this.side = SIDE_LOCAL_INVOKE;
-        this.token = serviceContext.getToken();
+        token = TokenProxy.proxy(serviceContext == null ? null : serviceContext.getTokenId());
+        caller = serviceContext != null && serviceContext instanceof ContainerContext ?
+                ((ContainerContext) serviceContext).getCaller() : localCaller;
+    }
+
+
+    private static Subjoin getSubjoinFromContext() {
+        ServiceContext serviceContext = ConcreteContext.getServiceContext();
+        return serviceContext == null ? null : serviceContext.getSubjoin();
+    }
+
+    private static Locale getLocaleFromContext() {
+        ServiceContext serviceContext = ConcreteContext.getServiceContext();
+        return serviceContext == null ? null : serviceContext.getLocale();
     }
 
     @Override
-    protected AbstractUnit getUnit(RuntimeContext context) {
-        return AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());
+    public Caller getCaller() {
+        return caller;
+    }
+
+    @Override
+    public Token getToken() {
+        return token;
+    }
+
+    @Override
+    public String getTokenId() {
+        return getToken().getTokenId();
     }
 
 
+//    public LocalServiceContext(Destination destination, RuntimeContext context) {
+//        super(destination, context);
+//        ServiceContext serviceContext = ConcreteContext.getServiceContext();
+//        this.caller = serviceContext.getCaller();
+//        this.courier = serviceContext.getCourier();
+//        this.logging = serviceContext.getLogging();
+//        this.model = serviceContext.getModel();
+//        this.subjoin = serviceContext.getSubjoin();
+//        this.side = SIDE_LOCAL_INVOKE;
+//        this.token = serviceContext.getToken();
+//    }
+//
+//    @Override
+//    protected AbstractUnit getUnit(RuntimeContext context) {
+//        return AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());
+//    }
+//
+//
+//    @Override
+//    public Subjoin getSubjoin() {
+//        return null;
+//    }
+//
+//    @Override
+//    public Locale getLocale() {
+//        return null;
+//    }
+//
+//    @Override
+//    public String getTokenId() {
+//        return null;
+//    }
 }

@@ -38,9 +38,17 @@ public class OrganizationAccount implements NamedAccount<AccountIDImpl>, SaaSAcc
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public AccountIDImpl getId() {
         return id;
+    }
+
+    public void setId(AccountIDImpl id) {
+        this.id = id;
     }
 
     @Override
@@ -48,21 +56,13 @@ public class OrganizationAccount implements NamedAccount<AccountIDImpl>, SaaSAcc
         return roles;
     }
 
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+
     @Override
     public boolean isValid() {
         return true;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setId(AccountIDImpl id) {
-        this.id = id;
-    }
-
-    public void setRoles(Set<String> roles) {
-        this.roles = roles;
     }
 
     @Override

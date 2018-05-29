@@ -31,6 +31,25 @@ import java.lang.annotation.Target;
 @Mock
 public @interface VehicleNum {
 
+    //是否含挂车
+    boolean towedVehicle() default true;
+
+    //是否含教练车
+    boolean coachVehicle() default true;
+
+    //是否包含政府车
+    boolean governmentVehicle() default true;
+
+    Province[] belong() default {
+            Province.西藏, Province.浙江, Province.湖北, Province.贵州, Province.广西,
+            Province.重庆, Province.青海, Province.山西, Province.安徽, Province.内蒙古,
+            Province.陕西, Province.四川, Province.湖南, Province.上海, Province.河北,
+            Province.辽宁, Province.天津, Province.新疆, Province.海南, Province.甘肃,
+            Province.吉林, Province.福建, Province.河南, Province.云南, Province.黑龙江,
+            Province.山东, Province.江苏, Province.江西, Province.宁夏, Province.北京,
+            Province.广东};
+
+
     enum Province {
         西藏('藏', "ABCDEFG"), 浙江('浙', "ABCDEFGHJKL"),
         湖北('鄂', "ABCDEFGHJKLMNPQ"), 贵州('贵', "ABCDEFGHJ"),
@@ -65,25 +84,6 @@ public @interface VehicleNum {
             return code;
         }
     }
-
-    //是否含挂车
-    boolean towedVehicle() default true;
-
-    //是否含教练车
-    boolean coachVehicle() default true;
-
-    //是否包含政府车
-    boolean governmentVehicle() default true;
-
-
-    Province[] belong() default {
-            Province.西藏, Province.浙江, Province.湖北, Province.贵州, Province.广西,
-            Province.重庆, Province.青海, Province.山西, Province.安徽, Province.内蒙古,
-            Province.陕西, Province.四川, Province.湖南, Province.上海, Province.河北,
-            Province.辽宁, Province.天津, Province.新疆, Province.海南, Province.甘肃,
-            Province.吉林, Province.福建, Province.河南, Province.云南, Province.黑龙江,
-            Province.山东, Province.江苏, Province.江西, Province.宁夏, Province.北京,
-            Province.广东};
 
 
 }

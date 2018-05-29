@@ -19,8 +19,8 @@ package org.coodex.concrete.support.jsr339;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.AbstractJAXRSResource;
-import org.coodex.concrete.jaxrs.JaxRSCourier;
 import org.coodex.concrete.jaxrs.Polling;
+import org.coodex.concrete.message.TBMContainer;
 import org.coodex.concurrent.components.PriorityRunnable;
 
 import javax.ws.rs.container.AsyncResponse;
@@ -35,12 +35,6 @@ import java.util.concurrent.Executor;
  */
 public abstract class AbstractJSR339Resource<T extends ConcreteService> extends AbstractJAXRSResource<T> {
 
-    @Override
-    protected int getMethodStartIndex() {
-        return 2;
-    }
-
-
     /**
      * @return
      */
@@ -48,6 +42,10 @@ public abstract class AbstractJSR339Resource<T extends ConcreteService> extends 
         return ConcreteHelper.getExecutor();
     }
 
+    @Override
+    protected int getMethodStartIndex() {
+        return 2;
+    }
 
     protected void __execute(final String methodName, final AsyncResponse asyncResponse, final String tokenId, final Object... params) {
 
@@ -58,10 +56,12 @@ public abstract class AbstractJSR339Resource<T extends ConcreteService> extends 
             public void run() {
                 try {
                     if (method.getDeclaringClass().equals(Polling.class)) {
-                        JaxRSCourier.asyncMessageReceive(tokenId,
-                                new Jsr339AsyncMessageReceiver(asyncResponse,
-                                        ((Integer) params[0]).intValue() * 1000L,
-                                        new ResponseBuilder(tokenId, method, params)));
+//                        JaxRSCourier.asyncMessageReceive(tokenId,
+//                                new Jsr339AsyncMessageReceiver(asyncResponse,
+//                                        ((Integer) params[0]).intValue() * 1000L,
+//                                        new ResponseBuilder(tokenId, method, params)));
+                        asyncResponse.resume(TBMContainer.getInstance().getMessages(
+                                tokenId,((Integer) params[0]).intValue() * 1000L));
                     } else {
                         asyncResponse.resume(invokeByTokenId(tokenId, method, params));
                     }
@@ -70,7 +70,6 @@ public abstract class AbstractJSR339Resource<T extends ConcreteService> extends 
                 }
             }
         }));
-
     }
 
     protected void execute(String invokeMethodName, AsyncResponse asyncResponse, String tokenId, Object... objects) {

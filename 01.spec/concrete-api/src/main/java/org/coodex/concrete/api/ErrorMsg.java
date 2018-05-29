@@ -32,7 +32,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface ErrorMsg {
 
-    String value() default  "";
+    String value() default "";
 
     Class<? extends MessageFormatter> formatterClass() default MessageFormatter.class;
 

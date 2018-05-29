@@ -126,6 +126,7 @@ public class AccountsCommon {
      * @param authCode
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static String getAuthenticatorDesc(CanLoginEntity entity, String authCode) {
         if (entity.getAuthCodeKey() != null && entity.getAuthCodeKeyActiveTime() != null) {
             IF.not(TOTPAuthenticator.authenticate(authCode, entity.getAuthCodeKey()), AUTHORIZE_FAILED);
@@ -148,9 +149,11 @@ public class AccountsCommon {
      */
     public static <E extends CanLoginEntity> void bindAuthKey(E entity, String authCode, CrudRepository<E, String> repo) {
         Token token = TokenWrapper.getInstance();
-        Long validation = token.getAttribute("accounts.temp.authKey.validation." + entity.getId());
+        Long validation = token.getAttribute("accounts.temp.authKey.validation." + entity.getId(),
+                Long.class);
         IF.is(System.currentTimeMillis() > validation, AUTH_KEY_FAILURE);
-        String authKey = token.getAttribute("accounts.temp.authKey." + entity.getId());
+        String authKey = token.getAttribute("accounts.temp.authKey." + entity.getId(),
+                String.class);
         token.removeAttribute("accounts.temp.authKey.validation." + entity.getId());
         token.removeAttribute("accounts.temp.authKey." + entity.getId());
         IF.not(TOTPAuthenticator.authenticate(authCode, authKey), AUTHORIZE_FAILED);

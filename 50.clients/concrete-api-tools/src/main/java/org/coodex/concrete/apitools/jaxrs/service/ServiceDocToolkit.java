@@ -34,6 +34,8 @@ import java.util.*;
  * Created by davidoff shen on 2016-12-04.
  */
 public class ServiceDocToolkit extends DocToolkit {
+    private Set<String> pojoTypes = new HashSet<String>();
+
     public ServiceDocToolkit(AbstractRender render) {
         super(render);
     }
@@ -84,8 +86,6 @@ public class ServiceDocToolkit extends DocToolkit {
             getRender().writeTo("pojos/" + canonicalName(clz.getName()) + ".md", "pojo.md", map);
         }
     }
-
-    private Set<String> pojoTypes = new HashSet<String>();
 
     public Set<String> getPojos() {
         return pojoTypes;

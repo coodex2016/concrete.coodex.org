@@ -18,8 +18,8 @@ package org.coodex.concrete.websocket;
 
 public interface WebSocketService {
 
-    void setEndPoint(ConcreteWebSocketEndPoint endPoint);
-
     ConcreteWebSocketEndPoint getEndPoint();
+
+    void setEndPoint(ConcreteWebSocketEndPoint endPoint);
 
 }

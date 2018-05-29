@@ -26,20 +26,18 @@ import static org.coodex.util.Common.randomStr;
  * Created by davidoff shen on 2017-05-16.
  */
 public class EMailMocker extends AbstractMocker<EMail> {
+    private final String[] top = {".com", ".net", ".org", ".gov", ".cn"};
+    private final String chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+
     @Override
     public Object mock(EMail mockAnnotation, Class clazz) {
         String domain = mockAnnotation.domains().length > 0 ?
                 random(mockAnnotation.domains()) :
                 randomDomain();
-        return randomStr(3,9, chars) + '@' + domain;
+        return randomStr(3, 9, chars) + '@' + domain;
     }
 
-    private final String[] top = {".com", ".net", ".org", ".gov", ".cn"};
-    private final String chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-
-
-
     private String randomDomain() {
-        return randomStr(5,10, chars) + random(top);
+        return randomStr(5, 10, chars) + random(top);
     }
 }

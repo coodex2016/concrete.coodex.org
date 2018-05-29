@@ -37,7 +37,6 @@ public class OrganizationEntity extends AbstractEntity {
     private String higherLevelId;
 
 
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "higherLevelId")
     private OrganizationEntity higherLevel;
@@ -50,14 +49,13 @@ public class OrganizationEntity extends AbstractEntity {
         this.higherLevel = higherLevel;
     }
 
-        public String getHigherLevelId() {
+    public String getHigherLevelId() {
         return higherLevelId;
     }
 //
 //    public void setHigherLevelId(String higherLevelId) {
 //        this.higherLevelId = higherLevelId;
 //    }
-
 
 
     public String getDescription() {

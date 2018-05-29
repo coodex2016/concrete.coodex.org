@@ -48,6 +48,15 @@ import static org.coodex.concrete.support.jaxrs.javassist.CGContext.CLASS_POOL;
 public abstract class AbstractMethodGenerator {
 
 
+    private static final AtomicInteger REF = new AtomicInteger(0);
+    private static final Class<?>[] PRIMITIVE_CLASSES = new Class[]{
+            boolean.class, byte.class, char.class, short.class, int.class,
+            long.class, float.class, double.class
+    };
+    private static final Class<?>[] PRIMITIVE_BOX_CLASSES = new Class[]{
+            Boolean.class, Byte.class, Character.class, Short.class, Integer.class,
+            Long.class, Float.class, Double.class
+    };
     final private CGContext context;
     final private Unit unit;
 
@@ -61,10 +70,13 @@ public abstract class AbstractMethodGenerator {
         return context;
     }
 
+//    protected final CtClass[] getParameterTypesForDemo(Class pojoClass) {
+//        return getParameterTypesWith(pojoClass);
+//    }
+
     public Unit getUnit() {
         return unit;
     }
-
 
     /**
      * @return 获取javassist的参数类型
@@ -98,16 +110,10 @@ public abstract class AbstractMethodGenerator {
         return parameters;
     }
 
-//    protected final CtClass[] getParameterTypesForDemo(Class pojoClass) {
-//        return getParameterTypesWith(pojoClass);
-//    }
-
     /**
      * @return 获取参数签名类型
      */
     protected abstract SignatureAttribute.Type[] getSignatureTypes(Class pojoClass);
-
-    private static final AtomicInteger REF = new AtomicInteger(0);
 
     protected int actualParamCount() {
         return getUnit().getParameters().length -
@@ -126,6 +132,10 @@ public abstract class AbstractMethodGenerator {
         else
             return null;
     }
+
+//    protected final SignatureAttribute.Type[] getSignatureTypesForDemo(Class pojoClass) {
+//        return getSignatureTypesWith(pojoClass);
+//    }
 
     protected final SignatureAttribute.Type[] getSignatureTypesWith(Class pojoClass, SignatureAttribute.Type... addingTypes) {
         int additionParamCount = addingTypes == null ? 0 : addingTypes.length;
@@ -156,6 +166,10 @@ public abstract class AbstractMethodGenerator {
         return parameters;
     }
 
+//    protected final String getMethodBodyForDemo() {
+//        return "{return ($r)mockResult(\"" + getUnit().getFunctionName() + "\");}";
+//    }
+
     private Class createPojoClass(Param[] pojoParams, String className) throws CannotCompileException {
         CtClass ctClass = CLASS_POOL.makeClass(className);
 
@@ -173,8 +187,8 @@ public abstract class AbstractMethodGenerator {
         return ctClass.toClass();
     }
 
-//    protected final SignatureAttribute.Type[] getSignatureTypesForDemo(Class pojoClass) {
-//        return getSignatureTypesWith(pojoClass);
+//    protected final SignatureAttribute.Type getReturnSignatureTypeForDemo() {
+//        return JavassistHelper.classType(unit.getGenericReturnType(), context.getServiceClass());
 //    }
 
     /**
@@ -182,8 +196,8 @@ public abstract class AbstractMethodGenerator {
      */
     protected abstract String getMethodBody(Class pojoClass);
 
-//    protected final String getMethodBodyForDemo() {
-//        return "{return ($r)mockResult(\"" + getUnit().getFunctionName() + "\");}";
+//    protected CtClass getReturnTypeForDemo() {
+//        return CLASS_POOL.getOrNull(unit.getReturnType().getName());
 //    }
 
     /**
@@ -191,19 +205,10 @@ public abstract class AbstractMethodGenerator {
      */
     protected abstract SignatureAttribute.Type getReturnSignatureType();
 
-//    protected final SignatureAttribute.Type getReturnSignatureTypeForDemo() {
-//        return JavassistHelper.classType(unit.getGenericReturnType(), context.getServiceClass());
-//    }
-
     /**
      * @return 方法返回类型
      */
     protected abstract CtClass getReturnType();
-
-//    protected CtClass getReturnTypeForDemo() {
-//        return CLASS_POOL.getOrNull(unit.getReturnType().getName());
-//    }
-
 
     /**
      * @return 方法参数注解
@@ -262,7 +267,6 @@ public abstract class AbstractMethodGenerator {
         return getParameterAnnotationsAttributeWith();
     }
 
-
     final CtMethod generateMethod(String methodName) throws CannotCompileException {
 //        boolean isDevModel = isDevModel("jaxrs");
         Class pojoClass = pojoClass();
@@ -307,17 +311,6 @@ public abstract class AbstractMethodGenerator {
     }
 
     protected abstract String[] getContentType();
-
-    private static final Class<?>[] PRIMITIVE_CLASSES = new Class[]{
-            boolean.class, byte.class, char.class, short.class, int.class,
-            long.class, float.class, double.class
-    };
-
-    private static final Class<?>[] PRIMITIVE_BOX_CLASSES = new Class[]{
-            Boolean.class, Byte.class, Character.class, Short.class, Integer.class,
-            Long.class, Float.class, Double.class
-    };
-
 
     private String box(Class<?> c, int index) {
         return box(c, "$" + index);

@@ -37,6 +37,11 @@ public class FastJsonSerializer extends AbstractJsonSerializer {
 
     private Object ignoreNotMatch = null;
 
+    public static void main(String[] args) {
+        System.out.println(JSONSerializerFactory.getInstance().toJson("ok"));
+        System.out.println(JSONSerializerFactory.getInstance().parse("ok", String.class));
+    }
+
     private synchronized void init() throws ClassNotFoundException, NoSuchMethodException {
         if (jsonClass == null) {
             jsonClass = Class.forName("com.alibaba.fastjson.JSON");
@@ -74,7 +79,6 @@ public class FastJsonSerializer extends AbstractJsonSerializer {
         }
     }
 
-
     @Override
     public String toJson(Object t) {
         try {
@@ -84,11 +88,5 @@ public class FastJsonSerializer extends AbstractJsonSerializer {
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-    }
-
-
-    public static void main(String[] args) {
-        System.out.println(JSONSerializerFactory.getInstance().toJson("ok"));
-        System.out.println(JSONSerializerFactory.getInstance().parse("ok", String.class));
     }
 }

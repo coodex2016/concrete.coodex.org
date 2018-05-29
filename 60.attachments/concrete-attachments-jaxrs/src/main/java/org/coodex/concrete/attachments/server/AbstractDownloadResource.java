@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.attachments.server;
 
+import org.coodex.concrete.Client;
 import org.coodex.concrete.attachments.AttachmentEntityInfo;
 import org.coodex.concrete.attachments.AttachmentServiceHelper;
 import org.coodex.concrete.attachments.Repository;
@@ -23,7 +24,6 @@ import org.coodex.concrete.attachments.client.ClientService;
 import org.coodex.concrete.common.AttachmentInfoErrorCodes;
 import org.coodex.concrete.common.BeanProviderFacade;
 import org.coodex.concrete.common.IF;
-import org.coodex.concrete.jaxrs.Client;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -48,7 +48,7 @@ public class AbstractDownloadResource {
         if (!"public".equalsIgnoreCase(AttachmentServiceHelper.ATTACHMENT_PROFILE.getString("rule.read", "public"))) {
 
             ClientService clientService = Client.getInstance(ClientService.class,
-                    AttachmentServiceHelper.ATTACHMENT_PROFILE.getString(clientId + ".location"));
+                    AttachmentServiceHelper.ATTACHMENT_PROFILE.getString(clientId + ".location")); // TODO rename
             IF.not(clientService.readable(tokenId, attachmentId), AttachmentInfoErrorCodes.NO_READ_PRIVILEGE);
         }
 

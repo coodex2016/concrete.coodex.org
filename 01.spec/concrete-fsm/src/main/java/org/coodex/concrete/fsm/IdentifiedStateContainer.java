@@ -31,6 +31,5 @@ public interface IdentifiedStateContainer {
     <S extends IdentifiedState<ID>, ID extends Serializable> S loadStateAndLock(ID id, Class<? extends S> stateClass, long timeoutInMS) throws IdentifiedStateIsLockingException;
 
 
-
     void release(Serializable id);
 }

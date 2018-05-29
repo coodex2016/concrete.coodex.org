@@ -32,27 +32,27 @@ public class PojoInfo {
     private final Class rowType;
     private final Map<String, PojoProperty> properties = new HashMap<String, PojoProperty>();
 
-    public Type getType() {
-        return type;
-    }
-
-    public Class getRowType() {
-        return rowType;
-    }
-
     public PojoInfo(Type type, Type... context) {
         this.type = toTypeReference(type, context);
         rowType = TypeHelper.typeToClass(this.type);
         if (rowType == null) throw new RuntimeException(type + " is NOT POJO.");
 
         Set<Type> contextSet = new HashSet<Type>();
-        if(context != null && context.length > 0){
+        if (context != null && context.length > 0) {
             contextSet.addAll(Arrays.asList(context));
         }
         contextSet.add(type);
         context = contextSet.toArray(new Type[0]);
         buildMethodProperties(context);
         buildFieldProperties(context);
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Class getRowType() {
+        return rowType;
     }
 
     private void buildFieldProperties(Type... context) {

@@ -155,8 +155,6 @@ public abstract class AbstractLoginServiceImpl
     }
 
 
-
-
     /**
      * 其他登录方式，实现者自行重载
      *

@@ -61,7 +61,7 @@ public class MockerFacade {
     private static final AcceptableServiceLoader<String, RelationPolicy> RELATION_POLICY_LOADER =
             new AcceptableServiceLoader<String, RelationPolicy>(new ServiceLoaderFacade<RelationPolicy>() {
             });
-
+    private static final Map<String, PojoInfo> POJO_INFO_MAP = new HashMap<String, PojoInfo>();
 
     public static <T> T mock(GenericType<T> genericType) {
         return mock(genericType, null);
@@ -76,7 +76,7 @@ public class MockerFacade {
     }
 
     public static <T> T mock(Method method) {
-        return mock(method, (Class[])null);
+        return mock(method, (Class[]) null);
     }
 
     public static <T> T mock(final Method method, Class... context) {
@@ -225,7 +225,6 @@ public class MockerFacade {
         return null;
     }
 
-
     private static final Annotation getAnnotation(PojoProperty property) {
         if (property == null) return null;
         for (Annotation annotation : property.getAnnotations()) {
@@ -316,6 +315,14 @@ public class MockerFacade {
         return (T) map;
     }
 
+//    private static final Type getComponentType(Type componentType, PojoProperty pojoProperty){
+//        if(componentType == null) componentType = void.class;
+//        if(pojoProperty != null){
+//            COLLECTION collection = pojoProperty.getAnnotation(COLLECTION.class);
+//            if
+//        }
+//    }
+
     private static final <T extends Collection> T mockCollection(
             Class<? extends Collection> collectionClass,
             Type componentType,
@@ -344,16 +351,6 @@ public class MockerFacade {
 
         return (T) collection;
     }
-
-//    private static final Type getComponentType(Type componentType, PojoProperty pojoProperty){
-//        if(componentType == null) componentType = void.class;
-//        if(pojoProperty != null){
-//            COLLECTION collection = pojoProperty.getAnnotation(COLLECTION.class);
-//            if
-//        }
-//    }
-
-    private static final Map<String, PojoInfo> POJO_INFO_MAP = new HashMap<String, PojoInfo>();
 
     private static PojoInfo getPojoInfo(Type type, Type... context) {
         synchronized (POJO_INFO_MAP) {

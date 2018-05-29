@@ -19,6 +19,7 @@ package org.coodex.concrete.core.messages;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.common.messages.Message;
 
+@Deprecated
 public interface Courier {
     String getType();
 

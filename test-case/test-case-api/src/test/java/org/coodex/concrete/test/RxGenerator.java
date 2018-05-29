@@ -16,19 +16,15 @@
 
 package org.coodex.concrete.test;
 
-import org.coodex.concrete.apitools.API;
-import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.test.api.Test;
-
 import java.io.IOException;
 
 public class RxGenerator {
 
-    public static void main(String [] args) throws IOException {
-        String projectPath = ConcreteHelper.getProfile("env").getString("project.path");
-
-        API.generate("java.code.RxJava2.v1",
-                projectPath + "/src/main/java",
-                Test.class.getPackage().getName());
+    public static void main(String[] args) throws IOException {
+//        String projectPath = ConcreteHelper.getProfile("env").getString("project.path");
+//
+//        API.generate("java.code.RxJava2.v1",
+//                projectPath + "/src/main/java",
+//                Test.class.getPackage().getName());
     }
 }

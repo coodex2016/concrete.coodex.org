@@ -43,14 +43,13 @@ import static org.coodex.util.TypeHelper.solve;
  */
 public class CountFacadeProvider implements CountFacade {
 
+    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE
+            = ExecutorsHelper.newScheduledThreadPool(ConcreteHelper.getProfile().getInt("counter.thread.pool.size", 10));
     private final static Logger log = LoggerFactory.getLogger(CountFacadeProvider.class);
-
     private final static AtomicInteger atomicInteger = new AtomicInteger(0);
-
-    private Map<Class, CounterChain> chainMap;
-
     private final static ServiceLoader<Counter> counterProvider = new ConcreteServiceLoader<Counter>() {
     };
+    private Map<Class, CounterChain> chainMap;
 
     @SuppressWarnings("unchecked")
     private void buildMap() {
@@ -130,9 +129,6 @@ public class CountFacadeProvider implements CountFacade {
 
         return (CounterChain) newClass.toClass().getConstructor(new Class[0]).newInstance();
     }
-
-    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE
-            = ExecutorsHelper.newScheduledThreadPool(ConcreteHelper.getProfile().getInt("counter.thread.pool.size", 10));
 
     @Override
     @SuppressWarnings("unchecked")

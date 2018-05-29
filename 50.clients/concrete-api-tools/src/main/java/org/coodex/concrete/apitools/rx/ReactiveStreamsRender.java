@@ -34,6 +34,10 @@ public class ReactiveStreamsRender extends AbstractRender {
 
     public static final String RENDER_NAME = "java.code.RxJava2.v1";
 
+    public static void main(String[] args) {
+        System.out.println(int.class.getSimpleName());
+    }
+
     @Override
     protected String getTemplatePath() {
         return "concrete/templates/rx/java/code/v1/";
@@ -154,7 +158,7 @@ public class ReactiveStreamsRender extends AbstractRender {
         methodInfo.setName(unit.getFunctionName());
         Class context = unit.getDeclaringModule().getInterfaceClass();
         methodInfo.setReturnType(typeToStr(unit.getGenericReturnType(), context, imports, true));
-        for(Param param: unit.getParameters()){
+        for (Param param : unit.getParameters()) {
             ParamInfo paramInfo = new ParamInfo();
             paramInfo.setName(param.getName());
             paramInfo.setType(typeToStr(param.getGenericType(), context, imports, false));
@@ -208,10 +212,5 @@ public class ReactiveStreamsRender extends AbstractRender {
         public void setName(String name) {
             this.name = name;
         }
-    }
-
-
-    public static void main(String[] args) {
-        System.out.println(int.class.getSimpleName());
     }
 }

@@ -23,4 +23,5 @@ import org.coodex.concrete.core.intercept.RBACInterceptor;
  * Created by davidoff shen on 2016-09-06.
  */
 @Aspect
-public class RBAC_Aspect extends AbstractConcreteAspect<RBACInterceptor> {}
+public class RBAC_Aspect extends AbstractConcreteAspect<RBACInterceptor> {
+}

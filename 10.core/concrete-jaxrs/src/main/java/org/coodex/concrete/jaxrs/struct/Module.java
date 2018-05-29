@@ -41,38 +41,6 @@ public class Module extends AbstractModule<Unit> {
 //    private List<Class<?>> inheritedChain = new ArrayList<Class<?>>();
     private Map<String, Method> serviceAtoms;
 
-    protected final boolean sameMethod(Method m1, Method m2) {
-        if (m1 == null || m2 == null) return false;
-        return m1.equals(m2) ||
-                (m1.getName().equals(m2.getName()) && Arrays.equals(m1.getParameterTypes(), m2.getParameterTypes()));
-
-    }
-
-//    private Class<?> findParent(Class<?> clz) {
-//
-//        for (Class<?> c : clz.getInterfaces()) {
-//            if (ConcreteService.class.isAssignableFrom(clz)) {
-//                return c.getAnnotation(MicroService.class) != null
-//                        && c.getAnnotation(Abstract.class) != null
-//                        ? c : findParent(c);
-//            }
-//        }
-//        return null;
-//    }
-
-//    private void initInheritedChain() {
-//        Stack<Class<?>> stack = new Stack<Class<?>>();
-//        Class<?> parent = getInterfaceClass();
-//        _while:
-//        while (parent != null) {
-//            stack.push(parent);
-//            parent = findParent(parent);
-//        }
-//        while (!stack.isEmpty()) {
-//            inheritedChain.add(stack.pop());
-//        }
-//    }
-
     public Module(Class<?> interfaceClass) {
         super(interfaceClass);
 
@@ -104,6 +72,38 @@ public class Module extends AbstractModule<Unit> {
 //        }
 //        this.units = units.toArray(new Unit[0]);
 //        Arrays.sort(this.units);
+    }
+
+//    private Class<?> findParent(Class<?> clz) {
+//
+//        for (Class<?> c : clz.getInterfaces()) {
+//            if (ConcreteService.class.isAssignableFrom(clz)) {
+//                return c.getAnnotation(MicroService.class) != null
+//                        && c.getAnnotation(Abstract.class) != null
+//                        ? c : findParent(c);
+//            }
+//        }
+//        return null;
+//    }
+
+//    private void initInheritedChain() {
+//        Stack<Class<?>> stack = new Stack<Class<?>>();
+//        Class<?> parent = getInterfaceClass();
+//        _while:
+//        while (parent != null) {
+//            stack.push(parent);
+//            parent = findParent(parent);
+//        }
+//        while (!stack.isEmpty()) {
+//            inheritedChain.add(stack.pop());
+//        }
+//    }
+
+    protected final boolean sameMethod(Method m1, Method m2) {
+        if (m1 == null || m2 == null) return false;
+        return m1.equals(m2) ||
+                (m1.getName().equals(m2.getName()) && Arrays.equals(m1.getParameterTypes(), m2.getParameterTypes()));
+
     }
 
     private void checkUnit(Unit unit) {

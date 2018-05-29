@@ -23,7 +23,7 @@ import org.coodex.sharedcache.SharedCacheClientManager;
  * Created by davidoff shen on 2016-11-23.
  */
 public class JedisTest {
-    public static void main(String [] args){
+    public static void main(String[] args) {
         SharedCacheClient client = SharedCacheClientManager.getClient("jedis");
         client.put("test1", "test1");
         client.put("test2", "test2", 1);

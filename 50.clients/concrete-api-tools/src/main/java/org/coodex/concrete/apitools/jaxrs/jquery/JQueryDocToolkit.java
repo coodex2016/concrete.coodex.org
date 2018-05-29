@@ -46,7 +46,6 @@ public class JQueryDocToolkit extends ServiceDocToolkit {
             try {
                 builder.append(
                         JSON.toJSONString(
-                                // TODO new mocker
                                 MockerFacade.mock(
                                         unit.getParameters()[i].getGenericType(), module.getInterfaceClass()
                                 ), true));

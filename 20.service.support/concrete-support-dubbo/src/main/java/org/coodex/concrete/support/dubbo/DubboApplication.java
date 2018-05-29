@@ -24,7 +24,6 @@ import com.alibaba.dubbo.rpc.RpcContext;
 import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.api.Application;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concrete.dubbo.ProxyFor;
 import org.coodex.util.Common;
 import org.coodex.util.GenericType;
@@ -34,13 +33,10 @@ import org.springframework.cglib.proxy.InvocationHandler;
 import org.springframework.cglib.proxy.Proxy;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.coodex.concrete.common.AModule.getUnit;
+import static org.coodex.concrete.common.ConcreteHelper.updatedMap;
 import static org.coodex.concrete.dubbo.DubboHelper.*;
 
 public class DubboApplication implements Application {
@@ -134,7 +130,7 @@ public class DubboApplication implements Application {
         }
 
         @Override
-        public String getAgent() {
+        public String getClientProvider() {
             return agent;
         }
     }
@@ -146,13 +142,13 @@ public class DubboApplication implements Application {
         }
 
 
+        @SuppressWarnings("unchecked")
         private Object buildConcreteServiceImpl(final Class dpClass) {
 
             final Class concreteClass = ((Class<?>) dpClass).getAnnotation(ProxyFor.class).value();
 
             return Proxy.newProxyInstance(DubboApplication.class.getClassLoader(),
                     new Class[]{dpClass}, new InvocationHandler() {
-
 
                         private Method findActualMethod(Method methodOfProxy) throws NoSuchMethodException {
                             return methodOfProxy.getParameterTypes().length == 0 ?
@@ -173,23 +169,19 @@ public class DubboApplication implements Application {
                                     RpcContext.getContext().getAttachment(SUBJOIN),
                                     new GenericType<Map<String, String>>() {
                                     }.genericType());
-                            SubjoinBaseJava7 subjoin = new SubjoinBaseJava7(map);
+                            DubboSubjoin subjoin = new DubboSubjoin(map);
+                            String locate = RpcContext.getContext().getAttachment(LOCATE);
                             String tokenId = RpcContext.getContext().getAttachment(Token.CONCRETE_TOKEN_ID_KEY);
                             String agent = RpcContext.getContext().getAttachment(AGENT);
-                            RpcContext.getContext().removeAttachment(Token.CONCRETE_TOKEN_ID_KEY)
-                                    .removeAttachment(AGENT).removeAttachment(SUBJOIN);
-                            TokenManager tokenManager = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
-                            Token token = Common.isBlank(tokenId) ? null : tokenManager.getToken(tokenId, false);
-                            if (token == null || !token.isValid()) {
-                                token = tokenManager.getToken(Common.getUUIDStr(), true);
-                            }
+                            ServerSideContext serverSideContext = new DubboServiceContext(
+                                    new DubboCaller(clientIP, agent),
+                                    subjoin,
+                                    locate == null ? null : Locale.forLanguageTag(locate),
+                                    tokenId
+                            );
                             try {
                                 Object result = ConcreteContext.runWithContext(
-                                        new DubboServiceContext(
-                                                new DubboCaller(clientIP, agent), getUnit(concreteClass, m),
-                                                subjoin,
-                                                token
-                                        ),
+                                        serverSideContext,
                                         new CallableClosure() {
                                             @Override
                                             public Object call() throws Throwable {
@@ -198,12 +190,12 @@ public class DubboApplication implements Application {
                                             }
                                         });
                                 Map<String, String> toClient = new ConcurrentHashMap<String, String>();
-                                Map<String, String> subjoinMap = subjoin.toMap();
+                                Map<String, String> subjoinMap = updatedMap(subjoin);
                                 if (subjoinMap.size() > 0)
-                                    toClient.put(SUBJOIN, objectToStr(subjoin.toMap()));
+                                    toClient.put(SUBJOIN, objectToStr(subjoinMap));
 
                                 try {
-                                    String newTokenId = token.getTokenId();
+                                    String newTokenId = serverSideContext.getTokenId();
                                     if (!Common.isBlank(newTokenId) && !Common.isSameStr(newTokenId, tokenId)) {
                                         toClient.put(Token.CONCRETE_TOKEN_ID_KEY, newTokenId);
                                     }

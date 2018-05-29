@@ -38,7 +38,6 @@ public class Runner3 {
 //        container.release(id);
 
 
-
         for (int i = 0; i < 300; i++) {
             final int x = i;
             new Thread() {

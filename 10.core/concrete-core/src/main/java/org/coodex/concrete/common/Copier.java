@@ -73,7 +73,6 @@ public interface Copier<SRC, TARGET> {
 
 
     /**
-     *
      * @param srcCollection
      * @return
      */

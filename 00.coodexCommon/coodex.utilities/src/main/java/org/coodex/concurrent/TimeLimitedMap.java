@@ -25,27 +25,16 @@ import java.util.concurrent.TimeUnit;
 
 public class TimeLimitedMap<K, V> {
 
-    public interface TimeoutCallback {
-        void timeout();
-    }
-
-    private static class Task<V> {
-        ScheduledFuture future;
-        V value;
-    }
-
     private final ScheduledExecutorService scheduledExecutorService;
-    private Map<K, Task<V>> tasks = new ConcurrentHashMap<K, Task<V>>();
     private final long timeOut;
-
-
+    private Map<K, Task<V>> tasks = new ConcurrentHashMap<K, Task<V>>();
     public TimeLimitedMap() {
         this(10000);
     }
-
     public TimeLimitedMap(long timeOut) {
         this(timeOut, ExecutorsHelper.newScheduledThreadPool(1));
     }
+
 
     public TimeLimitedMap(long timeOut, ScheduledExecutorService scheduledExecutorService) {
         this.timeOut = timeOut;
@@ -100,6 +89,15 @@ public class TimeLimitedMap<K, V> {
 
     private long getTimeOut(long timeOut) {
         return timeOut > 0 ? timeOut : (this.timeOut > 0 ? this.timeOut : 10000l);
+    }
+
+    public interface TimeoutCallback {
+        void timeout();
+    }
+
+    private static class Task<V> {
+        ScheduledFuture future;
+        V value;
     }
 
 

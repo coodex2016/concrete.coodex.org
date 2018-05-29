@@ -49,8 +49,11 @@ public abstract class AbstractManagementService<
         extends AbstractOrgService<J, P> {
 
     @Inject
-    protected AbstractPositionRepo<J> positionRepo;
+    private AbstractPositionRepo<J> positionRepo;
 
+    public AbstractPositionRepo<J> getPositionRepo() {
+        return positionRepo;
+    }
 
     protected <O extends Serializable> O deepCopy(O value) {
         try {

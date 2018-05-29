@@ -18,9 +18,9 @@ package org.coodex.concurrent;
 
 public interface Coalition<T> {
 
+    void call(T object);
+
     interface Callback<T> {
         void call(T arg);
     }
-
-    void call(T object);
 }

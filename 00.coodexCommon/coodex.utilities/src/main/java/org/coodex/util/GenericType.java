@@ -16,6 +16,7 @@
 
 package org.coodex.util;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import static org.coodex.util.TypeHelper.solve;
@@ -25,12 +26,18 @@ import static org.coodex.util.TypeHelper.solve;
  */
 public abstract class GenericType<T> {
 
+
     public final Type genericType() {
         return genericType(null);
     }
 
-    public final Type genericType(Class context){
+    public final Type genericType(Class context) {
         return solve(GenericType.class.getTypeParameters()[0], getClass(), context);
     }
+
+    public final Type getType() {
+        return ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    }
+
 
 }

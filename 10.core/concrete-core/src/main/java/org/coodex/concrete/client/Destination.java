@@ -67,6 +67,31 @@ public class Destination implements Serializable {
         this.async = async;
     }
 
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        Destination that = (Destination) o;
+//
+//        if (tokenTransfer != that.tokenTransfer) return false;
+//        if (async != that.async) return false;
+//        if (identify != null ? !identify.equals(that.identify) : that.identify != null) return false;
+//        if (!location.equals(that.location)) return false;
+//        return tokenManagerKey != null ? tokenManagerKey.equals(that.tokenManagerKey) : that.tokenManagerKey == null;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = identify != null ? identify.hashCode() : 0;
+//        result = 31 * result + location.hashCode();
+//        result = 31 * result + (tokenManagerKey != null ? tokenManagerKey.hashCode() : 0);
+//        result = 31 * result + (tokenTransfer ? 1 : 0);
+//        result = 31 * result + (async ? 1 : 0);
+//        return result;
+//    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,19 +100,17 @@ public class Destination implements Serializable {
         Destination that = (Destination) o;
 
         if (tokenTransfer != that.tokenTransfer) return false;
-        if (async != that.async) return false;
         if (identify != null ? !identify.equals(that.identify) : that.identify != null) return false;
-        if (!location.equals(that.location)) return false;
+        if (location != null ? !location.equals(that.location) : that.location != null) return false;
         return tokenManagerKey != null ? tokenManagerKey.equals(that.tokenManagerKey) : that.tokenManagerKey == null;
     }
 
     @Override
     public int hashCode() {
         int result = identify != null ? identify.hashCode() : 0;
-        result = 31 * result + location.hashCode();
+        result = 31 * result + (location != null ? location.hashCode() : 0);
         result = 31 * result + (tokenManagerKey != null ? tokenManagerKey.hashCode() : 0);
         result = 31 * result + (tokenTransfer ? 1 : 0);
-        result = 31 * result + (async ? 1 : 0);
         return result;
     }
 

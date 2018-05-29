@@ -31,10 +31,6 @@ public class Starter {
     @Inject
     private BoxedCounter counter;
 
-    public int[] getBoxedCount() {
-        return counter.getBoxes();
-    }
-
     public static void main(String[] args) throws InterruptedException {
 
         new ClassPathXmlApplicationContext("counter.xml");
@@ -45,6 +41,10 @@ public class Starter {
 
         ExecutorsHelper.shutdownAll();
 
+    }
+
+    public int[] getBoxedCount() {
+        return counter.getBoxes();
     }
 
 }

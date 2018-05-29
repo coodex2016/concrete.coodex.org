@@ -25,7 +25,7 @@ import java.util.concurrent.Callable;
 @MicroService
 public interface TestApi extends ConcreteService {
 
-    void test1(Map<String,String> param);
+    void test1(Map<String, String> param);
 
     String test2(Callable<List<Set<Object>>> k);
 }

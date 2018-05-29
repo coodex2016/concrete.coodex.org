@@ -43,21 +43,9 @@ import static org.coodex.concrete.client.websocket.WSInvokerFactory.isSSL;
 public class WSClientHandle {
 
     private final static Logger log = LoggerFactory.getLogger(WSClientHandle.class);
-
-
-    public interface WSCallback {
-        void onReturn(ResponsePackage<Object> responsePackage);
-
-        void onError(Throwable th);
-    }
-
-
     private TimeLimitedMap<String, WSCallback> callbackMap = new TimeLimitedMap<String, WSCallback>();
-
-
     private Map<Destination, Session> sessionMap = new HashMap<Destination, Session>();
     private JSONSerializer serializer = JSONSerializerFactory.getInstance();
-
     private SingletonMap<Destination, Object> locks = new SingletonMap<Destination, Object>(new SingletonMap.Builder<Destination, Object>() {
         @Override
         public Object build(Destination key) {
@@ -65,12 +53,8 @@ public class WSClientHandle {
         }
     });
 
-
-
-
     WSClientHandle() {
     }
-
 
     private Session getSession(Destination destination) throws URISyntaxException, IOException, DeploymentException, InterruptedException {
 
@@ -149,5 +133,11 @@ public class WSClientHandle {
         } catch (Throwable th) {
             throw ConcreteHelper.getException(th);
         }
+    }
+
+    public interface WSCallback {
+        void onReturn(ResponsePackage<Object> responsePackage);
+
+        void onError(Throwable th);
     }
 }

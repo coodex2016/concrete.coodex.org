@@ -33,9 +33,8 @@ import java.util.List;
 @Aspect
 public class ConcreteAOPChain extends SyncInterceptorChain implements Ordered {
 
-    private static final Profile profile = ConcreteHelper.getProfile();
-
     protected static final String ASPECT_POINT = AbstractConcreteAspect.ASPECT_POINT;
+    private static final Profile profile = ConcreteHelper.getProfile();
 
     public ConcreteAOPChain(List<ConcreteInterceptor> interceptors) {
         super(interceptors);

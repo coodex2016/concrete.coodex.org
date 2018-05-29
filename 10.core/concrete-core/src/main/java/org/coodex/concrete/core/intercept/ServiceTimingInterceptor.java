@@ -41,38 +41,19 @@ import java.util.*;
 public class ServiceTimingInterceptor extends AbstractInterceptor {
 
 
-    @Override
-    public boolean accept(RuntimeContext context) {
-        return isTimingLimitService(context);
-    }
-
-    @Override
-    public int getOrder() {
-        return InterceptOrders.SERVICE_TIMING;
-    }
-
-    @Override
-    public void before(RuntimeContext context, MethodInvocation joinPoint) {
-        IF.not(getValidator(context.getAnnotation(ServiceTiming.class)).isAllowed(),
-                ErrorCodes.OUT_OF_SERVICE_TIME);
-    }
-
-
     private final static Logger log = LoggerFactory.getLogger(ServiceTimingInterceptor.class);
-
-
     private final static Map<String, String> DEFAULT_CHECKERS = new HashMap<String, String>();
+    private static final ServiceTimingChecker ALL_ALLOWED_CHECKER = new ServiceTimingChecker() {
+        @Override
+        public boolean isAllowed() {
+            return true;
+        }
+    };
 
     static {
         DEFAULT_CHECKERS.put("TIMERANGE", ByTimeRange.class.getCanonicalName());
         DEFAULT_CHECKERS.put("WORKDAY", ByWorkDay.class.getCanonicalName());
     }
-
-    public boolean isTimingLimitService(RuntimeContext context) {
-        return context.getDeclaringMethod().getAnnotation(NotService.class) == null
-                && (context.getAnnotation(ServiceTiming.class) != null);
-    }
-
 
     private static ServiceTimingChecker loadCheckerInstance(String label) {
         Profile profile = Profile.getProfile("serviceTiming.properties");
@@ -114,7 +95,37 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
         return ALL_ALLOWED_CHECKER;
     }
 
+    private static ServiceTimingChecker getValidator(ServiceTiming serviceTiming) {
+        if (serviceTiming == null || serviceTiming.value().length == 0)
+            return ALL_ALLOWED_CHECKER;
+        else
+            return new ServiceTimingCheckerChain(serviceTiming);
+    }
+
+    @Override
+    public boolean accept(RuntimeContext context) {
+        return isTimingLimitService(context);
+    }
+
+    @Override
+    public int getOrder() {
+        return InterceptOrders.SERVICE_TIMING;
+    }
+
+    @Override
+    public void before(RuntimeContext context, MethodInvocation joinPoint) {
+        IF.not(getValidator(context.getAnnotation(ServiceTiming.class)).isAllowed(),
+                ErrorCodes.OUT_OF_SERVICE_TIME);
+    }
+
+    public boolean isTimingLimitService(RuntimeContext context) {
+        return context.getDeclaringMethod().getAnnotation(NotService.class) == null
+                && (context.getAnnotation(ServiceTiming.class) != null);
+    }
+
     private static class ServiceTimingCheckerChain implements ServiceTimingChecker {
+
+        private List<ServiceTimingChecker> chain = new ArrayList<ServiceTimingChecker>();
 
         ServiceTimingCheckerChain(ServiceTiming serviceTiming) {
             Set<String> keys = new HashSet<String>();
@@ -131,8 +142,6 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
             }
         }
 
-        private List<ServiceTimingChecker> chain = new ArrayList<ServiceTimingChecker>();
-
         @Override
         public boolean isAllowed() {
             for (ServiceTimingChecker checker : chain) {
@@ -141,21 +150,6 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
             }
             return true;
         }
-    }
-
-    private static final ServiceTimingChecker ALL_ALLOWED_CHECKER = new ServiceTimingChecker() {
-        @Override
-        public boolean isAllowed() {
-            return true;
-        }
-    };
-
-
-    private static ServiceTimingChecker getValidator(ServiceTiming serviceTiming) {
-        if (serviceTiming == null || serviceTiming.value().length == 0)
-            return ALL_ALLOWED_CHECKER;
-        else
-            return new ServiceTimingCheckerChain(serviceTiming);
     }
 
 }

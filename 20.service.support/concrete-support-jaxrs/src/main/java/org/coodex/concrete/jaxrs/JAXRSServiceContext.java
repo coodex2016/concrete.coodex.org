@@ -17,25 +17,27 @@
 package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.common.Caller;
-import org.coodex.concrete.common.ServiceContext;
+import org.coodex.concrete.common.ServerSideContext;
 import org.coodex.concrete.common.Subjoin;
-import org.coodex.concrete.common.Token;
-import org.coodex.concrete.common.struct.AbstractUnit;
-import org.coodex.concrete.core.messages.Courier;
 
-import static org.coodex.concrete.common.ConcreteContext.SIDE_SERVER;
+import java.util.Locale;
 
-public class JAXRSServiceContext extends ServiceContext {
+public class JAXRSServiceContext extends ServerSideContext {
 
-    private final static Courier jaxrsCourier = new JaxRSCourier();
+//    private final static Courier jaxrsCourier = new JaxRSCourier();
 
-    JAXRSServiceContext(Caller caller, Token token, AbstractUnit unit, Subjoin subjoin) {
-        this.caller = caller;
-        this.token = token;
-        this.currentUnit = unit;
-        this.subjoin = subjoin;
-        this.side = SIDE_SERVER;
-        this.model = JaxRSHelper.JAXRS_MODEL;
-        this.courier = jaxrsCourier;
+
+    public JAXRSServiceContext(Caller caller, Subjoin subjoin, Locale locale, String tokenId) {
+        super(caller, subjoin, locale, tokenId);
     }
+
+//    JAXRSServiceContext(Caller caller, Token token, AbstractUnit unit, Subjoin subjoin) {
+//        this.caller = caller;
+//        this.token = token;
+//        this.currentUnit = unit;
+//        this.subjoin = subjoin;
+//        this.side = SIDE_SERVER;
+//        this.model = JaxRSHelper.JAXRS_MODEL;
+//        this.courier = jaxrsCourier;
+//    }
 }

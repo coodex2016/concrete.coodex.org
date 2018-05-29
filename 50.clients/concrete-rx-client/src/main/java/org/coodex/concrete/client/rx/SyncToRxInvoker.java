@@ -21,7 +21,7 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.ClientHelper;
-import org.coodex.concrete.client.ClientServiceContext;
+import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.RuntimeContext;
@@ -55,7 +55,7 @@ public class SyncToRxInvoker extends AbstractRxInvoker {
 
     @Override
     public Observable invoke(final RuntimeContext runtimeContext, final Object... args) {
-        final ClientServiceContext clientServiceContext = new ToAsyncClientContext(getDestination(), runtimeContext);
+        final ClientSideContext clientServiceContext = new ToAsyncClientContext(getDestination(), runtimeContext);
 
         return Observable.create(new ObservableOnSubscribe() {
             @Override

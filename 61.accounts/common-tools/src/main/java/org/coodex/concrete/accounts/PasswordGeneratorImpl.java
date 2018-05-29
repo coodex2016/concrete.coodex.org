@@ -38,7 +38,7 @@ public class PasswordGeneratorImpl implements PasswordGenerator {
 
     @Override
     public String encode(String pwd) {
-        if(pwd == null) pwd = generate();
+        if (pwd == null) pwd = generate();
         return DigestHelper.sha1(pwd.getBytes());
     }
 }

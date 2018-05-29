@@ -28,11 +28,11 @@ public class MobilePhoneNumMocker extends AbstractMocker<MobilePhoneNum> {
     @Override
     public Object mock(MobilePhoneNum mockAnnotation, Class clazz) {
 
-        StringBuilder builder = new StringBuilder().append(1).append(randomChar("3578")) ;
+        StringBuilder builder = new StringBuilder().append(1).append(randomChar("3578"));
 
-        for(int i = 3; i <= 11; i ++){
+        for (int i = 3; i <= 11; i++) {
             builder.append(randomChar("0123456789"));
-            if(mockAnnotation.appleStyle() && (i == 3 || i == 7)){
+            if (mockAnnotation.appleStyle() && (i == 3 || i == 7)) {
                 builder.append('-');
             }
         }

@@ -21,7 +21,7 @@ import org.junit.runners.model.Statement;
 /**
  * Created by davidoff shen on 2016-09-08.
  */
-public class B implements TestRule{
+public class B implements TestRule {
 
     @Override
     public Statement apply(Statement base, Description description) {

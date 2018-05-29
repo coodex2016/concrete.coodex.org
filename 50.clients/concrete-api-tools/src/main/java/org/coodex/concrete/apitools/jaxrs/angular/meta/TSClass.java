@@ -39,7 +39,7 @@ public abstract class TSClass {
         this.classType = classType;
         this.packageName = clz.getPackage().getName();
         this.className = clz.getSimpleName();
-        for(TypeVariable t : clz.getTypeParameters()){
+        for (TypeVariable t : clz.getTypeParameters()) {
             genericParams.add(t.getName());
         }
     }

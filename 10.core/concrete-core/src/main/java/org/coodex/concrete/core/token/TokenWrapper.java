@@ -17,6 +17,8 @@
 package org.coodex.concrete.core.token;
 
 import org.coodex.concrete.common.*;
+import org.coodex.concrete.core.token.local.LocalTokenManager;
+import org.coodex.util.Singleton;
 
 import java.io.Serializable;
 import java.util.Enumeration;
@@ -33,20 +35,48 @@ public class TokenWrapper implements Token {
 
 
     private static final Token singletonInstance = new TokenWrapper();
+    private static Singleton<TokenManager> tokenManager =
+            new Singleton<TokenManager>(new Singleton.Builder<TokenManager>() {
+                @Override
+                public TokenManager build() {
+                    try {
+                        return BeanProviderFacade
+                                .getBeanProvider()
+                                .getBean(TokenManager.class);
+                    } catch (ConcreteException ce) {
+                        if (ce.getCode() == ErrorCodes.NO_SERVICE_INSTANCE_FOUND) {
+                            return new LocalTokenManager();
+                        } else
+                            throw ce;
+                    }
+                }
+            });
+
+    public static final Token getInstance() {
+        return singletonInstance;
+    }
+
+    public static Token getToken(String id) {
+        return tokenManager.getInstance().getToken(id);
+    }
+
+    public static Token newToken() {
+        return tokenManager.getInstance().newToken();
+    }
 
     private Token getToken() {
         return getToken(true);
     }
 
     private Token getToken(boolean checkValidation) {
-        Token token = getServiceContext().getToken();
-        IF.isNull(token, ErrorCodes.NONE_TOKEN);
-        IF.is(checkValidation && !token.isValid(), ErrorCodes.TOKEN_INVALIDATE, token.getTokenId());
+        Token token = null;
+        ServiceContext context = getServiceContext();
+        if (context instanceof ContainerContext) {
+            token = ((ContainerContext) context).getToken();
+        }
+//        IF.isNull(token, ErrorCodes.NONE_TOKEN);
+        IF.is(checkValidation && token != null && !token.isValid(), ErrorCodes.TOKEN_INVALIDATE, token.getTokenId());
         return token;
-    }
-
-    public static final Token getInstance() {
-        return singletonInstance;
     }
 
     @Override

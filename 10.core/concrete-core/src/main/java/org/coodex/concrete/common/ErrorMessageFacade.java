@@ -41,15 +41,17 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
     private final static Logger log = LoggerFactory.getLogger(ErrorMessageFacade.class);
 
 
-
     private final static Set<Class<? extends AbstractErrorCodes>> REGISTERED = new HashSet<Class<? extends AbstractErrorCodes>>();
 
     private final static Map<Integer, Field> errorCodes = new HashMap<Integer, Field>();
 
 
+    private ErrorMessageFacade() {
+    }
+
     private static void registerClass(Class<? extends AbstractErrorCodes> clz) {
         if (clz == null) return;
-        if(REGISTERED.contains(clz)) return;
+        if (REGISTERED.contains(clz)) return;
 
         synchronized (errorCodes) {
             for (Field f : clz.getDeclaredFields()) {
@@ -123,10 +125,6 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
 
         return (pattern != null) ? (format ? formatter.format(pattern, objects) : pattern) : null;
     }
-
-    private ErrorMessageFacade() {
-    }
-
 
 
 }

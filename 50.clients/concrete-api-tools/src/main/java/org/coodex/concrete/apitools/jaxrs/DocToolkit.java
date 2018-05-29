@@ -53,11 +53,11 @@ public abstract class DocToolkit {
         return canonicalName(name, "\\/");
     }
 
-    public String getPojoName(String name){
+    public String getPojoName(String name) {
         return name.substring(name.lastIndexOf('.') + 1);
     }
 
-    public String getPojoPackage(String name){
+    public String getPojoPackage(String name) {
         return name.substring(0, name.lastIndexOf('.'));
     }
 
@@ -101,7 +101,7 @@ public abstract class DocToolkit {
                 TypeVariable typeVariable = (TypeVariable) t;
                 StringBuilder builder = new StringBuilder();
                 builder.append(typeVariable.getName());
-                if(!Object.class.equals(typeVariable.getBounds()[0])){
+                if (!Object.class.equals(typeVariable.getBounds()[0])) {
                     builder.append(" extends ").append(formatTypeStr(typeVariable.getBounds()[0]));
                 }
                 return builder.toString();

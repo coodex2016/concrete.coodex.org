@@ -27,16 +27,17 @@ import java.util.ServiceLoader;
 public class SharedCacheClientManager {
 
 
-//    private static ServiceLoader<SharedCacheClientFactory> factoryProviders;
+    //    private static ServiceLoader<SharedCacheClientFactory> factoryProviders;
     private static Singleton<ServiceLoader<SharedCacheClientFactory>> factoryProviders =
-        new Singleton<ServiceLoader<SharedCacheClientFactory>>(new Singleton.Builder<ServiceLoader<SharedCacheClientFactory>>() {
-            @Override
-            public ServiceLoader<SharedCacheClientFactory> build() {
-                return ServiceLoader.load(SharedCacheClientFactory.class);
-            }
-        });
+            new Singleton<ServiceLoader<SharedCacheClientFactory>>(new Singleton.Builder<ServiceLoader<SharedCacheClientFactory>>() {
+                @Override
+                public ServiceLoader<SharedCacheClientFactory> build() {
+                    return ServiceLoader.load(SharedCacheClientFactory.class);
+                }
+            });
+
     private static void load() {
-            factoryProviders.getInstance();
+        factoryProviders.getInstance();
 //        if (factoryProviders == null) {
 //            synchronized (SharedCacheClientManager.class) {
 //                if (factoryProviders == null)

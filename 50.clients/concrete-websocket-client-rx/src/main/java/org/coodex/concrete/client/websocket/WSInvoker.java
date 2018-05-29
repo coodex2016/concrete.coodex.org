@@ -32,13 +32,11 @@ import org.coodex.util.TypeHelper;
 
 import java.lang.reflect.Method;
 
-import static org.coodex.concrete.client.websocket.WSClientServiceContext.findUnit;
 import static org.coodex.concrete.websocket.WebSocketHelper.buildRequest;
+import static org.coodex.concrete.websocket.WebSocketHelper.findUnit;
 
 
 public class WSInvoker extends AbstractRxInvoker {
-
-    private JSONSerializer serializer = JSONSerializerFactory.getInstance();
 
     private static Singleton<WSClientHandle> handle = new Singleton<WSClientHandle>(
             new Singleton.Builder<WSClientHandle>() {
@@ -48,8 +46,9 @@ public class WSInvoker extends AbstractRxInvoker {
                 }
             }
     );
+    private JSONSerializer serializer = JSONSerializerFactory.getInstance();
 
-    public WSInvoker(Destination destination) {
+    WSInvoker(Destination destination) {
         super(destination);
     }
 
@@ -128,7 +127,7 @@ public class WSInvoker extends AbstractRxInvoker {
                             }
                         }
                     });
-                }catch (Throwable th){
+                } catch (Throwable th) {
                     th.printStackTrace();
                     emitter.onError(th);
                     emitter.onComplete();

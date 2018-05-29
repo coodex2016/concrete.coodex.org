@@ -35,6 +35,9 @@ public class Tenant extends AbstractPojo {
 
     @Description(name = "[R]是否使用中")
     private boolean using;
+    @DateTime
+    @Description(name = "[R]有效期至")
+    private String validation;
 
     public boolean isUsing() {
         return using;
@@ -43,10 +46,6 @@ public class Tenant extends AbstractPojo {
     public void setUsing(boolean using) {
         this.using = using;
     }
-
-    @DateTime
-    @Description(name = "[R]有效期至")
-    private String validation;
 
     public String getAppSet() {
         return appSet;

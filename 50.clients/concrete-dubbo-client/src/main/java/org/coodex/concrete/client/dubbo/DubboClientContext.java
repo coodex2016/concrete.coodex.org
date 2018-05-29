@@ -16,19 +16,17 @@
 
 package org.coodex.concrete.client.dubbo;
 
-import org.coodex.concrete.client.ClientServiceContext;
+import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.AModule;
 import org.coodex.concrete.common.RuntimeContext;
-import org.coodex.concrete.common.struct.AbstractUnit;
 
-public class DubboClientContext extends ClientServiceContext {
+public class DubboClientContext extends ClientSideContext {
     public DubboClientContext(Destination destination, RuntimeContext context) {
         super(destination, context);
     }
 
-    @Override
-    protected AbstractUnit getUnit(RuntimeContext context) {
-        return AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());
-    }
+//    @Override
+//    protected AbstractUnit getUnit(RuntimeContext context) {
+//        return AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());
+//    }
 }

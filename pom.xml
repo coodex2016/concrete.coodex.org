@@ -25,7 +25,7 @@
     <url>https://concrete.coodex.org</url>
     <groupId>org.coodex</groupId>
     <artifactId>concrete.pom</artifactId>
-    <version>0.2.2</version>
+    <version>0.2.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -83,7 +83,6 @@
         <module>50.clients/concrete-client</module>
         <module>50.clients/concrete-jaxrs-client</module>
         <module>50.clients/concrete-jaxrs-client-rx</module>
-        <module>50.clients/concrete-jaxrs-invoker-okhttp3</module>
         <module>50.clients/concrete-rx-client</module>
         <module>50.clients/concrete-websocket-client-rx</module>
 
@@ -102,7 +101,6 @@
         <module>test-case/test-case-server</module>
         <module>10.core/concrete-dubbo</module>
         <module>20.service.support/concrete-support-dubbo</module>
-        <module>10.core/concrete-core-java7</module>
         <module>50.clients/concrete-dubbo-client</module>
         <module>50.clients/concrete-dubbo-client-rx</module>
 
@@ -259,9 +257,6 @@
                     <source>1.6</source>
                     <target>1.6</target>
                     <encoding>UTF-8</encoding>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
 

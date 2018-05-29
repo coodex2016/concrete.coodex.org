@@ -23,6 +23,22 @@ import java.util.List;
  */
 public class Polygon {
 
+    private final static InAlgorithm inAlgorithm = new TurnoverNumberAlgorithm();
+    private final Point[] points;
+
+
+    public Polygon(List<Point> points) {
+        this.points = points.toArray(new Point[0]);
+    }
+
+    public boolean inPolygon(Point point) {
+        return inAlgorithm.in(point, points);
+    }
+
+    interface InAlgorithm {
+        boolean in(Point point, Point[] polygon);
+    }
+
     public static class Point {
         private final double x;
         private final double y;
@@ -40,12 +56,6 @@ public class Polygon {
             return y;
         }
     }
-
-
-    interface InAlgorithm {
-        boolean in(Point point, Point[] polygon);
-    }
-
 
     /**
      * 射线法，修改自http://www.html-js.com/article/1528
@@ -87,7 +97,6 @@ public class Polygon {
         }
     }
 
-
     /**
      * 回转数法，修改自http://www.html-js.com/article/1538
      */
@@ -123,18 +132,6 @@ public class Polygon {
             // 计算回转数并判断点和多边形的几何关系
             return Math.round(sum / Math.PI) != 0;
         }
-    }
-
-    private final Point[] points;
-
-    public Polygon(List<Point> points) {
-        this.points = points.toArray(new Point[0]);
-    }
-
-    private final static InAlgorithm inAlgorithm = new TurnoverNumberAlgorithm();
-
-    public boolean inPolygon(Point point) {
-        return inAlgorithm.in(point, points);
     }
 
 

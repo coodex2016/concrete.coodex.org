@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.io.NotSerializableException;
 import java.io.Serializable;
 
+@Deprecated
 public abstract class AbstractMessage<T> implements Message<T> {
     private transient final static Logger log = LoggerFactory.getLogger(AbstractMessage.class);
 

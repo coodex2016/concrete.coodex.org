@@ -25,7 +25,6 @@ public abstract class AbstractCoalition<T> implements Coalition<T> {
     protected final int interval;
 
 
-
     public AbstractCoalition(Coalition.Callback<T> c, int interval, ScheduledExecutorService scheduledExecutorService) {
         if (scheduledExecutorService == null) throw new NullPointerException("scheduledExecutorService is null.");
         this.scheduledExecutorService = scheduledExecutorService;
@@ -36,9 +35,6 @@ public abstract class AbstractCoalition<T> implements Coalition<T> {
     public AbstractCoalition(Coalition.Callback<T> c, int interval) {
         this(c, interval, ExecutorsHelper.newSingleThreadScheduledExecutor());
     }
-
-
-
 
 
     public void terminate() {

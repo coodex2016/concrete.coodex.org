@@ -25,30 +25,7 @@ import java.util.Map;
 @Deprecated
 public class ClientCommon {
 
-    public static class Domain {
-        private String identify;
-        private String type;
-        private boolean asyncSupport;
-
-        public Domain(String location, String type, boolean asyncSupport) {
-            this.identify = location;
-            this.type = type;
-            this.asyncSupport = asyncSupport;
-        }
-
-        public boolean isAsyncSupport() {
-            return asyncSupport;
-        }
-
-        public String getIdentify() {
-            return identify;
-        }
-
-        public String getType() {
-            return type;
-        }
-    }
-
+    private static final Map<String, String> CLIENT_TOKEN_MANAGER = new HashMap<String, String>();
 
     private static String getKey(String domain) {
         return Common.isBlank(domain) ? "" : ("." + domain);
@@ -87,13 +64,35 @@ public class ClientCommon {
         return s;
     }
 
-    private static final Map<String, String> CLIENT_TOKEN_MANAGER = new HashMap<String, String>();
-
     public static void setTokenId(String key, String tokenId) {
         if (!Common.isBlank(key)) CLIENT_TOKEN_MANAGER.put(key, tokenId);
     }
 
     public static String getTokenId(String key) {
         return Common.isBlank(key) ? null : CLIENT_TOKEN_MANAGER.get(key);
+    }
+
+    public static class Domain {
+        private String identify;
+        private String type;
+        private boolean asyncSupport;
+
+        public Domain(String location, String type, boolean asyncSupport) {
+            this.identify = location;
+            this.type = type;
+            this.asyncSupport = asyncSupport;
+        }
+
+        public boolean isAsyncSupport() {
+            return asyncSupport;
+        }
+
+        public String getIdentify() {
+            return identify;
+        }
+
+        public String getType() {
+            return type;
+        }
     }
 }

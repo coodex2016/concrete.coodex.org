@@ -25,7 +25,7 @@ public abstract class ClientMethodInvocation implements MethodInvocation {
 
     private final Class<?> clazz;
     private final Method method;
-    private final Object [] arguments;
+    private final Object[] arguments;
     private final Object instance;
 
     public ClientMethodInvocation(Object instance, Class<?> clazz, Method method, Object[] arguments) {

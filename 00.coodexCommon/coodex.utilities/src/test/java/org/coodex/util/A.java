@@ -21,10 +21,9 @@ package org.coodex.util;
  */
 public class A<XXX> {
     public XXX xxx;
-//    public final XXX xxx2 = null;
-    private char ch;
-
     public A<XXX>[] ddd;
+    //    public final XXX xxx2 = null;
+    private char ch;
 
     public char getCh() {
         return ch;

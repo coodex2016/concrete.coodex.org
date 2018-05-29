@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * 关联
- *
+ * <p>
  * Created by davidoff shen on 2017-05-11.
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
@@ -36,6 +36,7 @@ public @interface Relation {
 
     /**
      * 指定关联策略
+     *
      * @return
      */
     String policy();

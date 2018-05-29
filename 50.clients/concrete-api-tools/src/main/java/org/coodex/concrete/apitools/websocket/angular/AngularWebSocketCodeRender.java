@@ -98,7 +98,7 @@ public class AngularWebSocketCodeRender extends AbstractAngularRender<WebSocketU
                 StringBuilder builder = new StringBuilder("{");
                 boolean isFirst = true;
                 for (AbstractParam param : unit.getParameters()) {
-                    if(!isFirst){
+                    if (!isFirst) {
                         builder.append(", ");
                     }
                     builder.append(param.getName()).append(": ").append(param.getName());

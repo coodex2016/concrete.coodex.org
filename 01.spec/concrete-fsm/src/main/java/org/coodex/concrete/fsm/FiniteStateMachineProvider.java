@@ -18,6 +18,6 @@ package org.coodex.concrete.fsm;
 
 public interface FiniteStateMachineProvider {
 
-    <S extends State,FSM extends FiniteStateMachine<? extends S>>
+    <S extends State, FSM extends FiniteStateMachine<? extends S>>
     FSM getMachine(S state, Class<? extends FSM> machineClass);
 }

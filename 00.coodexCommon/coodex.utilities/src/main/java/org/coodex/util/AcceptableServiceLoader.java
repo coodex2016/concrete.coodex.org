@@ -46,7 +46,7 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
         Class tClass = instance.getClass();
         Class paramClass = param == null ? null : param.getClass();
 //        Type t = ;
-        if(paramClass == null)
+        if (paramClass == null)
             return instance.accept(null);
 
         Class required = typeToClass(solve(
@@ -60,7 +60,7 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
         }
     }
 
-    public List<T> getServiceInstances(Param_Type param){
+    public List<T> getServiceInstances(Param_Type param) {
         List<T> list = new ArrayList<T>();
         for (T instance : getAllInstances()) {
             if (accept(instance, param))

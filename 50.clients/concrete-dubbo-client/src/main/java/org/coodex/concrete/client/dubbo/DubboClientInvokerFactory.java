@@ -22,7 +22,7 @@ import org.coodex.concrete.client.InvokerFactory;
 
 public class DubboClientInvokerFactory implements InvokerFactory {
 
-    public static boolean isDubbo(Destination destination){
+    public static boolean isDubbo(Destination destination) {
         return "dubbo".equalsIgnoreCase(destination.getLocation());
     }
 

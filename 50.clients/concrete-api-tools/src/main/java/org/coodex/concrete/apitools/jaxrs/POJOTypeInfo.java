@@ -40,6 +40,7 @@ public class POJOTypeInfo {
     private final Class<?> type;
 
     private POJOTypeInfo arrayElement = OBJECT_POJO_INFO;
+    private List<POJOTypeInfo> genericParameters = new ArrayList<POJOTypeInfo>();
 
     public POJOTypeInfo(Class<?> contextType, Type genericType) {
         this.contextType = contextType;
@@ -50,8 +51,6 @@ public class POJOTypeInfo {
     public Class<?> getContextType() {
         return contextType;
     }
-
-    private List<POJOTypeInfo> genericParameters = new ArrayList<POJOTypeInfo>();
 
     private Class<?> loadClass() {
         return $loadClass(genericType);

@@ -28,20 +28,6 @@ import static org.coodex.pojomocker.MockerFacade.MOCKER_LOADER;
 @DefaultMockers.DefaultAnnotations
 public class DefaultMockers implements Mocker<Annotation> {
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    @interface DefaultAnnotations{
-        INTEGER intM() default @INTEGER;
-        BYTE byteM() default @BYTE;
-        CHAR charM() default @CHAR;
-        SHORT shortM() default @SHORT;
-        LONG longM() default @LONG;
-        STRING stringM() default @STRING;
-        BOOLEAN booleanM() default @BOOLEAN;
-        FLOAT floatM() default @FLOAT;
-        DOUBLE doubleM() default @DOUBLE;
-    }
-
     private static final DefaultAnnotations DEFAULT_ANNOTATIONS = DefaultMockers.class.getAnnotation(DefaultAnnotations.class);
 
     @Override
@@ -52,27 +38,49 @@ public class DefaultMockers implements Mocker<Annotation> {
     @Override
     public Object mock(Annotation mockAnnotation, Class clazz) {
 
-        if(byte.class == clazz || Byte.class.equals(clazz)){
+        if (byte.class == clazz || Byte.class.equals(clazz)) {
             mockAnnotation = DEFAULT_ANNOTATIONS.byteM();
-        } else if(char.class == clazz || Character.class.equals(clazz)){
+        } else if (char.class == clazz || Character.class.equals(clazz)) {
             mockAnnotation = DEFAULT_ANNOTATIONS.charM();
-        } else if(short.class == clazz || Short.class.equals(clazz)){
+        } else if (short.class == clazz || Short.class.equals(clazz)) {
             mockAnnotation = DEFAULT_ANNOTATIONS.shortM();
-        } else if(int.class == clazz || Integer.class.equals(clazz)){
+        } else if (int.class == clazz || Integer.class.equals(clazz)) {
             mockAnnotation = DEFAULT_ANNOTATIONS.intM();
-        } else if(long.class == clazz || Long.class.equals(clazz)){
+        } else if (long.class == clazz || Long.class.equals(clazz)) {
             mockAnnotation = DEFAULT_ANNOTATIONS.longM();
-        } else if(float.class == clazz || Float.class.equals(clazz)){
+        } else if (float.class == clazz || Float.class.equals(clazz)) {
             mockAnnotation = (DEFAULT_ANNOTATIONS.floatM());
-        } else if(double.class == clazz || Double.class.equals(clazz)){
-            mockAnnotation =(DEFAULT_ANNOTATIONS.doubleM());
-        } else if(boolean.class == clazz || Boolean.class.equals(clazz)){
-            mockAnnotation =(DEFAULT_ANNOTATIONS.booleanM());
-        } else if(String.class.equals(clazz)){
-            mockAnnotation =(DEFAULT_ANNOTATIONS.stringM());
+        } else if (double.class == clazz || Double.class.equals(clazz)) {
+            mockAnnotation = (DEFAULT_ANNOTATIONS.doubleM());
+        } else if (boolean.class == clazz || Boolean.class.equals(clazz)) {
+            mockAnnotation = (DEFAULT_ANNOTATIONS.booleanM());
+        } else if (String.class.equals(clazz)) {
+            mockAnnotation = (DEFAULT_ANNOTATIONS.stringM());
         } else {
             return null;
         }
         return MOCKER_LOADER.getServiceInstance(mockAnnotation).mock(mockAnnotation, clazz);
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    @interface DefaultAnnotations {
+        INTEGER intM() default @INTEGER;
+
+        BYTE byteM() default @BYTE;
+
+        CHAR charM() default @CHAR;
+
+        SHORT shortM() default @SHORT;
+
+        LONG longM() default @LONG;
+
+        STRING stringM() default @STRING;
+
+        BOOLEAN booleanM() default @BOOLEAN;
+
+        FLOAT floatM() default @FLOAT;
+
+        DOUBLE doubleM() default @DOUBLE;
     }
 }

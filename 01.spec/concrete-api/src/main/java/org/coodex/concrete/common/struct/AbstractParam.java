@@ -39,7 +39,6 @@ public abstract class AbstractParam implements Annotated {
     }
 
 
-
     public String getLabel() {
         return description == null ? "" : description.name();
 //        return Common.isBlank(s) ? "　" : s;
@@ -49,6 +48,7 @@ public abstract class AbstractParam implements Annotated {
         return description == null ? "" : description.description();
 //        return Common.isBlank(s) ? "　" : s;
     }
+
     /**
      * 参数类型
      *
@@ -59,11 +59,11 @@ public abstract class AbstractParam implements Annotated {
     }
 
 
-
     @Override
     public Annotation[] getAnnotations() {
         return parameter.getAnnotations();
     }
+
     /**
      * 参数泛型类型
      *

@@ -30,10 +30,13 @@ public @interface MAP {
 
     @SuppressWarnings("rawtypes")
     Class keyType() default String.class;
+
     @SuppressWarnings("rawtypes")
     Class keyMocker() default Mock.class;
+
     @SuppressWarnings("rawtypes")
     Class valueType() default Object.class;
+
     @SuppressWarnings("rawtypes")
     Class valueMocker() default Mock.class;
 

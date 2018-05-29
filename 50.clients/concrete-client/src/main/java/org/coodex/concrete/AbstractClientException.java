@@ -23,7 +23,7 @@ public abstract class AbstractClientException extends ConcreteException {
     protected final int code;
     protected final String msg;
 
-    public AbstractClientException(int code, String msg ) {
+    public AbstractClientException(int code, String msg) {
         super(ErrorCodes.CLIENT_ERROR);
         this.msg = msg;
         this.code = code;

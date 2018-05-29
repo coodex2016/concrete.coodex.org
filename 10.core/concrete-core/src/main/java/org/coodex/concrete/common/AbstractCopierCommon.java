@@ -28,20 +28,6 @@ import static org.coodex.util.TypeHelper.typeToClass;
  */
 public abstract class AbstractCopierCommon<A, B> {
 
-    protected enum Index {
-        A(0), B(1);
-
-        private final int index;
-
-        Index(int i) {
-            index = i;
-        }
-
-        int getIndex() {
-            return index;
-        }
-    }
-
     private Class[] classes = new Class[2];
 
     protected Class getClass(Index index) {
@@ -96,12 +82,12 @@ public abstract class AbstractCopierCommon<A, B> {
         return (T) collection;
     }
 
-    private Class<? extends Collection> getCollectionClass(Collection collection){
+    private Class<? extends Collection> getCollectionClass(Collection collection) {
         Class<? extends Collection> clazz = collection.getClass();
         if (List.class.isAssignableFrom(clazz)) {
-            return  List.class;
+            return List.class;
         } else if (Set.class.isAssignableFrom(clazz)) {
-            return  Set.class;
+            return Set.class;
         } else
             return clazz;
     }
@@ -109,6 +95,20 @@ public abstract class AbstractCopierCommon<A, B> {
     @SuppressWarnings("unchecked")
     protected <T extends Collection> T copy(Collection srcCollection, Index srcIndex) {
         return (T) copy(srcCollection, getCollectionClass(srcCollection), srcIndex);
+    }
+
+    protected enum Index {
+        A(0), B(1);
+
+        private final int index;
+
+        Index(int i) {
+            index = i;
+        }
+
+        int getIndex() {
+            return index;
+        }
     }
 
 

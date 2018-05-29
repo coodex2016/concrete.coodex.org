@@ -18,7 +18,7 @@ package test.org.coodex.concrete.fsm;
 
 import org.coodex.concrete.fsm.State;
 
-public class AbstractDemoState implements State{
+public class AbstractDemoState implements State {
 
     private int value = 0;
 

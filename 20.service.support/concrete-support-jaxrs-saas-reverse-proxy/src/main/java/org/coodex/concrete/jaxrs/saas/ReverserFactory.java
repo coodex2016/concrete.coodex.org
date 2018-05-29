@@ -28,7 +28,7 @@ public class ReverserFactory {
 
     private static final AcceptableServiceLoader<String, Reverser> REVERSER_FACTORY =
             new AcceptableServiceLoader<String, Reverser>(new ConcreteServiceLoader<Reverser>() {
-            }) ;
+            });
 
 
     public static final Reverser getReverser(String propertyName) {

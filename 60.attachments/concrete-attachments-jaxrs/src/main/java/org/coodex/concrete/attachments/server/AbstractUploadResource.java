@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.attachments.server;
 
+import org.coodex.concrete.Client;
 import org.coodex.concrete.attachments.AttachmentEntityInfo;
 import org.coodex.concrete.attachments.AttachmentInfo;
 import org.coodex.concrete.attachments.AttachmentServiceHelper;
@@ -24,7 +25,6 @@ import org.coodex.concrete.attachments.client.ClientService;
 import org.coodex.concrete.common.AttachmentInfoErrorCodes;
 import org.coodex.concrete.common.BeanProviderFacade;
 import org.coodex.concrete.common.IF;
-import org.coodex.concrete.jaxrs.Client;
 
 import java.io.InputStream;
 
@@ -40,7 +40,7 @@ public class AbstractUploadResource {
         IF.is(AttachmentServiceHelper.ATTACHMENT_PROFILE.getBool(clientId + ".readonly", true), AttachmentInfoErrorCodes.NO_WRITE_PRIVILEGE);
 
         ClientService clientService = Client.getInstance(ClientService.class,
-                AttachmentServiceHelper.ATTACHMENT_PROFILE.getString(clientId + ".location"));
+                AttachmentServiceHelper.ATTACHMENT_PROFILE.getString(clientId + ".location"));// TODO rename
         IF.not(clientService.writable(tokenId), AttachmentInfoErrorCodes.NO_WRITE_PRIVILEGE);
         attachmentInfo.setLastUsed(System.currentTimeMillis());
         AttachmentEntityInfo entityInfo = repository.put(inputStream, attachmentInfo);

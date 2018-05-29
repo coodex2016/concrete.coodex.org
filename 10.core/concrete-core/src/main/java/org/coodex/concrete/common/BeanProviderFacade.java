@@ -27,15 +27,14 @@ public class BeanProviderFacade extends ServiceLoaderFacade<BeanProvider> {
 
     private static final BeanProvider DEFAULT_PROVIDER = ReflectHelper.throwExceptionObject(
             BeanProvider.class, new ConcreteException(ErrorCodes.NO_BEAN_PROVIDER_FOUND));
-
-    @Override
-    public BeanProvider getDefaultProvider() {
-        return DEFAULT_PROVIDER;
-    }
-
     private static final ServiceLoader<BeanProvider> SPI_INSTANCE = new BeanProviderFacade();
 
     public static BeanProvider getBeanProvider() {
         return SPI_INSTANCE.getInstance();
+    }
+
+    @Override
+    public BeanProvider getDefaultProvider() {
+        return DEFAULT_PROVIDER;
     }
 }

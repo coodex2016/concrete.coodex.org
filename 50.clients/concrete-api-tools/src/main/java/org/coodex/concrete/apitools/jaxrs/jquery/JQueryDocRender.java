@@ -59,7 +59,6 @@ public class JQueryDocRender extends AbstractRender {
         List<Module> modules = ConcreteHelper.loadModules(RENDER_NAME, packages);
 
 
-
         // book.json
         if (!exists("book.json"))
             copyTo("book.json", "book.json");

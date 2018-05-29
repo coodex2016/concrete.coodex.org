@@ -21,7 +21,6 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import java.io.IOException;
-import java.util.Map;
 
 public interface ConcreteWebSocketEndPoint {
 
@@ -38,16 +37,16 @@ public interface ConcreteWebSocketEndPoint {
 //    Token getToken(Session session);
 
 
-    @Deprecated
-    <T> void broadcast(String subject, T content);
-
-    @Deprecated
-    <T> void broadcast(String subject, T content, Map<String, String> subjoin);
-
-    @Deprecated
-    <T> void broadcast(String subject, T content, SessionFilter sessionFilter);
-
-    @Deprecated
-    <T> void broadcast(String subject, T content, Map<String, String> subjoin, SessionFilter sessionFilter);
+//    @Deprecated
+//    <T> void broadcast(String subject, T content);
+//
+//    @Deprecated
+//    <T> void broadcast(String subject, T content, Map<String, String> subjoin);
+//
+//    @Deprecated
+//    <T> void broadcast(String subject, T content, SessionFilter sessionFilter);
+//
+//    @Deprecated
+//    <T> void broadcast(String subject, T content, Map<String, String> subjoin, SessionFilter sessionFilter);
 
 }

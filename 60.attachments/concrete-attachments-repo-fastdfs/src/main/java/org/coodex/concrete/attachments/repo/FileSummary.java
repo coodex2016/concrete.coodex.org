@@ -33,12 +33,12 @@ public class FileSummary extends FileInfo {
                 fileInfo.getSourceIpAddr());
     }
 
-    void setMetaData(Map<String, String> metaData) {
-        this.metaData = metaData;
-    }
-
     public Map<String, String> getMetaData() {
         return metaData;
+    }
+
+    void setMetaData(Map<String, String> metaData) {
+        this.metaData = metaData;
     }
 
     public String getMetaData(String name) {

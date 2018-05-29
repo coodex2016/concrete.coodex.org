@@ -30,6 +30,7 @@ public abstract class AbstractAdministratorFactory implements AcceptableAccountF
     private Token token = TokenWrapper.getInstance();
 
     @Override
+    @SuppressWarnings("unchecked")
     public <ID extends AccountID> Account<ID> getAccountByID(ID id) {
         if (id == null || !(id instanceof AccountIDImpl)) return null;
         return (Account<ID>) getAdministrator(((AccountIDImpl) id).getId());

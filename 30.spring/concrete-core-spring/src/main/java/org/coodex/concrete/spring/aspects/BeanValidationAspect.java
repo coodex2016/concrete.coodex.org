@@ -23,4 +23,5 @@ import org.coodex.concrete.core.intercept.BeanValidationInterceptor;
  * Created by davidoff shen on 2016-09-05.
  */
 @Aspect
-public class BeanValidationAspect extends AbstractConcreteAspect<BeanValidationInterceptor> {}
+public class BeanValidationAspect extends AbstractConcreteAspect<BeanValidationInterceptor> {
+}

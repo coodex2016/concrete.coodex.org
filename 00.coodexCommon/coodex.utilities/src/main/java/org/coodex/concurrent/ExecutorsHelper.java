@@ -26,50 +26,11 @@ import java.util.concurrent.*;
  */
 public class ExecutorsHelper {
 
-    static class ConcreteLinkedBlockingQueue extends LinkedBlockingQueue<Runnable> {
-        private ThreadPoolExecutor threadPoolExecutor;
-        private int maximumPoolSize;
-
-        public void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor) {
-            this.threadPoolExecutor = threadPoolExecutor;
-            this.maximumPoolSize = threadPoolExecutor.getMaximumPoolSize();
-        }
-
-        @Override
-        public boolean offer(Runnable runnable) {
-            if (threadPoolExecutor == null) return super.offer(runnable);
-            return threadPoolExecutor.getPoolSize() < maximumPoolSize ?
-                    false : super.offer(runnable);
-        }
-    }
-
-
-    static class ConcretePriorityBlockingQueue extends PriorityBlockingQueue<Runnable> {
-        private ThreadPoolExecutor threadPoolExecutor;
-        private int maximumPoolSize;
-
-
-        public void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor) {
-            this.threadPoolExecutor = threadPoolExecutor;
-            this.maximumPoolSize = threadPoolExecutor.getMaximumPoolSize();
-        }
-
-
-        @Override
-        public boolean offer(Runnable runnable) {
-            if (threadPoolExecutor == null) return super.offer(runnable);
-            runnable = getPriorityRunnable(runnable);
-            return threadPoolExecutor.getPoolSize() < maximumPoolSize ?
-                    false : super.offer(runnable);
-        }
-    }
-
     private static PriorityRunnable getPriorityRunnable(Runnable runnable) {
         return runnable instanceof PriorityRunnable ?
                 (PriorityRunnable) runnable :
                 new PriorityRunnable(Thread.NORM_PRIORITY, runnable);
     }
-
 
     public static ExecutorService newPriorityThreadPool(final int coreSize, int maxSize) {
         return newPriorityThreadPool(coreSize, maxSize, 60L);
@@ -111,7 +72,6 @@ public class ExecutorsHelper {
         return ExecutorWrapper.wrap(Executors.newFixedThreadPool(nThreads, threadFactory));
     }
 
-
     public static ExecutorService newSingleThreadExecutor() {
         return ExecutorWrapper.wrap(Executors.newSingleThreadExecutor());
     }
@@ -120,16 +80,13 @@ public class ExecutorsHelper {
         return ExecutorWrapper.wrap(Executors.newSingleThreadExecutor(threadFactory));
     }
 
-
     public static ExecutorService newCachedThreadPool() {
         return ExecutorWrapper.wrap(Executors.newCachedThreadPool());
     }
 
-
     public static ExecutorService newCachedThreadPool(ThreadFactory threadFactory) {
         return ExecutorWrapper.wrap(Executors.newCachedThreadPool(threadFactory));
     }
-
 
     public static ScheduledExecutorService newSingleThreadScheduledExecutor() {
         return ExecutorWrapper.wrap(Executors.newSingleThreadScheduledExecutor());
@@ -139,17 +96,14 @@ public class ExecutorsHelper {
         return ExecutorWrapper.wrap(Executors.newSingleThreadScheduledExecutor(threadFactory));
     }
 
-
     public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize) {
         return ExecutorWrapper.wrap(Executors.newScheduledThreadPool(corePoolSize));
     }
-
 
     public static ScheduledExecutorService newScheduledThreadPool(
             int corePoolSize, ThreadFactory threadFactory) {
         return ExecutorWrapper.wrap(Executors.newScheduledThreadPool(corePoolSize, threadFactory));
     }
-
 
     public static final void shutdownAll() {
         ExecutorWrapper.shutdown();
@@ -157,5 +111,42 @@ public class ExecutorsHelper {
 
     public static final List<Runnable> shutdownAllNOW() {
         return ExecutorWrapper.shutdownNow();
+    }
+
+    static class ConcreteLinkedBlockingQueue extends LinkedBlockingQueue<Runnable> {
+        private ThreadPoolExecutor threadPoolExecutor;
+        private int maximumPoolSize;
+
+        public void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor) {
+            this.threadPoolExecutor = threadPoolExecutor;
+            this.maximumPoolSize = threadPoolExecutor.getMaximumPoolSize();
+        }
+
+        @Override
+        public boolean offer(Runnable runnable) {
+            if (threadPoolExecutor == null) return super.offer(runnable);
+            return threadPoolExecutor.getPoolSize() < maximumPoolSize ?
+                    false : super.offer(runnable);
+        }
+    }
+
+    static class ConcretePriorityBlockingQueue extends PriorityBlockingQueue<Runnable> {
+        private ThreadPoolExecutor threadPoolExecutor;
+        private int maximumPoolSize;
+
+
+        public void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor) {
+            this.threadPoolExecutor = threadPoolExecutor;
+            this.maximumPoolSize = threadPoolExecutor.getMaximumPoolSize();
+        }
+
+
+        @Override
+        public boolean offer(Runnable runnable) {
+            if (threadPoolExecutor == null) return super.offer(runnable);
+            runnable = getPriorityRunnable(runnable);
+            return threadPoolExecutor.getPoolSize() < maximumPoolSize ?
+                    false : super.offer(runnable);
+        }
     }
 }

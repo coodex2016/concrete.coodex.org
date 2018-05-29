@@ -29,34 +29,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@Deprecated
 public class JaxRSCourier implements Courier {
 
     private final static Logger log = LoggerFactory.getLogger(JaxRSCourier.class);
     private final static long MAX_LIFE = 5 * 60 * 1000;
-
-
-    private class MessageWithArrived {
-        private final Message message;
-        private final long arrived = System.currentTimeMillis();
-
-        public MessageWithArrived(Message message) {
-            this.message = message;
-        }
-
-        public Message getMessage() {
-            return message;
-        }
-
-        public long getArrived() {
-            return arrived;
-        }
-    }
-
     private final static Map<String, Queue<MessageWithArrived>> queueMap = new HashMap<String, Queue<MessageWithArrived>>();
-
     private final static Map<Queue<MessageWithArrived>, Set<AsyncMessageReceiver>> ASYNC_MESSAGE_GETTER_MAP
             = new HashMap<Queue<MessageWithArrived>, Set<AsyncMessageReceiver>>();
-
     //    private static ScheduledExecutorService scheduledExecutorService;
     private static Singleton<ScheduledExecutorService> scheduledExecutorService =
             new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
@@ -65,6 +45,13 @@ public class JaxRSCourier implements Courier {
                     return ExecutorsHelper.newSingleThreadScheduledExecutor();
                 }
             });
+
+    public JaxRSCourier() {
+//        synchronized (JaxRSCourier.class) {
+//            if (scheduledExecutorService == null)
+//                scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
+//        }
+    }
 
     private static ScheduledExecutorService getScheduledExecutorService() {
 //        if (scheduledExecutorService == null)
@@ -75,13 +62,6 @@ public class JaxRSCourier implements Courier {
 //            }
 //        return scheduledExecutorService;
         return scheduledExecutorService.getInstance();
-    }
-
-    public JaxRSCourier() {
-//        synchronized (JaxRSCourier.class) {
-//            if (scheduledExecutorService == null)
-//                scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
-//        }
     }
 
     // TODO 性能优化
@@ -113,7 +93,6 @@ public class JaxRSCourier implements Courier {
 
     }
 
-
     public static void asyncMessageReceive(String tokenId, AsyncMessageReceiver asyncMessageReceiver) {
         Queue<MessageWithArrived> queue = getQueue(tokenId);
 
@@ -137,7 +116,6 @@ public class JaxRSCourier implements Courier {
         }
         return ASYNC_MESSAGE_GETTER_MAP.get(queue);
     }
-
 
     public static List<Message> getMessage(String tokenId, long timeOut) {
         Queue<MessageWithArrived> queue = getQueue(tokenId);
@@ -163,6 +141,10 @@ public class JaxRSCourier implements Courier {
         return messages;
     }
 
+    @SuppressWarnings("unchecked")
+    public static void deregister(AsyncMessageReceiver getter) {
+        getAsyncMessageReceivers(getter.getKey()).remove(getter);
+    }
 
     @Override
     public String getType() {
@@ -194,8 +176,20 @@ public class JaxRSCourier implements Courier {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static void deregister(AsyncMessageReceiver getter) {
-        getAsyncMessageReceivers(getter.getKey()).remove(getter);
+    private class MessageWithArrived {
+        private final Message message;
+        private final long arrived = System.currentTimeMillis();
+
+        public MessageWithArrived(Message message) {
+            this.message = message;
+        }
+
+        public Message getMessage() {
+            return message;
+        }
+
+        public long getArrived() {
+            return arrived;
+        }
     }
 }

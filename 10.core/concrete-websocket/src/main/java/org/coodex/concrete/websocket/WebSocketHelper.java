@@ -16,15 +16,30 @@
 
 package org.coodex.concrete.websocket;
 
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.common.struct.AbstractParam;
 import org.coodex.util.Common;
+import org.coodex.util.SingletonMap;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class WebSocketHelper {
+//    private static Map<Class, WebSocketModule> moduleMap = new ConcurrentHashMap<Class, WebSocketModule>();
+
+    private static SingletonMap<Class, WebSocketModule> modules =
+            new SingletonMap<Class, WebSocketModule>(
+                    new SingletonMap.Builder<Class, WebSocketModule>() {
+                        @Override
+                        public WebSocketModule build(Class key) {
+                            return new WebSocketModule(key);
+                        }
+                    }
+            );
+
     private static String keyBase(Class serviceClass, Method method) {
         return String.format("%s:%s(%d)",
                 serviceClass.getName(),
@@ -40,7 +55,7 @@ public class WebSocketHelper {
         return buildKey(runtimeContext.getDeclaringClass(), runtimeContext.getDeclaringMethod());
     }
 
-
+    @SuppressWarnings("unchecked")
     public static RequestPackage buildRequest(String msgId, WebSocketUnit unit, Object[] args) {
         RequestPackage requestPackage = new RequestPackage();
         requestPackage.setMsgId(msgId);
@@ -62,6 +77,22 @@ public class WebSocketHelper {
                 break;
         }
         return requestPackage;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static WebSocketUnit findUnit(RuntimeContext context) {
+        WebSocketModule module = IF.isNull(modules.getInstance(context.getDeclaringClass()),
+                context.getDeclaringClass() + "is not a concrete service.");
+        Method method = context.getDeclaringMethod();
+        for (WebSocketUnit unit : module.getUnits()) {
+            if (unit.getMethod().getName().equals(method.getName()) &&
+                    Arrays.equals(unit.getMethod().getParameterTypes(), method.getParameterTypes())) {
+                return unit;
+            }
+        }
+        throw new RuntimeException("unable found websocket unit: "
+                + context.getDeclaringClass().getName() + " "
+                + context.getDeclaringMethod().getName());
     }
 
 

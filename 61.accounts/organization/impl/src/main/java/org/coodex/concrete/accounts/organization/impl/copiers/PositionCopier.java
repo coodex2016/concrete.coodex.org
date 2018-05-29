@@ -23,5 +23,5 @@ import org.coodex.concrete.accounts.organization.pojo.Position;
  * Created by davidoff shen on 2017-05-11.
  */
 public abstract class PositionCopier<T extends Position, E extends AbstractPositionEntity>
-        extends PojoCopier<T, E>{
+        extends PojoCopier<T, E> {
 }

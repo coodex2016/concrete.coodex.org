@@ -22,10 +22,7 @@ import java.util.*;
 
 public abstract class AbstractSubjoin implements Subjoin {
 
-    public static final String LOCALE = "CONCRETE-LOCATE";
-
     private Map<String, List<String>> stringMap = new HashMap<String, List<String>>();
-    private Locale locale = Locale.getDefault();
 
     public AbstractSubjoin() {
         this(null);
@@ -34,31 +31,17 @@ public abstract class AbstractSubjoin implements Subjoin {
     public AbstractSubjoin(Map<String, String> map) {
         if (map == null) return;
 
+        Collection<String> skipKeys = skipKeys();
         for (String key : map.keySet()) {
+            if (skipKeys != null && skipKeys.contains(key))
+                continue;
             String v = map.get(key);
             if (v == null) continue;
-
-            if (key.equalsIgnoreCase(LOCALE)) {
-                setLocale(forLanguageTag(v));
-            } else {
-                set(key, Common.toArray(v, "; ", new ArrayList<String>()));
-            }
+            set(key, Common.toArray(v, "; ", new ArrayList<String>()));
         }
     }
 
-    protected abstract Locale forLanguageTag(String localeStr);
-
-    protected abstract String toLanguageTag();
-
-    @Override
-    public Locale getLocale() {
-        return locale;
-    }
-
-    protected void setLocale(Locale locale) {
-        if (locale != null)
-            this.locale = locale;
-    }
+    protected abstract Collection<String> skipKeys();
 
     @Override
     public String get(String name) {
@@ -82,7 +65,10 @@ public abstract class AbstractSubjoin implements Subjoin {
 
     @Override
     public void set(String name, List<String> values) {
-        stringMap.put(name, values);
+        if (values == null)
+            stringMap.remove(name);
+        else
+            stringMap.put(name, new ArrayList<String>(values));
     }
 
     @Override
@@ -95,15 +81,14 @@ public abstract class AbstractSubjoin implements Subjoin {
         list.add(value);
     }
 
-    // todo 只导出改变了的信息
-    public Map<String, String> toMap() {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(LOCALE, toLanguageTag());
-
-        for (String key : keySet()) {
-            map.put(key, get(key));
-        }
-        return map;
+    protected boolean containsKey(String name) {
+        return stringMap.containsKey(name);
     }
+
+    @Override
+    public Set<String> updatedKeySet() {
+        return stringMap.keySet();
+    }
+
 
 }

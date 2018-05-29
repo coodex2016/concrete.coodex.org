@@ -26,7 +26,7 @@ public class JaxRSModuleMaker implements ModuleMaker<Module> {
 
     public static final String JAX_RS_PREV = "JaxRS";
 
-//    @Override
+    //    @Override
     public boolean accept(String desc) {
         return desc != null
                 && desc.length() >= JAX_RS_PREV.length()

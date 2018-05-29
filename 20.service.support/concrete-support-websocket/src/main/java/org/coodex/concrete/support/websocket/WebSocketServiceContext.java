@@ -17,18 +17,14 @@
 package org.coodex.concrete.support.websocket;
 
 import org.coodex.concrete.common.Caller;
-import org.coodex.concrete.common.ServiceContext;
+import org.coodex.concrete.common.ServerSideContext;
 import org.coodex.concrete.common.Subjoin;
-import org.coodex.concrete.common.Token;
-import org.coodex.concrete.common.struct.AbstractUnit;
-import org.coodex.concrete.core.messages.Courier;
 
-import static org.coodex.concrete.common.ConcreteContext.SIDE_SERVER;
-import static org.coodex.concrete.websocket.Constants.WEB_SOCKET_MODEL;
+import java.util.Locale;
 
-public class WebSocketServiceContext extends ServiceContext {
+public class WebSocketServiceContext extends ServerSideContext {
 
-    private static final Courier webSocketCourier = new WebSocketCourier();
+//    private static final Courier webSocketCourier = new WebSocketCourier();
 
     private static Caller CALLER = new Caller() {
         @Override
@@ -37,22 +33,24 @@ public class WebSocketServiceContext extends ServiceContext {
         }
 
         @Override
-        public String getAgent() {
+        public String getClientProvider() {
             return "CONCRETE-TODO: JSR 356 do not support, use hack";
         }
     };
 
-    public WebSocketServiceContext(Token token, Subjoin subjoin, AbstractUnit unit, Caller caller) {
-        this.token = token;
-        this.subjoin = subjoin;
-        this.currentUnit = unit;
-        this.model = WEB_SOCKET_MODEL;
-        this.caller = caller == null ? CALLER : caller;
-        this.side = SIDE_SERVER;
-        this.courier = webSocketCourier;
+    public WebSocketServiceContext(String tokenId, Subjoin subjoin, Caller caller, Locale locale) {
+        super(caller == null ? CALLER : caller, subjoin, locale, tokenId);
+
+//        this.token = token;
+//        this.subjoin = subjoin;
+//        this.currentUnit = unit;
+//        this.model = WEB_SOCKET_MODEL;
+//        this.caller = caller == null ? CALLER : caller;
+//        this.side = SIDE_SERVER;
+//        this.courier = webSocketCourier;
     }
 
-    public WebSocketServiceContext(Token token, Subjoin subjoin, AbstractUnit unit) {
-        this(token, subjoin, unit, CALLER);
-    }
+//    public WebSocketServiceContext(Token token, Subjoin subjoin, AbstractUnit unit) {
+//        this(token, subjoin, unit, CALLER);
+//    }
 }

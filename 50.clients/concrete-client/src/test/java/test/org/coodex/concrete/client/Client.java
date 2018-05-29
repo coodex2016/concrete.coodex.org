@@ -24,7 +24,7 @@ import org.junit.Test;
 public class Client {
 
     @Test
-    public void testClientHelper1(){
+    public void testClientHelper1() {
         Destination destination = ClientHelper.getDestination("local");
         Assert.assertEquals(destination.getIdentify(), "local");
         Assert.assertEquals(destination.getLocation(), "local");

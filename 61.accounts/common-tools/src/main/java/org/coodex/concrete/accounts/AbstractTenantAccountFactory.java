@@ -40,6 +40,7 @@ public abstract class AbstractTenantAccountFactory implements AcceptableAccountF
     protected abstract TenantAccount newAccount(String key);
 
     @Override
+    @SuppressWarnings({"unchecked", "unsafe"})
     public <ID extends AccountID> Account<ID> getAccountByID(ID id) {
         return (Account<ID>) IF.isNull(accountCache.get(((AccountIDImpl) id).getId()), NONE_THIS_ACCOUNT);
     }

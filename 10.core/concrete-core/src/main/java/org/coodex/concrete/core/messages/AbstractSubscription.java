@@ -20,20 +20,21 @@ import org.coodex.concrete.common.messages.MessageFilter;
 import org.coodex.concrete.common.messages.Subscriber;
 import org.coodex.concrete.common.messages.Subscription;
 
+@Deprecated
 public abstract class AbstractSubscription<T> implements Subscription<T> {
     private final String subject;
     private final MessageFilter<T> filter;
     protected Subscriber<T> subscriber;
 
 
-    @Override
-    public void setSubscriber(Subscriber<T> subscriber) {
-        this.subscriber = subscriber;
-    }
-
     public AbstractSubscription(String subject, MessageFilter<T> filter) {
         this.subject = subject;
         this.filter = filter;
+    }
+
+    @Override
+    public void setSubscriber(Subscriber<T> subscriber) {
+        this.subscriber = subscriber;
     }
 
     @Override
@@ -42,7 +43,7 @@ public abstract class AbstractSubscription<T> implements Subscription<T> {
     }
 
     @Override
-    public MessageFilter<? super T>  getFilter() {
+    public MessageFilter<? super T> getFilter() {
         return filter;
     }
 

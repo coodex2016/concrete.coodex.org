@@ -19,6 +19,7 @@ package org.coodex.concrete.core.messages;
 import org.coodex.concrete.common.messages.Subscriber;
 import org.coodex.concrete.common.messages.Subscription;
 
+@Deprecated
 public class SubscriberImpl<T> implements Subscriber<T> {
 
     private final Subscription<T> subscription;

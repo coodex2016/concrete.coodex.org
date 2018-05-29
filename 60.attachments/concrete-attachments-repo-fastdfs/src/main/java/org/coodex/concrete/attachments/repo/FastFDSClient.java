@@ -32,28 +32,16 @@ import java.util.Set;
  */
 public class FastFDSClient {
 
+    public static final String META_FILE_NAME = "file-getName";
+
     static {
         ClientGlobal.setG_charset("UTF-8");
     }
 
-    public static final String META_FILE_NAME = "file-getName";
+    private TrackerGroup trackerGroup;
 
-    class StorageClient_ extends StorageClient {
-        StorageClient_(TrackerServer trackerServer, StorageServer storageServer) {
-            super(trackerServer, null);
-        }
-
-        public String[] do_upload_file(byte cmd, String group_name, String master_filename, String prefix_name, String file_ext_name, long file_size, UploadCallback callback, NameValuePair[] meta_list) throws IOException, MyException {
-            return super.do_upload_file(cmd, group_name, master_filename, prefix_name, file_ext_name, file_size, callback, meta_list);
-        }
-
-        public int do_append_file(String group_name, String appender_filename, long file_size, UploadCallback callback) throws IOException, MyException {
-            return super.do_append_file(group_name, appender_filename, file_size, callback);
-        }
-
-        public int do_modify_file(String group_name, String appender_filename, long file_offset, long modify_size, UploadCallback callback) throws IOException, MyException {
-            return super.do_modify_file(group_name, appender_filename, file_offset, modify_size, callback);
-        }
+    public FastFDSClient(TrackerGroup trackerGroup) {
+        this.trackerGroup = trackerGroup;
     }
 
     static Map<String, String> nameValuePairToMap(NameValuePair[] nameValuePairs) {
@@ -76,21 +64,12 @@ public class FastFDSClient {
         return set.toArray(new NameValuePair[0]);
     }
 
-
-    private TrackerGroup trackerGroup;
-
-    public FastFDSClient(TrackerGroup trackerGroup) {
-        this.trackerGroup = trackerGroup;
-    }
-
-
     private StorageClient_ getClient(String groupName) throws IOException {
 
         TrackerClient trackerClient = new TrackerClient(trackerGroup);
         TrackerServer trackerServer = trackerGroup == null ? null : trackerGroup.getConnection();
         return new StorageClient_(trackerServer, trackerClient.getStoreStorage(trackerServer, groupName));
     }
-
 
     /**
      * 上传一个本地文件
@@ -157,7 +136,6 @@ public class FastFDSClient {
         return uploadFile(inputStream, local_filename, null, size, metaInfo, group);
     }
 
-
     /**
      * 上传一个流
      *
@@ -200,7 +178,6 @@ public class FastFDSClient {
 
         return new FileLocation(result[0], result[1]);
     }
-
 
     public FileSummary getFileSummary(String group, String fileName) throws IOException, MyException {
         StorageClient_ client = getClient(group);
@@ -247,7 +224,6 @@ public class FastFDSClient {
 
     }
 
-
     public void updateFileSummary(FileLocation location, FileSummary fileSummary) throws IOException, MyException {
         getClient(location.getGroup()).set_metadata(
                 location.getGroup(),
@@ -255,6 +231,24 @@ public class FastFDSClient {
                 mapToNameValuePairs(fileSummary.getMetaData()),
                 ProtoCommon.STORAGE_SET_METADATA_FLAG_OVERWRITE
         );
+    }
+
+    class StorageClient_ extends StorageClient {
+        StorageClient_(TrackerServer trackerServer, StorageServer storageServer) {
+            super(trackerServer, null);
+        }
+
+        public String[] do_upload_file(byte cmd, String group_name, String master_filename, String prefix_name, String file_ext_name, long file_size, UploadCallback callback, NameValuePair[] meta_list) throws IOException, MyException {
+            return super.do_upload_file(cmd, group_name, master_filename, prefix_name, file_ext_name, file_size, callback, meta_list);
+        }
+
+        public int do_append_file(String group_name, String appender_filename, long file_size, UploadCallback callback) throws IOException, MyException {
+            return super.do_append_file(group_name, appender_filename, file_size, callback);
+        }
+
+        public int do_modify_file(String group_name, String appender_filename, long file_offset, long modify_size, UploadCallback callback) throws IOException, MyException {
+            return super.do_modify_file(group_name, appender_filename, file_offset, modify_size, callback);
+        }
     }
 
 

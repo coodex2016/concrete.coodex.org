@@ -42,8 +42,9 @@ public class JaxRSHelper {
     //    public static final String KEY_ERROR_CODE = "code";
 //    public static final String KEY_ERROR_MESSAGE = "msg";
     public static final String HEADER_ERROR_OCCURRED = "CONCRETE-ERROR-OCCURRED";
+    public static final String KEY_CLIENT_PROVIDER = "X-CLIENT-PROVIDER";
 
-    public static final String JAXRS_MODEL = "jaxrs_model";
+//    public static final String JAXRS_MODEL = "jaxrs_model";
 
 //    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
 //            String.class,
@@ -66,19 +67,20 @@ public class JaxRSHelper {
 //            double.class,
 //            void.class,
 //    };
+    private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<Class<?>, Module>();
 
     public static boolean isPrimitive(Class c) {
 //        return Common.inArray(c, PRIMITIVE_CLASSES);
         return TypeHelper.isPrimitive(c);
     }
 
+
+//    private static final int TO_LOWER = 'a' - 'A';
+
     public static boolean isBigString(Param param) {
         return String.class.isAssignableFrom(param.getType())
                 && param.getDeclaredAnnotation(BigString.class) != null;
     }
-
-
-//    private static final int TO_LOWER = 'a' - 'A';
 
     @Deprecated
     public static String lowerFirstChar(String string) {
@@ -92,6 +94,9 @@ public class JaxRSHelper {
 //        return string;
     }
 
+
+//    private final static String DEFAULT_DELIM = ".-_ /\\";
+
     @Deprecated
     public static String upperFirstChar(String string) {
         return Common.upperFirstChar(string);
@@ -103,9 +108,6 @@ public class JaxRSHelper {
 //        }
 //        return string;
     }
-
-
-//    private final static String DEFAULT_DELIM = ".-_ /\\";
 
     @Deprecated
     public static String camelCase(String s) {
@@ -152,9 +154,6 @@ public class JaxRSHelper {
         }
         return builder.toString();
     }
-
-
-    private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<Class<?>, Module>();
 
     @SuppressWarnings("unchecked")
     public static final synchronized Module getModule(final Class<? extends ConcreteService> type, String... packages) {

@@ -17,7 +17,7 @@
 package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.api.Signable;
-import org.coodex.concrete.client.ClientServiceContext;
+import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.common.*;
 import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Common;
@@ -34,6 +34,17 @@ public class SignUtil {
     private static final String TAG_SIGNATRUE = "signature";
 
     public static final Profile PROFILE = getProfile(TAG_SIGNATRUE);
+    private static final AcceptableServiceLoader<String, IronPenFactory> IRON_PEN_FACTORY_CONCRETE_SPI_FACADE
+            = new AcceptableServiceLoader<String, IronPenFactory>(new ConcreteServiceLoader<IronPenFactory>() {
+    });
+    private static final SignatureSerializer DEFAULT_SERIALIZER = new DefaultSignatureSerializer();
+    private static final ServiceLoader<SignatureSerializer> SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE
+            = new ConcreteServiceLoader<SignatureSerializer>() {
+        @Override
+        public SignatureSerializer getConcreteDefaultProvider() {
+            return DEFAULT_SERIALIZER;
+        }
+    };
 
     private static String getString(Profile profile, String key, String paperName) {
         return Common.isBlank(paperName) ? profile.getString(key) : profile.getString(key + "." + paperName);
@@ -43,12 +54,11 @@ public class SignUtil {
 //        return s == null ? getString(profile, key, null) : s;
     }
 
-
     public static String getString(String key, String paperName, String defaultValue) {
         ServiceContext serviceContext = ConcreteContext.getServiceContext();
         String value = null;
-        if (serviceContext instanceof ClientServiceContext) {
-            String module = ((ClientServiceContext) serviceContext).getDestination().getIdentify();
+        if (serviceContext instanceof ClientSideContext) {
+            String module = ((ClientSideContext) serviceContext).getDestination().getIdentify();
             if (!Common.isBlank(module)) {
                 value = getString(getProfile(TAG_SIGNATRUE, module), key, paperName);
             }
@@ -60,6 +70,23 @@ public class SignUtil {
 //            return PROFILE.getString(key, defaultValue);
 //        String s = PROFILE.getString(key + "." + paperName, defaultValue);
 //        return s == null ? getString(key, null, defaultValue) : s;
+    }
+
+    public static HowToSign howToSign(Signable signable) {
+
+        String algorithm = getString("algorithm", signable.paperName(), signable.algorithm());
+        return new HowToSign(
+                IRON_PEN_FACTORY_CONCRETE_SPI_FACADE.getServiceInstance(algorithm),
+                signable.serializer().equals(SignatureSerializer.class) ?
+                        DEFAULT_SERIALIZER :
+                        SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE.getInstance(signable.serializer()),
+                signable.paperName(),
+                algorithm
+        );
+    }
+
+    public static HowToSign howToSign(DefinitionContext context) {
+        return howToSign(context.getAnnotation(Signable.class));
     }
 
     public static class HowToSign {
@@ -96,35 +123,5 @@ public class SignUtil {
         public String getAlgorithm() {
             return algorithm;
         }
-    }
-
-    private static final AcceptableServiceLoader<String, IronPenFactory> IRON_PEN_FACTORY_CONCRETE_SPI_FACADE
-            = new AcceptableServiceLoader<String, IronPenFactory>(new ConcreteServiceLoader<IronPenFactory>() {
-    });
-
-    private static final SignatureSerializer DEFAULT_SERIALIZER = new DefaultSignatureSerializer();
-    private static final ServiceLoader<SignatureSerializer> SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE
-            = new ConcreteServiceLoader<SignatureSerializer>() {
-        @Override
-        public SignatureSerializer getConcreteDefaultProvider() {
-            return DEFAULT_SERIALIZER;
-        }
-    };
-
-    public static HowToSign howToSign(Signable signable) {
-
-        String algorithm = getString("algorithm", signable.paperName(), signable.algorithm());
-        return new HowToSign(
-                IRON_PEN_FACTORY_CONCRETE_SPI_FACADE.getServiceInstance(algorithm),
-                signable.serializer().equals(SignatureSerializer.class) ?
-                        DEFAULT_SERIALIZER :
-                        SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE.getInstance(signable.serializer()),
-                signable.paperName(),
-                algorithm
-        );
-    }
-
-    public static HowToSign howToSign(DefinitionContext context) {
-        return howToSign(context.getAnnotation(Signable.class));
     }
 }

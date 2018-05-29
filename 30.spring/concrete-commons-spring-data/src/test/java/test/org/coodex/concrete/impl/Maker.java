@@ -23,12 +23,12 @@ import test.org.coodex.concrete.entities.TestEntity;
 
 public class Maker extends AbstractSpecificationsMaker<Condition, TestEntity> {
 
-    public Specifications<TestEntity> aaa(Condition condition){
+    public Specifications<TestEntity> aaa(Condition condition) {
         return null;
     }
 
     @MakerFunction("a01")
-    public Specifications<TestEntity> bbb(Condition condition){
+    public Specifications<TestEntity> bbb(Condition condition) {
         return null;
     }
 

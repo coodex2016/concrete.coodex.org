@@ -33,6 +33,115 @@ public class Operators {
     /**
      * Created by davidoff shen on 2017-03-17.
      */
+    public enum Logical {
+        /**
+         * 等于
+         *
+         * @see EqualOperator
+         */
+        EQUAL(new EqualOperator()),
+        /**
+         * 小于
+         *
+         * @see LessOperator
+         */
+        LESS(new LessOperator()),
+        /**
+         * 大于
+         *
+         * @see GreaterOperator
+         */
+        GREATER(new GreaterOperator()),
+        /**
+         * 小于等于
+         *
+         * @see LessEqualOperator
+         */
+        LESS_EQUAL(new LessEqualOperator()),
+        /**
+         * 大于等于
+         *
+         * @see GreaterEqualOperator
+         */
+        GREATER_EQUAL(new GreaterEqualOperator()),
+        /**
+         * 不等于
+         *
+         * @see NotEqualOperator
+         */
+        NOT_EQUAL(new NotEqualOperator()),
+
+        /**
+         * between(a,b)
+         *
+         * @see BetweenOperator
+         */
+        BETWEEN(new BetweenOperator()),
+        /**
+         * in [...]
+         *
+         * @see InOperator
+         */
+        IN(new InOperator()),
+        /**
+         * not in [...]
+         *
+         * @see NotInOperator
+         */
+        NOT_IN(new NotInOperator()),
+        /**
+         * like %...%
+         *
+         * @see LikeOperator
+         */
+        LIKE(new LikeOperator()),
+        /**
+         * like ...%
+         *
+         * @see StartWithOperator
+         */
+        START_WITH(new StartWithOperator()),
+        /**
+         * like %...
+         *
+         * @see EndWithOperator
+         */
+        END_WITH(new EndWithOperator()),
+
+        /**
+         * like custom pattern, ex: like ..%.._..
+         *
+         * @see CustomPatternLikeOperator
+         */
+        CUSTOM_LIKE(new CustomPatternLikeOperator()),
+
+        /**
+         * is null
+         *
+         * @see IsNullOperator
+         */
+        IS_NULL(new IsNullOperator()),
+        /**
+         * not null
+         *
+         * @see NotNullOperator
+         */
+        NOT_NULL(new NotNullOperator());
+
+        private final Operator operator;
+
+        Logical(Operator operator) {
+            this.operator = operator;
+        }
+
+        public Operator getOperator() {
+            return operator;
+        }
+    }
+
+    /**
+     * Created by davidoff shen on 2017-03-17.
+     */
     public interface Operator {
 
         Logical getLogical();
@@ -398,116 +507,6 @@ public class Operators {
         @Override
         protected String toPattern(String value) {
             return value;
-        }
-    }
-
-
-    /**
-     * Created by davidoff shen on 2017-03-17.
-     */
-    public enum Logical {
-        /**
-         * 等于
-         *
-         * @see EqualOperator
-         */
-        EQUAL(new EqualOperator()),
-        /**
-         * 小于
-         *
-         * @see LessOperator
-         */
-        LESS(new LessOperator()),
-        /**
-         * 大于
-         *
-         * @see GreaterOperator
-         */
-        GREATER(new GreaterOperator()),
-        /**
-         * 小于等于
-         *
-         * @see LessEqualOperator
-         */
-        LESS_EQUAL(new LessEqualOperator()),
-        /**
-         * 大于等于
-         *
-         * @see GreaterEqualOperator
-         */
-        GREATER_EQUAL(new GreaterEqualOperator()),
-        /**
-         * 不等于
-         *
-         * @see NotEqualOperator
-         */
-        NOT_EQUAL(new NotEqualOperator()),
-
-        /**
-         * between(a,b)
-         *
-         * @see BetweenOperator
-         */
-        BETWEEN(new BetweenOperator()),
-        /**
-         * in [...]
-         *
-         * @see InOperator
-         */
-        IN(new InOperator()),
-        /**
-         * not in [...]
-         *
-         * @see NotInOperator
-         */
-        NOT_IN(new NotInOperator()),
-        /**
-         * like %...%
-         *
-         * @see LikeOperator
-         */
-        LIKE(new LikeOperator()),
-        /**
-         * like ...%
-         *
-         * @see StartWithOperator
-         */
-        START_WITH(new StartWithOperator()),
-        /**
-         * like %...
-         *
-         * @see EndWithOperator
-         */
-        END_WITH(new EndWithOperator()),
-
-        /**
-         * like custom pattern, ex: like ..%.._..
-         *
-         * @see CustomPatternLikeOperator
-         */
-        CUSTOM_LIKE(new CustomPatternLikeOperator()),
-
-        /**
-         * is null
-         *
-         * @see IsNullOperator
-         */
-        IS_NULL(new IsNullOperator()),
-        /**
-         * not null
-         *
-         * @see NotNullOperator
-         */
-        NOT_NULL(new NotNullOperator());
-
-        private final Operator operator;
-
-        Logical(Operator operator) {
-            this.operator = operator;
-        }
-
-        public Operator getOperator() {
-            return operator;
         }
     }
 

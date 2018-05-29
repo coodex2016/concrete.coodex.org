@@ -67,7 +67,6 @@ public class HmacPen extends AbstractIronPen {
     };
 
 
-
     HmacPen(String paperName) {
         super(paperName);
     }

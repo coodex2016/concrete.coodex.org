@@ -17,15 +17,33 @@
 package org.coodex.concrete.test.client;
 
 import org.coodex.concrete.Client;
+import org.coodex.concrete.common.JSONSerializerFactory;
+import org.coodex.concrete.jaxrs.Polling;
 import org.coodex.concrete.test.api.Test;
 
 public class ClientInvoker {
 
-    public static void main(String [] args){
+    private static void startPolling() {
+        new Thread() {
+            @Override
+            public void run() {
+                Polling test = Client.getInstance(Polling.class, "remote");
+                while (true) {
+                    JSONSerializerFactory.getInstance()
+                            .toJson(test.polling(15));
+                }
+            }
+        }.start();
+    }
+
+    public static void main(String[] args) throws InterruptedException {
 //        Test test = Client.getInstance(Test.class,"websocket");
-        Test test = Client.getInstance(Test.class,"remote");
-        System.out.println(String.format("1 + 2 = %d", test.add(1,2)));
-        System.out.println(test.sayHello("Davidoff"));
+        Test test = Client.getInstance(Test.class, "remote");
+        System.out.println(String.format("1 + 2 = %d", test.add(1, 2)));
+        startPolling();
+        Thread.sleep(5000);
+        System.out.println(String.format("3 + 2 = %d", test.add(3, 2)));
+//        System.out.println(test.sayHello("Davidoff"));
 //        System.out.println(test.add(1,2));
 
 //        Test_RX test = Client.getInstance(Test_RX.class,"websocket");

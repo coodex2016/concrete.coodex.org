@@ -20,16 +20,34 @@ import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 
 public class CallerWrapper implements Caller {
 
-    private CallerWrapper(){
+    private static Caller instance = new CallerWrapper();
+
+    private static Caller defaultCaller = new Caller() {
+        @Override
+        public String getAddress() {
+            return "unknown";
+        }
+
+        @Override
+        public String getClientProvider() {
+            return "unknown";
+        }
+    };
+
+    private CallerWrapper() {
     }
 
-    private static Caller instance = new CallerWrapper();
-    public static Caller getInstance(){
+    public static Caller getInstance() {
         return instance;
     }
 
-    private Caller getCaller(){
-        return getServiceContext().getCaller();
+    private Caller getCaller() {
+        ServiceContext serviceContext = getServiceContext();
+        if (serviceContext instanceof ContainerContext) {
+            return ((ContainerContext) serviceContext).getCaller();
+        } else {
+            return defaultCaller;
+        }
     }
 
     @Override
@@ -38,7 +56,12 @@ public class CallerWrapper implements Caller {
     }
 
     @Override
-    public String getAgent() {
-        return getCaller().getAgent();
+    public String getClientProvider() {
+        return getCaller().getClientProvider();
     }
+
+//    @Override
+//    public String getAgent() {
+//        return getCaller().getAgent();
+//    }
 }

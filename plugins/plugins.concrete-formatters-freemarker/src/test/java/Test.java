@@ -22,7 +22,7 @@ import org.coodex.concrete.formatters.FreemarkerMessageFormatter;
  */
 public class Test {
 
-    public static void main(String [] args){
+    public static void main(String[] args) {
         MessageFormatter formatter = new FreemarkerMessageFormatter();
         System.out.println(
                 formatter.format("${o1}, ${o2}, ${o3.class}", "hello", 2, formatter));

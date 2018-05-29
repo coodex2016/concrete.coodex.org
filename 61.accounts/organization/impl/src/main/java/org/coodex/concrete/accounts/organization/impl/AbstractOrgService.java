@@ -52,8 +52,6 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
     protected AbstractPersonAccountRepo<P> personAccountRepo;
 
 
-
-
     /**
      * 检查是否具有管理orgId的权限
      * 优先级：

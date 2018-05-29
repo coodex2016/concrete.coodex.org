@@ -34,11 +34,8 @@ import static org.coodex.concrete.jaxrs.JaxRSHelper.getSubmitBody;
  */
 public class Predicates {
 
-    private static Profile getProfile() {
-        return Profile.getProfile("jaxrs.predicates.properties");
-    }
-
-
+    public static final String[] HTTP_METHOD = new String[]{
+            HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.GET};
     /**
      * 【默认】使用PUT方法的谓词
      */
@@ -100,8 +97,9 @@ public class Predicates {
     public static final String[][] PREDICATES = new String[][]{
             PREDICATES_PUT, PREDICATES_DELETE, PREDICATES_POST, PREDICATES_GET};
 
-    public static final String[] HTTP_METHOD = new String[]{
-            HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.GET};
+    private static Profile getProfile() {
+        return Profile.getProfile("jaxrs.predicates.properties");
+    }
 
     /**
      * <pre>默认的谓词：
@@ -134,7 +132,7 @@ public class Predicates {
             for (int j = 0; j < PREDICATES[i].length; j++) {
                 if (methodName.startsWith(PREDICATES[i][j])) {
                     int l = lastCheck == null ? 0 : lastCheck.length();
-                    if(PREDICATES[i][j].length() > l){
+                    if (PREDICATES[i][j].length() > l) {
                         methodIndex = i;
                         lastCheck = PREDICATES[i][j];
                     }
@@ -142,7 +140,7 @@ public class Predicates {
                 }
             }
         }
-        if(methodIndex >=0) return HTTP_METHOD[methodIndex];
+        if (methodIndex >= 0) return HTTP_METHOD[methodIndex];
 //        }
 //        Annotation[][] annotations = method.getParameterAnnotations();
 //        for (int i = 0, j = method.getParameterTypes().length; i < j; i++) {

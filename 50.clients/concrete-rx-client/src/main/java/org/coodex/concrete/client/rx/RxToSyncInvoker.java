@@ -30,18 +30,10 @@ import java.lang.reflect.Method;
 public abstract class RxToSyncInvoker extends AbstractInvoker {
     private final AbstractRxInvoker rxInvoker;
 
-    static class RxResult {
-        private Object object;
-        private Throwable throwable;
-        private boolean waiting = false;
-        private boolean completed = false;
-    }
-
     public RxToSyncInvoker(Destination destination, AbstractRxInvoker rxInvoker) {
         super(destination);
         this.rxInvoker = rxInvoker;
     }
-
 
     @Override
     public Object invoke(Object instance, Class clz, Method method, final Object... args) throws Throwable {
@@ -126,5 +118,12 @@ public abstract class RxToSyncInvoker extends AbstractInvoker {
 
         if (rxResult.throwable != null) throw rxResult.throwable;
         return rxResult.object;
+    }
+
+    static class RxResult {
+        private Object object;
+        private Throwable throwable;
+        private boolean waiting = false;
+        private boolean completed = false;
     }
 }

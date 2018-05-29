@@ -24,7 +24,7 @@ import org.coodex.pojomocker.annotations.STRING;
  * Created by davidoff shen on 2017-04-28.
  */
 public class Position extends AbstractPojo {
-//    private String name;
+    //    private String name;
 //
     @Description(
             name = "职位名称"

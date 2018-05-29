@@ -36,26 +36,12 @@ import java.util.concurrent.TimeUnit;
 
 public class SingletonIdentifiedStateContainer implements IdentifiedStateContainer {
 
-    private static class Lock {
-        private IdentifiedState identifiedState;
-        private Future future;
-
-        public Lock(IdentifiedState identifiedState, Future future) {
-            this.identifiedState = identifiedState;
-            this.future = future;
-        }
-
-        public IdentifiedState getIdentifiedState() {
-            return identifiedState;
-        }
-
-        public Future getFuture() {
-            return future;
-        }
-    }
+    private final static Map<Serializable, Lock> STATUS_MAP = new ConcurrentHashMap<Serializable, Lock>();
 
 //    private static ScheduledExecutorService LOCK_FORCE_RELEASE = null;
-
+    private final static ConcreteServiceLoader<IdentifiedStateLoader> LOADERS = new ConcreteServiceLoader<IdentifiedStateLoader>() {
+    };
+    private final static long DEFAULT_TIME_OUT = 1000;
     private static Singleton<ScheduledExecutorService> LOCK_FORCE_RELEASE =
             new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
                 @Override
@@ -63,6 +49,8 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
                     return ExecutorsHelper.newSingleThreadScheduledExecutor();
                 }
             });
+    private static Map<Class, IdentifiedStateLoader> loaderMap = new HashMap<Class, IdentifiedStateLoader>();
+
     private static ScheduledExecutorService getReleaseExecutor() {
 //        if (LOCK_FORCE_RELEASE == null)
 //            synchronized (SingletonIdentifiedStateContainer.class) {
@@ -73,13 +61,6 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
 //        return LOCK_FORCE_RELEASE;
         return LOCK_FORCE_RELEASE.getInstance();
     }
-
-    private final static Map<Serializable, Lock> STATUS_MAP = new ConcurrentHashMap<Serializable, Lock>();
-
-    private final static ConcreteServiceLoader<IdentifiedStateLoader> LOADERS = new ConcreteServiceLoader<IdentifiedStateLoader>() {
-    };
-
-    private static Map<Class, IdentifiedStateLoader> loaderMap = new HashMap<Class, IdentifiedStateLoader>();
 
     @SuppressWarnings("unchecked")
     private static <S extends IdentifiedState<ID>, ID extends Serializable, L extends IdentifiedStateLoader<S, ID>>
@@ -103,9 +84,6 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
         }
 
     }
-
-    private final static long DEFAULT_TIME_OUT = 1000;
-
 
     @Override
     public <S extends IdentifiedState<ID>, ID extends Serializable> S newStateAndLock(Class<? extends S> stateClass) {
@@ -160,5 +138,23 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
     @Override
     public void release(Serializable id) {
         $release(id, true);
+    }
+
+    private static class Lock {
+        private IdentifiedState identifiedState;
+        private Future future;
+
+        public Lock(IdentifiedState identifiedState, Future future) {
+            this.identifiedState = identifiedState;
+            this.future = future;
+        }
+
+        public IdentifiedState getIdentifiedState() {
+            return identifiedState;
+        }
+
+        public Future getFuture() {
+            return future;
+        }
     }
 }

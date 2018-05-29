@@ -27,10 +27,6 @@ public interface Token extends Serializable {
 
     String CONCRETE_TOKEN_ID_KEY = "CONCRETE-TOKEN-ID";
 
-    enum Event{
-        CREATED, INVALIDATED
-    }
-
     /**
      * 令牌创建时间
      *
@@ -50,18 +46,17 @@ public interface Token extends Serializable {
      */
     void invalidate();
 
-//    /**
-//     * 失效事件，此时应清空全部缓存的数据
-//     */
-//    void onInvalidate();
-
-
     /**
      * 当前账户
      *
      * @return
      */
     <ID extends AccountID> Account<ID> currentAccount();
+
+//    /**
+//     * 失效事件，此时应清空全部缓存的数据
+//     */
+//    void onInvalidate();
 
     /**
      * 设置当前账户
@@ -83,7 +78,6 @@ public interface Token extends Serializable {
      * @param credible
      */
     void setAccountCredible(boolean credible);
-
 
     /**
      * 获取令牌id
@@ -126,12 +120,15 @@ public interface Token extends Serializable {
      */
     Enumeration<String> attributeNames();
 
-
     /**
      * 更新token内的值
      */
     void flush();
 
     void renew();
+
+    enum Event {
+        CREATED, INVALIDATED
+    }
 
 }
