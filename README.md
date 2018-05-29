@@ -25,6 +25,43 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-05-19
+- 0.2.3-SNAPSHOT
+- 重构Subjoin，移除语言环境；提供回写能力；
+- TokenManager增加newToken接口；getToken(String, boolean)声明作废
+- 重新设计ServiceContext
+    - ServiceContext: 包含当前上下文的附加信息、语言环境、令牌id
+        - ContainerContext: 服务运行容器的上下文，泛化自ServiceContext，增加了令牌、调用者
+            - TestServiceContext: 测试环境的上下文，泛化自ContainerContext
+            - ServerSideContext: service support的运行上下文，泛化自ContainerContext；须各服务提供者具体实现
+                - JaxRS/WebSocket/Dubbo支持进行相应调整
+            - LocalServiceContext: 本地调用时的上下文，泛化自ContainerContext；使用当前服务上下文的信息构建
+        - ClientSideContext: 泛化自ServiceContext，增加调用的服务定义，封装了tokenId的获取规则；须各客户端提供者具体实现
+    - 其他属性调整
+        - Courier从上下文中移除，Server端消息推送不应受运行环境限制，调整方案待定
+- 重新设计Server端推送模
+    - 废弃原仅支持单机的订阅模型
+    - 增加发布订阅模型 `org.coodex.concrete.message`
+        - 通用消息主题 `Topic<MessageType>`
+        - 基于Token的消息主题 `TokenBasedTopic<MessageType>`,相同消息同一个令牌只消费一次，消息推送基于此类型主题实现
+            - 目前已支持jaxrs，其他服务模型持续增加
+        - concrete-core-spring增加对此发布订阅模型的DI支持
+            - 已知问题,目前尚不能使用@Inject注解注入,方案研究中 :(
+            - 示例
+            ```java
+                private Topic<String> x;// 示意而已，建议消息体为明确的消息类型
+            
+                private Topic<Set<String>> y;
+                
+                @Queue("test")
+                private Topic<String> z;
+            ```
+- 重写了一个对泛型检索的类，在发布订阅模型中试用，后续会替代原TypeHelper
+- concrete-core: 增加IP和MAC的Mocker
+- concrete-test
+    - 增加TestSubjoin注解，方便添加测试环境的附加信息
+- bug fix
+    - concrete-api-tools: 生成angular based sdk的模板文件中的错误
 
 ## 2018-04-14
 
