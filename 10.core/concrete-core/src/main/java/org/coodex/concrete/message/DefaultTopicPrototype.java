@@ -20,7 +20,9 @@ import org.coodex.concrete.common.IF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultTopicPrototype<M> extends AbstractTopicPrototype<M> {
+import java.io.Serializable;
+
+public class DefaultTopicPrototype<M extends Serializable> extends AbstractTopicPrototype<M> {
     private final static Logger log = LoggerFactory.getLogger(AbstractTopicPrototype.class);
 
 

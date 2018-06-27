@@ -84,26 +84,51 @@ public class Common {
         return str == null ? "" : str;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Serializable> T deepCopy(T object)
-            throws IOException, ClassNotFoundException {
+
+    public static byte[] serialize(Object object) throws IOException {
         // 序列化obj
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(bos);
         try {
             oos.writeObject(object);
+            return bos.toByteArray();
         } finally {
             oos.close();
         }
+    }
 
+    public static Object deserialize(byte[] buf) throws IOException, ClassNotFoundException {
         // 反序列化成一个clone对象
-        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+        ByteArrayInputStream bis = new ByteArrayInputStream(buf);
         ObjectInputStream ois = new ObjectInputStream(bis);
         try {
-            return (T) ois.readObject();
+            return ois.readObject();
         } finally {
             ois.close();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Serializable> T deepCopy(T object)
+            throws IOException, ClassNotFoundException {
+        return (T) deserialize(serialize(object));
+//        // 序列化obj
+//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        ObjectOutputStream oos = new ObjectOutputStream(bos);
+//        try {
+//            oos.writeObject(object);
+//        } finally {
+//            oos.close();
+//        }
+//
+//        // 反序列化成一个clone对象
+//        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+//        ObjectInputStream ois = new ObjectInputStream(bis);
+//        try {
+//            return (T) ois.readObject();
+//        } finally {
+//            ois.close();
+//        }
 
     }
 

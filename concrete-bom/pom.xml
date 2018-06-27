@@ -378,6 +378,17 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-courier-jms</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-courier-jms-activemq</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

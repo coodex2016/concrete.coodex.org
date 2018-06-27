@@ -43,7 +43,8 @@ import static org.coodex.util.Common.runtimeException;
 class TopicBuilder
         implements SingletonMap.Builder<TopicKey, AbstractTopic> {
     private final static Logger log = LoggerFactory.getLogger(TopicBuilder.class);
-
+    private static final TopicPrototypeProvider defaultTopicPrototypeProvider
+            = new DefaultTopicPrototypeProvider();
     private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> providers =
             new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(
                     new ConcreteServiceLoader<TopicPrototypeProvider>() {
@@ -62,6 +63,8 @@ class TopicBuilder
     private Class<? extends AbstractTopic> getClass(Type topicType) {
         if (topicType instanceof ParameterizedType) {
             return (Class<? extends AbstractTopic>) ((ParameterizedType) topicType).getRawType();
+        } else if (topicType instanceof Class && AbstractTopic.class.isAssignableFrom((Class<?>) topicType)) {
+            return (Class<? extends AbstractTopic>) topicType;
         } else {
             throw new RuntimeException(topicType + " is NOT SUPPORTED.");
         }
@@ -79,6 +82,11 @@ class TopicBuilder
         try {
             Class<? extends AbstractTopic> topicClass = getClass(key.topicType);
             TopicPrototypeProvider provider = providers.getServiceInstance(topicClass);
+            if (provider == null) {
+                if (defaultTopicPrototypeProvider.accept(topicClass)) {
+                    provider = defaultTopicPrototypeProvider;
+                }
+            }
             IF.isNull(provider, "No provider for " + topicClass.getName());
             Class<? extends AbstractTopicPrototype> prototype = provider.getPrototype();
 

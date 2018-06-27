@@ -24,6 +24,6 @@ public class DefaultTopicPrototypeProvider implements TopicPrototypeProvider {
 
     @Override
     public boolean accept(Class<? extends AbstractTopic> param) {
-        return param != null && param.equals(Topic.class);
+        return param != null && Topic.class.isAssignableFrom(param);
     }
 }

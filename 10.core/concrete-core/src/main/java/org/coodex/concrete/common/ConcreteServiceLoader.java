@@ -56,6 +56,7 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
                         }
                     }
                 } catch (Throwable th) {
+                    // ？？？
                 }
                 init = true;
             }

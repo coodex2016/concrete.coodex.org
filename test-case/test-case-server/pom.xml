@@ -125,6 +125,13 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>concrete-courier-jms-activemq</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.apache.curator/curator-framework -->
         <dependency>
             <groupId>org.apache.curator</groupId>

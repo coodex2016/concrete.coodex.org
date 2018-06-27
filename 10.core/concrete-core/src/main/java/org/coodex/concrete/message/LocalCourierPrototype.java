@@ -16,11 +16,14 @@
 
 package org.coodex.concrete.message;
 
-public class LocalCourierPrototype<M> extends CourierPrototype<M> {
+import java.io.Serializable;
+import java.lang.reflect.Type;
+
+public class LocalCourierPrototype<M extends Serializable> extends CourierPrototype<M> {
 
 
-    public LocalCourierPrototype(String queue, String destination) {
-        super(queue, destination);
+    public LocalCourierPrototype(String queue, String destination, Type topicType) {
+        super(queue, destination, topicType);
     }
 
     @Override

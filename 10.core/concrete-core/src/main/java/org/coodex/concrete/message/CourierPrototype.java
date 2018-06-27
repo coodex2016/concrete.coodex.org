@@ -16,14 +16,19 @@
 
 package org.coodex.concrete.message;
 
-public abstract class CourierPrototype<M> implements Courier<M> {
+import java.io.Serializable;
+import java.lang.reflect.Type;
+
+public abstract class CourierPrototype<M extends Serializable> implements Courier<M> {
     private final String destination;
     private final String queue;
+    private final Type topicType;
     private AbstractTopicPrototype<M> topic;
 
-    public CourierPrototype(String queue, String destination) {
+    public CourierPrototype(String queue, String destination, Type topicType) {
         this.destination = destination;
         this.queue = queue;
+        this.topicType = topicType;
     }
 
 
@@ -36,6 +41,9 @@ public abstract class CourierPrototype<M> implements Courier<M> {
         return topic;
     }
 
+    public Type getTopicType() {
+        return topicType;
+    }
 
     public String getDestination() {
         return destination;

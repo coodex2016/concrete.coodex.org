@@ -16,7 +16,9 @@
 
 package org.coodex.concrete.message;
 
-public interface TokenBasedTopic<M> extends AbstractTopic<M> {
+import java.io.Serializable;
+
+public interface TokenBasedTopic<M extends Serializable> extends AbstractTopic<M> {
 
     Subscription subscribe(MessageFilter<M> messageFilter);
 }

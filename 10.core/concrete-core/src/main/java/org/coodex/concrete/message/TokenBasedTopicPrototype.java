@@ -20,12 +20,13 @@ import org.coodex.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.Set;
 
 /**
  * @param <M>
  */
-public class TokenBasedTopicPrototype<M> extends AbstractTopicPrototype<M> implements TokenBasedTopic<M> {
+public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTopicPrototype<M> implements TokenBasedTopic<M> {
 
     private final static Logger log = LoggerFactory.getLogger(TokenBasedTopicPrototype.class);
 
@@ -139,7 +140,7 @@ public class TokenBasedTopicPrototype<M> extends AbstractTopicPrototype<M> imple
     }
 
 
-    public static class ConsumedNotify {
+    public static class ConsumedNotify implements Serializable {
         private String id;
         private String tokenId;
 
@@ -165,7 +166,7 @@ public class TokenBasedTopicPrototype<M> extends AbstractTopicPrototype<M> imple
         }
     }
 
-    public static class Id<M> {
+    public static class Id<M extends Serializable> implements Serializable {
         private String id;
         private M message;
 
@@ -194,7 +195,7 @@ public class TokenBasedTopicPrototype<M> extends AbstractTopicPrototype<M> imple
         }
     }
 
-    public static class TokenConfirm<M> extends Id<M> {
+    public static class TokenConfirm<M extends Serializable> extends Id<M> {
 
         private String tokenId;
 

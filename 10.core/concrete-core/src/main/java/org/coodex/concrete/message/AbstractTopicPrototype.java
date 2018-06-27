@@ -22,13 +22,14 @@ import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
-public abstract class AbstractTopicPrototype<M> implements AbstractTopic<M> {
+public abstract class AbstractTopicPrototype<M extends Serializable> implements AbstractTopic<M> {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractTopicPrototype.class);
 

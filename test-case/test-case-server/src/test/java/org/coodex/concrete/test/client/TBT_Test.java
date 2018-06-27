@@ -35,7 +35,7 @@ public class TBT_Test extends ConcreteTestCase {
 
     private static TokenBasedTopic<TestSubject> topic = Topics.<TestSubject, TokenBasedTopic<TestSubject>>get(
             new GenericTypeHelper.GenericType<TokenBasedTopic<TestSubject>>() {
-            }.getType()
+            }.getType(), "test"
     );
 
 

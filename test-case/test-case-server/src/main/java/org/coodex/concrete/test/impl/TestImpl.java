@@ -22,6 +22,7 @@ import org.coodex.concrete.ConcreteClient;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.concrete.message.MessageFilter;
+import org.coodex.concrete.message.Queue;
 import org.coodex.concrete.message.TokenBasedTopic;
 import org.coodex.concrete.message.Topic;
 import org.coodex.concrete.test.api.Test;
@@ -31,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import rx.org.coodex.concrete.test.api.Test_RX;
 
 import javax.inject.Inject;
-import java.util.Set;
 
 public class TestImpl implements Test {
 
@@ -39,11 +39,13 @@ public class TestImpl implements Test {
 
     private Token token = TokenWrapper.getInstance();
 
+    @Queue("test")
     private Topic<String> x;
 
-    private Topic<Set<String>> y;
+//    @Queue("test")
+//    private Topic<Set<String>> y;
 
-
+    @Queue("test")
     private TokenBasedTopic<TestSubject> tokenBasedTopic;
 
 //    @Inject

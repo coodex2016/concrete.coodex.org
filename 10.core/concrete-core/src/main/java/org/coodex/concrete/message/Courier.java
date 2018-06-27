@@ -16,7 +16,9 @@
 
 package org.coodex.concrete.message;
 
-public interface Courier<M> {
+import java.io.Serializable;
+
+public interface Courier<M extends Serializable> {
     void deliver(M message);
 
     void associate(AbstractTopicPrototype<M> topic);

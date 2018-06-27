@@ -17,7 +17,9 @@
 package org.coodex.concrete.message;
 
 
-public interface Topic<M> extends AbstractTopic<M> {
+import java.io.Serializable;
+
+public interface Topic<M extends Serializable> extends AbstractTopic<M> {
 
 
 }

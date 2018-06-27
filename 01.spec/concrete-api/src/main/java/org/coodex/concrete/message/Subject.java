@@ -16,7 +16,9 @@
 
 package org.coodex.concrete.message;
 
-public interface Subject {
+import java.io.Serializable;
+
+public interface Subject extends Serializable {
 
     String getSubject();
 }

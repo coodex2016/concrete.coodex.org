@@ -25,6 +25,12 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+
+## 2018-06-27
+- 发布订阅模型增加jms支持 `jms::_provider_`
+    - 增加activemq的支持模块 `jms::activemq:_url_`
+
+
 ## 2018-05-19
 - 0.2.3-SNAPSHOT
 - 重构Subjoin，移除语言环境；提供回写能力；

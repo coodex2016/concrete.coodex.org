@@ -19,11 +19,14 @@ package org.coodex.concrete.message;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.util.AcceptableServiceLoader;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 
 import static org.coodex.concrete.message.TopicBuilder.buildTopic;
 
 public class Topics {
+
+    public static final String TAG_QUEUE = "queue";
 
 
     private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> topicProviders =
@@ -40,7 +43,7 @@ public class Topics {
 //        return Topics.<M, T>get(genericType.genericType(context));
 //    }
 
-    public static <M, T extends AbstractTopic<M>> T get(Type type) {
+    public static <M extends Serializable, T extends AbstractTopic<M>> T get(Type type) {
         return Topics.<M, T>get(type, null);
     }
 
@@ -52,7 +55,7 @@ public class Topics {
 //        return Topics.<M, T>get(genericType.genericType(context), queue);
 //    }
 
-    public static <M, T extends AbstractTopic<M>> T get(Type type, String queue) {
+    public static <M extends Serializable, T extends AbstractTopic<M>> T get(Type type, String queue) {
         return (T) buildTopic(new TopicKey(queue, type));
     }
 

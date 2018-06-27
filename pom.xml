@@ -103,6 +103,8 @@
         <module>20.service.support/concrete-support-dubbo</module>
         <module>50.clients/concrete-dubbo-client</module>
         <module>50.clients/concrete-dubbo-client-rx</module>
+        <module>plugins/concrete-courier-jms</module>
+        <module>plugins/concrete-courier-jms-activemq</module>
 
     </modules>
 
@@ -133,7 +135,7 @@
         <freemarker.version>2.3.23</freemarker.version>
         <fastjson.version>1.2.32</fastjson.version>
         <guice.version>4.1.0</guice.version>
-        <javassist.verion>${default.version}</javassist.verion>
+        <javassist.verion>3.22.0-GA</javassist.verion>
 
         <thrift.version>${default.version}</thrift.version>
 
@@ -144,6 +146,8 @@
 
         <rxjava.vesion>2.1.3</rxjava.vesion>
         <jackson2.version>2.9.0</jackson2.version>
+
+        <activemq.version>5.15.4</activemq.version>
 
         <!-- coodex utilities 版本，它并不需要随着concrete变化，待第一次正式发布后规划其版本 -->
         <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>
@@ -483,6 +487,24 @@
                 <groupId>io.reactivex.rxjava2</groupId>
                 <artifactId>rxjava</artifactId>
                 <version>${rxjava.vesion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-client</artifactId>
+                <version>${activemq.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>1.1.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.rabbitmq.jms</groupId>
+                <artifactId>rabbitmq-jms</artifactId>
+                <version>1.8.1</version>
             </dependency>
         </dependencies>
 

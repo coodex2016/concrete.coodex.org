@@ -15,5 +15,5 @@
 #
 
 
-org.coodex.concrete.message.DefaultTopicPrototypeProvider
+# org.coodex.concrete.message.DefaultTopicPrototypeProvider
 org.coodex.concrete.message.TokenBasedTopicPrototypeProvider

@@ -21,6 +21,8 @@ import org.coodex.concrete.message.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
+
 public class TopicTest {
     private final static Logger log = LoggerFactory.getLogger(TopicTest.class);
 
@@ -45,7 +47,7 @@ public class TopicTest {
 
     }
 
-    static class A<M> {
+    static class A<M extends Serializable> {
         Topic<M> getTopic() {
             System.out.println(new GenericTypeHelper.GenericType<M>(getClass()) {
             }.getType());

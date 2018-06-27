@@ -22,11 +22,13 @@ import org.coodex.concrete.message.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
+
 public class GTTest {
 
     private final static Logger log = LoggerFactory.getLogger(GTTest.class);
 
-    static class A<X> {
+    static class A<X extends Serializable> {
         void testA() {
             log.debug("{}",
                     new GenericTypeHelper.GenericType<Topic<X>>(getClass()) {
@@ -34,14 +36,14 @@ public class GTTest {
         }
     }
 
-    static class B<X> extends A<X> {
+    static class B<X extends Serializable> extends A<X> {
         void testB() {
             log.debug("{}", new GenericTypeHelper.GenericType<TokenBasedTopic<X>>(this.getClass()) {
             }.getType());
         }
     }
 
-    static class C<X> extends B<X> {
+    static class C<X extends Serializable> extends B<X> {
         void testC() {
         }
     }

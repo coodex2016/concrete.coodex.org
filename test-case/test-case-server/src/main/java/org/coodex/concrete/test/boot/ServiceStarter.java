@@ -19,7 +19,6 @@ package org.coodex.concrete.test.boot;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concrete.core.token.local.LocalTokenManager;
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
-import org.coodex.concrete.support.dubbo.DubboApplication;
 import org.coodex.concrete.support.jsr339.ConcreteJaxrs339Application;
 import org.coodex.concrete.support.websocket.CallerHackConfigurator;
 import org.coodex.concrete.support.websocket.ConcreteWebSocketApplication;
@@ -45,8 +44,6 @@ import javax.servlet.ServletException;
 import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpoint;
-
-import static org.coodex.concrete.dubbo.DubboHelper.buildRegistryConfigs;
 
 @SpringBootApplication
 @Configuration
@@ -110,14 +107,14 @@ public class ServiceStarter {
         return registrationBean;
     }
 
-    @Bean
-    public DubboApplication dubboApplication() {
-        DubboApplication dubboApplication = new DubboApplication(
-                "test", buildRegistryConfigs(new String[]{profile.getString("registry")})
-        );
-        dubboApplication.register(Test.class);
-        return dubboApplication;
-    }
+//    @Bean
+//    public DubboApplication dubboApplication() {
+//        DubboApplication dubboApplication = new DubboApplication(
+//                "test", buildRegistryConfigs(new String[]{profile.getString("registry")})
+//        );
+//        dubboApplication.register(Test.class);
+//        return dubboApplication;
+//    }
 
     @Bean
     public TokenManager tokenManager() {
