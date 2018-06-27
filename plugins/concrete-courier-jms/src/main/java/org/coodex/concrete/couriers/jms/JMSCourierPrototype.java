@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.couriers.jms;
 
+import org.coodex.concrete.message.AbstractTopicPrototype;
 import org.coodex.concrete.message.CourierPrototype;
 import org.coodex.util.Singleton;
 
@@ -33,7 +34,7 @@ public class JMSCourierPrototype<M extends Serializable> extends CourierPrototyp
                 public JMSFacade build() {
 
                     return new JMSFacade(getQueue(),
-                            driver, String.format("%s@%s",getTopicType().toString(), getQueue()),
+                            driver, String.format("%s@%s", getTopicType().toString(), getQueue()),
                             new JMSFacade.ObjectListener() {
                                 @Override
                                 public void receive(Object o) {
@@ -53,6 +54,12 @@ public class JMSCourierPrototype<M extends Serializable> extends CourierPrototyp
         return destination.substring(JMS_PREFIX.length());
     }
 
+
+    @Override
+    public void associate(AbstractTopicPrototype<M> topic) {
+        super.associate(topic);
+        jmsFacadeSingleton.getInstance();
+    }
 
     @Override
     public void deliver(M message) {
