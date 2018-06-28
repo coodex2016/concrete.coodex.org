@@ -14,10 +14,5 @@
 # limitations under the License.
 #
 
-# destination=jms::activemq:tcp://localhost:61616
 
-
-destination=rabbitmq:amqp://localhost/
-#virtualHost=/
-#host=localhost
-#port=5672
+org.coodex.concrete.couriers.rabbitmq.RabbitMQCourierPrototypeProvider

@@ -31,7 +31,7 @@ import java.io.Serializable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static org.coodex.concrete.message.Topics.TAG_QUEUE;
+import static org.coodex.concrete.message.Topics.*;
 
 
 class JMSFacade {
@@ -80,8 +80,8 @@ class JMSFacade {
             }
         };
         this.connectionFactory = connectionFactorySingletonMap.getInstance(driver);
-        this.userName = ConcreteHelper.getString(TAG_QUEUE, name, "username");
-        this.password = ConcreteHelper.getString(TAG_QUEUE, name, "password");
+        this.userName = ConcreteHelper.getString(TAG_QUEUE, name, QUEUE_USERNAME);
+        this.password = ConcreteHelper.getString(TAG_QUEUE, name, QUEUE_PASSWORD);
         try {
             connect();
         } catch (JMSException e) {

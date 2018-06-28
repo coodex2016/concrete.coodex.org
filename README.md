@@ -26,6 +26,14 @@ public interface SomeService extends ConcreteService{
 看[书](https://concrete.coodex.org)，多练
 
 
+## 2018-06-28
+- 发布订阅模型增加基于rabbitmq的支持 `rabbitmq` or `rabbitmq:_url_`
+    - 不带url配置时，需要配置 `username` `password` `ssl`(默认false) `virtualHost` `host` `port`(默认5672) 
+    - [url参考](https://www.rabbitmq.com/api-guide.html#connecting)
+        - concrete为 `amqp(s)://username:password@host:port/` 设置 `virtualHost` 为 `/`
+
+
+
 ## 2018-06-27
 - 发布订阅模型增加jms支持 `jms::_provider_`
     - 增加activemq的支持模块 `jms::activemq:_url_`

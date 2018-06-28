@@ -31,10 +31,13 @@ public abstract class CourierPrototype<M extends Serializable> implements Courie
         this.topicType = topicType;
     }
 
+    protected abstract void afterTopicAssociation();
+
 
     @Override
     public void associate(AbstractTopicPrototype<M> topic) {
         this.topic = topic;
+        afterTopicAssociation();
     }
 
     protected AbstractTopicPrototype<M> getTopic() {

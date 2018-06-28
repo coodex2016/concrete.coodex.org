@@ -27,6 +27,8 @@ import static org.coodex.concrete.message.TopicBuilder.buildTopic;
 public class Topics {
 
     public static final String TAG_QUEUE = "queue";
+    public static final String QUEUE_USERNAME = "username";
+    public static final String QUEUE_PASSWORD = "password";
 
 
     private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> topicProviders =

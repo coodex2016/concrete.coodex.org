@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.couriers.jms;
 
-import org.coodex.concrete.message.AbstractTopicPrototype;
 import org.coodex.concrete.message.CourierPrototype;
 import org.coodex.util.Singleton;
 
@@ -50,16 +49,15 @@ public class JMSCourierPrototype<M extends Serializable> extends CourierPrototyp
         driver = getDriverFromDestination(destination);
     }
 
+    @Override
+    protected void afterTopicAssociation() {
+        jmsFacadeSingleton.getInstance();
+    }
+
     private String getDriverFromDestination(String destination) {
         return destination.substring(JMS_PREFIX.length());
     }
 
-
-    @Override
-    public void associate(AbstractTopicPrototype<M> topic) {
-        super.associate(topic);
-        jmsFacadeSingleton.getInstance();
-    }
 
     @Override
     public void deliver(M message) {

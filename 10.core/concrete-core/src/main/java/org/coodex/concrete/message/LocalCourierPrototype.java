@@ -27,6 +27,11 @@ public class LocalCourierPrototype<M extends Serializable> extends CourierProtot
     }
 
     @Override
+    protected void afterTopicAssociation() {
+
+    }
+
+    @Override
     public void deliver(M message) {
         getTopic().notify(message);
     }

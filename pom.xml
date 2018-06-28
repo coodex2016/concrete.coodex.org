@@ -105,6 +105,7 @@
         <module>50.clients/concrete-dubbo-client-rx</module>
         <module>plugins/concrete-courier-jms</module>
         <module>plugins/concrete-courier-jms-activemq</module>
+        <module>plugins/concrete-courier-rabbitmq</module>
 
     </modules>
 
@@ -148,6 +149,7 @@
         <jackson2.version>2.9.0</jackson2.version>
 
         <activemq.version>5.15.4</activemq.version>
+        <rabbitmq.client.version>5.3.0</rabbitmq.client.version>
 
         <!-- coodex utilities 版本，它并不需要随着concrete变化，待第一次正式发布后规划其版本 -->
         <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>
@@ -407,10 +409,10 @@
                 <type>pom</type>
                 <scope>import</scope>
                 <!--<exclusions>-->
-                    <!--<exclusion>-->
-                        <!--<groupId>org.springframework.boot</groupId>-->
-                        <!--<artifactId>spring-boot-starter-logging</artifactId>-->
-                    <!--</exclusion>-->
+                <!--<exclusion>-->
+                <!--<groupId>org.springframework.boot</groupId>-->
+                <!--<artifactId>spring-boot-starter-logging</artifactId>-->
+                <!--</exclusion>-->
                 <!--</exclusions>-->
             </dependency>
             <!-- guice IoC -->
@@ -496,15 +498,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-clients</artifactId>
-                <version>1.1.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.rabbitmq.jms</groupId>
-                <artifactId>rabbitmq-jms</artifactId>
-                <version>1.8.1</version>
+                <groupId>com.rabbitmq</groupId>
+                <artifactId>amqp-client</artifactId>
+                <version>${rabbitmq.client.version}</version>
             </dependency>
         </dependencies>
 
