@@ -26,6 +26,37 @@ public interface SomeService extends ConcreteService{
 看[书](https://concrete.coodex.org)，多练
 
 
+## 2018-07-01
+- coodex-utilities: 增加多任务并行单元，所有并行任务完成后返回
+
+```java
+
+    //使用10个线程的线程池作为并行处理容器
+    Parallel parallel = new Parallel(ExecutorsHelper.newFixedThreadPool(10));
+    Runnable [] runnables = new Runnable[20];
+    for(int i = 0; i < runnables.length; i ++){
+        // 每个任务随机执行0-5000毫秒, 20%几率抛异常
+        runnables[i] = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(Common.random(5000));
+                    if(Common.random(5)>3)
+                        throw new RuntimeException("test");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+    }
+
+    //所有任务执行完成后
+    Parallel.Batch batch = parallel.run(runnables);
+
+    System.out.println(JSON.toJSONString(batch,SerializerFeature.PrettyFormat));
+
+```
+
 ## 2018-06-28
 - 发布订阅模型增加基于rabbitmq的支持 `rabbitmq` or `rabbitmq:_url_`
     - 不带url配置时，需要配置 `username` `password` `ssl`(默认false) `virtualHost` `host` `port`(默认5672) 
