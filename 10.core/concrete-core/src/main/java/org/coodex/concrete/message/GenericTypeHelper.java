@@ -189,18 +189,20 @@ public class GenericTypeHelper {
 
             ParameterizedTypeImpl that = (ParameterizedTypeImpl) o;
 
-            if (rawType != null ? !rawType.equals(that.rawType) : that.rawType != null) return false;
-            if (ownerType != null ? !ownerType.equals(that.ownerType) : that.ownerType != null) return false;
-            return actualTypeArguments != null ?
-                    Arrays.equals(getActualTypeArguments(), that.getActualTypeArguments()) : that.actualTypeArguments == null;
+            return toString().equals(that.toString());
+//            if (rawType != null ? !rawType.equals(that.rawType) : that.rawType != null) return false;
+//            if (ownerType != null ? !ownerType.equals(that.ownerType) : that.ownerType != null) return false;
+//            return actualTypeArguments != null ?
+//                    Arrays.equals(getActualTypeArguments(), that.getActualTypeArguments()) : that.actualTypeArguments == null;
         }
 
         @Override
         public int hashCode() {
-            int result = rawType != null ? rawType.hashCode() : 0;
-            result = 31 * result + (ownerType != null ? ownerType.hashCode() : 0);
-            result = 31 * result + (actualTypeArguments != null ? actualTypeArguments.hashCode() : 0);
-            return result;
+//            int result = rawType != null ? rawType.hashCode() : 0;
+//            result = 31 * result + (ownerType != null ? ownerType.hashCode() : 0);
+//            result = 31 * result + (actualTypeArguments != null ? actualTypeArguments.hashCode() : 0);
+//            return result;
+            return toString().hashCode();
         }
 
         @Override

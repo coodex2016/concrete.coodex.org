@@ -27,6 +27,8 @@ public class TopicKey {
 
     public TopicKey(String queue, Type topicType) {
         this.queue = Common.isBlank(queue) ? ConcreteHelper.getProfile().getString("queue.default") : queue;
+        if (Common.isBlank(queue))
+            this.queue = null;
         this.topicType = topicType;
     }
 
