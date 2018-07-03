@@ -25,6 +25,9 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-07-02
+- concrete-core: 增加queue的默认值配置
+
 
 ## 2018-07-01
 - coodex-utilities: 增加多任务并行单元，所有并行任务完成后返回

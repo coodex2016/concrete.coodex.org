@@ -16,6 +16,9 @@
 
 package org.coodex.concrete.message;
 
+import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.util.Common;
+
 import java.lang.reflect.Type;
 
 public class TopicKey {
@@ -23,7 +26,7 @@ public class TopicKey {
     Type topicType;
 
     public TopicKey(String queue, Type topicType) {
-        this.queue = queue;
+        this.queue = Common.isBlank(queue) ? ConcreteHelper.getProfile().getString("queue.default") : queue;
         this.topicType = topicType;
     }
 
