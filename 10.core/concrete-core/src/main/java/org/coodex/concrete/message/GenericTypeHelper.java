@@ -46,6 +46,10 @@ public class GenericTypeHelper {
                 build(t, context);
     }
 
+    public static Type buildParameterizedType(Class c, Type... parameters) {
+        return new ParameterizedTypeImpl(c, parameters);
+    }
+
 
     private static Type build(Type t, Type context) {
         GenericTypeInfo contextInfo = typeInfos.getInstance(context);
@@ -138,6 +142,14 @@ public class GenericTypeHelper {
         private final Type ownerType;
         private final List<Type> actualTypeArguments = new ArrayList<Type>();
 
+        ParameterizedTypeImpl(Type rawType, Type... parameters) {
+            this.rawType = rawType;
+            this.ownerType = rawType;
+            for (Type t : parameters) {
+                actualTypeArguments.add(t);
+            }
+        }
+
         ParameterizedTypeImpl(GenericTypeInfo genericTypeInfo, ParameterizedType pt) {
             rawType = pt.getRawType();
             ownerType = pt.getOwnerType();
@@ -179,7 +191,8 @@ public class GenericTypeHelper {
 
             if (rawType != null ? !rawType.equals(that.rawType) : that.rawType != null) return false;
             if (ownerType != null ? !ownerType.equals(that.ownerType) : that.ownerType != null) return false;
-            return actualTypeArguments != null ? actualTypeArguments.equals(that.actualTypeArguments) : that.actualTypeArguments == null;
+            return actualTypeArguments != null ?
+                    Arrays.equals(getActualTypeArguments(), that.getActualTypeArguments()) : that.actualTypeArguments == null;
         }
 
         @Override

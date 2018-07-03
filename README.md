@@ -27,6 +27,9 @@ public interface SomeService extends ConcreteService{
 
 ## 2018-07-02
 - concrete-core: 增加queue的默认值配置
+- 发布订阅模型支持Observer Bean,凡注册的Observer Bean均可被自动订阅
+    - 增加MessageConsumer注解，用于声明Observer Bean应该订阅的主题
+
 
 
 ## 2018-07-01
