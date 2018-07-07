@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.message;
 
+import org.coodex.util.Singleton;
 import org.coodex.util.SingletonMap;
 
 import java.lang.reflect.GenericArrayType;
@@ -141,6 +142,32 @@ public class GenericTypeHelper {
         private final Type rawType;
         private final Type ownerType;
         private final List<Type> actualTypeArguments = new ArrayList<Type>();
+        private final Singleton<String> stringSingleton = new Singleton<String>(
+                new Singleton.Builder<String>() {
+                    @Override
+                    public String build() {
+                        StringBuilder builder = new StringBuilder(((Class) getRawType()).getName());
+                        if (actualTypeArguments.size() > 0) {
+                            builder.append("<");
+
+                            for (int i = 0; i < actualTypeArguments.size(); i++) {
+                                if (i > 0) builder.append(',');
+                                Type t = actualTypeArguments.get(i);
+                                if (t == null) {
+                                    builder.append("null");
+                                } else if (t instanceof TypeVariable) {
+                                    builder.append(((TypeVariable) t).getName())
+                                            .append(" in ").append(((TypeVariable) t).getGenericDeclaration());
+                                } else {
+                                    builder.append(t == null ? null : t.toString());
+                                }
+                            }
+                            builder.append(">");
+                        }
+                        return builder.toString();
+                    }
+                }
+        );
 
         ParameterizedTypeImpl(Type rawType, Type... parameters) {
             this.rawType = rawType;
@@ -149,6 +176,7 @@ public class GenericTypeHelper {
                 actualTypeArguments.add(t);
             }
         }
+
 
         ParameterizedTypeImpl(GenericTypeInfo genericTypeInfo, ParameterizedType pt) {
             rawType = pt.getRawType();
@@ -207,25 +235,7 @@ public class GenericTypeHelper {
 
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder(((Class) getRawType()).getName());
-            if (actualTypeArguments.size() > 0) {
-                builder.append("<");
-
-                for (int i = 0; i < actualTypeArguments.size(); i++) {
-                    if (i > 0) builder.append(',');
-                    Type t = actualTypeArguments.get(i);
-                    if (t == null) {
-                        builder.append("null");
-                    } else if (t instanceof TypeVariable) {
-                        builder.append(((TypeVariable) t).getName())
-                                .append(" in ").append(((TypeVariable) t).getGenericDeclaration());
-                    } else {
-                        builder.append(t == null ? null : t.toString());
-                    }
-                }
-                builder.append(">");
-            }
-            return builder.toString();
+            return stringSingleton.getInstance();
         }
     }
 

@@ -1,6 +1,6 @@
 <#macro paramList params><#list params as param>${param.name}: ${param.type}<#if param_has_next>, </#if></#list></#macro>
-<#macro importsList classes><#list classes?sort as clazz>${clazz}<#if clz_has_next>, </#if></#list></#macro>
-<#macro genericList typeVariable><#list typeVariable as clazz>${clazz}<#if clz_has_next>, </#if></#list></#macro>
+<#macro importsList classes><#list classes?sort as clz>${clz}<#if clz_has_next>, </#if></#list></#macro>
+<#macro genericList typeVariable><#list typeVariable as clz>${clz}<#if clz_has_next>, </#if></#list></#macro>
 <#if includeServices??>
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
