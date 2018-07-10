@@ -32,15 +32,12 @@ import org.coodex.util.ReflectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.PropertyValue;
-import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -292,17 +289,17 @@ public class TopicBeanPostProcessor extends InstantiationAwareBeanPostProcessorA
         return (Class<?>) ctClass.toClass();
     }
 
-    @Override
-    public PropertyValues postProcessPropertyValues(PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) throws BeansException {
-        if (bean.getClass().getPackage().getName().startsWith("org.coodex.concrete.test")) {
-            log.debug(beanName);
-            for (PropertyValue value : pvs.getPropertyValues()) {
-                log.debug("{}: {}", value.getName(), value.getValue());
-            }
-        }
-
-        return super.postProcessPropertyValues(pvs, pds, bean, beanName);
-    }
+//    @Override
+//    public PropertyValues postProcessPropertyValues(PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) throws BeansException {
+//        if (bean.getClass().getPackage().getName().startsWith("org.coodex.concrete.test")) {
+//            log.debug(beanName);
+//            for (PropertyValue value : pvs.getPropertyValues()) {
+//                log.debug("{}: {}", value.getName(), value.getValue());
+//            }
+//        }
+//
+//        return super.postProcessPropertyValues(pvs, pds, bean, beanName);
+//    }
 
     //
 
