@@ -16,6 +16,7 @@
 
 package org.coodex.util;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,6 +53,20 @@ public class SingletonMap<K, V> {
             }
         }
         return null;
+    }
+
+    public Collection<V> values() {
+        synchronized (map) {
+            return map.values();
+        }
+    }
+
+    public void clear() {
+        if (map.size() > 0)
+            synchronized (map) {
+                if (map.size() > 0)
+                    map.clear();
+            }
     }
 
     public interface Builder<K, V> {
