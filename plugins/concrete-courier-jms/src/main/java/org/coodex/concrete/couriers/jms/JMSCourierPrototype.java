@@ -39,7 +39,7 @@ public class JMSCourierPrototype<M extends Serializable> extends CourierPrototyp
                                 public void receive(Object o) {
                                     getTopic().notify((M) o);
                                 }
-                            });
+                            }, getMessageType());
                 }
             }
     );

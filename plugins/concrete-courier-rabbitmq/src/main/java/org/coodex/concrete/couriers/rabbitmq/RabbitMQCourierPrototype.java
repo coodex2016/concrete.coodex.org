@@ -19,6 +19,8 @@ package org.coodex.concrete.couriers.rabbitmq;
 import com.rabbitmq.client.*;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.message.CourierPrototype;
+import org.coodex.concrete.message.Serializer;
+import org.coodex.concrete.message.Topics;
 import org.coodex.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,7 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
     public static final String KEY_SSL = "ssl";
     public static final String EXCHANGER_NAME = "org.coodex.concrete.topics";
     private final static Logger log = LoggerFactory.getLogger(RabbitMQCourierPrototype.class);
+    private final Serializer serializer;
     private Connection connection;
     private Channel channel;
     private String routingKey;
@@ -45,6 +48,7 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
     public RabbitMQCourierPrototype(String queue, String destination, Type topicType) {
         super(queue, destination, topicType);
         routingKey = String.format("%s@%s", getTopicType().toString(), queue);
+
         // build connection
         try {
             ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -68,6 +72,9 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
             // set username and password
             String username = ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_USERNAME);
             String password = ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_PASSWORD);
+            serializer = Topics.getSerializer(
+                    ConcreteHelper.getString(TAG_QUEUE, queue, SERIALIZER_TYPE)
+            );
             if (!Common.isBlank(username) || !Common.isBlank(password)) {
                 connectionFactory.setUsername(username);
                 connectionFactory.setPassword(password);
@@ -92,7 +99,7 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
                     @Override
                     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                         try {
-                            getTopic().notify((M) Common.deserialize(body));
+                            getTopic().notify(serializer.<M>deserialize(body, getMessageType()));
                         } catch (Throwable th) {
                             log.warn("notify error: {}", th.getLocalizedMessage(), th);
                         }
@@ -109,7 +116,8 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
     public void deliver(M message) {
         if (channel != null) {
             try {
-                channel.basicPublish(EXCHANGER_NAME, routingKey, null, Common.serialize(message));
+                channel.basicPublish(EXCHANGER_NAME, routingKey, null,
+                        serializer.serialize(message));
             } catch (IOException e) {
                 throw Common.runtimeException(e);
             }

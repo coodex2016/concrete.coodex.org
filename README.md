@@ -25,6 +25,11 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-07-18
+- concrete-core: 增加发布订阅模型的消息Serializer
+- concrete-courier-jsm, concrete-courier-rabbitmq: 增加 `serializer` 配置项, 可选有 `json`, 默认为java serialize
+- concrete-commons-spring-data: `SpecCommon`增加 `distinct`
+
 ## 2018-07-02
 - concrete-core: 增加queue的默认值配置
 - 发布订阅模型支持Observer Bean,凡注册的Observer Bean均可被自动订阅

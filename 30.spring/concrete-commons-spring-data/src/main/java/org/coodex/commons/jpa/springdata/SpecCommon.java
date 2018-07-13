@@ -32,6 +32,16 @@ import java.util.Collection;
 @SuppressWarnings("unchecked")
 public class SpecCommon {
 
+    public static <E> Specification<E> distinct(final Specification<E> specification) {
+        return new Specification<E>() {
+            @Override
+            public Predicate toPredicate(Root<E> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                query.distinct(true);
+                return specification == null ? null : specification.toPredicate(root, query, cb);
+            }
+        };
+    }
+
     public static <ATTR, E> Path<ATTR> getPath(Root<E> root, String attrName) {
         From<E, ?> f = null;
         String[] nodes = attrName.split("\\.");

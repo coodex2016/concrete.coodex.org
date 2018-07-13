@@ -18,6 +18,8 @@ package org.coodex.concrete.couriers.jms;
 
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ConcreteServiceLoader;
+import org.coodex.concrete.message.Serializer;
+import org.coodex.concrete.message.Topics;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Common;
@@ -26,8 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
-import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -61,16 +63,19 @@ class JMSFacade {
     private final String userName;
     private final String password;
     private final MessageListener messageListener;
+    private final Type messageType;
+    private final Serializer serializer;
     private ConnectionFactory connectionFactory;
     private Connection connection;
     private Session session;
     private MessageProducer producer;
     private MessageConsumer consumer;
 
-    JMSFacade(String name, String driver, String topicName, final ObjectListener objectListener) {
+    JMSFacade(String name, String driver, String topicName, final ObjectListener objectListener, Type messageType) {
         this.name = name;
         this.driver = driver;
         this.topicName = topicName;
+        this.messageType = messageType;
         this.messageListener = new MessageListener() {
             @Override
             public void onMessage(Message message) {
@@ -82,6 +87,9 @@ class JMSFacade {
         this.connectionFactory = connectionFactorySingletonMap.getInstance(driver);
         this.userName = ConcreteHelper.getString(TAG_QUEUE, name, QUEUE_USERNAME);
         this.password = ConcreteHelper.getString(TAG_QUEUE, name, QUEUE_PASSWORD);
+        this.serializer = Topics.getSerializer(
+                ConcreteHelper.getString(TAG_QUEUE, name, SERIALIZER_TYPE)
+        );
         try {
             connect();
         } catch (JMSException e) {
@@ -89,14 +97,14 @@ class JMSFacade {
         }
     }
 
-    public void publish(Object message) {
+    public void publish(Serializable message) {
         if (message == null)
             throw new NullPointerException("message is null.");
 
         if (producer != null) {
             try {
                 producer.send(session.createObjectMessage(
-                        serialize(message)
+                        serializer.serialize(message)
                 ));
             } catch (Throwable e) {
                 throw new RuntimeException(e);
@@ -106,24 +114,20 @@ class JMSFacade {
         }
     }
 
-    private Serializable serialize(Object message) throws IOException {
-        return Common.serialize(message);
-    }
+//    private Serializable serialize(Object message) throws IOException {
+//        return Common.serialize(message);
+//    }
 
     private Object deserialize(ObjectMessage message) {
         try {
             Serializable serializable = message.getObject();
             if (serializable instanceof byte[]) {
-                return Common.deserialize((byte[]) serializable);
+                return serializer.deserialize((byte[]) serializable, messageType);
             } else {
                 throw new RuntimeException("wrong message type: " +
                         (serializable == null ? null : serializable.getClass().toString()));
             }
         } catch (JMSException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

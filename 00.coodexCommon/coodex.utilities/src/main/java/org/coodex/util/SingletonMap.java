@@ -62,11 +62,10 @@ public class SingletonMap<K, V> {
     }
 
     public void clear() {
-        if (map.size() > 0)
-            synchronized (map) {
-                if (map.size() > 0)
-                    map.clear();
-            }
+        synchronized (map) {
+            if (map.size() > 0)
+                map.clear();
+        }
     }
 
     public interface Builder<K, V> {

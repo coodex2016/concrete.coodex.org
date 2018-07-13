@@ -23,12 +23,16 @@ public abstract class CourierPrototype<M extends Serializable> implements Courie
     private final String destination;
     private final String queue;
     private final Type topicType;
+    private final Type messageType;
     private AbstractTopicPrototype<M> topic;
 
     public CourierPrototype(String queue, String destination, Type topicType) {
         this.destination = destination;
         this.queue = queue;
         this.topicType = topicType;
+        this.messageType = GenericTypeHelper.solve(
+                AbstractTopic.class.getTypeParameters()[0],
+                topicType);
     }
 
     protected abstract void afterTopicAssociation();
@@ -54,5 +58,9 @@ public abstract class CourierPrototype<M extends Serializable> implements Courie
 
     public String getQueue() {
         return queue;
+    }
+
+    public Type getMessageType() {
+        return messageType;
     }
 }

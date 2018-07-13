@@ -144,6 +144,9 @@ public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTo
         private String id;
         private String tokenId;
 
+        public ConsumedNotify() {
+        }
+
         public ConsumedNotify(String id, String tokenId) {
             this.id = id;
             this.tokenId = tokenId;
@@ -196,6 +199,9 @@ public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTo
     }
 
     public static class TokenConfirm<M extends Serializable> extends Id<M> {
+
+        public TokenConfirm() {
+        }
 
         private String tokenId;
 

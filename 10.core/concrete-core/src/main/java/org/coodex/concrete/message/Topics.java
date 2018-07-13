@@ -17,6 +17,7 @@
 package org.coodex.concrete.message;
 
 import org.coodex.concrete.common.ConcreteServiceLoader;
+import org.coodex.concrete.message.serializers.DefaultSerializer;
 import org.coodex.util.AcceptableServiceLoader;
 
 import java.io.Serializable;
@@ -29,13 +30,23 @@ public class Topics {
     public static final String TAG_QUEUE = "queue";
     public static final String QUEUE_USERNAME = "username";
     public static final String QUEUE_PASSWORD = "password";
-
-
+    public static final String SERIALIZER_TYPE = "serializer";
+    private static final Serializer DEFAULT_SERIALIZER = new DefaultSerializer();
+    private static AcceptableServiceLoader<String, Serializer> serializerAcceptableServiceLoader =
+            new AcceptableServiceLoader<String, Serializer>(
+                    new ConcreteServiceLoader<Serializer>() {
+                    }
+            );
     private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> topicProviders =
             new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(
                     new ConcreteServiceLoader<TopicPrototypeProvider>() {
                     }
             );
+
+    public static Serializer getSerializer(String serializerType) {
+        Serializer serializer = serializerAcceptableServiceLoader.getServiceInstance(serializerType);
+        return serializer == null ? DEFAULT_SERIALIZER : serializer;
+    }
 
 //    public static <M, T extends AbstractTopic<M>> T get(GenericType<T> genericType) {
 //        return get(genericType, (Class<?>) null);
