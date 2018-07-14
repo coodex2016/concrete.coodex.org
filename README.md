@@ -25,7 +25,14 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
-## 2018-07-18
+## 2018-07-14
+- concrete-jaxrs-client: 修正URLEncoder问题，` ` 转为 `%20`
+- concrete-support-jaxrs: 修复Subjoin无法获取客户端传递的header的问题。根据RFC2616，使其对大小写不敏感
+    - 坑: spring-boot-start默认使用tomcat,tomcat把所有请求header转小写了,使用spring-boot-start-jetty,则可以保留大小写,不确定哪个更好
+- concrete-core: 适配之前版本的signature规则
+
+
+## 2018-07-13
 - concrete-core: 增加发布订阅模型的消息Serializer
 - concrete-courier-jsm, concrete-courier-rabbitmq: 增加 `serializer` 配置项, 可选有 `json`, 默认为java serialize
 - concrete-commons-spring-data: `SpecCommon`增加 `distinct`

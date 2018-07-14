@@ -19,6 +19,7 @@ package org.coodex.concrete.test.impl;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import org.coodex.concrete.ConcreteClient;
+import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.concrete.message.MessageFilter;
@@ -121,15 +122,22 @@ public class TestImpl implements Test {
         return x1 + x2;
     }
 
+    @Inject
+    private Subjoin subjoin;
+
     @Override
     public String sayHello(String name) {
+        for(String key: subjoin.keySet()){
+            log.debug("{}: {}", key.toUpperCase(), subjoin.get(key.toUpperCase()));
+        }
+
 //        x.publish("hello");
-        invokeSync(local, "local");
-        invokeSync(jaxrs, "jaxrs");
-        invokeSync(websocket, "websocket");
-        invokeRx(localRx, "local");
-        invokeRx(jaxrsRx, "jaxrs");
-        invokeRx(websocketRx, "websocket");
+//        invokeSync(local, "local");
+//        invokeSync(jaxrs, "jaxrs");
+//        invokeSync(websocket, "websocket");
+//        invokeRx(localRx, "local");
+//        invokeRx(jaxrsRx, "jaxrs");
+//        invokeRx(websocketRx, "websocket");
         return "Hello " + name;
     }
 
