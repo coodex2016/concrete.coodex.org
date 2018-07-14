@@ -38,6 +38,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -147,6 +148,20 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         }
     }
 
+    protected String encode(String s, String charset) throws UnsupportedEncodingException {
+        StringBuilder builder = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            switch (c) {
+                case ' ':
+                    builder.append("%20");
+                    break;
+                default:
+                    builder.append(URLEncoder.encode(String.valueOf(c), charset));
+            }
+        }
+        return builder.toString();
+    }
+
     protected String toStr(Object o) {
         if (o == null) return null;
         if (JaxRSHelper.isPrimitive(o.getClass())) return o.toString();
@@ -184,7 +199,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                         }
                     }
                 }
-                builder.append(URLEncoder.encode(node, getEncodingCharset()));
+                builder.append(encode(node, getEncodingCharset()));
             }
             path = path + builder.toString();
 
@@ -263,6 +278,5 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
     public ServiceContext buildContext(Class concreteClass, Method method) {
         return new JaxRSClientContext(getDestination(), RuntimeContext.getRuntimeContext(method, concreteClass));
     }
-
 
 }
