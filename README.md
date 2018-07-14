@@ -30,6 +30,7 @@ public interface SomeService extends ConcreteService{
 - concrete-support-jaxrs: 修复Subjoin无法获取客户端传递的header的问题。根据[RFC2616 4.2](https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2)，使其对大小写不敏感
     - 坑: spring-boot-start默认使用tomcat,tomcat把所有请求header转小写了,使用spring-boot-start-jetty,则可以保留大小写,不确定哪个更好
 - concrete-core: 适配之前版本的signature规则
+- coodex-utilities: `SingtonMap` 增加最大存在时长参数
 
 
 ## 2018-07-13

@@ -16,13 +16,23 @@
 
 package org.coodex.util;
 
+import org.coodex.concurrent.ExecutorsHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class SingletonMap<K, V> {
 
+    private final static Logger log = LoggerFactory.getLogger(SingletonMap.class);
+
     private final Builder<K, V> builder;
+    private long maxAge = 0;
+    private ScheduledExecutorService scheduledExecutorService;
     private Map<K, V> map = new ConcurrentHashMap<K, V>();
 
     public SingletonMap(Builder<K, V> builder) {
@@ -30,15 +40,36 @@ public class SingletonMap<K, V> {
         this.builder = builder;
     }
 
+    /**
+     * @param builder
+     * @param maxAge  map内对象的最大存在时长，单位为毫秒
+     */
+    public SingletonMap(Builder<K, V> builder, long maxAge) {
+        this(builder);
+        this.maxAge = maxAge;
+        if (maxAge > 0) {
+            scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
+        }
+    }
+
     public boolean containsKey(Object key) {
         return map.containsKey(key);
     }
 
-    public V getInstance(K key) {
+    public V getInstance(final K key) {
         if (!map.containsKey(key)) {
             synchronized (map) {
                 if (!map.containsKey(key)) {
-                    map.put(key, builder.build(key));
+                    V o = builder.build(key);
+                    map.put(key, o);
+                    if (maxAge > 0) {
+                        scheduledExecutorService.schedule(new Runnable() {
+                            @Override
+                            public void run() {
+                                remove(key);
+                            }
+                        }, maxAge, TimeUnit.MILLISECONDS);
+                    }
                 }
             }
         }
