@@ -60,7 +60,11 @@ public class HmacPen extends AbstractIronPen {
                     String key = PROFILE.getString("hmacKey." + paperName + "." + keyId);
                     if (key == null)
                         key = PROFILE.getString("hmacKey." + paperName);
-                    return key == null ? getString("hmacKey", keyId, null) : key;
+
+                    if(key == null)
+                        key = getString("hmacKey", keyId, null);
+
+                    return key == null ? getString("hmacKey", null, null) : key;
                 }
             };
         }
