@@ -52,6 +52,7 @@ public class SingletonMap<K, V> {
         }
     }
 
+
     public boolean containsKey(Object key) {
         return map.containsKey(key);
     }
@@ -66,6 +67,7 @@ public class SingletonMap<K, V> {
                         scheduledExecutorService.schedule(new Runnable() {
                             @Override
                             public void run() {
+                                log.debug("{} die.", key);
                                 remove(key);
                             }
                         }, maxAge, TimeUnit.MILLISECONDS);
@@ -98,6 +100,7 @@ public class SingletonMap<K, V> {
                 map.clear();
         }
     }
+
 
     public interface Builder<K, V> {
         V build(K key);
