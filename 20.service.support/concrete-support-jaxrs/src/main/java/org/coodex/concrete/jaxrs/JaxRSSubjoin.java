@@ -48,7 +48,9 @@ public class JaxRSSubjoin extends AbstractChangeableSubjoin {
     }
 
 
-    // RFC2616  http header 大小写不敏感
+    // https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
+    // Each header field consists of a name followed by a colon (":") and the field value. Field names are case-insensitive
+    //
     @Override
     protected boolean containsKey(String name) {
         return super.containsKey(name) || super.containsKey(name.toLowerCase());
