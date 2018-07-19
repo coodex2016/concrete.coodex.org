@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.jaxrs;
+package org.coodex.concrete.test.api;
+
+import org.coodex.concrete.jaxrs.Body;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Created by davidoff shen on 2016-12-15.
- */
-@Deprecated
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Body
-public @interface BigString {
+public @interface PostParam {
 }

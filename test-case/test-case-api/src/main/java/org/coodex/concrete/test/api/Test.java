@@ -19,6 +19,7 @@ package org.coodex.concrete.test.api;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.jaxrs.Body;
 import org.coodex.util.Parameter;
 
 @MicroService
@@ -33,5 +34,12 @@ public interface Test extends ConcreteService {
 
     String sayHello(
             @Parameter("name") String name);
+
+    void bodyTest(
+            @Parameter("bodyInt") @Body Integer bodyInt,
+            @Parameter("notBodyInt")  Integer notBodyInt,
+            @Parameter("bodyStr") @Body String bodyStr,
+            @Parameter("notBodyStr") String notBodyStr
+    );
 
 }

@@ -17,9 +17,12 @@
 package org.coodex.concrete.common.struct;
 
 import org.coodex.concrete.api.Description;
+import org.coodex.util.Common;
 import org.coodex.util.ReflectHelper;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
@@ -95,7 +98,20 @@ public abstract class AbstractParam implements Annotated {
 
     @Override
     public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
-        return parameter.getAnnotation(annotationClass);
+        Target target = annotationClass.getAnnotation(Target.class);
+        if(target != null && Common.inArray(ElementType.ANNOTATION_TYPE, target.value())){
+            for(Annotation annotation: parameter.getAnnotations()){
+                if(annotation.annotationType().equals(annotationClass))
+                    return (T) annotation;
+                Annotation x  = annotation.annotationType().getAnnotation(annotationClass);
+                if(x != null) return (T) x;
+
+            }
+
+            return null;
+        } else {
+            return parameter.getAnnotation(annotationClass);
+        }
     }
 
 }

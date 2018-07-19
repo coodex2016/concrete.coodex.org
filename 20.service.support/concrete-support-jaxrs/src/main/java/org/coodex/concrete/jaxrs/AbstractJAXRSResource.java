@@ -212,6 +212,17 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         return builder.build();
     }
 
+//    private Object[] revert(Object [] params, Method method){
+//        Unit unit = getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass()));
+//        if(unit.getPojoCount() == 0) return params;
+//        Object[] result = new Object[method.getParameterTypes().length];
+//        for(int i = 0; i < method.getParameterTypes().length; i ++){
+//
+////            result[i] =
+//        }
+//        return params;
+//    }
+
     protected Response invokeByTokenId(final String tokenId, final Method method, final Object[] params) {
         final int paramCount = params == null ? 0 : params.length;
 
@@ -227,8 +238,9 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
                             Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
                             if (paramCount == 0)
                                 return method.invoke(instance);
-                            else
+                            else {
                                 return method.invoke(instance, params);
+                            }
                         }
 
                     }

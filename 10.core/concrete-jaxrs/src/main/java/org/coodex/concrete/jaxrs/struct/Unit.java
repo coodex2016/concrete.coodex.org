@@ -20,8 +20,9 @@ import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.struct.AbstractUnit;
-import org.coodex.concrete.jaxrs.BigString;
+import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.Common;
+import org.coodex.util.TypeHelper;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.PathParam;
@@ -30,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.coodex.concrete.jaxrs.JaxRSHelper.isPrimitive;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.slash;
 import static org.coodex.concrete.jaxrs.Predicates.getHttpMethod;
 import static org.coodex.concrete.jaxrs.Predicates.removePredicate;
@@ -149,12 +149,14 @@ public class Unit extends AbstractUnit<Param, Module> {
 //        if (pathParam != null) return pathParam.value();
         PathParam pathParam1 = parameter.getDeclaredAnnotation(PathParam.class);
         if (pathParam1 != null) return pathParam1.value();
-        Class<?> clz = parameter.getType();
-        boolean isBigString = parameter.getDeclaredAnnotation(BigString.class) != null;
-        //大字符串
-        if (clz == String.class && isBigString) return null;
+        if(JaxRSHelper.postPrimitive(parameter)) return null;
 
-        return isPrimitive(clz) ? parameter.getName() : null;
+        Class<?> clz = parameter.getType();
+//        boolean isBigString = parameter.getDeclaredAnnotation(BigString.class) != null;
+//        //大字符串
+//        if (clz == String.class && isBigString) return null;
+
+        return TypeHelper.isPrimitive(clz) ? parameter.getName() : null;
 //
 //        return pathParam1 == null ?
 //                (isPrimitive(parameter.getType())
@@ -180,9 +182,10 @@ public class Unit extends AbstractUnit<Param, Module> {
 
 //            parameters[i] = new Param(method, i);
 //            Param param = parameters[i];
-        if (!isPrimitive(param.getType()) ||
-                (param.getType() == String.class
-                        && param.getDeclaredAnnotation(BigString.class) != null)) {
+        if (!TypeHelper.isPrimitive(param.getType()) ||
+                /*(param.getType() == String.class
+                        && param.getDeclaredAnnotation(BigString.class) != null) */
+                JaxRSHelper.postPrimitive(param)) {
             _getPojo().add(param);
             param.setPathParam(false);
         }

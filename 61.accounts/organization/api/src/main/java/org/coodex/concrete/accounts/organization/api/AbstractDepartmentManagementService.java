@@ -19,7 +19,7 @@ package org.coodex.concrete.accounts.organization.api;
 import org.coodex.concrete.accounts.organization.pojo.Department;
 import org.coodex.concrete.api.*;
 import org.coodex.concrete.api.pojo.StrID;
-import org.coodex.concrete.jaxrs.BigString;
+import org.coodex.concrete.jaxrs.Body;
 import org.coodex.util.Parameter;
 
 import static org.coodex.concrete.accounts.AccountManagementRoles.*;
@@ -36,7 +36,7 @@ public interface AbstractDepartmentManagementService<D extends Department> exten
     @Description(name = "新建部门", description = "LOGGING: new 新建的部门实体信息")
     StrID<D> save(
             @Parameter("department") D department,
-            @Parameter("higherLevel") @BigString String higherLevel);
+            @Parameter("higherLevel") @Body String higherLevel);
 
 
     @Description(name = "修改部门信息",

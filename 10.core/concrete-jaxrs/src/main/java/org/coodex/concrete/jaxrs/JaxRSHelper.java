@@ -69,14 +69,19 @@ public class JaxRSHelper {
 //    };
     private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<Class<?>, Module>();
 
+    @Deprecated
     public static boolean isPrimitive(Class c) {
 //        return Common.inArray(c, PRIMITIVE_CLASSES);
         return TypeHelper.isPrimitive(c);
     }
 
+    public static boolean postPrimitive(Param param){
+        return param.getDeclaredAnnotation(Body.class) != null;
+    }
 
 //    private static final int TO_LOWER = 'a' - 'A';
 
+    @Deprecated
     public static boolean isBigString(Param param) {
         return String.class.isAssignableFrom(param.getType())
                 && param.getDeclaredAnnotation(BigString.class) != null;
@@ -237,7 +242,7 @@ public class JaxRSHelper {
         Param toSubmit = null;
         for (int i = 0; i < unit.getParameters().length; i++) {
             Param param = unit.getParameters()[i];
-            if (!JaxRSHelper.isPrimitive(param.getType()) || JaxRSHelper.isBigString(param)) {
+            if (!TypeHelper.isPrimitive(param.getType()) || JaxRSHelper.postPrimitive(param)) {
                 toSubmit = param;
                 break;
             }

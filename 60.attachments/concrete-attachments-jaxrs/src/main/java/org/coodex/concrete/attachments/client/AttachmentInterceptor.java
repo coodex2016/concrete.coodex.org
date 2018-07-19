@@ -21,8 +21,8 @@ import org.coodex.concrete.attachments.Attachment;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.core.intercept.AbstractInterceptor;
 import org.coodex.concrete.core.intercept.InterceptOrders;
-import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.ReflectHelper;
+import org.coodex.util.TypeHelper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -100,7 +100,7 @@ public class AttachmentInterceptor extends AbstractInterceptor {
             } else {
                 if (c == String.class) {
                     attachments.add((String) object);
-                } else if (JaxRSHelper.isPrimitive(c)) {
+                } else if (TypeHelper.isPrimitive(c)) {
                     return;
                 } else {
                     grant(object, attachments, stack, false);

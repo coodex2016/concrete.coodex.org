@@ -21,7 +21,6 @@ import org.coodex.concrete.client.ClientTokenManagement;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.AbstractSyncInvoker;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.pojomocker.MockerFacade;
@@ -164,7 +163,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 
     protected String toStr(Object o) {
         if (o == null) return null;
-        if (JaxRSHelper.isPrimitive(o.getClass())) return o.toString();
+        if (TypeHelper.isPrimitive(o.getClass())) return o.toString();
         return getJSONSerializer().toJson(o);
     }
 

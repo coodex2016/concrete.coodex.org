@@ -19,7 +19,7 @@ package org.coodex.concrete.accounts.organization.api;
 import org.coodex.concrete.accounts.organization.pojo.Institution;
 import org.coodex.concrete.api.*;
 import org.coodex.concrete.api.pojo.StrID;
-import org.coodex.concrete.jaxrs.BigString;
+import org.coodex.concrete.jaxrs.Body;
 import org.coodex.util.Parameter;
 
 import static org.coodex.concrete.accounts.AccountManagementRoles.*;
@@ -36,7 +36,7 @@ public interface AbstractInstitutionManagementService<I extends Institution> ext
     StrID<I> save(
             @Parameter("institution") @Description(name = "单位信息") I institution,
             @Description(name = "上级单位", description = "可为空")
-            @Parameter("higherLevel") @BigString String higherLevel);
+            @Parameter("higherLevel") @Body String higherLevel);
 
     @Description(name = "更新单位信息",
             description = "LOGGING: old 单位实体变更前数据; new 变更后的实体数据")

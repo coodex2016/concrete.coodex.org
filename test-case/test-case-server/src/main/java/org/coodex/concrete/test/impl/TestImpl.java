@@ -141,6 +141,11 @@ public class TestImpl implements Test {
         return "Hello " + name;
     }
 
+    @Override
+    public void bodyTest(Integer bodyInt, Integer notBodyInt, String bodyStr, String notBodyStr) {
+        log.debug("{}, {}, {}, {}", bodyInt, notBodyInt, bodyStr, notBodyStr);
+    }
+
     private void invokeRx(final Test_RX test, final String tag) {
         final int x1 = Common.random(100);
         final int x2 = Common.random(100);

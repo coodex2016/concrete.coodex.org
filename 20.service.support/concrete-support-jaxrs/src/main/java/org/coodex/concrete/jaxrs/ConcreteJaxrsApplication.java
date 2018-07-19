@@ -22,9 +22,13 @@ import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.ErrorMessageFacade;
 import org.coodex.util.ReflectHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,6 +36,8 @@ import java.util.Set;
 import static org.coodex.concrete.common.ConcreteHelper.foreachClassInPackages;
 
 public abstract class ConcreteJaxrsApplication extends Application implements org.coodex.concrete.api.Application {
+
+    private final static Logger log = LoggerFactory.getLogger(ConcreteJaxrsApplication.class);
 
     protected static final JaxRSModuleMaker moduleMaker = new JaxRSModuleMaker();
     private Set<Class<? extends ConcreteService>> servicesClasses = new HashSet<Class<? extends ConcreteService>>();
@@ -112,7 +118,26 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
         if (!servicesClasses.contains(concreteServiceClass)) {
             servicesClasses.add(concreteServiceClass);
             Class<?> jaxrs = generateJaxrsClass(concreteServiceClass);
+
             if (jaxrs != null) {
+                if(log.isDebugEnabled()){
+                    StringBuilder builder = new StringBuilder();
+                    builder.append("\n\tclassName: ").append(jaxrs.getName()).append(";");
+                    for(Method method : jaxrs.getMethods()){
+                        builder.append("\n\t\tmethod: ").append(method.getName()).append("(");
+                        for(int i = 0; i < method.getGenericParameterTypes().length; i ++){
+                            if( i > 0) builder.append(", ");
+                            if(method.getParameterAnnotations()[i] != null)
+                            for(Annotation annotation: method.getParameterAnnotations()[i]){
+                                builder.append(annotation.annotationType().getName())
+                                        .append(" ");
+                            }
+                            builder.append(method.getParameterTypes()[i].toString());
+                        }
+                        builder.append(");");
+                    }
+                    log.debug("class info:{}", builder.toString());
+                }
                 jaxrsClasses.add(jaxrs);
 //                singletonInstances.add(newInstance(jaxrs));
             }

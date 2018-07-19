@@ -19,9 +19,9 @@ package org.coodex.concrete.apitools.jaxrs.service;
 import org.coodex.concrete.apitools.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
 import org.coodex.concrete.apitools.jaxrs.POJOPropertyInfo;
-import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.PojoInfo;
 import org.coodex.util.PojoProperty;
+import org.coodex.util.TypeHelper;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -42,7 +42,7 @@ public class ServiceDocToolkit extends DocToolkit {
 
     @Override
     protected String getClassLabel(Class<?> clz) throws IOException {
-        if (JaxRSHelper.isPrimitive(clz) || clz.getPackage().getName().startsWith("java"))
+        if (TypeHelper.isPrimitive(clz) || clz.getPackage().getName().startsWith("java"))
             return clz.getSimpleName();
         else {
             buildPojo(clz);

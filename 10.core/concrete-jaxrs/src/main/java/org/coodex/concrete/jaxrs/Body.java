@@ -21,12 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Created by davidoff shen on 2016-12-15.
- */
-@Deprecated
-@Target({ElementType.PARAMETER})
+@Target({ElementType.PARAMETER,ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Body
-public @interface BigString {
+public @interface Body {
 }

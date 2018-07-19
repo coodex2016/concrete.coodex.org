@@ -39,7 +39,8 @@ public class ClientInvoker {
     public static void main(String[] args) throws InterruptedException {
 //        Test test = Client.getInstance(Test.class,"websocket");
         Test test = Client.getInstance(Test.class, "remote");
-        test.sayHello("h i");
+        test.bodyTest(1,2, "3", "4");
+//        test.sayHello("h i");
 //        System.out.println(String.format("1 + 2 = %d", test.add(1, 2)));
 //        startPolling();
 //        Thread.sleep(5000);

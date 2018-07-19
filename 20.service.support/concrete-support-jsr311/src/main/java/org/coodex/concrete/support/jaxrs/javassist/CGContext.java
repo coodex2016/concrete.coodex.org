@@ -27,6 +27,7 @@ import javassist.bytecode.annotation.IntegerMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 import org.coodex.concrete.jaxrs.CreatedByConcrete;
 import org.coodex.util.Common;
+import org.coodex.util.TypeHelper;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -41,27 +42,27 @@ import static org.coodex.concrete.common.ConcreteContext.KEY_TOKEN;
 public class CGContext {
 
     public static final ClassPool CLASS_POOL = ClassPool.getDefault();
-    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
-            String.class,
-            Boolean.class,
-            Character.class,
-            Byte.class,
-            Short.class,
-            Integer.class,
-            Long.class,
-            Float.class,
-            Double.class,
-            Void.class,
-            boolean.class,
-            char.class,
-            byte.class,
-            short.class,
-            int.class,
-            long.class,
-            float.class,
-            double.class,
-            void.class,
-    };
+//    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
+//            String.class,
+//            Boolean.class,
+//            Character.class,
+//            Byte.class,
+//            Short.class,
+//            Integer.class,
+//            Long.class,
+//            Float.class,
+//            Double.class,
+//            Void.class,
+//            boolean.class,
+//            char.class,
+//            byte.class,
+//            short.class,
+//            int.class,
+//            long.class,
+//            float.class,
+//            double.class,
+//            void.class,
+//    };
     private static final String[] HTTP_METHODS =
             {HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE};
     private static final Class<?>[] JAXRS_METHOD_CLASS =
@@ -85,8 +86,10 @@ public class CGContext {
         constPool = getClassFile().getConstPool();
     }
 
+    @Deprecated
     public static boolean isPrimitive(Class c) {
-        return Common.inArray(c, PRIMITIVE_CLASSES);
+//        return Common.inArray(c, PRIMITIVE_CLASSES);
+        return TypeHelper.isPrimitive(c);
     }
 
     public Class<?> getServiceClass() {
