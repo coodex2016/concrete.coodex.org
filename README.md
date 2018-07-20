@@ -25,6 +25,11 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-07-20
+- coodex-utilities
+    - 提供一个SimpleDateFormat不是线程安全的坑的解决方案，concrete使用到SimpleDateFormat的地方相应更改。`Common.getSafetyDateFormat()`
+    - Common提供了一组日期时间与字符串转换的接口
+- concrete-client: 根据模块化的概念，调整模拟客户端调用返回数据的vm参数优先级，`org.coodex.concrete.client.MODULE_NAME` 高于原优先级
 
 ## 2018-07-19
 - concrete-jaxrs: 废弃蹩脚的BigString，增加Body注解，用来声明指定的`基础类型参数`通过body传递。Body也可以用于修饰自定义注解类型，如下例也能声明通过body传递

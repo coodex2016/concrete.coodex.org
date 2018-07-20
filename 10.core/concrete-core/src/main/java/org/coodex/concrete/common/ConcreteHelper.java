@@ -461,10 +461,12 @@ public class ConcreteHelper {
         return getProfile().getString("concrete.appSet");
     }
 
+
     public static String devModelKey(String module) {
-        return "org.coodex.concrete" + (
+        String key = "org.coodex.concrete" + (
                 Common.isBlank(module) ? "" : ("." + module)
         ) + ".devMode";
+        return key;
     }
 
     public static boolean isDevModel(String module) {

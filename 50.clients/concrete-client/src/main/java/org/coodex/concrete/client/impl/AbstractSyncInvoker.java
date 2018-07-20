@@ -21,6 +21,7 @@ import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.client.ClientMethodInvocation;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.common.ConcreteContext;
+import org.coodex.pojomocker.MockerFacade;
 
 import java.lang.reflect.Method;
 
@@ -43,7 +44,11 @@ public abstract class AbstractSyncInvoker extends AbstractInvoker {
                 return ClientHelper.getSyncInterceptorChain().invoke(new ClientMethodInvocation(instance, clz, method, args) {
                     @Override
                     public Object proceed() throws Throwable {
-                        return execute(clz, method, args);
+                        if(isMock()){
+                            return MockerFacade.mock(method, clz);
+                        } else {
+                            return execute(clz, method, args);
+                        }
                     }
                 });
             }

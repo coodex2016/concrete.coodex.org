@@ -494,42 +494,42 @@ public class Common {
 
     public static char randomChar(String s) {
         if (Common.isBlank(s)) throw new IllegalArgumentException("range is blank.");
-        return s.charAt(Common.random(s.length() - 1));
+        return s.charAt(Common.random(s.length()));
     }
 
     public static <T> T random(T[] range) {
         if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
-        return range[random(range.length - 1)];
+        return range[random(range.length)];
     }
 
     public static byte random(byte[] range) {
         if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
-        return range[random(range.length - 1)];
+        return range[random(range.length)];
     }
 
     public static short random(short[] range) {
         if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
-        return range[random(range.length - 1)];
+        return range[random(range.length )];
     }
 
     public static int random(int[] range) {
         if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
-        return range[random(range.length - 1)];
+        return range[random(range.length)];
     }
 
     public static long random(long[] range) {
         if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
-        return range[random(range.length - 1)];
+        return range[random(range.length)];
     }
 
     public static float random(float[] range) {
         if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
-        return range[random(range.length - 1)];
+        return range[random(range.length)];
     }
 
     public static double random(double[] range) {
         if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
-        return range[random(range.length - 1)];
+        return range[random(range.length)];
     }
 
     public static String randomStr(int min, int max, String range) {
@@ -723,6 +723,9 @@ public class Common {
     }
 
     public static void main(String[] args) {
-        System.out.println(Profile.getProfile("a.properties").getStrList("aaa"));
+//        System.out.println(Profile.getProfile("a.properties").getStrList("aaa"));
+        for(int i = 0; i< 1000; i ++){
+            System.out.println(random(1));
+        }
     }
 }

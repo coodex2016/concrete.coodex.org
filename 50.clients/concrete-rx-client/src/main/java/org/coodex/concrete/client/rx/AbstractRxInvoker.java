@@ -31,6 +31,7 @@ import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.concrete.rx.ReactiveExtensionFor;
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.pojomocker.MockerFacade;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -107,6 +108,18 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
      */
     protected abstract Observable invoke(RuntimeContext context, Object... args);
 
+    private Observable invokeP(final RuntimeContext context, Object... args) {
+        if (isMock()) {
+            return Observable.create(new ObservableOnSubscribe() {
+                @Override
+                public void subscribe(ObservableEmitter e) throws Exception {
+                    e.onNext(MockerFacade.mock(context.getDeclaringMethod(), context.getDeclaringClass()));
+                }
+            });
+        } else {
+            return invoke(context, args);
+        }
+    }
 
     @Override
     public final Object invoke(Object instance, Class clz, Method method, final Object... args) throws Throwable {
@@ -144,7 +157,7 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
                     @Override
 
                     public Object call() throws Throwable {
-                        invoke(runtimeContext, args).subscribe(new Observer() {
+                        invokeP(runtimeContext, args).subscribe(new Observer() {
                             @Override
                             public void onSubscribe(Disposable d) {
                             }
