@@ -16,8 +16,9 @@
 
 package org.csource.fastdfs;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static org.coodex.util.Common.dateToStr;
 
 /**
  * Server Info
@@ -124,10 +125,10 @@ public class FileInfo {
      * @return string
      */
     public String toString() {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return "source_ip_addr = " + this.source_ip_addr + ", " +
                 "file_size = " + this.file_size + ", " +
-                "create_timestamp = " + df.format(this.create_timestamp) + ", " +
+                "create_timestamp = " + dateToStr(this.create_timestamp) + ", " +
                 "crc32 = " + this.crc32;
     }
 }

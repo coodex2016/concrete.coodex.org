@@ -23,12 +23,12 @@ import org.coodex.util.Profile;
 import org.springframework.data.repository.CrudRepository;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import static org.coodex.concrete.accounts.Constants.ORGANIZATION_PREFIX;
 import static org.coodex.concrete.common.AccountsErrorCodes.*;
 import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
+import static org.coodex.util.Common.*;
 
 /**
  * Created by davidoff shen on 2017-05-03.
@@ -49,17 +49,17 @@ public class AccountsCommon {
             });
 
     private final static DateFormatter DEFAULT_DATE_FORMATTER = new DateFormatter() {
-        private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        private final DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//        private final DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         @Override
         public DateFormat getDateFormat() {
-            return dateFormat;
+            return getSafetyDateFormat(DEFAULT_DATE_FORMAT);
         }
 
         @Override
         public DateFormat getDateTimeFormat() {
-            return dateTimeFormat;
+            return getSafetyDateFormat(DEFAULT_DATETIME_FORMAT);
         }
     };
 

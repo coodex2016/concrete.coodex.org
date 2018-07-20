@@ -18,9 +18,9 @@ package org.coodex.concrete.core.mocker;
 
 import org.coodex.concrete.api.mockers.DateTime;
 import org.coodex.pojomocker.AbstractMocker;
+import org.coodex.util.Common;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -31,7 +31,7 @@ public class DateTimeMocker extends AbstractMocker<DateTime> {
     @Override
     public Object mock(DateTime mockAnnotation, Class clazz) {
         try {
-            DateFormat format = new SimpleDateFormat(mockAnnotation.format());
+            DateFormat format = Common.getSafetyDateFormat(mockAnnotation.format());//new SimpleDateFormat(mockAnnotation.format());
 
             long min = 0, max = Long.MAX_VALUE;
             if (mockAnnotation.min().length() > 0) {

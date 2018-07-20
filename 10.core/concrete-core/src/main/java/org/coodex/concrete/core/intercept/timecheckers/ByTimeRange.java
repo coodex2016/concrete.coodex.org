@@ -18,10 +18,9 @@ package org.coodex.concrete.core.intercept.timecheckers;
 
 import org.coodex.concrete.common.ServiceTimingChecker;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.StringTokenizer;
+
+import static org.coodex.util.Common.now;
 
 /**
  * <pre>按照时间段提供服务
@@ -33,7 +32,7 @@ import java.util.StringTokenizer;
  */
 public class ByTimeRange implements ServiceTimingChecker {
 
-    private static final DateFormat format = new SimpleDateFormat("HH:mm");
+//    private static final DateFormat format = new SimpleDateFormat("HH:mm");
 
     private String range;
 
@@ -49,7 +48,7 @@ public class ByTimeRange implements ServiceTimingChecker {
     @Override
     public boolean isAllowed() {
         if (range == null) return true;
-        String now = format.format(new Date());
+        String now = now("HH:mm");//format.format(new Date());
         StringTokenizer st = new StringTokenizer(range, ";");
         while (st.hasMoreElements()) {
             String str = st.nextToken().trim();

@@ -21,10 +21,8 @@ import org.coodex.concrete.accounts.organization.entities.AbstractPersonAccountE
 import org.coodex.concrete.accounts.organization.pojo.Person;
 import org.coodex.util.Common;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
 import static org.coodex.concrete.accounts.AccountsCommon.DATE_FORMATTER_SERVICE_LOADER;
+import static org.coodex.util.Common.strToDate;
 
 /**
  * Created by davidoff shen on 2017-05-11.
@@ -32,12 +30,12 @@ import static org.coodex.concrete.accounts.AccountsCommon.DATE_FORMATTER_SERVICE
 public abstract class PersonCopier<T extends Person, E extends AbstractPersonAccountEntity>
         extends PojoCopier<T, E> {
 
-    private final DateFormat dateFormat_ID = new SimpleDateFormat("yyyyMMdd");
+//    private final DateFormat dateFormat_ID = new SimpleDateFormat("yyyyMMdd");
 
     private void setBirthday(E e, String s) {
         try {
             e.setBirthDay(DATE_FORMATTER_SERVICE_LOADER.getInstance().getDateFormat()
-                    .format(dateFormat_ID.parse(s)));
+                    .format(strToDate(s, "yyyyMMdd")));
         } catch (Throwable th) {
         }
     }

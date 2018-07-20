@@ -21,6 +21,9 @@ package org.coodex.util;
 
 import java.io.*;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -34,8 +37,14 @@ public class Common {
             .getProperty("path.separator");
     public static final String FILE_SEPARATOR = System
             .getProperty("file.separator");
+    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+    public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
+    public static final String DEFAULT_DATETIME_FORMAT =
+            DEFAULT_DATE_FORMAT + " " + DEFAULT_TIME_FORMAT;
     private static final int TO_LOWER = 'a' - 'A';
     private final static String DEFAULT_DELIM = ".-_ /\\";
+    private static ThreadLocal<SingletonMap<String, DateFormat>> threadLocal
+            = new ThreadLocal<SingletonMap<String, DateFormat>>();
 
     @SuppressWarnings("unchecked")
     public static <T> Set<T> arrayToSet(T[] array) {
@@ -83,7 +92,6 @@ public class Common {
     public static String nullToStr(String str) {
         return str == null ? "" : str;
     }
-
 
     public static byte[] serialize(Object object) throws IOException {
         // 序列化obj
@@ -180,6 +188,18 @@ public class Common {
         copyStream(is, os, 4096, false, Integer.MAX_VALUE);
     }
 
+//    public static <T> List<T> joinList(List<T> ... lists) {
+////        List<T> result = new ArrayList<T>();
+////        if(lists != null && lists.length > 0){
+////            for(List<T> set : lists){
+////                if(set != null) result.addAll(set);
+////            }
+////        }
+////        result.addAll(ary1);
+////        result.addAll(ary2);
+//        return join(new ArrayList<T>(), lists);
+//    }
+
     public static void copyStream(InputStream is, OutputStream os,
                                   int blockSize, boolean flushPerBlock, int bps) throws IOException {
         byte[] buf = new byte[blockSize];
@@ -250,18 +270,6 @@ public class Common {
         result.removeAll(todiv);
         return result;
     }
-
-//    public static <T> List<T> joinList(List<T> ... lists) {
-////        List<T> result = new ArrayList<T>();
-////        if(lists != null && lists.length > 0){
-////            for(List<T> set : lists){
-////                if(set != null) result.addAll(set);
-////            }
-////        }
-////        result.addAll(ary1);
-////        result.addAll(ary2);
-//        return join(new ArrayList<T>(), lists);
-//    }
 
     @SuppressWarnings("unchecked")
     private static <T, C extends Collection<T>> C join(C instance, Collection... collections) {
@@ -614,7 +622,6 @@ public class Common {
         return c[0][0];
     }
 
-
     /**
      * 两个字符串的相似度
      *
@@ -638,6 +645,76 @@ public class Common {
             }
         }
         return subMap;
+    }
+
+    public static String calendarToStr(Calendar calendar, String format) {
+        return dateToStr(calendar.getTime(), format);
+    }
+
+    public static String calendarToStr(Calendar calendar) {
+        return calendarToStr(calendar, DEFAULT_DATETIME_FORMAT);
+    }
+
+    public static String dateToStr(Date date, String format) {
+        return getSafetyDateFormat(format).format(date);
+    }
+
+    public static String dateToStr(Date date) {
+        return dateToStr(date, DEFAULT_DATETIME_FORMAT);
+    }
+
+    public static DateFormat getSafetyDateFormat(String format) {
+        if (threadLocal.get() == null) {
+            threadLocal.set(new SingletonMap<String, DateFormat>(
+                    new SingletonMap.Builder<String, DateFormat>() {
+                        @Override
+                        public DateFormat build(String key) {
+                            return new SimpleDateFormat(key);
+                        }
+                    }
+            ));
+        }
+        return threadLocal.get().getInstance(format);
+    }
+
+    public static Date strToDate(String str, String format) throws ParseException {
+        return getSafetyDateFormat(format).parse(str);
+    }
+
+    public static Date strToDate(String str) throws ParseException {
+        return strToDate(str, DEFAULT_DATETIME_FORMAT);
+    }
+
+    public static Calendar strToCalendar(String str, String format) throws ParseException {
+        return dateToCalendar(strToDate(str, format));
+    }
+
+    public static String longToDateStr(long l) {
+        return longToDateStr(l, DEFAULT_DATETIME_FORMAT);
+    }
+
+    public static String longToDateStr(long l, String format) {
+        return calendarToStr(longToCalendar(l), format);
+    }
+
+    public static Calendar longToCalendar(long l) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(l);
+        return calendar;
+    }
+
+    public static Calendar dateToCalendar(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
+    }
+
+    public static String now() {
+        return now(DEFAULT_DATETIME_FORMAT);
+    }
+
+    public static String now(String format) {
+        return dateToStr(new Date(), format);
     }
 
 

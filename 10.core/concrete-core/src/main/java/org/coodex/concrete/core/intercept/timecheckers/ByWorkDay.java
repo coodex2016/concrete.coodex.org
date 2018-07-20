@@ -19,11 +19,11 @@ package org.coodex.concrete.core.intercept.timecheckers;
 import org.coodex.concrete.common.ServiceTimingChecker;
 import org.coodex.util.Common;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.StringTokenizer;
+
+import static org.coodex.util.Common.DEFAULT_DATE_FORMAT;
+import static org.coodex.util.Common.now;
 
 /**
  * <pre>工作日提供服务
@@ -41,7 +41,7 @@ import java.util.StringTokenizer;
  */
 public class ByWorkDay implements ServiceTimingChecker {
 
-    private static final DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//    private static final DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
     private String weekday = "1,2,3,4,5";
 
@@ -104,7 +104,7 @@ public class ByWorkDay implements ServiceTimingChecker {
 
     @Override
     public boolean isAllowed() {
-        String now = format.format(new Date());
+        String now = now(DEFAULT_DATE_FORMAT);
         if (inWorkday(now)) return true;
         if (inRestDay(now)) return false;
         return isWeekday();
