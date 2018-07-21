@@ -25,6 +25,9 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-07-21
+- concrete-client: `moduleMock.properties`中可配置`client.MODULE_NAME=true`来模拟客户端调用返回数据，优先级高于`0720`修改
+
 ## 2018-07-20
 - coodex-utilities
     - 提供一个SimpleDateFormat不是线程安全的坑的解决方案，concrete使用到SimpleDateFormat的地方相应更改。`Common.getSafetyDateFormat()`

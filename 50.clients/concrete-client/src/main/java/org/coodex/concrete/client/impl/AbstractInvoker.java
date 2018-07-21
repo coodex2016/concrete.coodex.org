@@ -18,8 +18,10 @@ package org.coodex.concrete.client.impl;
 
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.Invoker;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.util.Common;
+import org.coodex.util.Profile;
 
 import java.lang.reflect.Method;
 
@@ -28,6 +30,7 @@ import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 
 public abstract class AbstractInvoker implements Invoker {
 
+    private final static Profile devModeProfile = ConcreteHelper.getProfile("moduleMock");
     private final Destination destination;
 
     public AbstractInvoker(Destination destination) {
@@ -37,7 +40,8 @@ public abstract class AbstractInvoker implements Invoker {
     public abstract ServiceContext buildContext(final Class concreteClass, final Method method);
 
     protected boolean isMock() {
-        return isDevModel(Common.isBlank(destination.getIdentify()) ? "client" : ("client." + destination.getIdentify()));
+        String key = Common.isBlank(destination.getIdentify()) ? "client" : ("client." + destination.getIdentify());
+        return devModeProfile.getBool(key, false) || isDevModel(key);
     }
 
     protected Destination getDestination() {
