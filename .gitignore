@@ -1,0 +1,14 @@
+
+target/
+pom.xml.versionsBackup
+test-case/
+/release.properties
+
+env.properties
+
+/.idea/
+*.iml
+
+.project
+.classpath
+.settings
