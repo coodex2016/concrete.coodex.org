@@ -18,10 +18,14 @@ package org.coodex.concrete.client.impl;
 
 import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.ClientHelper;
+import org.coodex.concrete.apm.APM;
+import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.client.ClientMethodInvocation;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.common.ConcreteContext;
+import org.coodex.concrete.common.ServiceContext;
 import org.coodex.pojomocker.MockerFacade;
+import org.coodex.util.Common;
 
 import java.lang.reflect.Method;
 
@@ -37,22 +41,31 @@ public abstract class AbstractSyncInvoker extends AbstractInvoker {
 
     @Override
     public Object invoke(final Object instance, final Class clz, final Method method, final Object... args) {
-
-        return ConcreteContext.runWithContext(buildContext(clz, method), new CallableClosure() {
-            @Override
-            public Object call() throws Throwable {
-                return ClientHelper.getSyncInterceptorChain().invoke(new ClientMethodInvocation(instance, clz, method, args) {
-                    @Override
-                    public Object proceed() throws Throwable {
-                        if(isMock()){
-                            return MockerFacade.mock(method, clz);
-                        } else {
-                            return execute(clz, method, args);
+        ServiceContext serviceContext = buildContext(clz, method);
+        Trace trace = APM.build().start(String.format("client invoke: %s", getDestination().getLocation()));
+        trace.hack(serviceContext.getSubjoin());
+        try {
+            return ConcreteContext.runWithContext(serviceContext, new CallableClosure() {
+                @Override
+                public Object call() throws Throwable {
+                    return ClientHelper.getSyncInterceptorChain().invoke(new ClientMethodInvocation(instance, clz, method, args) {
+                        @Override
+                        public Object proceed() throws Throwable {
+                            if (isMock()) {
+                                return MockerFacade.mock(method, clz);
+                            } else {
+                                return execute(clz, method, args);
+                            }
                         }
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        } catch (Throwable throwable) {
+            trace.error(throwable);
+            throw Common.runtimeException(throwable);
+        } finally {
+            trace.finish();
+        }
 //        return ConcreteContext.runWithContext(buildContext(clz, method), new ConcreteClosure() {
 //            @Override
 //            public Object concreteRun() throws Throwable {

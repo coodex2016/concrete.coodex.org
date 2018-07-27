@@ -38,8 +38,16 @@ public class ClientInvoker {
 
     public static void main(String[] args) throws InterruptedException {
 //        Test test = Client.getInstance(Test.class,"websocket");
-        Test test = Client.getInstance(Test.class, "remote");
-        test.bodyTest(1,2, "3", "4");
+//        Trace trace = APM.build().start("kkk");
+        try {
+            Test test = Client.getInstance(Test.class, "remote");
+            System.out.println(test.test());
+        }finally {
+//            trace.finish();
+        }
+
+        Thread.sleep(5000);
+//        test.bodyTest(1,2, "3", "4");
 //        test.sayHello("h i");
 //        System.out.println(String.format("1 + 2 = %d", test.add(1, 2)));
 //        startPolling();

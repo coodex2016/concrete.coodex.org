@@ -23,6 +23,8 @@ import com.alibaba.dubbo.config.ServiceConfig;
 import com.alibaba.dubbo.rpc.RpcContext;
 import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.api.Application;
+import org.coodex.concrete.apm.APM;
+import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.dubbo.ProxyFor;
 import org.coodex.util.Common;
@@ -179,6 +181,11 @@ public class DubboApplication implements Application {
                                     locate == null ? null : Locale.forLanguageTag(locate),
                                     tokenId
                             );
+                            Trace trace = APM.build(serverSideContext.getSubjoin())
+                                    .tag("remote", serverSideContext.getCaller().getAddress())
+                                    .tag("agent", serverSideContext.getCaller().getClientProvider())
+                                    .start(String.format("dubbo: %s.%s", method.getDeclaringClass().getName(), method.getName()));
+
                             try {
                                 Object result = ConcreteContext.runWithContext(
                                         serverSideContext,
@@ -205,7 +212,10 @@ public class DubboApplication implements Application {
                                     toClient.put(RESULT, objectToStr(result));
                                 return toClient;
                             } catch (Throwable th) {
+                                trace.error(th);
                                 throw th;
+                            } finally {
+                                trace.finish();
                             }
                         }
                     });

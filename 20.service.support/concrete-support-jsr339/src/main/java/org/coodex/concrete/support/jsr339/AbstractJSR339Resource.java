@@ -61,7 +61,7 @@ public abstract class AbstractJSR339Resource<T extends ConcreteService> extends 
 //                                        ((Integer) params[0]).intValue() * 1000L,
 //                                        new ResponseBuilder(tokenId, method, params)));
                         asyncResponse.resume(TBMContainer.getInstance().getMessages(
-                                tokenId,((Integer) params[0]).intValue() * 1000L));
+                                tokenId, ((Integer) params[0]).intValue() * 1000L));
                     } else {
                         asyncResponse.resume(invokeByTokenId(tokenId, method, params));
                     }

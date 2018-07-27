@@ -17,6 +17,8 @@
 package org.coodex.concrete.support.websocket;
 
 import org.coodex.closure.CallableClosure;
+import org.coodex.concrete.apm.APM;
+import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.messages.Message;
 import org.coodex.concrete.common.struct.AbstractParam;
@@ -310,10 +312,14 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
 
             @Override
             public void run() {
-                ServiceContext context = new WebSocketServiceContext(
+                WebSocketServiceContext context = new WebSocketServiceContext(
                         tokenId, getSubjoin(requestPackage.getSubjoin()),
                         (Caller) session.getUserProperties().get(WEB_SOCKET_CALLER_INFO)
                         , null /* TODO 从subjoin或者session里获取Locale */);
+                Trace trace = APM.build(context.getSubjoin())
+                        .tag("remote", context.getCaller().getAddress())
+                        .tag("agent", context.getCaller().getClientProvider())
+                        .start(String.format("websocket: %s.%s", method.getDeclaringClass().getName(), method.getName()));
                 try {
 
                     Object result = runWithContext(
@@ -350,6 +356,7 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
                     responsePackage.setContent(result);
                     sendText(JSONSerializerFactory.getInstance().toJson(responsePackage), session);
                 } catch (final Throwable th) {
+                    trace.error(th);
                     runWithContext(context, new CallableClosure() {
                         @Override
                         public Object call() throws Throwable {
@@ -358,6 +365,8 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
                         }
                     });
 
+                } finally {
+                    trace.finish();
                 }
 
             }

@@ -25,6 +25,11 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-07-27
+- 增加APM能力，基于zipkin做了一个轻量封装
+    - 增加`concrete-apm-zipkin`依赖；
+    - concrete.properties里配置`module.name`, `zipkin.location`即可
+
 ## 2018-07-21
 - concrete-client: `moduleMock.properties`中可配置`client.MODULE_NAME=true`来模拟客户端调用返回数据，优先级高于`0720`修改
 

@@ -146,6 +146,11 @@ public class TestImpl implements Test {
         log.debug("{}, {}, {}, {}", bodyInt, notBodyInt, bodyStr, notBodyStr);
     }
 
+    @Override
+    public Float test() {
+        return 0.45f;
+    }
+
     private void invokeRx(final Test_RX test, final String tag) {
         final int x1 = Common.random(100);
         final int x2 = Common.random(100);

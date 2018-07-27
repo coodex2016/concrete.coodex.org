@@ -82,6 +82,15 @@
                 <type>pom</type>
             </dependency>
 
+            <!-- zipkin brave -->
+            <dependency>
+                <groupId>io.zipkin.brave</groupId>
+                <artifactId>brave-bom</artifactId>
+                <version>${brave.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <dependency>
                 <groupId>org.glassfish.web</groupId>
                 <artifactId>el-impl</artifactId>
@@ -399,6 +408,12 @@
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-courier-rabbitmq</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-apm-zipkin</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 

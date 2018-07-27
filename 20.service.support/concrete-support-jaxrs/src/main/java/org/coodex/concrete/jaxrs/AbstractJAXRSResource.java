@@ -18,6 +18,8 @@ package org.coodex.concrete.jaxrs;
 
 import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.apm.APM;
+import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
 import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
@@ -152,7 +154,7 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
         }
     }
 
-    protected ServiceContext buildContext(String tokenId/*,Token token, AbstractUnit unit*/) {
+    protected JAXRSServiceContext buildContext(String tokenId/*,Token token, AbstractUnit unit*/) {
 
         return new JAXRSServiceContext(new Caller() {
             @Override
@@ -191,25 +193,37 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
 //        Token token
 
 //        Object result = runWithToken.runWithToken(getToken(tokenId));
-        ServiceContext serviceContext = buildContext(tokenId);
-        Object result = runWithContext(serviceContext, callable);
+        JAXRSServiceContext serviceContext = buildContext(tokenId);
+        // apm
 
-        Response.ResponseBuilder builder = result == null ? Response.noContent() : Response.ok();
-        String tokenIdAfterInvoke = serviceContext.getTokenId();
-        if (!Common.isSameStr(tokenId, tokenIdAfterInvoke) && !Common.isBlank(tokenIdAfterInvoke)) {
-            builder = setTokenInfo(tokenIdAfterInvoke, builder);
-        }
-
-        if (result != null) {
-            builder = builder.entity(result);
-            if (result instanceof String) {
-                builder = textType(builder);
-            } else {
-                builder = jsonType(builder);
+        Trace trace = APM.build(serviceContext.getSubjoin())
+                .tag("remote", serviceContext.getCaller().getAddress())
+                .tag("agent", serviceContext.getCaller().getClientProvider())
+                .start(String.format("jaxrs: %s.%s", method.getDeclaringClass().getName(), method.getName()));
+        try {
+            Object result = runWithContext(serviceContext, callable);
+            Response.ResponseBuilder builder = result == null ? Response.noContent() : Response.ok();
+            String tokenIdAfterInvoke = serviceContext.getTokenId();
+            if (!Common.isSameStr(tokenId, tokenIdAfterInvoke) && !Common.isBlank(tokenIdAfterInvoke)) {
+                builder = setTokenInfo(tokenIdAfterInvoke, builder);
             }
-        }
 
-        return builder.build();
+            if (result != null) {
+                builder = builder.entity(result);
+                if (result instanceof String) {
+                    builder = textType(builder);
+                } else {
+                    builder = jsonType(builder);
+                }
+            }
+
+            return builder.build();
+        } catch (Throwable throwable) {
+            trace.error(throwable);
+            throw Common.runtimeException(throwable);
+        } finally {
+            trace.finish();
+        }
     }
 
 //    private Object[] revert(Object [] params, Method method){

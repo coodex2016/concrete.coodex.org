@@ -96,6 +96,12 @@
 
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
+            <artifactId>concrete-apm-zipkin</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>concrete-websocket-client-rx</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

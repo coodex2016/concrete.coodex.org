@@ -42,4 +42,7 @@ public interface Test extends ConcreteService {
             @Parameter("notBodyStr") String notBodyStr
     );
 
+
+    Float test();
+
 }
