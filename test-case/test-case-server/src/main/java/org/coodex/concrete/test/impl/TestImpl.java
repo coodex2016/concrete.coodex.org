@@ -148,6 +148,10 @@ public class TestImpl implements Test {
 
     @Override
     public Float test() {
+        jaxrs.sayHello("1100");
+
+
+        jaxrs.sayHello("1200");
         return 0.45f;
     }
 
