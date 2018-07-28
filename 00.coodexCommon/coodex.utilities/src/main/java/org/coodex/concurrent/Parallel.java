@@ -28,12 +28,23 @@ import java.util.concurrent.ExecutorService;
  */
 public class Parallel {
 
+    private static RunnerWrapper defaultWrapper = new RunnerWrapper() {
+        @Override
+        public Runnable wrap(Runnable runnable) {
+            return runnable;
+        }
+    };
     private final ExecutorService executorService;
+    private final RunnerWrapper wrapper;
 
     public Parallel(ExecutorService executorService) {
-        this.executorService = executorService;
+        this(executorService, null);
     }
 
+    public Parallel(ExecutorService executorService, RunnerWrapper wrapper) {
+        this.executorService = executorService;
+        this.wrapper = wrapper == null ? defaultWrapper : wrapper;
+    }
 
     public Batch run(Runnable... runnables) {
 
@@ -43,7 +54,9 @@ public class Parallel {
         //
         int i = 1;
         for (Runnable runnable : runnables) {
-            batch.getTasks().add(newTask(runnable, i++, batch));
+            batch.getTasks().add(newTask(
+                    wrapper.wrap(runnable),
+                    i++, batch));
         }
         while (!batch.isAllFinished()) {
             synchronized (batch) {
@@ -81,6 +94,10 @@ public class Parallel {
         return task;
     }
 
+    public interface RunnerWrapper {
+        Runnable wrap(Runnable runnable);
+    }
+
     public static class Task {
         private Calendar start;
         private Calendar end;
@@ -88,7 +105,7 @@ public class Parallel {
         private boolean finished = false;
         private Integer id;
 
-        public long getTimeConsuming(){
+        public long getTimeConsuming() {
             return end.getTimeInMillis() - start.getTimeInMillis();
         }
 
@@ -119,7 +136,7 @@ public class Parallel {
         private Calendar start;
         private Calendar end;
 
-        public long getTimeConsuming(){
+        public long getTimeConsuming() {
             return end.getTimeInMillis() - start.getTimeInMillis();
         }
 

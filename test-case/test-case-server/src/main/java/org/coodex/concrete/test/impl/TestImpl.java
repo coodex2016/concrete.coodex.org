@@ -19,6 +19,7 @@ package org.coodex.concrete.test.impl;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import org.coodex.concrete.ConcreteClient;
+import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
@@ -27,12 +28,14 @@ import org.coodex.concrete.message.Queue;
 import org.coodex.concrete.message.TokenBasedTopic;
 import org.coodex.concrete.message.Topic;
 import org.coodex.concrete.test.api.Test;
+import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.org.coodex.concrete.test.api.Test_RX;
 
 import javax.inject.Inject;
+import java.util.concurrent.ExecutorService;
 
 public class TestImpl implements Test {
 
@@ -131,6 +134,12 @@ public class TestImpl implements Test {
             log.debug("{}: {}", key.toUpperCase(), subjoin.get(key.toUpperCase()));
         }
 
+        try {
+            Thread.sleep(Common.random(1000));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
 //        x.publish("hello");
 //        invokeSync(local, "local");
 //        invokeSync(jaxrs, "jaxrs");
@@ -146,12 +155,40 @@ public class TestImpl implements Test {
         log.debug("{}, {}, {}, {}", bodyInt, notBodyInt, bodyStr, notBodyStr);
     }
 
+    private static ExecutorService executorService = ExecutorsHelper.newFixedThreadPool(4);
     @Override
     public Float test() {
-        jaxrs.sayHello("1100");
 
 
-        jaxrs.sayHello("1200");
+        APM.parallel(executorService, new Runnable() {
+            @Override
+            public void run() {
+                jaxrs.sayHello("1100");
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                jaxrs.sayHello("1200");
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                jaxrs.sayHello("1300");
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                jaxrs.sayHello("1400");
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                jaxrs.sayHello("1500");
+            }
+        });
+
+
+
         return 0.45f;
     }
 

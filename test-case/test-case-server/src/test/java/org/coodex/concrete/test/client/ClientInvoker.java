@@ -44,9 +44,9 @@ public class ClientInvoker {
             System.out.println(test.test());
         }finally {
 //            trace.finish();
+            Thread.sleep(5000);
         }
 
-        Thread.sleep(5000);
 //        test.bodyTest(1,2, "3", "4");
 //        test.sayHello("h i");
 //        System.out.println(String.format("1 + 2 = %d", test.add(1, 2)));

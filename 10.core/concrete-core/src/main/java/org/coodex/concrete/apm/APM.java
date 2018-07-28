@@ -18,7 +18,10 @@ package org.coodex.concrete.apm;
 
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.Subjoin;
+import org.coodex.concurrent.Parallel;
 import org.coodex.util.Singleton;
+
+import java.util.concurrent.ExecutorService;
 
 public class APM {
 
@@ -76,6 +79,11 @@ public class APM {
                                     public Trace loadFrom(Subjoin subjoin) {
                                         return doNothing;
                                     }
+
+                                    @Override
+                                    public Parallel.RunnerWrapper createWrapper() {
+                                        return null;
+                                    }
                                 };
 
                                 @Override
@@ -93,6 +101,15 @@ public class APM {
 
     public static Trace build(Subjoin subjoin) {
         return traceFactoryServiceSingleton.getInstance().getInstance().loadFrom(subjoin);
+    }
+
+    public static Parallel.Batch parallel(ExecutorService executorService, Runnable... runnables) {
+
+        return new Parallel(executorService,
+                traceFactoryServiceSingleton.getInstance()
+                        .getInstance()
+                        .createWrapper()
+        ).run(runnables);
     }
 
 }

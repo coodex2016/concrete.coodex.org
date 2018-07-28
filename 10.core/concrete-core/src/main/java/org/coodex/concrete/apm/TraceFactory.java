@@ -17,10 +17,13 @@
 package org.coodex.concrete.apm;
 
 import org.coodex.concrete.common.Subjoin;
+import org.coodex.concurrent.Parallel;
 
 public interface TraceFactory {
 
     Trace create();
 
     Trace loadFrom(Subjoin subjoin);
+
+    Parallel.RunnerWrapper createWrapper();
 }

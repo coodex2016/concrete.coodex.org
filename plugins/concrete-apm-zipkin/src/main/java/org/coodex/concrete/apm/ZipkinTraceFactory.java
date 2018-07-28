@@ -16,7 +16,10 @@
 
 package org.coodex.concrete.apm;
 
+import brave.propagation.CurrentTraceContext;
+import brave.propagation.TraceContext;
 import org.coodex.concrete.common.Subjoin;
+import org.coodex.concurrent.Parallel;
 
 public class ZipkinTraceFactory implements TraceFactory {
     @Override
@@ -27,5 +30,27 @@ public class ZipkinTraceFactory implements TraceFactory {
     @Override
     public Trace loadFrom(Subjoin subjoin) {
         return new ZipkinTrace(subjoin);
+    }
+
+    @Override
+    public Parallel.RunnerWrapper createWrapper() {
+        final TraceContext context = CurrentTraceContext.Default.create().get();
+        return context == null ? null :
+                new Parallel.RunnerWrapper() {
+                    @Override
+                    public Runnable wrap(final Runnable runnable) {
+                        return new Runnable() {
+                            @Override
+                            public void run() {
+                                CurrentTraceContext.Scope scope = CurrentTraceContext.Default.create().maybeScope(context);
+                                try {
+                                    runnable.run();
+                                } finally {
+                                    scope.close();
+                                }
+                            }
+                        };
+                    }
+                };
     }
 }
