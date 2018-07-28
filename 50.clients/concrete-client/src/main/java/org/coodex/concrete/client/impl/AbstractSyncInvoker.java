@@ -42,7 +42,9 @@ public abstract class AbstractSyncInvoker extends AbstractInvoker {
     @Override
     public Object invoke(final Object instance, final Class clz, final Method method, final Object... args) {
         ServiceContext serviceContext = buildContext(clz, method);
-        Trace trace = APM.build().start(String.format("client invoke: %s", getDestination().getLocation()));
+        Trace trace = APM.build().tag("interface", clz.getName())
+                .tag("method", method.getName())
+                .start(String.format("client invoke: %s", getDestination().getLocation()));
         trace.hack(serviceContext.getSubjoin());
         try {
             return ConcreteContext.runWithContext(serviceContext, new CallableClosure() {

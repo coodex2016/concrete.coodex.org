@@ -29,7 +29,10 @@ public interface SomeService extends ConcreteService{
 ## 2018-07-28
 - coodex-utilities: 并行处理扩展了一个RunnerWrapper
 - concrete-core: APM 增加并行处理支持
-- conrete-apm-zipkin: 增加并行处理支持
+- concrete-apm-zipkin: 增加并行处理支持
+- concrete-client: 增加调用接口和方法的tag，方便查看
+- concrete-jaxrs-client: 修复`X-CLIENT-PROVIDER`为空的问题
+
 
 ## 2018-07-27
 - 增加APM能力，基于zipkin做了一个轻量封装

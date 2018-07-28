@@ -20,9 +20,8 @@ import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.common.RuntimeContext;
 
-import javax.ws.rs.core.HttpHeaders;
-
 import static org.coodex.concrete.common.ConcreteHelper.VERSION;
+import static org.coodex.concrete.jaxrs.JaxRSHelper.KEY_CLIENT_PROVIDER;
 
 public class JaxRSClientContext extends ClientSideContext {
     private static final String CONCRETE_JAXRS_USER_AGENT = "cocnrete-jaxrs-client " + VERSION;
@@ -45,7 +44,7 @@ public class JaxRSClientContext extends ClientSideContext {
 //        this.caller = CLIENT_CALLER;
 //        this.model = JaxRSHelper.JAXRS_MODEL;
 //        this.subjoin = new SubjoinWrapper.DefaultSubjoin();
-        getSubjoin().add(HttpHeaders.USER_AGENT, CONCRETE_JAXRS_USER_AGENT);
+        getSubjoin().add(KEY_CLIENT_PROVIDER, CONCRETE_JAXRS_USER_AGENT);
     }
 
 //    @Override
