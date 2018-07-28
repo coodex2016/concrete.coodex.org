@@ -32,7 +32,7 @@ public interface SomeService extends ConcreteService{
 - concrete-apm-zipkin: 增加并行处理支持
 - concrete-client: 增加调用接口和方法的tag，方便查看
 - concrete-jaxrs-client: 修复`X-CLIENT-PROVIDER`为空的问题
-- concrete-apm-plugin-mysql: 参考 `brave-instrumentation-mysql` 增加apm的mysql的插件 
+- concrete-apm-plugin-mysql: 参考 `brave-instrumentation-mysql` 增加apm的mysql的插件，在`url`后面增加`statementInterceptors=org.coodex.concrete.apm.mysql.TracingStatementInterceptor`即可 
 
 
 ## 2018-07-27
