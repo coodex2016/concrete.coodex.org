@@ -107,6 +107,7 @@
         <module>plugins/concrete-courier-jms-activemq</module>
         <module>plugins/concrete-courier-rabbitmq</module>
         <module>plugins/concrete-apm-zipkin</module>
+        <module>plugins/concrete-apm-plugin-mysql</module>
 
     </modules>
 

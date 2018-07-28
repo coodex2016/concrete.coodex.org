@@ -20,6 +20,12 @@ import org.coodex.concrete.common.Subjoin;
 
 public interface Trace {
 
+//    enum Kind{
+//        CLIENT, SERVER
+//    }
+//
+//    Trace kind(Kind kind);
+
     Trace start();
 
     Trace start(String name);

@@ -20,6 +20,7 @@ import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
 import brave.propagation.CurrentTraceContext;
+import brave.propagation.ThreadLocalSpan;
 import brave.propagation.TraceContext;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.Subjoin;
@@ -93,21 +94,27 @@ public class ZipkinTrace extends AbstractTrace {
     protected void actualStart(String name) {
         if (traceContext == null) {
             span = getTracer().newTrace();
+//            span = ThreadLocalSpan.create(getTracer()).next();
         } else {
             span = getTracer().newChild(traceContext);
+//            span = getTracer().joinSpan(traceContext);
         }
 
         if (!Common.isBlank(name))
             span = span.name(name);
         if (!Common.isBlank(type))
             span = span.tag("type", type);
+
+
+
         if (map.size() > 0) {
             for (String key : map.keySet()) {
                 span = span.tag(key, map.get(key));
             }
         }
-        scope = CurrentTraceContext.Default.create().maybeScope(span.context());
+        scope = CurrentTraceContext.Default.create().newScope(span.context());
         span = span.start();
+//        ThreadLocalSpan.create(getTracer()).next();
     }
 
     @Override
@@ -115,6 +122,7 @@ public class ZipkinTrace extends AbstractTrace {
         if (span != null) {
             span.finish();
             scope.close();
+            ThreadLocalSpan.CURRENT_TRACER.remove();
             span = null;
         }
     }

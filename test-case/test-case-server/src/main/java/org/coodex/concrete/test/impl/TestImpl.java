@@ -35,6 +35,10 @@ import org.slf4j.LoggerFactory;
 import rx.org.coodex.concrete.test.api.Test_RX;
 
 import javax.inject.Inject;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.concurrent.ExecutorService;
 
 public class TestImpl implements Test {
@@ -79,6 +83,9 @@ public class TestImpl implements Test {
     @Inject
     @ConcreteClient("websocket")
     private Test_RX websocketRx;
+
+    @Inject
+    private DataSource dataSource;
 
 
     private boolean pushStart = false;
@@ -133,7 +140,15 @@ public class TestImpl implements Test {
         for(String key: subjoin.keySet()){
             log.debug("{}: {}", key.toUpperCase(), subjoin.get(key.toUpperCase()));
         }
+        try {
+            Connection connection = dataSource.getConnection();
 
+            Statement statement = connection.createStatement();
+            statement.execute("select count(1) from t_child");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         try {
             Thread.sleep(Common.random(1000));
         } catch (InterruptedException e) {

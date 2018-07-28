@@ -32,10 +32,7 @@ import org.glassfish.jersey.servlet.ServletProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -49,6 +46,7 @@ import javax.websocket.server.ServerEndpoint;
 @Configuration
 @EnableAspectJAutoProxy
 @Import(ConcreteSpringConfiguration.class)
+@ImportResource("env.xml")
 public class ServiceStarter {
 
     private static Profile profile = Profile.getProfile("env.properties");
