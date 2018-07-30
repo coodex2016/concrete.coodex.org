@@ -25,6 +25,8 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+##2018-07-30
+- concrete-core: `BeanValidationInterceptor` 无参数方法不再进行校验
 
 ## 2018-07-28
 - coodex-utilities: 并行处理扩展了一个RunnerWrapper

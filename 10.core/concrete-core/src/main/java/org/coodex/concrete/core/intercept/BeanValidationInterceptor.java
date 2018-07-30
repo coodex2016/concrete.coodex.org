@@ -94,7 +94,9 @@ public class BeanValidationInterceptor extends AbstractInterceptor {
 
     @Override
     public void before(RuntimeContext context, MethodInvocation joinPoint) {
-        checkViolations(getValidator().validateParameters(
-                joinPoint.getThis(), context.getDeclaringMethod(), joinPoint.getArguments()));
+        if (context.getDeclaringMethod().getParameterTypes().length > 0) {
+            checkViolations(getValidator().validateParameters(
+                    joinPoint.getThis(), context.getDeclaringMethod(), joinPoint.getArguments()));
+        }
     }
 }
