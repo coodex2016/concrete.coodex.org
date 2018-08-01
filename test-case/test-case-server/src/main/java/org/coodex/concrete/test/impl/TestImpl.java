@@ -19,7 +19,6 @@ package org.coodex.concrete.test.impl;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import org.coodex.concrete.ConcreteClient;
-import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
@@ -39,6 +38,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 public class TestImpl implements Test {
@@ -162,7 +162,12 @@ public class TestImpl implements Test {
 //        invokeRx(localRx, "local");
 //        invokeRx(jaxrsRx, "jaxrs");
 //        invokeRx(websocketRx, "websocket");
-        return "Hello " + name;
+        return "";
+    }
+
+    @Override
+    public List<String> nullTest() {
+        return null;
     }
 
     @Override
@@ -175,36 +180,36 @@ public class TestImpl implements Test {
     public Float test() {
 
 
-        APM.parallel(executorService, new Runnable() {
-            @Override
-            public void run() {
-                jaxrs.sayHello("1100");
-            }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                jaxrs.sayHello("1200");
-            }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                jaxrs.sayHello("1300");
-            }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                jaxrs.sayHello("1400");
-            }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                jaxrs.sayHello("1500");
-            }
-        });
+//        APM.parallel(executorService, new Runnable() {
+//            @Override
+//            public void run() {
+//                jaxrs.sayHello("1100");
+//            }
+//        }, new Runnable() {
+//            @Override
+//            public void run() {
+//                jaxrs.sayHello("1200");
+//            }
+//        }, new Runnable() {
+//            @Override
+//            public void run() {
+//                jaxrs.sayHello("1300");
+//            }
+//        }, new Runnable() {
+//            @Override
+//            public void run() {
+//                jaxrs.sayHello("1400");
+//            }
+//        }, new Runnable() {
+//            @Override
+//            public void run() {
+//                jaxrs.sayHello("1500");
+//            }
+//        });
 
 
 
-        return 0.45f;
+        return null;
     }
 
     private void invokeRx(final Test_RX test, final String tag) {

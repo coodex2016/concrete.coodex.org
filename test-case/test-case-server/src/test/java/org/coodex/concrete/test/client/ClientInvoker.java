@@ -42,6 +42,8 @@ public class ClientInvoker {
         try {
             Test test = Client.getInstance(Test.class, "remote");
             System.out.println(test.test());
+            System.out.println(test.sayHello("asf"));
+            System.out.println(test.nullTest());
         }finally {
 //            trace.finish();
             Thread.sleep(5000);

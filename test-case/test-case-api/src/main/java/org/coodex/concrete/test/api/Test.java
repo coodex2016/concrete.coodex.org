@@ -22,6 +22,8 @@ import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.jaxrs.Body;
 import org.coodex.util.Parameter;
 
+import java.util.List;
+
 @MicroService
 public interface Test extends ConcreteService {
 
@@ -34,6 +36,8 @@ public interface Test extends ConcreteService {
 
     String sayHello(
             @Parameter("name") String name);
+
+    List<String> nullTest();
 
     void bodyTest(
             @Parameter("bodyInt") @Body Integer bodyInt,

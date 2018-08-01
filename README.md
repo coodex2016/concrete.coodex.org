@@ -25,7 +25,10 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
-##2018-07-30
+## 2018-08-01
+- concrete-jaxrs-client: 修复接口返回集合类型时，返回null报错问题
+
+## 2018-07-30
 - concrete-core: `BeanValidationInterceptor` 无参数方法不再进行校验
 
 ## 2018-07-28
