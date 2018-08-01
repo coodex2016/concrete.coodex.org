@@ -105,7 +105,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 
 
         if (code >= 200 && code < 300) {
-            return void.class.equals(unit.getReturnType()) || code == 204 ?
+            return (code == 204 || void.class.equals(unit.getReturnType())) ?
                     null :
                     getJSONSerializer().parse(body,
                             TypeHelper.toTypeReference(unit.getGenericReturnType(),
