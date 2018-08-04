@@ -112,7 +112,7 @@
                 success: function(data, textStatus, request){
                     setTokenId(request.getResponseHeader('CONCRETE-TOKEN-ID'));
                 }
-            })).error(function (jx) {
+            })).fail(function (jx) {
                 if (configuration.onError) {
                     var e = jx.responseJSON;
                     if(typeof e === "object"){

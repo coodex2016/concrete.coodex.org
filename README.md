@@ -25,6 +25,9 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-08-04
+- concrete-api-tools: 修复生成的脚本在jquery3下无法正常使用的缺陷。
+
 ## 2018-08-01
 - concrete-jaxrs-client: 修复接口返回集合类型时，返回null报错问题
 
