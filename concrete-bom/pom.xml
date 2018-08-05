@@ -97,6 +97,12 @@
                 <version>2.2</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.glassfish.web</groupId>
+                <artifactId>javax.el</artifactId>
+                <version>2.2.6</version>
+            </dependency>
+
             <!-- slf4j -->
             <dependency>
                 <groupId>org.slf4j</groupId>
