@@ -284,8 +284,14 @@ public class SpecCommon {
      * @param <A>
      * @return
      */
+    @Deprecated
     public static <E, A> Specification<E> isNull(String attributeName, A value) {
-        return $spec(Operators.Logical.IS_NULL, attributeName, value);
+//        return $spec(Operators.Logical.IS_NULL, attributeName, value);
+        return isNull(attributeName);
+    }
+
+    public static <E> Specification<E> isNull(String attributeName) {
+        return $spec(Operators.Logical.IS_NULL, attributeName);
     }
 
     /**
@@ -297,8 +303,14 @@ public class SpecCommon {
      * @param <A>
      * @return
      */
+    @Deprecated
     public static <E, A> Specification<E> notNull(String attributeName, A value) {
-        return $spec(Operators.Logical.NOT_NULL, attributeName, value);
+//        return $spec(Operators.Logical.NOT_NULL, attributeName, value);
+        return notNull(attributeName);
+    }
+
+    public static <E> Specification<E> notNull(String attributeName) {
+        return $spec(Operators.Logical.NOT_NULL, attributeName);
     }
 
 

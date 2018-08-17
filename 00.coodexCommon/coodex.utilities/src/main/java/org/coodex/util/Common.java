@@ -230,9 +230,23 @@ public class Common {
             os.flush();
     }
 
+    // TODO fix
     public static String byte2hex(byte[] b) {
         String hs = "";
         for (int n = 0; n < b.length; n++) {
+            String sTmp = Integer.toHexString(b[n] & 0XFF);
+            if (sTmp.length() == 1) {
+                hs = hs + "0" + sTmp;
+            } else {
+                hs = hs + sTmp;
+            }
+        }
+        return hs.toUpperCase();
+    }
+
+    public static String byte2hex(byte[] b, int offset, int length){
+        String hs = "";
+        for (int n = offset, l = Math.min(offset + length, b.length); n < l; n++) {
             String sTmp = Integer.toHexString(b[n] & 0XFF);
             if (sTmp.length() == 1) {
                 hs = hs + "0" + sTmp;

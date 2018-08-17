@@ -37,9 +37,8 @@ import static org.coodex.concrete.common.ConcreteHelper.foreachClassInPackages;
 
 public abstract class ConcreteJaxrsApplication extends Application implements org.coodex.concrete.api.Application {
 
-    private final static Logger log = LoggerFactory.getLogger(ConcreteJaxrsApplication.class);
-
     protected static final JaxRSModuleMaker moduleMaker = new JaxRSModuleMaker();
+    private final static Logger log = LoggerFactory.getLogger(ConcreteJaxrsApplication.class);
     private Set<Class<? extends ConcreteService>> servicesClasses = new HashSet<Class<? extends ConcreteService>>();
     private Set<Class<?>> jaxrsClasses = new HashSet<Class<?>>();
     private Set<Object> singletonInstances = new HashSet<Object>();
@@ -120,18 +119,19 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
             Class<?> jaxrs = generateJaxrsClass(concreteServiceClass);
 
             if (jaxrs != null) {
-                if(log.isDebugEnabled()){
+                if (log.isDebugEnabled()) {
                     StringBuilder builder = new StringBuilder();
                     builder.append("\n\tclassName: ").append(jaxrs.getName()).append(";");
-                    for(Method method : jaxrs.getMethods()){
+                    for (Method method : jaxrs.getMethods()) {
+                        if (Object.class.equals(method.getDeclaringClass())) continue;
                         builder.append("\n\t\tmethod: ").append(method.getName()).append("(");
-                        for(int i = 0; i < method.getGenericParameterTypes().length; i ++){
-                            if( i > 0) builder.append(", ");
-                            if(method.getParameterAnnotations()[i] != null)
-                            for(Annotation annotation: method.getParameterAnnotations()[i]){
-                                builder.append(annotation.annotationType().getName())
-                                        .append(" ");
-                            }
+                        for (int i = 0; i < method.getGenericParameterTypes().length; i++) {
+                            if (i > 0) builder.append(", ");
+                            if (method.getParameterAnnotations()[i] != null)
+                                for (Annotation annotation : method.getParameterAnnotations()[i]) {
+                                    builder.append(annotation.annotationType().getName())
+                                            .append(" ");
+                                }
                             builder.append(method.getParameterTypes()[i].toString());
                         }
                         builder.append(");");
