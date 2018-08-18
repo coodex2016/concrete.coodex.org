@@ -82,10 +82,15 @@ public class CRC {
      * Constructs a new CRC processor for table based CRC calculations.
      * Underneath, it just calls finalCRC() method.
      *
-     * @param crcParams CRC algorithm parameters
+     * @param algorithm CRC algorithm parameters
      * @throws RuntimeException if CRC sum width is not divisible by 8
      */
-    public CRC(Algorithm crcParams) {
+    public CRC(Algorithm algorithm) {
+        this(algorithm.parameters);
+
+    }
+
+    public CRC(Parameters crcParams) {
         this.crcParams = new Parameters(crcParams);
 
         initValue = (crcParams.reflectIn) ? reflect(crcParams.init, crcParams.width) : crcParams.init;
@@ -104,6 +109,7 @@ public class CRC {
             crctable[i] = CRC.calculateCRC(crcParams, tmp);
         }
     }
+
 
     /**
      * Reverses order of last count bits.
@@ -126,6 +132,18 @@ public class CRC {
         return ret;
     }
 
+    public static long calculateCRC(Algorithm algorithm, byte[] data) {
+        return calculateCRC(algorithm, data, 0, data.length);
+    }
+
+    public static long calculateCRC(Algorithm algorithm, byte[] data, int offset, int length) {
+        return calculateCRC(algorithm.parameters, data, offset, length);
+    }
+
+    public static long calculateCRC(Parameters crcParams, byte[] data) {
+        return calculateCRC(crcParams, data, 0, data.length);
+    }
+
     /**
      * This method implements simple straight forward bit by bit calculation.
      * It is relatively slow for large amounts of data, but does not require
@@ -141,12 +159,12 @@ public class CRC {
      * @param data      data for the CRC calculation
      * @return the CRC value of the data provided
      */
-    public static long calculateCRC(Algorithm crcParams, byte[] data) {
+    public static long calculateCRC(Parameters crcParams, byte[] data, int offset, int length) {
         long curValue = crcParams.init;
         long topBit = 1L << (crcParams.width - 1);
         long mask = (topBit << 1) - 1;
 
-        for (int i = 0; i < data.length; i++) {
+        for (int i = offset, upper = Math.min(offset + length, data.length); i < upper; i++) {
             long curByte = ((long) (data[i])) & 0x00FFL;
             if (crcParams.reflectIn) {
                 curByte = reflect(curByte, 8);
@@ -305,52 +323,64 @@ public class CRC {
      */
     public enum Algorithm {
         //CRC-8
-        CRC8(8, 0x07, 0x00, false, false, 0x0),
-        CRC8_CDMA2000(8, 0x9b, 0xff, false, false, 0x0),
-        CRC8_DARC(8, 0X39, 0X00, true, true, 0x0),
-        CRC8_DVB_S2(8, 0xd5, 0x00, false, false, 0x0),
-        CRC8_EBU(8, 0x1d, 0xff, true, true, 0x0),
-        CRC8_I_CODE(8, 0x1d, 0xfd, false, false, 0x0),
-        CRC8_ITU(8, 0x07, 0x00, false, false, 0x55),
-        CRC8_MAXIM(8, 0X31, 0X00, true, true, 0x00),
-        CRC8_ROHC(8, 0x07, 0xff, true, true, 0x00),
-        CRC8_WCDMA(8, 0X9B, 0X00, true, true, 0x00),
+        CRC8(new Parameters(8, 0x07, 0x00, false, false, 0x0)),
+        CRC8_CDMA2000(new Parameters(8, 0x9b, 0xff, false, false, 0x0)),
+        CRC8_DARC(new Parameters(8, 0X39, 0X00, true, true, 0x0)),
+        CRC8_DVB_S2(new Parameters(8, 0xd5, 0x00, false, false, 0x0)),
+        CRC8_EBU(new Parameters(8, 0x1d, 0xff, true, true, 0x0)),
+        CRC8_I_CODE(new Parameters(8, 0x1d, 0xfd, false, false, 0x0)),
+        CRC8_ITU(new Parameters(8, 0x07, 0x00, false, false, 0x55)),
+        CRC8_MAXIM(new Parameters(8, 0X31, 0X00, true, true, 0x00)),
+        CRC8_ROHC(new Parameters(8, 0x07, 0xff, true, true, 0x00)),
+        CRC8_WCDMA(new Parameters(8, 0X9B, 0X00, true, true, 0x00)),
         // CRC-16
-        CRC16_CCITT_FALSE(16, 0x1021, 0x00FFFF, false, false, 0x0),
-        CRC16_ARC(16, 0x8005, 0x0000, true, true, 0x0),
-        CRC16_AUG_CCITT(16, 0x1021, 0x1D0F, false, false, 0x0),
-        CRC16_BUYPASS(16, 0x8005, 0x0000, false, false, 0x0),
-        CRC16_CDMA2000(16, 0xC867, 0xFFFF, false, false, 0x0),
-        CRC16_DDS110(16, 0x8005, 0x800d, false, false, 0x0),
-        CRC16_DECT_R(16, 0x0589, 0x0000, false, false, 0x0001),
-        CRC16_DECT_X(16, 0x0589, 0x0000, false, false, 0x0),
-        CRC16_DNP(16, 0x3d65, 0x0000, true, true, 0xffff),
-        CRC16_EN13757(16, 0x3d65, 0x0000, false, false, 0xffff),
-        CRC16_GENIBUS(16, 0x1021, 0x00FFFF, false, false, 0xffff),
-        CRC16_MAXIM(16, 0x8005, 0x0000, true, true, 0xffff),
-        CRC16_MCRF4XX(16, 0x1021, 0x00FFFF, true, true, 0x0),
-        CRC16_RIELLO(16, 0x1021, 0x00B2AA, true, true, 0x0),
-        CRC16_T10DIF(16, 0x8bb7, 0x0000, false, false, 0x0000),
-        CRC16_TELEDISK(16, 0xa097, 0x0000, false, false, 0x0000),
-        CRC16_TMS37157(16, 0X1021, 0X89EC, true, true, 0x0000),
-        CRC16_USB(16, 0X8005, 0xffff, true, true, 0xffff),
-        CRC_A(16, 0x1021, 0xc6c6, true, true, 0x0),
-        CRC16_KERMIT(16, 0x1021, 0x0000, true, true, 0x0),
-        CRC16_MODBUS(16, 0X8005, 0XFFFF, true, true, 0x0),
-        CRC16_X25(16, 0x1021, 0xffff, true, true, 0xffff),
-        CRC16_XMODEM(16, 0x1021, 0x0000, false, false, 0x0000),
+        CRC16_CCITT_FALSE(new Parameters(16, 0x1021, 0x00FFFF, false, false, 0x0)),
+        CRC16_ARC(new Parameters(16, 0x8005, 0x0000, true, true, 0x0)),
+        CRC16_AUG_CCITT(new Parameters(16, 0x1021, 0x1D0F, false, false, 0x0)),
+        CRC16_BUYPASS(new Parameters(16, 0x8005, 0x0000, false, false, 0x0)),
+        CRC16_CDMA2000(new Parameters(16, 0xC867, 0xFFFF, false, false, 0x0)),
+        CRC16_DDS110(new Parameters(16, 0x8005, 0x800d, false, false, 0x0)),
+        CRC16_DECT_R(new Parameters(16, 0x0589, 0x0000, false, false, 0x0001)),
+        CRC16_DECT_X(new Parameters(16, 0x0589, 0x0000, false, false, 0x0)),
+        CRC16_DNP(new Parameters(16, 0x3d65, 0x0000, true, true, 0xffff)),
+        CRC16_EN13757(new Parameters(16, 0x3d65, 0x0000, false, false, 0xffff)),
+        CRC16_GENIBUS(new Parameters(16, 0x1021, 0x00FFFF, false, false, 0xffff)),
+        CRC16_MAXIM(new Parameters(16, 0x8005, 0x0000, true, true, 0xffff)),
+        CRC16_MCRF4XX(new Parameters(16, 0x1021, 0x00FFFF, true, true, 0x0)),
+        CRC16_RIELLO(new Parameters(16, 0x1021, 0x00B2AA, true, true, 0x0)),
+        CRC16_T10DIF(new Parameters(16, 0x8bb7, 0x0000, false, false, 0x0000)),
+        CRC16_TELEDISK(new Parameters(16, 0xa097, 0x0000, false, false, 0x0000)),
+        CRC16_TMS37157(new Parameters(16, 0X1021, 0X89EC, true, true, 0x0000)),
+        CRC16_USB(new Parameters(16, 0X8005, 0xffff, true, true, 0xffff)),
+        CRC_A(new Parameters(16, 0x1021, 0xc6c6, true, true, 0x0)),
+        CRC16_KERMIT(new Parameters(16, 0x1021, 0x0000, true, true, 0x0)),
+        CRC16_MODBUS(new Parameters(16, 0X8005, 0XFFFF, true, true, 0x0)),
+        CRC16_X25(new Parameters(16, 0x1021, 0xffff, true, true, 0xffff)),
+        CRC16_XMODEM(new Parameters(16, 0x1021, 0x0000, false, false, 0x0000)),
         //CRC32
-        CRC32(32, 0x04C11DB7, 0xFFFFFFFF, true, true, 0xFFFFFFFF),
-        CRC32_BZIP2(32, 0x04C11DB7, 0xFFFFFFFF, false, false, 0xFFFFFFFF),
-        CRC32C(32, 0x1EDC6F41, 0xFFFFFFFF, true, true, 0xFFFFFFFF),
-        CRC32D(32, 0xA833982B, 0xFFFFFFFF, true, true, 0xFFFFFFFF),
-        CRC32_MPEG2(32, 0x04C11DB7, 0xFFFFFFFF, false, false, 0x00000000),
-        CRC32_POSIX(32, 0x04C11DB7, 0x00000000, false, false, 0xFFFFFFFF),
-        CRC32Q(32, 0x814141AB, 0x00000000, false, false, 0x00000000),
-        CRC32_JAMCRC(32, 0x04C11DB7, 0xFFFFFFFF, true, true, 0x00000000),
-        CRC32_XFER(32, 0x000000AF, 0x00000000, false, false, 0x00000000);
+        CRC32(new Parameters(32, 0x04C11DB7, 0xFFFFFFFF, true, true, 0xFFFFFFFF)),
+        CRC32_BZIP2(new Parameters(32, 0x04C11DB7, 0xFFFFFFFF, false, false, 0xFFFFFFFF)),
+        CRC32C(new Parameters(32, 0x1EDC6F41, 0xFFFFFFFF, true, true, 0xFFFFFFFF)),
+        CRC32D(new Parameters(32, 0xA833982B, 0xFFFFFFFF, true, true, 0xFFFFFFFF)),
+        CRC32_MPEG2(new Parameters(32, 0x04C11DB7, 0xFFFFFFFF, false, false, 0x00000000)),
+        CRC32_POSIX(new Parameters(32, 0x04C11DB7, 0x00000000, false, false, 0xFFFFFFFF)),
+        CRC32Q(new Parameters(32, 0x814141AB, 0x00000000, false, false, 0x00000000)),
+        CRC32_JAMCRC(new Parameters(32, 0x04C11DB7, 0xFFFFFFFF, true, true, 0x00000000)),
+        CRC32_XFER(new Parameters(32, 0x000000AF, 0x00000000, false, false, 0x00000000));
 
 
+        private Parameters parameters;
+
+        Algorithm(Parameters parameters) {
+            this.parameters = parameters;
+        }
+
+        public Parameters getParameters() {
+            return parameters;
+        }
+    }
+
+    public static class Parameters {
         private int width;   // Width of the CRC expressed in bits
         private long polynomial; // Polynomial used in this CRC calculation
         private boolean reflectIn;   // Refin indicates whether input bytes should be reflected
@@ -358,7 +388,8 @@ public class CRC {
         private long init; // Init is initial value for CRC calculation
         private long finalXor; // Xor is a value for final xor to be applied before returning result
 
-        Algorithm(int width, long polynomial, long init, boolean reflectIn, boolean reflectOut, long finalXor) {
+        Parameters(int width, long polynomial, long init, boolean reflectIn, boolean reflectOut, long finalXor) {
+
             this.width = width;
             this.polynomial = polynomial;
             this.reflectIn = reflectIn;
@@ -366,6 +397,17 @@ public class CRC {
             this.init = init;
             this.finalXor = finalXor;
         }
+
+
+        Parameters(Parameters orig) {
+            width = orig.width;
+            polynomial = orig.polynomial;
+            reflectIn = orig.reflectIn;
+            reflectOut = orig.reflectOut;
+            init = orig.init;
+            finalXor = orig.finalXor;
+        }
+
 
         public int getWidth() {
             return width;
@@ -389,51 +431,6 @@ public class CRC {
 
         public long getFinalXor() {
             return finalXor;
-        }
-
-
-//        /** CCITT CRC parameters */
-//        public static final Parameters CCITT = new Parameters(16, 0x1021, 0x00FFFF, false, false, 0x0);
-//        /** CRC16 CRC parameters, also known as ARC */
-//        public static final Parameters CRC16 = new Parameters(16, 0x8005, 0x0000, true, true, 0x0);
-//        /** XMODEM is a set of CRC parameters commonly referred as "XMODEM" */
-//        public static final Parameters XMODEM = new Parameters(16, 0x1021, 0x0000, false, false, 0x0);
-//        /** XMODEM2 is another set of CRC parameters commonly referred as "XMODEM" */
-//        public static final Parameters XMODEM2 = new Parameters(16, 0x8408, 0x0000, true, true, 0x0);
-//
-//        /** CRC32 is by far the the most commonly used CRC-32 polynom and set of parameters */
-//        public static final Parameters CRC32 = new Parameters(32, 0x04C11DB7, 0x00FFFFFFFFL, true, true, 0x00FFFFFFFFL);
-//        /** IEEE is an alias to CRC32 */
-//        public static final Parameters IEEE = CRC32;
-//        /** Castagnoli polynomial. used in iSCSI. And also provided by hash/crc32 package. */
-//        public static final Parameters Castagnoli = new Parameters(32, 0x1EDC6F41L, 0x00FFFFFFFFL, true, true, 0x00FFFFFFFFL);
-//        /** CRC32C is an alias to Castagnoli */
-//        public static final Parameters CRC32C = Castagnoli;
-//        /** Koopman polynomial */
-//        public static final Parameters Koopman = new Parameters(32, 0x741B8CD7L, 0x00FFFFFFFFL, true, true, 0x00FFFFFFFFL);
-//
-//        /** CRC64ISO is set of parameters commonly known as CRC64-ISO */
-//        public static final Parameters CRC64ISO = new Parameters(64, 0x000000000000001BL, 0xFFFFFFFFFFFFFFFFL, true, true, 0xFFFFFFFFFFFFFFFFL);
-//        /** CRC64ECMA is set of parameters commonly known as CRC64-ECMA */
-//        public static final Parameters CRC64ECMA = new Parameters(64, 0x42F0E1EBA9EA3693L, 0xFFFFFFFFFFFFFFFFL, true, true, 0xFFFFFFFFFFFFFFFFL);
-
-    }
-
-    private static class Parameters {
-        private int width;   // Width of the CRC expressed in bits
-        private long polynomial; // Polynomial used in this CRC calculation
-        private boolean reflectIn;   // Refin indicates whether input bytes should be reflected
-        private boolean reflectOut;   // Refout indicates whether input bytes should be reflected
-        private long init; // Init is initial value for CRC calculation
-        private long finalXor; // Xor is a value for final xor to be applied before returning result
-
-        Parameters(Algorithm orig) {
-            width = orig.width;
-            polynomial = orig.polynomial;
-            reflectIn = orig.reflectIn;
-            reflectOut = orig.reflectOut;
-            init = orig.init;
-            finalXor = orig.finalXor;
         }
     }
 
