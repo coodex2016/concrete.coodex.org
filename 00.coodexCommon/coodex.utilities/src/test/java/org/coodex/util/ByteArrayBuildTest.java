@@ -16,7 +16,6 @@
 
 package org.coodex.util;
 
-import org.coodex.io.ByteArrayBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,15 +24,15 @@ public class ByteArrayBuildTest {
     @Test
     public void test(){
         ByteArrayBuilder byteArrayBuilder;
-        byteArrayBuilder = new ByteArrayBuilder(ByteArrayBuilder.Endianness.BIG).append(0xABCDl);
-        Assert.assertEquals("000000000000ABCD", Common.byte2hex(byteArrayBuilder.toByteArray()));
+        byteArrayBuilder = new ByteArrayBuilder(ByteArrayBuilder.Endianness.BIG_ENDIAN).append(0xABCDl);
+        Assert.assertEquals("000000000000ABCD", Common.byte2hex(byteArrayBuilder.build()));
 
         byteArrayBuilder = new ByteArrayBuilder().append("1234567890").append(CRC.Algorithm.CRC16_MODBUS);
         Assert.assertEquals(Common.byte2hex("1234567890".getBytes()) + "0AC2",
-                Common.byte2hex(byteArrayBuilder.toByteArray()));
+                Common.byte2hex(byteArrayBuilder.build()));
 
         byteArrayBuilder = new ByteArrayBuilder().append((short) 0xABCD);
-        Assert.assertEquals("CDAB", Common.byte2hex(byteArrayBuilder.toByteArray()));
+        Assert.assertEquals("CDAB", Common.byte2hex(byteArrayBuilder.build()));
 
     }
 }

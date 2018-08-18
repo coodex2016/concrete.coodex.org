@@ -22,7 +22,6 @@ import org.coodex.concrete.ConcreteClient;
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
-import org.coodex.concrete.message.MessageFilter;
 import org.coodex.concrete.message.Queue;
 import org.coodex.concrete.message.TokenBasedTopic;
 import org.coodex.concrete.message.Topic;
@@ -40,6 +39,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+
+import static org.coodex.concrete.test.impl.SubscribeInterceptor.SUBSCRIBED_NUMBER_KEY;
 
 public class TestImpl implements Test {
 
@@ -120,13 +121,8 @@ public class TestImpl implements Test {
     @Override
     public int add(final int x1, int x2) {
         token.setAttribute("a", "sdf");
+        token.setAttribute(SUBSCRIBED_NUMBER_KEY, x2);
         log.debug("tokenId: {}", token.getTokenId());
-        tokenBasedTopic.subscribe(new MessageFilter<TestSubject>() {
-            @Override
-            public boolean handle(TestSubject message) {
-                return message.getNumber() == x1;
-            }
-        });
 
         startPush();
         return x1 + x2;

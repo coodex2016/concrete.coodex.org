@@ -17,6 +17,7 @@
 package org.coodex.concrete.test.impl;
 
 import org.coodex.concrete.message.Subject;
+import org.coodex.util.Common;
 
 public class TestSubject implements Subject {
     private final int number;
@@ -27,7 +28,7 @@ public class TestSubject implements Subject {
 
     @Override
     public String getSubject() {
-        return "test";
+        return Common.now();
     }
 
     public int getNumber() {

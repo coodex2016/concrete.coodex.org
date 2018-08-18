@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package org.coodex.io;
-
-import org.coodex.util.CRC;
-import org.coodex.util.Common;
+package org.coodex.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -28,7 +25,7 @@ public class ByteArrayBuilder {
     private final Endianness endianness;
 
     public ByteArrayBuilder() {
-        this(Endianness.LITTLE);
+        this(Endianness.LITTLE_ENDIAN);
     }
 
     public ByteArrayBuilder(Endianness endianness) {
@@ -53,7 +50,7 @@ public class ByteArrayBuilder {
     private byte[] toBytes(long l, int wide, Endianness endianness) {
 
         byte[] bytes = new byte[wide];
-        boolean little = Endianness.LITTLE.equals(endianness);
+        boolean little = Endianness.LITTLE_ENDIAN.equals(endianness);
         for (int i = 0; i < wide; i++) {
             bytes[little ? i : (wide - i - 1)] = (byte) l;
             l = l >>> 8;
@@ -117,12 +114,12 @@ public class ByteArrayBuilder {
                 algorithm.getParameters().getWidth() / 8, endianness));
     }
 
-    public byte[] toByteArray() {
+    public byte[] build() {
         return byteArrayOutputStream.toByteArray();
     }
 
     public enum Endianness {
-        BIG, LITTLE
+        BIG_ENDIAN, LITTLE_ENDIAN
     }
 
 }

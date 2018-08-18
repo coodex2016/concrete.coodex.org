@@ -32,3 +32,4 @@
 
 org.coodex.concrete.core.token.local.LocalTokenEventListener
 org.coodex.concrete.core.intercept.OperatorTokenEventListener
+org.coodex.concrete.core.intercept.TokenBaseTopicTokenEventListener

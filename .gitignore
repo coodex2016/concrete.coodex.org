@@ -1,10 +1,10 @@
 
 target/
 pom.xml.versionsBackup
-test-case/
 /release.properties
 
 env.properties
+env.xml
 
 /.idea/
 *.iml

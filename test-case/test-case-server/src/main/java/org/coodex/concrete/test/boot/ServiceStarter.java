@@ -16,13 +16,16 @@
 
 package org.coodex.concrete.test.boot;
 
+import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concrete.core.token.local.LocalTokenManager;
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
+import org.coodex.concrete.spring.aspects.ConcreteAOPChain;
 import org.coodex.concrete.support.jsr339.ConcreteJaxrs339Application;
 import org.coodex.concrete.support.websocket.CallerHackConfigurator;
 import org.coodex.concrete.support.websocket.ConcreteWebSocketApplication;
 import org.coodex.concrete.test.api.Test;
+import org.coodex.concrete.test.impl.SubscribeInterceptor;
 import org.coodex.concrete.test.impl.TestImpl;
 import org.coodex.util.Profile;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -42,6 +45,8 @@ import javax.servlet.ServletException;
 import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpoint;
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootApplication
 @Configuration
@@ -106,14 +111,6 @@ public class ServiceStarter extends SpringBootServletInitializer {
         return registrationBean;
     }
 
-//    @Bean
-//    public DubboApplication dubboApplication() {
-//        DubboApplication dubboApplication = new DubboApplication(
-//                "test", buildRegistryConfigs(new String[]{profile.getString("registry")})
-//        );
-//        dubboApplication.register(Test.class);
-//        return dubboApplication;
-//    }
 
     @Bean
     public TokenManager tokenManager() {
@@ -121,9 +118,28 @@ public class ServiceStarter extends SpringBootServletInitializer {
     }
 
     @Bean
+    public SubscribeInterceptor subscribeInterceptor() {
+        return new SubscribeInterceptor();
+    }
+
+    private List<ConcreteInterceptor> interceptors() {
+        List<ConcreteInterceptor> interceptors = new ArrayList<ConcreteInterceptor>();
+        interceptors.add(subscribeInterceptor());
+        return interceptors;
+    }
+
+
+    // 同切片链的定义方式，参见 https://book.concrete.coodex.org/%E5%B7%A5%E5%85%B7%E9%93%BE/Aspects.html#切片链方式
+    @Bean
+    public ConcreteAOPChain aspects() {
+        return new ConcreteAOPChain(interceptors());
+    }
+
+    @Bean
     public Test getTest() {
         return new TestImpl();
     }
+
 
     public static class JaxRSApplication extends ConcreteJaxrs339Application {
         public JaxRSApplication() {

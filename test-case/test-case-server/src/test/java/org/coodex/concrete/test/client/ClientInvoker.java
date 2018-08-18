@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.test.client;
 
+import com.alibaba.fastjson.JSON;
 import org.coodex.concrete.Client;
 import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.jaxrs.Polling;
@@ -41,9 +42,16 @@ public class ClientInvoker {
 //        Trace trace = APM.build().start("kkk");
         try {
             Test test = Client.getInstance(Test.class, "remote");
-            System.out.println(test.test());
-            System.out.println(test.sayHello("asf"));
-            System.out.println(test.nullTest());
+            Polling polling = Client.getInstance(Polling.class, "remote");
+            test.add(2,3);
+            while(true){
+
+                System.out.println(JSON.toJSONString(polling.polling(10)));
+            }
+
+//            System.out.println(test.test());
+//            System.out.println(test.sayHello("asf"));
+//            System.out.println(test.nullTest());
         }finally {
 //            trace.finish();
             Thread.sleep(5000);

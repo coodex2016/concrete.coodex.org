@@ -1,0 +1,59 @@
+<!DOCTYPE>
+<!--
+  ~ Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html>
+<head>
+    <title>jQuery SDK example</title>
+    <!--<script type="text/javascript" rel="script"-->
+    <!--src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>-->
+
+    <script type="text/javascript" rel="script"
+            src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="jquery-concrete.js"></script>
+    <script>
+        $(document).ready(function () {
+            // 设置服务根
+            concrete.configure({
+                root: '/jaxrs'
+            });
+            var testService = concrete.module("Test");
+            // var exampleModule = concrete.module("ExampleApi");
+            // $('#add45').click(function () {
+            //     exampleModule.add(4,5).then(function (sum) {
+            //         alert("4 + 5 = " + sum);
+            //     })
+            // });
+            // $('#add145').click(function () {
+            //     exampleModule.add(14,5).then(function (sum) {
+            //         alert("14 + 5 = " + sum);
+            //     })
+            // });
+            $('#bodyTest').click(function () {
+                    testService.bodyTest(1, 1, '123', '987').then(function (value) {
+                        console.log('ok');
+                    })
+                }
+            );
+        });
+    </script>
+</head>
+<body>
+<button id="bodyTest">bodyTest</button>
+<button id="add45">add(4, 5)</button>
+<button id="add145">add(14, 5)</button>
+</body>
+</html>
