@@ -346,14 +346,16 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
                     String tokenIdAfterInvoke = context.getTokenId();
                     if (!Common.isSameStr(tokenId, tokenIdAfterInvoke)
                             && !Common.isBlank(tokenIdAfterInvoke)) {
-
+                        responsePackage.setConcreteTokenId(tokenIdAfterInvoke);
                     }
+                    /////  TODO 在哪切入消息推送？
 //                    if (isNew)
 //                        responsePackage.setConcreteTokenId(token.getTokenId());
                     responsePackage.setSubjoin(updatedMap(context.getSubjoin()));
                     responsePackage.setMsgId(requestPackage.getMsgId());
                     responsePackage.setOk(true);
                     responsePackage.setContent(result);
+
                     sendText(JSONSerializerFactory.getInstance().toJson(responsePackage), session);
                 } catch (final Throwable th) {
                     trace.error(th);

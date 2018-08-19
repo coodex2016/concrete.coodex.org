@@ -82,7 +82,7 @@ public class TBMContainer {
         List<ServerSideMessage> messages = new ArrayList<ServerSideMessage>();
         for (TBMMessage message : messageList) {
 //            message.consumedNotifyTopic.publish(new TokenBasedTopicPrototype.ConsumedNotify(message.id, tokenId));
-            message.cunsumeBy(tokenId);
+            message.consumeBy(tokenId);
             messages.add(new SSMImpl(message));
         }
 
@@ -173,7 +173,7 @@ public class TBMContainer {
                     TimeUnit.SECONDS); //默认30秒失效
         }
 
-        void cunsumeBy(String tokenId) {
+        void consumeBy(String tokenId) {
             consumedNotifyTopic.publish(new TokenBasedTopicPrototype.ConsumedNotify(id, tokenId));
         }
     }
@@ -198,7 +198,7 @@ public class TBMContainer {
         public void put(TBMMessage message) {
             synchronized (queue) {
                 if (tbmListener != null) {
-                    message.cunsumeBy(tbmListener.getTokenId());
+                    message.consumeBy(tbmListener.getTokenId());
                     tbmListener.onMessage(new SSMImpl(message));
                 } else {
                     queue.add(message);
