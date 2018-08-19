@@ -20,6 +20,7 @@ import org.coodex.concrete.common.Token;
 import org.coodex.concrete.common.TokenEventListener;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.concrete.message.Subscription;
+import org.coodex.concrete.message.TBMContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +67,9 @@ public class TokenBaseTopicTokenEventListener implements TokenEventListener {
                             subscription.cancel();
                         }
                     }
-                    log.debug("token {} cancel {} subscription(s).", token.getTokenId(), set.size());
+                    TBMContainer.getInstance().clear(token.getTokenId());
                     subscriptionsMap.remove(token.getTokenId());
+                    log.debug("token {} cancel {} subscription(s).", token.getTokenId(), set.size());
                 }
             }
         }

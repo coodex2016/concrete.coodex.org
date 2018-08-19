@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.message;
 
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.concurrent.ExecutorsHelper;
@@ -72,7 +73,7 @@ public class TBMContainer {
     }
 
     void remove(TokenBasedTopicPrototype.ConsumedNotify consumedNotify) {
-        queues.getInstance(consumedNotify.getTokenId());
+        queues.getInstance(consumedNotify.getTokenId()).remove(consumedNotify.getId());
     }
 
     public List<ServerSideMessage> getMessages(String tokenId, long timeOut) {
@@ -80,7 +81,8 @@ public class TBMContainer {
 
         List<ServerSideMessage> messages = new ArrayList<ServerSideMessage>();
         for (TBMMessage message : messageList) {
-            message.consumedNotifyTopic.publish(new TokenBasedTopicPrototype.ConsumedNotify(message.id, tokenId));
+//            message.consumedNotifyTopic.publish(new TokenBasedTopicPrototype.ConsumedNotify(message.id, tokenId));
+            message.cunsumeBy(tokenId);
             messages.add(new SSMImpl(message));
         }
 
@@ -90,6 +92,25 @@ public class TBMContainer {
     public List<ServerSideMessage> getMessages(long timeOut) {
         String tokenId = TokenWrapper.getInstance().getTokenId();
         return getMessages(tokenId, timeOut);
+    }
+
+    public void listen(String tokenId, TBMListener tbmListener){
+        TBMQueue queue = queues.getInstance(tokenId);
+        queue.tbmListener = tbmListener;
+    }
+
+    public void clear(String tokenId) {
+        TBMQueue queue = queues.remove(tokenId);
+        if (queue != null) {
+            queue.tbmListener = null;
+            queue.peekAll(0);
+        }
+    }
+
+    public interface TBMListener {
+        String getTokenId();
+
+        void onMessage(ServerSideMessage serverSideMessage);
     }
 
     static class SSMImpl implements ServerSideMessage {
@@ -147,14 +168,20 @@ public class TBMContainer {
                         public void run() {
                             remove(tokenConfirm.getTokenId(), TBMMessage.this);
                         }
-                    }, 5, TimeUnit.MINUTES); // 5分钟以后失效
+                    },
+                    ConcreteHelper.getProfile().getLong("tokenBasedTopicMessage.cacheLife", 30),
+                    TimeUnit.SECONDS); //默认30秒失效
+        }
+
+        void cunsumeBy(String tokenId) {
+            consumedNotifyTopic.publish(new TokenBasedTopicPrototype.ConsumedNotify(id, tokenId));
         }
     }
 
     static class TBMQueue {
         private Queue<TBMMessage> queue = new LinkedBlockingQueue<TBMMessage>();
         private Map<String, TBMMessage> index = new ConcurrentHashMap<String, TBMMessage>();
-
+        private TBMListener tbmListener;
         private Object lock = new Object();
 
         void remove(TBMMessage message) {
@@ -170,11 +197,17 @@ public class TBMContainer {
 
         public void put(TBMMessage message) {
             synchronized (queue) {
-                queue.add(message);
-                index.put(message.id, message);
+                if (tbmListener != null) {
+                    message.cunsumeBy(tbmListener.getTokenId());
+                    tbmListener.onMessage(new SSMImpl(message));
+                } else {
+                    queue.add(message);
+                    index.put(message.id, message);
+                }
                 synchronized (lock) {
                     queue.notifyAll();
                 }
+
             }
         }
 
