@@ -16,29 +16,24 @@
 
 package org.coodex.concrete.spring.components;
 
-import org.coodex.concrete.common.BeanProviderFacade;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.spring.aspects.ConcreteAOPChain;
-import org.coodex.util.Singleton;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
 public class ConcreteInterceptorPostProcessor extends InstantiationAwareBeanPostProcessorAdapter {
 
-    private Singleton<ConcreteAOPChain> chainSingleton = new Singleton<ConcreteAOPChain>(new Singleton.Builder<ConcreteAOPChain>() {
-        @Override
-        public ConcreteAOPChain build() {
-            return BeanProviderFacade.getBeanProvider().getBean(ConcreteAOPChain.class);
-        }
-    });
+    @Inject
+    private ConcreteAOPChain concreteAOPChain;
 
     @Override
     public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
         if (bean instanceof ConcreteInterceptor) {
-            chainSingleton.getInstance().add((ConcreteInterceptor) bean);
+            concreteAOPChain.add((ConcreteInterceptor) bean);
         }
         return super.postProcessAfterInstantiation(bean, beanName);
     }
