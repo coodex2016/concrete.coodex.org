@@ -19,6 +19,7 @@ package org.coodex.concrete.support.websocket;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.common.messages.Message;
 import org.coodex.concrete.core.messages.Courier;
+import org.coodex.concrete.message.ServerSideMessage;
 
 @Deprecated
 public class WebSocketCourier implements Courier {
@@ -28,7 +29,27 @@ public class WebSocketCourier implements Courier {
     }
 
     @Override
-    public <T> void pushTo(Message<T> message, Token token) {
-        WebSocketServerHandle.sendMessage(message, token.getTokenId());
+    public <T> void pushTo(final Message<T> message, Token token) {
+        WebSocketServerHandle.sendMessage(new ServerSideMessage<T>() {
+            @Override
+            public String getSubject() {
+                return message.getSubject();
+            }
+
+            @Override
+            public String getId() {
+                return message.getId();
+            }
+
+            @Override
+            public String getHost() {
+                return message.getHost();
+            }
+
+            @Override
+            public T getBody() {
+                return message.getBody();
+            }
+        }, token.getTokenId());
     }
 }

@@ -21,6 +21,7 @@ import org.coodex.concrete.common.messages.Message;
 import java.util.List;
 import java.util.Queue;
 
+@Deprecated
 public abstract class AsyncMessageReceiver {
 
     private String tokenId;

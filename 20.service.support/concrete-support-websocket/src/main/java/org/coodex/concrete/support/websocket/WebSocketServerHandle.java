@@ -20,8 +20,8 @@ import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.common.messages.Message;
 import org.coodex.concrete.common.struct.AbstractParam;
+import org.coodex.concrete.message.ServerSideMessage;
 import org.coodex.concrete.websocket.ConcreteWebSocketEndPoint;
 import org.coodex.concrete.websocket.*;
 import org.coodex.concurrent.ExecutorsHelper;
@@ -92,7 +92,7 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
 
     }
 
-    static <T> void sendMessage(Message<T> message, String tokenId) {
+    static <T> void sendMessage(ServerSideMessage<T> message, String tokenId) {
         for (Session session : peers.keySet()) {
             if (tokenId.equals(peers.get(session))) {
                 $sendText(JSONSerializerFactory.getInstance().toJson(buildPackage(message)),
@@ -103,7 +103,7 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> ResponsePackage<T> buildPackage(Message<T> message) {
+    private static <T> ResponsePackage<T> buildPackage(ServerSideMessage<T> message) {
         ResponsePackage responsePackage = new ResponsePackage();
         Map<String, String> subjoin = new HashMap<>();
         subjoin.put(BROADCAST, "true");

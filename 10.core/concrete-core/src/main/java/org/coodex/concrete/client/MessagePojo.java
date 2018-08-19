@@ -17,7 +17,7 @@
 package org.coodex.concrete.client;
 
 import org.coodex.concrete.common.messages.Message;
-
+@Deprecated
 public class MessagePojo<T> implements Message<T> {
 
     private String subject;
