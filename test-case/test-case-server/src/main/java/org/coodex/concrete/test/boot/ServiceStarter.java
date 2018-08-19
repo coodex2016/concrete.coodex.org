@@ -16,11 +16,9 @@
 
 package org.coodex.concrete.test.boot;
 
-import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concrete.core.token.local.LocalTokenManager;
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
-import org.coodex.concrete.spring.aspects.ConcreteAOPChain;
 import org.coodex.concrete.support.jsr339.ConcreteJaxrs339Application;
 import org.coodex.concrete.support.websocket.CallerHackConfigurator;
 import org.coodex.concrete.support.websocket.ConcreteWebSocketApplication;
@@ -36,7 +34,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportResource;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -45,12 +46,9 @@ import javax.servlet.ServletException;
 import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpoint;
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootApplication
 @Configuration
-@EnableAspectJAutoProxy
 @Import(ConcreteSpringConfiguration.class)
 @ImportResource("env.xml")
 public class ServiceStarter extends SpringBootServletInitializer {
@@ -122,18 +120,6 @@ public class ServiceStarter extends SpringBootServletInitializer {
         return new SubscribeInterceptor();
     }
 
-    private List<ConcreteInterceptor> interceptors() {
-        List<ConcreteInterceptor> interceptors = new ArrayList<ConcreteInterceptor>();
-        interceptors.add(subscribeInterceptor());
-        return interceptors;
-    }
-
-
-    // 同切片链的定义方式，参见 https://book.concrete.coodex.org/%E5%B7%A5%E5%85%B7%E9%93%BE/Aspects.html#切片链方式
-    @Bean
-    public ConcreteAOPChain aspects() {
-        return new ConcreteAOPChain(interceptors());
-    }
 
     @Bean
     public Test getTest() {

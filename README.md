@@ -25,6 +25,11 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+
+## 2018-08-19
+- concrete-core-spring: 简化切片的使用方式，废弃`org.coodex.concrete.spring.aspects.*Aspect`，直接定义`ConcreteInterceptor`的Bean即可
+
+
 ## 2018-08-18
 - coodex-utitlies: 增加ByteArrayBuilder，方便构建协议数据
 - concrete-core: 增加TokenBaseTopic的订阅管理切片，和自动取消订阅的TokenEventListener，[使用参考](test-case/test-case-server/src/main/java/org/coodex/concrete/test/impl/SubscribeInterceptor.java)

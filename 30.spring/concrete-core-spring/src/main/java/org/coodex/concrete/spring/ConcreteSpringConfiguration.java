@@ -18,13 +18,17 @@ package org.coodex.concrete.spring;
 
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.concrete.spring.aspects.ConcreteAOPChain;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @Configuration
+@EnableAspectJAutoProxy
 @ComponentScan("org.coodex.concrete.spring.components")
 public class ConcreteSpringConfiguration {
+
 
     @Bean
     public BeanProvider springBeanProvider() {
@@ -45,4 +49,10 @@ public class ConcreteSpringConfiguration {
     public Subjoin subjoinWrapper() {
         return SubjoinWrapper.getInstance();
     }
+
+    @Bean
+    public ConcreteAOPChain concreteAOPChain() {
+        return new ConcreteAOPChain();
+    }
+
 }

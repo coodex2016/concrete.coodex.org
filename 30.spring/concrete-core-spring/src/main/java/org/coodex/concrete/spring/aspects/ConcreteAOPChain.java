@@ -27,14 +27,19 @@ import org.springframework.core.Ordered;
 
 import java.util.List;
 
+import static org.coodex.concrete.spring.aspects.AspectJHelper.ASPECT_POINT;
+
 /**
  * Created by davidoff shen on 2016-09-07.
  */
 @Aspect
 public class ConcreteAOPChain extends SyncInterceptorChain implements Ordered {
 
-    protected static final String ASPECT_POINT = AbstractConcreteAspect.ASPECT_POINT;
     private static final Profile profile = ConcreteHelper.getProfile();
+
+    public ConcreteAOPChain() {
+
+    }
 
     public ConcreteAOPChain(List<ConcreteInterceptor> interceptors) {
         super(interceptors);

@@ -23,5 +23,6 @@ import org.coodex.concrete.core.intercept.OperationLogInterceptor;
  * Created by davidoff shen on 2017-05-08.
  */
 @Aspect
+@Deprecated
 public class OperationLogAspect extends AbstractConcreteAspect<OperationLogInterceptor> {
 }

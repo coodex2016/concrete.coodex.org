@@ -23,5 +23,6 @@ import org.coodex.concrete.core.intercept.BeanValidationInterceptor;
  * Created by davidoff shen on 2016-09-05.
  */
 @Aspect
+@Deprecated
 public class BeanValidationAspect extends AbstractConcreteAspect<BeanValidationInterceptor> {
 }

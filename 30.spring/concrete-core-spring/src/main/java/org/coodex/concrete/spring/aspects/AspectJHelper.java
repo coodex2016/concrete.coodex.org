@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
  * Created by davidoff shen on 2016-09-07.
  */
 public class AspectJHelper {
+    public static final String ASPECT_POINT = "target(org.coodex.concrete.api.ConcreteService) && execution(public * *(..))";
     protected final static Method getMethod(Signature sign) {
         return ((MethodSignature) sign).getMethod();
     }

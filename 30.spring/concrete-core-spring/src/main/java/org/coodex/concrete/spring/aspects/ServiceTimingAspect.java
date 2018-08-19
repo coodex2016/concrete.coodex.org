@@ -23,5 +23,6 @@ import org.coodex.concrete.core.intercept.ServiceTimingInterceptor;
  * Created by davidoff shen on 2016-11-02.
  */
 @Aspect
+@Deprecated
 public class ServiceTimingAspect extends AbstractConcreteAspect<ServiceTimingInterceptor> {
 }

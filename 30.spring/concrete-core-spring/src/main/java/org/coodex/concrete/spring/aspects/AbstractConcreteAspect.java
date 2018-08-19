@@ -28,14 +28,15 @@ import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.ConcreteSyncInterceptor;
 import org.springframework.core.Ordered;
 
+import static org.coodex.concrete.spring.aspects.AspectJHelper.ASPECT_POINT;
 import static org.coodex.util.TypeHelper.solve;
 import static org.coodex.util.TypeHelper.typeToClass;
 
 /**
  * Created by davidoff shen on 2016-09-01.
  */
+@Deprecated
 public abstract class AbstractConcreteAspect<T extends AbstractInterceptor> extends AbstractSyncInterceptor implements Ordered {
-    public static final String ASPECT_POINT = "target(org.coodex.concrete.api.ConcreteService) && execution(public * *(..))";
 
 
     private ConcreteInterceptor interceptor;
