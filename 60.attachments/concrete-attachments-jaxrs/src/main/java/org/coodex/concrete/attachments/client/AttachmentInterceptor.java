@@ -21,6 +21,7 @@ import org.coodex.concrete.attachments.Attachment;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.core.intercept.AbstractInterceptor;
 import org.coodex.concrete.core.intercept.InterceptOrders;
+import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.util.ReflectHelper;
 import org.coodex.util.TypeHelper;
 
@@ -33,6 +34,7 @@ import java.util.Set;
 /**
  * Created by davidoff shen on 2016-12-13.
  */
+@ServerSide
 public class AttachmentInterceptor extends AbstractInterceptor {
 
     public static final int ORDER = InterceptOrders.OTHER + 1;
@@ -43,7 +45,7 @@ public class AttachmentInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    public boolean accept(RuntimeContext context) {
+    protected boolean accept_(RuntimeContext context) {
         return true;
     }
 
