@@ -23,6 +23,8 @@ import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.common.ServiceTimingChecker;
+import org.coodex.concrete.core.intercept.annotations.Local;
+import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.timecheckers.ByTimeRange;
 import org.coodex.concrete.core.intercept.timecheckers.ByWorkDay;
 import org.coodex.util.Common;
@@ -38,6 +40,8 @@ import java.util.*;
 /**
  * Created by davidoff shen on 2016-11-02.
  */
+@ServerSide
+@Local
 public class ServiceTimingInterceptor extends AbstractInterceptor {
 
 
@@ -103,7 +107,7 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    public boolean accept(RuntimeContext context) {
+    protected boolean accept_(RuntimeContext context) {
         return isTimingLimitService(context);
     }
 

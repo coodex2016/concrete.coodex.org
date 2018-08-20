@@ -17,12 +17,27 @@
 package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.coodex.concrete.client.ClientSideContext;
+import org.coodex.concrete.client.LocalServiceContext;
 import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.ServerSideContext;
+import org.coodex.concrete.common.ServiceContext;
+import org.coodex.concrete.core.intercept.annotations.ClientSide;
+import org.coodex.concrete.core.intercept.annotations.Default;
+import org.coodex.concrete.core.intercept.annotations.Local;
+import org.coodex.concrete.core.intercept.annotations.ServerSide;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 
 /**
  * Created by davidoff shen on 2016-09-07.
  */
 public abstract class AbstractInterceptor implements ConcreteInterceptor {
+
+    private final static Logger log = LoggerFactory.getLogger(AbstractInterceptor.class);
+
 
 //    private final static ThreadLocal<Object> atom = new ThreadLocal<>();
 
@@ -35,7 +50,30 @@ public abstract class AbstractInterceptor implements ConcreteInterceptor {
                 joinPoint.getThis().getClass());
     }
 
-//    private boolean isAtomLevel(){
+    @Override
+    public final boolean accept(RuntimeContext context) {
+        return sideAccept() && accept_(context);
+    }
+
+    private boolean sideAccept() {
+        ServiceContext serviceContext = getServiceContext();
+        Class<? extends AbstractInterceptor> clz = this.getClass();
+        if (serviceContext instanceof ServerSideContext) {
+            return clz.getAnnotation(ServerSide.class) != null;
+        } else if (serviceContext instanceof ClientSideContext) {
+            return clz.getAnnotation(ClientSide.class) != null;
+        } else if (serviceContext instanceof LocalServiceContext) {
+            return clz.getAnnotation(Local.class) != null;
+        } else
+            return clz.getAnnotation(Default.class) != null || (
+                    clz.getAnnotation(ServerSide.class) == null
+                    && clz.getAnnotation(ClientSide.class) == null
+                    && clz.getAnnotation(Default.class) == null                    );
+    }
+
+    protected abstract boolean accept_(RuntimeContext context);
+
+    //    private boolean isAtomLevel(){
 //        return false;
 //    }
 

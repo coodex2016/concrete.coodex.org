@@ -36,7 +36,7 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
     }
 
     @Override
-    public boolean accept(RuntimeContext context) {
+    protected boolean accept_(RuntimeContext context) {
         return true;
     }
 

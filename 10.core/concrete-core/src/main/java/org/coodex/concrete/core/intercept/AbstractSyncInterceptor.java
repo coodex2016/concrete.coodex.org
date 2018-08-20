@@ -19,6 +19,10 @@ package org.coodex.concrete.core.intercept;
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.core.intercept.annotations.ClientSide;
+import org.coodex.concrete.core.intercept.annotations.Default;
+import org.coodex.concrete.core.intercept.annotations.Local;
+import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,31 +71,70 @@ public abstract class AbstractSyncInterceptor extends AbstractInterceptor implem
 
 
     protected ConcreteSyncInterceptor asyncToSync(final ConcreteInterceptor interceptor) {
-        return new AbstractSyncInterceptor() {
-            @Override
-            public int getOrder() {
-                return interceptor.getOrder();
-            }
+//        return new AbstractSyncInterceptor() {
+//            @Override
+//            public int getOrder() {
+//                return interceptor.getOrder();
+//            }
+//
+//            @Override
+//            protected boolean accept_(RuntimeContext context) {
+//                return interceptor.accept(context);
+//            }
+//
+//            @Override
+//            public void before(RuntimeContext context, MethodInvocation joinPoint) {
+//                interceptor.before(context, joinPoint);
+//            }
+//
+//            @Override
+//            public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+//                return interceptor.after(context, joinPoint, result);
+//            }
+//
+//            @Override
+//            public Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
+//                return interceptor.onError(context, joinPoint, th);
+//            }
+//        };
+        return new InnerSyncInterceptor(interceptor);
+    }
 
-            @Override
-            public boolean accept(RuntimeContext context) {
-                return interceptor.accept(context);
-            }
+    @ServerSide
+    @ClientSide
+    @Local
+    @Default
+    public static class InnerSyncInterceptor extends AbstractSyncInterceptor {
 
-            @Override
-            public void before(RuntimeContext context, MethodInvocation joinPoint) {
-                interceptor.before(context, joinPoint);
-            }
+        private final ConcreteInterceptor interceptor;
 
-            @Override
-            public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
-                return interceptor.after(context, joinPoint, result);
-            }
+        InnerSyncInterceptor(ConcreteInterceptor interceptor) {
+            this.interceptor = interceptor;
+        }
 
-            @Override
-            public Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
-                return interceptor.onError(context, joinPoint, th);
-            }
-        };
+        @Override
+        public int getOrder() {
+            return interceptor.getOrder();
+        }
+
+        @Override
+        public boolean accept_(RuntimeContext context) {
+            return interceptor.accept(context);
+        }
+
+        @Override
+        public void before(RuntimeContext context, MethodInvocation joinPoint) {
+            interceptor.before(context, joinPoint);
+        }
+
+        @Override
+        public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+            return interceptor.after(context, joinPoint, result);
+        }
+
+        @Override
+        public Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
+            return interceptor.onError(context, joinPoint, th);
+        }
     }
 }

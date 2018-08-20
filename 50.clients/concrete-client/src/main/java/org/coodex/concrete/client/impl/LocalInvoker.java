@@ -18,6 +18,7 @@ package org.coodex.concrete.client.impl;
 
 import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.client.Destination;
+import org.coodex.concrete.client.LocalServiceContext;
 import org.coodex.concrete.common.BeanProviderFacade;
 import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.ServiceContext;

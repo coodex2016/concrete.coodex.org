@@ -27,6 +27,7 @@ public interface SomeService extends ConcreteService{
 
 ## 2018-08-20
 - concrete-api: 增加 `MessageSubject` 注解，用于修饰POJO，可达到实现`Subject`接口相同效果，减少对POJO的代码侵入，`concrete-core`修改代码进行支持
+- concrete-core: 修改切片对accept方式，定义了`ServerSide` `Local` `ClientSide` `Default` 四个注解，用来声明Interceptor的作用域
 
 ## 2018-08-19
 - concrete-core-spring: 简化切片的使用方式，废弃`org.coodex.concrete.spring.aspects.*Aspect`，直接定义`ConcreteInterceptor`的Bean即可

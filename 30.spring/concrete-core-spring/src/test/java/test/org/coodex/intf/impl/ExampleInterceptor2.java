@@ -31,7 +31,7 @@ public class ExampleInterceptor2 extends AbstractInterceptor {
     }
 
     @Override
-    public boolean accept(RuntimeContext context) {
+    protected boolean accept_(RuntimeContext context) {
         return true;
     }
 

@@ -24,6 +24,8 @@ import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.struct.AbstractParam;
 import org.coodex.concrete.common.struct.AbstractUnit;
+import org.coodex.concrete.core.intercept.annotations.ClientSide;
+import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.signature.SignUtil;
 import org.coodex.util.Common;
 import org.coodex.util.ReflectHelper;
@@ -45,6 +47,8 @@ import static org.coodex.concrete.core.signature.SignUtil.PROFILE;
 /**
  * Created by davidoff shen on 2017-04-24.
  */
+@ServerSide
+@ClientSide
 public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
 
@@ -62,11 +66,12 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    public boolean accept(RuntimeContext context) {
-        ServiceContext serviceContext = getServiceContext();
-        return context.getAnnotation(Signable.class) != null &&
-                (serviceContext instanceof ServerSideContext ||
-                        serviceContext instanceof ClientSideContext);
+    protected boolean accept_(RuntimeContext context) {
+//        ServiceContext serviceContext = getServiceContext();
+        return context.getAnnotation(Signable.class) != null;
+//        &&
+//                (serviceContext instanceof ServerSideContext ||
+//                        serviceContext instanceof ClientSideContext);
     }
 
 //    private int getModel() {

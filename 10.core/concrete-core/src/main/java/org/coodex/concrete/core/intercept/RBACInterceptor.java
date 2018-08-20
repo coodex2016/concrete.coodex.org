@@ -22,12 +22,14 @@ import org.coodex.concrete.api.Domain;
 import org.coodex.concrete.api.Safely;
 import org.coodex.concrete.common.RBACHelper;
 import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
 
 /**
  * Created by davidoff shen on 2016-09-07.
  */
+@ServerSide
 public class RBACInterceptor extends AbstractInterceptor {
     @Override
     public int getOrder() {
@@ -35,7 +37,7 @@ public class RBACInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    public boolean accept(RuntimeContext context) {
+    protected boolean accept_(RuntimeContext context) {
         return context.getAnnotation(AccessAllow.class) != null;
     }
 

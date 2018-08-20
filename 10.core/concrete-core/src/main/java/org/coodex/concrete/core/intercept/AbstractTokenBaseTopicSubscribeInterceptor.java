@@ -18,18 +18,18 @@ package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.RuntimeContext;
-import org.coodex.concrete.common.ServerSideContext;
-import org.coodex.concrete.common.ServiceContext;
+import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.message.Subscription;
 
-import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 import static org.coodex.concrete.core.intercept.InterceptOrders.OTHER;
 
+@ServerSide
 public abstract class AbstractTokenBaseTopicSubscribeInterceptor extends AbstractInterceptor {
     @Override
-    public boolean accept(RuntimeContext context) {
-        ServiceContext serviceContext = getServiceContext();
-        return serviceContext != null && serviceContext instanceof ServerSideContext;
+    protected boolean accept_(RuntimeContext context) {
+//        ServiceContext serviceContext = getServiceContext();
+//        return serviceContext != null && serviceContext instanceof ServerSideContext;
+        return true;
     }
 
     /**

@@ -64,7 +64,7 @@ public abstract class AbstractConcreteAspect<T extends AbstractInterceptor> exte
 
 
     @Override
-    public final boolean accept(RuntimeContext context) {
+    public final boolean accept_(RuntimeContext context) {
         return getInterceptor().accept(context);
     }
 

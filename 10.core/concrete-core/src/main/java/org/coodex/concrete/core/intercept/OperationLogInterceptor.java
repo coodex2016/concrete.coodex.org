@@ -20,6 +20,8 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.LogAtomic;
 import org.coodex.concrete.api.OperationLog;
 import org.coodex.concrete.common.*;
+import org.coodex.concrete.core.intercept.annotations.Local;
+import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
@@ -33,6 +35,8 @@ import static org.coodex.concrete.common.ConcreteContext.getLoggingData;
 /**
  * Created by davidoff shen on 2017-05-08.
  */
+@ServerSide
+@Local
 public class OperationLogInterceptor extends AbstractSyncInterceptor {
 
     private final static Logger log = LoggerFactory.getLogger(OperationLogInterceptor.class);
@@ -111,7 +115,7 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
     }
 
     @Override
-    public boolean accept(RuntimeContext context) {
+    protected boolean accept_(RuntimeContext context) {
         return context.getAnnotation(OperationLog.class) != null || context.getAnnotation(LogAtomic.class) != null;
     }
 

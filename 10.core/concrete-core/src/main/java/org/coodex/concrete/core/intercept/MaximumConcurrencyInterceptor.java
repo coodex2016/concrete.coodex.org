@@ -22,6 +22,8 @@ import org.coodex.concrete.api.NotService;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.core.intercept.annotations.Local;
+import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.util.Profile;
 
 import java.util.HashMap;
@@ -33,6 +35,8 @@ import static org.coodex.concrete.core.intercept.InterceptOrders.LIMITING;
 /**
  * Created by davidoff shen on 2017-04-10.
  */
+@ServerSide
+@Local
 public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
     private static final Profile MC_PROFILE = Profile.getProfile("limiting.maximum.concurrency.properties");
     private static final Map<String, ConcurrencyStrategy> STRATEGIES = new HashMap<String, ConcurrencyStrategy>();
@@ -53,7 +57,7 @@ public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    public boolean accept(RuntimeContext context) {
+    protected boolean accept_(RuntimeContext context) {
         return context.getDeclaringMethod().getAnnotation(NotService.class) == null
                 && (context.getAnnotation(Limiting.class) != null);
     }

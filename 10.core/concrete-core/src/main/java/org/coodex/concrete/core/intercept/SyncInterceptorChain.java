@@ -18,6 +18,10 @@ package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.core.intercept.annotations.ClientSide;
+import org.coodex.concrete.core.intercept.annotations.Default;
+import org.coodex.concrete.core.intercept.annotations.Local;
+import org.coodex.concrete.core.intercept.annotations.ServerSide;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
@@ -26,6 +30,10 @@ import java.util.*;
 /**
  * Created by davidoff shen on 2016-09-07.
  */
+@ServerSide
+@Local
+@ClientSide
+@Default
 public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set<ConcreteInterceptor> {
 
     private static Comparator<ConcreteInterceptor> comparator = new Comparator<ConcreteInterceptor>() {
@@ -47,7 +55,7 @@ public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set
     }
 
     @Override
-    public boolean accept(RuntimeContext context) {
+    protected boolean accept_(RuntimeContext context) {
         return true;
     }
 
