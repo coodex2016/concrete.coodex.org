@@ -37,7 +37,6 @@ public class TokenBaseTopicTokenEventListener implements TokenEventListener {
 
     public static void putSubscription(Subscription subscription) {
         if (subscription == null) return;
-
         Token token = TokenWrapper.getInstance();
         Set<Subscription> set = null;
         if (!subscriptionsMap.containsKey(token.getTokenId())) {
