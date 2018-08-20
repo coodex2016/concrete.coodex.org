@@ -20,6 +20,7 @@ import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
@@ -61,6 +62,7 @@ public class TBMContainer {
     }
 
     private static void remove(String tokenId, TBMMessage message) {
+        if(Common.isBlank(tokenId)) return;
         queues.getInstance(tokenId).remove(message);
         if (log.isDebugEnabled()) {
             log.debug("removed from token {}\n{}", tokenId,
@@ -69,6 +71,7 @@ public class TBMContainer {
     }
 
     void push(TokenBasedTopicPrototype.TokenConfirm tokenConfirm, Topic<TokenBasedTopicPrototype.ConsumedNotify> consumedNotifyTopic) {
+        if(Common.isBlank(tokenConfirm.getTokenId())) return;
         queues.getInstance(tokenConfirm.getTokenId()).put(new TBMMessage(tokenConfirm, consumedNotifyTopic));
     }
 
@@ -125,6 +128,12 @@ public class TBMContainer {
             this.body = message.message;
             if (message.message instanceof Subject) {
                 this.subject = ((Subject) message.message).getSubject();
+            } else if(message.message != null){
+                Class clz = message.message.getClass();
+                MessageSubject messageSubject = (MessageSubject) clz.getAnnotation(MessageSubject.class);
+                if(messageSubject != null){
+                    this.subject = messageSubject.value();
+                }
             }
         }
 
