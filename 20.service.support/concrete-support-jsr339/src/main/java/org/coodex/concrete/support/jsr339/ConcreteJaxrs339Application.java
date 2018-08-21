@@ -16,16 +16,10 @@
 
 package org.coodex.concrete.support.jsr339;
 
-import org.coodex.concrete.jaxrs.ClassGenerator;
-import org.coodex.concrete.jaxrs.ConcreteJaxrsApplication;
-import org.coodex.concrete.support.jsr339.javassist.JSR339ClassGenerator;
-
 import javax.ws.rs.core.Application;
-import java.util.Map;
 
-public class ConcreteJaxrs339Application extends ConcreteJaxrsApplication {
-
-    private static JSR339ClassGenerator classGenerator = new JSR339ClassGenerator();
+@Deprecated
+public class ConcreteJaxrs339Application extends ConcreteJSR339Application {
 
     public ConcreteJaxrs339Application() {
         super();
@@ -35,13 +29,4 @@ public class ConcreteJaxrs339Application extends ConcreteJaxrsApplication {
         super(application);
     }
 
-    @Override
-    protected ClassGenerator getClassGenerator() {
-        return classGenerator;
-    }
-
-    @Override
-    public Map<String, Object> getProperties() {
-        return getApplication() != null ? getApplication().getProperties() : super.getProperties();
-    }
 }

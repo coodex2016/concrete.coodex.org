@@ -17,15 +17,10 @@
 package org.coodex.concrete.support.jsr311;
 
 
-import org.coodex.concrete.jaxrs.ClassGenerator;
-import org.coodex.concrete.jaxrs.ConcreteJaxrsApplication;
-import org.coodex.concrete.support.jsr311.javassist.JSR311ClassGenerator;
-
 import javax.ws.rs.core.Application;
 
-public class ConcreteJaxrs311Application extends ConcreteJaxrsApplication {
-
-    private static JSR311ClassGenerator classGenerator = new JSR311ClassGenerator();
+@Deprecated
+public class ConcreteJaxrs311Application extends ConcreteJSR311Application {
 
     public ConcreteJaxrs311Application() {
         super();
@@ -34,11 +29,4 @@ public class ConcreteJaxrs311Application extends ConcreteJaxrsApplication {
     public ConcreteJaxrs311Application(Application application) {
         super(application);
     }
-
-    @Override
-    protected ClassGenerator getClassGenerator() {
-        return classGenerator;
-    }
-
-
 }

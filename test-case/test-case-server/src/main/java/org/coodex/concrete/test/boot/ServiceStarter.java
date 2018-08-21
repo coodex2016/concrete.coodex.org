@@ -19,7 +19,7 @@ package org.coodex.concrete.test.boot;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concrete.core.token.local.LocalTokenManager;
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
-import org.coodex.concrete.support.jsr339.ConcreteJaxrs339Application;
+import org.coodex.concrete.support.jsr339.ConcreteJSR339Application;
 import org.coodex.concrete.support.websocket.CallerHackConfigurator;
 import org.coodex.concrete.support.websocket.ConcreteWebSocketApplication;
 import org.coodex.concrete.test.api.Test;
@@ -127,7 +127,7 @@ public class ServiceStarter extends SpringBootServletInitializer {
     }
 
 
-    public static class JaxRSApplication extends ConcreteJaxrs339Application {
+    public static class JaxRSApplication extends ConcreteJSR339Application {
         public JaxRSApplication() {
             register(JacksonFeature.class,
                     LoggingFeature.class,
