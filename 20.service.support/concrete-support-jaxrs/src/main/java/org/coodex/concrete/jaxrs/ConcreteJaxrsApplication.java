@@ -45,6 +45,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     private Set<Class<?>> othersClasses = new HashSet<Class<?>>();
 
     private Application application = null;
+    private boolean exceptionMapperRegisted = false;
 
     public ConcreteJaxrsApplication() {
         super();
@@ -80,7 +81,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     protected abstract ClassGenerator getClassGenerator();
 
     protected void registerDefault() {
-        register(ConcreteExceptionMapper.class, Polling.class);
+        register(Polling.class);
         registerPackage(ErrorCodes.class.getPackage().getName());
     }
 
@@ -160,6 +161,9 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
         } else if (AbstractErrorCodes.class.isAssignableFrom(clz)) {
             ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) clz);
         } else {
+            if(ConcreteExceptionMapper.class.isAssignableFrom(clz)){
+                exceptionMapperRegisted = true;
+            }
             if (!othersClasses.contains(clz)) {
                 othersClasses.add(clz);
                 if (clz.getAnnotation(Provider.class) != null) {
@@ -171,6 +175,9 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
 
     @Override
     public Set<Class<?>> getClasses() {
+        if(!exceptionMapperRegisted){
+            register(ConcreteExceptionMapper.class);
+        }
         Set<Class<?>> set = new HashSet<Class<?>>();
         if (application != null) {
             set.addAll(application.getClasses());
@@ -182,6 +189,9 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
 
     @Override
     public Set<Object> getSingletons() {
+        if(!exceptionMapperRegisted){
+            register(ConcreteExceptionMapper.class);
+        }
         Set<Object> set = new HashSet<Object>();
         if (application != null) {
             set.addAll(application.getSingletons());

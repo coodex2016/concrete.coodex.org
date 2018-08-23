@@ -36,30 +36,7 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
 
     private final static Logger log = LoggerFactory.getLogger(ConcreteExceptionMapper.class);
     private final static ConcreteServiceLoader<ErrorCodeMapper> CODE_MAPPER_SERVICE_LOADER = new ConcreteServiceLoader<ErrorCodeMapper>() {
-        private ErrorCodeMapper errorCodeMapper = new ErrorCodeMapper() {
-            @Override
-            public Response.Status toStatus(int errorCode) {
-                switch (errorCode) {
-                    case ErrorCodes.UNKNOWN_ERROR:
-                    case ErrorCodes.MODULE_DEFINITION_NOT_FOUND:
-                    case ErrorCodes.UNIT_DEFINITION_NOT_FOUND:
-                    case ErrorCodes.NO_BEAN_PROVIDER_FOUND:
-                    case ErrorCodes.NO_SERVICE_INSTANCE_FOUND:
-                    case ErrorCodes.BEAN_CONFLICT:
-                        return Response.Status.INTERNAL_SERVER_ERROR;
-                    case ErrorCodes.NONE_TOKEN:
-                    case ErrorCodes.TOKEN_INVALIDATE:
-                        return Response.Status.UNAUTHORIZED;
-                    case ErrorCodes.UNTRUSTED_ACCOUNT:
-                    case ErrorCodes.NO_AUTHORIZATION:
-                        return Response.Status.FORBIDDEN;
-                    case ErrorCodes.OVERRUN:
-                        return Response.Status.SERVICE_UNAVAILABLE;
-                    default:
-                        return Response.Status.BAD_REQUEST;
-                }
-            }
-        };
+        private ErrorCodeMapper errorCodeMapper = new DefaultErrorCodeMapper();
 
         @Override
         protected ErrorCodeMapper getConcreteDefaultProvider() {
