@@ -92,6 +92,8 @@ public class JavassistHelper {
     public static String getSignature(SignatureAttribute.Type type) {
         if (type instanceof SignatureAttribute.ObjectType) {
             return ((SignatureAttribute.ObjectType) type).encode();
+        } else if(type instanceof SignatureAttribute.BaseType){
+            return String.valueOf(((SignatureAttribute.BaseType) type).getDescriptor());
         }
         return null;
     }

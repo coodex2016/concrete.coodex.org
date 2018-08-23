@@ -29,6 +29,7 @@ public class API {
     private static final ServiceLoader<ConcreteAPIRender> RENDERS =
             new ConcreteServiceLoader<ConcreteAPIRender>() {
             };
+    private static final String TAG_API_GENERATOR = "api_gen";
 
     public static void generate(String desc, String path, String... packages) throws IOException {
         if (packages == null) {
@@ -47,6 +48,17 @@ public class API {
         }
 
         throw new RuntimeException("NONE render for " + desc + " found.");
+    }
+
+    /**
+     * 根据api_gen.properties（or api_gen.module.properties）的配置生成所需的内容
+     *
+     * @param module
+     */
+    public static void generateFor(String module, String... packages) throws IOException {
+        String desc = ConcreteHelper.getString(TAG_API_GENERATOR, module, "desc");
+        String path = ConcreteHelper.getString(TAG_API_GENERATOR, module, "path");
+        generate(desc, path, packages);
     }
 
 
