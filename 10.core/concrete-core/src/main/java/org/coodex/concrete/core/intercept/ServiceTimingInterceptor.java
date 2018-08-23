@@ -25,6 +25,7 @@ import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.common.ServiceTimingChecker;
 import org.coodex.concrete.core.intercept.annotations.Local;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
+import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.concrete.core.intercept.timecheckers.ByTimeRange;
 import org.coodex.concrete.core.intercept.timecheckers.ByWorkDay;
 import org.coodex.util.Common;
@@ -41,6 +42,7 @@ import java.util.*;
  * Created by davidoff shen on 2016-11-02.
  */
 @ServerSide
+@TestContext
 @Local
 public class ServiceTimingInterceptor extends AbstractInterceptor {
 

@@ -19,11 +19,13 @@ package org.coodex.concrete.core.intercept;
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
+import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.concrete.message.Subscription;
 
 import static org.coodex.concrete.core.intercept.InterceptOrders.OTHER;
 
 @ServerSide
+@TestContext
 public abstract class AbstractTokenBaseTopicSubscribeInterceptor extends AbstractInterceptor {
     @Override
     protected boolean accept_(RuntimeContext context) {

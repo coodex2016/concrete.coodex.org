@@ -42,7 +42,7 @@ public class ConcreteTestRule implements TestRule {
             @Override
             public void evaluate() throws Throwable {
                 TokenID testToken = description.getAnnotation(TokenID.class);
-                String tokenId = testToken == null ? null : testToken.value();
+                final String tokenId = testToken == null ? null : testToken.value();
                 try {
                     runWithContext(
                             new TestServiceContext(tokenId, getSubjoin(description)),

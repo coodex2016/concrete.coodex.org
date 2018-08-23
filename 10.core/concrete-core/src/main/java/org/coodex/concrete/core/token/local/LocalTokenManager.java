@@ -44,7 +44,7 @@ public class LocalTokenManager implements TokenManager {
 
     @Override
     public Token getToken(String id) {
-        return getToken(id, false);
+        return buildToken(id, false);
     }
 
     @Override

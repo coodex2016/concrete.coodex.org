@@ -20,6 +20,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.annotations.Local;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
+import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ import java.util.Set;
  * Created by davidoff shen on 2016-09-07.
  */
 @ServerSide
+@TestContext
 @Local
 public class BeanValidationInterceptor extends AbstractInterceptor {
 

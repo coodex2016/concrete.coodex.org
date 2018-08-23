@@ -22,6 +22,7 @@ import org.coodex.concrete.api.OperationLog;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.annotations.Local;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
+import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
@@ -36,6 +37,7 @@ import static org.coodex.concrete.common.ConcreteContext.getLoggingData;
  * Created by davidoff shen on 2017-05-08.
  */
 @ServerSide
+@TestContext
 @Local
 public class OperationLogInterceptor extends AbstractSyncInterceptor {
 

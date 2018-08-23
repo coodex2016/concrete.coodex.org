@@ -19,10 +19,7 @@ package org.coodex.concrete.core.intercept;
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.RuntimeContext;
-import org.coodex.concrete.core.intercept.annotations.ClientSide;
-import org.coodex.concrete.core.intercept.annotations.Default;
-import org.coodex.concrete.core.intercept.annotations.Local;
-import org.coodex.concrete.core.intercept.annotations.ServerSide;
+import org.coodex.concrete.core.intercept.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +101,7 @@ public abstract class AbstractSyncInterceptor extends AbstractInterceptor implem
     @ClientSide
     @Local
     @Default
+    @TestContext
     public static class InnerSyncInterceptor extends AbstractSyncInterceptor {
 
         private final ConcreteInterceptor interceptor;

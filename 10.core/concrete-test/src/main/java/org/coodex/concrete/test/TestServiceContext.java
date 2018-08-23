@@ -30,7 +30,7 @@ import java.lang.reflect.Proxy;
 import static org.coodex.concrete.common.ConcreteHelper.VERSION;
 import static org.coodex.concrete.core.token.TokenWrapper.newToken;
 
-public class TestServiceContext extends AbstractContainerContext {
+public class TestServiceContext extends AbstractContainerContext implements org.coodex.concrete.common.TestServiceContext {
 
 
     private static SingletonMap<String, Token> tokens =
@@ -68,8 +68,9 @@ public class TestServiceContext extends AbstractContainerContext {
     }
 
     private static Token getTestToken(String tokenId) {
-        return Common.isBlank(tokenId) ? newToken()
-                : tokens.getInstance(tokenId);
+        return tokens.getInstance(Common.isBlank(tokenId) ?
+                Common.getUUIDStr() :
+                tokenId);
     }
 
     private static class TestCaller implements Caller {

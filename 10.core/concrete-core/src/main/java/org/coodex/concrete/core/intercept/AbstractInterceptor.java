@@ -22,10 +22,8 @@ import org.coodex.concrete.client.LocalServiceContext;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.common.ServerSideContext;
 import org.coodex.concrete.common.ServiceContext;
-import org.coodex.concrete.core.intercept.annotations.ClientSide;
-import org.coodex.concrete.core.intercept.annotations.Default;
-import org.coodex.concrete.core.intercept.annotations.Local;
-import org.coodex.concrete.core.intercept.annotations.ServerSide;
+import org.coodex.concrete.common.TestServiceContext;
+import org.coodex.concrete.core.intercept.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,11 +62,13 @@ public abstract class AbstractInterceptor implements ConcreteInterceptor {
             return clz.getAnnotation(ClientSide.class) != null;
         } else if (serviceContext instanceof LocalServiceContext) {
             return clz.getAnnotation(Local.class) != null;
+        } else if (serviceContext instanceof TestServiceContext) {
+            return clz.getAnnotation(TestContext.class) != null;
         } else
             return clz.getAnnotation(Default.class) != null || (
                     clz.getAnnotation(ServerSide.class) == null
-                    && clz.getAnnotation(ClientSide.class) == null
-                    && clz.getAnnotation(Default.class) == null                    );
+                            && clz.getAnnotation(ClientSide.class) == null
+                            && clz.getAnnotation(Default.class) == null);
     }
 
     protected abstract boolean accept_(RuntimeContext context);
