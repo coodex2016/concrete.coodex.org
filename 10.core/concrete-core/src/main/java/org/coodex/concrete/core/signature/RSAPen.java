@@ -30,9 +30,10 @@ import org.coodex.util.ServiceLoader;
 public class RSAPen extends AbstractIronPen {
 
     private static final ServiceLoader<RSAKeyStore> RSA_KEY_STORE_PROVIDERS = new ConcreteServiceLoader<RSAKeyStore>() {
+        private RSAKeyStore defaultKeyStore = new RSAKeyStoreDefaultImpl();
         @Override
         public RSAKeyStore getConcreteDefaultProvider() {
-            return new RSAKeyStoreDefaultImpl();
+            return defaultKeyStore;
         }
     };
 

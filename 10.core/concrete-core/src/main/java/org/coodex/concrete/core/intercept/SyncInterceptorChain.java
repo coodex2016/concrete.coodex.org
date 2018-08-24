@@ -18,7 +18,6 @@ package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.RuntimeContext;
-import org.coodex.concrete.core.intercept.annotations.*;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
@@ -27,12 +26,7 @@ import java.util.*;
 /**
  * Created by davidoff shen on 2016-09-07.
  */
-@ServerSide
-@Local
-@ClientSide
-@Default
-@TestContext
-public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set<ConcreteInterceptor> {
+public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set<ConcreteInterceptor>, InterceptorChain {
 
     private static Comparator<ConcreteInterceptor> comparator = new Comparator<ConcreteInterceptor>() {
         @Override

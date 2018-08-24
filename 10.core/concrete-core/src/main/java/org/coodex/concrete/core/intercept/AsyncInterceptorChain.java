@@ -21,7 +21,7 @@ import org.coodex.concrete.common.RuntimeContext;
 
 import java.util.*;
 
-public class AsyncInterceptorChain extends AbstractInterceptor implements Set<ConcreteInterceptor> {
+public class AsyncInterceptorChain extends AbstractInterceptor implements Set<ConcreteInterceptor>, InterceptorChain {
 
 
     private static Comparator<ConcreteInterceptor> comparatorAsc = new MyComparator(1);

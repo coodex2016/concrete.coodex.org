@@ -25,6 +25,16 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-08-24
+- concrete-core: 
+    - 一些优化；
+    - 签名验签的干扰项调整为String类型;
+    - 提供NoiseValidator和NoiseGenerator接口，方便扩展，默认行为与之前的方案相同
+- concrete-spring:
+    - 一些优化；
+- concrete-client:
+    - 一些优化；
+
 ## 2018-08-23
 - concrete-core: 
     - bug fix. 修复JavassistHelper.getSignature时，基础类型支持有误的问题

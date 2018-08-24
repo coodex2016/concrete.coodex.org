@@ -45,6 +45,47 @@ public class SignUtil {
             return DEFAULT_SERIALIZER;
         }
     };
+    private static final NoiseValidator defaultValidator = new NoiseValidator() {
+        @Override
+        public void checkNoise(String keyId, String noise) {
+
+        }
+
+        @Override
+        public boolean accept(String param) {
+            return true;
+        }
+    };
+
+    private static final AcceptableServiceLoader<String, NoiseValidator> validatorLoader = new AcceptableServiceLoader<String, NoiseValidator>(
+            new ConcreteServiceLoader<NoiseValidator>() {
+                @Override
+                protected NoiseValidator getConcreteDefaultProvider() {
+                    return defaultValidator;
+                }
+            }
+    );
+
+    private static final NoiseGenerator defaultGenerator = new NoiseGenerator() {
+        @Override
+        public String generateNoise() {
+            return String.valueOf(Common.random(0, Integer.MAX_VALUE));
+        }
+
+        @Override
+        public boolean accept(String param) {
+            return true;
+        }
+    };
+    private static final AcceptableServiceLoader<String, NoiseGenerator> generatorLoader = new AcceptableServiceLoader<String, NoiseGenerator>(
+            new ConcreteServiceLoader<NoiseGenerator>() {
+                @Override
+                protected NoiseGenerator getConcreteDefaultProvider() {
+                    return defaultGenerator;
+                }
+            }
+    );
+
 
     private static String getString(Profile profile, String key, String paperName) {
         return Common.isBlank(paperName) ? profile.getString(key) : profile.getString(key + "." + paperName);
@@ -52,6 +93,16 @@ public class SignUtil {
 //            return profile.getString(key);
 //        String s = profile.getString(key + "." + paperName);
 //        return s == null ? getString(profile, key, null) : s;
+    }
+
+    public static NoiseValidator getNoiseValidator(String keyId) {
+        NoiseValidator noiseValidator = validatorLoader.getServiceInstance(keyId);
+        return noiseValidator == null ? defaultValidator : noiseValidator;
+    }
+
+    public static NoiseGenerator getNoiseGenerator(String keyId) {
+        NoiseGenerator noiseGenerator = generatorLoader.getServiceInstance(keyId);
+        return noiseGenerator == null ? defaultGenerator : noiseGenerator;
     }
 
     public static String getString(String key, String paperName, String defaultValue) {

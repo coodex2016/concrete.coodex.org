@@ -23,6 +23,7 @@ import org.coodex.concrete.client.impl.JavaProxyInstanceBuilder;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.AsyncInterceptorChain;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
+import org.coodex.concrete.core.intercept.InterceptorChain;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
 import org.coodex.ssl.SSLContextFactory;
 import org.coodex.util.AcceptableServiceLoader;
@@ -236,7 +237,8 @@ public class ClientHelper {
 
     private static void buildChain(Set<ConcreteInterceptor> chain) {
         for (ConcreteInterceptor interceptor : getInterceptorServiceLoader().getAllInstances()) {
-            chain.add(interceptor);
+            if (!(interceptor instanceof InterceptorChain))
+                chain.add(interceptor);
         }
     }
 

@@ -17,6 +17,7 @@
 package org.coodex.concrete.spring.components;
 
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
+import org.coodex.concrete.core.intercept.InterceptorChain;
 import org.coodex.concrete.spring.aspects.ConcreteAOPChain;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
@@ -32,7 +33,7 @@ public class ConcreteInterceptorPostProcessor extends InstantiationAwareBeanPost
 
     @Override
     public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
-        if (bean instanceof ConcreteInterceptor) {
+        if (bean instanceof ConcreteInterceptor && !(bean instanceof InterceptorChain)) {
             concreteAOPChain.add((ConcreteInterceptor) bean);
         }
         return super.postProcessAfterInstantiation(bean, beanName);

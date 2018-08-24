@@ -22,6 +22,7 @@ import org.coodex.concrete.api.Domain;
 import org.coodex.concrete.api.Safely;
 import org.coodex.concrete.common.RBACHelper;
 import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.core.intercept.annotations.Default;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.util.Common;
@@ -32,6 +33,7 @@ import org.coodex.util.Profile;
  */
 @ServerSide
 @TestContext
+@Default
 public class RBACInterceptor extends AbstractInterceptor {
     @Override
     public int getOrder() {

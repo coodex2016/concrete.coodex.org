@@ -14,30 +14,14 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.api.pojo;
+package org.coodex.concrete.core.intercept;
 
-import java.io.Serializable;
+import org.coodex.concrete.core.intercept.annotations.*;
 
-/**
- * Created by davidoff shen on 2017-04-20.
- */
-public abstract class Signature implements Serializable {
-    private String noise;
-    private String sign;
-
-    public String getNoise() {
-        return noise;
-    }
-
-    public void setNoise(String noise) {
-        this.noise = noise;
-    }
-
-    public String getSign() {
-        return sign;
-    }
-
-    public void setSign(String sign) {
-        this.sign = sign;
-    }
+@ServerSide
+@Local
+@ClientSide
+@Default
+@TestContext
+public interface InterceptorChain {
 }

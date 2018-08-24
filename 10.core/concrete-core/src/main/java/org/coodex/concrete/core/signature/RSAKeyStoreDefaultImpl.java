@@ -46,6 +46,7 @@ public class RSAKeyStoreDefaultImpl implements RSAKeyStore {
      * <p>
      * resource:
      * paperName.keyId.pem
+     * keyId.pem
      * paperName.pem
      *
      * @param paperName
@@ -60,7 +61,7 @@ public class RSAKeyStoreDefaultImpl implements RSAKeyStore {
                             "rsa.privateKey." + paperName,
                             "rsa.privateKey." + keyId,
                             "rsa.privateKey"),
-                    Arrays.asList(paperName + "." + keyId + ".pem", paperName + ".pem"));
+                    Arrays.asList(paperName + "." + keyId + ".pem", keyId + ".pem", paperName + ".pem"));
         } catch (Throwable th) {
             throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }
@@ -77,7 +78,7 @@ public class RSAKeyStoreDefaultImpl implements RSAKeyStore {
         if (s == null) {
             InputStream is = null;
             for (String resource : resources) {
-                is = RSAKeyStoreDefaultImpl.class.getClassLoader().getResourceAsStream(resource);
+                is = RSAKeyStoreDefaultImpl.class.getClassLoader().getResourceAsStream("rsaKeys/" + resource);
                 if (is != null) break;
             }
 
@@ -110,6 +111,7 @@ public class RSAKeyStoreDefaultImpl implements RSAKeyStore {
      * <p>
      * resource:
      * paperName.keyId.crt
+     * keyId.crt
      * paperName.crt
      *
      * @param paperName
@@ -123,7 +125,7 @@ public class RSAKeyStoreDefaultImpl implements RSAKeyStore {
                     "rsa.publicKey." + paperName,
                     "rsa.publicKey." + keyId,
                     "rsa.publicKey"),
-                    Arrays.asList(paperName + "." + keyId + ".crt", paperName + ".crt"));
+                    Arrays.asList(paperName + "." + keyId + ".crt", keyId + ".crt", paperName + ".crt"));
         } catch (Throwable th) {
             throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }

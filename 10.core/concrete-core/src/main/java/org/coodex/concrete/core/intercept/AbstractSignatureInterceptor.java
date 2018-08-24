@@ -42,7 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
-import static org.coodex.concrete.core.signature.SignUtil.PROFILE;
+import static org.coodex.concrete.core.signature.SignUtil.*;
 
 /**
  * Created by davidoff shen on 2017-04-24.
@@ -165,13 +165,15 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     private void serverSide_Verify(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
         Map<String, Object> content = buildContent(
                 context, joinPoint.getArguments());
-        IF.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
+        String noise = IF.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
                 KEY_FIELD_NOISE + " MUST NOT null.");
 
         // 必须保留，存在向content中put数据的可能
         String algorithm = getKeyField(content, KEY_FIELD_ALGORITHM, howToSign.getAlgorithm());
         String keyId = getKeyField(content, KEY_FIELD_KEY_ID, null);
+        // 检验noise有效性
+        getNoiseValidator(keyId).checkNoise(keyId,noise);
         IronPen ironPen = howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName());
         SignatureSerializer serializer = howToSign.getSerializer();
         IF.not(ironPen.verify(serializer.serialize(content),
@@ -243,7 +245,8 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
      * @throws IllegalAccessException
      */
     private Object serverSign(Signature signature, String algorithm, String keyId, IronPen ironPen, SignatureSerializer serializer) throws IllegalAccessException {
-        signature.setNoise(Common.random(Integer.MAX_VALUE));
+//        signature.setNoise(Common.random(Integer.MAX_VALUE));
+        signature.setNoise(getNoiseGenerator(keyId).generateNoise());
         signature.setSign(
                 Base64.encodeBase64String(
                         ironPen.sign(serializer.serialize(signatureToMap(signature)), algorithm, keyId)));
@@ -305,8 +308,16 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         // 0 签名
         Map<String, Object> content = buildContent(
                 context, joinPoint.getArguments());
+
+        // keyId
+        String keyId = putKeyField(content, KEY_FIELD_KEY_ID,
+                SignUtil.getString(KEY_FIELD_KEY_ID, howToSign.getPaperName(), null),
+                context, joinPoint);
+
         // noise
-        int noise = Common.random(0, Integer.MAX_VALUE);
+//        int noise = Common.random(0, Integer.MAX_VALUE);
+        String noise = getNoiseGenerator(keyId).generateNoise();
+
         putKeyField(content, KEY_FIELD_NOISE, noise, context, joinPoint);
 
         //algorithm
@@ -316,10 +327,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         if (algorithm == null)
             algorithm = howToSign.getAlgorithm();
 
-        // keyId
-        String keyId = putKeyField(content, KEY_FIELD_KEY_ID,
-                SignUtil.getString(KEY_FIELD_KEY_ID, howToSign.getPaperName(), null),
-                context, joinPoint);
+
 
         byte[] data = howToSign.getSerializer().serialize(content);
 
@@ -327,15 +335,17 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
                 .sign(data, algorithm, keyId));
 
         putKeyField(content, KEY_FIELD_SIGN, sign, context, joinPoint);
-        log.debug("signature for[ {} ]: \n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}",
-                context.getActualMethod().getName(),
-                getPropertyName(KEY_FIELD_NOISE), noise,
-                getPropertyName(KEY_FIELD_ALGORITHM), algorithm,
-                getPropertyName(KEY_FIELD_KEY_ID), keyId,
-                getPropertyName(KEY_FIELD_SIGN), sign,
-                "toSign", dataToString(data)
+        if(log.isDebugEnabled()) {
+            log.debug("signature for[ {} ]: \n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}",
+                    context.getActualMethod().getName(),
+                    getPropertyName(KEY_FIELD_NOISE), noise,
+                    getPropertyName(KEY_FIELD_ALGORITHM), algorithm,
+                    getPropertyName(KEY_FIELD_KEY_ID), keyId,
+                    getPropertyName(KEY_FIELD_SIGN), sign,
+                    "toSign", dataToString(data)
 //                    "data",
-        );
+            );
+        }
     }
 
     private Object clientSide_Verify(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign, Object o) {

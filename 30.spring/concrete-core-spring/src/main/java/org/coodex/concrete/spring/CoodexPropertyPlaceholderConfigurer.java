@@ -32,6 +32,7 @@ import java.util.Properties;
  * 参见 {@link org.coodex.util.RecursivelyProfile}
  * Created by davidoff shen on 2017-05-11.
  */
+@Deprecated
 public class CoodexPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 
     @Override

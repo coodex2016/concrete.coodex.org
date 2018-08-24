@@ -14,30 +14,13 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.api.pojo;
+package org.coodex.concrete.core.signature;
 
-import java.io.Serializable;
+import org.coodex.util.AcceptableService;
 
 /**
- * Created by davidoff shen on 2017-04-20.
+ * 干扰有效性验证
  */
-public abstract class Signature implements Serializable {
-    private String noise;
-    private String sign;
-
-    public String getNoise() {
-        return noise;
-    }
-
-    public void setNoise(String noise) {
-        this.noise = noise;
-    }
-
-    public String getSign() {
-        return sign;
-    }
-
-    public void setSign(String sign) {
-        this.sign = sign;
-    }
+public interface NoiseValidator extends AcceptableService<String> {
+    void checkNoise(String keyId, String noise);
 }

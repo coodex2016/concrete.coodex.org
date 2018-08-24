@@ -34,39 +34,41 @@ import static org.coodex.concrete.core.signature.SignUtil.getString;
 public class HmacPen extends AbstractIronPen {
 
     private static final ServiceLoader<HmacKeyStore> HMAC_KEY_STORE_PROVIDERS = new ConcreteServiceLoader<HmacKeyStore>() {
+        private HmacKeyStore defaultKeyStore = new HmacKeyStore() {
+            /**
+             * 优先级
+             * hmacKey.paperName.keyId
+             * hmacKey.paperName
+             * hmacKey.keyId
+             * hmacKey
+             *
+             * @param paperName
+             * @param keyId
+             * @return
+             */
+            @Override
+            public byte[] getHmacKey(String paperName, String keyId) {
+                String s = getHmacKeyStr(paperName, keyId);
+                return s == null ? null : s.getBytes();
+            }
+
+            private String getHmacKeyStr(String paperName, String keyId) {
+                if (keyId == null)
+                    return getString("hmacKey", paperName, null);
+                String key = PROFILE.getString("hmacKey." + paperName + "." + keyId);
+                if (key == null)
+                    key = PROFILE.getString("hmacKey." + paperName);
+
+                if (key == null)
+                    key = getString("hmacKey", keyId, null);
+
+                return key == null ? getString("hmacKey", null, null) : key;
+            }
+        };
+
         @Override
         public HmacKeyStore getConcreteDefaultProvider() {
-            return new HmacKeyStore() {
-                /**
-                 * 优先级
-                 * hmacKey.paperName.keyId
-                 * hmacKey.paperName
-                 * hmacKey.keyId
-                 * hmacKey
-                 *
-                 * @param paperName
-                 * @param keyId
-                 * @return
-                 */
-                @Override
-                public byte[] getHmacKey(String paperName, String keyId) {
-                    String s = getHmacKeyStr(paperName, keyId);
-                    return s == null ? null : s.getBytes();
-                }
-
-                private String getHmacKeyStr(String paperName, String keyId) {
-                    if (keyId == null)
-                        return getString("hmacKey", paperName, null);
-                    String key = PROFILE.getString("hmacKey." + paperName + "." + keyId);
-                    if (key == null)
-                        key = PROFILE.getString("hmacKey." + paperName);
-
-                    if(key == null)
-                        key = getString("hmacKey", keyId, null);
-
-                    return key == null ? getString("hmacKey", null, null) : key;
-                }
-            };
+            return defaultKeyStore;
         }
     };
 
