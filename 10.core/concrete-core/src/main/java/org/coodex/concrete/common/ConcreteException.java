@@ -26,6 +26,7 @@ import org.coodex.util.Common;
 public class ConcreteException extends RuntimeException {
 
     private int code;
+    private String message;
     private Object[] o;
 
     /**
@@ -43,6 +44,13 @@ public class ConcreteException extends RuntimeException {
                     throw (ConcreteException) this.o[o.length - 1];
             }
         }
+
+        this.message = buildMessage();
+    }
+
+    private String buildMessage() {
+        String message = ErrorMessageFacade.getMessage(code, o);
+        return Common.isBlank(message) ? String.format("error code: %06d", code) : message;
     }
 
 
@@ -52,8 +60,7 @@ public class ConcreteException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        String message = ErrorMessageFacade.getMessage(code, o);
-        return Common.isBlank(message) ? String.format("error code: %06d", code) : message;
+        return message;
     }
 
 }

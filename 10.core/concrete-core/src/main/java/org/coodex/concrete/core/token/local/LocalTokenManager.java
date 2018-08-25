@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.core.token.local;
 
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.concurrent.ExecutorsHelper;
@@ -27,6 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import static org.coodex.concrete.common.ConcreteHelper.getTokenMaxIdleInMinute;
 
 /**
  * 本地会话管理<br/>
@@ -85,7 +86,8 @@ public class LocalTokenManager implements TokenManager {
 
         void active() {
 
-            long maxIdleTime = ConcreteHelper.getProfile().getLong("localTokenManager.maxIdleTime", DEFAULT_MAX_IDLE) * 60 * 1000;
+            long maxIdleTime = getTokenMaxIdleInMinute() * 60 * 1000;
+
             if (maxIdleTime <= 0) {
                 maxIdleTime = DEFAULT_MAX_IDLE * 60 * 1000;
             }

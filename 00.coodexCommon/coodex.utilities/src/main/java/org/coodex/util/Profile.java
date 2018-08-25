@@ -21,9 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -68,6 +66,7 @@ public class Profile implements StringMap {
                     return ExecutorsHelper.newSingleThreadScheduledExecutor();
                 }
             });
+    private static Set<String> notFound = new HashSet<String>();
     protected Properties p = new Properties();
     private long lastModified = 0;
     private String resourcePath;
@@ -198,8 +197,12 @@ public class Profile implements StringMap {
             }
             load();
         } else {
-            if (!reload)
-                log.warn("Profile [" + path + "] not found.");
+            if (!reload) {
+                if (!notFound.contains(path)) {
+                    notFound.add(path);
+                    log.info("Profile [" + path + "] not found.");
+                }
+            }
         }
     }
 

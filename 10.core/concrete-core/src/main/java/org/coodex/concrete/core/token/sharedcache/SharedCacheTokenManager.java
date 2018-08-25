@@ -23,6 +23,8 @@ import org.coodex.sharedcache.SharedCacheClient;
 import org.coodex.sharedcache.SharedCacheClientManager;
 import org.coodex.util.Common;
 
+import static org.coodex.concrete.common.ConcreteHelper.getTokenMaxIdleInMinute;
+
 /**
  * Created by davidoff shen on 2016-11-23.
  */
@@ -44,7 +46,8 @@ public class SharedCacheTokenManager implements TokenManager {
     private Token $getToken(String id) {
         String tokenCacheType = ConcreteHelper.getProfile().getString("tokenCacheType");
         SharedCacheClient client = SharedCacheClientManager.getClient(tokenCacheType);
-        long maxIdleTime = ConcreteHelper.getProfile().getLong("sharedCacheTokenManager.maxIdleTime", DEFAULT_MAX_IDLE) * 60 * 1000;
+
+        long maxIdleTime = getTokenMaxIdleInMinute() * 60 * 1000;
 
         return new SharedCacheToken(client, id, maxIdleTime);
     }

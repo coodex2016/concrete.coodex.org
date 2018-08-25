@@ -65,6 +65,10 @@ public class ConcreteHelper {
         return Profile.getProfile(tag + ".properties");
     }
 
+    public static Integer getTokenMaxIdleInMinute(){
+        return getProfile().getInt("token.maxIdleTime", 60);
+    }
+
     public static Profile getProfile() {
         return getProfile("concrete");
     }
