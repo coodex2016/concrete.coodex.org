@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
+
 
 /**
  * Created by davidoff shen on 2016-09-04.
@@ -105,7 +107,9 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
         ErrorMsg errorMsg = null;
         ErrorMsg formatterValue = null;
         if (f == null) {
-            log.debug("errorCode [{}] has not register.", code);
+            if(getServiceContext() instanceof ServerSideContext) {
+                log.debug("errorCode [{}] has not register.", code);
+            }
 //            return null;
         } else {
 

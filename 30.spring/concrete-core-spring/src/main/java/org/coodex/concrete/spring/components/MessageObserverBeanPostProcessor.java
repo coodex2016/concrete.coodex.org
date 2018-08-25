@@ -41,11 +41,11 @@ public class MessageObserverBeanPostProcessor extends InstantiationAwareBeanPost
         String queue = null;
         final Type messageType = GenericTypeHelper.solve(Observer.class.getTypeParameters()[0], observer.getClass());
 
-        Class<? extends Topic> topicClass = messageConsumer == null ? Topic.class :
+        Class<? extends AbstractTopic> topicClass = messageConsumer == null ? Topic.class :
                 messageConsumer.topicType();
         queue = messageConsumer == null ? null : messageConsumer.queue();
 
-        if (topicClass.equals(Topic.class)) {
+        if (topicClass.equals(Topic.class) || topicClass.equals(AbstractTopic.class)) {
             topicType = GenericTypeHelper.buildParameterizedType(Topic.class, messageType);
         } else {
             topicType = topicClass;

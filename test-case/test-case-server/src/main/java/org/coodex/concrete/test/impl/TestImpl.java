@@ -202,7 +202,7 @@ public class TestImpl implements Test {
 //                jaxrs.sayHello("1500");
 //            }
 //        });
-
+        token.invalidate();
 
 
         return null;

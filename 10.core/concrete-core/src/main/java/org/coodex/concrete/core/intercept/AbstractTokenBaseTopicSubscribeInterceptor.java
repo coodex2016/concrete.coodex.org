@@ -23,9 +23,11 @@ import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.concrete.message.Subscription;
 
 import static org.coodex.concrete.core.intercept.InterceptOrders.OTHER;
+import static org.coodex.concrete.core.intercept.TBTSManager.putSubscription;
 
 @ServerSide
 @TestContext
+@Deprecated
 public abstract class AbstractTokenBaseTopicSubscribeInterceptor extends AbstractInterceptor {
     @Override
     protected boolean accept_(RuntimeContext context) {
@@ -43,9 +45,7 @@ public abstract class AbstractTokenBaseTopicSubscribeInterceptor extends Abstrac
 
     @Override
     public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
-        TokenBaseTopicTokenEventListener.putSubscription(
-                subscribe()
-        );
+        putSubscription(subscribe());
         return super.after(context, joinPoint, result);
     }
 

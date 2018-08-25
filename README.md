@@ -25,6 +25,14 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-08-25
+- concrete-core:
+    - 废弃`AbstractTokenBaseTopicSubscribeInterceptor`
+    - 新增`AbstractTokenBasedTopicSubscribeInterceptor`进行替代，关注点更少
+- concrete-core-spring:
+    - 相应修改
+
+
 ## 2018-08-24
 - concrete-core: 
     - 一些优化；

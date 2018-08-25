@@ -62,7 +62,7 @@ public class TBMContainer {
     }
 
     private static void remove(String tokenId, TBMMessage message) {
-        if(Common.isBlank(tokenId)) return;
+        if (Common.isBlank(tokenId)) return;
         queues.getInstance(tokenId).remove(message);
         if (log.isDebugEnabled()) {
             log.debug("removed from token {}\n{}", tokenId,
@@ -71,7 +71,7 @@ public class TBMContainer {
     }
 
     void push(TokenBasedTopicPrototype.TokenConfirm tokenConfirm, Topic<TokenBasedTopicPrototype.ConsumedNotify> consumedNotifyTopic) {
-        if(Common.isBlank(tokenConfirm.getTokenId())) return;
+        if (Common.isBlank(tokenConfirm.getTokenId())) return;
         queues.getInstance(tokenConfirm.getTokenId()).put(new TBMMessage(tokenConfirm, consumedNotifyTopic));
     }
 
@@ -80,16 +80,30 @@ public class TBMContainer {
     }
 
     public List<ServerSideMessage> getMessages(String tokenId, long timeOut) {
-        List<TBMMessage> messageList = queues.getInstance(tokenId).peekAll(timeOut);
+        if (Common.isBlank(tokenId)) {
+            if (timeOut > 0) {
+                Object lock = new Object();
+                synchronized (lock) {
+                    try {
+                        lock.wait(timeOut);
+                    } catch (InterruptedException e) {
+                        log.warn(e.getLocalizedMessage(), e);
+                    }
+                }
+            }
+            return new ArrayList<ServerSideMessage>();
+        } else {
+            List<TBMMessage> messageList = queues.getInstance(tokenId).peekAll(timeOut);
 
-        List<ServerSideMessage> messages = new ArrayList<ServerSideMessage>();
-        for (TBMMessage message : messageList) {
+            List<ServerSideMessage> messages = new ArrayList<ServerSideMessage>();
+            for (TBMMessage message : messageList) {
 //            message.consumedNotifyTopic.publish(new TokenBasedTopicPrototype.ConsumedNotify(message.id, tokenId));
-            message.consumeBy(tokenId);
-            messages.add(new SSMImpl(message));
-        }
+                message.consumeBy(tokenId);
+                messages.add(new SSMImpl(message));
+            }
 
-        return messages;
+            return messages;
+        }
     }
 
     public List<ServerSideMessage> getMessages(long timeOut) {
@@ -97,7 +111,7 @@ public class TBMContainer {
         return getMessages(tokenId, timeOut);
     }
 
-    public void listen(String tokenId, TBMListener tbmListener){
+    public void listen(String tokenId, TBMListener tbmListener) {
         TBMQueue queue = queues.getInstance(tokenId);
         queue.tbmListener = tbmListener;
     }
@@ -128,10 +142,10 @@ public class TBMContainer {
             this.body = message.message;
             if (message.message instanceof Subject) {
                 this.subject = ((Subject) message.message).getSubject();
-            } else if(message.message != null){
+            } else if (message.message != null) {
                 Class clz = message.message.getClass();
                 MessageSubject messageSubject = (MessageSubject) clz.getAnnotation(MessageSubject.class);
-                if(messageSubject != null){
+                if (messageSubject != null) {
                     this.subject = messageSubject.value();
                 }
             }

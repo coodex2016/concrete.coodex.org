@@ -17,50 +17,80 @@
 package org.coodex.concrete.test.impl;
 
 import org.coodex.concrete.common.Token;
-import org.coodex.concrete.core.intercept.AbstractTokenBaseTopicSubscribeInterceptor;
-import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.concrete.core.intercept.AbstractTokenBasedTopicSubscribeInterceptor;
+import org.coodex.concrete.message.MessageConsumer;
 import org.coodex.concrete.message.MessageFilter;
-import org.coodex.concrete.message.Queue;
-import org.coodex.concrete.message.Subscription;
-import org.coodex.concrete.message.TokenBasedTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SubscribeInterceptor extends AbstractTokenBaseTopicSubscribeInterceptor {
+import javax.inject.Inject;
+
+@MessageConsumer(queue = "test")
+public class SubscribeInterceptor extends AbstractTokenBasedTopicSubscribeInterceptor<TestSubject> {
     public static final String SUBSCRIBED = "org.coodex.token.subscribed";
     public static final String SUBSCRIBED_NUMBER_KEY = "X1";
     private final static Logger log = LoggerFactory.getLogger(SubscribeInterceptor.class);
 
-    @Queue("test")
-    private TokenBasedTopic<TestSubject> tokenBasedTopic;
+//    @Queue("test")
+//    private TokenBasedTopic<TestSubject> tokenBasedTopic;
+
+    @Inject
+    private Token token;
+
+//    @Override
+//    protected Subscription subscribe() {
+//        Token token = TokenWrapper.getInstance();
+//        Subscription subscription = null;
+//        log.debug(" tokenid: {}, x1", token.getTokenId(), token.getAttribute(SUBSCRIBED_NUMBER_KEY, Integer.class));
+//        if (token.isValid()
+//                && token.getAttribute(SUBSCRIBED, Object.class) == null
+//                && token.getAttribute(SUBSCRIBED_NUMBER_KEY, Object.class) != null) {
+//            synchronized (tokenBasedTopic) {
+//                if (token.isValid()
+//                        && token.getAttribute(SUBSCRIBED, Object.class) == null
+//                        && token.getAttribute(SUBSCRIBED_NUMBER_KEY, Object.class) != null) {
+//                    final Integer x1 = token.getAttribute(SUBSCRIBED_NUMBER_KEY, Integer.class);
+//                    subscription = tokenBasedTopic.subscribe(new MessageFilter<TestSubject>() {
+//                        @Override
+//                        public boolean handle(TestSubject message) {
+//                            return message.getNumber() == x1;
+//                        }
+//                    });
+//                    log.debug("TestSubject subscribed.");
+//
+//                    token.setAttribute(SUBSCRIBED, Boolean.valueOf(true));
+//                }
+//            }
+//        }
+//        return subscription;
+//    }
 
 
     @Override
-    protected Subscription subscribe() {
-        Token token = TokenWrapper.getInstance();
-        Subscription subscription = null;
-        log.debug(" tokenid: {}, x1", token.getTokenId(), token.getAttribute(SUBSCRIBED_NUMBER_KEY, Integer.class));
-        if (token.isValid()
-                && token.getAttribute(SUBSCRIBED, Object.class) == null
-                && token.getAttribute(SUBSCRIBED_NUMBER_KEY, Object.class) != null) {
-            synchronized (tokenBasedTopic) {
-                if (token.isValid()
-                        && token.getAttribute(SUBSCRIBED, Object.class) == null
-                        && token.getAttribute(SUBSCRIBED_NUMBER_KEY, Object.class) != null) {
-                    final Integer x1 = token.getAttribute(SUBSCRIBED_NUMBER_KEY, Integer.class);
-                    subscription = tokenBasedTopic.subscribe(new MessageFilter<TestSubject>() {
-                        @Override
-                        public boolean handle(TestSubject message) {
-                            return message.getNumber() == x1;
-                        }
-                    });
-                    log.debug("TestSubject subscribed.");
+    protected boolean checkAccountCredible() {
+        return false;
+    }
 
-                    token.setAttribute(SUBSCRIBED, Boolean.valueOf(true));
-                }
+    @Override
+    protected MessageFilter<TestSubject> subscribe() {
+        final Integer x1 = token.getAttribute(SUBSCRIBED_NUMBER_KEY, Integer.class);
+
+        token.setAttribute(SUBSCRIBED, Boolean.valueOf(true));
+        log.debug("TestSubject subscribed.");
+        return new MessageFilter<TestSubject>() {
+            @Override
+            public boolean handle(TestSubject message) {
+                return message.getNumber() == x1;
             }
-        }
-        return subscription;
+        };
+
+
+    }
+
+    @Override
+    protected boolean check() {
+        return token.getAttribute(SUBSCRIBED, Object.class) == null
+                && token.getAttribute(SUBSCRIBED_NUMBER_KEY, Object.class) != null;
     }
 
 }

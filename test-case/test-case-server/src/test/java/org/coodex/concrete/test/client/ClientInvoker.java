@@ -18,24 +18,23 @@ package org.coodex.concrete.test.client;
 
 import com.alibaba.fastjson.JSON;
 import org.coodex.concrete.Client;
-import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.jaxrs.Polling;
 import org.coodex.concrete.test.api.Test;
 
 public class ClientInvoker {
 
-    private static void startPolling() {
-        new Thread() {
-            @Override
-            public void run() {
-                Polling test = Client.getInstance(Polling.class, "remote");
-                while (true) {
-                    JSONSerializerFactory.getInstance()
-                            .toJson(test.polling(15));
-                }
-            }
-        }.start();
-    }
+//    private static void startPolling() {
+//        new Thread() {
+//            @Override
+//            public void run() {
+//                Polling test = Client.getInstance(Polling.class, "remote");
+//                while (true) {
+//                    JSONSerializerFactory.getInstance()
+//                            .toJson(test.polling(15));
+//                }
+//            }
+//        }.start();
+//    }
 
     public static void main(String[] args) throws InterruptedException {
 //        Test test = Client.getInstance(Test.class,"websocket");
@@ -44,10 +43,11 @@ public class ClientInvoker {
             Test test = Client.getInstance(Test.class, "remote");
             Polling polling = Client.getInstance(Polling.class, "remote");
             test.add(2,3);
-            while(true){
+//            while(true){
 
                 System.out.println(JSON.toJSONString(polling.polling(10)));
-            }
+//            }
+            test.test();
 
 //            System.out.println(test.test());
 //            System.out.println(test.sayHello("asf"));
