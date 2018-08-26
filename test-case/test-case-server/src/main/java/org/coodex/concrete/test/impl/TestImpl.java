@@ -37,7 +37,9 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import static org.coodex.concrete.test.impl.SubscribeInterceptor.SUBSCRIBED_NUMBER_KEY;
@@ -48,8 +50,21 @@ public class TestImpl implements Test {
 
     private Token token = TokenWrapper.getInstance();
 
+    @Inject
     @Queue("test")
     private Topic<String> x;
+
+//    @Inject
+//    @Queue("test")
+//    private Topic<byte[][]> x2;
+//
+    @Inject
+    @Queue("test")
+    private Topic<ArrayList<Set<int[]>>> x3;
+
+    @Inject
+    @Queue("test")
+    private Topic<Integer> x4;
 
 //    @Queue("test")
 //    private Topic<Set<String>> y;
@@ -57,9 +72,9 @@ public class TestImpl implements Test {
     @Queue("test")
     private TokenBasedTopic<TestSubject> tokenBasedTopic;
 
-//    @Inject
-//    @Queue("test")
-//    private Topic<String> z;
+    @Inject
+    @Queue("test2")
+    private Topic<String> z;
 
     @Inject
     @ConcreteClient("local")

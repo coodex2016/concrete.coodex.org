@@ -21,15 +21,19 @@ import org.coodex.util.Common;
 
 import java.lang.reflect.Type;
 
+import static org.coodex.util.ReflectHelper.typeToCodeStr;
+
 public class TopicKey {
     String queue;
     Type topicType;
+    String topicTypeName;
 
     public TopicKey(String queue, Type topicType) {
         this.queue = Common.isBlank(queue) ? ConcreteHelper.getProfile().getString("queue.default") : queue;
         if (Common.isBlank(queue))
             this.queue = null;
         this.topicType = topicType;
+        this.topicTypeName = typeToCodeStr(topicType);
     }
 
     static TopicKey copy(TopicKey topicKey) {
@@ -44,13 +48,13 @@ public class TopicKey {
         TopicKey topicKey = (TopicKey) o;
 
         if (queue != null ? !queue.equals(topicKey.queue) : topicKey.queue != null) return false;
-        return topicType != null ? topicType.equals(topicKey.topicType) : topicKey.topicType == null;
+        return topicTypeName != null ? topicTypeName.equals(topicKey.topicTypeName) : topicKey.topicTypeName == null;
     }
 
     @Override
     public int hashCode() {
         int result = queue != null ? queue.hashCode() : 0;
-        result = 31 * result + (topicType != null ? topicType.hashCode() : 0);
+        result = 31 * result + (topicTypeName != null ? topicTypeName.hashCode() : 0);
         return result;
     }
 }

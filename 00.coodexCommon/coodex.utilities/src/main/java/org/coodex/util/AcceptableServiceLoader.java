@@ -84,6 +84,8 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
             T instance = serviceLoaderFacade.getDefaultProvider();
             if (accept(instance, param))
                 return instance;
+            if(instance.accept(param))
+                return instance;
         } catch (Throwable th) {
         }
         log.warn("no service instance accept this: {}", param);

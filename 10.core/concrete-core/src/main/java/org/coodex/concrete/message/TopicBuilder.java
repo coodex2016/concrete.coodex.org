@@ -48,6 +48,10 @@ class TopicBuilder
     private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> providers =
             new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(
                     new ConcreteServiceLoader<TopicPrototypeProvider>() {
+                        @Override
+                        protected TopicPrototypeProvider getConcreteDefaultProvider() {
+                            return defaultTopicPrototypeProvider;
+                        }
                     }
             );
     private static SingletonMap<TopicKey, AbstractTopic> topics =

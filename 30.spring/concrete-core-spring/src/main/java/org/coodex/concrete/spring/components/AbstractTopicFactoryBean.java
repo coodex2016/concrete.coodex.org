@@ -16,18 +16,17 @@
 
 package org.coodex.concrete.spring.components;
 
-import org.coodex.concrete.message.Queue;
 import org.coodex.concrete.message.Topics;
-import org.springframework.beans.factory.FactoryBean;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import static org.coodex.concrete.message.GenericTypeHelper.solve;
 
-public abstract class AbstractTopicFactoryBean<T> implements FactoryBean<T> {
+public abstract class AbstractTopicFactoryBean<T> /*implements FactoryBean<T>*/ {
 
     private Type topicType = null;
+    private boolean queueLoaded = false;
+    private String queueName;
 
     protected Type getType() {
         if (topicType == null) {
@@ -40,37 +39,41 @@ public abstract class AbstractTopicFactoryBean<T> implements FactoryBean<T> {
         return topicType;
     }
 
-
-    private boolean queueLoaded = false;
-    private String queueName;
-
-    protected String getQueueName() {
-        if (!queueLoaded) {
-            synchronized (this) {
-                if (!queueLoaded) {
-                    Queue queue = getClass().getAnnotation(Queue.class);
-                    queueName = queue == null ? null : queue.value();
-                    queueLoaded = true;
-                }
-            }
-        }
-        return queueName;
+    public T getActurlTopic(String queueName) {
+        return Topics.get(getType(), queueName);
     }
 
-
-    @Override
-    public Class<?> getObjectType() {
-        ParameterizedType pt = (ParameterizedType) getType();
-        return (Class<?>) pt.getRawType();
+private String getQueueName() {
+    if (!queueLoaded) {
+        org.coodex.concrete.message.Queue queue =
+                getClass().getAnnotation(org.coodex.concrete.message.Queue.class);
+        queueName = queue == null ? null : queue.value();
+        queueLoaded = true;
     }
+    return queueName;
+}
 
-    @Override
-    public boolean isSingleton() {
-        return true;
+private java.lang.reflect.Type getTopicType(){
+    if(topicType == null){
+       topicType = getClass().getGenericInterfaces()[0];
     }
+    return topicType;
+}
 
-    @Override
-    public T getObject() throws Exception {
-        return Topics.get(getType(), getQueueName());
-    }
+
+//    @Override
+//    public Class<?> getObjectType() {
+//        ParameterizedType pt = (ParameterizedType) getType();
+//        return (Class<?>) pt.getRawType();
+//    }
+
+//    @Override
+//    public boolean isSingleton() {
+//        return true;
+//    }
+
+//    @Override
+//    public T getObject() throws Exception {
+//        return Topics.get(getType(), getQueueName());
+//    }
 }

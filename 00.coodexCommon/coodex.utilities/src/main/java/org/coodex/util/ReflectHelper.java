@@ -311,6 +311,32 @@ public class ReflectHelper {
         });
     }
 
+    public static String typeToCodeStr(Type type) {
+        StringBuilder builder = new StringBuilder();
+        if (type instanceof ParameterizedType) {
+            builder.append(typeToCodeStr(((ParameterizedType) type).getRawType())).append("<");
+            int l = ((ParameterizedType) type).getActualTypeArguments().length;
+            for (int i = 0; i < l; i++) {
+                if (i > 0) {
+                    builder.append(", ");
+                }
+                builder.append(typeToCodeStr(((ParameterizedType) type).getActualTypeArguments()[i]));
+            }
+            builder.append(">");
+        } else if (type instanceof Class) {
+            if (((Class) type).isArray()) {
+                return typeToCodeStr(((Class) type).getComponentType()) + "[]";
+            } else {
+                return ((Class) type).getName();
+            }
+        } else if (type instanceof TypeVariable) {
+            return ((TypeVariable) type).getName();
+        } else if (type instanceof GenericArrayType) {
+            return typeToCodeStr(((GenericArrayType) type).getGenericComponentType()) + "[]";
+        }
+        return builder.toString();
+    }
+
     public interface Processor {
         void process(Class<?> serviceClass);
     }
