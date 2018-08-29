@@ -18,12 +18,7 @@ package org.coodex.concrete.message;
 
 import java.io.Serializable;
 
-/**
- * 消息不同，主题不同
- * 队列不同，主题不同
- *
- * @param <M> 消息类型
- */
-public interface AbstractTopic<M extends Serializable> extends Producer<M> {
-    Subscription subscribe(Observer<M> observer);
+public interface Producer<M extends Serializable> {
+
+    void publish(M message);
 }

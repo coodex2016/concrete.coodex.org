@@ -12,3 +12,4 @@ env.xml
 .project
 .classpath
 .settings
+api_gen.*.properties

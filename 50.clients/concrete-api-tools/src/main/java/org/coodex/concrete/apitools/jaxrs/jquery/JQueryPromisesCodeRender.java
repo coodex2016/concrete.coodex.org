@@ -19,6 +19,7 @@ package org.coodex.concrete.apitools.jaxrs.jquery;
 import org.coodex.concrete.apitools.AbstractRender;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
+import org.coodex.concrete.jaxrs.Polling;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
@@ -109,7 +110,10 @@ public class JQueryPromisesCodeRender extends AbstractRender {
 
     @Override
     public void writeTo(String... packages) throws IOException {
-        List<Module> moduleList = ConcreteHelper.loadModules(RENDER_NAME, packages);
+        Set<String> set = new HashSet<String>(Arrays.asList(packages));
+        set.add(Polling.class.getPackage().getName());
+        List<Module> moduleList = ConcreteHelper.loadModules(RENDER_NAME, set.toArray(new String[0]));
+
         Set<String> modules = new HashSet<String>();
         for (Module module : moduleList) {
             StringBuilder builder = new StringBuilder();

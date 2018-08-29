@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.message;
+package org.coodex.concrete.test.client;
 
-import java.io.Serializable;
+import org.coodex.concrete.apitools.API;
+import org.coodex.concrete.test.api.Test;
 
-/**
- * 消息不同，主题不同
- * 队列不同，主题不同
- *
- * @param <M> 消息类型
- */
-public interface AbstractTopic<M extends Serializable> extends Producer<M> {
-    Subscription subscribe(Observer<M> observer);
+import java.io.IOException;
+
+public class Gen {
+
+    public static void main(String [] args) throws IOException {
+        API.generateFor("demo", Test.class.getPackage().getName() );
+    }
 }

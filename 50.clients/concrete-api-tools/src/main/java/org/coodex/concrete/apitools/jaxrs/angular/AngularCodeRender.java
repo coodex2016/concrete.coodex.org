@@ -17,12 +17,12 @@
 package org.coodex.concrete.apitools.jaxrs.angular;
 
 import org.coodex.concrete.apitools.AbstractAngularRender;
+import org.coodex.concrete.apitools.jaxrs.JaxrsRenderHelper;
 import org.coodex.concrete.apitools.jaxrs.angular.meta.TSClass;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.struct.AbstractModule;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.Module;
-import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.util.Common;
 
@@ -76,26 +76,27 @@ public class AngularCodeRender extends AbstractAngularRender<Unit> {
 
     @Override
     protected String getMethodPath(AbstractModule<Unit> module, Unit unit) {
-        return (module.getName() + unit.getName()).replace("{", "${");
+        return JaxrsRenderHelper.getMethodPath(module, unit);
     }
 
     @Override
     protected String getBody(Unit unit) {
-        Param[] pojoParams = unit.getPojo();
-        switch (unit.getPojoCount()) {
-            case 1:
-                return pojoParams[0].getName();
-            case 0:
-                return null;
-            default:
-                StringBuilder builder = new StringBuilder("{ ");
-                for (int i = 0; i < pojoParams.length; i++) {
-                    if (i > 0) builder.append(", ");
-                    builder.append(pojoParams[i].getName()).append(": ").append(pojoParams[i].getName());
-                }
-                builder.append(" }");
-                return builder.toString();
-        }
+        return JaxrsRenderHelper.getBody(unit);
+//        Param[] pojoParams = unit.getPojo();
+//        switch (unit.getPojoCount()) {
+//            case 1:
+//                return pojoParams[0].getName();
+//            case 0:
+//                return null;
+//            default:
+//                StringBuilder builder = new StringBuilder("{ ");
+//                for (int i = 0; i < pojoParams.length; i++) {
+//                    if (i > 0) builder.append(", ");
+//                    builder.append(pojoParams[i].getName()).append(": ").append(pojoParams[i].getName());
+//                }
+//                builder.append(" }");
+//                return builder.toString();
+//        }
     }
 
 
