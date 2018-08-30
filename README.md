@@ -2,6 +2,8 @@
 
 [concrete.coodex.org](https://concrete.coodex.org)
 
+> [![](jetbrains.svg)](https://www.jetbrains.com)感谢[JetBrains](https://www.jetbrains.com/?from=Concrete)提供IDE工具开源授权。
+
 ## 什么鬼？
 
 > Concrete是一种基于Java的服务定义规范
