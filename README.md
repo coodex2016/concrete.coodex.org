@@ -22,7 +22,6 @@ public interface SomeService extends ConcreteService{
 
 > 致力于让研发者将精力尽可能多的投入到需求分析、业务逻辑和用户体验上
 
-
 ## 怎么搞？
 
 看[书](https://concrete.coodex.org)，多练
