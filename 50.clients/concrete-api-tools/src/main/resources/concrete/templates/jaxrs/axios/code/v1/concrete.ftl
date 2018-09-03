@@ -2,7 +2,7 @@
 import * as axios from 'axios'
 
 let defaultConfiguration = {
-    'root': '/jaxrs',
+    'root': undefined,
     'onError': undefined,
     'pollingTimeout': 10,
     'globalTokenKey': undefined,
@@ -168,3 +168,16 @@ export function execute (module, url, responseType, method, body) {
         return Promise.reject(err)
     })
 }
+
+
+export function overload (module, function_map) {
+
+    return function () {
+        var key = arguments.length.toString();
+        var func = function_map[key];
+        if (!func && typeof func !== "function") {
+            return argumentsError(module);
+        }
+        return func.apply(this, arguments);
+    }
+};

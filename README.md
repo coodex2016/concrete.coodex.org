@@ -26,6 +26,9 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-09-03
+- concrete-api-tools: 调整`axios`生成的代码
+
 ## 2018-08-29
 - concrete-api-tools: 新增对`axios`的支持 `JaxRS.code.axios.js.v1`
 
