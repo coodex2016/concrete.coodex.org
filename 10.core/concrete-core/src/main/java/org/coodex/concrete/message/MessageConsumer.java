@@ -20,6 +20,7 @@ import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Inherited
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE})
 public @interface MessageConsumer {
 

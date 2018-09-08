@@ -17,6 +17,8 @@
 package org.coodex.concrete.spring.components;
 
 import org.coodex.concrete.message.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 
@@ -26,16 +28,18 @@ import java.lang.reflect.Type;
 @Named
 public class MessageObserverBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter {
 
+    private final static Logger log = LoggerFactory.getLogger(MessageObserverBeanPostProcessor.class);
+
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof Observer) {
             Observer observer = (Observer) bean;
-            getTopic(observer).subscribe(observer);
+            getTopic(observer, beanName).subscribe(observer);
         }
         return super.postProcessAfterInitialization(bean, beanName);
     }
 
-    private AbstractTopic getTopic(Observer observer) {
+    private AbstractTopic getTopic(Observer observer, String beanName) {
         MessageConsumer messageConsumer = observer.getClass().getAnnotation(MessageConsumer.class);
         Type topicType = null;
         String queue = null;
@@ -50,7 +54,7 @@ public class MessageObserverBeanPostProcessor extends InstantiationAwareBeanPost
         } else {
             topicType = topicClass;
         }
-
+        log.debug("{} subscribe {}, {}", topicType, beanName, observer.getClass().getName());
         return Topics.get(topicType, queue);
     }
 }

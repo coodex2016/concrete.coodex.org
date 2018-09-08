@@ -101,6 +101,7 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
                 public void run() {
                     try {
                         if (finalFilter == null || finalFilter.handle(message)) {
+                            log.debug("message update:{}", observer.getClass().getName());
                             observer.update(message);
                         }
                     } catch (Throwable throwable) {
