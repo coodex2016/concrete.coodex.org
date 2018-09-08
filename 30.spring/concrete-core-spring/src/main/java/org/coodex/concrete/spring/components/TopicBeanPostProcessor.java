@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 import javax.inject.Inject;
@@ -174,10 +173,8 @@ public class TopicBeanPostProcessor extends InstantiationAwareBeanPostProcessorA
                         ParameterizedType pt = (ParameterizedType) topicType;
 
                         Class<?> clz = getBeanClass(topicType, queueName, className, pt, contextClass);
-                        BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(clz);
-                        defaultListableBeanFactory.registerBeanDefinition(
-                                beanName, beanDefinitionBuilder.getBeanDefinition());
-                        log.info("Topic Bean registered: {}, {}, {}, {}", beanName, queueName, topicType.toString(), clz.getName());
+                        defaultListableBeanFactory.registerSingleton(beanName, clz.getConstructor().newInstance());
+                        log.info("Topic Bean registered: {}, {}, {}, {}. ", beanName, queueName, topicType.toString(), clz.getName());
                         injected.add(topicKey);
                     }
                 }

@@ -77,7 +77,7 @@ public class TokenWrapper implements Token {
 //        IF.isNull(token, ErrorCodes.NONE_TOKEN);
         IF.is(checkValidation && token != null && !token.isValid(),
                 ErrorCodes.TOKEN_INVALIDATE,
-                token.getTokenId());
+                token == null ? null : token.getTokenId());
 
         return token;
     }
