@@ -26,6 +26,10 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+
+## 2018-09-09
+- concrete-core-spring: 缺陷修复
+
 ## 2018-09-08
 - concrete-core, concrete-core-spring: 缺陷修复
 
