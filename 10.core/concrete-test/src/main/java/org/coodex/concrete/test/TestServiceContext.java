@@ -23,10 +23,6 @@ import org.coodex.concrete.common.Token;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import static org.coodex.concrete.common.ConcreteHelper.VERSION;
 import static org.coodex.concrete.core.token.TokenWrapper.newToken;
 
@@ -37,21 +33,21 @@ public class TestServiceContext extends AbstractContainerContext implements org.
             new SingletonMap<String, Token>(new SingletonMap.Builder<String, Token>() {
                 @Override
                 public Token build(final String key) {
-                    final Token newToken = newToken();
-                    return (Token) Proxy.newProxyInstance(
-                            Token.class.getClassLoader(),
-                            new Class[]{Token.class},
-                            new InvocationHandler() {
-                                @Override
-                                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                                    if (method.getName().equals("getTokenId")) {
-                                        return key;
-                                    } else {
-                                        return method.invoke(newToken, args);
-                                    }
-                                }
-                            }
-                    );
+                    return newToken();
+//                    return (Token) Proxy.newProxyInstance(
+//                            Token.class.getClassLoader(),
+//                            new Class[]{Token.class},
+//                            new InvocationHandler() {
+//                                @Override
+//                                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+//                                    if (method.getName().equals("getTokenId")) {
+//                                        return key;
+//                                    } else {
+//                                        return method.invoke(newToken, args);
+//                                    }
+//                                }
+//                            }
+//                    );
                 }
             });
 

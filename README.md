@@ -28,7 +28,9 @@ public interface SomeService extends ConcreteService{
 
 
 ## 2018-09-09
-- concrete-core-spring: 缺陷修复
+- concrete-core: 去掉多余的debug
+- concrete-core-spring: 缺陷修复;
+- concrete-test: 修改TokenID的值相同即token相同，不等同于tokenId
 
 ## 2018-09-08
 - concrete-core, concrete-core-spring: 缺陷修复

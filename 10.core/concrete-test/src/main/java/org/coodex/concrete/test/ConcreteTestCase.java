@@ -25,4 +25,12 @@ import org.junit.rules.TestRule;
 public abstract class ConcreteTestCase {
     @Rule
     public final TestRule CONCRETE_TEST_RULE = new ConcreteTestRule();
+
+    protected void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+
+        }
+    }
 }
