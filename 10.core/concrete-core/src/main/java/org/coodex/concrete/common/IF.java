@@ -29,7 +29,8 @@ public class IF {
      * @param objects
      */
     public static final void is(boolean exp, int code, Object... objects) {
-        is(exp, new ConcreteException(code, objects));
+//        is(exp, new ConcreteException(code, objects));
+        if (exp) throw new ConcreteException(code, objects);
     }
 
     public static final void is(boolean exp, ConcreteException ex) {
@@ -37,7 +38,8 @@ public class IF {
     }
 
     public static final void is(boolean exp, String message) {
-        is(exp, ConcreteHelper.getException(new RuntimeException(message)));
+//        is(exp, ConcreteHelper.getException(new RuntimeException(message)));
+        if (exp) throw ConcreteHelper.getException(new RuntimeException(message));
     }
 
     /**
@@ -48,7 +50,7 @@ public class IF {
      * @param objects
      */
     public static final void not(boolean exp, int code, Object... objects) {
-        not(exp, new ConcreteException(code, objects));
+        is(!exp, code, objects);
     }
 
     public static final void not(boolean exp, ConcreteException ex) {
@@ -68,7 +70,9 @@ public class IF {
      * @return
      */
     public static final <T> T isNull(T o, int code, Object... objects) {
-        return isNull(o, new ConcreteException(code, objects));
+        is(o == null, code, objects);
+        return o;
+//        return isNull(o, new ConcreteException(code, objects));
     }
 
     public static final <T> T isNull(T o, ConcreteException exp) {
@@ -77,7 +81,9 @@ public class IF {
     }
 
     public static final <T> T isNull(T o, String message) {
-        return isNull(o, ConcreteHelper.getException(new RuntimeException(message)));
+        is(o == null, message);
+        return o;
+//        return isNull(o, ConcreteHelper.getException(new RuntimeException(message)));
     }
 
 
@@ -89,7 +95,8 @@ public class IF {
      * @param objects
      */
     public static final void notNull(Object o, int code, Object... objects) {
-        notNull(o, new ConcreteException(code, objects));
+//        notNull(o, new ConcreteException(code, objects));
+        is(o != null, code, objects);
     }
 
     public static final void notNull(Object o, ConcreteException ex) {
@@ -97,7 +104,8 @@ public class IF {
     }
 
     public static final void notNull(Object o, String message) {
-        notNull(o, ConcreteHelper.getException(new RuntimeException(message)));
+//        notNull(o, ConcreteHelper.getException(new RuntimeException(message)));
+        is(o != null, message);
     }
 
 }

@@ -16,7 +16,9 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.ConcreteServiceLoader;
+import org.coodex.concrete.common.ErrorInfo;
+import org.coodex.concrete.common.ThrowableMapperFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,16 +60,17 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
 
     @Override
     public Response toResponse(Throwable exception) {
-        int errorCode = ErrorCodes.UNKNOWN_ERROR;
-
-        ConcreteException concreteException = ConcreteHelper.findException(exception);
-
-
-        if (concreteException != null) {
-            errorCode = concreteException.getCode();
-            exception = concreteException;
-        }
-        Response.Status status = getStatus(errorCode);
+//        int errorCode = ErrorCodes.UNKNOWN_ERROR;
+//
+//        ConcreteException concreteException = ConcreteHelper.findException(exception);
+//
+//
+//        if (concreteException != null) {
+//            errorCode = concreteException.getCode();
+//            exception = concreteException;
+//        }
+        ErrorInfo errorInfo = ThrowableMapperFacade.toErrorInfo(exception);
+        Response.Status status = getStatus(errorInfo.getCode());
 
         if (status.getFamily() == Response.Status.Family.SERVER_ERROR) {
             log.warn("exception occurred: {}", exception.getLocalizedMessage(), exception);
@@ -77,7 +80,7 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
         return Response.status(status)
                 .header("Content-Type", MediaType.APPLICATION_JSON)
                 .header(HEADER_ERROR_OCCURRED, true)
-                .entity(new ErrorInfo(errorCode, exception.getLocalizedMessage()))
+                .entity(errorInfo)
                 .build();
     }
 }

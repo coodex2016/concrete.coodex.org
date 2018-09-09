@@ -28,9 +28,13 @@ public interface SomeService extends ConcreteService{
 
 
 ## 2018-09-09
-- concrete-core: 去掉多余的debug
+- concrete-core: 
+    - 去掉多余的debug
+    - 增加ThrowableMapper，方便根据不同类型的异常转换ErrorInfo
+    - IF性能优化
 - concrete-core-spring: 缺陷修复;
 - concrete-test: 修改TokenID的值相同即token相同，不等同于tokenId
+- 0.2.3发布到中央库
 
 ## 2018-09-08
 - concrete-core, concrete-core-spring: 缺陷修复

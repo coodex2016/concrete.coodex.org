@@ -184,11 +184,11 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
         $sendText(text, session);
     }
 
-    private void sendError(String msgId, ConcreteException exception, Session session) {
+    private void sendError(String msgId, Throwable exception, Session session) {
         ResponsePackage<ErrorInfo> responsePackage = new ResponsePackage<ErrorInfo>();
         responsePackage.setOk(false);
         responsePackage.setMsgId(msgId);
-        responsePackage.setContent(new ErrorInfo(exception));
+        responsePackage.setContent(ThrowableMapperFacade.toErrorInfo(exception));
         sendText(JSONSerializerFactory.getInstance().toJson(responsePackage), session);
     }
 
@@ -267,7 +267,7 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
         try {
             invokeService(requestPackage, session);
         } catch (Throwable th) {
-            sendError(requestPackage.getMsgId(), ConcreteHelper.getException(th), session);
+            sendError(requestPackage.getMsgId(), th, session);
         }
     }
 
@@ -362,7 +362,7 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
                     runWithContext(context, new CallableClosure() {
                         @Override
                         public Object call() throws Throwable {
-                            sendError(requestPackage.getMsgId(), ConcreteHelper.getException(th), session);
+                            sendError(requestPackage.getMsgId(), th, session);
                             return null;
                         }
                     });
