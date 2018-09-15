@@ -1,7 +1,7 @@
 <#macro classNameList classes><#list classes?sort as clazz>${clazz}<#if clazz_has_next>, </#if></#list></#macro>
 import { NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ConcreteHeadersInterceptor } from './AbstractConcreteService';
+import { ConcreteHeadersInterceptor, Broadcast } from './AbstractConcreteService';
 <#list services?keys?sort as key>
 import { <@classNameList classes=services[key]/> } from './${key}';
 </#list>
@@ -19,7 +19,7 @@ export * from './${pack}';
         provide: HTTP_INTERCEPTORS,
         useClass: ConcreteHeadersInterceptor,
         multi: true,
-    }, <@classNameList classes=providers/>],
+    }, Broadcast, <@classNameList classes=providers/>],
 })
 export class Concrete${moduleType}Module {
 }

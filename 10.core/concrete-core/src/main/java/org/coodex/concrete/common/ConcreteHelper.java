@@ -35,7 +35,7 @@ import static org.coodex.util.ReflectHelper.foreachClass;
  */
 public class ConcreteHelper {
 
-    public static final String VERSION = "0.2.3-SNAPSHOT";
+    public static final String VERSION = "0.2.4-SNAPSHOT";
     private static final ClassNameFilter CONCRETE_SERVICE_INTERFACE_FILTER = new ConcreteClassFilter() {
         @Override
         protected boolean accept(Class<?> clazz) {

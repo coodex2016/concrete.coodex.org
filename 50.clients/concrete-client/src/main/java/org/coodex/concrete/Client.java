@@ -27,17 +27,24 @@ import static org.coodex.concrete.ClientHelper.*;
 public class Client {
 
     public static <T> T getInstance(Class<T> concreteServiceClass) {
-        return getInstance(concreteServiceClass, null);
+        return getInstance(concreteServiceClass, (String) null);
     }
 
-    public static <T> T getInstance(Class<T> concreteServiceClass, String module) {
+    public static <T> T getInstance(Class<T> concreteServiceClass, Destination destination) {
         boolean sync = ConcreteHelper.isConcreteService(concreteServiceClass);
         IF.not(sync || isReactiveExtension(concreteServiceClass),
                 concreteServiceClass + "is NOT ConcreteService.");
-        Destination destination = getDestination(module);
         destination.setAsync(!sync);
-
         return getInstanceBuilder().build(destination, concreteServiceClass);
+    }
+
+    public static <T> T getInstance(Class<T> concreteServiceClass, String module) {
+
+        return getInstance(concreteServiceClass, getDestination(module));
+//        Destination destination = getDestination(module);
+//        destination.setAsync(!sync);
+//
+//        return getInstanceBuilder().build(destination, concreteServiceClass);
     }
 
 }

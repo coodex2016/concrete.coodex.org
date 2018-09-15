@@ -26,6 +26,12 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-09-14
+- concrete-api-tools: 修复生成Angular脚本，订阅时的错误
+
+## 2018-09-12
+- 0.2.4-SNAPSHOT
+- concrete-client: 增加`public static <T> T getInstance(Class<T> concreteServiceClass, Destination destination)`接口，不再完全依赖模块配置文件，暂行方案，后续考虑模块配置如何调整。
 
 ## 2018-09-09
 - concrete-core: 
@@ -55,7 +61,6 @@ public interface SomeService extends ConcreteService{
 - concrete-core-spring:
     - 相应修改
 
-
 ## 2018-08-24
 - concrete-core: 
     - 一些优化；
@@ -73,7 +78,6 @@ public interface SomeService extends ConcreteService{
 - concrete-test
     - 修改上下文
 
-
 ## 2018-08-21
 - concrete-support-jsr311, concrete-support-jsr339: 重命名了ConcreteJaxrs\*\*\*Application，调整为ConcreteJSR\*\*\*Application，作废原有名称
 
@@ -85,11 +89,9 @@ public interface SomeService extends ConcreteService{
 - concrete-core-spring: 简化切片的使用方式，废弃`org.coodex.concrete.spring.aspects.*Aspect`，直接定义`ConcreteInterceptor`的Bean即可
 - concrete-core: 修改TokenBasedTopicMessage的缓存机制，默认缓存30秒，可通过`tokenBasedTopicMessage.cacheLife`更改，单位为秒
 
-
 ## 2018-08-18
 - coodex-utitlies: 增加ByteArrayBuilder，方便构建协议数据
 - concrete-core: 增加TokenBasedTopic的订阅管理切片，和自动取消订阅的TokenEventListener，[使用参考](test-case/test-case-server/src/main/java/org/coodex/concrete/test/impl/SubscribeInterceptor.java)
-
 
 ## 2018-08-17
 - coodex-utilities: https://github.com/snksoft/java-crc 在其基础上进行修改，参考 https://crccalc.com/ 的算法名定义了CRC8/16/32的枚举，提供通用的crc算法
@@ -112,7 +114,6 @@ public interface SomeService extends ConcreteService{
 - concrete-client: 增加调用接口和方法的tag，方便查看
 - concrete-jaxrs-client: 修复`X-CLIENT-PROVIDER`为空的问题
 - concrete-apm-plugin-mysql: 参考 `brave-instrumentation-mysql` 增加apm的mysql的插件，在`url`后面增加`statementInterceptors=org.coodex.concrete.apm.mysql.TracingStatementInterceptor`即可 
-
 
 ## 2018-07-27
 - 增加APM能力，基于zipkin做了一个轻量封装
@@ -143,9 +144,8 @@ public @interface PostParam {
 - concrete-jaxrs-client: 修正URLEncoder问题，` ` 转为 `%20`
 - concrete-support-jaxrs: 修复Subjoin无法获取客户端传递的header的问题。根据[RFC2616 4.2](https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2)，使其对大小写不敏感
     - 坑: spring-boot-start默认使用tomcat,tomcat把所有请求header转小写了,使用spring-boot-start-jetty,则可以保留大小写,不确定哪个更好
-- concrete-core: 适配之前版本的signature规则
+- concrete-core: 适配之前版本的signature规则恩
 - coodex-utilities: `SingtonMap` 增加最大存在时长参数
-
 
 ## 2018-07-13
 - concrete-core: 增加发布订阅模型的消息Serializer
@@ -156,8 +156,6 @@ public @interface PostParam {
 - concrete-core: 增加queue的默认值配置
 - 发布订阅模型支持Observer Bean,凡注册的Observer Bean均可被自动订阅
     - 增加MessageConsumer注解，用于声明Observer Bean应该订阅的主题
-
-
 
 ## 2018-07-01
 - coodex-utilities: 增加多任务并行单元，所有并行任务完成后返回
@@ -326,7 +324,6 @@ registry=protocal://user:pwd@ip:port, .....
 
 - api-tools: 生成angular SDK时，增加了模块化定义，简化项目代码; 生成的service依赖改为相对路径，不再需要在tsconfig.json里添加baseUrl。
 - api-tools: 新增AngularCodeRenderV2，使用Angular 4.3的新模块HttpClient模块替代Http模块，推荐Angular版本高于4.3的使用
-
 
 ## 2017-12-26
 

@@ -101,7 +101,7 @@ export class Broadcast extends AbstractConcreteService {
         if (messages && messages.length > 0) {
             for (const message of messages) {
                 const subject = this.bcSubject.get(message.subject);
-                if (subject !== null) {
+                if (subject) {
                     subject.next(message.body);
                 } else {
                     console.warn("no subscriber for " + message.subject);
