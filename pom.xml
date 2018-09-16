@@ -367,10 +367,17 @@
 
             <!-- https://mvnrepository.com/artifact/org.jboss.spec.javax.ws.rs/jboss-jaxrs-api_2.0_spec -->
             <!-- JSR 339 JAX-RS 2.0 -->
+            <!--<dependency>-->
+                <!--<groupId>org.jboss.spec.javax.ws.rs</groupId>-->
+                <!--<artifactId>jboss-jaxrs-api_2.0_spec</artifactId>-->
+                <!--<version>${jsr-339.version}</version>-->
+            <!--</dependency>-->
+
+            <!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
             <dependency>
-                <groupId>org.jboss.spec.javax.ws.rs</groupId>
-                <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
-                <version>${jsr-339.version}</version>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>2.1</version>
             </dependency>
 
 
