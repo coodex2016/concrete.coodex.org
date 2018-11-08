@@ -136,7 +136,7 @@
         <jersey.version>2.25.1</jersey.version>
         <junit.version>4.12</junit.version>
         <freemarker.version>2.3.23</freemarker.version>
-        <fastjson.version>1.2.32</fastjson.version>
+        <fastjson.version>1.2.51</fastjson.version>
         <guice.version>4.1.0</guice.version>
         <javassist.verion>3.22.0-GA</javassist.verion>
 

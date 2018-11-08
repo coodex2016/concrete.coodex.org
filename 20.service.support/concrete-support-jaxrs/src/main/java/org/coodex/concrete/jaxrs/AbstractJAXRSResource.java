@@ -217,6 +217,12 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
                 }
             }
 
+            Map<String, String> map = ConcreteHelper.updatedMap(serviceContext.getSubjoin());
+            if(map != null && map.size() > 0){
+                for(String key: map.keySet()){
+                    builder = builder.header(key, map.get(key));
+                }
+            }
             return builder.build();
         } catch (Throwable throwable) {
             trace.error(throwable);
