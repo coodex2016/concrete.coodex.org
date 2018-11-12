@@ -35,4 +35,14 @@ public class LocalCourierPrototype<M extends Serializable> extends CourierProtot
     public void deliver(M message) {
         getTopic().notify(message);
     }
+
+    @Override
+    public boolean isConsumer() {
+        return true;
+    }
+
+    @Override
+    public void setConsumer(boolean consumer) {
+
+    }
 }

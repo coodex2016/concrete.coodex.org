@@ -18,13 +18,18 @@ package org.coodex.concrete.couriers.jms;
 
 import org.coodex.concrete.message.CourierPrototype;
 import org.coodex.util.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.jms.JMSException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 
 import static org.coodex.concrete.couriers.jms.JMSCourierPrototypeProvider.JMS_PREFIX;
 
 public class JMSCourierPrototype<M extends Serializable> extends CourierPrototype<M> {
+
+    private final static Logger log = LoggerFactory.getLogger(JMSCourierPrototype.class);
 
     private final String driver;
     private final Singleton<JMSFacade> jmsFacadeSingleton = new Singleton<JMSFacade>(
@@ -43,6 +48,7 @@ public class JMSCourierPrototype<M extends Serializable> extends CourierPrototyp
                 }
             }
     );
+    private boolean consumer = false;
 
     public JMSCourierPrototype(String queue, String destination, Type topicType) {
         super(queue, destination, topicType);
@@ -62,5 +68,24 @@ public class JMSCourierPrototype<M extends Serializable> extends CourierPrototyp
     @Override
     public void deliver(M message) {
         jmsFacadeSingleton.getInstance().publish(message);
+    }
+
+    @Override
+    public boolean isConsumer() {
+        return consumer;
+    }
+
+    @Override
+    public void setConsumer(boolean consumer) {
+        synchronized (this) {
+            if (consumer != this.consumer) {
+                try {
+                    jmsFacadeSingleton.getInstance().setConsumer(consumer);
+                    this.consumer = consumer;
+                } catch (JMSException e) {
+                    log.error(e.getLocalizedMessage(), e);
+                }
+            }
+        }
     }
 }

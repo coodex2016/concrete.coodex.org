@@ -68,6 +68,7 @@ class JMSFacade {
     private ConnectionFactory connectionFactory;
     private Connection connection;
     private Session session;
+    private Destination destination;
     private MessageProducer producer;
     private MessageConsumer consumer;
 
@@ -118,6 +119,20 @@ class JMSFacade {
 //        return Common.serialize(message);
 //    }
 
+    public void setConsumer(boolean isConsumer) throws JMSException {
+        if (isConsumer && consumer == null) {
+            consumer = session.createConsumer(destination, null, false);
+            consumer.setMessageListener(messageListener);
+        } else if (!isConsumer && consumer != null) {
+            try {
+                consumer.close();
+            } finally {
+                consumer = null;
+            }
+        }
+
+    }
+
     private Object deserialize(ObjectMessage message) {
         try {
             Serializable serializable = message.getObject();
@@ -159,11 +174,10 @@ class JMSFacade {
                 reconnect();
             }
         });
+
         connection.start();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Destination destination = session.createTopic(topicName);
-        consumer = session.createConsumer(destination, null, false);
-        consumer.setMessageListener(messageListener);
+        destination = session.createTopic(topicName);
         producer = session.createProducer(destination);
     }
 

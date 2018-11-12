@@ -22,4 +22,9 @@ public interface Courier<M extends Serializable> {
     void deliver(M message);
 
     void associate(AbstractTopicPrototype<M> topic);
+
+    // 是否是一个消费者
+    boolean isConsumer();
+
+    void setConsumer(boolean consumer);
 }

@@ -41,7 +41,10 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
     public static final String EXCHANGER_NAME = "org.coodex.concrete.topics";
     private final static Logger log = LoggerFactory.getLogger(RabbitMQCourierPrototype.class);
     private final Serializer serializer;
+    private boolean consumer = false;
+    private String consumerStr = null;
     private Connection connection;
+    private String queueName;
     private Channel channel;
     private String routingKey;
 
@@ -93,18 +96,9 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
                 channel = connection.createChannel();
 
                 channel.exchangeDeclare(EXCHANGER_NAME, BuiltinExchangeType.TOPIC);
-                String queueName = channel.queueDeclare().getQueue();
+                queueName = channel.queueDeclare().getQueue();
                 channel.queueBind(queueName, EXCHANGER_NAME, routingKey);
-                channel.basicConsume(queueName, true, new DefaultConsumer(channel) {
-                    @Override
-                    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                        try {
-                            getTopic().notify(serializer.<M>deserialize(body, getMessageType()));
-                        } catch (Throwable th) {
-                            log.warn("notify error: {}", th.getLocalizedMessage(), th);
-                        }
-                    }
-                });
+
 
             } catch (Throwable th) {
                 throw Common.runtimeException(th);
@@ -123,6 +117,41 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
             }
         } else {
             throw new RuntimeException("rabbitmq channel NOT build: " + getQueue());
+        }
+    }
+
+    @Override
+    public boolean isConsumer() {
+        return consumer;
+    }
+
+    @Override
+    public void setConsumer(boolean consumer) {
+        synchronized (this) {
+            if (consumer != this.consumer) {
+                try {
+                    if (consumer) {
+                        consumerStr = channel.basicConsume(queueName, true, new DefaultConsumer(channel) {
+                            @Override
+                            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                                try {
+                                    getTopic().notify(serializer.<M>deserialize(body, getMessageType()));
+                                } catch (Throwable th) {
+                                    log.warn("notify error: {}", th.getLocalizedMessage(), th);
+                                }
+                            }
+                        });
+                    } else if (consumerStr != null) {
+                        try {
+                            channel.basicCancel(consumerStr);
+                        } finally {
+                            consumerStr = null;
+                        }
+                    }
+                } catch (IOException e) {
+                    log.error(e.getLocalizedMessage(), e);
+                }
+            }
         }
     }
 }

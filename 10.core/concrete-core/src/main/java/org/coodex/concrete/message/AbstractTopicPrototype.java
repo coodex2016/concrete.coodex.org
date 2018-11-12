@@ -61,6 +61,10 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
                 if (subscriptions.containsKey(observer)) {
                     subscriptions.remove(observer);
                 }
+
+                if (subscriptions.size() == 0) {
+                    this.courier.setConsumer(false);
+                }
             }
         }
     }
@@ -84,6 +88,9 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
             synchronized (subscriptions) {
                 if (!subscriptions.containsKey(observer)) {
                     subscriptions.put(observer, new SubscriptionImpl(observer));
+                    if (!courier.isConsumer()) {
+                        courier.setConsumer(true);
+                    }
                 }
             }
         }
