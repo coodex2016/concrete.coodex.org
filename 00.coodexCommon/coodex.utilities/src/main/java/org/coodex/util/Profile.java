@@ -127,27 +127,28 @@ public class Profile implements StringMap {
     }
 
     static public URL getResource(String resource) {
-        ClassLoader classLoader = null;
-        URL url = null;
-
-        classLoader = Thread.currentThread().getContextClassLoader();
-        if (classLoader != null) {
-            url = classLoader.getResource(resource);
-            if (url != null) {
-                return url;
-            }
-        }
-
-        // We could not find resource. Ler us now try with the
-        // classloader that loaded this class.
-        classLoader = Profile.class.getClassLoader();
-        if (classLoader != null) {
-            url = classLoader.getResource(resource);
-            if (url != null) {
-                return url;
-            }
-        }
-        return ClassLoader.getSystemResource(resource);
+//        ClassLoader classLoader = null;
+//        URL url = null;
+//
+//        classLoader = Thread.currentThread().getContextClassLoader();
+//        if (classLoader != null) {
+//            url = classLoader.getResource(resource);
+//            if (url != null) {
+//                return url;
+//            }
+//        }
+//
+//        // We could not find resource. Ler us now try with the
+//        // classloader that loaded this class.
+//        classLoader = Profile.class.getClassLoader();
+//        if (classLoader != null) {
+//            url = classLoader.getResource(resource);
+//            if (url != null) {
+//                return url;
+//            }
+//        }
+//        return ClassLoader.getSystemResource(resource);
+        return Common.getResource(resource);
     }
 
     private void loadFromPath(String path) {

@@ -232,16 +232,17 @@ public class Common {
 
     // TODO fix
     public static String byte2hex(byte[] b) {
-        String hs = "";
-        for (int n = 0; n < b.length; n++) {
-            String sTmp = Integer.toHexString(b[n] & 0XFF);
-            if (sTmp.length() == 1) {
-                hs = hs + "0" + sTmp;
-            } else {
-                hs = hs + sTmp;
-            }
-        }
-        return hs.toUpperCase();
+//        String hs = "";
+//        for (int n = 0; n < b.length; n++) {
+//            String sTmp = Integer.toHexString(b[n] & 0XFF);
+//            if (sTmp.length() == 1) {
+//                hs = hs + "0" + sTmp;
+//            } else {
+//                hs = hs + sTmp;
+//            }
+//        }
+//        return hs.toUpperCase();
+        return byte2hex(b,0,b.length);
     }
 
     public static String byte2hex(byte[] b, int offset, int length){
