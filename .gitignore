@@ -13,3 +13,5 @@ env.xml
 .classpath
 .settings
 api_gen.*.properties
+
+dependencies.txt

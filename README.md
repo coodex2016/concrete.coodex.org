@@ -26,6 +26,9 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-12-19
+- 一些小优化
+
 ## 2018-11-12
 - concrete-support-jaxrs: bugfix 修复Jaxrs模式下Subjoin未回传问题
 - concrete-core, concrete-courier-jms, concrete-courier-rabbitmq: 机制调整，主题无订阅时不产生消费者

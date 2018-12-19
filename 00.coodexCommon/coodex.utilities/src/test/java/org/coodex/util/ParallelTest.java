@@ -18,14 +18,14 @@ package org.coodex.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.concurrent.Parallel;
 
 public class ParallelTest {
 
     public static void main(String [] args){
         //使用10个线程的线程池作为并行处理容器
-        Parallel parallel = new Parallel(ExecutorsHelper.newFixedThreadPool(10));
+//        Parallel parallel = new Parallel(ExecutorsHelper.newFixedThreadPool(10));
+        Parallel parallel = new Parallel();
         Runnable [] runnables = new Runnable[20];
         for(int i = 0; i < runnables.length; i ++){
             // 每个任务随机执行0-5000毫秒, 20%几率抛异常
@@ -47,5 +47,7 @@ public class ParallelTest {
         Parallel.Batch batch = parallel.run(runnables);
 
         System.out.println(JSON.toJSONString(batch,SerializerFeature.PrettyFormat));
+
+        System.out.println(batch.getTimeConsuming());
     }
 }

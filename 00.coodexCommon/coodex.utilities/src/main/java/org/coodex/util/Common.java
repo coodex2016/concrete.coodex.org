@@ -622,7 +622,7 @@ public class Common {
         int lenB = strB.length();
         int[][] c = new int[lenA + 1][lenB + 1];
         // Record the distance of all begin points of each string
-        //初始化方式与背包问题有点不同
+        // 初始化方式与背包问题有点不同
         for (int i = 0; i < lenA; i++) c[i][lenB] = lenA - i;
         for (int j = 0; j < lenB; j++) c[lenA][j] = lenB - j;
         c[lenA][lenB] = 0;

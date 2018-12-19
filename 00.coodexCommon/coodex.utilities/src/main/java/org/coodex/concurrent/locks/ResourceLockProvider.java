@@ -14,30 +14,11 @@
  * limitations under the License.
  */
 
-package org.coodex.util;
+package org.coodex.concurrent.locks;
 
-public class Singleton<T> {
+import org.coodex.util.AcceptableService;
 
-    private final Builder<T> builder;
-    private volatile T instance = null;
+public interface ResourceLockProvider extends AcceptableService<ResourceId> {
 
-    public Singleton(Builder<T> builder) {
-        if (builder == null) throw new NullPointerException("builder MUST NOT be null.");
-        this.builder = builder;
-    }
-
-    public T getInstance() {
-        if (instance == null) {
-            synchronized (this) {
-                if (instance == null) {
-                    instance = builder.build();
-                }
-            }
-        }
-        return instance;
-    }
-
-    public interface Builder<T> {
-        T build();
-    }
+    ResourceLock getLock(ResourceId id);
 }

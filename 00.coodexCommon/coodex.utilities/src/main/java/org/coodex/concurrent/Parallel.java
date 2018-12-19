@@ -21,6 +21,7 @@ import org.coodex.util.Common;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -37,6 +38,10 @@ public class Parallel {
     private final ExecutorService executorService;
     private final RunnerWrapper wrapper;
 
+    public Parallel() {
+        this(null);
+    }
+
     public Parallel(ExecutorService executorService) {
         this(executorService, null);
     }
@@ -51,30 +56,37 @@ public class Parallel {
         Batch batch = new Batch();
         batch.start = Calendar.getInstance();
 
-        //
-        int i = 1;
-        for (Runnable runnable : runnables) {
-            batch.getTasks().add(newTask(
-                    wrapper.wrap(runnable),
-                    i++, batch));
-        }
-        while (!batch.isAllFinished()) {
-            synchronized (batch) {
-                try {
-                    batch.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        if (runnables != null && runnables.length > 0) {
+            CountDownLatch latch = new CountDownLatch(runnables.length);
+            int i = 1;
+            for (Runnable runnable : runnables) {
+                batch.getTasks().add(newTask(
+                        wrapper.wrap(runnable),
+                        i++, latch/*, batch*/));
             }
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+//            while (!batch.isAllFinished()) {
+//                synchronized (batch) {
+//                    try {
+//                        batch.wait();
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
         }
         batch.end = Calendar.getInstance();
         return batch;
     }
 
-    private Task newTask(final Runnable runnable, int i, final Object lock) {
+    private Task newTask(final Runnable runnable, int i, final CountDownLatch latch/*, final Object lock*/) {
         final Task task = new Task();
         task.id = i;
-        executorService.execute(new Runnable() {
+        Runnable run = new Runnable() {
             @Override
             public void run() {
                 task.start = Calendar.getInstance();
@@ -85,12 +97,19 @@ public class Parallel {
                 } finally {
                     task.end = Calendar.getInstance();
                     task.finished = true;
-                    synchronized (lock) {
-                        lock.notify();
-                    }
+                    latch.countDown();
+//                    synchronized (lock) {
+//                        lock.notify();
+//                    }
                 }
             }
-        });
+        };
+
+        if (executorService != null) {
+            executorService.execute(run);
+        } else {
+            new Thread(run).start();
+        }
         return task;
     }
 
@@ -157,14 +176,13 @@ public class Parallel {
             return end;
         }
 
-        public boolean isAllFinished() {
-            for (Task task : tasks) {
-                if (!task.isFinished()) return false;
-            }
-            return true;
-        }
+//        public boolean isAllFinished() {
+//            for (Task task : tasks) {
+//                if (!task.isFinished()) return false;
+//            }
+//            return true;
+//        }
 
     }
-
 
 }
