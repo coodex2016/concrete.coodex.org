@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.client;
 
-import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 
 import java.util.HashMap;
@@ -39,22 +39,26 @@ public class ClientCommon {
     }
 
     private static boolean getDomainAsyncSupport(String domain) {
-        return ConcreteHelper.getProfile()
-                .getBool(
-                        "concrete.client" + getKey(domain) + ".async", true);
+//        return ConcreteHelper.getProfile()
+//                .getBool(
+//                        "concrete.client" + getKey(domain) + ".async", true);
+        return Config.getValue("concrete.client" + getKey(domain) + ".async", true);
     }
 
     private static String getDomainType(String domain) {
-        return ConcreteHelper.getProfile()
-                .getString(
-                        "concrete.client" + getKey(domain) + ".type");
+//        return ConcreteHelper.getProfile()
+//                .getString(
+//                        "concrete.client" + getKey(domain) + ".type");
+        return Config.get("concrete.client" + getKey(domain) + ".type");
     }
 
     private static String getDomainIdentify(String domain) {
-        String s = ConcreteHelper.getProfile()
-                .getString(
-                        "concrete.client" + getKey(domain) + ".domain",
-                        Common.nullToStr(domain)).trim();
+//        String s = ConcreteHelper.getProfile()
+//                .getString(
+//                        "concrete.client" + getKey(domain) + ".domain",
+//                        Common.nullToStr(domain)).trim();
+        String s = Config.getValue("concrete.client" + getKey(domain) + ".domain",
+                Common.nullToStr(domain)).trim();
         char[] buf = s.toCharArray();
         int len = buf.length;
         while (len > 0 && buf[len - 1] == '/') {

@@ -17,8 +17,7 @@
 package org.coodex.concrete.common;
 
 import org.coodex.concurrent.ExecutorsHelper;
-import org.coodex.util.Common;
-import org.coodex.util.RecursivelyProfile;
+import org.coodex.config.Config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,12 +28,13 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by davidoff shen on 2017-03-24.
  */
+@Deprecated
 public abstract class ConcreteCache<K, V> {
 
     private final static ScheduledExecutorService THREADS = ExecutorsHelper.newScheduledThreadPool(
-            ConcreteHelper.getProfile().getInt("cache.thread.pool.size", 1)
+            Config.getValue("cache.thread.pool.size", 1)
     );
-    private final static RecursivelyProfile RECURSIVELY_PROFILE = new RecursivelyProfile(ConcreteHelper.getProfile());
+//    private final static RecursivelyProfile RECURSIVELY_PROFILE = new RecursivelyProfile(ConcreteHelper.getProfile());
     private Map<K, Cached<V>> cache = new HashMap<K, Cached<V>>();
     //    private int time;
     private TimeUnit unit;
@@ -60,7 +60,8 @@ public abstract class ConcreteCache<K, V> {
     }
 
     protected final long getCachingTime() {
-        return Common.toLong(RECURSIVELY_PROFILE.getString(getRule(), "cache.object.life"), 10);
+//        return Common.toLong(RECURSIVELY_PROFILE.getString(getRule(), "cache.object.life"), 10);
+        return Config.getValue("cache.object.life", 10, getRule());
     }
 
     public V get(final K key) {

@@ -19,7 +19,6 @@ package org.coodex.pojomocker.mockers;
 import org.coodex.pojomocker.Mocker;
 import org.coodex.pojomocker.annotations.STRING;
 import org.coodex.util.Common;
-import org.coodex.util.Profile;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,14 +29,13 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.coodex.pojomocker.mockers.DefaultCharMocker.getDefaultRange;
+
 /**
  * Created by davidoff shen on 2017-05-15.
  */
 public class DefaultStringMocker implements Mocker<STRING> {
 
-    static char[] getDefaultRange() {
-        return Profile.getProfile("mock.properties").getString("default.string.range", DefaultCharMocker.DEFAULT_RANGE_STR).toCharArray();
-    }
 
     @Override
     public boolean accept(STRING param) {

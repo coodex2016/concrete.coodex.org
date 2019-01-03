@@ -26,6 +26,166 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-01-03
+- 修复JaxrsSubjoin可能出现content-type重复的问题
+- 定义Configuration接口，用于获取系统的配置；提供默认的基于Profile的Configuration实现；提供Config门面简化获取配置方式
+- coodex及concrete配置类内容迁移到Configuration接口，兼容了之前从Profile中获取的行为
+- 连接池由ConcreteHelper统一提供，可通过配置灵活设定
+- 其他一些优化
+
+### Configuration & Profile
+
+#### coodex-utilities
+
+configuration:
+
+| namespace | key | default | desc |
+| --- | ---- | ----- | --- |
+| mock | default.chars.range | ASCII | char seq |
+
+#### shared-cache-jedis
+
+| namespace | key | default | desc |
+| --- | ---- | ---- | --- |
+| sharedcache-jedis | redisServers | none | split by ',' |
+| sharedcache-jedis | pool.minIdle | 0 | integer |
+| sharedcache-jedis | pool.maxIdle | 8 | integer |
+| sharedcache-jedis | pool.maxTotal | 8 | integer |
+| sharedcache-jedis | defaultMaxCacheTime | 3600 | long, sec |
+
+#### shared-cache-memcached
+
+| namespace | key | default | desc |
+| --- | ---- | ---- | --- |
+| sharedcache-xmemcached | defaultMaxCacheTime | 3600 | long, sec |
+| sharedcache-xmemcached | memchachedServers | none | split by ' ' |
+| sharedcache-xmemcached | poolSize | 1 | integer |
+| sharedcache-xmemcached | user.(server) | none | - |
+| sharedcache-xmemcached | pwd.(server) | none | - |
+
+#### coodex-utilities-servlet
+
+| namespace | key | default | desc |
+| --- | ---- | ---- | --- |
+| cors_settings | allowOrigin | none | - |
+| cors_settings | exposeHeaders | none | - |
+| cors_settings | allowMethod | none | - |
+| cors_settings | allowHeaders | none | - |
+| cors_settings | maxAge | none | - |
+| cors_settings | allowCredentials | false | - |
+
+#### concrete
+
+- configuration
+
+| namespace | key | default | desc |
+| --- | ---- | ---- | --- |
+| (executorName), (appSet) | executor | none | alias to |
+| (executorName), (appSet) | executor.corePoolSize | 0 | integer |
+| (executorName), (appSet) | executor.maximumPoolSize | Integer.MAX_VALUE | integer |
+| (executorName), (appSet) | executor.keepAliveTime | 60 | integer, min |
+| (schedulerName), (appSet) | scheduler | none | alias to |
+| (schedulerName), (appSet) | scheduler.executorSize | 1 | integer |
+| (appSet) | token.maxIdelTime | 60 | integer, min |
+| concrete, (appSet) | api.packages | String[0] | String[] |
+| concrete, (appSet) | remoteapi.packages | String[0] | String[] |
+| (appSet) | (BeanNameFilter.class.name).prefix | none | className |
+| (appSet) | (ServiceProvider.class.name).provider | none | className |
+| (appSet) | (ServiceProvider.class.name).default | none | className |
+| (appSet) | (ConflictSolution.class.name) | none | className |
+| - | cache.thread.pool.size | 1 | integer, deprecated |
+| - | cache.object.life | 10 | integer, min, deprecated |
+| - | concrete.client(.domainKey).async | true | deprecated |
+| - | concrete.client(.domainKey).type | - | deprecated |
+| - | concrete.client(.domainKey).domain | - | deprecated |
+| (appSet) | tokenBasedTopicMessage.cacheLife | 30 | integer, sec |
+| (appSet) | queue.default | none | queueName |
+| (appSet) | messagePattern.resourceBundles | messagePattern | - |
+| (appSet) | tokenCacheType | none | - |
+| (appSet) | aspect.bean.validation | true | - |
+| signature, (module), (appSet) | algorithm | none | - |
+| signature, (module), (appSet) | keyId | none | - |
+| signature, (module), (appSet) | sign | none | - |
+| signature, (module), (appSet) | noise | none | - |
+| signature, (appSet) | property.algorithm | algorithm | - |
+| signature, (appSet) | property.keyId | keyId | - |
+| signature, (appSet) | property.sign | sign | - |
+| signature, (appSet) | property.noise | noise | - |
+| signature, (module), (appSet) | hmacKey(.paperName)(.keyId) | none | - |
+| signature, (module), (appSet) | rsa.privateKey(.paperName)(.keyId) | none | - |
+| signature, (module), (appSet) | rsa.publicKey(.paperName)(.keyId) | none | - |
+| (appSet) | websocket.hostId | none | ??? |
+| (appSet) | jsonb.provider | none | - |
+| (appSet) | jsr339.charset | utf-8 | - |
+| (appSet) | org.coodex.concrete.spring.aspects.ConcreteAOPChain.order | 0 | - |
+| moduleMock, (appSet) | client(.destinationId) | false | - |
+| (appSet) | zipkin.location | none | - |
+| (appSet) | module.name | concrete | - |
+| concrete_accounts, (appSet) | application.name | coodex.org | - |
+| (appSet) | tenant.RPC.service | none | - |
+| (appSet) | defaultPassword | p@55w0rd | - |
+| concrete_accounts, (appSet) | validation.defer | false | - |
+| concrete_accounts, (appSet) | validation.days | 7 | - |
+| concrete_accounts, (appSet) | administrator.id | none | - |
+| limiting.maximum.concurrency, (appSet), (strategyName) | max | Integer.MAX_VALUE | - |
+| administrator, (appSet) | encoded.password | (default) | - |
+| administrator, (appSet) | authKey | none | - |
+| administrator, (appSet) | name | none | - |
+| administrator, (appSet) | roles | {SystemManager} | - |
+| administrator, (appSet) | valid | true | - |
+| totp, (appSet) | fault.tolerance | 10 | - |
+| totp, (appSet), (app) | issuer.name | coodex.org | - |
+| totp, (appSet), (app) | server.name | (issuer.name) | - |
+| (appSet) | (serviceClassName).(methodName).(parameterCount) | none | - |
+| jaxrs.predicates, (appSet) | service.predicates.PUT | update, set | - |
+| jaxrs.predicates, (appSet) | service.predicates.GET | new, get, findBy | - |
+| jaxrs.predicates, (appSet) | service.predicates.DELETE | delete | - |
+| jaxrs.predicates, (appSet) | service.predicates.POST | save | - |
+| attachmentService, (appSet) | fastdfs.tracker | none | String[] |
+| attachmentService, (appSet) | key.(clientId) | "" | - |
+| attachmentService, (appSet) | attachment.validity | 10 | integer, minutes |
+| attachmentService, (appSet) | rule.read | public | - |
+| attachmentService, (appSet) | (clientId).location | none | - |
+| attachmentService, (appSet) | download.speedLimited | 1024 (k) | - |
+| attachmentService, (appSet) | (clientId).readonly | true | - |
+| attachmentService, (appSet) | download.priority | 1 | 1 - 10 |
+| attachmentService, (appSet) | upload.priority | 5 | 1 - 10 |
+
+- executors
+
+  - service
+  - client
+
+- schedulers
+
+  - service
+  - count
+  - tbm - token based message
+  - jms.reconnect
+  - localTokenManager
+  - fsm.lock.release
+  - websocket.retry
+
+- profile
+
+  - /accounts/(id).properties
+    - id: string
+    - roles: string[]
+    - name: string
+    - password: string
+    - authKey: string
+  - simpleAccounts.properties
+    - password: boolean: true
+    - authCode: boolean: true
+
+- system properties
+
+| key | default |
+| --- | ---- |
+| concrete.appSet | null |
+
+
+
 ## 2018-12-19
 - 一些小优化
 

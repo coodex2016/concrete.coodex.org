@@ -17,14 +17,15 @@
 package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
-import org.coodex.util.Profile;
 
 import javax.ws.rs.HttpMethod;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.getSubmitBody;
 
 
@@ -36,6 +37,7 @@ public class Predicates {
 
     public static final String[] HTTP_METHOD = new String[]{
             HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.GET};
+    private static final String TAG_JAXRS_PREDICATES = "jaxrs.predicates";
     /**
      * 【默认】使用PUT方法的谓词
      */
@@ -62,31 +64,31 @@ public class Predicates {
      * service.predicates.PUT
      */
     private static final String[] PREDICATES_PUT =
-            getProfile().getStrList(
-                    "service.predicates.PUT", ",", PREDICATES_PUT_DEFAULT);
+            Config.getArray(
+                    "service.predicates.PUT", ",", PREDICATES_PUT_DEFAULT, TAG_JAXRS_PREDICATES, getAppSet());
 
     /**
      * 使用GET方法的谓词
      * service.predicates.GET
      */
-    private static final String[] PREDICATES_GET = getProfile().getStrList(
-            "service.predicates.GET", ",", PREDICATES_GET_DEFAULT);
+    private static final String[] PREDICATES_GET = Config.getArray(
+            "service.predicates.GET", ",", PREDICATES_GET_DEFAULT, TAG_JAXRS_PREDICATES, getAppSet());
 
     /**
      * 使用DELETE方法的谓词
      * service.predicates.DELETE
      */
     private static final String[] PREDICATES_DELETE =
-            getProfile().getStrList(
-                    "service.predicates.DELETE", ",", PREDICATES_DELETE_DEFAULT);
+            Config.getArray(
+                    "service.predicates.DELETE", ",", PREDICATES_DELETE_DEFAULT, TAG_JAXRS_PREDICATES, getAppSet());
 
     /**
      * 使用POST方法的谓词
      * service.predicates.POST
      */
     private static final String[] PREDICATES_POST =
-            getProfile().getStrList(
-                    "service.predicates.POST", ",", PREDICATES_POST_DEFAULT);
+            Config.getArray(
+                    "service.predicates.POST", ",", PREDICATES_POST_DEFAULT, TAG_JAXRS_PREDICATES, getAppSet());
 
     /**
      * @see #PREDICATES_PUT
@@ -97,9 +99,9 @@ public class Predicates {
     public static final String[][] PREDICATES = new String[][]{
             PREDICATES_PUT, PREDICATES_DELETE, PREDICATES_POST, PREDICATES_GET};
 
-    private static Profile getProfile() {
-        return Profile.getProfile("jaxrs.predicates.properties");
-    }
+//    private static Profile_Deprecated getProfile() {
+//        return Profile_Deprecated.getProfile("jaxrs.predicates.properties");
+//    }
 
     /**
      * <pre>默认的谓词：

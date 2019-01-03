@@ -33,6 +33,13 @@ public interface CORSSetting {
     String ALLOW_METHOD = "Access-Control-Allow-Methods";
     String ALLOW_HEADERS = "Access-Control-Allow-Headers";
 
+    String KEY_ALLOW_ORIGIN = "allowOrigin";
+    String KEY_EXPOSE_HEADERS = "exposeHeaders";
+    String KEY_ALLOW_METHOD = "allowMethod";
+    String KEY_ALLOW_HEADERS = "allowHeaders";
+    String KEY_MAX_AGE = "maxAge";
+    String KEY_ALLOW_CREDENTIALS = "allowCredentials";
+
     /**
      * 空格或逗号分隔，为null表示不需要设置
      *

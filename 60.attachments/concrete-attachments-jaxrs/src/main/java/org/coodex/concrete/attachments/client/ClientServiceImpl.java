@@ -16,17 +16,19 @@
 
 package org.coodex.concrete.attachments.client;
 
-import org.coodex.concrete.attachments.AttachmentServiceHelper;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.coodex.concrete.attachments.AttachmentServiceHelper.TAG_ATTACHMENT_SERVICE;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.concrete.core.token.TokenWrapper.getToken;
 
 /**
@@ -63,7 +65,8 @@ public class ClientServiceImpl implements ClientService {
             }
         }
 
-        long validity = System.currentTimeMillis() + AttachmentServiceHelper.ATTACHMENT_PROFILE.getLong("attachment.validity", 10) * 1000 * 60;
+        long validity = System.currentTimeMillis() +
+                Config.getValue("attachment.validity", 10, TAG_ATTACHMENT_SERVICE, getAppSet()) * 1000 * 60;
         for (String attachmentId : attachmentIds) {
             if (attachmentId != null) {
                 attachments.put(attachmentId, validity);

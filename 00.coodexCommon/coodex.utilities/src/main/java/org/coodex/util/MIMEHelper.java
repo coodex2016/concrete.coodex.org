@@ -21,6 +21,7 @@ package org.coodex.util;
  * Created by davidoff shen on 2016-10-19.
  */
 public class MIMEHelper {
+
     private static final Profile mimeTypes = Profile.getProfile("mimeTypes.properties");
 
     private static final String DEFAULT_TYPE = "application/octet-stream";

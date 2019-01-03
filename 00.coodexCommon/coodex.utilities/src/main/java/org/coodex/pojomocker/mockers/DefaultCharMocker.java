@@ -16,10 +16,10 @@
 
 package org.coodex.pojomocker.mockers;
 
+import org.coodex.config.Config;
 import org.coodex.pojomocker.AbstractPrimitiveMocker;
 import org.coodex.pojomocker.annotations.CHAR;
 import org.coodex.util.Common;
-import org.coodex.util.Profile;
 
 /**
  * Created by davidoff shen on 2017-05-15.
@@ -28,8 +28,11 @@ public class DefaultCharMocker extends AbstractPrimitiveMocker<Character, CHAR> 
 
     static final String DEFAULT_RANGE_STR = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:;{}[]`!@#$%^&*()_+-='\",./<>?|\\";
 
+    static String NAMESPACE_MOCK = "mock";
+
     static char[] getDefaultRange() {
-        return Profile.getProfile("mock.properties").getString("default.chars.range", DEFAULT_RANGE_STR).toCharArray();
+//        return Profile_Deprecated.getProfile("mock.properties").getString("default.chars.range", DEFAULT_RANGE_STR).toCharArray();
+        return Config.getValue("default.chars.range", DEFAULT_RANGE_STR, NAMESPACE_MOCK).toCharArray();
     }
 
 

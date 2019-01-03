@@ -17,14 +17,15 @@
 package org.coodex.concrete.accounts;
 
 import org.coodex.concrete.Client;
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.config.Config;
 
 import java.io.Serializable;
 
 import static org.coodex.concrete.accounts.AccountsCommon.getTenant;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * 基于concrete-jaxrs-client的租户验证客户端
@@ -40,7 +41,9 @@ public class TenantRPCServiceClientImpl implements TenantRPCServiceClient {
 
     protected TenantRPCService getRPCService() {
         return Client.getInstance(TenantRPCService.class,
-                ConcreteHelper.getProfile().getString("tenant.RPC.service"));
+//                ConcreteHelper.getProfile().getString("tenant.RPC.service")
+                Config.get("tenant.RPC.service", getAppSet())
+        );
     }
 
     @Override

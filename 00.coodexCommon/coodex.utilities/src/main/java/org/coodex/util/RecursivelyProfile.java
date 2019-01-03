@@ -36,11 +36,12 @@ import java.util.StringTokenizer;
  * <p>
  * Created by davidoff shen on 2017-05-03.
  */
+@Deprecated
 public class RecursivelyProfile {
 
     private final StringMap profile;
 
-    public RecursivelyProfile(Profile profile) {
+    public RecursivelyProfile(Profile_Deprecated profile) {
         this.profile = profile;
     }
 

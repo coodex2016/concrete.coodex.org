@@ -16,14 +16,15 @@
 
 package org.coodex.concrete.common.conflictsolutions;
 
-import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
-import org.coodex.util.Profile;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * 基于Bean的名字过滤出唯一的实现
@@ -31,7 +32,7 @@ import java.util.Set;
  */
 public class BeanNameFilter extends AbstractConflictSolution /*implements ConflictSolution*/ {
 
-    private static final Profile profile = ConcreteHelper.getProfile();
+//    private static final Profile_Deprecated profile = ConcreteHelper.getProfile();
 
 
     @Override
@@ -42,7 +43,7 @@ public class BeanNameFilter extends AbstractConflictSolution /*implements Confli
     @Override
     protected <T> Map<String, T> doFilter(Map<String, T> beans, Class<T> clz) {
 
-        String prefix = profile.getString(BeanNameFilter.class.getCanonicalName() + ".prefix");
+        String prefix = Config.get(BeanNameFilter.class.getCanonicalName() + ".prefix", getAppSet());
         if (Common.isBlank(prefix)) return beans;
 
         Map<String, T> map = new HashMap<String, T>();
@@ -54,7 +55,8 @@ public class BeanNameFilter extends AbstractConflictSolution /*implements Confli
     }
 
     private Set<String> filter(Set<String> set) {
-        String prefix = profile.getString(BeanNameFilter.class.getCanonicalName() + ".prefix");
+        String prefix = Config.get(BeanNameFilter.class.getCanonicalName() + ".prefix", getAppSet());
+
         if (Common.isBlank(prefix)) return set;
 
         Set<String> stringSet = new HashSet<String>();

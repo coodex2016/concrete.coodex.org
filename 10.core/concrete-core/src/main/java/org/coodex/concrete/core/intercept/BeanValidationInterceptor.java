@@ -21,6 +21,7 @@ import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.annotations.Local;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
+import org.coodex.config.Config;
 import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,8 @@ import javax.validation.Validation;
 import javax.validation.executable.ExecutableValidator;
 import java.util.Collection;
 import java.util.Set;
+
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * Created by davidoff shen on 2016-09-07.
@@ -94,7 +97,7 @@ public class BeanValidationInterceptor extends AbstractInterceptor {
 
     @Override
     protected boolean accept_(RuntimeContext context) {
-        return ConcreteHelper.getProfile().getBool("aspect.bean.validation", true)
+        return Config.getValue("aspect.bean.validation", true, getAppSet())
                 && getValidator() != null;
     }
 

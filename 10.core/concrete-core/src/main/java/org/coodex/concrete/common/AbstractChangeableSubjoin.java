@@ -20,10 +20,7 @@ package org.coodex.concrete.common;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public abstract class AbstractChangeableSubjoin extends AbstractSubjoin {
 
@@ -35,6 +32,13 @@ public abstract class AbstractChangeableSubjoin extends AbstractSubjoin {
                 }
             }
     );
+
+    public AbstractChangeableSubjoin() {
+    }
+
+    public AbstractChangeableSubjoin(Map<String, String> map) {
+        super(map);
+    }
 
     /**
      * @return 包装后的Subjoin，会记录下自wrap之后所有的set信息，方便数据回传

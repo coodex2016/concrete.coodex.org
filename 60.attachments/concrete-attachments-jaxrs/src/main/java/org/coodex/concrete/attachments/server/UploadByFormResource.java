@@ -22,7 +22,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.coodex.concrete.attachments.AttachmentEntityInfo;
 import org.coodex.concrete.attachments.AttachmentInfo;
-import org.coodex.concrete.attachments.AttachmentServiceHelper;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +33,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.coodex.concrete.attachments.AttachmentServiceHelper.TAG_ATTACHMENT_SERVICE;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * 附件上传的参考实现，基于jaxrs2.0;apache commons-fileupload
@@ -80,7 +83,7 @@ public class UploadByFormResource extends AbstractUploadResource {
                 }
             }
         });
-        t.setPriority(AttachmentServiceHelper.ATTACHMENT_PROFILE.getInt("upload.priority", 5));
+        t.setPriority(Config.getValue("upload.priority", 5, TAG_ATTACHMENT_SERVICE, getAppSet()));
         t.start();
     }
 

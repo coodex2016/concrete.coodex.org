@@ -20,7 +20,7 @@ import org.coodex.concrete.accounts.AccountIDImpl;
 import org.coodex.concrete.common.AcceptableAccountFactory;
 import org.coodex.concrete.common.Account;
 import org.coodex.concrete.common.AccountID;
-import org.coodex.util.Profile;
+import org.coodex.util.Common;
 
 import static org.coodex.concrete.accounts.AccountIDImpl.TYPE_SIMPLE;
 
@@ -38,6 +38,6 @@ public class SimpleAccountFactory implements AcceptableAccountFactory<AccountIDI
     public boolean accept(AccountIDImpl param) {
         boolean isSimple = param != null && param.getType() == TYPE_SIMPLE;
 
-        return isSimple && Profile.getResource("accounts/" + param.getId() + ".properties") != null;
+        return isSimple && Common.getResource("accounts/" + param.getId() + ".properties") != null;
     }
 }

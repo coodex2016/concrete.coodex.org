@@ -16,9 +16,12 @@
 
 package org.coodex.concrete.common;
 
+import org.coodex.config.Config;
 import org.coodex.util.ServiceLoaderFacade;
 
 import java.util.Map;
+
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * 使用concrete.properties解决冲突的SPIFacade。
@@ -65,19 +68,19 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
 
     @Override
     protected T conflict(Class<? extends T> providerClass, Map<String, T> map) {
-        String key = ConcreteHelper.getProfile().getString(providerClass + ".provider");
+        String key = Config.get(providerClass + ".provider", getAppSet());
         return map.containsKey(key) ? map.get(key) : super.conflict(providerClass, map);
     }
 
     @Override
     protected T conflict() {
-        String key = ConcreteHelper.getProfile().getString(getInterfaceClass().getCanonicalName() + ".provider");
+        String key = Config.get(getInterfaceClass().getCanonicalName() + ".provider", getAppSet());
         Map<String, T> instances = $getInstances();
         return instances.containsKey(key) ? instances.get(key) : super.conflict();
     }
 
     protected final T getDefaultProviderFromProfile() {
-        String key = ConcreteHelper.getProfile().getString(getInterfaceClass().getCanonicalName() + ".default");
+        String key = Config.get(getInterfaceClass().getCanonicalName() + ".default", getAppSet());
         Map<String, T> instances = $getInstances();
         return instances.containsKey(key) ? instances.get(key) : null;
     }

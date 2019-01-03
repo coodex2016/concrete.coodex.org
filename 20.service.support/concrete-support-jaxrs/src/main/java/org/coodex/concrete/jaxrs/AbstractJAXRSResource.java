@@ -302,7 +302,7 @@ public abstract class AbstractJAXRSResource<T extends ConcreteService> {
     protected abstract Response.ResponseBuilder jsonType(Response.ResponseBuilder builder);
 
     private Subjoin getSubjoin() {
-        return new JaxRSSubjoin(httpHeaders);
+        return new JaxRSSubjoin(httpHeaders).wrap();
     }
 
     protected Response.ResponseBuilder setTokenInfo(String tokenId, Response.ResponseBuilder builder) {

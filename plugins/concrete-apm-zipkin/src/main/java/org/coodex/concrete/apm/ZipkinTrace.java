@@ -22,8 +22,8 @@ import brave.Tracing;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.ThreadLocalSpan;
 import brave.propagation.TraceContext;
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.Subjoin;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 import zipkin2.codec.SpanBytesEncoder;
@@ -36,6 +36,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
+
 public class ZipkinTrace extends AbstractTrace {
 
     private static final String TRACE_ID = "X-APM-TRACE-ID";
@@ -45,7 +47,7 @@ public class ZipkinTrace extends AbstractTrace {
                 @Override
                 public Tracing build() {
                     Tracing.Builder builder = Tracing.newBuilder();
-                    String url = ConcreteHelper.getProfile().getString("zipkin.location");
+                    String url = Config.get("zipkin.location",getAppSet());
                     if (url != null) {
                         Sender sender = OkHttpSender.create(url + "/api/v2/spans");
                         builder = builder.spanReporter(AsyncReporter.builder(sender)
@@ -55,7 +57,7 @@ public class ZipkinTrace extends AbstractTrace {
 
 
                     return builder.localServiceName(
-                            ConcreteHelper.getProfile().getString("module.name", "concrete")
+                            Config.getValue("module.name", "concrete", getAppSet())
                     ).build();
                 }
             }

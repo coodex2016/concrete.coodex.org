@@ -16,33 +16,37 @@
 
 package org.coodex.concrete.message;
 
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.core.token.TokenWrapper;
-import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
-import org.coodex.util.Singleton;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
 import java.util.Queue;
-import java.util.concurrent.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
+import static org.coodex.concrete.common.ConcreteHelper.getScheduler;
 
 public class TBMContainer {
 
     private final static Logger log = LoggerFactory.getLogger(TBMContainer.class);
 
 
-    private static Singleton<ScheduledExecutorService> scheduledExecutor = new Singleton<ScheduledExecutorService>(
-            new Singleton.Builder<ScheduledExecutorService>() {
-                @Override
-                public ScheduledExecutorService build() {
-                    return ExecutorsHelper.newScheduledThreadPool(1);
-                }
-            }
-    );
+//    private static Singleton<ScheduledExecutorService> scheduledExecutor = new Singleton<ScheduledExecutorService>(
+//            new Singleton.Builder<ScheduledExecutorService>() {
+//                @Override
+//                public ScheduledExecutorService build() {
+//                    return ExecutorsHelper.newScheduledThreadPool(1);
+//                }
+//            }
+//    );
     private static TBMContainer tbmContainer = new TBMContainer();
     private static SingletonMap<String, TBMQueue> queues = new SingletonMap<String, TBMQueue>(
             new SingletonMap.Builder<String, TBMQueue>() {
@@ -185,14 +189,14 @@ public class TBMContainer {
             this.consumedNotifyTopic = consumedNotifyTopic;
             this.id = tokenConfirm.getId();
             this.message = tokenConfirm.getMessage();
-            this.future = scheduledExecutor.getInstance().schedule(
+            this.future = getScheduler("tbm").schedule(
                     new Runnable() {
                         @Override
                         public void run() {
                             remove(tokenConfirm.getTokenId(), TBMMessage.this);
                         }
                     },
-                    ConcreteHelper.getProfile().getLong("tokenBasedTopicMessage.cacheLife", 30),
+                    Config.getValue("tokenBasedTopicMessage.cacheLife", 30, getAppSet()),
                     TimeUnit.SECONDS); //默认30秒失效
         }
 

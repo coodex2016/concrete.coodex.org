@@ -28,8 +28,8 @@ import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.concrete.core.intercept.timecheckers.ByTimeRange;
 import org.coodex.concrete.core.intercept.timecheckers.ByWorkDay;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
-import org.coodex.util.Profile;
 import org.coodex.util.ReflectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +47,7 @@ import java.util.*;
 public class ServiceTimingInterceptor extends AbstractInterceptor {
 
 
+    public static final String NAMESPACE_SERVICE_TIMING = "serviceTiming";
     private final static Logger log = LoggerFactory.getLogger(ServiceTimingInterceptor.class);
     private final static Map<String, String> DEFAULT_CHECKERS = new HashMap<String, String>();
     private static final ServiceTimingChecker ALL_ALLOWED_CHECKER = new ServiceTimingChecker() {
@@ -62,10 +63,10 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
     }
 
     private static ServiceTimingChecker loadCheckerInstance(String label) {
-        Profile profile = Profile.getProfile("serviceTiming.properties");
+//        Profile_Deprecated profile = Profile_Deprecated.getProfile("serviceTiming.properties");
 
         // 确定规则类型
-        String type = profile.getString(label + ".type");
+        String type = Config.get(label + ".type", NAMESPACE_SERVICE_TIMING);
         String className = null;
         if (Common.isBlank(type)) {
             log.warn("ServiceTiming validation rule not defined. : {} ", label);
@@ -86,7 +87,7 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
                 if (!Modifier.isStatic(f.getModifiers()) // 非static
                         && !Modifier.isFinal(f.getModifiers()) // 非final
                         && String.class.equals(f.getType())) { // String类型
-                    String s = profile.getString(label + "." + f.getName());
+                    String s = Config.get(label + "." + f.getName(), NAMESPACE_SERVICE_TIMING);
                     if (s != null) {
                         f.set(o, s.trim());
                     }

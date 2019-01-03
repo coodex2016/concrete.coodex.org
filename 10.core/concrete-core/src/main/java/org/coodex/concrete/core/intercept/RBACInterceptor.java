@@ -25,8 +25,11 @@ import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.core.intercept.annotations.Default;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
-import org.coodex.util.Profile;
+
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
+//import org.coodex.util.Profile_Deprecated;
 
 /**
  * Created by davidoff shen on 2016-09-07.
@@ -53,12 +56,12 @@ public class RBACInterceptor extends AbstractInterceptor {
 
         if (context.getDeclaringMethod() != null) {
             // 找profile
-            Profile profile = Profile.getProfile(context.getModuleName() + ".properties");
+//            Profile_Deprecated profile = Profile_Deprecated.getProfile(context.getModuleName() + ".properties");
             // 修改为基于java方法名.参数数量
             // String[] acl = profile.getStrList(context.getMethodName());
-            String[] acl = profile.getStrList(context.getDeclaringMethod().getName() + "."
-                    + context.getDeclaringMethod().getParameterTypes().length);
-            String domain = profile.getString("domain");
+            String[] acl = Config.getArray(context.getDeclaringMethod().getName() + "."
+                    + context.getDeclaringMethod().getParameterTypes().length, getAppSet());
+            String domain = Config.get("domain", getAppSet());
 
             if (domain == null) {
                 Domain owner = context.getAnnotation(Domain.class);

@@ -18,21 +18,24 @@ package org.coodex.concrete.attachments;
 
 import org.coodex.concrete.common.AttachmentInfoErrorCodes;
 import org.coodex.concrete.common.ConcreteException;
+import org.coodex.config.Config;
 import org.coodex.util.DigestHelper;
-import org.coodex.util.Profile;
 
 import java.util.List;
+
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * Created by davidoff shen on 2016-12-13.
  */
 public class AttachmentServiceHelper {
+    public static final String TAG_ATTACHMENT_SERVICE = "attachmentService";
 
-    public static final Profile ATTACHMENT_PROFILE = Profile.getProfile("attachmentService.properties");
+//    public static final Profile_Deprecated ATTACHMENT_PROFILE = Profile_Deprecated.getProfile("attachmentService.properties");
 
 
     public static String getKey(String clientId) {
-        return ATTACHMENT_PROFILE.getString("key." + clientId, "");
+        return Config.get("key." + clientId, "", TAG_ATTACHMENT_SERVICE, getAppSet());
     }
 
     public static String sign(String clientId, String attachmentId) {

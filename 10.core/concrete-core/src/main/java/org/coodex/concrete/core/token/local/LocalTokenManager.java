@@ -16,9 +16,9 @@
 
 package org.coodex.concrete.core.token.local;
 
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenManager;
-import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.util.Common;
 
 import java.util.Map;
@@ -41,7 +41,7 @@ public class LocalTokenManager implements TokenManager {
 
     static final Map<String, TokenWithFuture> TOKENS = new ConcurrentHashMap<String, TokenWithFuture>();
 
-    private static final ScheduledExecutorService EXECUTOR = ExecutorsHelper.newSingleThreadScheduledExecutor();
+//    private static final ScheduledExecutorService EXECUTOR = ExecutorsHelper.newSingleThreadScheduledExecutor();
 
     @Override
     public Token getToken(String id) {
@@ -99,16 +99,18 @@ public class LocalTokenManager implements TokenManager {
                 }
             };
 
-            if (!EXECUTOR.isTerminated() && !EXECUTOR.isShutdown()) {
+            ScheduledExecutorService scheduler = ConcreteHelper.getScheduler("localTokenManager");
+
+            if (!scheduler.isTerminated() && !scheduler.isShutdown()) {
                 if (handler == null) { //新建
-                    handler = EXECUTOR.schedule(future, maxIdleTime, TimeUnit.MILLISECONDS);
+                    handler = scheduler.schedule(future, maxIdleTime, TimeUnit.MILLISECONDS);
                 } else {
                     if (token.isValid()) {
                         token.active();
                         try {
                             handler.cancel(true);
                         } finally {
-                            handler = EXECUTOR.schedule(future, maxIdleTime, TimeUnit.MILLISECONDS);
+                            handler = scheduler.schedule(future, maxIdleTime, TimeUnit.MILLISECONDS);
                         }
                     }
                 }

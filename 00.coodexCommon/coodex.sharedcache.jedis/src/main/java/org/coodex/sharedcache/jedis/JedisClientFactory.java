@@ -17,9 +17,9 @@
 package org.coodex.sharedcache.jedis;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.coodex.config.Config;
 import org.coodex.sharedcache.SharedCacheClient;
 import org.coodex.sharedcache.SharedCacheClientFactory;
-import org.coodex.util.Profile;
 import org.coodex.util.Singleton;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
@@ -33,18 +33,19 @@ import java.util.Set;
  */
 public class JedisClientFactory implements SharedCacheClientFactory {
     public static final String JEDIS_DRIVER_NAME = "jedis";
+    public static final String NAMESPACE_JEDIS = "sharedcache-jedis";
 
     public static final int DEFAULT_PORT = 6379;
 
 //    private static AbstractJedisClient client;
 
-    private static Profile profile;
+    //    private static Profile_Deprecated profile;
     private static Singleton<AbstractJedisClient> client = new Singleton<AbstractJedisClient>(
             new Singleton.Builder<AbstractJedisClient>() {
                 @Override
                 public AbstractJedisClient build() {
-                    profile = Profile.getProfile("sharedcache-jedis.properties");
-                    String[] redisServers = profile.getStrList("redisServers");
+//                    profile = Profile_Deprecated.getProfile("sharedcache-jedis.properties");
+                    String[] redisServers = Config.getArray("redisServers", NAMESPACE_JEDIS);
                     if (redisServers == null) throw new RuntimeException("no redis server defined.");
 
 
@@ -59,15 +60,15 @@ public class JedisClientFactory implements SharedCacheClientFactory {
 
                     GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
 
-                    poolConfig.setMinIdle(profile.getInt("pool.minIdle", GenericObjectPoolConfig.DEFAULT_MIN_IDLE));
-                    poolConfig.setMaxIdle(profile.getInt("pool.maxIdle", GenericObjectPoolConfig.DEFAULT_MAX_IDLE));
-                    poolConfig.setMaxTotal(profile.getInt("pool.maxTotal", GenericObjectPoolConfig.DEFAULT_MAX_TOTAL));
+                    poolConfig.setMinIdle(Config.getValue("pool.minIdle", GenericObjectPoolConfig.DEFAULT_MIN_IDLE, NAMESPACE_JEDIS));
+                    poolConfig.setMaxIdle(Config.getValue("pool.maxIdle", GenericObjectPoolConfig.DEFAULT_MAX_IDLE, NAMESPACE_JEDIS));
+                    poolConfig.setMaxTotal(Config.getValue("pool.maxTotal", GenericObjectPoolConfig.DEFAULT_MAX_TOTAL, NAMESPACE_JEDIS));
 
                     // TODO 安全认证
 
 
                     if (servers.size() == 0) throw new RuntimeException("no redis server defined.");
-                    long defaultMaxCacheTime = profile.getLong("defaultMaxCacheTime", DEFAULT_MAX_CACHED_SECENDS) * 1000;
+                    long defaultMaxCacheTime = Config.getValue("defaultMaxCacheTime", DEFAULT_MAX_CACHED_SECENDS, NAMESPACE_JEDIS) * 1000;
 
                     if (servers.size() == 1) {
                         HostAndPort server = servers.iterator().next();

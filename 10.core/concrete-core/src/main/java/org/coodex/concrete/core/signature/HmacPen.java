@@ -20,12 +20,12 @@ import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.IF;
+import org.coodex.util.Common;
 import org.coodex.util.DigestHelper;
 import org.coodex.util.ServiceLoader;
 
 import java.util.Arrays;
 
-import static org.coodex.concrete.core.signature.SignUtil.PROFILE;
 import static org.coodex.concrete.core.signature.SignUtil.getString;
 
 /**
@@ -53,12 +53,14 @@ public class HmacPen extends AbstractIronPen {
             }
 
             private String getHmacKeyStr(String paperName, String keyId) {
-                if (keyId == null)
+                if (Common.isBlank(keyId))
                     return getString("hmacKey", paperName, null);
-                String key = PROFILE.getString("hmacKey." + paperName + "." + keyId);
-                if (key == null)
-                    key = PROFILE.getString("hmacKey." + paperName);
-
+                String key = null;
+                if(!Common.isBlank(paperName)) {
+                    key = getString("hmacKey." + paperName + "." + keyId, null, null);
+                    if (key == null)
+                        key = getString("hmacKey." + paperName, null, null);
+                }
                 if (key == null)
                     key = getString("hmacKey", keyId, null);
 

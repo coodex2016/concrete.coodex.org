@@ -17,8 +17,10 @@
 package org.coodex.concrete.accounts;
 
 
-import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.config.Config;
 import org.coodex.util.DigestHelper;
+
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * 默认密码为p@55w0rd，可通过concrete.properties的defaultPassword重载
@@ -33,7 +35,7 @@ public class PasswordGeneratorImpl implements PasswordGenerator {
 
     @Override
     public String generate() {
-        return ConcreteHelper.getProfile().getString("defaultPassword", "p@55w0rd");
+        return Config.getValue("defaultPassword", "p@55w0rd", getAppSet());
     }
 
     @Override

@@ -29,6 +29,13 @@
     <artifactId>concrete-attachments-repo-fastdfs</artifactId>
 
     <dependencies>
+
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>concrete-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>concrete-attachments</artifactId>

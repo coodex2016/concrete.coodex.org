@@ -17,10 +17,9 @@
 package org.coodex.concrete.accounts;
 
 import org.apache.commons.codec.binary.Base32;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.DigestHelper;
-import org.coodex.util.Profile;
-import org.coodex.util.RecursivelyProfile;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -29,6 +28,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
+
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 
 /**
@@ -46,7 +47,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class TOTPAuthenticator {
 
-    public static final Profile TOTP_PROFILE = Profile.getProfile("totp.properties");
+    private static final String TAG_TOTP = "totp";
+//    public static final Profile_Deprecated TOTP_PROFILE = Profile_Deprecated.getProfile("totp.properties");
 
     public static String generateAuthKey() {
         return new Base32().encodeAsString(
@@ -76,7 +78,8 @@ public class TOTPAuthenticator {
         // Window is used to check codes generated in the near past.
         // You can use this value to tune how far you're willing to go.
 
-        int window = Math.max(Math.min(TOTP_PROFILE.getInt("fault.tolerance", 10), 10), 1);
+        int window = Math.max(Math.min(
+                Config.getValue("fault.tolerance", 10, TAG_TOTP, getAppSet()), 10), 1);
 
         for (int i = -window; i <= window; ++i) {
             long hash = buildCode(decodedKey, t + i);
@@ -120,9 +123,9 @@ public class TOTPAuthenticator {
     }
 
     public static String build(String authKey, String app, String userName) {
-        RecursivelyProfile profile = new RecursivelyProfile(TOTP_PROFILE);
-        String issuerName = profile.getString(app, "issuer.name", "coodex.org");
-        String serverName = profile.getString(app, "server.name", issuerName);
+//        RecursivelyProfile profile = new RecursivelyProfile(TOTP_PROFILE);
+        String issuerName = Config.getValue("issuer.name", "coodex.org", TAG_TOTP, getAppSet(), app);
+        String serverName = Config.getValue("server.name", issuerName, TAG_TOTP, getAppSet(), app);
         return String.format("otpauth://totp/%s:%s?secret=%s&issuer=%s",
                 urlEncoder(serverName), urlEncoder(userName), authKey,
                 urlEncoder(issuerName));

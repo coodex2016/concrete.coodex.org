@@ -21,19 +21,20 @@ import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.auth.AuthInfo;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.utils.AddrUtil;
+import org.coodex.config.Config;
 import org.coodex.sharedcache.SharedCacheClient;
 import org.coodex.sharedcache.SharedCacheClientFactory;
 import org.coodex.util.Common;
-import org.coodex.util.Profile;
 
 /**
  * Created by davidoff shen on 2016-11-24.
  */
 public class XMemcachedCacheClientFactory implements SharedCacheClientFactory {
     public static final String DRIVER_NAME = "xmemcached";
+    public static final String NAMESPACE_XMEMCHACHED = "sharedcache-xmemcached";
 
     private MemcachedClientBuilder builder;
-    private Profile profile = Profile.getProfile("sharedcache-xmemcached.properties");
+//    private Profile_Deprecated profile = Profile_Deprecated.getProfile("sharedcache-xmemcached.properties");
 
     @Override
     public boolean isAccepted(String driverName) {
@@ -44,26 +45,26 @@ public class XMemcachedCacheClientFactory implements SharedCacheClientFactory {
     @Override
     public SharedCacheClient getClientInstance() {
         init();
-        return new XMemcachedCacheClient(builder, profile.getLong("defaultMaxCacheTime", DEFAULT_MAX_CACHED_SECENDS) * 1000);
+        return new XMemcachedCacheClient(builder,
+                Config.getValue("defaultMaxCacheTime", DEFAULT_MAX_CACHED_SECENDS, NAMESPACE_XMEMCHACHED) * 1000);
     }
 
     private synchronized void init() {
         if (builder == null) {
-
-
-            String[] servers = profile.getStrList("memcachedServers", " ");
+            // TODO 完善config接口
+            String[] servers = Common.toArray(Config.get("memchachedServers", NAMESPACE_XMEMCHACHED), " ", (String[]) null);
             if (servers == null || servers.length == 0)
                 throw new RuntimeException("no memcached server defined.");
 
 
             MemcachedClientBuilder memcachedClientBuilder = new XMemcachedClientBuilder(
-                    AddrUtil.getAddresses(profile.getString("memcachedServers")));
+                    AddrUtil.getAddresses(Config.get("memcachedServers", NAMESPACE_XMEMCHACHED)));
             memcachedClientBuilder.setCommandFactory(new BinaryCommandFactory());
-            memcachedClientBuilder.setConnectionPoolSize(profile.getInt("poolSize", 1));
+            memcachedClientBuilder.setConnectionPoolSize(Config.getValue("poolSize", 1, NAMESPACE_XMEMCHACHED));
             for (String server : servers) {
-                String username = profile.getString("user." + server);
+                String username = Config.get("user." + server, NAMESPACE_XMEMCHACHED);
                 if (!Common.isBlank(username)) {
-                    String password = profile.getString("pwd." + server);
+                    String password = Config.get("pwd." + server, NAMESPACE_XMEMCHACHED);
                     memcachedClientBuilder.addAuthInfo(AddrUtil.getOneAddress(server),
                             AuthInfo.typical(username, password));
                 }

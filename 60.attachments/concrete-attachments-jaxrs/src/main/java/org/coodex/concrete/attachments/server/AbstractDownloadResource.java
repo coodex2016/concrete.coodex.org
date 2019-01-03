@@ -18,12 +18,12 @@ package org.coodex.concrete.attachments.server;
 
 import org.coodex.concrete.Client;
 import org.coodex.concrete.attachments.AttachmentEntityInfo;
-import org.coodex.concrete.attachments.AttachmentServiceHelper;
 import org.coodex.concrete.attachments.Repository;
 import org.coodex.concrete.attachments.client.ClientService;
 import org.coodex.concrete.common.AttachmentInfoErrorCodes;
 import org.coodex.concrete.common.BeanProviderFacade;
 import org.coodex.concrete.common.IF;
+import org.coodex.config.Config;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -32,6 +32,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
+import static org.coodex.concrete.attachments.AttachmentServiceHelper.TAG_ATTACHMENT_SERVICE;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * Created by davidoff shen on 2016-12-14.
@@ -45,10 +48,10 @@ public class AbstractDownloadResource {
         AttachmentEntityInfo attachmentEntityInfo = repository.get(attachmentId);
         IF.isNull(attachmentEntityInfo, AttachmentInfoErrorCodes.ATTACHMENT_NOT_EXISTS);
 
-        if (!"public".equalsIgnoreCase(AttachmentServiceHelper.ATTACHMENT_PROFILE.getString("rule.read", "public"))) {
+        if (!"public".equalsIgnoreCase(Config.getValue("rule.read", "public", TAG_ATTACHMENT_SERVICE, getAppSet()))) {
 
             ClientService clientService = Client.getInstance(ClientService.class,
-                    AttachmentServiceHelper.ATTACHMENT_PROFILE.getString(clientId + ".location")); // TODO rename
+                    Config.get(clientId + ".location", TAG_ATTACHMENT_SERVICE, getAppSet())); // TODO rename
             IF.not(clientService.readable(tokenId, attachmentId), AttachmentInfoErrorCodes.NO_READ_PRIVILEGE);
         }
 
@@ -63,7 +66,7 @@ public class AbstractDownloadResource {
                         + URLEncoder.encode(attachmentEntityInfo.getName(), "UTF-8")
                         + "\"");
 
-        final int speedLimit = AttachmentServiceHelper.ATTACHMENT_PROFILE.getInt("download.speedLimited", 1024) * 1024;
+        final int speedLimit = Config.getValue("download.speedLimited", 1024, TAG_ATTACHMENT_SERVICE, getAppSet()) * 1024;
 
         StreamingOutput output = new StreamingOutput() {
 

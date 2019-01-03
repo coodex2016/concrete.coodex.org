@@ -17,11 +17,14 @@
 package org.coodex.concrete.common;
 
 import org.coodex.concrete.common.conflictsolutions.ThrowException;
+import org.coodex.config.Config;
 import org.coodex.util.AcceptableServiceLoader;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * Created by davidoff shen on 2016-12-03.
@@ -61,7 +64,7 @@ public abstract class AbstractBeanProvider implements BeanProvider {
 
         // 3 从配置文件中读取
         try {
-            Class c = Class.forName(ConcreteHelper.getProfile().getString(ConflictSolution.class.getCanonicalName()));
+            Class c = Class.forName(Config.get(ConflictSolution.class.getCanonicalName(), getAppSet()));
             return (ConflictSolution) c.newInstance();
         } catch (Throwable th) {
         }

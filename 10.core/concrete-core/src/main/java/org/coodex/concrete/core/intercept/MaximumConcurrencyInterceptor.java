@@ -24,12 +24,13 @@ import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.core.intercept.annotations.Local;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
-import org.coodex.util.Profile;
+import org.coodex.config.Config;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.concrete.core.intercept.InterceptOrders.LIMITING;
 
 /**
@@ -38,7 +39,8 @@ import static org.coodex.concrete.core.intercept.InterceptOrders.LIMITING;
 @ServerSide
 @Local
 public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
-    private static final Profile MC_PROFILE = Profile.getProfile("limiting.maximum.concurrency.properties");
+    private static final String TAG_MC = "limiting.maximum.concurrency";
+    //    private static final Profile_Deprecated MC_PROFILE = Profile_Deprecated.getProfile("limiting.maximum.concurrency.properties");
     private static final Map<String, ConcurrencyStrategy> STRATEGIES = new HashMap<String, ConcurrencyStrategy>();
 
     private static ConcurrencyStrategy getStrategy(String strategyName) {
@@ -142,8 +144,9 @@ public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
         }
 
         public long getMaximum() {
-            return MC_PROFILE.getInt(strategyName + ".max",
-                    MC_PROFILE.getInt("max", Integer.MAX_VALUE));
+            return Config.getValue("max", Integer.MAX_VALUE, TAG_MC, getAppSet(), strategyName);
+//            return MC_PROFILE.getInt(strategyName + ".max",
+//                    MC_PROFILE.getInt("max", Integer.MAX_VALUE));
         }
     }
 

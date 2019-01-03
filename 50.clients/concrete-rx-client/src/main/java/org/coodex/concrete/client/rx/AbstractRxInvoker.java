@@ -27,10 +27,10 @@ import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.AbstractInvoker;
 import org.coodex.concrete.common.ConcreteContext;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.concrete.rx.ReactiveExtensionFor;
-import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.pojomocker.MockerFacade;
 
 import java.lang.reflect.InvocationHandler;
@@ -40,12 +40,10 @@ import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 
-import static org.coodex.concrete.common.ConcreteHelper.getProfile;
-
 public abstract class AbstractRxInvoker extends AbstractInvoker {
 
 
-    private static ExecutorService executorService;
+//    private static ExecutorService executorService;
 
     public AbstractRxInvoker(Destination destination) {
         super(destination);
@@ -84,19 +82,21 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
         });
     }
 
+
     protected static ExecutorService getExecutorService() {
-        if (executorService == null) {
-            synchronized (AbstractRxInvoker.class) {
-                if (executorService == null) {
-                    executorService = ExecutorsHelper.newLinkedThreadPool(
-                            getProfile().getInt("client.executor.corePoolSize", 0),
-                            getProfile().getInt("client.executor.maximumPoolSize", Integer.MAX_VALUE),
-                            getProfile().getInt("client.executor.keepAliveTime", 60)
-                    );
-                }
-            }
-        }
-        return executorService;
+//        if (executorService == null) {
+//            synchronized (AbstractRxInvoker.class) {
+//                if (executorService == null) {
+//                    executorService = ExecutorsHelper.newLinkedThreadPool(
+//                            getProfile().getInt("client.executor.corePoolSize", 0),
+//                            getProfile().getInt("client.executor.maximumPoolSize", Integer.MAX_VALUE),
+//                            getProfile().getInt("client.executor.keepAliveTime", 60)
+//                    );
+//                }
+//            }
+//        }
+//        return executorService;
+        return ConcreteHelper.getExecutor("client");
     }
 
     /**

@@ -19,9 +19,9 @@ package org.coodex.concrete.attachments.repo;
 import org.coodex.concrete.attachments.AttachmentEntityInfo;
 import org.coodex.concrete.attachments.AttachmentInfo;
 import org.coodex.concrete.attachments.Repository;
+import org.coodex.config.Config;
 import org.coodex.io.SpeedLimitedOutputStream;
 import org.coodex.util.Base58;
-import org.coodex.util.Profile;
 import org.csource.fastdfs.TrackerGroup;
 
 import java.io.InputStream;
@@ -33,6 +33,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
+
+//import org.coodex.util.Profile_Deprecated;
+
 /**
  * 基于fastDFS的参考存储
  * <p>
@@ -41,10 +45,12 @@ import java.util.Set;
  */
 public class FastDFSRepository implements Repository {
 
-    public static final Profile ATTACHMENT_PROFILE = Profile.getProfile("attachmentService.properties");
+    private static final String TAG_ATTACHMENT_SERVICE = "attachmentService";
+
+//    public static final Profile_Deprecated ATTACHMENT_PROFILE = Profile_Deprecated.getProfile("attachmentService.properties");
 
     private static InetSocketAddress[] getTrackerAddress() {
-        String[] address = ATTACHMENT_PROFILE.getStrList("fastdfs.tracker");
+        String[] address = Config.getArray("fastdfs.tracker", TAG_ATTACHMENT_SERVICE, getAppSet());
         if (address == null)
             return null;
         Set<InetSocketAddress> addressList = new HashSet<InetSocketAddress>();

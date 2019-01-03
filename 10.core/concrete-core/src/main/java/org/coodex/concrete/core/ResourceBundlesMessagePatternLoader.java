@@ -16,27 +16,28 @@
 
 package org.coodex.concrete.core;
 
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.MessagePatternLoader;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * 基于 ResourceBundle 的实现
  * Created by davidoff shen on 2016-12-02.
  */
 public class ResourceBundlesMessagePatternLoader implements MessagePatternLoader {
-    public static final String MESSAGE_PATTERN = "messagePattern";
+    public static final String[] MESSAGE_PATTERN = new String[]{"messagePattern"};
 
 
     private String getPatternFromBundle(String key) {
-        for (String resource : ConcreteHelper.getProfile()
-                .getStrList("messagePattern.resourceBundles", ",", new String[]{MESSAGE_PATTERN})) {
-
+        String[] list = Config.getArray("messagePattern.resourceBundles", ",", MESSAGE_PATTERN, getAppSet());
+        if (list == null || list.length == 0) return null;
+        for (String resource : list) {
             Locale locale = getServiceContext() == null ? null : getServiceContext().getLocale();//.get();
             if (locale == null)
                 locale = Locale.getDefault();

@@ -27,6 +27,7 @@ import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.concrete.core.intercept.annotations.ClientSide;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.signature.SignUtil;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.ReflectHelper;
 import org.coodex.util.TypeHelper;
@@ -42,6 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.concrete.core.signature.SignUtil.*;
 
 /**
@@ -159,7 +161,8 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     }
 
     private String getPropertyName(String propertyName) {
-        return PROFILE.getString("property." + propertyName, propertyName);
+//        return PROFILE.getString("property." + propertyName, propertyName);
+        return Config.getValue("property." + propertyName, propertyName, TAG_SIGNATRUE, getAppSet());
     }
 
     private void serverSide_Verify(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
@@ -342,7 +345,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
                     getPropertyName(KEY_FIELD_ALGORITHM), algorithm,
                     getPropertyName(KEY_FIELD_KEY_ID), keyId,
                     getPropertyName(KEY_FIELD_SIGN), sign,
-                    "toSign", dataToString(data)
+                    "body", dataToString(data)
 //                    "data",
             );
         }

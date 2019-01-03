@@ -18,9 +18,7 @@ package org.coodex.concrete.common.count;
 
 import javassist.*;
 import javassist.bytecode.SignatureAttribute;
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ConcreteServiceLoader;
-import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.count.*;
 import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
@@ -32,10 +30,10 @@ import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.coodex.concrete.common.ConcreteHelper.getScheduler;
 import static org.coodex.util.TypeHelper.solve;
 
 /**
@@ -43,8 +41,10 @@ import static org.coodex.util.TypeHelper.solve;
  */
 public class CountFacadeProvider implements CountFacade {
 
-    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE
-            = ExecutorsHelper.newScheduledThreadPool(ConcreteHelper.getProfile().getInt("counter.thread.pool.size", 10));
+//    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE
+//            = ExecutorsHelper.newScheduledThreadPool(ConcreteHelper.getProfile().getInt("counter.thread.pool.size", 10));
+
+
     private final static Logger log = LoggerFactory.getLogger(CountFacadeProvider.class);
     private final static AtomicInteger atomicInteger = new AtomicInteger(0);
     private final static ServiceLoader<Counter> counterProvider = new ConcreteServiceLoader<Counter>() {
@@ -79,7 +79,7 @@ public class CountFacadeProvider implements CountFacade {
         if (segmentation != null) {
             long next = segmentation.next();
             if (next > System.currentTimeMillis()) {
-                SCHEDULED_EXECUTOR_SERVICE.schedule(new Runnable() {
+                getScheduler("count").schedule(new Runnable() {
                     @Override
                     public void run() {
                         try {

@@ -16,13 +16,12 @@
 
 package org.coodex.concrete.fsm.impl;
 
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.fsm.IdentifiedState;
 import org.coodex.concrete.fsm.IdentifiedStateContainer;
 import org.coodex.concrete.fsm.IdentifiedStateIsLockingException;
 import org.coodex.concrete.fsm.IdentifiedStateLoader;
-import org.coodex.concurrent.ExecutorsHelper;
-import org.coodex.util.Singleton;
 import org.coodex.util.TypeHelper;
 
 import java.io.Serializable;
@@ -42,13 +41,14 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
     private final static ConcreteServiceLoader<IdentifiedStateLoader> LOADERS = new ConcreteServiceLoader<IdentifiedStateLoader>() {
     };
     private final static long DEFAULT_TIME_OUT = 1000;
-    private static Singleton<ScheduledExecutorService> LOCK_FORCE_RELEASE =
-            new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
-                @Override
-                public ScheduledExecutorService build() {
-                    return ExecutorsHelper.newSingleThreadScheduledExecutor();
-                }
-            });
+//    private static Singleton<ScheduledExecutorService> LOCK_FORCE_RELEASE =
+//            new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
+//                @Override
+//                public ScheduledExecutorService build() {
+//                    return ConcreteHelper.getScheduler("fsm.lock.release");
+////                    return ExecutorsHelper.newSingleThreadScheduledExecutor();
+//                }
+//            });
     private static Map<Class, IdentifiedStateLoader> loaderMap = new HashMap<Class, IdentifiedStateLoader>();
 
     private static ScheduledExecutorService getReleaseExecutor() {
@@ -59,8 +59,10 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
 //                }
 //            }
 //        return LOCK_FORCE_RELEASE;
-        return LOCK_FORCE_RELEASE.getInstance();
+//        return LOCK_FORCE_RELEASE.getInstance();
+        return ConcreteHelper.getScheduler("fsm.lock.release");
     }
+
 
     @SuppressWarnings("unchecked")
     private static <S extends IdentifiedState<ID>, ID extends Serializable, L extends IdentifiedStateLoader<S, ID>>

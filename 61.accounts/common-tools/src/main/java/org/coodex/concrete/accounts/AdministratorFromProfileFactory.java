@@ -16,11 +16,13 @@
 
 package org.coodex.concrete.accounts;
 
-import org.coodex.util.Profile;
+import org.coodex.config.Config;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * 在administrator.properties中定义管理员信息，关键项有：
@@ -35,7 +37,9 @@ import java.util.Set;
  */
 public class AdministratorFromProfileFactory extends AbstractAdministratorFactory {
 
-    public static final Profile ADMINISTRATOR_INFO = Profile.getProfile("administrator.properties");
+    public static final String TAG_ADMIN = "administrator";
+
+//    public static final Profile_Deprecated ADMINISTRATOR_INFO = Profile_Deprecated.getProfile("administrator.properties");
 
     @Override
     protected Administrator getAdministrator(String id) {
@@ -98,17 +102,17 @@ public class AdministratorFromProfileFactory extends AbstractAdministratorFactor
 
         @Override
         public boolean verify(String password, String authCode) {
-            if (password == null || !password.equals(ADMINISTRATOR_INFO.getString("encoded.password",
-                    AccountsCommon.getDefaultPassword()))) return false;
+            if (password == null || !password.equals(Config.getValue("encoded.password",
+                    AccountsCommon.getDefaultPassword(), TAG_ADMIN, getAppSet()))) return false;
 
-            return TOTPAuthenticator.authenticate(authCode, ADMINISTRATOR_INFO.getString("authKey"));
+            return TOTPAuthenticator.authenticate(authCode, Config.get("authKey", TAG_ADMIN, getAppSet()));
         }
 
 //        private AccountIDImpl id = ;
 
         @Override
         public String getName() {
-            return ADMINISTRATOR_INFO.getString("name", "administrator");
+            return Config.getValue("name", "administrator", TAG_ADMIN, getAppSet());
         }
 
         @Override
@@ -119,14 +123,15 @@ public class AdministratorFromProfileFactory extends AbstractAdministratorFactor
         @Override
         public Set<String> getRoles() {
             return new HashSet<String>(Arrays.asList(
-                    ADMINISTRATOR_INFO.getStrList("roles", ",",
-                            new String[]{AccountManagementRoles.SYSTEM_MANAGER})
+                    Config.getArray("roles", ",",
+                            new String[]{AccountManagementRoles.SYSTEM_MANAGER},
+                            TAG_ADMIN, getAppSet())
             ));
         }
 
         @Override
         public boolean isValid() {
-            return ADMINISTRATOR_INFO.getBool("valid", true);
+            return Config.getValue("valid", true, TAG_ADMIN, getAppSet());
         }
 
         @Override

@@ -19,7 +19,7 @@
  */
 package org.coodex.servlet.cors;
 
-import org.coodex.servlet.cors.impl.CORSSettingInProfile;
+import org.coodex.servlet.cors.impl.CORSSettingInConfiguration;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +31,16 @@ import java.io.IOException;
  */
 public class CorsFilter implements Filter {
 
-    private final CORSSetting corsSetting = new CORSSettingInProfile();
+    private final CORSSetting corsSetting;// = new CORSSettingInProfile();
+
+    public CorsFilter() {
+        this(new CORSSettingInConfiguration());
+    }
+
+
+    public CorsFilter(CORSSetting corsSetting) {
+        this.corsSetting = corsSetting;
+    }
 
     /*
      * (non-Javadoc)
@@ -41,6 +50,10 @@ public class CorsFilter implements Filter {
 //   @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
+    }
+
+    protected CORSSetting getCorsSetting() {
+        return corsSetting;
     }
 
     /*
@@ -61,7 +74,7 @@ public class CorsFilter implements Filter {
                           final HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        CORSSetter.set(corsSetting, new HeaderSetter() {
+        CORSSetter.set(getCorsSetting(), new HeaderSetter() {
 
             //         @Override
             public void set(String header, String value) {

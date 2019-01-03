@@ -49,7 +49,7 @@ public class CORSSettingInProfile implements CORSSetting {
      */
     @Override
     public String allowOrigin() {
-        return profile.getString("allowOrigin");
+        return profile.getString(KEY_ALLOW_ORIGIN);
     }
 
     /*
@@ -59,7 +59,7 @@ public class CORSSettingInProfile implements CORSSetting {
      */
     @Override
     public String exposeHeaders() {
-        return profile.getString("exposeHeaders");
+        return profile.getString(KEY_EXPOSE_HEADERS);
     }
 
     /*
@@ -69,7 +69,7 @@ public class CORSSettingInProfile implements CORSSetting {
      */
     @Override
     public String allowMethod() {
-        return profile.getString("allowMethod");
+        return profile.getString(KEY_ALLOW_METHOD);
     }
 
     /*
@@ -79,7 +79,7 @@ public class CORSSettingInProfile implements CORSSetting {
      */
     @Override
     public String allowHeaders() {
-        return profile.getString("allowHeaders");
+        return profile.getString(KEY_ALLOW_HEADERS);
     }
 
     /*
@@ -89,14 +89,14 @@ public class CORSSettingInProfile implements CORSSetting {
      */
     @Override
     public Long maxAge() {
-        String maxAge = profile.getString("maxAge");
+        String maxAge = profile.getString(KEY_MAX_AGE);
         Long lMaxAge = null;
         try {
             if (maxAge != null)
                 lMaxAge = Long.valueOf(maxAge);
         } catch (Throwable th) {
-            log.info("cannot load maxAge, type need: long. {} in {}",
-                    th.getLocalizedMessage(), profile.getLocation(), th);
+            log.info("cannot load maxAge, type need: long. {} ",
+                    th.getLocalizedMessage(), th);
         }
         return lMaxAge;
     }
@@ -108,15 +108,15 @@ public class CORSSettingInProfile implements CORSSetting {
      */
     @Override
     public Boolean allowCredentials() {
-        String allowCredentials = profile.getString("allowCredentials");
+        String allowCredentials = profile.getString(KEY_ALLOW_CREDENTIALS);
         Boolean blAC = null;
         try {
             if (allowCredentials != null)
                 blAC = Boolean.valueOf(allowCredentials);
 
         } catch (Throwable th) {
-            log.info("cannot load allowCredentials, type need: boolean. {} in {}",
-                    th.getLocalizedMessage(), profile.getLocation(), th);
+            log.info("cannot load allowCredentials, type need: boolean. {} ",
+                    th.getLocalizedMessage(), th);
         }
 
         return blAC;

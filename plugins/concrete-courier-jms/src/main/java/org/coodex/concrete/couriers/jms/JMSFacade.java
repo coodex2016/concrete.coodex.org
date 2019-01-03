@@ -20,7 +20,6 @@ import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.message.Serializer;
 import org.coodex.concrete.message.Topics;
-import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
@@ -30,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import javax.jms.*;
 import java.io.Serializable;
 import java.lang.reflect.Type;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static org.coodex.concrete.message.Topics.*;
@@ -56,7 +54,7 @@ class JMSFacade {
         }
     });
     private final static Logger log = LoggerFactory.getLogger(JMSFacade.class);
-    private static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
+//    private static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
     private final String name;
     private final String driver;
     private final String topicName;
@@ -149,7 +147,7 @@ class JMSFacade {
 
     private void reconnect() {
         clear();
-        scheduledExecutorService.schedule(new Runnable() {
+        ConcreteHelper.getScheduler("jms.reconnect").schedule(new Runnable() {
             @Override
             public void run() {
                 try {

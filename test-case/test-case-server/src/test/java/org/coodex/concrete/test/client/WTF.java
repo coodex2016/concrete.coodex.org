@@ -26,8 +26,7 @@ import java.io.IOException;
 public class WTF {
 
 
-
-    public static void main(String [] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 //        String basePath = Profile.getProfile("env.properties").getString("path");
 //        Map<String, String> renders = new HashMap<String, String>();
 //        renders.put(AngularCodeRender.RENDER_NAME, "ng2v1");
@@ -46,7 +45,6 @@ public class WTF {
         API.generate(JQueryPromisesCodeRender.RENDER_NAME,
                 Profile.getProfile("env.properties").getString("path.jquery.test"),
                 Test.class.getPackage().getName());
-
 
 
     }

@@ -19,6 +19,9 @@
  */
 package org.coodex.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.net.URL;
 import java.text.DateFormat;
@@ -41,10 +44,24 @@ public class Common {
     public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
     public static final String DEFAULT_DATETIME_FORMAT =
             DEFAULT_DATE_FORMAT + " " + DEFAULT_TIME_FORMAT;
+    private final static Logger log = LoggerFactory.getLogger(Common.class);
     private static final int TO_LOWER = 'a' - 'A';
     private final static String DEFAULT_DELIM = ".-_ /\\";
     private static ThreadLocal<SingletonMap<String, DateFormat>> threadLocal
             = new ThreadLocal<SingletonMap<String, DateFormat>>();
+    private static Singleton<AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue>> converterServiceLoader
+            = new Singleton<AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue>>(
+            new Singleton.Builder<AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue>>() {
+                @Override
+                public AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue> build() {
+                    return new AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue>(
+                            new ServiceLoaderFacade<StringConvertWithDefaultValue>() {
+                            }
+                    );
+                }
+            }
+    );
+
 
     @SuppressWarnings("unchecked")
     public static <T> Set<T> arrayToSet(T[] array) {
@@ -184,10 +201,6 @@ public class Common {
         return s == null || s.trim().length() == 0;
     }
 
-    public static void copyStream(InputStream is, OutputStream os) throws IOException {
-        copyStream(is, os, 4096, false, Integer.MAX_VALUE);
-    }
-
 //    public static <T> List<T> joinList(List<T> ... lists) {
 ////        List<T> result = new ArrayList<T>();
 ////        if(lists != null && lists.length > 0){
@@ -199,6 +212,10 @@ public class Common {
 ////        result.addAll(ary2);
 //        return join(new ArrayList<T>(), lists);
 //    }
+
+    public static void copyStream(InputStream is, OutputStream os) throws IOException {
+        copyStream(is, os, 4096, false, Integer.MAX_VALUE);
+    }
 
     public static void copyStream(InputStream is, OutputStream os,
                                   int blockSize, boolean flushPerBlock, int bps) throws IOException {
@@ -242,10 +259,10 @@ public class Common {
 //            }
 //        }
 //        return hs.toUpperCase();
-        return byte2hex(b,0,b.length);
+        return byte2hex(b, 0, b.length);
     }
 
-    public static String byte2hex(byte[] b, int offset, int length){
+    public static String byte2hex(byte[] b, int offset, int length) {
         String hs = "";
         for (int n = offset, l = Math.min(offset + length, b.length); n < l; n++) {
             String sTmp = Integer.toHexString(b[n] & 0XFF);
@@ -413,6 +430,26 @@ public class Common {
         }
     }
 
+    public static <T> T to(String str, T value) {
+        if (value == null) {
+            if (str == null)
+                return null;
+            throw new NullPointerException("value is null.");
+        }
+        Class cls = value.getClass();
+        if (cls.equals(String.class)) {
+            return (T) (str == null ? value : str);
+        }
+        if (cls.isArray() && cls.getComponentType().equals(String.class)) {
+            return (T) toArray(str, ",", (String[]) value);
+        }
+        StringConvertWithDefaultValue defaultValue = converterServiceLoader.getInstance().getServiceInstance(cls);
+        if (defaultValue == null) {
+            throw new RuntimeException("String to " + cls + " is not supported.");
+        }
+        return (T) defaultValue.convertTo(str, value, cls);
+    }
+
     public static int toInt(String str, int value) {
         try {
             return Integer.valueOf(str);
@@ -524,7 +561,7 @@ public class Common {
 
     public static short random(short[] range) {
         if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
-        return range[random(range.length )];
+        return range[random(range.length)];
     }
 
     public static int random(int[] range) {
@@ -732,15 +769,55 @@ public class Common {
         return dateToStr(new Date(), format);
     }
 
-
     public static RuntimeException runtimeException(Throwable th) {
         return th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th.getLocalizedMessage(), th);
     }
 
-    public static void main(String[] args) {
-//        System.out.println(Profile.getProfile("a.properties").getStrList("aaa"));
-        for(int i = 0; i< 1000; i ++){
-            System.out.println(random(1));
+//    public static void main(String[] args) {
+////        System.out.println(Profile.getProfile("a.properties").getStrList("aaa"));
+//        for (int i = 0; i < 1000; i++) {
+//            System.out.println(random(1));
+//        }
+//    }
+
+
+    public static class StringToInt implements StringConvertWithDefaultValue {
+
+        @Override
+        public Object convertTo(String str, Object defaultValue, Class<?> type) {
+            return toInt(str, (Integer) defaultValue);
+        }
+
+        @Override
+        public boolean accept(Class<?> param) {
+            return int.class.equals(param) || Integer.class.equals(param);
         }
     }
+
+    public static class StringToLong implements StringConvertWithDefaultValue {
+
+        @Override
+        public Object convertTo(String str, Object defaultValue, Class<?> type) {
+            return toLong(str, (Long) defaultValue);
+        }
+
+        @Override
+        public boolean accept(Class<?> param) {
+            return long.class.equals(param) || Long.class.equals(param);
+        }
+    }
+
+    public static class StringToBoolean implements StringConvertWithDefaultValue {
+
+        @Override
+        public Object convertTo(String str, Object defaultValue, Class<?> type) {
+            return toBool(str, (Boolean) defaultValue);
+        }
+
+        @Override
+        public boolean accept(Class<?> param) {
+            return boolean.class.equals(param) || Boolean.class.equals(param);
+        }
+    }
+
 }

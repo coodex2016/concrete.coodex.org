@@ -16,13 +16,15 @@
 
 package org.coodex.concrete.support.jsr339;
 
-import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
+
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 public class JSR339Common {
 
@@ -32,7 +34,7 @@ public class JSR339Common {
         try {
             return type.withCharset(
                     Charset.forName(
-                            ConcreteHelper.getProfile().getString("jsr339.charset", "utf8")
+                            Config.getValue("jsr339.charset", "utf8", getAppSet())
                     ).displayName()
             );
         } catch (UnsupportedCharsetException e) {

@@ -19,14 +19,14 @@ package org.coodex.concrete.spring.aspects;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
-import org.coodex.util.Profile;
+import org.coodex.config.Config;
 import org.springframework.core.Ordered;
 
 import java.util.List;
 
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.concrete.spring.aspects.AspectJHelper.ASPECT_POINT;
 
 /**
@@ -35,7 +35,7 @@ import static org.coodex.concrete.spring.aspects.AspectJHelper.ASPECT_POINT;
 @Aspect
 public class ConcreteAOPChain extends SyncInterceptorChain implements Ordered {
 
-    private static final Profile profile = ConcreteHelper.getProfile();
+//    private static final Profile_Deprecated profile = ConcreteHelper.getProfile();
 
     public ConcreteAOPChain() {
 
@@ -47,7 +47,7 @@ public class ConcreteAOPChain extends SyncInterceptorChain implements Ordered {
 
     @Override
     public int getOrder() {
-        return profile.getInt(ConcreteAOPChain.class.getCanonicalName() + ".order", 0);
+        return Config.getValue(ConcreteAOPChain.class.getCanonicalName() + ".order", 0, getAppSet());
     }
 
     @Around(ASPECT_POINT)

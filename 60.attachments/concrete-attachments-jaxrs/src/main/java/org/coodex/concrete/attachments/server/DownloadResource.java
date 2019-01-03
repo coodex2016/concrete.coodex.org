@@ -17,7 +17,7 @@
 package org.coodex.concrete.attachments.server;
 
 
-import org.coodex.concrete.attachments.AttachmentServiceHelper;
+import org.coodex.config.Config;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
@@ -25,6 +25,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
+
+import static org.coodex.concrete.attachments.AttachmentServiceHelper.TAG_ATTACHMENT_SERVICE;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * 附件下载的一个参考实现，基于jaxrs2.0
@@ -53,7 +56,7 @@ public class DownloadResource extends AbstractDownloadResource {
             }
         });
 
-        downloadThread.setPriority(AttachmentServiceHelper.ATTACHMENT_PROFILE.getInt("download.priority", 1));
+        downloadThread.setPriority(Config.getValue("download.priority", 1, TAG_ATTACHMENT_SERVICE, getAppSet()));
         downloadThread.start();
 
     }

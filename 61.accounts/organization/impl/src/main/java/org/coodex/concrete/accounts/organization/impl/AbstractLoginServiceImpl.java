@@ -113,7 +113,7 @@ public abstract class AbstractLoginServiceImpl
      * @param loginCacheEntryEntity
      */
     protected void setValidation(LoginCacheEntryEntity loginCacheEntryEntity) {
-        if (AccountsCommon.SETTINGS.getBool("validation.defer", false)) {
+        if (AccountsCommon.getBool("validation.defer", false)) {
             loginCacheEntryEntity.setValidation(getValidationFromNow());
         }
     }
@@ -134,7 +134,7 @@ public abstract class AbstractLoginServiceImpl
      */
     protected Calendar getValidationFromNow() {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, AccountsCommon.SETTINGS.getInt("validation.days", 7));
+        calendar.add(Calendar.DATE, AccountsCommon.getInt("validation.days", 7));
         return calendar;
     }
 
@@ -214,7 +214,7 @@ public abstract class AbstractLoginServiceImpl
 
     @Override
     public void administratorLogin(String tenant, String password, String authCode) {
-        administratorFactory.login(tenant, AccountsCommon.SETTINGS.getString("administrator.id"), password, authCode);
+        administratorFactory.login(tenant, AccountsCommon.getString("administrator.id"), password, authCode);
     }
 
     @Override

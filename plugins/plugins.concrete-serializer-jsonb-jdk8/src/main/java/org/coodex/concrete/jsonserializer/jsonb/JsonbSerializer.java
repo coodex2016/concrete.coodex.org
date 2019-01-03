@@ -17,12 +17,14 @@
 package org.coodex.concrete.jsonserializer.jsonb;
 
 import org.coodex.concrete.common.AbstractJsonSerializer;
-import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import java.lang.reflect.Type;
+
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 public class JsonbSerializer extends AbstractJsonSerializer {
 
@@ -30,7 +32,7 @@ public class JsonbSerializer extends AbstractJsonSerializer {
 
     private synchronized Jsonb getInstance() {
         if (jsonbInstnace == null) {
-            String providerName = ConcreteHelper.getProfile().getString("jsonb.provider", null);
+            String providerName = Config.get("jsonb.provider", getAppSet());
             jsonbInstnace = Common.isBlank(providerName) ? JsonbBuilder.create() : JsonbBuilder.newBuilder(providerName).build();
         }
         return jsonbInstnace;

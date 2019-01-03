@@ -16,11 +16,12 @@
 
 package org.coodex.concrete.message;
 
-import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 
 import java.lang.reflect.Type;
 
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.util.ReflectHelper.typeToCodeStr;
 
 public class TopicKey {
@@ -29,7 +30,8 @@ public class TopicKey {
     String topicTypeName;
 
     public TopicKey(String queue, Type topicType) {
-        this.queue = Common.isBlank(queue) ? ConcreteHelper.getProfile().getString("queue.default") : queue;
+        this.queue = Common.isBlank(queue) ?
+                Config.get("queue.default", getAppSet()) : queue;
         if (Common.isBlank(queue))
             this.queue = null;
         this.topicType = topicType;

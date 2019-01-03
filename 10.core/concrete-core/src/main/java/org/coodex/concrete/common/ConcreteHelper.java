@@ -20,13 +20,15 @@ import org.coodex.concrete.api.*;
 import org.coodex.concrete.common.struct.AbstractModule;
 import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.concurrent.ExecutorsHelper;
-import org.coodex.util.*;
+import org.coodex.config.Config;
 import org.coodex.util.ServiceLoader;
+import org.coodex.util.*;
 
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import static org.coodex.util.ReflectHelper.foreachClass;
 
@@ -50,38 +52,79 @@ public class ConcreteHelper {
     private final static ServiceLoader<ModuleMaker> MODULE_MAKERS = new ConcreteServiceLoader<ModuleMaker>() {
     };
     //    private static ExecutorService executorService;
-    private static Singleton<ExecutorService> executorService = new Singleton<ExecutorService>(new Singleton.Builder<ExecutorService>() {
-        @Override
-        public ExecutorService build() {
-            return ExecutorsHelper.newPriorityThreadPool(
-                    getProfile().getInt("service.executor.corePoolSize", 0),
-                    getProfile().getInt("service.executor.maximumPoolSize", Integer.MAX_VALUE),
-                    getProfile().getInt("service.executor.keepAliveTime", 60)
-            );
-        }
-    });
+//    private static Singleton<ExecutorService> executorService = new Singleton<ExecutorService>(new Singleton.Builder<ExecutorService>() {
+//        @Override
+//        public ExecutorService build() {
+//            return ExecutorsHelper.newPriorityThreadPool(
+//                    getProfile().getInt("service.executor.corePoolSize", 0),
+//                    getProfile().getInt("service.executor.maximumPoolSize", Integer.MAX_VALUE),
+//                    getProfile().getInt("service.executor.keepAliveTime", 60)
+//            );
+//        }
+//    });
 
-    private static Profile getDefaultProfile(String tag) {
-        return Profile.getProfile(tag + ".properties");
+    private static SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap = new SingletonMap<String, ScheduledExecutorService>(
+            new SingletonMap.Builder<String, ScheduledExecutorService>() {
+                @Override
+                public ScheduledExecutorService build(String key) {
+                    String aliasTo = Config.get("scheduler", key, getAppSet());
+                    if (Common.isBlank(aliasTo)) {
+                        return ExecutorsHelper.newScheduledThreadPool(
+                                Config.getValue("scheduler.executorSize", 1, key, getAppSet())
+                        );
+                    } else {
+                        return scheduledExecutorMap.getInstance(aliasTo);
+                    }
+                }
+            }
+    );
+
+    private static SingletonMap<String, ExecutorService> executorServiceMap = new SingletonMap<String, ExecutorService>(
+            new SingletonMap.Builder<String, ExecutorService>() {
+
+                @Override
+                public ExecutorService build(String key) {
+                    String aliasTo = Config.get("executor", key, getAppSet());
+                    if (Common.isBlank(aliasTo)) {
+                        return ExecutorsHelper.newPriorityThreadPool(
+                                Config.getValue("executor.corePoolSize", 0, key, getAppSet()),
+                                Config.getValue("executor.maximumPoolSize", Integer.MAX_VALUE, key, getAppSet()),
+                                Config.getValue("executor.keepAliveTime", 60, key, getAppSet())
+                        );
+                    } else {
+                        return executorServiceMap.getInstance(aliasTo);
+                    }
+//                    return ExecutorsHelper.newP;
+                }
+            }
+    );
+
+//    @Deprecated
+//    private static Profile_Deprecated getDefaultProfile(String tag) {
+//        return Profile_Deprecated.getProfile(tag + ".properties");
+//    }
+
+    public static Integer getTokenMaxIdleInMinute() {
+//        return getProfile().getInt("token.maxIdleTime", 60);
+        return Config.getValue("token.maxIdleTime", 60, getAppSet());
     }
 
-    public static Integer getTokenMaxIdleInMinute(){
-        return getProfile().getInt("token.maxIdleTime", 60);
-    }
+//    @Deprecated
+//    public static Profile_Deprecated getProfile() {
+//        return getProfile("concrete");
+//    }
+//
+//    @Deprecated
+//    public static Profile_Deprecated getProfile(String tag) {
+//        return getProfile(tag, null);
+//    }
 
-    public static Profile getProfile() {
-        return getProfile("concrete");
-    }
-
-    public static Profile getProfile(String tag) {
-        return getProfile(tag, null);
-    }
-
-    public static Profile getProfile(String tag, String sub) {
-        return Common.isBlank(sub) ?
-                getDefaultProfile(tag) :
-                Profile.getProfile(tag + "." + sub + ".properties");
-    }
+//    @Deprecated
+//    public static Profile_Deprecated getProfile(String tag, String sub) {
+//        return Common.isBlank(sub) ?
+//                getDefaultProfile(tag) :
+//                Profile_Deprecated.getProfile(tag + "." + sub + ".properties");
+//    }
 
     public static Map<String, String> updatedMap(Subjoin subjoin) {
         Map<String, String> map = new ConcurrentHashMap<String, String>();
@@ -94,25 +137,26 @@ public class ConcreteHelper {
     }
 
     public static String getString(String tag, String module, String key) {
-        Profile profile = getProfile(tag, module);
-        String value = profile.getString(key);
-        if (value == null && !Common.isBlank(module)) {
-            profile = getProfile(tag);
-            value = profile.getString(String.format("%s.%s", module, key));
-            if (value == null) {
-                value = profile.getString(key);
-            }
-        }
-        if (value == null) {
-            profile = getProfile();
-            if (!Common.isBlank(module)) {
-                value = profile.getString(String.format("%s.%s.%s", tag, module, key));
-            }
-            if (value == null) {
-                value = profile.getString(String.format("%s.%s", tag, key));
-            }
-        }
-        return value;
+//        Profile_Deprecated profile = getProfile(tag, module);
+//        String value = profile.getString(key);
+//        if (value == null && !Common.isBlank(module)) {
+//            profile = getProfile(tag);
+//            value = profile.getString(String.format("%s.%s", module, key));
+//            if (value == null) {
+//                value = profile.getString(key);
+//            }
+//        }
+//        if (value == null) {
+//            profile = getProfile();
+//            if (!Common.isBlank(module)) {
+//                value = profile.getString(String.format("%s.%s.%s", tag, module, key));
+//            }
+//            if (value == null) {
+//                value = profile.getString(String.format("%s.%s", tag, key));
+//            }
+//        }
+//        return value;
+        return Config.get(key, tag, module);
     }
 
     public static ExecutorService getExecutor() {
@@ -128,7 +172,20 @@ public class ConcreteHelper {
 //            }
 //        }
 //        return executorService;
-        return executorService.getInstance();
+//        return executorService.getInstance();
+        return getExecutor("service");
+    }
+
+    public static ScheduledExecutorService getScheduler(){
+        return getScheduler("service");
+    }
+
+    public static ScheduledExecutorService getScheduler(String name){
+        return scheduledExecutorMap.getInstance(name);
+    }
+
+    public static ExecutorService getExecutor(String executorName) {
+        return executorServiceMap.getInstance(executorName);
     }
 
     public static Method[] getAllMethod(Class<?> serviceClass) {
@@ -454,15 +511,17 @@ public class ConcreteHelper {
 
 
     public static String[] getApiPackages() {
-        return getProfile().getStrList("concrete.api.packages", ",", new String[0]);
+        return Config.getArray("api.packages", ",", new String[0], "concrete", getAppSet());
     }
 
     public static String[] getRemoteApiPackages() {
-        return getProfile().getStrList("concrete.remoteapi.packages", ",", new String[0]);
+        return Config.getArray("remoteapi.packages", ",", new String[0], "concrete", getAppSet());
     }
 
     public static String getAppSet() {
-        return getProfile().getString("concrete.appSet");
+//        return getProfile().getString("concrete.appSet");
+        return System.getProperty("concrete.appSet");
+//        return !Common.isBlank(appSet) ? appSet : Config.get("appSet", "concrete");
     }
 
 

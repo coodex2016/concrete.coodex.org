@@ -18,8 +18,8 @@ package org.coodex.concrete.accounts;
 
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.config.Config;
 import org.coodex.util.AcceptableServiceLoader;
-import org.coodex.util.Profile;
 import org.springframework.data.repository.CrudRepository;
 
 import java.text.DateFormat;
@@ -28,13 +28,15 @@ import java.util.Calendar;
 import static org.coodex.concrete.accounts.Constants.ORGANIZATION_PREFIX;
 import static org.coodex.concrete.common.AccountsErrorCodes.*;
 import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.util.Common.*;
 
 /**
  * Created by davidoff shen on 2017-05-03.
  */
 public class AccountsCommon {
-    public static final Profile SETTINGS = Profile.getProfile("concrete_accounts.properties");
+    public static final String TAG_ACCOUNTS_SETTING = "concrete_accounts";
+//    public static final Profile_Deprecated SETTINGS = Profile_Deprecated.getProfile("concrete_accounts.properties");
 //    public static final RecursivelyProfile RECURSIVELY_SETTING =
 //            new RecursivelyProfile(SETTINGS);
 
@@ -79,8 +81,26 @@ public class AccountsCommon {
     }
 
     public static final String getApplicationName() {
-        return SETTINGS.getString("application.name",
-                ConcreteHelper.getProfile().getString("application.name", "coodex.org"));
+//        return SETTINGS.getString("application.name",
+//                ConcreteHelper.getProfile().getString("application.name", "coodex.org"));
+        return Config.getValue("application.name", "coodex.org", TAG_ACCOUNTS_SETTING, getAppSet());
+    }
+
+    public static final boolean getBool(String key, boolean defaultValue) {
+        return Config.getValue(key, defaultValue, TAG_ACCOUNTS_SETTING, getAppSet());
+    }
+
+    public static final int getInt(String key, int defaultValue) {
+        return Config.getValue(key, defaultValue, TAG_ACCOUNTS_SETTING, getAppSet());
+    }
+
+    public static final String getString(String key) {
+        return getString(key, null);
+    }
+    public static final String getString(String key, String defaultValue) {
+        return defaultValue == null ?
+                Config.get(key, TAG_ACCOUNTS_SETTING, getAppSet()) :
+                Config.getValue(key, defaultValue, TAG_ACCOUNTS_SETTING, getAppSet());
     }
 
 

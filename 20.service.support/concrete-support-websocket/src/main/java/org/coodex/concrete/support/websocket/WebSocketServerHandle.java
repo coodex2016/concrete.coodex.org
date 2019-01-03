@@ -24,8 +24,8 @@ import org.coodex.concrete.common.struct.AbstractParam;
 import org.coodex.concrete.message.ServerSideMessage;
 import org.coodex.concrete.websocket.ConcreteWebSocketEndPoint;
 import org.coodex.concrete.websocket.*;
-import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.concurrent.components.PriorityRunnable;
+import org.coodex.config.Config;
 import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
 import org.coodex.util.GenericType;
@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -51,7 +50,7 @@ import static org.coodex.concrete.websocket.Constants.*;
 
 class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
 
-    private final static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newScheduledThreadPool(1);
+//    private final static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newScheduledThreadPool(1);
 
     private final static Logger log = LoggerFactory.getLogger(WebSocketServerHandle.class);
 
@@ -81,7 +80,7 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
             }
         } catch (IllegalStateException | IOException e) {
             log.warn("send text failed. session: {}", session.getId(), e);
-            scheduledExecutorService.schedule(new Runnable() {
+            getScheduler("websocket.retry").schedule(new Runnable() {
                 @Override
                 public void run() {
                     toRetry.incrementAndGet();
@@ -435,7 +434,8 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
     }
 
     String getHostId() {
-        return ConcreteHelper.getProfile().getString("websocket.hostId", Common.getUUIDStr());
+        // TODO
+        return Config.getValue("websocket.hostId", Common.getUUIDStr(),getAppSet());
     }
 
 

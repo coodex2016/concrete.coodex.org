@@ -27,6 +27,7 @@ import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.concrete.test.ConcreteTestCase;
+import org.coodex.config.Config;
 import org.coodex.pojomocker.MockerFacade;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,7 +44,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-import static org.coodex.concrete.accounts.AdministratorFromProfileFactory.ADMINISTRATOR_INFO;
+import static org.coodex.concrete.accounts.AdministratorFromProfileFactory.TAG_ADMIN;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
+
 
 /**
  * Created by davidoff shen on 2017-05-11.
@@ -141,7 +144,7 @@ public class TestCases extends ConcreteTestCase {
     }
 
     protected void administratorLogin() throws InvalidKeyException, NoSuchAlgorithmException {
-        String authCode = getAuthCode(ADMINISTRATOR_INFO.getString("authKey"));
+        String authCode = getAuthCode(Config.get("authKey", TAG_ADMIN, getAppSet()));
         log.info("adminLogin. authCode[{}]", authCode);
         loginService.administratorLogin(null, AccountsCommon.getDefaultPassword(), authCode);
         Assert.assertTrue(token.isAccountCredible());

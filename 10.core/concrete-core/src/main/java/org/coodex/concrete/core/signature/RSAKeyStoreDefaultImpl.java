@@ -19,15 +19,16 @@ package org.coodex.concrete.core.signature;
 import org.apache.commons.codec.binary.Base64;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.util.Common;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.coodex.concrete.core.signature.SignUtil.PROFILE;
+import static org.coodex.concrete.core.signature.SignUtil.getString;
 
 /**
  * base64
@@ -55,23 +56,57 @@ public class RSAKeyStoreDefaultImpl implements RSAKeyStore {
     @Override
     public byte[] getPrivateKey(String paperName) {
         try {
-            String keyId = SignUtil.getString("keyId", paperName, null);
+            String keyId = getString("keyId", paperName, null);
             return loadKey(
-                    Arrays.asList("rsa.privateKey." + paperName + "." + keyId,
-                            "rsa.privateKey." + paperName,
-                            "rsa.privateKey." + keyId,
-                            "rsa.privateKey"),
-                    Arrays.asList(paperName + "." + keyId + ".pem", keyId + ".pem", paperName + ".pem"));
+//                    Arrays.asList("rsa.privateKey." + paperName + "." + keyId,
+//                            "rsa.privateKey." + paperName,
+//                            "rsa.privateKey." + keyId,
+//                            "rsa.privateKey"),
+                    getConfigKeys(paperName, keyId, "privateKey"),
+//                    Arrays.asList(paperName + "." + keyId + ".pem", keyId + ".pem", paperName + ".pem")
+                    getResourceList(paperName, keyId, "pem")
+            );
         } catch (Throwable th) {
             throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }
 
     }
 
+    private List<String> getResourceList(String paperName, String keyId, String type) {
+        List<String> list = new ArrayList<String>();
+        boolean paperNameIsBlank = Common.isBlank(paperName), keyIdIsBlank = Common.isBlank(keyId);
+        if (!keyIdIsBlank) {
+            if (!paperNameIsBlank) {
+                list.add(paperName + "." + keyId + "." + type);
+            }
+            list.add(keyId + "." + type);
+        }
+        if (!paperNameIsBlank) {
+            list.add(paperName + "." + type);
+        }
+        return list;
+    }
+
+    private List<String> getConfigKeys(String paperName, String keyId, String type) {
+        List<String> list = new ArrayList<String>();
+        boolean paperNameIsBlank = Common.isBlank(paperName), keyIdIsBlank = Common.isBlank(keyId);
+        if (!paperNameIsBlank) {
+            if (!keyIdIsBlank) {
+                list.add("rsa." + type + "." + paperName + "." + keyId);
+            }
+            list.add("rsa." + type + "." + paperName);
+        }
+        if (!keyIdIsBlank) {
+            list.add("rsa." + type + "." + keyId);
+        }
+        list.add("rsa." + type);
+        return list;
+    }
+
     private byte[] loadKey(List<String> properties, List<String> resources) throws IOException {
         String s = null;
         for (String property : properties) {
-            s = PROFILE.getString(property);
+            s = getString(property, null, null);
             if (s != null) break;
         }
 
@@ -121,11 +156,15 @@ public class RSAKeyStoreDefaultImpl implements RSAKeyStore {
     @Override
     public byte[] getPublicKey(String paperName, String keyId) {
         try {
-            return loadKey(Arrays.asList("rsa.publicKey." + paperName + "." + keyId,
-                    "rsa.publicKey." + paperName,
-                    "rsa.publicKey." + keyId,
-                    "rsa.publicKey"),
-                    Arrays.asList(paperName + "." + keyId + ".crt", keyId + ".crt", paperName + ".crt"));
+            return loadKey(
+//                    Arrays.asList("rsa.publicKey." + paperName + "." + keyId,
+//                    "rsa.publicKey." + paperName,
+//                    "rsa.publicKey." + keyId,
+//                    "rsa.publicKey"),
+//                    Arrays.asList(paperName + "." + keyId + ".crt", keyId + ".crt", paperName + ".crt")
+                    getConfigKeys(paperName, keyId, "publicKey"),
+                    getResourceList(paperName, keyId, "crt")
+            );
         } catch (Throwable th) {
             throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }

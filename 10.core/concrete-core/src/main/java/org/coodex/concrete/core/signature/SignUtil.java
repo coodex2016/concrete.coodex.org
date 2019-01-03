@@ -19,21 +19,24 @@ package org.coodex.concrete.core.signature;
 import org.coodex.concrete.api.Signable;
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.common.*;
+import org.coodex.config.Config;
 import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
 import org.coodex.util.ServiceLoader;
 
-import static org.coodex.concrete.common.ConcreteHelper.getProfile;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
+
+//import static org.coodex.concrete.common.ConcreteHelper.getProfile;
 
 /**
  * Created by davidoff shen on 2017-04-21.
  */
 public class SignUtil {
 
-    private static final String TAG_SIGNATRUE = "signature";
+    public static final String TAG_SIGNATRUE = "signature";
 
-    public static final Profile PROFILE = getProfile(TAG_SIGNATRUE);
+    //    public static final Profile PROFILE = getProfile(TAG_SIGNATRUE);
     private static final AcceptableServiceLoader<String, IronPenFactory> IRON_PEN_FACTORY_CONCRETE_SPI_FACADE
             = new AcceptableServiceLoader<String, IronPenFactory>(new ConcreteServiceLoader<IronPenFactory>() {
     });
@@ -95,6 +98,12 @@ public class SignUtil {
 //        return s == null ? getString(profile, key, null) : s;
     }
 
+    private static String getStr(String key, String paperName, String... namespaces) {
+        return Common.isBlank(paperName) ?
+                Config.get(key, namespaces) :
+                Config.get(key + "." + paperName, namespaces);
+    }
+
     public static NoiseValidator getNoiseValidator(String keyId) {
         NoiseValidator noiseValidator = validatorLoader.getServiceInstance(keyId);
         return noiseValidator == null ? defaultValidator : noiseValidator;
@@ -108,14 +117,18 @@ public class SignUtil {
     public static String getString(String key, String paperName, String defaultValue) {
         ServiceContext serviceContext = ConcreteContext.getServiceContext();
         String value = null;
+        String module = null;
         if (serviceContext instanceof ClientSideContext) {
-            String module = ((ClientSideContext) serviceContext).getDestination().getIdentify();
-            if (!Common.isBlank(module)) {
-                value = getString(getProfile(TAG_SIGNATRUE, module), key, paperName);
-            }
+            module = ((ClientSideContext) serviceContext).getDestination().getIdentify();
+//            if (!Common.isBlank(module)) {
+//                value = getString(getProfile(TAG_SIGNATRUE, module), key, paperName);
+//            }
         }
-        if (value == null)
-            value = getString(getProfile(TAG_SIGNATRUE), key, paperName);
+//        if (value == null) {
+//            value = getString(getProfile(TAG_SIGNATRUE), key, paperName);
+
+//        }
+        value = getStr(key, paperName, TAG_SIGNATRUE, module, getAppSet());
         return value == null ? defaultValue : value;
 //        if (Common.isBlank(paperName))
 //            return PROFILE.getString(key, defaultValue);

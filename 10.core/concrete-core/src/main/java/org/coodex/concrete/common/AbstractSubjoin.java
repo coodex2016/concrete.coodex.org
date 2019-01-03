@@ -41,6 +41,10 @@ public abstract class AbstractSubjoin implements Subjoin {
         }
     }
 
+//    protected void resetUpdatedMap(){
+//        stringMap.clear();
+//    }
+
     protected abstract Collection<String> skipKeys();
 
     @Override
