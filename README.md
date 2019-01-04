@@ -30,7 +30,7 @@ public interface SomeService extends ConcreteService{
 - 修复JaxrsSubjoin可能出现content-type重复的问题
 - 定义Configuration接口，用于获取系统的配置；提供默认的基于Profile的Configuration实现；提供Config门面简化获取配置方式
 - coodex及concrete配置类内容迁移到Configuration接口，兼容了之前从Profile中获取的行为
-- 连接池由ConcreteHelper统一提供，可通过配置灵活设定
+- 线程池由ConcreteHelper统一提供，可通过配置灵活设定
 - 其他一些优化
 
 ### Configuration & Profile
