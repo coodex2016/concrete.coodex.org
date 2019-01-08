@@ -19,7 +19,6 @@ package org.coodex.concrete.accounts.organization.api;
 import org.coodex.concrete.accounts.organization.pojo.Institution;
 import org.coodex.concrete.api.*;
 import org.coodex.concrete.api.pojo.StrID;
-import org.coodex.concrete.jaxrs.Body;
 import org.coodex.util.Parameter;
 
 import static org.coodex.concrete.accounts.AccountManagementRoles.*;
@@ -34,12 +33,16 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 public interface AbstractInstitutionManagementService<I extends Institution> extends ConcreteService {
     @Description(name = "新建单位", description = "LOGGING: new 新建单位的实体数据")
     StrID<I> save(
-            @Parameter("institution") @Description(name = "单位信息") I institution,
+            @Parameter("institution")
+            @Description(name = "单位信息")
+                    I institution,
             @Description(name = "上级单位", description = "可为空")
-            @Parameter("higherLevel") @Body String higherLevel);
+            @Parameter("higherLevel")
+                    String higherLevel);
 
     @Description(name = "更新单位信息",
             description = "LOGGING: old 单位实体变更前数据; new 变更后的实体数据")
+    @MicroService("{id}")
     void update(
             @Parameter("id") String id,
             @Parameter("institution") I institution);
@@ -61,7 +64,7 @@ public interface AbstractInstitutionManagementService<I extends Institution> ext
     @Description(name = "删除单位",
             description = "删除单位时，单位、下属单位、部门应没有人员方可删除，下属单位、部门、职位均被删除。"
                     + "LOGGING: deleted 所有被删除的实体信息")
-    @MicroService
+    @MicroService("{id}")
     void delete(
             @Parameter("id") String id);
 }

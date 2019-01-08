@@ -17,7 +17,6 @@
 package org.coodex.concrete.accounts.organization.api;
 
 import org.coodex.concrete.api.*;
-import org.coodex.concrete.jaxrs.Body;
 import org.coodex.util.Parameter;
 
 /**
@@ -31,16 +30,13 @@ public interface AbstractLoginService extends ConcreteService {
             @Parameter("tenant")
                     String tenant,
             @Description(name = "帐号", description = "可以是身份证号/邮箱/手机号")
-            @Body
             @Parameter("account")
                     String account,
             @Description(name = "密码")
-            @Body
             @Parameter("password")
                     String password,
             @Description(name = "认证码",
                     description = "为空则表示可能尚未绑定认证码或认证码尚未生效")
-            @Body
             @Parameter("authCode")
                     String authCode);
 
@@ -48,20 +44,22 @@ public interface AbstractLoginService extends ConcreteService {
     @Description(name = "系统管理员登录", description = "用于系统初始化管理")
     void administratorLogin(
             @Parameter("tenant") String tenant,
-            @Parameter("password") @Body String password,
-            @Parameter("authCode") @Body String authCode);
+            @Parameter("password") String password,
+            @Parameter("authCode") String authCode);
 
     @MicroService("login/credential")
     @Description(name = "使用缓存的令牌登录", description = "登录后账户为不可信状态")
     void loginWith(
-            @Parameter("credential") @Body String credential);
+            @Parameter("credential")
+                    String credential);
 
 
     @Description(name = "使用授权码验证身份", description = "验证成功后，当前令牌账户置为可信状态")
     @MicroService("login/identification")
     @AccessAllow
     String identification(
-            @Parameter("authCode") @Body String authCode);
+            @Parameter("authCode")
+                    String authCode);
 
 
     @Description(name = "注销登录", description = "注销后，缓存的令牌也同时失效")

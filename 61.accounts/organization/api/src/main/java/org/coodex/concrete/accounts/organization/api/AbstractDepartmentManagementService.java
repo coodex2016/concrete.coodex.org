@@ -19,7 +19,6 @@ package org.coodex.concrete.accounts.organization.api;
 import org.coodex.concrete.accounts.organization.pojo.Department;
 import org.coodex.concrete.api.*;
 import org.coodex.concrete.api.pojo.StrID;
-import org.coodex.concrete.jaxrs.Body;
 import org.coodex.util.Parameter;
 
 import static org.coodex.concrete.accounts.AccountManagementRoles.*;
@@ -36,11 +35,12 @@ public interface AbstractDepartmentManagementService<D extends Department> exten
     @Description(name = "新建部门", description = "LOGGING: new 新建的部门实体信息")
     StrID<D> save(
             @Parameter("department") D department,
-            @Parameter("higherLevel") @Body String higherLevel);
+            @Parameter("higherLevel") String higherLevel);
 
 
     @Description(name = "修改部门信息",
             description = "LOGGING: old 变更前的部门实体；new 变更后的部门实体")
+    @MicroService("{id}")
     void update(
             @Parameter("id") String id,
             @Parameter("department") D department);
@@ -62,6 +62,7 @@ public interface AbstractDepartmentManagementService<D extends Department> exten
     @Description(name = "删除部门",
             description = "删除部门时，部门、下属部门应无人员，职位、下属部门均被删除。" +
                     "LOGGING: deleted 所有被删除的实体信息")
+    @MicroService("{id}")
     void delete(
             @Parameter("id") String id);
 }

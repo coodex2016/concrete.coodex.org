@@ -26,5 +26,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Body
+@Deprecated
 public @interface PostParam {
 }

@@ -20,7 +20,6 @@ import org.coodex.concrete.api.AccessAllow;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.api.Safely;
-import org.coodex.concrete.jaxrs.Body;
 import org.coodex.util.Parameter;
 
 /**
@@ -33,22 +32,22 @@ public interface TenantSelfManagementService extends ConcreteService {
     @MicroService("{tenantAccountName}/login")
     void login(
             @Parameter("tenantAccountName") String tenantAccountName,
-            @Parameter("password")@Body String password,
-            @Parameter("authCode")@Body String authCode);
+            @Parameter("password") String password,
+            @Parameter("authCode") String authCode);
 
     @AccessAllow
     @Safely
     @MicroService("mine/pwd")
     void updatePassword(
-            @Parameter("password")@Body String password,
-            @Parameter("authCode")@Body String authCode);
+            @Parameter("password") String password,
+            @Parameter("authCode") String authCode);
 
     @AccessAllow
     @MicroService("mine/totp")
     String authenticatorDesc(
-            @Parameter("authCode")@Body String authCode);
+            @Parameter("authCode") String authCode);
 
     @AccessAllow
     @MicroService("mine/auth")
-    void bindAuthKey(@Parameter("authCode")@Body String authCode);
+    void bindAuthKey(@Parameter("authCode") String authCode);
 }

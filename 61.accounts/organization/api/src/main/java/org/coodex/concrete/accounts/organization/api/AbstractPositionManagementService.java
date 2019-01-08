@@ -19,7 +19,6 @@ package org.coodex.concrete.accounts.organization.api;
 import org.coodex.concrete.accounts.organization.pojo.Position;
 import org.coodex.concrete.api.*;
 import org.coodex.concrete.api.pojo.StrID;
-import org.coodex.concrete.jaxrs.Body;
 import org.coodex.util.Parameter;
 
 import java.util.Set;
@@ -38,9 +37,10 @@ public interface AbstractPositionManagementService<P extends Position> extends C
     @Description(name = "新建职位")
     StrID<P> save(
             @Parameter("position") P position,
-            @Parameter("belong") @Body String belong);
+            @Parameter("belong") String belong);
 
     @Description(name = "修改职位信息")
+    @MicroService("{id}")
     void update(
             @Parameter("id") String id,
             @Parameter("position") P position);
@@ -58,6 +58,7 @@ public interface AbstractPositionManagementService<P extends Position> extends C
             @Parameter("order") Integer order);
 
     @Description(name = "删除职位")
+    @MicroService("{id}")
     void delete(@Parameter("id") String id);
 
     @MicroService("{id}/roles")

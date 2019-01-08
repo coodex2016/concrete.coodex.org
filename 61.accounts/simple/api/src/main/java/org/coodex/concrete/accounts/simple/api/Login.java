@@ -20,7 +20,6 @@ import org.coodex.concrete.api.AccessAllow;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.MicroService;
-import org.coodex.concrete.jaxrs.Body;
 import org.coodex.util.Parameter;
 
 /**
@@ -32,14 +31,11 @@ public interface Login extends ConcreteService {
     @Description(name = "帐号登录")
     String login(
             @Parameter("account")
-            @Body
                     String account,
             @Parameter("password")
             @Description(name = "密码")
-            @Body
                     String password,
             @Parameter("authCode")
-            @Body
                     String authCode);
 
 

@@ -57,6 +57,7 @@ public interface AbstractPersonManagementService<P extends Person> extends Concr
             @Parameter("order") Integer order);
 
     @Description(name = "删除人员")
+    @MicroService("{id}")
     void delete(
             @Parameter("id") String id);
 

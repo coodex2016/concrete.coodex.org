@@ -44,12 +44,12 @@ public interface AbstractInformationService<
     @Description(name = "全部组织结构信息")
     List<InstitutionFull<I, D, J, P>> get();
 
-    @MicroService("all/institutions")
+    @MicroService("all/institutions/{id}")
     @Description(name = "某一个单位下的全部组织结构信息，含指定单位")
     InstitutionFull<I, D, J, P> getOneInstitutionFull(
             @Parameter("id") String id);
 
-    @MicroService("all/departments")
+    @MicroService("all/departments/{id}")
     @Description(name = "某一个部门下的全部组织结构信息，含指定部门")
     DepartmentFull<D, J, P> getOneDepartmentFull(
             @Parameter("id") String id);
@@ -62,7 +62,7 @@ public interface AbstractInformationService<
     List<StrID<Organization>> getHigherLevelOrganizations(
             @Parameter("id") String id);
 
-    @MicroService("institutions")
+    @MicroService("institutions/{id}")
     @Description(name = "获取一个单位信息")
     StrID<I> getInstitution(
             @Parameter("id") String id);

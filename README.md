@@ -41,6 +41,8 @@ public interface SomeService extends ConcreteService{
         - ext={'rxjsVersion':6}
 - 修复基于Profile的Configuration命名空间为空时获取不到数据的问题
 
+- 二更，快照版起默认使用新风格
+
 ## 2019-01-03
 - 修复JaxrsSubjoin可能出现content-type重复的问题
 - 定义Configuration接口，用于获取系统的配置；提供默认的基于Profile的Configuration实现；提供Config门面简化获取配置方式

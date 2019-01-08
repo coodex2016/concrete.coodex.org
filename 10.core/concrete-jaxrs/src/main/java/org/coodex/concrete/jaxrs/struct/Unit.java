@@ -236,7 +236,6 @@ public class Unit extends AbstractUnit<Param, Module> {
     }
 
     private boolean isBodyPrimitive(Param param) {
-
         if (used024Behavior()) {
             return param.getDeclaredAnnotation(Body.class) != null;
         } else {
