@@ -42,7 +42,7 @@ export abstract class AbstractConcreteService {
         const headers = new Headers({
             'content-type': 'application/json',
             // 自行添加
-            'X-CLIENT-PROVIDER': 'CONCRETE-ANGULAR',
+            'X-CLIENT-PROVIDER': 'CONCRETE-ANGULAR-V1-${version}',
             'Cache-Control': 'no-cache, no-store'
         });
         if (tokenId) {
@@ -112,7 +112,7 @@ export class Broadcast extends AbstractConcreteService {
     }
 
     private polling(timeOut: number): Observable<any> {
-        return this.http.request(this.$$getServiceRoot() + `/Concrete/polling/${timeOut}`, this.defaultRequestOptions('GET'))
+        return this.http.request(<#if style>this.$$getServiceRoot() + `/Concrete/polling/${timeOut}`, this.defaultRequestOptions('GET')<#else>this.$$getServiceRoot() + `/Concrete/polling`, this.defaultRequestOptions('POST').merge(new RequestOptions({ body: timeOut }))</#if>)
             .map(this.extractData)
             .catch(this.handleError);
     }

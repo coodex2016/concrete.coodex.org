@@ -21,6 +21,7 @@ import org.coodex.concrete.apitools.jaxrs.JaxrsRenderHelper;
 import org.coodex.concrete.apitools.jaxrs.angular.meta.TSClass;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.struct.AbstractModule;
+import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Unit;
@@ -56,9 +57,17 @@ public class AngularCodeRender extends AbstractAngularRender<Unit> {
             }
 
             // AbstractConcreteService.ts
-            if (!exists(contextPath + "AbstractConcreteService.ts"))
-                copyTo("abstractConcreteService.ftl",
-                        contextPath + "AbstractConcreteService.ts");
+            if (!exists(contextPath + "AbstractConcreteService.ts")) {
+                Map<String, Object> versionAndStyle = new HashMap<String, Object>();
+                versionAndStyle.put("version", ConcreteHelper.VERSION);
+                versionAndStyle.put("style", JaxRSHelper.used024Behavior());
+
+                writeTo(contextPath + "AbstractConcreteService.ts",
+                        "abstractConcreteService.ftl",
+                        versionAndStyle);
+//                copyTo("abstractConcreteService.ftl",
+//                        contextPath + "AbstractConcreteService.ts");
+            }
 
             // packages
             packages(contextPath);

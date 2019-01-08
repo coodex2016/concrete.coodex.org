@@ -17,6 +17,7 @@
 package org.coodex.concrete.apitools;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by davidoff shen on 2016-11-30.
@@ -42,5 +43,7 @@ public interface ConcreteAPIRender {
 
 
     void setRoot(String rootPath);
+
+    void setExt(Map<String, Object> ext);
 
 }

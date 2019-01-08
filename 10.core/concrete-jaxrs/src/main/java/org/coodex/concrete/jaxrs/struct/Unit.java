@@ -20,18 +20,19 @@ import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.struct.AbstractUnit;
+import org.coodex.concrete.jaxrs.Body;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.Common;
 import org.coodex.util.TypeHelper;
 
 import javax.ws.rs.HttpMethod;
-import javax.ws.rs.PathParam;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.coodex.concrete.jaxrs.JaxRSHelper.slash;
+import static org.coodex.concrete.jaxrs.JaxRSHelper.used024Behavior;
 import static org.coodex.concrete.jaxrs.Predicates.getHttpMethod;
 import static org.coodex.concrete.jaxrs.Predicates.removePredicate;
 
@@ -45,6 +46,7 @@ public class Unit extends AbstractUnit<Param, Module> {
 
     private List<Param> pojo;
     private String name;
+    private String declaredName = null;
 
     public Unit(Method method, Module module) {
         super(method, module);
@@ -110,8 +112,69 @@ public class Unit extends AbstractUnit<Param, Module> {
 //    }
 
 
-    private String getNameOnInit() {
+    private String getDeclaredName() {
+        if (declaredName == null) {
+            synchronized (this) {
+                if (declaredName == null) {
+                    declaredName = getUnitDeclaredName();
+                }
+            }
+        }
+        return declaredName;
+    }
 
+    private String getNameOnInit() {
+        if (JaxRSHelper.used024Behavior()) {
+
+//            List<Class> inheritedChain = ConcreteHelper.inheritedChain(
+//                    getMethod().getDeclaringClass(), getDeclaringModule().getInterfaceClass());
+//            if (inheritedChain == null)
+//                inheritedChain = Arrays.asList();
+//
+//            StringBuffer buffer = new StringBuffer();
+//            for (Class c : inheritedChain) {
+//                String serviceName = ConcreteHelper.getServiceName(c);
+//                if (!Common.isBlank(serviceName))
+//                    buffer.append(slash(Common.camelCase(serviceName, true)));
+//            }
+//
+//            MicroService microService = getMethod().getAnnotation(MicroService.class);
+//            buffer.append(slash(microService == null ? removePredicate(getMethod().getName()) : microService.value()));
+//
+//            String toTest = slash(getDeclaringModule().getName())
+//                    + buffer.toString();
+//
+//            for (Param parameter : getParameters()) {
+//                String pathParamValue = getPathParam(parameter);
+//                if (pathParamValue != null) {
+//                    String restfulNode = "{" + pathParamValue + "}";
+//
+//                    if (toTest == null || toTest.indexOf(restfulNode) < 0) {
+//                        buffer.append(slash(restfulNode));
+//                    }
+//                }
+//            }
+//            return buffer.toString();
+            StringBuilder unitName = new StringBuilder(getDeclaredName());
+            String toTest = slash(getDeclaringModule().getName()) + getDeclaredName();
+
+            for (Param parameter : getParameters()) {
+                String pathParamValue = getPathParam(parameter);
+                if (pathParamValue != null) {
+                    String restfulNode = "{" + pathParamValue + "}";
+
+                    if (toTest == null || toTest.indexOf(restfulNode) < 0) {
+                        unitName.append(slash(restfulNode));
+                    }
+                }
+            }
+            return unitName.toString();
+        } else {
+            return getDeclaredName();
+        }
+    }
+
+    private String getUnitDeclaredName() {
         List<Class> inheritedChain = ConcreteHelper.inheritedChain(
                 getMethod().getDeclaringClass(), getDeclaringModule().getInterfaceClass());
         if (inheritedChain == null)
@@ -127,19 +190,6 @@ public class Unit extends AbstractUnit<Param, Module> {
         MicroService microService = getMethod().getAnnotation(MicroService.class);
         buffer.append(slash(microService == null ? removePredicate(getMethod().getName()) : microService.value()));
 
-        String toTest = slash(getDeclaringModule().getName())
-                + buffer.toString();
-
-        for (Param parameter : getParameters()) {
-            String pathParamValue = getPathParam(parameter);
-            if (pathParamValue != null) {
-                String restfulNode = "{" + pathParamValue + "}";
-
-                if (toTest == null || toTest.indexOf(restfulNode) < 0) {
-                    buffer.append(slash(restfulNode));
-                }
-            }
-        }
         return buffer.toString();
     }
 
@@ -147,16 +197,20 @@ public class Unit extends AbstractUnit<Param, Module> {
     protected String getPathParam(Param parameter) {
 //        PathParam pathParam = parameter.getDeclaredAnnotation(PathParam.class);
 //        if (pathParam != null) return pathParam.value();
-        PathParam pathParam1 = parameter.getDeclaredAnnotation(PathParam.class);
-        if (pathParam1 != null) return pathParam1.value();
-        if(JaxRSHelper.postPrimitive(parameter)) return null;
+//        PathParam pathParam1 = parameter.getDeclaredAnnotation(PathParam.class);
+//        if (pathParam1 != null) return pathParam1.value();
+        if (JaxRSHelper.postPrimitive(parameter)) return null;
 
         Class<?> clz = parameter.getType();
 //        boolean isBigString = parameter.getDeclaredAnnotation(BigString.class) != null;
 //        //大字符串
 //        if (clz == String.class && isBigString) return null;
 
-        return TypeHelper.isPrimitive(clz) ? parameter.getName() : null;
+        return TypeHelper.isPrimitive(clz) ?
+//                JaxRSHelper.used024Behavior() ?
+                parameter.getName() :
+//                        null :
+                null;
 //
 //        return pathParam1 == null ?
 //                (isPrimitive(parameter.getType())
@@ -166,15 +220,33 @@ public class Unit extends AbstractUnit<Param, Module> {
 //                pathParam1.value();
     }
 
+//    private String post024Style(Param param) {
+//
+//    }
+
 
     @Override
     public String getName() {
         return name;
     }
 
+    private void addToBody(Param param) {
+        param.setPathParam(false);
+        _getPojo().add(param);
+    }
+
+    private boolean isBodyPrimitive(Param param) {
+
+        if (used024Behavior()) {
+            return param.getDeclaredAnnotation(Body.class) != null;
+        } else {
+            return getDeclaredName().indexOf(String.format("{%s}", param.getName())) < 0;
+        }
+    }
+
     @Override
     protected Param buildParam(Method method, int index) {
-
+//        String toTest = getDeclaredName();
 //        int paramCount = method.getParameterTypes().length;
 //        parameters = new Param[paramCount];
 //        for (int i = 0; i < paramCount; i++) {
@@ -185,9 +257,10 @@ public class Unit extends AbstractUnit<Param, Module> {
         if (!TypeHelper.isPrimitive(param.getType()) ||
                 /*(param.getType() == String.class
                         && param.getDeclaredAnnotation(BigString.class) != null) */
-                JaxRSHelper.postPrimitive(param)) {
-            _getPojo().add(param);
-            param.setPathParam(false);
+                isBodyPrimitive(param)) {
+//            _getPojo().add(param);
+//            param.setPathParam(false);
+            addToBody(param);
         }
 //        }
         return param;

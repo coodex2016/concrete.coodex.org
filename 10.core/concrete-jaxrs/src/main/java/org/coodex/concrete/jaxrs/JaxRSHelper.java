@@ -25,6 +25,7 @@ import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.config.Config;
 import org.coodex.util.ClassNameFilter;
 import org.coodex.util.Common;
 import org.coodex.util.ReflectHelper;
@@ -46,7 +47,7 @@ public class JaxRSHelper {
 
 //    public static final String JAXRS_MODEL = "jaxrs_model";
 
-//    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
+    //    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
 //            String.class,
 //            Boolean.class,
 //            Character.class,
@@ -69,23 +70,36 @@ public class JaxRSHelper {
 //    };
     private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<Class<?>, Module>();
 
-    @Deprecated
-    public static boolean isPrimitive(Class c) {
-//        return Common.inArray(c, PRIMITIVE_CLASSES);
-        return TypeHelper.isPrimitive(c);
+    /**
+     * 0.2.4-SNAPSHOT及以前版本，基础类型参数默认使用path传递，0.2.4之后，默认使用body传递，除非明确定义了path变量
+     * @return 是否使用0.2.4-SNAPSHOT的默认传参行为
+     */
+    public static boolean used024Behavior() {
+        String style = System.getProperty("jaxrs.style.before.024");
+        if(style == null){
+            style = Config.get("jaxrs.style.before.024");
+        }
+        return Common.toBool(style, ConcreteHelper.VERSION.equals("0.2.4-SNAPSHOT"));
     }
 
-    public static boolean postPrimitive(Param param){
-        return param.getDeclaredAnnotation(Body.class) != null;
+//    @Deprecated
+//    public static boolean isPrimitive(Class c) {
+////        return Common.inArray(c, PRIMITIVE_CLASSES);
+//        return TypeHelper.isPrimitive(c);
+//    }
+
+    public static boolean postPrimitive(Param param) {
+//        return param.getDeclaredAnnotation(Body.class) != null;
+        return !param.isPathParam();
     }
 
 //    private static final int TO_LOWER = 'a' - 'A';
 
-    @Deprecated
-    public static boolean isBigString(Param param) {
-        return String.class.isAssignableFrom(param.getType())
-                && param.getDeclaredAnnotation(BigString.class) != null;
-    }
+//    @Deprecated
+//    public static boolean isBigString(Param param) {
+//        return String.class.isAssignableFrom(param.getType())
+//                && param.getDeclaredAnnotation(BigString.class) != null;
+//    }
 
     @Deprecated
     public static String lowerFirstChar(String string) {

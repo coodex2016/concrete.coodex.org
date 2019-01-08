@@ -36,6 +36,8 @@ public abstract class AbstractRender implements ConcreteAPIRender {
     private String rootToWrite;
     private String desc;
 
+    private Map<String, Object> ext = null;
+
     protected String getRenderDesc() {
         return desc;
     }
@@ -82,12 +84,25 @@ public abstract class AbstractRender implements ConcreteAPIRender {
         writeTo(filePath, templateName, map);
     }
 
+    protected Map<String, Object> merge(Map<String, Object> map) {
+        if (ext == null || ext.size() ==0) {
+            return map;
+        } else {
+            Map<String,Object> result = new HashMap<String, Object>();
+            if(map != null){
+                result.putAll(map);
+            }
+            result.putAll(ext);
+            return result;
+        }
+    }
+
     public void writeTo(String filePath, String templateName, Map<String, Object> map) throws IOException {
         Template template = getTemplate(templateName);
         File target = Common.getNewFile(rootToWrite + FS + filePath);
         OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(target), Charset.forName("UTF-8"));
         try {
-            template.process(map, outputStream);
+            template.process(merge(map), outputStream);
         } catch (TemplateException e) {
             throw new IOException(e.getLocalizedMessage(), e);
         } finally {
@@ -116,5 +131,10 @@ public abstract class AbstractRender implements ConcreteAPIRender {
         } finally {
             inputStream.close();
         }
+    }
+
+    @Override
+    public void setExt(Map<String, Object> ext) {
+        this.ext = ext;
     }
 }

@@ -35,7 +35,7 @@ public abstract class AbstractConfiguration implements Configuration {
         List<String> ns = toList(namespaces);
         return search(key,
                 ns == null || ns.size() == 0 ? null : ns,
-                ns == null || ns.size() == 0 ? -1 : ns.size());
+                ns == null ? -1 : ns.size());
     }
 
 
@@ -52,12 +52,16 @@ public abstract class AbstractConfiguration implements Configuration {
 
     private List<String> buildKeys(String key, List<String> namespaces, int deep) {
         List<String> keys = new ArrayList<String>();
-        for (int i = deep - 1; i < namespaces.size(); i++) {
-            String temp = "";
-            for (int j = i + 1; j < namespaces.size(); j++) {
-                temp += namespaces.get(deep - 1 + j - i ) + ".";
+        if(namespaces != null && namespaces.size() >= 0) {
+            for (int i = deep - 1; i < namespaces.size(); i++) {
+                String temp = "";
+                for (int j = i + 1; j < namespaces.size(); j++) {
+                    temp += namespaces.get(deep - 1 + j - i) + ".";
+                }
+                keys.add(temp + key);
             }
-            keys.add(temp + key);
+        } else {
+            keys.add(key);
         }
         return keys;
     }

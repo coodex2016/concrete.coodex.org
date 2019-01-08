@@ -16,11 +16,15 @@
 
 package org.coodex.concrete.apitools;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.util.ServiceLoader;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by davidoff shen on 2016-12-01.
@@ -32,6 +36,27 @@ public class API {
     private static final String TAG_API_GENERATOR = "api_gen";
 
     public static void generate(String desc, String path, String... packages) throws IOException {
+//        if (packages == null) {
+//            packages = ConcreteHelper.getApiPackages();
+//        }
+//        if (RENDERS.getAllInstances().size() == 0)
+//            throw new RuntimeException("NONE render found.");
+//        for (ConcreteAPIRender render : RENDERS.getAllInstances()) {
+//            synchronized (render) {
+//                if (render.isAccept(desc)) {
+//                    render.setRoot(path);
+//                    render.writeTo(packages);
+//                    return;
+//                }
+//            }
+//        }
+//
+//        throw new RuntimeException("NONE render for " + desc + " found.");
+        generate(null, desc, path, packages);
+    }
+
+
+    public static void generate(Map<String, Object> ext, String desc, String path, String... packages) throws IOException {
         if (packages == null) {
             packages = ConcreteHelper.getApiPackages();
         }
@@ -41,6 +66,7 @@ public class API {
             synchronized (render) {
                 if (render.isAccept(desc)) {
                     render.setRoot(path);
+                    render.setExt(ext);
                     render.writeTo(packages);
                     return;
                 }
@@ -58,7 +84,18 @@ public class API {
     public static void generateFor(String module, String... packages) throws IOException {
         String desc = ConcreteHelper.getString(TAG_API_GENERATOR, module, "desc");
         String path = ConcreteHelper.getString(TAG_API_GENERATOR, module, "path");
-        generate(desc, path, packages);
+
+        generate(toMap(ConcreteHelper.getString(TAG_API_GENERATOR, module, "ext")),
+                desc, path, packages);
+    }
+
+    private static Map<String, Object> toMap(String json) {
+        if (json == null)
+            return new HashMap<String, Object>();
+        else {
+            return JSON.parseObject(json, new TypeReference<Map<String, Object>>() {
+            });
+        }
     }
 
 

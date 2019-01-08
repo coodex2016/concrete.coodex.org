@@ -19,6 +19,7 @@ package org.coodex.concrete.apitools.jaxrs.axios;
 import org.coodex.concrete.apitools.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.JaxrsRenderHelper;
 import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Param;
@@ -52,7 +53,11 @@ public class AxiosCodeRender extends AbstractRender {
         String moduleName = getRenderDesc().substring(RENDER_NAME.length());
         moduleName = Common.isBlank(moduleName) ? "concrete" : moduleName.substring(1);
         List<Module> moduleList = ConcreteHelper.loadModules(RENDER_NAME, packages);
-        writeTo("jaxrs/concrete.js", "concrete.ftl", "version", (Object) ConcreteHelper.VERSION);
+        Map<String, Object> versionAndStyle = new HashMap<String, Object>();
+        versionAndStyle.put("version", ConcreteHelper.VERSION);
+        versionAndStyle.put("style", JaxRSHelper.used024Behavior());
+
+        writeTo("jaxrs/concrete.js", "concrete.ftl", versionAndStyle);
         for (Module module : moduleList) {
             Map<String, Object> param = new HashMap<String, Object>();
             param.put("moduleName", moduleName);

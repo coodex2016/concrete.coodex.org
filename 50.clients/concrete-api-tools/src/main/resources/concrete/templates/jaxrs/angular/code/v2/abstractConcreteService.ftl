@@ -1,7 +1,7 @@
 import {HttpClient, HttpResponse, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
-import 'rxjs/add/observable/throw';
+<#if rxjsVersion lt 6>import 'rxjs/add/observable/throw';<#else >import {throwError} from 'rxjs';</#if>
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 
@@ -76,7 +76,7 @@ export abstract class AbstractConcreteService {
 
     protected handleError(res: Response | any) {
         const errorInfo = typeof res.error === 'object' ? res.error : (JSON.parse(res.error) || {});
-        return Observable.throw(AbstractConcreteService.onError(
+        return <#if rxjsVersion lt 6>Observable.throw<#else>throwError</#if>(AbstractConcreteService.onError(
             errorInfo.code || res.status,
             errorInfo.msg || res.statusText));
     }
@@ -87,7 +87,7 @@ export class ConcreteHeadersInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         let concreteHeaders = req.headers.set('content-type', 'application/json')
             .set('Cache-Control','no-cache, no-store')
-            .set('X-CLIENT-PROVIDER', 'CONCRETE-ANGULAR');
+            .set('X-CLIENT-PROVIDER', 'CONCRETE-ANGULAR-V2-${version}');
         const tokenId = runtimeContext.getTokenId();
         if (tokenId) {
             concreteHeaders = concreteHeaders.set('CONCRETE-TOKEN-ID', tokenId);
@@ -121,7 +121,7 @@ export class Broadcast extends AbstractConcreteService {
     }
 
     private polling(timeOut: number): Observable<any> {
-        return this.http.request('GET', this.$$getServiceRoot() + `/Concrete/polling/${timeOut}`, this.defaultRequestOptions())
+        return this.http.request(<#if style>'GET', this.$$getServiceRoot() + `/Concrete/polling/${timeOut}`, this.defaultRequestOptions()<#else>'POST', this.$$getServiceRoot() + `/Concrete/polling`, this.defaultRequestOptions(timeOut)</#if>)
             .map(this.extractData)
             .catch(this.handleError);
     }

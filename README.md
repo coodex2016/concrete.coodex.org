@@ -26,6 +26,21 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-01-08
+
+- jaxrs部分，原简单类型默认作为path参数传递，修改为：0.2.4-SNAPSHOT默认行为依然如此，0.2.4发布后默认行为更新为默认使用body传递，
+除非明确定义了在path中传递
+    - jaxrs.style.before.024
+        - true/false
+        - System.property 高于 Config.get
+        - 0.2.4-SNAPSHOT默认为true，0.2.4发布后默认为false
+        - 之后更新不一定保留此参数
+    - 更新axios/angular的代码生成器
+- 扩展生成API接口，支持扩展属性
+    - 生成JaxRS.code.angular.ts.v2时，需要指定rxjs的版本
+        - ext={'rxjsVersion':6}
+- 修复基于Profile的Configuration命名空间为空时获取不到数据的问题
+
 ## 2019-01-03
 - 修复JaxrsSubjoin可能出现content-type重复的问题
 - 定义Configuration接口，用于获取系统的配置；提供默认的基于Profile的Configuration实现；提供Config门面简化获取配置方式
