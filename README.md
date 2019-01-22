@@ -26,6 +26,11 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## progressing
+
+- SharedCacheToken增加防反跳，降低io
+- TODO: profile支持yml
+
 ## 2019-01-08
 
 - jaxrs部分，原简单类型默认作为path参数传递，修改为：0.2.4-SNAPSHOT默认行为依然如此，0.2.4发布后默认行为更新为默认使用body传递，
@@ -182,6 +187,7 @@ configuration:
   - localTokenManager
   - fsm.lock.release
   - websocket.retry
+  - sct.debouncer
 
 - profile
 

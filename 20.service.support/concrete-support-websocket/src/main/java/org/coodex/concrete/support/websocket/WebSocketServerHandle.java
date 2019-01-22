@@ -22,6 +22,7 @@ import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.struct.AbstractParam;
 import org.coodex.concrete.message.ServerSideMessage;
+import org.coodex.concrete.message.TBMContainer;
 import org.coodex.concrete.websocket.ConcreteWebSocketEndPoint;
 import org.coodex.concrete.websocket.*;
 import org.coodex.concurrent.components.PriorityRunnable;
@@ -342,14 +343,29 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
                             });
 
                     ResponsePackage responsePackage = new ResponsePackage();
-                    String tokenIdAfterInvoke = context.getTokenId();
+                    final String tokenIdAfterInvoke = context.getTokenId();
                     if (!Common.isSameStr(tokenId, tokenIdAfterInvoke)
                             && !Common.isBlank(tokenIdAfterInvoke)) {
+
                         responsePackage.setConcreteTokenId(tokenIdAfterInvoke);
+                        // 订阅消息推送
+                        if (!Common.isBlank(tokenId)) {
+                            peers.put(session, tokenIdAfterInvoke);
+                            TBMContainer.getInstance().clear(tokenId);
+                        }
+                        TBMContainer.getInstance().listen(tokenIdAfterInvoke, new TBMContainer.TBMListener() {
+                            @Override
+                            public String getTokenId() {
+                                return tokenIdAfterInvoke;
+                            }
+
+                            @Override
+                            public void onMessage(ServerSideMessage serverSideMessage) {
+                                sendMessage(serverSideMessage, tokenIdAfterInvoke);
+                            }
+                        });
+
                     }
-                    /////  TODO 在哪切入消息推送？
-//                    if (isNew)
-//                        responsePackage.setConcreteTokenId(token.getTokenId());
                     responsePackage.setSubjoin(updatedMap(context.getSubjoin()));
                     responsePackage.setMsgId(requestPackage.getMsgId());
                     responsePackage.setOk(true);
@@ -435,7 +451,7 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
 
     String getHostId() {
         // TODO
-        return Config.getValue("websocket.hostId", Common.getUUIDStr(),getAppSet());
+        return Config.getValue("websocket.hostId", Common.getUUIDStr(), getAppSet());
     }
 
 

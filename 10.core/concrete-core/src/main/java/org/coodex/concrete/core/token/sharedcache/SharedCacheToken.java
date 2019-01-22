@@ -16,17 +16,17 @@
 
 package org.coodex.concrete.core.token.sharedcache;
 
-import org.coodex.concrete.common.Account;
-import org.coodex.concrete.common.AccountFactory;
-import org.coodex.concrete.common.AccountID;
-import org.coodex.concrete.common.BeanProviderFacade;
+import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.AbstractToken;
+import org.coodex.concurrent.Coalition;
+import org.coodex.concurrent.Debouncer;
 import org.coodex.sharedcache.SharedCacheClient;
 
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Created by davidoff shen on 2016-11-23.
@@ -40,6 +40,13 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
     private long maxIdleTime;
     private String cacheKey;
 
+    private Debouncer<Runnable> debouncer = new Debouncer<Runnable>(new Coalition.Callback<Runnable>() {
+        @Override
+        public void call(Runnable runnable) {
+            runnable.run();
+        }
+    },10, ConcreteHelper.getScheduler("sct.debouncer"));
+
     SharedCacheToken(SharedCacheClient client, String tokenId, long maxIdleTime) {
         this.client = client;
         this.tokenId = tokenId;
@@ -50,7 +57,12 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
     }
 
     private void write() {
-        client.put(cacheKey, tokenData, maxIdleTime);
+        debouncer.call(new Runnable() {
+            @Override
+            public void run() {
+                client.put(cacheKey, tokenData, maxIdleTime);
+            }
+        });
     }
 
     private synchronized void init() {

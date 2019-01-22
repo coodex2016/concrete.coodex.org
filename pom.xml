@@ -174,10 +174,6 @@
 
         <profile>
             <id>oss.distribution</id>
-            <properties>
-                <gpg.executable>gpg2</gpg.executable>
-                <gpg.useagent>true</gpg.useagent>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
