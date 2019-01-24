@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 class TBTSManager {
-    private final static Logger log = LoggerFactory.getLogger(TokenBaseTopicTokenEventListener.class);
+    private final static Logger log = LoggerFactory.getLogger(TBTSManager.class);
 
 //    private static Map<String, Set<Subscription>> subscriptionsMap = new HashMap<String, Set<Subscription>>();
 
