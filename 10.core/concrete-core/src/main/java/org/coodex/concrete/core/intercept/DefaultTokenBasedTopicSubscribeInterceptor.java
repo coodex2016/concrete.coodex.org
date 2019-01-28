@@ -18,14 +18,13 @@ package org.coodex.concrete.core.intercept;
 
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.message.MessageFilter;
-import org.coodex.util.Common;
 
 import javax.inject.Inject;
 import java.io.Serializable;
 
 public abstract class DefaultTokenBasedTopicSubscribeInterceptor<M extends Serializable> extends AbstractTokenBasedTopicSubscribeInterceptor<M> {
 
-    private String key = String.format("tbm_%s", Common.getUUIDStr());
+    private String key = String.format("tbm_%s", getClass().getName());
     @Inject
     private Token token;
 

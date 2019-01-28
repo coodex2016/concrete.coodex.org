@@ -20,6 +20,7 @@ import javassist.*;
 import javassist.bytecode.SignatureAttribute;
 import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.count.*;
+import org.coodex.util.Clock;
 import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +79,7 @@ public class CountFacadeProvider implements CountFacade {
         final Segmentation segmentation = counter.getSegmentation();
         if (segmentation != null) {
             long next = segmentation.next();
-            if (next > System.currentTimeMillis()) {
+            if (next > Clock.currentTimeMillis()) {
                 getScheduler("count").schedule(new Runnable() {
                     @Override
                     public void run() {
@@ -90,7 +91,7 @@ public class CountFacadeProvider implements CountFacade {
                             schedule(counter);
                         }
                     }
-                }, next - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                }, next - Clock.currentTimeMillis(), TimeUnit.MILLISECONDS);
             }
         }
     }

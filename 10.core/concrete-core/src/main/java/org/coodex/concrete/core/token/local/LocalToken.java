@@ -21,6 +21,7 @@ import org.coodex.concrete.common.AccountFactory;
 import org.coodex.concrete.common.AccountID;
 import org.coodex.concrete.common.BeanProviderFacade;
 import org.coodex.concrete.core.token.AbstractToken;
+import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ class LocalToken /*implements Token*/ extends AbstractToken {
     private boolean valid = true;
     private long lastActive;
     private String sessionId = Common.getUUIDStr();
-    private long created = System.currentTimeMillis();
+    private long created = Clock.currentTimeMillis();
 
     public LocalToken(String sessionId) {
         if (sessionId != null)
@@ -57,7 +58,7 @@ class LocalToken /*implements Token*/ extends AbstractToken {
     }
 
     void active() {
-        lastActive = System.currentTimeMillis();
+        lastActive = Clock.currentTimeMillis();
     }
 
     public long getLastActive() {

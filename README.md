@@ -28,8 +28,60 @@ public interface SomeService extends ConcreteService{
 
 ## progressing
 
-- SharedCacheToken增加防反跳，降低io
 - TODO: profile支持yml
+
+## 2019-01-28
+
+- SharedCacheToken增加防反跳，降低io
+- 增加时光机，手动滑稽
+    - 当前版本可以设置时刻起点（默认为当前虚拟机启动时间），可以设置时间流逝倍率（默认1倍），可扩展基于中心时光机的实现
+        - 假设设置为时间流逝倍率为300倍，则，机器时间上每1秒钟等于时光机中的300秒
+    - `org.coodex.util.Clock` 提供获取“当前”时刻的两个接口
+        - `currentTimeMillis()` 用来替代 `System.currentTimeMillis()`
+        - `getCalendar()` 用来替换 `Calendar.getInstance()`
+    - `org.coodex.util.Clock` 提供两个接口来替代常用的线程休眠接口
+        - `sleep(long)` 用来替代 `Thread.sleep(long)`
+        - `objWait(Object,long)` 用来替代 `Object.wait(long)`
+    - `org.coodex.concurrent.ExecutorHelper` 对`ScheduledExecutorService`做了包装，日程类方法支持时光机，如上例，计划300秒后执行，实际上会在1秒后执行
+
+```java
+package org.coodex.util;
+
+
+import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.util.clock.DefaultClockAgent;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class ClockTest {
+
+    private static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newScheduledThreadPool(5);
+
+    private static AtomicInteger atomicInteger = new AtomicInteger(0);
+
+    private static void poll(final CountDownLatch countDownLatch) {
+        scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(Common.now("yyyy-MM-dd HH:mm:ss.SSS"));
+                countDownLatch.countDown();
+            }
+        }, 0,1, TimeUnit.MINUTES);
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        System.setProperty(Clock.KEY_MAGNIFICATION, Float.toString(300f));
+        System.setProperty(DefaultClockAgent.KEY_BASELINE, "2019-01-28 12:00:00");
+        CountDownLatch countDownLatch = new CountDownLatch(20);
+        poll(countDownLatch);
+        countDownLatch.await();
+        ExecutorsHelper.shutdownAll();
+    }
+}
+```
 
 ## 2019-01-08
 

@@ -18,6 +18,7 @@ package org.coodex.concrete.accounts;
 
 import org.apache.commons.codec.binary.Base32;
 import org.coodex.config.Config;
+import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.coodex.util.DigestHelper;
 
@@ -61,7 +62,7 @@ public class TOTPAuthenticator {
             if (authCode == null || authKey == null) return false;
 
             return check_code(authKey, Long.valueOf(authCode),
-                    Calendar.getInstance().getTimeInMillis()
+                    Clock.currentTimeMillis()
                             / TimeUnit.SECONDS.toMillis(30));
         } catch (RuntimeException e) {
             throw e;

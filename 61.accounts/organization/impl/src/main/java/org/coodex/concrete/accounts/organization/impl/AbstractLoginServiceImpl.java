@@ -31,6 +31,7 @@ import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.util.Clock;
 import org.coodex.util.Common;
 
 import javax.inject.Inject;
@@ -96,7 +97,7 @@ public abstract class AbstractLoginServiceImpl
                 loginCacheEntryEntity.setCredential(newCredential());
                 loginCacheEntryEntity.setValidation(getValidationFromNow());
             }
-            loginCacheEntryEntity.setLastLogin(Calendar.getInstance());
+            loginCacheEntryEntity.setLastLogin(Clock.getCalendar());
             setValidation(loginCacheEntryEntity);
             return loginCacheEntryRepo.save(loginCacheEntryEntity).getCredential();
         } catch (RuntimeException e) { // rollback
@@ -133,7 +134,7 @@ public abstract class AbstractLoginServiceImpl
      * @return
      */
     protected Calendar getValidationFromNow() {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Clock.getCalendar();
         calendar.add(Calendar.DATE, AccountsCommon.getInt("validation.days", 7));
         return calendar;
     }

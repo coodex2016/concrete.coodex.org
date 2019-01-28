@@ -16,6 +16,7 @@
 
 package org.coodex.concurrent;
 
+import org.coodex.util.Clock;
 import org.coodex.util.Common;
 
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class Parallel {
     public Batch run(Runnable... runnables) {
 
         Batch batch = new Batch();
-        batch.start = Calendar.getInstance();
+        batch.start = Clock.getCalendar();
 
         if (runnables != null && runnables.length > 0) {
             CountDownLatch latch = new CountDownLatch(runnables.length);
@@ -79,7 +80,7 @@ public class Parallel {
 //                }
 //            }
         }
-        batch.end = Calendar.getInstance();
+        batch.end = Clock.getCalendar();
         return batch;
     }
 
@@ -89,13 +90,13 @@ public class Parallel {
         Runnable run = new Runnable() {
             @Override
             public void run() {
-                task.start = Calendar.getInstance();
+                task.start = Clock.getCalendar();
                 try {
                     runnable.run();
                 } catch (Throwable th) {
                     task.throwable = th;
                 } finally {
-                    task.end = Calendar.getInstance();
+                    task.end = Clock.getCalendar();
                     task.finished = true;
                     latch.countDown();
 //                    synchronized (lock) {

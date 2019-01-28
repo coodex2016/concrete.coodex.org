@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.test;
 
+import org.coodex.util.Clock;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 
@@ -28,7 +29,7 @@ public abstract class ConcreteTestCase {
 
     protected void sleep(long millis) {
         try {
-            Thread.sleep(millis);
+            Clock.sleep(millis);
         } catch (InterruptedException e) {
 
         }

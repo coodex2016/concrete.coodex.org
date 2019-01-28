@@ -24,6 +24,7 @@ import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.websocket.RequestPackage;
 import org.coodex.concrete.websocket.ResponsePackage;
 import org.coodex.concurrent.TimeLimitedMap;
+import org.coodex.util.Clock;
 import org.coodex.util.GenericType;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
@@ -75,7 +76,7 @@ public class WSClientHandle {
 
                     int maxRetryTimes = 10, retried = 0;
                     while (!session.isOpen() && retried++ < maxRetryTimes) {
-                        Thread.sleep(100);
+                        Clock.sleep(100);
                     }
                     if (!session.isOpen()) {
                         sessionMap.remove(destination);

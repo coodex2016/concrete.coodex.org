@@ -22,6 +22,7 @@ import org.coodex.concrete.attachments.Repository;
 import org.coodex.config.Config;
 import org.coodex.io.SpeedLimitedOutputStream;
 import org.coodex.util.Base58;
+import org.coodex.util.Clock;
 import org.csource.fastdfs.TrackerGroup;
 
 import java.io.InputStream;
@@ -120,7 +121,7 @@ public class FastDFSRepository implements Repository {
 
     @Override
     public AttachmentEntityInfo put(InputStream content, AttachmentInfo metaInfo) {
-        metaInfo.setCreated(System.currentTimeMillis());
+        metaInfo.setCreated(Clock.currentTimeMillis());
         FastFDSClient client = getClient();
         try {
             FileLocation location = client.uploadFile(content, metaInfo.getName(), metaInfo.getSize(), toMap(metaInfo));
@@ -134,7 +135,7 @@ public class FastDFSRepository implements Repository {
     }
 
     protected void update(AttachmentEntityInfo entityInfo) {
-        entityInfo.setLastUsed(System.currentTimeMillis());
+        entityInfo.setLastUsed(Clock.currentTimeMillis());
         updateInfo(entityInfo.getId(), entityInfo);
     }
 
@@ -190,7 +191,7 @@ public class FastDFSRepository implements Repository {
                     idToFileLocation(attachmentId),
                     new SpeedLimitedOutputStream(outputStream, speedLimit));
             AttachmentEntityInfo entityInfo = get(attachmentId);
-            entityInfo.setLastUsed(System.currentTimeMillis());
+            entityInfo.setLastUsed(Clock.currentTimeMillis());
             update(entityInfo);
         } catch (Throwable th) {
             throw new RuntimeException(th);

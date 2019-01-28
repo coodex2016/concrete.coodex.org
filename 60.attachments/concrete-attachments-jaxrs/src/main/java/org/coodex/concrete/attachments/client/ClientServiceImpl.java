@@ -21,6 +21,7 @@ import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.config.Config;
+import org.coodex.util.Clock;
 import org.coodex.util.Common;
 
 import java.util.HashMap;
@@ -65,7 +66,7 @@ public class ClientServiceImpl implements ClientService {
             }
         }
 
-        long validity = System.currentTimeMillis() +
+        long validity = Clock.currentTimeMillis() +
                 Config.getValue("attachment.validity", 10, TAG_ATTACHMENT_SERVICE, getAppSet()) * 1000 * 60;
         for (String attachmentId : attachmentIds) {
             if (attachmentId != null) {
@@ -93,7 +94,7 @@ public class ClientServiceImpl implements ClientService {
         HashMap<String, Long> authorizations =
                 token.getAttribute(ATTACHMENT_AUTHORIZATION_KEY, HashMap.class);
         Long validity = authorizations.get(attachmentId);
-        if (validity == null || validity.longValue() < System.currentTimeMillis()) {
+        if (validity == null || validity.longValue() < Clock.currentTimeMillis()) {
             authorizations.remove(attachmentId);
             token.flush();
             return false;

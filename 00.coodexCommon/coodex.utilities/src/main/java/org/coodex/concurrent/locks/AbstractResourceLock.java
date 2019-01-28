@@ -16,6 +16,8 @@
 
 package org.coodex.concurrent.locks;
 
+import org.coodex.util.Clock;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -27,7 +29,7 @@ public abstract class AbstractResourceLock implements ResourceLock {
 
     private final ResourceId resourceId;
     private ReentrantLock lock = new ReentrantLock();
-    private long lastActive = System.currentTimeMillis();
+    private long lastActive = Clock.currentTimeMillis();
 
     public AbstractResourceLock(ResourceId resourceId) {
         this.resourceId = resourceId;
@@ -65,7 +67,7 @@ public abstract class AbstractResourceLock implements ResourceLock {
     protected abstract boolean tryAlloc(long time);
 
     public AbstractResourceLock active() {
-        lastActive = System.currentTimeMillis();
+        lastActive = Clock.currentTimeMillis();
         return this;
     }
 
@@ -93,7 +95,7 @@ public abstract class AbstractResourceLock implements ResourceLock {
 
 
     public boolean isDeath() {
-        return lastActive + RESOURCE_CACHE_MAX_LIFE < System.currentTimeMillis();
+        return lastActive + RESOURCE_CACHE_MAX_LIFE < Clock.currentTimeMillis();
     }
 
     @Override
@@ -141,13 +143,13 @@ public abstract class AbstractResourceLock implements ResourceLock {
     @Override
     public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
         active();
-        long deathLine = System.currentTimeMillis() + toMillis(time, unit);
+        long deathLine = Clock.currentTimeMillis() + toMillis(time, unit);
         boolean locked = lock.tryLock(time, unit);
         if (locked) {
             if (!allocated()) {
                 synchronized (this) {
                     if (!allocated()) {
-                        if (tryAlloc(deathLine - System.currentTimeMillis())) {
+                        if (tryAlloc(deathLine - Clock.currentTimeMillis())) {
                             return true;
                         } else {
                             lock.unlock();

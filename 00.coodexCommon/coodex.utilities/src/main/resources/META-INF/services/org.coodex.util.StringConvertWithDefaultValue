@@ -17,3 +17,4 @@
 org.coodex.util.Common$StringToBoolean
 org.coodex.util.Common$StringToInt
 org.coodex.util.Common$StringToLong
+org.coodex.util.Common$StringToFloat

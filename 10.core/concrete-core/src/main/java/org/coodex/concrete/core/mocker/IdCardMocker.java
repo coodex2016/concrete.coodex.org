@@ -18,6 +18,7 @@ package org.coodex.concrete.core.mocker;
 
 import org.coodex.concrete.api.mockers.IdCard;
 import org.coodex.pojomocker.AbstractMocker;
+import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +84,7 @@ public class IdCardMocker extends AbstractMocker<IdCard> {
     private String birthDay(IdCard mock) {
         int minAge = mock == null ? 5 : Math.max(5, mock.minAge());
         int maxAge = mock == null ? 90 : Math.max(minAge + 10, Math.min(90, mock.maxAge()));
-        int thisYear = Calendar.getInstance().get(Calendar.YEAR);
+        int thisYear = Clock.getCalendar().get(Calendar.YEAR);
         int year = Common.random(thisYear - maxAge, thisYear - minAge);
         int month = Common.random(1, 12);
         return String.format("%d%02d%02d", year, month, Common.random(1, days(year, month)));

@@ -17,6 +17,7 @@
 package org.coodex.concrete.accounts.tenant.entities;
 
 import org.coodex.concrete.accounts.CanLoginEntity;
+import org.coodex.util.Clock;
 import org.coodex.util.Common;
 
 import javax.persistence.*;
@@ -46,7 +47,7 @@ public class AbstractTenantEntity implements Serializable, CanLoginEntity {
     private long surplus = 0;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Calendar created = Calendar.getInstance();
+    private Calendar created = Clock.getCalendar();
     // 密码散列值
     private String password;
     // 二步验证的key

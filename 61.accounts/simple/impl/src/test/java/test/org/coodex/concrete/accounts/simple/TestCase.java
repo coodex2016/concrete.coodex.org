@@ -20,6 +20,7 @@ import org.apache.commons.codec.binary.Base32;
 import org.coodex.concrete.accounts.TOTPAuthenticator;
 import org.coodex.concrete.accounts.simple.api.Login;
 import org.coodex.concrete.test.ConcreteTestCase;
+import org.coodex.util.Clock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -45,6 +46,6 @@ public class TestCase extends ConcreteTestCase {
         login.login("coodex", "p@55w0rd",
                 String.valueOf(
                         TOTPAuthenticator.buildCode(new Base32().decode("1234567890"),
-                                System.currentTimeMillis() / TimeUnit.SECONDS.toMillis(30))));
+                                Clock.currentTimeMillis() / TimeUnit.SECONDS.toMillis(30))));
     }
 }

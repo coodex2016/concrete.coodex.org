@@ -17,6 +17,7 @@
 package org.coodex.concrete.core.intercept.timecheckers;
 
 import org.coodex.concrete.common.ServiceTimingChecker;
+import org.coodex.util.Clock;
 import org.coodex.util.Common;
 
 import java.util.Calendar;
@@ -94,7 +95,7 @@ public class ByWorkDay implements ServiceTimingChecker {
             }
         }
 
-        Calendar c = Calendar.getInstance();
+        Calendar c = Clock.getCalendar();
         return weekday[c.get(Calendar.DAY_OF_WEEK) - 1];
     }
 

@@ -20,6 +20,7 @@ import org.coodex.concrete.common.Token;
 import org.coodex.concrete.common.messages.Message;
 import org.coodex.concrete.core.messages.Courier;
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.util.Clock;
 import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,13 +70,13 @@ public class JaxRSCourier implements Courier {
         if (!queueMap.containsKey(tokenId)) {
             Queue<MessageWithArrived> queue = new LinkedBlockingQueue<MessageWithArrived>();
             queueMap.put(tokenId, queue);
-            clean(queue, System.currentTimeMillis() + MAX_LIFE);
+            clean(queue, Clock.currentTimeMillis() + MAX_LIFE);
         }
         return queueMap.get(tokenId);
     }
 
     private static void clean(final Queue<MessageWithArrived> queue, final long deathLine) {
-        long time = Math.max(deathLine - System.currentTimeMillis(), 1000);
+        long time = Math.max(deathLine - Clock.currentTimeMillis(), 1000);
         getScheduledExecutorService().schedule(new Runnable() {
             @Override
             public void run() {
@@ -85,7 +86,7 @@ public class JaxRSCourier implements Courier {
                         queue.remove();
                         head = queue.peek();
                     }
-                    clean(queue, head == null ? (System.currentTimeMillis() + MAX_LIFE) : head.arrived);
+                    clean(queue, head == null ? (Clock.currentTimeMillis() + MAX_LIFE) : head.arrived);
                     queue.notifyAll();
                 }
             }
@@ -126,7 +127,8 @@ public class JaxRSCourier implements Courier {
                 if (queue.isEmpty()) {
                     try {
                         if (timeOut >= 0)
-                            queue.wait(timeOut);
+//                            queue.wait(timeOut);
+                            Clock.objWait(queue, timeOut);
                     } catch (Throwable e) {
                         log.warn("{}", e.getLocalizedMessage(), e);
                     }
@@ -178,7 +180,7 @@ public class JaxRSCourier implements Courier {
 
     private class MessageWithArrived {
         private final Message message;
-        private final long arrived = System.currentTimeMillis();
+        private final long arrived = Clock.currentTimeMillis();
 
         public MessageWithArrived(Message message) {
             this.message = message;

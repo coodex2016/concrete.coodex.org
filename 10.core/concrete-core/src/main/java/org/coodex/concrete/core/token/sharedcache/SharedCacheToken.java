@@ -21,12 +21,12 @@ import org.coodex.concrete.core.token.AbstractToken;
 import org.coodex.concurrent.Coalition;
 import org.coodex.concurrent.Debouncer;
 import org.coodex.sharedcache.SharedCacheClient;
+import org.coodex.util.Clock;
 
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Vector;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Created by davidoff shen on 2016-11-23.
@@ -182,7 +182,7 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
     }
 
     static class Data implements Serializable {
-        long created = System.currentTimeMillis();
+        long created = Clock.currentTimeMillis();
         boolean valid = true;
         Serializable currentAccountId = null;
         boolean accountCredible = false;

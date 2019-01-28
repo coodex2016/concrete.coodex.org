@@ -18,6 +18,7 @@ package org.coodex.concrete.core.mocker;
 
 import org.coodex.concrete.api.mockers.DateTime;
 import org.coodex.pojomocker.AbstractMocker;
+import org.coodex.util.Clock;
 import org.coodex.util.Common;
 
 import java.text.DateFormat;
@@ -46,7 +47,7 @@ public class DateTimeMocker extends AbstractMocker<DateTime> {
             if (Date.class.equals(clazz)) {
                 return new Date(dateTime);
             } else if (Calendar.class.equals(clazz)) {
-                Calendar calendar = Calendar.getInstance();
+                Calendar calendar = Clock.getCalendar();
                 calendar.setTimeInMillis(dateTime);
                 return calendar;
             } else if (String.class.equals(clazz)) {

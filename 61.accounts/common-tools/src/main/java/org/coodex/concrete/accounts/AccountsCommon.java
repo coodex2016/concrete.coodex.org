@@ -20,6 +20,7 @@ import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.config.Config;
 import org.coodex.util.AcceptableServiceLoader;
+import org.coodex.util.Clock;
 import org.springframework.data.repository.CrudRepository;
 
 import java.text.DateFormat;
@@ -155,7 +156,7 @@ public class AccountsCommon {
         Token token = TokenWrapper.getInstance();
         token.setAttribute("accounts.temp.authKey." + entity.getId(), authKey);
         token.setAttribute("accounts.temp.authKey.validation." + entity.getId(),
-                Long.valueOf(System.currentTimeMillis() + 10 * 60 * 1000l));
+                Long.valueOf(Clock.currentTimeMillis() + 10 * 60 * 1000l));
         return TOTPAuthenticator.build(authKey, AccountsCommon.getApplicationName(), entity.getName());
     }
 
@@ -171,14 +172,14 @@ public class AccountsCommon {
         Token token = TokenWrapper.getInstance();
         Long validation = token.getAttribute("accounts.temp.authKey.validation." + entity.getId(),
                 Long.class);
-        IF.is(System.currentTimeMillis() > validation, AUTH_KEY_FAILURE);
+        IF.is(Clock.currentTimeMillis() > validation, AUTH_KEY_FAILURE);
         String authKey = token.getAttribute("accounts.temp.authKey." + entity.getId(),
                 String.class);
         token.removeAttribute("accounts.temp.authKey.validation." + entity.getId());
         token.removeAttribute("accounts.temp.authKey." + entity.getId());
         IF.not(TOTPAuthenticator.authenticate(authCode, authKey), AUTHORIZE_FAILED);
         entity.setAuthCodeKey(authKey);
-        entity.setAuthCodeKeyActiveTime(Calendar.getInstance());
+        entity.setAuthCodeKeyActiveTime(Clock.getCalendar());
 
         putLoggingData("bind", authKey);
 

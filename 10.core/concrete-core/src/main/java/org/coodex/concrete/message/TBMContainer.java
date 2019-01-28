@@ -19,6 +19,7 @@ package org.coodex.concrete.message;
 import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.config.Config;
+import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class TBMContainer {
     private final static Logger log = LoggerFactory.getLogger(TBMContainer.class);
 
 
-//    private static Singleton<ScheduledExecutorService> scheduledExecutor = new Singleton<ScheduledExecutorService>(
+    //    private static Singleton<ScheduledExecutorService> scheduledExecutor = new Singleton<ScheduledExecutorService>(
 //            new Singleton.Builder<ScheduledExecutorService>() {
 //                @Override
 //                public ScheduledExecutorService build() {
@@ -89,7 +90,8 @@ public class TBMContainer {
                 Object lock = new Object();
                 synchronized (lock) {
                     try {
-                        lock.wait(timeOut);
+//                        lock.wait(timeOut);
+                        Clock.objWait(lock, timeOut);
                     } catch (InterruptedException e) {
                         log.warn(e.getLocalizedMessage(), e);
                     }

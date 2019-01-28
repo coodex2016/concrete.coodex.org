@@ -17,6 +17,8 @@
 package org.coodex.concurrent;
 
 
+import org.coodex.util.Clock;
+
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +54,7 @@ public class Throttler<T> extends AbstractCoalition<T> {
     }
 
     private long getNextThrottle() {
-        long l = System.currentTimeMillis() - prevTime;
+        long l = Clock.currentTimeMillis() - prevTime;
         return l > interval ? 0 : l;
     }
 
@@ -67,7 +69,7 @@ public class Throttler<T> extends AbstractCoalition<T> {
                 @Override
                 public void run() {
                     synchronized (Throttler.this) {
-                        prevTime = System.currentTimeMillis();
+                        prevTime = Clock.currentTimeMillis();
                         prevFuture = null;
                         callback.call(key);
                     }

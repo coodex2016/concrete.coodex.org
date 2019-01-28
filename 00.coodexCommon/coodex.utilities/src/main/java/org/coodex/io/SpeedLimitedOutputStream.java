@@ -16,6 +16,8 @@
 
 package org.coodex.io;
 
+import org.coodex.util.Clock;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -34,7 +36,7 @@ public class SpeedLimitedOutputStream extends OutputStream {
     }
 
     private void startCount() {
-        lastCountTime = System.currentTimeMillis();
+        lastCountTime = Clock.currentTimeMillis();
         wroteBytesFromLastCountTime = 0;
     }
 
@@ -47,10 +49,10 @@ public class SpeedLimitedOutputStream extends OutputStream {
         wroteBytesFromLastCountTime += size;
 
         if (wroteBytesFromLastCountTime >= speedLimit) {
-            long toSleep = 1000l - (System.currentTimeMillis() - lastCountTime);
+            long toSleep = 1000l - (Clock.currentTimeMillis() - lastCountTime);
             if (toSleep > 0) {
                 try {
-                    Thread.sleep(toSleep);
+                    Clock.sleep(toSleep);
                 } catch (InterruptedException e) {
                 }
             }

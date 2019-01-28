@@ -17,6 +17,7 @@
 package org.coodex.util.locks;
 
 import org.coodex.concurrent.locks.*;
+import org.coodex.util.Clock;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class LockTest {
 
     public static long test(Thread... threads) throws InterruptedException {
         AbstractLockTestThread.reset();
-        long current = System.currentTimeMillis();
+        long current = Clock.currentTimeMillis();
 
         for (Thread thread : threads) {
             thread.start();
@@ -37,7 +38,7 @@ public class LockTest {
         for (Thread thread : threads) {
             thread.join();
         }
-        long used = System.currentTimeMillis() - current;
+        long used = Clock.currentTimeMillis() - current;
 
         System.out.println(String.format("%s: %,d; used: %d ms",
                 threads[0].getClass().getSimpleName(),

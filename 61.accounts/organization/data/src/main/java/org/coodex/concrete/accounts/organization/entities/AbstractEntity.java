@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.accounts.organization.entities;
 
+import org.coodex.util.Clock;
 import org.coodex.util.Common;
 
 import javax.persistence.*;
@@ -41,7 +42,7 @@ public abstract class AbstractEntity implements Serializable {
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Calendar created = Calendar.getInstance();
+    private Calendar created = Clock.getCalendar();
 
     public String getId() {
         return id;

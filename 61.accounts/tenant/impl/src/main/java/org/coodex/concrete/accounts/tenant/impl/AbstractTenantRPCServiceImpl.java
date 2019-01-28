@@ -22,6 +22,7 @@ import org.coodex.concrete.accounts.TenantRPCService;
 import org.coodex.concrete.accounts.tenant.entities.AbstractTenantEntity;
 import org.coodex.concrete.accounts.tenant.repositories.AbstractTenantRepo;
 import org.coodex.concrete.common.IF;
+import org.coodex.util.Clock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +56,7 @@ public abstract class AbstractTenantRPCServiceImpl<E extends AbstractTenantEntit
         Calendar calendar = tenantEntity.getValidation();
         IF.not(
                 tenantEntity.isUsing() && calendar != null &&
-                        calendar.getTimeInMillis() >= System.currentTimeMillis()
+                        calendar.getTimeInMillis() >= Clock.currentTimeMillis()
                 , TENANT_UNAVAILABLE);
     }
 

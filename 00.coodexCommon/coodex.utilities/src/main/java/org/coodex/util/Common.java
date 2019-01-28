@@ -221,22 +221,22 @@ public class Common {
                                   int blockSize, boolean flushPerBlock, int bps) throws IOException {
         byte[] buf = new byte[blockSize];
         int cached = -1;
-        long start = Calendar.getInstance().getTimeInMillis();
+        long start = Clock.currentTimeMillis();
         long wrote = 0;
         while ((cached = is.read(buf)) > 0) {
             // 自上次计时开始，已写入数据超出bps
             if (wrote >= bps) {
                 long n = wrote / bps;
                 wrote = wrote % bps;
-                long interval = Calendar.getInstance().getTimeInMillis() - start;
+                long interval = Clock.currentTimeMillis() - start;
                 try {
                     if (interval < 1000 * n)
-                        Thread.sleep(interval);
+                        Clock.sleep(interval);
                 } catch (InterruptedException e) {
                 }
             }
             // 重新开始计时
-            start = Calendar.getInstance().getTimeInMillis();
+            start = Clock.currentTimeMillis();
             os.write(buf, 0, cached);
             if (flushPerBlock) {
                 os.flush();
@@ -750,13 +750,13 @@ public class Common {
     }
 
     public static Calendar longToCalendar(long l) {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Clock.getCalendar();
         calendar.setTimeInMillis(l);
         return calendar;
     }
 
     public static Calendar dateToCalendar(Date date) {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Clock.getCalendar();
         calendar.setTime(date);
         return calendar;
     }
@@ -766,7 +766,7 @@ public class Common {
     }
 
     public static String now(String format) {
-        return dateToStr(new Date(), format);
+        return dateToStr(Clock.getCalendar().getTime(), format);
     }
 
     public static RuntimeException runtimeException(Throwable th) {
@@ -780,6 +780,22 @@ public class Common {
 //        }
 //    }
 
+    public static class StringToFloat implements StringConvertWithDefaultValue{
+
+        @Override
+        public Object convertTo(String str, Object defaultValue, Class<?> type) {
+            try {
+                return Float.parseFloat(str);
+            }catch (Throwable t){
+                return defaultValue;
+            }
+        }
+
+        @Override
+        public boolean accept(Class<?> param) {
+            return float.class.equals(param) || Float.class.equals(param);
+        }
+    }
 
     public static class StringToInt implements StringConvertWithDefaultValue {
 

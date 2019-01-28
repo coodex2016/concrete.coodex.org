@@ -17,6 +17,7 @@
 package org.coodex.count.segmentations;
 
 import org.coodex.count.Segmentation;
+import org.coodex.util.Clock;
 
 import java.util.Calendar;
 
@@ -26,8 +27,12 @@ import java.util.Calendar;
 public class Hourly implements Segmentation {
     @Override
     public long next() {
-        Calendar c = Calendar.getInstance();
+        Calendar c = Clock.getCalendar();
         c.add(Calendar.HOUR_OF_DAY, 1);
+        return clearCalendar(c);
+    }
+
+    static long clearCalendar(Calendar c) {
         c.set(Calendar.MINUTE, 0);
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);

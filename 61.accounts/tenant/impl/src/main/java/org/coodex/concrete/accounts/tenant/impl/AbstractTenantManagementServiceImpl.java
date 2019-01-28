@@ -28,6 +28,7 @@ import org.coodex.concrete.api.pojo.PageRequest;
 import org.coodex.concrete.api.pojo.PageResult;
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.concrete.common.*;
+import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -130,7 +131,7 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
         if (validation != null) {
             // TODO 配置化
             validation = getValidation(validation, 2, 3);// 两年
-            IF.is(System.currentTimeMillis() < validation.getTimeInMillis(), cannotDelete);
+            IF.is(Clock.currentTimeMillis() < validation.getTimeInMillis(), cannotDelete);
         }
 
         tenantRepo.delete(tenantEntity);
@@ -146,15 +147,15 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
         if (tenantEntity.isUsing()) {
             tenantEntity.setValidation(validation);
         } else {
-            tenantEntity.setSurplus(tenantEntity.getSurplus() + validation.getTimeInMillis() - System.currentTimeMillis());
+            tenantEntity.setSurplus(tenantEntity.getSurplus() + validation.getTimeInMillis() - Clock.currentTimeMillis());
         }
         putLoggingData("tenant", tenantRepo.save(tenantEntity));
     }
 
     protected Calendar getValidation(Calendar validation, int count, int unit) {
-        validation = validation == null ? Calendar.getInstance() : (Calendar) validation.clone();
-        Calendar result = Calendar.getInstance();
-        result.setTimeInMillis(Math.max(System.currentTimeMillis(), validation.getTimeInMillis()));
+        validation = validation == null ? Clock.getCalendar() : (Calendar) validation.clone();
+        Calendar result = Clock.getCalendar();
+        result.setTimeInMillis(Math.max(Clock.currentTimeMillis(), validation.getTimeInMillis()));
         switch (unit) {
             case 1:
                 result.add(Calendar.MONTH, count);
@@ -175,7 +176,7 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
     public void layUp(String tenant) {
         E tenantEntity = getTenantEntity(tenant);
         Calendar validation = tenantEntity.getValidation();
-        long now = System.currentTimeMillis();
+        long now = Clock.currentTimeMillis();
         IF.not(tenantEntity.isUsing() && validation != null &&
                         validation.getTimeInMillis() >= now,
                 AccountsErrorCodes.TENANT_UNAVAILABLE);
@@ -189,9 +190,9 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
     @Override
     public void desterilize(String tenant) {
         E tenantEntity = getTenantEntity(tenant);
-        long now = System.currentTimeMillis();
+        long now = Clock.currentTimeMillis();
         IF.is(tenantEntity.isUsing(), AccountsErrorCodes.TENANT_IN_USING);
-        Calendar validation = Calendar.getInstance();
+        Calendar validation = Clock.getCalendar();
         validation.setTimeInMillis(now + tenantEntity.getSurplus());
         tenantEntity.setSurplus(0l);
         tenantEntity.setValidation(validation);

@@ -17,8 +17,11 @@
 package org.coodex.count.segmentations;
 
 import org.coodex.count.Segmentation;
+import org.coodex.util.Clock;
 
 import java.util.Calendar;
+
+import static org.coodex.count.segmentations.Hourly.clearCalendar;
 
 /**
  * Created by davidoff shen on 2017-04-19.
@@ -27,12 +30,9 @@ public class Daily implements Segmentation {
 
     @Override
     public long next() {
-        Calendar c = Calendar.getInstance();
+        Calendar c = Clock.getCalendar();
         c.add(Calendar.DATE, 1);
         c.set(Calendar.HOUR, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-        return c.getTimeInMillis();
+        return clearCalendar(c);
     }
 }

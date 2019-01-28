@@ -17,6 +17,7 @@
 package org.coodex.concrete.spring;
 
 import org.coodex.count.Segmentation;
+import org.coodex.util.Clock;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 
 import java.util.Calendar;
@@ -35,7 +36,7 @@ public class SpecificMomentSegmentation implements Segmentation {
 
     @Override
     public long next() {
-        return cronSequenceGenerator.next(Calendar.getInstance().getTime()).getTime();
+        return cronSequenceGenerator.next(Clock.getCalendar().getTime()).getTime();
     }
 
 }

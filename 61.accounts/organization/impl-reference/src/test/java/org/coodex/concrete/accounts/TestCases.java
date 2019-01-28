@@ -29,6 +29,7 @@ import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.concrete.test.ConcreteTestCase;
 import org.coodex.config.Config;
 import org.coodex.pojomocker.MockerFacade;
+import org.coodex.util.Clock;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,7 +86,7 @@ public class TestCases extends ConcreteTestCase {
 
     protected String getAuthCode(String authKey) throws InvalidKeyException, NoSuchAlgorithmException {
         return String.format("%06d", TOTPAuthenticator.buildCode(
-                new Base32().decode(authKey), Calendar.getInstance().getTimeInMillis()
+                new Base32().decode(authKey), Clock.currentTimeMillis()
                         / TimeUnit.SECONDS.toMillis(30)));
     }
 
