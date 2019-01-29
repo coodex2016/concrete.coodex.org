@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -750,13 +751,13 @@ public class Common {
     }
 
     public static Calendar longToCalendar(long l) {
-        Calendar calendar = Clock.getCalendar();
+        Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(l);
         return calendar;
     }
 
     public static Calendar dateToCalendar(Date date) {
-        Calendar calendar = Clock.getCalendar();
+        Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return calendar;
     }
@@ -780,13 +781,13 @@ public class Common {
 //        }
 //    }
 
-    public static class StringToFloat implements StringConvertWithDefaultValue{
+    public static class StringToFloat implements StringConvertWithDefaultValue {
 
         @Override
         public Object convertTo(String str, Object defaultValue, Class<?> type) {
             try {
                 return Float.parseFloat(str);
-            }catch (Throwable t){
+            } catch (Throwable t) {
                 return defaultValue;
             }
         }
@@ -834,6 +835,10 @@ public class Common {
         public boolean accept(Class<?> param) {
             return boolean.class.equals(param) || Boolean.class.equals(param);
         }
+    }
+
+    public static Long getSystemStart() {
+        return ManagementFactory.getRuntimeMXBean().getStartTime();
     }
 
 }

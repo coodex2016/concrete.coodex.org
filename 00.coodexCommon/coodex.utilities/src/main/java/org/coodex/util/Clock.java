@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class Clock {
 
-    public static final String KEY_MAGNIFICATION = "org.coodex.util.Clock.magnification";
+    public static final String KEY_MAGNIFICATION = Clock.class.getName() + ".magnification";
 
 
     public static final Float getMagnification() {

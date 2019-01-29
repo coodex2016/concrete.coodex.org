@@ -26,9 +26,16 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
-## progressing
+## 2019-01-29
 
-- TODO: profile支持yml
+- 增加中心时光机服务，达到多虚拟机之间采用相同的基准进行时间加速
+    - `org.coodex.util.clock.ClockAgentService`
+        - `start()`，启动服务
+        - `shutdown()`，终止服务
+- 增加基于中心时间服务的时光机
+    - 使用时在SPI中为 `org.coodex.util.clock.ClockAgent` 注册`org.coodex.util.clock.RemoteClockAgent`
+    - 参数：`org.coodex.util.Clock.remoteHost`和`org.coodex.util.Clock.remotePort`, Config > System.property
+
 
 ## 2019-01-28
 

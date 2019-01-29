@@ -22,31 +22,28 @@ import org.coodex.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.management.ManagementFactory;
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
-public class DefaultClockAgent implements ClockAgent {
+import static org.coodex.util.Common.getSystemStart;
+
+public class DefaultClockAgent extends AbstractClockAgent {
     private final static Logger log = LoggerFactory.getLogger(DefaultClockAgent.class);
 
-    public static final String KEY_BASELINE = "org.coodex.util.Clock.baseline";
-
-    private final Float magnification;
-    private final long baseLine;
-    private final long start;
+    public static final String KEY_BASELINE = Clock.class.getName() + ".baseline";
 
     public DefaultClockAgent() {
-        magnification = Clock.getMagnification();
+        super(Clock.getMagnification(), getTheBaseLine(), getSystemStart());
+    }
+
+    private static long getTheBaseLine() {
         Long l = toBaseLine(Config.get(KEY_BASELINE));
         if (l == null) {
             l = toBaseLine(System.getProperty(KEY_BASELINE));
         }
-        start = getSystemStart();
-        baseLine = l == null ? getSystemStart() : l.longValue();
+        return l == null ? getSystemStart() : l.longValue();
     }
 
-    private Long toBaseLine(String str) {
+    private static Long toBaseLine(String str) {
         if (!Common.isBlank(str) && !str.equalsIgnoreCase("now")) {
             try {
                 return Common.strToDate(str).getTime();
@@ -55,42 +52,5 @@ public class DefaultClockAgent implements ClockAgent {
             }
         }
         return null;
-    }
-
-    private Long getSystemStart() {
-        return ManagementFactory.getRuntimeMXBean().getStartTime();
-    }
-
-    private long diff() {
-        return (long) ((System.currentTimeMillis() - start) * magnification);
-    }
-
-    @Override
-    public long currentTimeMillis() {
-        return baseLine + diff();
-    }
-
-    @Override
-    public Calendar getCalendar() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(currentTimeMillis());
-        return calendar;
-    }
-
-    @Override
-    public void sleep(long millis) throws InterruptedException {
-        if (millis <= 0) return;
-        Thread.sleep((long) Math.max(millis / magnification, 1));
-    }
-
-    @Override
-    public void objWait(Object obj, long millis) throws InterruptedException {
-        if (millis <= 0) return;
-        obj.wait((long) Math.max(millis / magnification, 1));
-    }
-
-    @Override
-    public long toMillis(long duration, TimeUnit timeUnit) {
-        return (long) (timeUnit.toMillis(duration )/ magnification);
     }
 }
