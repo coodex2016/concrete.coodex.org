@@ -75,6 +75,7 @@ package org.coodex.util;
 public class CRC {
     private Parameters crcParams;
     private long initValue;
+    private long curValue;
     private long[] crctable;
     private long mask;
 
@@ -87,7 +88,6 @@ public class CRC {
      */
     public CRC(Algorithm algorithm) {
         this(algorithm.parameters);
-
     }
 
     public CRC(Parameters crcParams) {
@@ -108,6 +108,7 @@ public class CRC {
             tmp[0] = (byte) i;
             crctable[i] = CRC.calculateCRC(crcParams, tmp);
         }
+        curValue = initValue;
     }
 
 
@@ -210,13 +211,13 @@ public class CRC {
      * and finalCRC methods, possibly supplying data in chunks). It can be called multiple times per
      * CRC calculation to feed data to be processed in chunks.
      *
-     * @param curValue CRC intermediate value so far
      * @param chunk    data chunk to b processed by this call
      * @param offset   is 0-based offset of the data to be processed in the array supplied
      * @param length   indicates number of bytes to be processed.
      * @return updated intermediate value for this CRC
      */
-    public long update(long curValue, byte[] chunk, int offset, int length) {
+    public long update(/*long curValue,*/ byte[] chunk, int offset, int length) {
+//        long curValue = currentValue;
         if (crcParams.reflectIn) {
             for (int i = 0; i < length; i++) {
                 byte v = chunk[offset + i];
@@ -240,80 +241,76 @@ public class CRC {
     /**
      * A convenience method for feeding a complete byte array of data.
      *
-     * @param curValue CRC intermediate value so far
      * @param chunk    data chunk to b processed by this call
      * @return updated intermediate value for this CRC
      */
-    public long update(long curValue, byte[] chunk) {
-        return update(curValue, chunk, 0, chunk.length);
+    public long update(/*long curValue,*/ byte[] chunk) {
+        return update(/*curValue,*/ chunk, 0, chunk.length);
     }
 
     /**
      * This method should be called to retrieve actual CRC for the data processed so far.
      *
-     * @param curValue CRC intermediate value so far
      * @return calculated CRC
      */
-    public long finalCRC(long curValue) {
-        long ret = curValue;
+    public long finalCRC(/*long curValue*/) {
+//        long ret = curValue;
         if (crcParams.reflectOut != crcParams.reflectIn) {
-            ret = reflect(ret, crcParams.width);
+            curValue = reflect(curValue, crcParams.width);
         }
-        return (ret ^ crcParams.finalXor) & mask;
+        curValue =  (curValue ^ crcParams.finalXor) & mask;
+        return curValue;
     }
 
-    /**
-     * A convenience method allowing to calculate CRC in one call.
-     *
-     * @param data is data to calculate CRC on
-     * @return calculated CRC
-     */
-    public long calculateCRC(byte[] data) {
-        long crc = init();
-        crc = update(crc, data);
-        return finalCRC(crc);
-    }
+//    /**
+//     * A convenience method allowing to calculate CRC in one call.
+//     *
+//     * @param data is data to calculate CRC on
+//     * @return calculated CRC
+//     */
+//    public long calculateCRC(byte[] data) {
+//        long crc = init();
+//        crc = update(crc, data);
+//        return finalCRC(crc);
+//    }
 
     /**
      * Is a convenience method to spare end users from explicit type conversion every time this package is used.
      * Underneath, it just calls finalCRC() method.
      *
-     * @param curValue current intermediate crc state value
      * @return the final CRC value
      * @throws RuntimeException if crc being calculated is not 8-bit
      */
-    public byte finalCRC8(long curValue) {
+    public byte finalCRC8(/*long curValue*/) {
         if (crcParams.width != 8)
             throw new RuntimeException("CRC width mismatch");
-        return (byte) finalCRC(curValue);
+        return (byte) finalCRC(/*curValue*/);
     }
 
     /**
      * Is a convenience method to spare end users from explicit type conversion every time this package is used.
      * Underneath, it just calls finalCRC() method.
      *
-     * @param curValue current intermediate crc state value
      * @return the final CRC value
      * @throws RuntimeException if crc being calculated is not 16-bit
      */
-    public short finalCRC16(long curValue) {
+    public short finalCRC16(/*long curValue*/) {
         if (crcParams.width != 16)
             throw new RuntimeException("CRC width mismatch");
-        return (short) finalCRC(curValue);
+        return (short) finalCRC(/*curValue*/);
     }
 
     /**
      * Is a convenience method to spare end users from explicit type conversion every time this package is used.
      * Underneath, it just calls finalCRC() method.
      *
-     * @param curValue current intermediate crc state value
      * @return the final CRC value
      * @throws RuntimeException if crc being calculated is not 32-bit
      */
-    public int finalCRC32(long curValue) {
+    public int finalCRC32(/*long curValue*/) {
         if (crcParams.width != 32)
             throw new RuntimeException("CRC width mismatch");
-        return (int) finalCRC(curValue);
+        return (int) finalCRC(/*curValue*/);
     }
 
     /**
@@ -388,7 +385,7 @@ public class CRC {
         private long init; // Init is initial value for CRC calculation
         private long finalXor; // Xor is a value for final xor to be applied before returning result
 
-        Parameters(int width, long polynomial, long init, boolean reflectIn, boolean reflectOut, long finalXor) {
+        public Parameters(int width, long polynomial, long init, boolean reflectIn, boolean reflectOut, long finalXor) {
 
             this.width = width;
             this.polynomial = polynomial;

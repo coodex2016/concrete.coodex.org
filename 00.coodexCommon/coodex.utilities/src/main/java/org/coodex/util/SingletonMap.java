@@ -21,19 +21,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SingletonMap<K, V> {
 
     private final static Logger log = LoggerFactory.getLogger(SingletonMap.class);
-
+    private final static AtomicInteger poolNumber = new AtomicInteger(1);
     private final Builder<K, V> builder;
     private long maxAge = 0;
     private ScheduledExecutorService scheduledExecutorService;
-    private Map<K, V> map = new ConcurrentHashMap<K, V>();
+    private Map<K, V> map = new HashMap<K, V>();
 
     public SingletonMap(Builder<K, V> builder) {
         if (builder == null) throw new NullPointerException("builder MUST NOT be null.");
@@ -48,7 +49,7 @@ public class SingletonMap<K, V> {
         this(builder);
         this.maxAge = maxAge;
         if (maxAge > 0) {
-            scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
+            scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor("singletonMap-" + poolNumber.getAndIncrement());
         }
     }
 

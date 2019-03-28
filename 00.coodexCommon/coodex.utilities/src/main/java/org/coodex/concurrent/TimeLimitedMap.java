@@ -22,17 +22,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TimeLimitedMap<K, V> {
 
+    private final static AtomicInteger poolNumber = new AtomicInteger(1);
     private final ScheduledExecutorService scheduledExecutorService;
     private final long timeOut;
     private Map<K, Task<V>> tasks = new ConcurrentHashMap<K, Task<V>>();
+
     public TimeLimitedMap() {
         this(10000);
     }
+
     public TimeLimitedMap(long timeOut) {
-        this(timeOut, ExecutorsHelper.newScheduledThreadPool(1));
+        this(timeOut, ExecutorsHelper.newScheduledThreadPool(1, "TLM-life-cycle-" + poolNumber.getAndIncrement()));
     }
 
 

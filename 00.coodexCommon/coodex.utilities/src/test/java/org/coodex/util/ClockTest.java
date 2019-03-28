@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ClockTest {
 
-    private static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newScheduledThreadPool(5);
+    private static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newScheduledThreadPool(5,"ClockTest");
 
 //    private static AtomicInteger atomicInteger = new AtomicInteger(0);
 

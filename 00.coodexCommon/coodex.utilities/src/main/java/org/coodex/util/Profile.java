@@ -73,7 +73,7 @@ public class Profile {
             new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
                 @Override
                 public ScheduledExecutorService build() {
-                    return ExecutorsHelper.newSingleThreadScheduledExecutor();
+                    return ExecutorsHelper.newSingleThreadScheduledExecutor("profile_reload");
                 }
             });
     private static Set<String> notFound = new HashSet<String>();

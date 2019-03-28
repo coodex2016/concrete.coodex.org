@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractResourceLockProvider implements ResourceLockProvider {
     public final static long RESOURCE_CACHE_MAX_LIFE = 10 * 1000; // 10 seconds
@@ -44,7 +45,7 @@ public abstract class AbstractResourceLockProvider implements ResourceLockProvid
             new Singleton.Builder<ScheduledExecutorService>() {
                 @Override
                 public ScheduledExecutorService build() {
-                    return ExecutorsHelper.newSingleThreadScheduledExecutor();
+                    return ExecutorsHelper.newSingleThreadScheduledExecutor("cleanDeathResource");
                 }
             }
     );

@@ -17,9 +17,11 @@
 package org.coodex.concurrent;
 
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractCoalition<T> implements Coalition<T> {
 
+    private static final AtomicInteger poolNumber = new AtomicInteger(1);
     protected final ScheduledExecutorService scheduledExecutorService;// = Executors.newScheduledThreadPool(1);
     protected final Coalition.Callback<T> callback;
     protected final int interval;
@@ -33,7 +35,7 @@ public abstract class AbstractCoalition<T> implements Coalition<T> {
     }
 
     public AbstractCoalition(Coalition.Callback<T> c, int interval) {
-        this(c, interval, ExecutorsHelper.newSingleThreadScheduledExecutor());
+        this(c, interval, ExecutorsHelper.newSingleThreadScheduledExecutor("CoalitionPool-" + poolNumber.getAndIncrement()));
     }
 
 

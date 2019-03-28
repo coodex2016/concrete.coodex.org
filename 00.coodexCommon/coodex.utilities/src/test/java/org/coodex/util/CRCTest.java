@@ -65,9 +65,15 @@ public class CRCTest {
         Assert.assertEquals(0xd321, calculateCRC(CRC.Algorithm.CRC16_XMODEM, content));
 
         CRC crc = new CRC(CRC.Algorithm.CRC16_XMODEM);
-        long crcValue = crc.init();
-        crcValue = crc.update(crcValue, content);
-        Assert.assertEquals(0xd321, crc.finalCRC(crcValue));
+        crc.update(/*crcValue,*/ content);
+        Assert.assertEquals(0xd321, crc.finalCRC(/*crcValue*/));
+
+        crc = new CRC(CRC.Algorithm.CRC16_XMODEM);
+        for(int i = 0; i < content.length; i ++)
+            crc.update(new byte[]{content[i]});
+        Assert.assertEquals(0xd321, crc.finalCRC(/*crcValue*/));
+
+
 
         // CRC32
         Assert.assertEquals(0x261DAEE5l, calculateCRC(CRC.Algorithm.CRC32, content));

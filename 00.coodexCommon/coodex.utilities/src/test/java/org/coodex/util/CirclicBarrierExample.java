@@ -23,7 +23,7 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 
 public class CirclicBarrierExample {
-    static ExecutorService executorService = ExecutorsHelper.newFixedThreadPool(2);
+    static ExecutorService executorService = ExecutorsHelper.newFixedThreadPool(2,"CirclicBarrier");
 
     private static void execute(Runnable runnable) {
         executorService.execute(runnable);

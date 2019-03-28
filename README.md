@@ -26,6 +26,11 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-03-28
+
+- coodex-utilities: ExecutorsHelper相关接口可以指定线程池名称
+- concrete调用端相应更新
+
 ## 2019-01-29
 
 - 增加中心时光机服务，达到多虚拟机之间采用相同的基准进行时间加速

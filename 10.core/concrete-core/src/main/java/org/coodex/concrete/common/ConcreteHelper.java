@@ -70,7 +70,8 @@ public class ConcreteHelper {
                     String aliasTo = Config.get("scheduler", key, getAppSet());
                     if (Common.isBlank(aliasTo)) {
                         return ExecutorsHelper.newScheduledThreadPool(
-                                Config.getValue("scheduler.executorSize", 1, key, getAppSet())
+                                Config.getValue("scheduler.executorSize", 1, key, getAppSet()),
+                                key + ".scheduler"
                         );
                     } else {
                         return scheduledExecutorMap.getInstance(aliasTo);
@@ -89,7 +90,8 @@ public class ConcreteHelper {
                         return ExecutorsHelper.newPriorityThreadPool(
                                 Config.getValue("executor.corePoolSize", 0, key, getAppSet()),
                                 Config.getValue("executor.maximumPoolSize", Integer.MAX_VALUE, key, getAppSet()),
-                                Config.getValue("executor.keepAliveTime", 60, key, getAppSet())
+                                Config.getValue("executor.keepAliveTime", 60, key, getAppSet()),
+                                key + ".executor"
                         );
                     } else {
                         return executorServiceMap.getInstance(aliasTo);
