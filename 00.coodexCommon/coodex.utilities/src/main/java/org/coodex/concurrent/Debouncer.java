@@ -34,27 +34,27 @@ public class Debouncer<T> extends AbstractCoalition<T> {
         super(c, interval);
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        Debouncer<String> debouncer = new Debouncer<String>(new Coalition.Callback<String>() {
-            @Override
-            public void call(String arg) {
-                System.out.println(arg);
-            }
-        }, 80);
-
-        for (int i = 0; i < 100; i++) {
-            Thread.sleep(Common.random(100));
-            debouncer.call(String.format("%d", i));
-        }
-
-        for (int i = 5; i < 108; i++) {
-            Thread.sleep(Common.random(100));
-            debouncer.call(String.format("%d", i));
-        }
-
-        Thread.sleep(100);
-        debouncer.terminate();
-    }
+//    public static void main(String[] args) throws InterruptedException {
+//        Debouncer<String> debouncer = new Debouncer<String>(new Coalition.Callback<String>() {
+//            @Override
+//            public void call(String arg) {
+//                System.out.println(arg);
+//            }
+//        }, 80);
+//
+//        for (int i = 0; i < 100; i++) {
+//            Thread.sleep(Common.random(100));
+//            debouncer.call(String.format("%d", i));
+//        }
+//
+//        for (int i = 5; i < 108; i++) {
+//            Thread.sleep(Common.random(100));
+//            debouncer.call(String.format("%d", i));
+//        }
+//
+//        Thread.sleep(100);
+//        debouncer.terminate();
+//    }
 
     public synchronized void call(final T key) {
 

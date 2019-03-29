@@ -35,23 +35,23 @@ public class Throttler<T> extends AbstractCoalition<T> {
         super(c, interval);
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        Throttler<String> throttler = new Throttler<String>(new Coalition.Callback<String>() {
-            @Override
-            public void call(String arg) {
-                System.out.println(arg);
-            }
-        }, 200);
-
-        for (int i = 0; i < 410; i++) {
-            Thread.sleep(20);
-            throttler.call(String.format("%d", i));
-        }
-
-
-        Thread.sleep(200);
-        throttler.terminate();
-    }
+//    public static void main(String[] args) throws InterruptedException {
+//        Throttler<String> throttler = new Throttler<String>(new Coalition.Callback<String>() {
+//            @Override
+//            public void call(String arg) {
+//                System.out.println(arg);
+//            }
+//        }, 200);
+//
+//        for (int i = 0; i < 410; i++) {
+//            Thread.sleep(20);
+//            throttler.call(String.format("%d", i));
+//        }
+//
+//
+//        Thread.sleep(200);
+//        throttler.terminate();
+//    }
 
     private long getNextThrottle() {
         long l = Clock.currentTimeMillis() - prevTime;

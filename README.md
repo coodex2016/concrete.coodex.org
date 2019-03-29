@@ -26,6 +26,10 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2018-03-28
+
+- coodex-utilities: 连击和防反跳机制自带线程池调整，由每个实例一个调整为公用，使用系统属性`coalition.executors.size`进行配置，默认为3
+
 ## 2019-03-28
 
 - coodex-utilities: ExecutorsHelper相关接口可以指定线程池名称

@@ -16,16 +16,28 @@
 
 package org.coodex.concurrent;
 
+import org.coodex.util.Common;
+import org.coodex.util.Singleton;
+
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractCoalition<T> implements Coalition<T> {
 
-    private static final AtomicInteger poolNumber = new AtomicInteger(1);
     protected final ScheduledExecutorService scheduledExecutorService;// = Executors.newScheduledThreadPool(1);
     protected final Coalition.Callback<T> callback;
     protected final int interval;
 
+    private static final Singleton<ScheduledExecutorService> sesSingleton = new Singleton<ScheduledExecutorService>(
+            new Singleton.Builder<ScheduledExecutorService>() {
+                @Override
+                public ScheduledExecutorService build() {
+                    return ExecutorsHelper.newScheduledThreadPool(Common.toInt(
+                            System.getProperty("coalition.executors.size"), 3
+                            ),
+                            "CoalitionPool");
+                }
+            }
+    );
 
     public AbstractCoalition(Coalition.Callback<T> c, int interval, ScheduledExecutorService scheduledExecutorService) {
         if (scheduledExecutorService == null) throw new NullPointerException("scheduledExecutorService is null.");
@@ -35,11 +47,13 @@ public abstract class AbstractCoalition<T> implements Coalition<T> {
     }
 
     public AbstractCoalition(Coalition.Callback<T> c, int interval) {
-        this(c, interval, ExecutorsHelper.newSingleThreadScheduledExecutor("CoalitionPool-" + poolNumber.getAndIncrement()));
+        this(c, interval, sesSingleton.getInstance());
     }
 
 
-    public void terminate() {
-        scheduledExecutorService.shutdownNow();
-    }
+//    public void terminate() {
+//        scheduledExecutorService.shutdownNow();
+//    }
+
+
 }
