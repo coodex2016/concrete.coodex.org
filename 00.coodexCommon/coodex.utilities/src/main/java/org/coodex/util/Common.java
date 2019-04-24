@@ -248,7 +248,6 @@ public class Common {
             os.flush();
     }
 
-    // TODO fix
     public static String byte2hex(byte[] b) {
 //        String hs = "";
 //        for (int n = 0; n < b.length; n++) {
@@ -264,16 +263,86 @@ public class Common {
     }
 
     public static String byte2hex(byte[] b, int offset, int length) {
-        String hs = "";
-        for (int n = offset, l = Math.min(offset + length, b.length); n < l; n++) {
-            String sTmp = Integer.toHexString(b[n] & 0XFF);
-            if (sTmp.length() == 1) {
-                hs = hs + "0" + sTmp;
+//        String hs = "";
+//        for (int n = offset, l = Math.min(offset + length, b.length); n < l; n++) {
+//            String sTmp = Integer.toHexString(b[n] & 0XFF);
+//            if (sTmp.length() == 1) {
+//                hs = hs + "0" + sTmp;
+//            } else {
+//                hs = hs + sTmp;
+//            }
+//        }
+//        return hs.toUpperCase();
+        return byte2hex(b, offset, length, 0, null);
+    }
+
+    public static String byte2hex(byte[] b, int col, String split) {
+        return byte2hex(b, 0, b.length, col, split);
+    }
+
+    public static String byte2hex(byte[] b, int offset, int length, int col, String split) {
+        StringBuilder builder = new StringBuilder();
+        for (int index = 0, n = offset, l = Math.min(offset + length, b.length); n < l; n++, index++) {
+            if (col > 0 && index > 0 && index % col == 0) {
+                builder.append(LINE_SEPARATOR);
+            }
+            int tmp = b[n] & 0xFF;
+            if (tmp < 0x10) {
+                builder.append('0').append(Integer.toHexString(tmp));
             } else {
-                hs = hs + sTmp;
+                builder.append(Integer.toHexString(tmp));
+            }
+            if (split != null) {
+                builder.append(split);
             }
         }
-        return hs.toUpperCase();
+        return builder.toString();
+    }
+
+    private static int hexCharValue(char c) {
+        if (c >= '0' && c <= '9') return c - '0';
+
+        if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+
+        if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+
+        return -1;
+    }
+
+
+    public static byte[] hex2byte(String hexString) {
+        return hex2byte(hexString, LINE_SEPARATOR + " ");
+    }
+
+    public static byte[] hex2byte(String hexString, String ignoreChars) {
+        char[] ignore = ignoreChars == null ? new char[0] : ignoreChars.toCharArray();
+        int hi = -1, low = -1;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        boolean closed = true;
+        for (char c : hexString.toCharArray()) {
+            int charValue = hexCharValue(c);
+            if (charValue == -1) {
+                if (inArray(c, ignore)) {
+                    closed = true;
+                } else {
+                    throw new RuntimeException("unknown hex char: " + c + "[0x" + Integer.toHexString(c) + "]");
+                }
+            } else {
+                hi = low;
+                low = charValue;
+                closed = hi != -1 && low != -1;
+            }
+
+            if (closed && low != -1) {
+                byteArrayOutputStream.write(hi == -1 ? low : ((hi << 4 | low)));
+                hi = -1;
+                low = -1;
+            }
+        }
+        if (low != -1) {
+            byteArrayOutputStream.write(hi == -1 ? low : ((hi << 4 | low)));
+        }
+        return byteArrayOutputStream.toByteArray();
     }
 
     /**
