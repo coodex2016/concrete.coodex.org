@@ -14,5 +14,6 @@
 # limitations under the License.
 #
 
-org.coodex.concrete.client.impl.AliasInvokerFactory
+# deprecated @ 201906111
+# org.coodex.concrete.client.impl.AliasInvokerFactory
 org.coodex.concrete.client.impl.LocalInvokerFactory

@@ -20,8 +20,6 @@ import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.Invoker;
 import org.coodex.concrete.client.InvokerFactory;
 
-import static org.coodex.concrete.client.websocket.WSInvokerFactory.isWebsocket;
-
 public class WSSyncInvokerFactory implements InvokerFactory {
     @Override
     public Invoker getInvoker(Destination destination) {
@@ -30,6 +28,6 @@ public class WSSyncInvokerFactory implements InvokerFactory {
 
     @Override
     public boolean accept(Destination param) {
-        return !param.isAsync() && isWebsocket(param.getLocation());
+        return param != null && !param.isAsync() && param instanceof WebsocketDestination;
     }
 }

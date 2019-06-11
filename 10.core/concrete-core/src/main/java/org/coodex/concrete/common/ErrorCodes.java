@@ -63,4 +63,10 @@ public final class ErrorCodes extends AbstractErrorCodes {
     public static final int UNKNOWN_CLASS = CONCRETE_CORE + 17;
 
     public static final int MODULE_DEFINITION_NON_UNIQUENESS = CONCRETE_CORE + 18;
+
+    ///Own protocol
+    public static final int OWN_PROVIDER_NO_RESPONSE_VISITOR = CONCRETE_CORE + 200;
+
+    public static final int SERVICE_ID_NOT_EXISTS = CONCRETE_CORE + 201;
+
 }

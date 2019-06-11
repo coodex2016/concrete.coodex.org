@@ -229,9 +229,31 @@ public class Profile {
         return toBool(p.getProperty(key), v);
     }
 
+    private boolean isPlaceHolder(String v) {
+        return v.startsWith("${") && v.endsWith("}");
+
+    }
+
+    private String actualValue(String v) {
+        if (isPlaceHolder(v)) {
+            String x = v.substring(2, v.length() - 1);
+            int index = x.indexOf(':');
+            String namespace = null;
+            String key = x;
+            if(index > 0){
+                namespace = x.substring(0,index);
+                key = x.substring(index + 1);
+            }
+            Profile profile = namespace == null ? this : Profile.getProfile(namespace + ".properties");
+
+            return profile.getString(key);
+        }
+        return v;
+    }
+
     public String getString(String key, String v) {
         String s = p.getProperty(key);
-        return s == null ? v : s;
+        return s == null ? v : actualValue(s);
     }
 
 

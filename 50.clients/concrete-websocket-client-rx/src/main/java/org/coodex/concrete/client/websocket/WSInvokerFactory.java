@@ -22,17 +22,11 @@ import org.coodex.concrete.client.rx.AbstractRXInvokerFactory;
 
 public class WSInvokerFactory extends AbstractRXInvokerFactory {
 
-    static boolean isWebsocket(String location) {
-        return location.toLowerCase().startsWith("ws:") || isSSL(location);
-    }
 
-    static boolean isSSL(String location) {
-        return location.toLowerCase().startsWith("wss:");
-    }
 
     @Override
     public boolean accept(Destination param) {
-        return super.accept(param) && isWebsocket(param.getLocation());
+        return super.accept(param) && param instanceof WebsocketDestination;
     }
 
     @Override

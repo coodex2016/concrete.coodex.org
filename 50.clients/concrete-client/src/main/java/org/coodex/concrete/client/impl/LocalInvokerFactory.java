@@ -32,6 +32,7 @@ public class LocalInvokerFactory implements InvokerFactory {
 
     @Override
     public boolean accept(Destination param) {
-        return param.getLocation().equalsIgnoreCase(LOCAL) && !param.isAsync();
+//        return param.getLocation().equalsIgnoreCase(LOCAL) && !param.isAsync();
+        return param != null && !param.isAsync() && param instanceof LocalDestination;
     }
 }

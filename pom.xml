@@ -69,6 +69,7 @@
         <module>10.core/concrete-fsm-impl</module>
         <module>10.core/concrete-jaxrs</module>
         <module>10.core/concrete-dubbo</module>
+        <module>10.core/concrete-amqp</module>
 
         <module>20.service.support/concrete-support-jaxrs</module>
         <module>20.service.support/concrete-support-jsr311</module>
@@ -76,6 +77,7 @@
         <module>20.service.support/concrete-support-jaxrs-saas-reverse-proxy</module>
         <module>20.service.support/concrete-support-websocket</module>
         <module>20.service.support/concrete-support-dubbo</module>
+        <module>20.service.support/concrete-support-amqp</module>
 
         <module>30.spring/concrete-core-spring</module>
         <module>30.spring/concrete-commons-spring-data</module>
@@ -88,6 +90,7 @@
         <module>50.clients/concrete-websocket-client-rx</module>
         <module>50.clients/concrete-dubbo-client</module>
         <module>50.clients/concrete-dubbo-client-rx</module>
+        <module>50.clients/concrete-amqp-client</module>
 
         <module>60.attachments/concrete-attachments</module>
         <module>60.attachments/concrete-attachments-jaxrs</module>
@@ -105,9 +108,8 @@
         <module>plugins/concrete-courier-rabbitmq</module>
         <module>plugins/concrete-apm-zipkin</module>
         <module>plugins/concrete-apm-plugin-mysql</module>
+        <module>test-case</module>
 
-        <module>test-case/test-case-api</module>
-        <module>test-case/test-case-server</module>
     </modules>
 
 

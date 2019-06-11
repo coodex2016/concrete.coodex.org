@@ -18,10 +18,9 @@ package org.coodex.concrete.client.dubbo.rx;
 
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.Invoker;
+import org.coodex.concrete.client.dubbo.DubboDestination;
 import org.coodex.concrete.client.rx.AbstractRXInvokerFactory;
 import org.coodex.concrete.client.rx.SyncToRxInvoker;
-
-import static org.coodex.concrete.client.dubbo.DubboClientInvokerFactory.isDubbo;
 
 public class DubboRXInvokerFactory extends AbstractRXInvokerFactory {
     @Override
@@ -31,6 +30,6 @@ public class DubboRXInvokerFactory extends AbstractRXInvokerFactory {
 
     @Override
     public boolean accept(Destination param) {
-        return super.accept(param) && isDubbo(param);
+        return super.accept(param) && param instanceof DubboDestination;
     }
 }

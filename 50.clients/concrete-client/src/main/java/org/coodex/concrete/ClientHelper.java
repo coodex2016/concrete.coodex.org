@@ -17,6 +17,7 @@
 package org.coodex.concrete;
 
 import org.coodex.concrete.client.Destination;
+import org.coodex.concrete.client.DestinationFactory;
 import org.coodex.concrete.client.InstanceBuilder;
 import org.coodex.concrete.client.InvokerFactory;
 import org.coodex.concrete.client.impl.JavaProxyInstanceBuilder;
@@ -34,9 +35,9 @@ import org.coodex.util.Singleton;
 import javax.net.ssl.SSLContext;
 import java.util.Set;
 
-public class ClientHelper {
+import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
 
-    public static final String TAG_CLIENT = "client";
+public class ClientHelper {
 
 
 //    private static InstanceBuilder instanceBuilder;
@@ -187,15 +188,20 @@ public class ClientHelper {
     }
 
     public static Destination getDestination(String module) {
-        String location = getString(module, "location");
-        IF.is(Common.isBlank(location), "location for [" + module + "] is NOT found.");
-        Destination destination = new Destination();
-        destination.setIdentify(module);
-        destination.setLocation(location);
-        destination.setTokenManagerKey(getString(module, "tokenManagerKey"));
-        destination.setTokenTransfer(Common.toBool(getString(module, "tokenTransfer"), false));
-        return destination;
+//        String location = getString(module, "location");
+//        IF.is(Common.isBlank(location), "location for [" + module + "] is NOT found.");
+//        Destination destination = new Destination();
+//        destination.setIdentify(module);
+//        destination.setLocation(location);
+//        destination.setTokenManagerKey(getString(module, "tokenManagerKey"));
+//        destination.setTokenTransfer(Common.toBool(getString(module, "tokenTransfer"), false));
+//        return destination;
+        return destinationFactoryAcceptableServiceLoader.getServiceInstance(module).build(module);
     }
+
+    private static AcceptableServiceLoader<String, DestinationFactory<Destination,String>> destinationFactoryAcceptableServiceLoader
+            = new AcceptableServiceLoader<String, DestinationFactory<Destination, String>>(new ConcreteServiceLoader<DestinationFactory<Destination, String>>() {
+    });
 
     private static AcceptableServiceLoader<String, SSLContextFactory> getSSLContextFactoryAcceptableServiceLoader() {
 //        if (sslContextFactoryAcceptableServiceLoader == null) {
@@ -212,6 +218,16 @@ public class ClientHelper {
         return sslContextFactoryAcceptableServiceLoader.getInstance();
     }
 
+    public static SSLContext getSSLContext(String ssl) {
+        try {
+            return getSSLContextFactoryAcceptableServiceLoader()
+                    .getServiceInstance(ssl).getSSLContext(ssl);
+        } catch (Throwable th) {
+            throw ConcreteHelper.getException(th);
+        }
+    }
+
+    @Deprecated
     public static SSLContext getSSLContext(Destination destination) {
         String ssl = getString(destination.getIdentify(), "ssl");
         try {

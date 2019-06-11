@@ -18,17 +18,12 @@ package org.coodex.concrete.websocket;
 
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.RuntimeContext;
-import org.coodex.concrete.common.struct.AbstractParam;
-import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class WebSocketHelper {
-//    private static Map<Class, WebSocketModule> moduleMap = new ConcurrentHashMap<Class, WebSocketModule>();
 
     private static SingletonMap<Class, WebSocketModule> modules =
             new SingletonMap<Class, WebSocketModule>(
@@ -40,44 +35,6 @@ public class WebSocketHelper {
                     }
             );
 
-    private static String keyBase(Class serviceClass, Method method) {
-        return String.format("%s:%s(%d)",
-                serviceClass.getName(),
-                method.getName(),
-                method.getParameterTypes().length);
-    }
-
-    public static String buildKey(Class serviceClass, Method method) {
-        return Common.sha1(keyBase(serviceClass, method));
-    }
-
-    private static String buildKey(RuntimeContext runtimeContext) {
-        return buildKey(runtimeContext.getDeclaringClass(), runtimeContext.getDeclaringMethod());
-    }
-
-    @SuppressWarnings("unchecked")
-    public static RequestPackage buildRequest(String msgId, WebSocketUnit unit, Object[] args) {
-        RequestPackage requestPackage = new RequestPackage();
-        requestPackage.setMsgId(msgId);
-        requestPackage.setServiceId(unit.getKey());
-
-        AbstractParam[] parameters = unit.getParameters();
-        switch (parameters.length) {
-            case 0:
-                break;
-            case 1:
-                requestPackage.setContent(args[0]);
-                break;
-            default:
-                Map<String, Object> toSend = new HashMap<String, Object>();
-                for (int i = 0; i < parameters.length; i++) {
-                    toSend.put(parameters[i].getName(), args[i]);
-                }
-                requestPackage.setContent(toSend);
-                break;
-        }
-        return requestPackage;
-    }
 
     @SuppressWarnings("unchecked")
     public static WebSocketUnit findUnit(RuntimeContext context) {

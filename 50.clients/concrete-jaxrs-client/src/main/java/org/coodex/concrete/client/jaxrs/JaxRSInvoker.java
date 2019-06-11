@@ -18,7 +18,6 @@ package org.coodex.concrete.client.jaxrs;
 
 import org.coodex.concrete.AbstractClientException;
 import org.coodex.concrete.client.ClientTokenManagement;
-import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.AbstractSyncInvoker;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.jaxrs.struct.Param;
@@ -39,7 +38,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -48,8 +46,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import static org.coodex.concrete.ClientHelper.*;
-import static org.coodex.concrete.client.jaxrs.JaxRSInvokerFactory.isSSL;
+import static org.coodex.concrete.ClientHelper.getJSONSerializer;
+import static org.coodex.concrete.ClientHelper.getSSLContext;
 import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
@@ -58,22 +56,38 @@ import static org.coodex.concrete.jaxrs.JaxRSHelper.getUnitFromContext;
 public class JaxRSInvoker extends AbstractSyncInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(JaxRSInvoker.class);
+//    private static final String DEFAULT_LOGGING_FEATURE_CLASS = "";
 
-    private static ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+//    static {
+//        // jersey logging feature
+//        try {
+//            Class<?> feature = Class.forName(getLoggingFeatureClassName());
+//            clientBuilder = clientBuilder.register(feature);
+//        } catch (Throwable th) {
+//            log.info("register LoggingFeature failed. {}", th.getLocalizedMessage());
+//        }
+//    }
 
     private final Client client;
 
-    JaxRSInvoker(Destination destination) {
+    JaxRSInvoker(JaxRSDestination destination) {
         super(destination);
-        client = isSSL(destination.getLocation()) ?
+        // TODO logging
+        ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+        client = destination.isSsl() ?
                 clientBuilder.hostnameVerifier(new HostnameVerifier() {
                     @Override
                     public boolean verify(String s, SSLSession sslSession) {
                         return true;
                     }
-                }).sslContext(getSSLContext(destination)).build() :
+                }).sslContext(getSSLContext(destination.getSsl())).build() :
                 clientBuilder.build();
     }
+
+//    private static String getLoggingFeatureClassName() {
+//        // TODO
+//        return DEFAULT_LOGGING_FEATURE_CLASS;
+//    }
 
     public static Invocation.Builder buildHeaders(Invocation.Builder builder, StringBuilder str, Subjoin subjoin, String tokenId) {
         if (subjoin != null || !Common.isBlank(tokenId)) {
@@ -137,12 +151,12 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
     }
 
     protected String getEncodingCharset() {
-        String charset = getString(getDestination().getIdentify(), "jaxrs.charset");
+        String charset = ((JaxRSDestination) getDestination()).getCharset();
         if (charset == null) charset = "utf-8";
         try {
             return Charset.forName(charset).displayName();
         } catch (UnsupportedCharsetException e) {
-            log.warn("Unsupported charset: {}", charset);
+            log.warn("Unsupported charset: {}， use \"UTF-8\"", charset);
             return "utf-8";
         }
     }
@@ -248,7 +262,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
     }
 
     private Response request(String url, String method, Object body) throws URISyntaxException {
-        URI uri = new URI(url);
+//        URI uri = new URI(url);
         Invocation.Builder builder = client.target(url).request();
         StringBuilder str = new StringBuilder();
         str.append("url: ").append(url).append("\n").append("method: ").append(method);

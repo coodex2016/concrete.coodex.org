@@ -16,12 +16,24 @@
 
 package org.coodex.concrete.websocket;
 
-import org.coodex.concrete.common.struct.AbstractModule;
+import org.coodex.concrete.own.OwnServiceModule;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class WebSocketModule extends AbstractModule<WebSocketUnit> {
+public class WebSocketModule extends OwnServiceModule<WebSocketUnit> {
+    public WebSocketModule(Class<?> interfaceClass) {
+        super(interfaceClass);
+    }
+//    @Override
+//    protected WebSocketUnit[] toArrays(List<WebSocketUnit> webSocketUnits) {
+//        return new WebSocketUnit[0];
+//    }
+//
+//    @Override
+//    protected WebSocketUnit buildUnit(Method method) {
+//        return null;
+//    }
 
 //    private static Map<String,>
 //    public static WebSocketModule buildModule(Class<?> interfaceClass){
@@ -30,15 +42,15 @@ public class WebSocketModule extends AbstractModule<WebSocketUnit> {
 //        return module;
 //    }
 
-    public WebSocketModule(Class<?> interfaceClass) {
-        super(interfaceClass);
-    }
-
-    @Override
-    public String getName() {
-        return getInterfaceClass().getName();
-    }
-
+    //    public WebSocketModule(Class<?> interfaceClass) {
+//        super(interfaceClass);
+//    }
+//
+//    @Override
+//    public String getName() {
+//        return getInterfaceClass().getName();
+//    }
+//
     @Override
     protected WebSocketUnit[] toArrays(List<WebSocketUnit> webSocketUnits) {
         return webSocketUnits.toArray(new WebSocketUnit[0]);
@@ -48,9 +60,9 @@ public class WebSocketModule extends AbstractModule<WebSocketUnit> {
     protected WebSocketUnit buildUnit(Method method) {
         return new WebSocketUnit(method, this);
     }
-
-    @Override
-    public int compareTo(AbstractModule o) {
-        return getName().compareTo(o.getName());
-    }
+//
+//    @Override
+//    public int compareTo(AbstractModule o) {
+//        return getName().compareTo(o.getName());
+//    }
 }

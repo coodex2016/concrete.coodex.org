@@ -26,7 +26,18 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
-## 2018-03-28
+## 2019-06
+
+- 设计支持基于amqp发布服务
+    - 重构websocket模块，抽象出自有的数据包处理、服务调用，ampq以及以后其他的支持都将通过类似模式扩展
+    - 设计concrete-client的Destination，各模块自行定义各自的Destination，不再局限于Config中获取，为下一步动态客户端提供支持
+    - 增加concrete-support-amqp模块，提供基于amqp发布服务的能力
+    - 增加concrete-client-amqp模块，提供rpc的调用能力
+    - TODO 测试
+- coodex-utilities:
+    - Profile增加placeHolder机制，${namespace.key}
+
+## 2019-03-28
 
 - coodex-utilities: 连击和防反跳机制自带线程池调整，由每个实例一个调整为公用，使用系统属性`coalition.executors.size`进行配置，默认为3
 

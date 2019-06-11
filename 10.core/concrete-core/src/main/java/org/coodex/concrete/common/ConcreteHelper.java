@@ -38,6 +38,10 @@ import static org.coodex.util.ReflectHelper.foreachClass;
 public class ConcreteHelper {
 
     public static final String VERSION = "0.2.4-SNAPSHOT";
+
+    public static final String TAG_CLIENT = "client";
+    public static final String KEY_LOCATION = "location";
+
     private static final ClassNameFilter CONCRETE_SERVICE_INTERFACE_FILTER = new ConcreteClassFilter() {
         @Override
         protected boolean accept(Class<?> clazz) {
@@ -178,11 +182,11 @@ public class ConcreteHelper {
         return getExecutor("service");
     }
 
-    public static ScheduledExecutorService getScheduler(){
+    public static ScheduledExecutorService getScheduler() {
         return getScheduler("service");
     }
 
-    public static ScheduledExecutorService getScheduler(String name){
+    public static ScheduledExecutorService getScheduler(String name) {
         return scheduledExecutorMap.getInstance(name);
     }
 

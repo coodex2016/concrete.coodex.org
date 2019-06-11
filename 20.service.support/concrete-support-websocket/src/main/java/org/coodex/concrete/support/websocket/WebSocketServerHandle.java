@@ -21,17 +21,16 @@ import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.struct.AbstractParam;
+import org.coodex.concrete.common.struct.AbstractUnit;
 import org.coodex.concrete.message.ServerSideMessage;
 import org.coodex.concrete.message.TBMContainer;
+import org.coodex.concrete.own.*;
 import org.coodex.concrete.websocket.ConcreteWebSocketEndPoint;
 import org.coodex.concrete.websocket.*;
 import org.coodex.concurrent.components.PriorityRunnable;
 import org.coodex.config.Config;
 import org.coodex.pojomocker.MockerFacade;
-import org.coodex.util.Common;
-import org.coodex.util.GenericType;
-import org.coodex.util.ReflectHelper;
-import org.coodex.util.TypeHelper;
+import org.coodex.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,10 +45,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.common.ConcreteContext.runWithContext;
 import static org.coodex.concrete.common.ConcreteHelper.*;
+import static org.coodex.concrete.common.ErrorCodes.SERVICE_ID_NOT_EXISTS;
+import static org.coodex.concrete.own.PackageHelper.analysisParameters;
 import static org.coodex.concrete.support.websocket.CallerHackConfigurator.WEB_SOCKET_CALLER_INFO;
 import static org.coodex.concrete.websocket.Constants.*;
 
-class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
+class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSocketEndPoint {
 
 //    private final static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newScheduledThreadPool(1);
 
@@ -57,8 +58,22 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
 
     private final static Map<Session, String> peers = Collections.synchronizedMap(new HashMap<Session, String>());
 
-    private final Map<String, WebSocketUnit> unitMap = new HashMap<String, WebSocketUnit>();
-    private ThreadLocal<Class> context = new ThreadLocal<>();
+    private final static OwnServiceProvider.OwnModuleBuilder OWN_MODULE_BUILDER = new OwnServiceProvider.OwnModuleBuilder() {
+        @Override
+        public OwnServiceModule build(Class clz) {
+            return new WebSocketModule(clz);
+        }
+    };
+
+//    @Override
+//    protected Subjoin getSubjoin(RequestPackage requestPackage) {
+//        return getSubjoin(requestPackage.getSubjoin());
+//    }
+
+    protected OwnServiceProvider.OwnModuleBuilder getModuleBuilder() {
+        return OWN_MODULE_BUILDER;
+    }
+
 
 //    @Deprecated
 //    public WebSocketServerHandle(String endPoint) {
@@ -207,35 +222,6 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
         return responsePackage;
     }
 
-    public final void registerPackage(String... packages) {
-        foreachClassInPackages(new ReflectHelper.Processor() {
-            @Override
-            public void process(Class<?> serviceClass) {
-                registerClasses(serviceClass);
-            }
-        }, packages);
-//        if (packages == null || packages.length == 0) {
-//            packages = ConcreteHelper.getApiPackages();
-//        }
-//        List<WebSocketModule> modules = ConcreteHelper.loadModules(WebSocketModuleMaker.WEB_SOCKET_SUPPORT, packages);
-//        for (WebSocketModule module : modules) {
-//            appendUnits(module);
-//        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public final void registerClasses(Class<?>... classes) {
-        for (final Class<?> clz : classes) {
-            if (AbstractErrorCodes.class.isAssignableFrom(clz)) {
-                ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) clz);
-            } else if (ConcreteHelper.isConcreteService(clz)) {
-                appendUnits(new WebSocketModule(clz));
-            } else {
-                throw new RuntimeException("cannot register class:" + clz.getName());
-            }
-        }
-    }
-
 //    public final void registerService(Class<? extends ConcreteService>... serviceClasses) {
 //        for (Class<? extends ConcreteService> clz : serviceClasses) {
 //            if (ConcreteHelper.isConcreteService(clz)) {
@@ -244,11 +230,6 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
 //        }
 //    }
 
-    private void appendUnits(WebSocketModule module) {
-        for (WebSocketUnit unit : module.getUnits()) {
-            unitMap.put(unit.getKey(), unit);
-        }
-    }
 
 //    @Override
 //    public Token getToken(Session session) {
@@ -287,151 +268,58 @@ class WebSocketServerHandle implements ConcreteWebSocketEndPoint {
     @SuppressWarnings("unchecked")
     private void invokeService(final RequestPackage<Object> requestPackage, final Session session) {
 
-        //1 找到方法
-        final WebSocketUnit unit = IF.isNull(unitMap.get(requestPackage.getServiceId()),
-                WebSocketErrorCodes.SERVICE_ID_NOT_EXISTS, requestPackage.getServiceId());
-
-        //2 解析数据
-        final Object[] objects = analysisParameters(
-                JSONSerializerFactory.getInstance().toJson(requestPackage.getContent()), unit);
-
-        //3 调用并返回结果
-        final String tokenId = requestPackage.getConcreteTokenId();
-//        Token t = getToken(session, requestPackage);
-
-//        final boolean isNew = t == null;
-
-//        final Token token = t == null ?
-//                BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(Common.getUUIDStr(), true)
-//                : t;//getToken(session);
-//        peers.put(session, token.getTokenId());
-//        final String
-//        session.getUserProperties()
-        ConcreteHelper.getExecutor().execute(new PriorityRunnable(ConcreteHelper.getPriority(unit), new Runnable() {
-            private Method method = unit.getMethod();
-
+        final Caller caller = (Caller) session.getUserProperties().get(WEB_SOCKET_CALLER_INFO);
+        final OwnServiceProvider.ResponseVisitor responseVisitor = new OwnServiceProvider.DefaultResponseVisitor() {
             @Override
-            public void run() {
-                WebSocketServiceContext context = new WebSocketServiceContext(
-                        tokenId, getSubjoin(requestPackage.getSubjoin()),
-                        (Caller) session.getUserProperties().get(WEB_SOCKET_CALLER_INFO)
-                        , null /* TODO 从subjoin或者session里获取Locale */);
-                Trace trace = APM.build(context.getSubjoin())
-                        .tag("remote", context.getCaller().getAddress())
-                        .tag("agent", context.getCaller().getClientProvider())
-                        .start(String.format("websocket: %s.%s", method.getDeclaringClass().getName(), method.getName()));
-                try {
-
-                    Object result = runWithContext(
-                            context,
-                            new CallableClosure() {
-
-                                public Object call() throws Throwable {
-                                    if (isDevModel("websocket")) {
-                                        return void.class.equals(unit.getGenericReturnType()) ?
-                                                null :
-                                                MockerFacade.mock(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
-                                    } else {
-                                        Object instance = BeanProviderFacade.getBeanProvider().getBean(unit.getDeclaringModule().getInterfaceClass());
-                                        if (objects == null)
-                                            return method.invoke(instance);
-                                        else
-                                            return method.invoke(instance, objects);
-                                    }
-
-                                }
-                            });
-
-                    ResponsePackage responsePackage = new ResponsePackage();
-                    final String tokenIdAfterInvoke = context.getTokenId();
-                    if (!Common.isSameStr(tokenId, tokenIdAfterInvoke)
-                            && !Common.isBlank(tokenIdAfterInvoke)) {
-
-                        responsePackage.setConcreteTokenId(tokenIdAfterInvoke);
-                        // 订阅消息推送
-                        if (!Common.isBlank(tokenId)) {
-                            peers.put(session, tokenIdAfterInvoke);
-                            TBMContainer.getInstance().clear(tokenId);
-                        }
-                        TBMContainer.getInstance().listen(tokenIdAfterInvoke, new TBMContainer.TBMListener() {
-                            @Override
-                            public String getTokenId() {
-                                return tokenIdAfterInvoke;
-                            }
-
-                            @Override
-                            public void onMessage(ServerSideMessage serverSideMessage) {
-                                sendMessage(serverSideMessage, tokenIdAfterInvoke);
-                            }
-                        });
-
-                    }
-                    responsePackage.setSubjoin(updatedMap(context.getSubjoin()));
-                    responsePackage.setMsgId(requestPackage.getMsgId());
-                    responsePackage.setOk(true);
-                    responsePackage.setContent(result);
-
-                    sendText(JSONSerializerFactory.getInstance().toJson(responsePackage), session);
-                } catch (final Throwable th) {
-                    trace.error(th);
-                    runWithContext(context, new CallableClosure() {
-                        @Override
-                        public Object call() throws Throwable {
-                            sendError(requestPackage.getMsgId(), th, session);
-                            return null;
-                        }
-                    });
-
-                } finally {
-                    trace.finish();
-                }
-
+            public void visit(String json) {
+                sendText(json, session);
             }
+        };
 
-            private Subjoin getSubjoin(Map<String, String> map) {
-                return new WebSocketSubjoin(map);
+        final OwnServiceProvider.ErrorVisitor errorVisitor = new OwnServiceProvider.ErrorVisitor() {
+            @Override
+            public void visit(String msgId, Throwable th) {
+                sendError(msgId, th, session);
             }
-        }));
+        };
+
+        final OwnServiceProvider.ServerSideMessageVisitor serverSideMessageVisitor = new OwnServiceProvider.ServerSideMessageVisitor() {
+            @Override
+            public void visit(ServerSideMessage serverSideMessage, String tokenId) {
+                sendMessage(serverSideMessage, tokenId);
+            }
+        };
+
+        final OwnServiceProvider.TBMNewTokenVisitor newTokenVisitor = new OwnServiceProvider.TBMNewTokenVisitor() {
+            @Override
+            public void visit(String tokenId) {
+                peers.put(session, tokenId);//???
+            }
+        };
+
+        invokeService(requestPackage, caller, responseVisitor, errorVisitor, serverSideMessageVisitor, newTokenVisitor);
     }
 
-    private Type paramType(AbstractParam param) {
-        return TypeHelper.isPrimitive(param.getType()) ? param.getType() :
-                TypeHelper.toTypeReference(param.getGenericType(), context.get());
+    @Override
+    protected ServerSideContext getServerSideContext(RequestPackage<Object> requestPackage,
+                                                     String tokenId, Caller caller) {
+
+        return new WebSocketServiceContext(
+                tokenId, getSubjoin(requestPackage.getSubjoin()),
+                caller, null /* TODO 从subjoin或者session里获取Locale */);
     }
 
-    private Object[] analysisParameters(String content, WebSocketUnit unit) {
-//        if (content == null) return null;
-        AbstractParam[] abstractParams = unit.getParameters();
-        if (abstractParams.length == 0) return null;
 
-//        Class<?> context = unit.getDeclaringModule().getInterfaceClass();
-        context.set(unit.getDeclaringModule().getInterfaceClass());
-        try {
-            JSONSerializer serializer = JSONSerializerFactory.getInstance();
 
-            List<Object> objects = new ArrayList<Object>();
-            if (abstractParams.length == 1) {
-                objects.add(content == null ? null :
-                        serializer.parse(content, paramType(abstractParams[0])));
-            } else {
-                Map<String, String> map = serializer.parse(
-                        content,
-                        new GenericType<Map<String, String>>() {
-                        }.genericType());
-
-                for (AbstractParam param : abstractParams) {
-                    String value = map.get(param.getName());
-                    objects.add(value == null ? null :
-                            serializer.parse(value, paramType(param))
-                    );
-                }
-            }
-            return objects.toArray();
-        } finally {
-            context.remove();
-        }
+    @Override
+    protected String getModuleName() {
+        return "websocket";
     }
 
+    @Override
+    protected Subjoin getSubjoin(Map<String, String> map) {
+        return new WebSocketSubjoin(map);
+    }
 
     private RequestPackage<Object> analysisRequest(String message, Session session) {
         try {

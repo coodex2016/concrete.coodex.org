@@ -22,17 +22,14 @@ import org.coodex.concrete.client.InvokerFactory;
 
 public class DubboClientInvokerFactory implements InvokerFactory {
 
-    public static boolean isDubbo(Destination destination) {
-        return "dubbo".equalsIgnoreCase(destination.getLocation());
-    }
 
     @Override
     public Invoker getInvoker(Destination destination) {
-        return new DubboClientInvoker(destination);
+        return new DubboClientInvoker((DubboDestination) destination);
     }
 
     @Override
     public boolean accept(Destination param) {
-        return !param.isAsync() && isDubbo(param);
+        return param != null && !param.isAsync() && param instanceof DubboDestination;
     }
 }

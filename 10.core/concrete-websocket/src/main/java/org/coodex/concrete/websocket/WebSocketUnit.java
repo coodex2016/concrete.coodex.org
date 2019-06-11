@@ -16,68 +16,67 @@
 
 package org.coodex.concrete.websocket;
 
-import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.DefinitionContext;
-import org.coodex.concrete.common.struct.AbstractParam;
-import org.coodex.concrete.common.struct.AbstractUnit;
-import org.coodex.util.Common;
+import org.coodex.concrete.own.OwnServiceUnit;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
-public class WebSocketUnit extends AbstractUnit<AbstractParam, WebSocketModule> {
-
-    private String key = null;
-
-    private Class paramType = null;
-
+public class WebSocketUnit extends OwnServiceUnit<WebSocketModule> /*extends AbstractUnit<AbstractParam, WebSocketModule> */ {
     public WebSocketUnit(Method method, WebSocketModule module) {
         super(method, module);
     }
 
-    @Override
-    public String getName() {
-        return getMethod().getName();
-    }
 
-    public synchronized String getKey() {
-        if (key == null) {
-            key = Common.sha1(String.format("%s:%s(%d)",
-                    getDeclaringModule().getInterfaceClass().getName(),
-                    getName(),
-                    getParameters().length));
-        }
-        return key;
-    }
-
-    @Override
-    protected void afterInit() {
-//        super.afterInit();
-    }
-
-    @Override
-    protected AbstractParam buildParam(Method method, int index) {
-        return new AbstractParam(method, index) {
-        };
-    }
-
+    //    private String key = null;
+//
+//    private Class paramType = null;
+//
+//    public WebSocketUnit(Method method, WebSocketModule module) {
+//        super(method, module);
+//    }
+//
+//    @Override
+//    public String getName() {
+//        return getMethod().getName();
+//    }
+//
+//    public synchronized String getKey() {
+//        if (key == null) {
+//            key = Common.sha1(String.format("%s:%s(%d)",
+//                    getDeclaringModule().getInterfaceClass().getName(),
+//                    getName(),
+//                    getParameters().length));
+//        }
+//        return key;
+//    }
+//
+//    @Override
+//    protected void afterInit() {
+////        super.afterInit();
+//    }
+//
+//    @Override
+//    protected AbstractParam buildParam(Method method, int index) {
+//        return new AbstractParam(method, index) {
+//        };
+//    }
+//
     @Override
     public String getInvokeType() {
         return "WebSocket";
     }
-
-    @Override
-    protected AbstractParam[] toArrays(List<AbstractParam> abstractParams) {
-        return abstractParams.toArray(new AbstractParam[0]);
-    }
-
-    @Override
-    protected DefinitionContext toContext() {
-        return ConcreteHelper.getContext(getMethod(), getDeclaringModule().getInterfaceClass());
-    }
-
-    @Override
-    public int compareTo(AbstractUnit o) {
-        return getName().compareTo(o.getName());
-    }
+//
+//    @Override
+//    protected AbstractParam[] toArrays(List<AbstractParam> abstractParams) {
+//        return abstractParams.toArray(new AbstractParam[0]);
+//    }
+//
+//    @Override
+//    protected DefinitionContext toContext() {
+//        return ConcreteHelper.getContext(getMethod(), getDeclaringModule().getInterfaceClass());
+//    }
+//
+//    @Override
+//    public int compareTo(AbstractUnit o) {
+//        return getName().compareTo(o.getName());
+//    }
 }

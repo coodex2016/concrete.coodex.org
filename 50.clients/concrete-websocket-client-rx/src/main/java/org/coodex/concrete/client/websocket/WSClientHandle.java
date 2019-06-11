@@ -21,8 +21,8 @@ import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.common.JSONSerializer;
 import org.coodex.concrete.common.JSONSerializerFactory;
-import org.coodex.concrete.websocket.RequestPackage;
-import org.coodex.concrete.websocket.ResponsePackage;
+import org.coodex.concrete.own.RequestPackage;
+import org.coodex.concrete.own.ResponsePackage;
 import org.coodex.concurrent.TimeLimitedMap;
 import org.coodex.util.Clock;
 import org.coodex.util.GenericType;
@@ -38,8 +38,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import static org.coodex.concrete.client.websocket.WSInvokerFactory.isSSL;
-
 @ClientEndpoint(configurator = SetUserAgentConfigurator.class)
 public class WSClientHandle {
 
@@ -47,17 +45,20 @@ public class WSClientHandle {
     private TimeLimitedMap<String, WSCallback> callbackMap = new TimeLimitedMap<String, WSCallback>();
     private Map<Destination, Session> sessionMap = new HashMap<Destination, Session>();
     private JSONSerializer serializer = JSONSerializerFactory.getInstance();
-    private SingletonMap<Destination, Object> locks = new SingletonMap<Destination, Object>(new SingletonMap.Builder<Destination, Object>() {
-        @Override
-        public Object build(Destination key) {
-            return new Object();
-        }
-    });
+    private SingletonMap<WebsocketDestination, Object> locks = new SingletonMap<WebsocketDestination, Object>(
+            new SingletonMap.Builder<WebsocketDestination, Object>() {
+                @Override
+                public Object build(WebsocketDestination key) {
+                    return new Object();
+                }
+            });
+
+//    private final AbstractOwnRxInvoker.ResponseTextVisitor responseTextVisitor;
 
     WSClientHandle() {
     }
 
-    private Session getSession(Destination destination) throws URISyntaxException, IOException, DeploymentException, InterruptedException {
+    private Session getSession(WebsocketDestination destination) throws URISyntaxException, IOException, DeploymentException, InterruptedException {
 
         Session session = sessionMap.get(destination);
         if (session == null || !session.isOpen()) {
@@ -67,7 +68,7 @@ public class WSClientHandle {
                 if (session == null || !session.isOpen()) {
                     // build session
                     WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-                    if (isSSL(destination.getLocation())) {
+                    if (destination.isSsl()) {
                         // TODO how to support wss used self-signed ?
                     }
                     session = container.connectToServer(this, new URI(destination.getLocation()));
@@ -111,7 +112,7 @@ public class WSClientHandle {
         }
     }
 
-    void send(final Destination destination, final RequestPackage requestPackage, final WSCallback callback) {
+    void send(final WebsocketDestination destination, final RequestPackage requestPackage, final WSCallback callback) {
         try {
             Session session = getSession(destination);
             synchronized (session) {

@@ -45,14 +45,6 @@
                 <version>${jsr-311.version}</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/org.jboss.spec.javax.ws.rs/jboss-jaxrs-api_2.0_spec -->
-            <!-- JSR 339 JAX-RS 2.0 -->
-            <!--<dependency>-->
-            <!--<groupId>org.jboss.spec.javax.ws.rs</groupId>-->
-            <!--<artifactId>jboss-jaxrs-api_2.0_spec</artifactId>-->
-            <!--<version>${jsr-339.version}</version>-->
-            <!--</dependency>-->
-
             <!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
             <dependency>
                 <groupId>javax.ws.rs</groupId>
@@ -303,6 +295,12 @@
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-support-amqp</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-api-tools</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
@@ -310,6 +308,12 @@
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-client</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-amqp-client</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 

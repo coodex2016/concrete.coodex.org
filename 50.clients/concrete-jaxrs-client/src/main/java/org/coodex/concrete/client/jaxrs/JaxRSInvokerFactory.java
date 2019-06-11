@@ -22,24 +22,14 @@ import org.coodex.concrete.client.InvokerFactory;
 
 public class JaxRSInvokerFactory implements InvokerFactory {
 
-    public static boolean isJaxRS(String location) {
-        return location.toLowerCase().startsWith("http://")
-                || isSSL(location);
-    }
-
-//    private static SingletonMap<Destination, JaxRSInvoker> i
-
-    public static boolean isSSL(String location) {
-        return location.toLowerCase().startsWith("https://");
-    }
 
     @Override
     public Invoker getInvoker(Destination destination) {
-        return new JaxRSInvoker(destination);
+        return new JaxRSInvoker((JaxRSDestination) destination);
     }
 
     @Override
     public boolean accept(Destination param) {
-        return !param.isAsync() && isJaxRS(param.getLocation());
+        return param != null && !param.isAsync() && param instanceof JaxRSDestination;
     }
 }

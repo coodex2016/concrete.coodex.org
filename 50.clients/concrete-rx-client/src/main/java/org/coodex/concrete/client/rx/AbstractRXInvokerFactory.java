@@ -23,6 +23,6 @@ public abstract class AbstractRXInvokerFactory implements InvokerFactory {
 
     @Override
     public boolean accept(Destination param) {
-        return param.isAsync();
+        return param != null && param.isAsync();
     }
 }

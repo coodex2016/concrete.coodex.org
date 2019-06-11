@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.websocket;
+package org.coodex.concrete.client.impl;
 
-public class ResponsePackage<T> extends DataPackage<T> {
+import org.coodex.concrete.client.Destination;
 
-    private boolean ok = true;
-
-    public boolean isOk() {
-        return ok;
-    }
-
-    public void setOk(boolean ok) {
-        this.ok = ok;
-    }
+public class LocalDestination extends Destination {
 }

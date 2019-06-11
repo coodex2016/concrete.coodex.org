@@ -18,11 +18,18 @@ package org.coodex.concrete.client.jaxrs.rx;
 
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.Invoker;
+import org.coodex.concrete.client.jaxrs.JaxRSDestination;
 import org.coodex.concrete.client.jaxrs.JaxRSInvokerFactory;
 import org.coodex.concrete.client.rx.AbstractRXInvokerFactory;
 import org.coodex.concrete.client.rx.SyncToRxInvoker;
 
 public class JaxRSRXInvokerFactory extends AbstractRXInvokerFactory {
+
+    /**
+     * TODO: 使用jaxrs 2.0的异步接口
+     * @param destination
+     * @return
+     */
     @Override
     public Invoker getInvoker(Destination destination) {
         return new SyncToRxInvoker(destination);
@@ -30,6 +37,7 @@ public class JaxRSRXInvokerFactory extends AbstractRXInvokerFactory {
 
     @Override
     public boolean accept(Destination param) {
-        return super.accept(param) && JaxRSInvokerFactory.isJaxRS(param.getLocation());
+        return super.accept(param) && param instanceof JaxRSDestination;
+                //JaxRSInvokerFactory.isJaxRS(param.getLocation());
     }
 }

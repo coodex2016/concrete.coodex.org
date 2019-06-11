@@ -22,7 +22,6 @@ import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.rpc.RpcContext;
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.ClientTokenManagement;
-import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.AbstractSyncInvoker;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.dubbo.DubboHelper;
@@ -38,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.coodex.concrete.ClientHelper.getString;
 import static org.coodex.concrete.common.ConcreteHelper.VERSION;
 import static org.coodex.concrete.dubbo.DubboHelper.*;
 
@@ -53,13 +51,13 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
                 @Override
 
                 public Object build(DubboCacheKey key) {
-                    Destination destination = key.getDestination();
-                    String registries = getString(destination.getIdentify(), "registry");
-                    String application = getString(destination.getIdentify(), "name");
+//                    Destination destination = key.getDestination();
+//                    String registries = getString(destination.getIdentify(), "registry");
+//                    String application = getString(destination.getIdentify(), "name");
+                    DubboDestination destination = key.getDestination();
                     ApplicationConfig applicationConfig = DubboHelper.applications.getInstance(
-                            application == null ? "concrete-dubbo-application" : application);
-                    List<RegistryConfig> registryConfigs = buildRegistryConfigs(
-                            Common.toArray(registries, ",", new String[0]));
+                            destination.getName() == null ? "concrete-dubbo-application" : destination.getName());
+                    List<RegistryConfig> registryConfigs = buildRegistryConfigs(destination.getRegistries());
                     ReferenceConfig reference = new ReferenceConfig(); // 此实例很重，封装了与注册中心的连接以及与提供者的连接，请自行缓存，否则可能造成内存和连接泄漏
                     reference.setApplication(applicationConfig);
                     reference.setRegistries(registryConfigs); // 多个注册中心可以用setRegistries()
@@ -72,7 +70,7 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
             });
 
 
-    public DubboClientInvoker(Destination destination) {
+    public DubboClientInvoker(DubboDestination destination) {
         super(destination);
     }
 
@@ -122,7 +120,7 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
         }
 
         Map<String, String> result = (Map<String, String>) findMethod(clz, method).invoke(
-                dubboClientInstances.getInstance(new DubboCacheKey(getDestination(), clz)),
+                dubboClientInstances.getInstance(new DubboCacheKey((DubboDestination) getDestination(), clz)),
                 args);
 
         if (log.isDebugEnabled()) {
@@ -146,15 +144,15 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
     }
 
     static class DubboCacheKey {
-        private final Destination destination;
+        private final DubboDestination destination;
         private final Class clz;
 
-        public DubboCacheKey(Destination destination, Class clz) {
+        public DubboCacheKey(DubboDestination destination, Class clz) {
             this.destination = destination;
             this.clz = clz;
         }
 
-        public Destination getDestination() {
+        public DubboDestination getDestination() {
             return destination;
         }
 

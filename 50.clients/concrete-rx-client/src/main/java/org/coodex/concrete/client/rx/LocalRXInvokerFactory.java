@@ -16,9 +16,9 @@
 
 package org.coodex.concrete.client.rx;
 
+import org.coodex.concrete.client.impl.LocalDestination;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.Invoker;
-import org.coodex.concrete.client.impl.LocalInvokerFactory;
 
 public class LocalRXInvokerFactory extends AbstractRXInvokerFactory {
 
@@ -29,6 +29,7 @@ public class LocalRXInvokerFactory extends AbstractRXInvokerFactory {
 
     @Override
     public boolean accept(Destination param) {
-        return super.accept(param) && param.getLocation().equalsIgnoreCase(LocalInvokerFactory.LOCAL);
+        return super.accept(param) && param instanceof LocalDestination;
+        //param.getLocation().equalsIgnoreCase(LocalInvokerFactory.LOCAL);
     }
 }

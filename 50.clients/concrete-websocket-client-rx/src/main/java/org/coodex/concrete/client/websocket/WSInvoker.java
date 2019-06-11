@@ -23,8 +23,8 @@ import org.coodex.concrete.client.ClientTokenManagement;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.rx.AbstractRxInvoker;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.websocket.RequestPackage;
-import org.coodex.concrete.websocket.ResponsePackage;
+import org.coodex.concrete.own.RequestPackage;
+import org.coodex.concrete.own.ResponsePackage;
 import org.coodex.concrete.websocket.WebSocketUnit;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
@@ -32,11 +32,12 @@ import org.coodex.util.TypeHelper;
 
 import java.lang.reflect.Method;
 
-import static org.coodex.concrete.websocket.WebSocketHelper.buildRequest;
+import static org.coodex.concrete.own.PackageHelper.buildRequest;
 import static org.coodex.concrete.websocket.WebSocketHelper.findUnit;
 
 
 public class WSInvoker extends AbstractRxInvoker {
+
 
     private static Singleton<WSClientHandle> handle = new Singleton<WSClientHandle>(
             new Singleton.Builder<WSClientHandle>() {
@@ -83,7 +84,8 @@ public class WSInvoker extends AbstractRxInvoker {
 
                 // send with callback
                 try {
-                    handle.getInstance().send(getDestination(), requestPackage, new WSClientHandle.WSCallback() {
+                    handle.getInstance()
+                            .send((WebsocketDestination) getDestination(), requestPackage, new WSClientHandle.WSCallback() {
 
                         private boolean completed = false;
 
@@ -134,7 +136,8 @@ public class WSInvoker extends AbstractRxInvoker {
                 }
 
             }
-        });
+        }
+        );
     }
 
 
