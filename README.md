@@ -32,9 +32,17 @@ public interface SomeService extends ConcreteService{
     - 重构websocket模块，抽象出自有的数据包处理、服务调用，ampq以及以后其他的支持都将通过类似模式扩展
     - 设计concrete-client的Destination，各模块自行定义各自的Destination，不再局限于Config中获取，为下一步动态客户端提供支持
     - 增加concrete-support-amqp模块，提供基于amqp发布服务的能力
+        - AMQPApplication，使用AMQPConnectionConfig和exchangeName构建
     - 增加concrete-client-amqp模块，提供rpc的调用能力
+        - location: amqp{s}{://{{username}:{password}@}host{:port}/{virtualHost}}
+        - amqp.username
+        - amqp.password
+        - amqp.host
+        - amqp.port
+        - amqp.virtualHost
+        - amqp.exchange: 默认AMQP_PROVIDER
 - coodex-utilities:
-    - Profile增加placeHolder机制，${namespace.key}
+    - Profile增加placeHolder机制，${namespace:key},namespace:可为空，为空时对应当前资源文件的key值。
 
 ## 2019-03-28
 
