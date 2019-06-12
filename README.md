@@ -29,7 +29,7 @@ public interface SomeService extends ConcreteService{
 ## 2019-06-12
 
 - 设计支持基于amqp发布服务
-    - 重构websocket模块，抽象出自有的数据包处理、服务调用，ampq以及以后其他的支持都将通过类似模式扩展
+    - 重构websocket模块，抽象出自有的数据包处理、服务调用，amqp以及以后其他的支持都将通过类似模式扩展
     - 设计concrete-client的Destination，各模块自行定义各自的Destination，不再局限于Config中获取，为下一步动态客户端提供支持
     - 增加concrete-support-amqp模块，提供基于amqp发布服务的能力
         - AMQPApplication，使用AMQPConnectionConfig和exchangeName构建
