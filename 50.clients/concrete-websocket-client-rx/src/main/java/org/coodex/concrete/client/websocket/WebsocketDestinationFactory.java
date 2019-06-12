@@ -23,12 +23,12 @@ import static org.coodex.concrete.client.websocket.WebsocketDestination.isSSL;
 
 public class WebsocketDestinationFactory extends AbstractDestinationFactory<WebsocketDestination> {
     static boolean isWebsocket(String location) {
-        return location.toLowerCase().startsWith("ws:") || isSSL(location);
+        return location != null && (location.toLowerCase().startsWith("ws:") || isSSL(location));
     }
 
     @Override
     public Destination build(String module) {
-        WebsocketDestination destination = init(new WebsocketDestination(), module, true);
+        WebsocketDestination destination = init(new WebsocketDestination(), module);
         return destination;
     }
 

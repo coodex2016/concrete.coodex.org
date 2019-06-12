@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.client.impl;
+package org.coodex.testcase.client;
 
-import org.coodex.concrete.client.AbstractDestinationFactory;
-import org.coodex.concrete.client.Destination;
+import org.coodex.concrete.Client;
+import org.coodex.testcase.api.TestCase;
 
-public class LocalDestinationFactory extends AbstractDestinationFactory<LocalDestination> {
+public class ClientTest {
 
-    public static final String DESC_LOCAL = "local";
-
-    @Override
-    public Destination build(String s) {
-        return init(new LocalDestination(), s);
+    private static void test(String module){
+        TestCase testCase = Client.getInstance(TestCase.class,module);
+        System.out.println(testCase.add(1,2) == 3);
     }
 
-    @Override
-    public boolean accept(String param) {
-        return DESC_LOCAL.equalsIgnoreCase(param);
+    public static void main(String[] args) {
+//        test("jaxrs");
+        test("amqp");
+
+        test("amqp");
     }
 }

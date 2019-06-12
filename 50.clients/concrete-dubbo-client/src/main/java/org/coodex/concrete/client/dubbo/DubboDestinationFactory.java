@@ -29,7 +29,7 @@ public class DubboDestinationFactory extends AbstractDestinationFactory<DubboDes
 
     @Override
     public Destination build(String module) {
-        DubboDestination dubboDestination = init(new DubboDestination(), module, false);
+        DubboDestination dubboDestination = init(new DubboDestination(), module);
         dubboDestination.setName(ClientHelper.getString(module, "name"));
         dubboDestination.setRegistries(
                 Common.toArray(ClientHelper.getString(module,"registry"),",", new String[0])

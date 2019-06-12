@@ -31,7 +31,7 @@ public class AMQPDestinationFactory extends AbstractDestinationFactory<AMQPDesti
 
     @Override
     public Destination build(String module) {
-        AMQPDestination destination = init(new AMQPDestination(), module, true);
+        AMQPDestination destination = init(new AMQPDestination(), module);
         destination.setHost(ClientHelper.getString(module, "amqp.host"));
         String port = ClientHelper.getString(module, "amqp.port");
         if (!Common.isBlank(port)) {

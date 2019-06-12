@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.client.impl;
+package org.coodex.testcase.api;
 
-import org.coodex.concrete.client.AbstractDestinationFactory;
-import org.coodex.concrete.client.Destination;
 
-public class LocalDestinationFactory extends AbstractDestinationFactory<LocalDestination> {
+import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.MicroService;
+import org.coodex.util.Parameter;
 
-    public static final String DESC_LOCAL = "local";
+@MicroService("concreteTest")
+public interface TestCase extends ConcreteService {
 
-    @Override
-    public Destination build(String s) {
-        return init(new LocalDestination(), s);
-    }
-
-    @Override
-    public boolean accept(String param) {
-        return DESC_LOCAL.equalsIgnoreCase(param);
-    }
+    int add(
+            @Parameter("x1") Integer x1,
+            @Parameter("x2") Integer x2
+    );
 }

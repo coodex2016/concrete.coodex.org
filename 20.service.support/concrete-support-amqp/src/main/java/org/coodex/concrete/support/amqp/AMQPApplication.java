@@ -27,6 +27,8 @@ import org.coodex.concrete.own.OwnServiceProvider;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;
 import org.coodex.util.GenericType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -36,6 +38,9 @@ import static org.coodex.concrete.amqp.AMQPConstants.ROUTE_KEY_RESPONSE;
 import static org.coodex.concrete.amqp.AMQPHelper.getExchangeName;
 
 public class AMQPApplication extends OwnServiceProvider {
+
+    private final static Logger log = LoggerFactory.getLogger(AMQPApplication.class);
+
 
     private static OwnModuleBuilder AMQP_MODULE_BUILDER = new OwnModuleBuilder() {
         @Override
@@ -47,11 +52,11 @@ public class AMQPApplication extends OwnServiceProvider {
     private Channel channel;
 
 
-    public AMQPApplication(AMQPConnectionConfig config){
+    public AMQPApplication(AMQPConnectionConfig config) {
         this(config, null);
     }
+
     /**
-     *
      * @param config
      * @param exchangeName 服务绑定到哪个交换机上
      */
@@ -67,7 +72,7 @@ public class AMQPApplication extends OwnServiceProvider {
 
     @Override
     protected Subjoin getSubjoin(Map<String, String> map) {
-        return new AMQPSubjoin(map);
+        return new AMQPSubjoin(map).wrap();
     }
 
     @Override
@@ -95,17 +100,20 @@ public class AMQPApplication extends OwnServiceProvider {
             channel.queueBind(queueName, exchangeName, ROUTE_KEY_REQUEST + "*");
             channel.basicConsume(queueName, true, new DefaultConsumer(channel) {
                 private void send(String json, String clientId) throws IOException {
-                    synchronized (channel) {
-                        channel.basicPublish(exchangeName, ROUTE_KEY_RESPONSE + clientId, null,
-                                json.getBytes("UTF-8"));
-                    }
+                    log.debug("send to {}: {}", clientId, json);
+                    channel.basicPublish(exchangeName,
+                            ROUTE_KEY_RESPONSE + clientId,
+                            null,
+                            json.getBytes("UTF-8"));
                 }
 
 
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                     final String clientId = envelope.getRoutingKey().substring(ROUTE_KEY_REQUEST.length());
-                    final RequestPackage<Object> requestPackage = serializer.parse(new String(body, "UTF-8"),
+                    String bodyStr = new String(body, "UTF-8");
+                    log.debug("message received: {}", bodyStr);
+                    final RequestPackage<Object> requestPackage = serializer.parse(bodyStr,
                             new GenericType<RequestPackage<Object>>() {
                             }.genericType());
 
@@ -127,7 +135,7 @@ public class AMQPApplication extends OwnServiceProvider {
                                     responsePackage.setMsgId(msgId);
                                     responsePackage.setContent(ThrowableMapperFacade.toErrorInfo(th));
                                     try {
-                                        send(serializer.toJson(requestPackage), clientId);
+                                        send(serializer.toJson(responsePackage), clientId);
                                     } catch (IOException e) {
                                         throw new RuntimeException(e);
                                     }

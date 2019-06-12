@@ -16,12 +16,13 @@
 
 package org.coodex.concrete.websocket;
 
+import org.coodex.concrete.common.AbstractChangeableSubjoin;
 import org.coodex.concrete.common.AbstractSubjoin;
 
 import java.util.Collection;
 import java.util.Map;
 
-public class WebSocketSubjoin extends AbstractSubjoin {
+public class WebSocketSubjoin extends AbstractChangeableSubjoin {
 
 
     public WebSocketSubjoin(Map<String, String> map) {

@@ -38,16 +38,16 @@ public abstract class AbstractDestinationFactory<T extends Destination> implemen
         return moduleLocationMap.getInstance(module);
     }
 
-    protected T init(T destination, String module, boolean defaultAsync) {
+    protected T init(T destination, String module/*, boolean defaultAsync*/) {
         destination.setIdentify(module);
         destination.setLocation(getLocation(module));
         destination.setTokenManagerKey(ConcreteHelper.getString(TAG_CLIENT, module, "tokenManagerKey"));
         destination.setTokenTransfer(
                 Common.toBool(ConcreteHelper.getString(TAG_CLIENT, module, "tokenTransfer"), false)
         );
-        destination.setAsync(
-                Common.toBool(ConcreteHelper.getString(TAG_CLIENT, module, "async"), defaultAsync)
-        );
+//        destination.setAsync(
+//                Common.toBool(ConcreteHelper.getString(TAG_CLIENT, module, "async"), defaultAsync)
+//        );
         return destination;
     }
 }

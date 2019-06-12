@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.client.impl;
+package org.coodex.testcase.impl;
 
-import org.coodex.concrete.client.AbstractDestinationFactory;
-import org.coodex.concrete.client.Destination;
+import org.coodex.concrete.common.Token;
+import org.coodex.testcase.api.TestCase;
 
-public class LocalDestinationFactory extends AbstractDestinationFactory<LocalDestination> {
+import javax.inject.Inject;
+import javax.inject.Named;
 
-    public static final String DESC_LOCAL = "local";
+@Named
+public class TestCaseImpl implements TestCase {
+
+    @Inject
+    private Token token;
 
     @Override
-    public Destination build(String s) {
-        return init(new LocalDestination(), s);
-    }
-
-    @Override
-    public boolean accept(String param) {
-        return DESC_LOCAL.equalsIgnoreCase(param);
+    public int add(Integer x1, Integer x2) {
+        token.setAttribute("key","key");
+//        throw new RuntimeException("hello world.");
+        return x1 + x2;
     }
 }

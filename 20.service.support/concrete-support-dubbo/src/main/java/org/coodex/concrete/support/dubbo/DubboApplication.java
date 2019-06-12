@@ -171,7 +171,7 @@ public class DubboApplication implements Application {
                                     RpcContext.getContext().getAttachment(SUBJOIN),
                                     new GenericType<Map<String, String>>() {
                                     }.genericType());
-                            DubboSubjoin subjoin = new DubboSubjoin(map);
+                            Subjoin subjoin = new DubboSubjoin(map).wrap();
                             String locate = RpcContext.getContext().getAttachment(LOCATE);
                             String tokenId = RpcContext.getContext().getAttachment(Token.CONCRETE_TOKEN_ID_KEY);
                             String agent = RpcContext.getContext().getAttachment(AGENT);

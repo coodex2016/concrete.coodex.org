@@ -16,12 +16,13 @@
 
 package org.coodex.concrete.support.dubbo;
 
+import org.coodex.concrete.common.AbstractChangeableSubjoin;
 import org.coodex.concrete.common.AbstractSubjoin;
 
 import java.util.Collection;
 import java.util.Map;
 
-public class DubboSubjoin extends AbstractSubjoin {
+public class DubboSubjoin extends AbstractChangeableSubjoin {
     public DubboSubjoin(Map<String, String> map) {
         super(map);
     }

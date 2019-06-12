@@ -34,7 +34,7 @@ public class JaxRSDestinationFactory extends AbstractDestinationFactory<JaxRSDes
 
     @Override
     public Destination build(String module) {
-        JaxRSDestination destination = init(new JaxRSDestination(), module, false);
+        JaxRSDestination destination = init(new JaxRSDestination(), module);
         destination.setLogLevel(ClientHelper.getString(module, "logLevel"));
         destination.setSsl(ClientHelper.getString(module, "ssl"));
         destination.setCharset(ClientHelper.getString(module, "jaxrs.charset"));

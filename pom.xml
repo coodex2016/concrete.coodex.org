@@ -154,7 +154,7 @@
         <jackson2.version>2.9.0</jackson2.version>
 
         <activemq.version>5.15.6</activemq.version>
-        <rabbitmq.client.version>5.4.3</rabbitmq.client.version>
+        <rabbitmq.client.version>5.7.1</rabbitmq.client.version>
 
         <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>
         <coodex.shared.cache.version>${project.parent.version}</coodex.shared.cache.version>

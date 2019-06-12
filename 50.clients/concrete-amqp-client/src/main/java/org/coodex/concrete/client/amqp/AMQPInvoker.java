@@ -127,15 +127,16 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
         private final String exchangeName;
         private final String clientId = Common.getUUIDStr();
 
-        Facade(Connection connection, String exchangeName) throws IOException {
+        Facade(final Connection connection, String exchangeName) throws IOException {
             this.exchangeName = getExchangeName(exchangeName);
             channel = connection.createChannel();
             channel.exchangeDeclare(this.exchangeName, BuiltinExchangeType.TOPIC);
             String queueName = channel.queueDeclare().getQueue();
-            channel.queueBind(queueName, exchangeName, ROUTE_KEY_RESPONSE + clientId);
+            channel.queueBind(queueName, this.exchangeName, ROUTE_KEY_RESPONSE + clientId);
             channel.basicConsume(queueName, true, new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                    log.info("consumerTag: {}, envelope: {}", consumerTag, envelope.getRoutingKey());
                     OwnRXMessageListener.getInstance().onMessage(new String(body, "UTF-8"));
                 }
             });

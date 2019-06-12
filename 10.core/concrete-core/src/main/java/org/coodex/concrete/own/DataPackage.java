@@ -18,12 +18,13 @@ package org.coodex.concrete.own;
 
 import org.coodex.util.Common;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class DataPackage<T> {
 
     private T content;
-    private Map<String, String> subjoin;
+    private Map<String, String> subjoin = new HashMap<String, String>();
     private String msgId = Common.getUUIDStr();
     private String concreteTokenId;
 

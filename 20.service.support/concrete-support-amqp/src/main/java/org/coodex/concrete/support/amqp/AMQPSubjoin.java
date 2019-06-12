@@ -16,13 +16,14 @@
 
 package org.coodex.concrete.support.amqp;
 
-import org.coodex.concrete.common.AbstractSubjoin;
+import org.coodex.concrete.amqp.AMQPConstants;
+import org.coodex.concrete.common.AbstractChangeableSubjoin;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
-public class AMQPSubjoin extends AbstractSubjoin {
+public class AMQPSubjoin extends AbstractChangeableSubjoin {
 
     public AMQPSubjoin(Map<String, String> map) {
         super(map);
@@ -30,6 +31,6 @@ public class AMQPSubjoin extends AbstractSubjoin {
 
     @Override
     protected Collection<String> skipKeys() {
-        return Arrays.asList();
+        return null;
     }
 }
