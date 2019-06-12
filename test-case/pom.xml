@@ -116,7 +116,7 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <artifactId>spring-boot-starter-jersey</artifactId>
         </dependency>
 
         <dependency>

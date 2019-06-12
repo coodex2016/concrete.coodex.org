@@ -31,5 +31,9 @@ public class ClientTest {
         test("amqp");
 
         test("amqp");
+
+        test("jaxrs");
+
+        test("websocket");
     }
 }
