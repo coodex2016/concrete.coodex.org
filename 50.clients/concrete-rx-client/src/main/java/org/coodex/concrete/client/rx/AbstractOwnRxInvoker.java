@@ -138,7 +138,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
                 CallBack callBack = new CallBack(observableEmitter,
                         context, getLogger(), getDestination());
 
-                callbackMap.put(msgId, callBack, 5000,
+                callbackMap.put(msgId, callBack, getDestination().getTimeout(),
                         new TimeLimitedMap.TimeoutCallback() {
                             @Override
                             public void timeout() {

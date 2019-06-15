@@ -19,9 +19,11 @@ package org.coodex.concrete.client;
 import java.io.Serializable;
 
 public abstract class Destination implements Serializable {
+    public static final Integer DEFAULT_REQUEST_TIMEOUT = 5000;
     private String identify;
     private String location;
     private String tokenManagerKey;
+    private Integer timeout;
     private boolean tokenTransfer;
 
 
@@ -67,60 +69,39 @@ public abstract class Destination implements Serializable {
         this.async = async;
     }
 
+    public Integer getTimeout() {
+        return timeout == null || timeout <= 0 ? DEFAULT_REQUEST_TIMEOUT : timeout;
+    }
+
+    public void setTimeout(Integer timeout) {
+        this.timeout = timeout;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Destination)) return false;
 
         Destination that = (Destination) o;
 
         if (tokenTransfer != that.tokenTransfer) return false;
         if (async != that.async) return false;
         if (identify != null ? !identify.equals(that.identify) : that.identify != null) return false;
-        if (!location.equals(that.location)) return false;
-        return tokenManagerKey != null ? tokenManagerKey.equals(that.tokenManagerKey) : that.tokenManagerKey == null;
+        if (location != null ? !location.equals(that.location) : that.location != null) return false;
+        if (tokenManagerKey != null ? !tokenManagerKey.equals(that.tokenManagerKey) : that.tokenManagerKey != null)
+            return false;
+        return timeout != null ? timeout.equals(that.timeout) : that.timeout == null;
     }
 
     @Override
     public int hashCode() {
         int result = identify != null ? identify.hashCode() : 0;
-        result = 31 * result + location.hashCode();
+        result = 31 * result + (location != null ? location.hashCode() : 0);
         result = 31 * result + (tokenManagerKey != null ? tokenManagerKey.hashCode() : 0);
+        result = 31 * result + (timeout != null ? timeout.hashCode() : 0);
         result = 31 * result + (tokenTransfer ? 1 : 0);
         result = 31 * result + (async ? 1 : 0);
         return result;
     }
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//
-//        Destination that = (Destination) o;
-//
-//        if (tokenTransfer != that.tokenTransfer) return false;
-//        if (identify != null ? !identify.equals(that.identify) : that.identify != null) return false;
-//        if (location != null ? !location.equals(that.location) : that.location != null) return false;
-//        return tokenManagerKey != null ? tokenManagerKey.equals(that.tokenManagerKey) : that.tokenManagerKey == null;
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        int result = identify != null ? identify.hashCode() : 0;
-//        result = 31 * result + (location != null ? location.hashCode() : 0);
-//        result = 31 * result + (tokenManagerKey != null ? tokenManagerKey.hashCode() : 0);
-//        result = 31 * result + (tokenTransfer ? 1 : 0);
-//        return result;
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "Destination{" +
-//                "identify='" + identify + '\'' +
-//                ", location='" + location + '\'' +
-//                ", tokenManagerKey='" + tokenManagerKey + '\'' +
-//                ", tokenTransfer=" + tokenTransfer +
-//                ", async=" + async +
-//                '}';
-//    }
 }

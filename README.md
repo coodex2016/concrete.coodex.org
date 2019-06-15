@@ -26,6 +26,10 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-06-15
+
+- Destination 增加timeout属性
+
 ## 2019-06-12
 
 - 设计支持基于amqp发布服务

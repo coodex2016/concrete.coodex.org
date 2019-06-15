@@ -16,10 +16,12 @@
 
 package org.coodex.concrete.client;
 
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
 
+import static org.coodex.concrete.client.Destination.DEFAULT_REQUEST_TIMEOUT;
 import static org.coodex.concrete.common.ConcreteHelper.KEY_LOCATION;
 import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
 
@@ -44,6 +46,9 @@ public abstract class AbstractDestinationFactory<T extends Destination> implemen
         destination.setTokenManagerKey(ConcreteHelper.getString(TAG_CLIENT, module, "tokenManagerKey"));
         destination.setTokenTransfer(
                 Common.toBool(ConcreteHelper.getString(TAG_CLIENT, module, "tokenTransfer"), false)
+        );
+        destination.setTimeout(
+                Common.toInt(ConcreteHelper.getString(TAG_CLIENT, module, "timeout"), DEFAULT_REQUEST_TIMEOUT)
         );
 //        destination.setAsync(
 //                Common.toBool(ConcreteHelper.getString(TAG_CLIENT, module, "async"), defaultAsync)
