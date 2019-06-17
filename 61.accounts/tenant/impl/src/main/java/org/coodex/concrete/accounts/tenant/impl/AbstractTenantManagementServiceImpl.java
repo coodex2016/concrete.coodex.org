@@ -41,6 +41,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
+import static org.springframework.data.domain.PageRequest.of;
 
 /**
  * Created by davidoff shen on 2017-05-26.
@@ -92,7 +93,7 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
     }
 
     protected Pageable toPageable(PageRequest request) {
-        return new org.springframework.data.domain.PageRequest(request.getNum().intValue() - 1, request.getPageSize());
+        return of(request.getNum().intValue() - 1, request.getPageSize());
     }
 
 

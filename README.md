@@ -8,6 +8,7 @@
 
 > Concrete是一种基于Java的服务定义规范
 
+
 ```java
 @MicroService
 public interface SomeService extends ConcreteService{
@@ -17,7 +18,6 @@ public interface SomeService extends ConcreteService{
     
 }
 ```
-
 ## 干哈滴？
 
 > 致力于让研发者将精力尽可能多的投入到需求分析、业务逻辑和用户体验上
@@ -25,6 +25,17 @@ public interface SomeService extends ConcreteService{
 ## 怎么搞？
 
 看[书](https://concrete.coodex.org)，多练
+
+## 2019-06-17
+
+- 建立0.3.x分支，准备开始0.3.0
+- 默认实现升级依赖，spring boot 2; spring framework 5; spring data Lovelace-SR8
+- 移除声明作废的代码
+- 0.3.x目标
+    - 接口不再需要继承ConcreteService，而是通过装饰模式指定
+    - 动态代理来做aop，不再依赖容器
+    - 结构不良的优化
+
 
 ## 2019-06-15
 

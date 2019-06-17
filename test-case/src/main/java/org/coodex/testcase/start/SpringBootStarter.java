@@ -36,10 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpoint;
@@ -80,8 +77,9 @@ public class SpringBootStarter {
         ServletContainer container = new ServletContainer();
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(
                 container, "/WebSocket") {
+
             @Override
-            public void onStartup(ServletContext servletContext) throws ServletException {
+            protected ServletRegistration.Dynamic addRegistration(String description, ServletContext servletContext) {
                 servletContext.addListener(new ServletContextListener() {
 
                     @Override
@@ -101,7 +99,9 @@ public class SpringBootStarter {
 
                     }
                 });
+                return super.addRegistration(description, servletContext);
             }
+
         };
         registrationBean.setName("demo");
         registrationBean.setAsyncSupported(true);

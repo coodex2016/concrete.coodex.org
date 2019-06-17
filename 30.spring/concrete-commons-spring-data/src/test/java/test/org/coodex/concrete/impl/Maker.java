@@ -18,17 +18,17 @@ package test.org.coodex.concrete.impl;
 
 import org.coodex.commons.jpa.springdata.AbstractSpecificationsMaker;
 import org.coodex.commons.jpa.springdata.MakerFunction;
-import org.springframework.data.jpa.domain.Specifications;
+import org.springframework.data.jpa.domain.Specification;
 import test.org.coodex.concrete.entities.TestEntity;
 
 public class Maker extends AbstractSpecificationsMaker<Condition, TestEntity> {
 
-    public Specifications<TestEntity> aaa(Condition condition) {
+    public Specification<TestEntity> aaa(Condition condition) {
         return null;
     }
 
     @MakerFunction("a01")
-    public Specifications<TestEntity> bbb(Condition condition) {
+    public Specification<TestEntity> bbb(Condition condition) {
         return null;
     }
 

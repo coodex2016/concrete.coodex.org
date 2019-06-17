@@ -18,7 +18,8 @@ package org.coodex.commons.jpa.springdata;
 
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.IF;
-import org.springframework.data.jpa.domain.Specifications;
+import org.springframework.data.jpa.domain.Specification;
+//import org.springframework.data.jpa.domain.Specifications;
 
 import java.lang.reflect.Method;
 
@@ -28,12 +29,12 @@ public abstract class AbstractSpecificationsMaker<C, T> implements Specification
 
 
     @Override
-    public Specifications<T> make(C condition) {
+    public Specification<T> make(C condition) {
         return wrapper(make(condition, null));
     }
 
     @SuppressWarnings("unchecked")
-    public Specifications<T> make(C condition, String name) {
+    public Specification<T> make(C condition, String name) {
 
         name = name == null ? "" : name;
 
@@ -53,7 +54,7 @@ public abstract class AbstractSpecificationsMaker<C, T> implements Specification
         try {
             Method method = IF.isNull(makerFunction, "SpecificationsMaker function not exists: " + name);
             method.setAccessible(true);
-            return (Specifications<T>) method.invoke(this, condition);
+            return (Specification<T>) method.invoke(this, condition);
         } catch (Throwable th) {
             throw ConcreteHelper.getException(th);
         }

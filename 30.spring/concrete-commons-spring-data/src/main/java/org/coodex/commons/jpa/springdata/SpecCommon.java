@@ -18,7 +18,7 @@ package org.coodex.commons.jpa.springdata;
 
 import org.coodex.commons.jpa.criteria.Operators;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.domain.Specifications;
+//import org.springframework.data.jpa.domain.Specifications;
 
 import javax.persistence.criteria.*;
 import java.util.Arrays;
@@ -69,34 +69,34 @@ public class SpecCommon {
         };
     }
 
-    public static <T> Specifications<T> and(Specification<T>... specifications) {
+    public static <T> Specification<T> and(Specification<T>... specifications) {
         return and(Arrays.asList(specifications));
     }
 
-    public static <T> Specifications<T> or(Specification<T>... specifications) {
+    public static <T> Specification<T> or(Specification<T>... specifications) {
         return or(Arrays.asList(specifications));
     }
 
-    public static <T> Specifications<T> and(Collection<Specification<T>> specList) {
-        Specifications<T> specs = null;
+    public static <T> Specification<T> and(Collection<Specification<T>> specList) {
+        Specification<T> specs = null;
         for (Specification<T> s : specList) {
             if (specs != null) {
                 specs = specs.and(s);
             } else {
-                specs = Specifications.where(s);
+                specs = Specification.where(s);
             }
         }
         return specs;
     }
 
 
-    public static <T> Specifications<T> or(Collection<Specification<T>> specList) {
-        Specifications<T> specs = null;
+    public static <T> Specification<T> or(Collection<Specification<T>> specList) {
+        Specification<T> specs = null;
         for (Specification<T> s : specList) {
             if (specs != null) {
                 specs = specs.or(s);
             } else {
-                specs = Specifications.where(s);
+                specs = Specification.where(s);
             }
         }
         return specs;
@@ -355,8 +355,8 @@ public class SpecCommon {
     }
 
 
-    public static <ENTITY> Specifications<ENTITY> wrapper(Specifications<ENTITY> specifications) {
-        return specifications == null ? Specifications.where(specifications) : specifications;
+    public static <ENTITY> Specification<ENTITY> wrapper(Specification<ENTITY> specifications) {
+        return specifications == null ? Specification.where(specifications) : specifications;
     }
 
     static class MemberOfSpec<ATTR, ENTITY> implements Specification<ENTITY> {

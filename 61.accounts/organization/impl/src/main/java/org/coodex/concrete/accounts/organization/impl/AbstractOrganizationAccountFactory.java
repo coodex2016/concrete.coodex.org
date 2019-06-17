@@ -22,7 +22,9 @@ import org.coodex.concrete.accounts.organization.entities.AbstractPositionEntity
 import org.coodex.concrete.accounts.organization.entities.OrganizationEntity;
 import org.coodex.concrete.accounts.organization.repositories.AbstractPersonAccountRepo;
 import org.coodex.concrete.common.*;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
+import org.coodex.util.SingletonMap;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -54,18 +56,31 @@ public abstract class AbstractOrganizationAccountFactory
 
 
     };
-    private ConcreteCache<String, OrganizationAccount> accountCache = new ConcreteCache<String, OrganizationAccount>() {
-        @Override
-        protected OrganizationAccount load(String key) {
-            P person = accountRepo.findOne(key);
-            return person == null ? null : accountCopier.copy(person);
-        }
 
-        @Override
-        protected String getRule() {
-            return AbstractOrganizationAccountFactory.class.getPackage().getName();
-        }
-    };
+    private SingletonMap<String, OrganizationAccount> accountSingletonMap = new SingletonMap<>(
+            new SingletonMap.Builder<String, OrganizationAccount>() {
+                @Override
+                public OrganizationAccount build(String key) {
+                    P person = accountRepo.findById(key).get();
+                    return person == null ? null : accountCopier.copy(person);
+                }
+            },
+            Config.getValue("cache.object.life", 10,
+                    AbstractOrganizationAccountFactory.class.getPackage().getName()
+            ) * 60 * 1000
+    );
+//    private ConcreteCache<String, OrganizationAccount> accountCache = new ConcreteCache<String, OrganizationAccount>() {
+//        @Override
+//        protected OrganizationAccount load(String key) {
+//            P person = accountRepo.findById(key).get();
+//            return person == null ? null : accountCopier.copy(person);
+//        }
+//
+//        @Override
+//        protected String getRule() {
+//            return AbstractOrganizationAccountFactory.class.getPackage().getName();
+//        }
+//    };
 
     public static Set<String> getAllRoles(AbstractPersonAccountEntity<? extends AbstractPositionEntity> p) {
         Set<String> roles = new HashSet<String>();
@@ -108,6 +123,6 @@ public abstract class AbstractOrganizationAccountFactory
 
     @Override
     public <ID extends AccountID> Account<ID> getAccountByID(ID id) {
-        return (Account<ID>) IF.isNull(accountCache.get(((AccountIDImpl) id).getId()), NONE_THIS_ACCOUNT);
+        return (Account<ID>) IF.isNull(accountSingletonMap.getInstance(((AccountIDImpl) id).getId()), NONE_THIS_ACCOUNT);
     }
 }

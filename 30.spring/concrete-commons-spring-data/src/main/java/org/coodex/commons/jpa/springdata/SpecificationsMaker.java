@@ -16,10 +16,10 @@
 
 package org.coodex.commons.jpa.springdata;
 
-import org.springframework.data.jpa.domain.Specifications;
+import org.springframework.data.jpa.domain.Specification;
 
 public interface SpecificationsMaker<C /*conditionType*/, T /*Entity type*/> {
 
-    Specifications<T> make(C condition);
+    Specification<T> make(C condition);
 
 }

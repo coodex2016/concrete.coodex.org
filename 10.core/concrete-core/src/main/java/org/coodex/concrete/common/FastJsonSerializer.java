@@ -39,7 +39,7 @@ public class FastJsonSerializer extends AbstractJsonSerializer {
 
     public static void main(String[] args) {
         System.out.println(JSONSerializerFactory.getInstance().toJson("ok"));
-        System.out.println(JSONSerializerFactory.getInstance().parse("ok", String.class));
+        System.out.println(JSONSerializerFactory.getInstance().<String>parse("ok", String.class));
     }
 
     private synchronized void init() throws ClassNotFoundException, NoSuchMethodException {

@@ -82,20 +82,20 @@ public abstract class AbstractInformationServiceImpl<
     protected InstitutionFull<I, D, J, P> $getOneInstitutionFull(String id) {
 
         // TODO 需要考虑缓存
-        IE institutionEntity = IF.isNull(institutionRepo.findOne(id), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
-        InstitutionFull<I, D, J, P> institutionFull = new InstitutionFull<I, D, J, P>();
+        IE institutionEntity = IF.isNull(institutionRepo.findById(id).get(), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
+        InstitutionFull<I, D, J, P> institutionFull = new InstitutionFull<>();
         institutionFull.setId(institutionEntity.getId());
         institutionFull.setInstitution(institutionCopier.copyB2A(institutionEntity));
 
         // 添加下级单位
-        institutionFull.setInstitutions(new ArrayList<InstitutionFull<I, D, J, P>>());
+        institutionFull.setInstitutions(new ArrayList<>());
         for (IE subInstitution : institutionRepo.findByTenantAndHigherLevelIdOrderByDisplayOrderDesc(
                 getTenant(), institutionEntity.getId())) {
             institutionFull.getInstitutions().add($getOneInstitutionFull(subInstitution.getId()));
         }
 
         // 添加下级部门
-        institutionFull.setDepartments(new ArrayList<DepartmentFull<D, J, P>>());
+        institutionFull.setDepartments(new ArrayList<>());
         for (DE department : departmentRepo.findByTenantAndHigherLevelIdOrderByDisplayOrderDesc(
                 getTenant(), institutionEntity.getId())) {
             institutionFull.getDepartments().add($getOneDepartmentFull(department.getId()));
@@ -103,19 +103,19 @@ public abstract class AbstractInformationServiceImpl<
 
 
         // 添加职位、人员
-        institutionFull.setPersons(new ArrayList<StrID<P>>());
-        institutionFull.setPositions(new ArrayList<StrID<J>>());
+        institutionFull.setPersons(new ArrayList<>());
+        institutionFull.setPositions(new ArrayList<>());
         appendPositionsAndPersons(institutionEntity, institutionFull.getPositions(), institutionFull.getPersons());
         return institutionFull;
     }
 
     protected void appendPositionsAndPersons(OrganizationEntity institutionEntity, List<StrID<J>> positionList, List<StrID<P>> personList) {
-        Set<String> personIdSet = new HashSet<String>();
+        Set<String> personIdSet = new HashSet<>();
         for (JE positionEntity : positionRepo.findByBelongOrderByDisplayOrderDesc(institutionEntity.getId())) {
             positionList.add(new StrID<J>(positionEntity.getId(), positionCopier.copyB2A(positionEntity)));
             for (PE personEntity : personAccountRepo.findAll(
                     SpecCommon.<PE, JE>memberOf("positions", positionEntity),
-                    new Sort(new Sort.Order(Sort.Direction.DESC, "displayOrder")))) {
+                    Sort.by(Sort.Order.desc("displayOrder")))) {
 
                 if (!personIdSet.contains(personEntity.getId())) {
                     personIdSet.add(personEntity.getId());
@@ -132,7 +132,7 @@ public abstract class AbstractInformationServiceImpl<
 
     protected DepartmentFull<D, J, P> $getOneDepartmentFull(String id) {
         // TODO 需要考虑缓存
-        DE departmentEntity = IF.isNull(departmentRepo.findOne(id), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
+        DE departmentEntity = IF.isNull(departmentRepo.findById(id).get(), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
         DepartmentFull<D, J, P> departmentFull = new DepartmentFull<D, J, P>();
         departmentFull.setDepartment(departmentCopier.copyB2A(departmentEntity));
         departmentFull.setId(departmentEntity.getId());
@@ -150,7 +150,7 @@ public abstract class AbstractInformationServiceImpl<
     @Override
     public List<StrID<Organization>> getHigherLevelOrganizations(String id) {
         OrganizationEntity organizationEntity =
-                IF.isNull(organizationRepo.findOne(id), OrganizationErrorCodes.NONE_THIS_ORGANIZATION).getHigherLevel();
+                IF.isNull(organizationRepo.findById(id).get(), OrganizationErrorCodes.NONE_THIS_ORGANIZATION).getHigherLevel();
 
         List<StrID<Organization>> organizationList = new ArrayList<StrID<Organization>>();
         while (organizationEntity != null) {
@@ -175,7 +175,7 @@ public abstract class AbstractInformationServiceImpl<
 
     @Override
     public StrID<I> getInstitution(String id) {
-        IE institutionEntity = IF.isNull(institutionRepo.findOne(id), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
+        IE institutionEntity = IF.isNull(institutionRepo.findById(id).get(), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
         return new StrID<I>(institutionEntity.getId(), institutionCopier.copyB2A(institutionEntity));
     }
 
@@ -202,42 +202,42 @@ public abstract class AbstractInformationServiceImpl<
     @Override
     @Deprecated
     public List<StrID<D>> getDepartmentsOfInstitution(String institution) {
-        IF.isNull(institutionRepo.findOne(institution), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
+        IF.isNull(institutionRepo.findById(institution).get(), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
         return $getDepartmentsOfOrganization(institution);
     }
 
     @Override
     @Deprecated
     public List<StrID<J>> getPositionsOfInstitution(String institution) {
-        IF.isNull(institutionRepo.findOne(institution), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
+        IF.isNull(institutionRepo.findById(institution).get(), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
         return $getPositionsOfOrganization(institution);
     }
 
     @Override
     @Deprecated
     public List<StrID<P>> getPersonsOfInstitution(String institution) {
-        IF.isNull(institutionRepo.findOne(institution), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
+        IF.isNull(institutionRepo.findById(institution).get(), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
         return $getPersonsOfOrganization(institution);
     }
 
     @Override
     @Deprecated
     public List<StrID<D>> getDepartmentsOfDepartment(String department) {
-        IF.isNull(departmentRepo.findOne(department), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
+        IF.isNull(departmentRepo.findById(department).get(), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
         return $getDepartmentsOfOrganization(department);
     }
 
     @Override
     @Deprecated
     public List<StrID<J>> getPositionsOfDepartment(String department) {
-        IF.isNull(departmentRepo.findOne(department), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
+        IF.isNull(departmentRepo.findById(department).get(), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
         return $getPositionsOfOrganization(department);
     }
 
     @Override
     @Deprecated
     public List<StrID<P>> getPersonsOfDepartment(String department) {
-        IF.isNull(departmentRepo.findOne(department), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
+        IF.isNull(departmentRepo.findById(department).get(), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
         return $getPersonsOfOrganization(department);
     }
 
@@ -284,7 +284,7 @@ public abstract class AbstractInformationServiceImpl<
 
     @Override
     public List<StrID<I>> getInstitutionsOfPerson(String person) {
-        PE personEntity = IF.isNull(personAccountRepo.findOne(person), OrganizationErrorCodes.PERSON_NOT_EXISTS);
+        PE personEntity = IF.isNull(personAccountRepo.findById(person).get(), OrganizationErrorCodes.PERSON_NOT_EXISTS);
         Set<String> institutions = new HashSet<String>();
         List<StrID<I>> institutionList = new ArrayList<StrID<I>>();
         for (JE positionEntity : personEntity.getPositions()) {
@@ -306,7 +306,7 @@ public abstract class AbstractInformationServiceImpl<
 
     @Override
     public List<StrID<D>> getDepartmentsOfPerson(String person) {
-        PE personEntity = IF.isNull(personAccountRepo.findOne(person), OrganizationErrorCodes.PERSON_NOT_EXISTS);
+        PE personEntity = IF.isNull(personAccountRepo.findById(person).get(), OrganizationErrorCodes.PERSON_NOT_EXISTS);
         Set<String> departments = new HashSet<String>();
         List<StrID<D>> departmentList = new ArrayList<StrID<D>>();
         for (JE positionEntity : personEntity.getPositions()) {
@@ -330,7 +330,7 @@ public abstract class AbstractInformationServiceImpl<
 
     @Override
     public List<StrID<J>> getPositionsOfPerson(String person) {
-        PE personEntity = IF.isNull(personAccountRepo.findOne(person), OrganizationErrorCodes.PERSON_NOT_EXISTS);
+        PE personEntity = IF.isNull(personAccountRepo.findById(person).get(), OrganizationErrorCodes.PERSON_NOT_EXISTS);
         List<StrID<J>> positionList = new ArrayList<StrID<J>>();
         for (JE positionEntity : personEntity.getPositions()) {
             positionList.add(new StrID<J>(positionEntity.getId(), positionCopier.copyB2A(positionEntity)));

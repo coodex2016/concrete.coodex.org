@@ -16,7 +16,12 @@
 
 package org.coodex.concrete.accounts;
 
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.AcceptableAccountFactory;
+import org.coodex.concrete.common.Account;
+import org.coodex.concrete.common.AccountID;
+import org.coodex.concrete.common.IF;
+import org.coodex.config.Config;
+import org.coodex.util.SingletonMap;
 
 import static org.coodex.concrete.common.AccountsErrorCodes.NONE_THIS_ACCOUNT;
 
@@ -25,24 +30,36 @@ import static org.coodex.concrete.common.AccountsErrorCodes.NONE_THIS_ACCOUNT;
  */
 public abstract class AbstractTenantAccountFactory implements AcceptableAccountFactory<AccountIDImpl> {
 
-    private ConcreteCache<String, TenantAccount> accountCache = new ConcreteCache<String, TenantAccount>() {
-        @Override
-        protected TenantAccount load(String key) {
-            return newAccount(key);
-        }
+//    private ConcreteCache<String, TenantAccount> accountCache = new ConcreteCache<String, TenantAccount>() {
+//        @Override
+//        protected TenantAccount load(String key) {
+//            return newAccount(key);
+//        }
+//
+//        @Override
+//        protected String getRule() {
+//            return AbstractTenantAccountFactory.class.getPackage().getName();
+//        }
+//    };
 
-        @Override
-        protected String getRule() {
-            return AbstractTenantAccountFactory.class.getPackage().getName();
-        }
-    };
+    private SingletonMap<String, TenantAccount> accountSingletonMap = new SingletonMap<>(
+            new SingletonMap.Builder<String, TenantAccount>() {
+                @Override
+                public TenantAccount build(String key) {
+                    return newAccount(key);
+                }
+            },
+            Config.getValue("cache.object.life", 10,
+                    AbstractTenantAccountFactory.class.getPackage().getName()
+            ) * 60 * 1000
+    );
 
     protected abstract TenantAccount newAccount(String key);
 
     @Override
     @SuppressWarnings({"unchecked", "unsafe"})
     public <ID extends AccountID> Account<ID> getAccountByID(ID id) {
-        return (Account<ID>) IF.isNull(accountCache.get(((AccountIDImpl) id).getId()), NONE_THIS_ACCOUNT);
+        return (Account<ID>) IF.isNull(accountSingletonMap.getInstance(((AccountIDImpl) id).getId()), NONE_THIS_ACCOUNT);
     }
 
     @Override

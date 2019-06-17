@@ -130,7 +130,7 @@ class TopicBuilder
             ctConstructor.setBody("{super($$);}");
             ctClass.addConstructor(ctConstructor);
 
-            Class<? extends AbstractTopic> newClass = ctClass.toClass();
+            Class<? extends AbstractTopic> newClass = (Class<? extends AbstractTopic>) ctClass.toClass();
             Constructor constructor = newClass.getConstructor(Courier.class);
             return (AbstractTopic) constructor.newInstance(courier);
         } catch (Throwable th) {

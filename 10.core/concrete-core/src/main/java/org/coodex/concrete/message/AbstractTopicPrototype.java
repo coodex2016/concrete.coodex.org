@@ -38,7 +38,7 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
                 @Override
                 public Executor build() {
                     // todo 根据配置获取
-                    return ExecutorsHelper.newFixedThreadPool(10);
+                    return ExecutorsHelper.newFixedThreadPool(10, "topic");
                 }
             }
     );

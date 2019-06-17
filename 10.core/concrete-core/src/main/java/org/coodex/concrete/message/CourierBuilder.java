@@ -129,7 +129,7 @@ class CourierBuilder
             ctConstructor.setBody("{super($$);}");
             ctClass.addConstructor(ctConstructor);
 
-            Class<Courier> courierClass = ctClass.toClass();
+            Class<Courier> courierClass = (Class<Courier>) ctClass.toClass();
             Constructor courierConstructor = courierClass.getConstructor(String.class, String.class, Type.class);
             return (Courier) courierConstructor.newInstance(key.queue, destination, key.topicType);
         } catch (Throwable th) {

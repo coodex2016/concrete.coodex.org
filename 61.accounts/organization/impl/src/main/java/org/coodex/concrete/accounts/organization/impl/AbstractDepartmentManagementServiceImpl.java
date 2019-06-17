@@ -51,7 +51,7 @@ public abstract class AbstractDepartmentManagementServiceImpl
 
     protected E getDepartmentEntity(String id) {
         IF.isNull(id, NONE_THIS_DEPARTMENT);
-        return IF.isNull(departmentRepo.findOne(id), NONE_THIS_DEPARTMENT);
+        return IF.isNull(departmentRepo.findById(id).get(), NONE_THIS_DEPARTMENT);
     }
 
 

@@ -25,6 +25,8 @@ import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 
+import static org.springframework.data.domain.PageRequest.of;
+
 /**
  * Created by davidoff shen on 2017-07-13.
  */
@@ -37,7 +39,7 @@ public class PageHelper {
 
     public static Pageable getPageable(PageRequest pageRequest, Sort sort) {
         int pageNo = pageRequest.getNum() != null && pageRequest.getNum() > 0 ? pageRequest.getNum().intValue() - 1 : 0;
-        return new org.springframework.data.domain.PageRequest(pageNo, pageRequest.getPageSize(), sort);
+        return of(pageNo, pageRequest.getPageSize(), sort);
     }
 
     public static <SRC, TARGET> PageResult<TARGET> copy(Page<SRC> srcPage, Copier<SRC, TARGET> copier) {

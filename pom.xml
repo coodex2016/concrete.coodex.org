@@ -24,7 +24,7 @@
     <url>https://concrete.coodex.org</url>
     <groupId>org.coodex</groupId>
     <artifactId>concrete.pom</artifactId>
-    <version>0.2.4-SNAPSHOT</version>
+    <version>0.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -125,33 +125,33 @@
         <jsr-311.version>1.1.1</jsr-311.version>
         <jsr-339.version>1.0.0.Final</jsr-339.version>
 
-        <dubbo.version>2.6.1</dubbo.version>
+        <dubbo.version>2.6.6</dubbo.version>
 
-        <slf4j.version>1.7.25</slf4j.version>
-        <aspectj.version>1.8.10</aspectj.version>
+        <slf4j.version>1.7.26</slf4j.version>
+        <aspectj.version>1.9.4</aspectj.version>
 
-        <spring.framework.version>4.3.10.RELEASE</spring.framework.version>
-        <spring.data.version>Ingalls-SR6</spring.data.version>
-        <spring.boot.version>1.5.6.RELEASE</spring.boot.version>
+        <spring.framework.version>5.1.7.RELEASE</spring.framework.version>
+        <spring.data.version>Lovelace-SR8</spring.data.version>
+        <spring.boot.version>2.1.5.RELEASE</spring.boot.version>
 
-        <jersey.version>2.25.1</jersey.version>
+        <jersey.version>2.28</jersey.version>
         <junit.version>4.12</junit.version>
-        <freemarker.version>2.3.23</freemarker.version>
-        <fastjson.version>1.2.51</fastjson.version>
-        <guice.version>4.1.0</guice.version>
-        <javassist.verion>3.22.0-GA</javassist.verion>
+        <freemarker.version>2.3.28</freemarker.version>
+        <fastjson.version>1.2.58</fastjson.version>
+        <guice.version>4.2.2</guice.version>
+        <javassist.verion>3.25.0-GA</javassist.verion>
 
-        <brave.version>5.1.3</brave.version>
+        <brave.version>5.6.5</brave.version>
 
         <thrift.version>${default.version}</thrift.version>
 
-        <hibernate.version>5.2.8.Final</hibernate.version>
-        <hibernate.validator.version>5.4.0.Final</hibernate.validator.version>
+        <hibernate.version>5.4.3.Final</hibernate.version>
+        <hibernate.validator.version>6.0.17.Final</hibernate.validator.version>
 
-        <druid.version>1.1.2</druid.version>
+        <druid.version>1.1.17</druid.version>
 
-        <rxjava.vesion>2.1.3</rxjava.vesion>
-        <jackson2.version>2.9.0</jackson2.version>
+        <rxjava.vesion>2.2.9</rxjava.vesion>
+        <jackson2.version>2.9.8</jackson2.version>
 
         <activemq.version>5.15.6</activemq.version>
         <rabbitmq.client.version>5.7.1</rabbitmq.client.version>
@@ -270,8 +270,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -409,14 +409,7 @@
             </dependency>
 
 
-            <!-- Spring framework -->
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-framework-bom</artifactId>
-                <version>${spring.framework.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+            <!-- Spring -->
 
             <dependency>
                 <groupId>org.springframework.data</groupId>
@@ -439,6 +432,15 @@
                 <!--</exclusion>-->
                 <!--</exclusions>-->
             </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring.framework.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- guice IoC -->
             <!--<dependency>-->
             <!--<groupId>com.google.inject</groupId>-->

@@ -73,7 +73,7 @@ public abstract class AbstractPersonManagementServiceImpl
     protected Set<J> getPositionsWithPermissionCheck(String[] positions) {
         Set<J> positionEntities = new HashSet<J>();
         for (String positionId : positions) {
-            J positionEntity = IF.isNull(getPositionRepo().findOne(positionId), POSITION_NOT_EXISTS);
+            J positionEntity = IF.isNull(getPositionRepo().findById(positionId).get(), POSITION_NOT_EXISTS);
             checkManagementPermission(positionEntity.getBelong());
             positionEntities.add(positionEntity);
         }
@@ -82,7 +82,7 @@ public abstract class AbstractPersonManagementServiceImpl
 
 
     protected E getPersonEntity(String id) {
-        return IF.isNull(personAccountRepo.findOne(id), PERSON_NOT_EXISTS);
+        return IF.isNull(personAccountRepo.findById(id).get(), PERSON_NOT_EXISTS);
     }
 
 

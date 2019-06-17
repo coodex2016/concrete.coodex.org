@@ -21,14 +21,15 @@ import org.coodex.commons.jpa.springdata.SpecCommon;
 import org.coodex.concrete.test.ConcreteTestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specifications;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import test.org.coodex.concrete.entities.TestEntity;
 import test.org.coodex.concrete.repo.TestRepo;
 
 import javax.inject.Inject;
+
+import static org.springframework.data.domain.PageRequest.of;
 
 /**
  * Created by davidoff shen on 2017-03-17.
@@ -104,7 +105,7 @@ public class TestCase extends ConcreteTestCase {
 
     @Test
     public void testNull() {
-        testRepo.findAll((Specifications<TestEntity>) null, new PageRequest(1, 1));
+        testRepo.findAll((Specification<TestEntity>) null, of(1, 1));
     }
 
     @Test

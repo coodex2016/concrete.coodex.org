@@ -76,7 +76,7 @@ public abstract class AbstractSelfManagementServiceImpl<
     protected PE getCurrentAccountEntity() {
         Account<AccountIDImpl> currentAccount = token.currentAccount();
         IF.is(currentAccount.getId().getType() != AccountIDImpl.TYPE_ORGANIZATION, NOT_ORGANIZATION_ACCOUNT);
-        return personAccountRepo.findOne(currentAccount.getId().getId());
+        return personAccountRepo.findById(currentAccount.getId().getId()).get();
     }
 
     @Override
