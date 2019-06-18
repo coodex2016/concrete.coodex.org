@@ -29,7 +29,7 @@ class RuntimeContext {
     }
 }
 
-const runtimeContext: RuntimeContext = new RuntimeContext();
+export const runtimeContext: RuntimeContext = new RuntimeContext();
 
 export abstract class AbstractConcreteService {
 
