@@ -17,7 +17,7 @@
 package org.coodex.concrete.accounts.api;
 
 import org.coodex.concrete.api.AccessAllow;
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Safely;
 import org.coodex.util.Parameter;
 
@@ -25,10 +25,10 @@ import org.coodex.util.Parameter;
  * 租户自管理服务，部署在应用端
  * Created by davidoff shen on 2017-05-26.
  */
-@MicroService("tenant")
+@ConcreteService("tenant")
 public interface TenantSelfManagementService {
 
-    @MicroService("{tenantAccountName}/login")
+    @ConcreteService("{tenantAccountName}/login")
     void login(
             @Parameter("tenantAccountName") String tenantAccountName,
             @Parameter("password") String password,
@@ -36,17 +36,17 @@ public interface TenantSelfManagementService {
 
     @AccessAllow
     @Safely
-    @MicroService("mine/pwd")
+    @ConcreteService("mine/pwd")
     void updatePassword(
             @Parameter("password") String password,
             @Parameter("authCode") String authCode);
 
     @AccessAllow
-    @MicroService("mine/totp")
+    @ConcreteService("mine/totp")
     String authenticatorDesc(
             @Parameter("authCode") String authCode);
 
     @AccessAllow
-    @MicroService("mine/auth")
+    @ConcreteService("mine/auth")
     void bindAuthKey(@Parameter("authCode") String authCode);
 }

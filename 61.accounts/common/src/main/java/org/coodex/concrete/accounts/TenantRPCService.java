@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.accounts;
 
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Signable;
 
 /**
@@ -25,7 +25,7 @@ import org.coodex.concrete.api.Signable;
  * Created by davidoff shen on 2017-05-26.
  */
 @Signable(paperName = "tenantRPCService")
-@MicroService(abstractive = true)
+@ConcreteService(abstractive = true)
 public interface TenantRPCService {
 
     /**

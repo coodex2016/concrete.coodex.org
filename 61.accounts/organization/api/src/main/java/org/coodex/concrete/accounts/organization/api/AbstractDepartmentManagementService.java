@@ -26,7 +26,7 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 /**
  * Created by davidoff shen on 2017-04-28.
  */
-@MicroService(value = "departments", abstractive = true)
+@ConcreteService(value = "departments", abstractive = true)
 @AccessAllow(roles = {SYSTEM_MANAGER, TENANT_MANAGER, ORGANIZATION_MANAGER})
 @Safely
 public interface AbstractDepartmentManagementService<D extends Department>  {
@@ -39,19 +39,19 @@ public interface AbstractDepartmentManagementService<D extends Department>  {
 
     @Description(name = "修改部门信息",
             description = "LOGGING: old 变更前的部门实体；new 变更后的部门实体")
-    @MicroService("{id}")
+    @ConcreteService("{id}")
     void update(
             @Parameter("id") String id,
             @Parameter("department") D department);
 
-    @MicroService("{id}/changeTo")
+    @ConcreteService("{id}/changeTo")
     @Description(name = "变更上级",
             description = "上级可以是单位，也可以是部门。LOGGING: original 原上级组织实体；target 变更后的上级组织实体")
     void updateHigherLevel(
             @Parameter("id") String id,
             @Parameter("higherLevel") String higherLevel);
 
-    @MicroService("{id}/order")
+    @ConcreteService("{id}/order")
     @Description(name = "调整部门显示顺序",
             description = "LOGGING: original 原显示顺序；target 变更后的显示顺序")
     void updateOrder(
@@ -61,7 +61,7 @@ public interface AbstractDepartmentManagementService<D extends Department>  {
     @Description(name = "删除部门",
             description = "删除部门时，部门、下属部门应无人员，职位、下属部门均被删除。" +
                     "LOGGING: deleted 所有被删除的实体信息")
-    @MicroService("{id}")
+    @ConcreteService("{id}")
     void delete(
             @Parameter("id") String id);
 }

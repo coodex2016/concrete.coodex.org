@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.apitools;
 
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.apitools.jaxrs.angular.meta.*;
 import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.common.modules.AbstractParam;
@@ -27,6 +26,8 @@ import org.coodex.util.TypeHelper;
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.*;
+
+import static org.coodex.concrete.common.ConcreteHelper.isConcreteService;
 
 public abstract class AbstractAngularRender<U extends AbstractUnit> extends AbstractRender {
 
@@ -76,7 +77,8 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
             toWrite.put("contextPath", getContextPath(key));
             Set<Class> classSet = new HashSet<Class>();
             for (Class clz : map.keySet()) {
-                if (ConcreteService.class.isAssignableFrom(clz)) {
+                //ConcreteService.class.isAssignableFrom(clz)
+                if (isConcreteService(clz)) {
                     toWrite.put("includeServices", Boolean.TRUE);
                     providers.add(map.get(clz).getClassName());
                     Set<String> set = services.containsKey(key) ? services.get(key) : new HashSet<String>();

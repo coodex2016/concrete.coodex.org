@@ -78,7 +78,7 @@ public class Module extends AbstractModule<Unit> {
 //
 //        for (Class<?> c : clz.getInterfaces()) {
 //            if (ConcreteService.class.isAssignableFrom(clz)) {
-//                return c.getAnnotation(MicroService.class) != null
+//                return c.getAnnotation(ConcreteService.class) != null
 //                        && c.getAnnotation(Abstract.class) != null
 //                        ? c : findParent(c);
 //            }

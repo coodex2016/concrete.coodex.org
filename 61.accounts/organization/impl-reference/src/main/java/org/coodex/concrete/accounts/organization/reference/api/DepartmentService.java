@@ -18,13 +18,13 @@ package org.coodex.concrete.accounts.organization.reference.api;
 
 import org.coodex.concrete.accounts.organization.api.AbstractDepartmentManagementService;
 import org.coodex.concrete.accounts.organization.pojo.Department;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.MicroService;
 
 /**
  * Created by davidoff shen on 2017-05-02.
  */
-@MicroService("organization")
+@ConcreteService("organization")
 @Description(name = "部门管理", description = "部门管理的参考实现")
 public interface DepartmentService extends AbstractDepartmentManagementService<Department> {
 }

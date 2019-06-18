@@ -18,13 +18,13 @@ package org.coodex.concrete.accounts.organization.reference.api;
 
 import org.coodex.concrete.accounts.organization.api.AbstractPositionManagementService;
 import org.coodex.concrete.accounts.organization.pojo.Position;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.MicroService;
 
 /**
  * Created by davidoff shen on 2017-05-02.
  */
-@MicroService("organization")
+@ConcreteService("organization")
 @Description(name = "职位管理", description = "职位管理的参考实现")
 public interface PositionService extends AbstractPositionManagementService<Position> {
 }

@@ -16,11 +16,19 @@
 
 package org.coodex.concrete.api;
 
+import java.lang.annotation.*;
+
 /**
- * 所有concrete business的根接口
- * <p>
- * Created by davidoff shen on 2016-08-29.
+ * Created by davidoff shen on 2016-08-31.
  */
-@Deprecated
-public interface ConcreteService {
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface ConcreteService {
+
+    String value() default "";
+
+    boolean abstractive() default false;
+
+    boolean notService() default false;
 }

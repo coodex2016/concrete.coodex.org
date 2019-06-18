@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.test.api;
 
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.jaxrs.Body;

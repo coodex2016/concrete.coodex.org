@@ -16,7 +16,7 @@
 
 package test.org.coodex.intf;
 
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.ServiceTiming;
 import test.org.coodex.intf.pojo.BV;
 
@@ -26,10 +26,10 @@ import javax.validation.constraints.NotNull;
 /**
  * Created by davidoff shen on 2016-09-02.
  */
-@MicroService
+@ConcreteService
 public interface AspectTest {
 
-    //    @MicroService
+    //    @ConcreteService
 //    @NotService
     @ServiceTiming({"rule1"})
     void test1(

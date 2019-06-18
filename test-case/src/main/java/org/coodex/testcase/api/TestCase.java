@@ -17,10 +17,10 @@
 package org.coodex.testcase.api;
 
 
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.util.Parameter;
 
-@MicroService("concreteTest")
+@ConcreteService("concreteTest")
 public interface TestCase {
 
     int add(

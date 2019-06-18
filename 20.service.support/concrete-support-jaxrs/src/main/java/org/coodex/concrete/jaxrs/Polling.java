@@ -16,10 +16,10 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.util.Parameter;
 
-@MicroService("Concrete")
+@ConcreteService("Concrete")
 public interface Polling {
 
     Object polling(@Parameter("timeOut") Integer timeOut);

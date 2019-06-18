@@ -18,8 +18,8 @@ package org.coodex.concrete.accounts.organization.api;
 
 import org.coodex.concrete.accounts.organization.pojo.Institution;
 import org.coodex.concrete.api.AccessAllow;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.api.Safely;
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.util.Parameter;
@@ -29,7 +29,7 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 /**
  * Created by davidoff shen on 2017-04-28.
  */
-@MicroService(value = "institutions",abstractive = true)
+@ConcreteService(value = "institutions",abstractive = true)
 @AccessAllow(roles = {SYSTEM_MANAGER, TENANT_MANAGER, ORGANIZATION_MANAGER})
 @Safely
 public interface AbstractInstitutionManagementService<I extends Institution>{
@@ -44,19 +44,19 @@ public interface AbstractInstitutionManagementService<I extends Institution>{
 
     @Description(name = "更新单位信息",
             description = "LOGGING: old 单位实体变更前数据; new 变更后的实体数据")
-    @MicroService("{id}")
+    @ConcreteService("{id}")
     void update(
             @Parameter("id") String id,
             @Parameter("institution") I institution);
 
-    @MicroService("{id}/changeTo")
+    @ConcreteService("{id}/changeTo")
     @Description(name = "变更上级单位",
             description = "LOGGING: original 原上级单位信息; target 变更之后的上级单位信息")
     void updateHigherLevel(
             @Parameter("id") String id,
             @Parameter("higherLevel") String higherLevel);
 
-    @MicroService("{id}/order")
+    @ConcreteService("{id}/order")
     @Description(name = "调整单位显示顺序",
             description = "越大越靠前，相同值则按创建时间升序排序；LOGGING: original 原顺序; target 调整后顺序。")
     void updateOrder(
@@ -66,7 +66,7 @@ public interface AbstractInstitutionManagementService<I extends Institution>{
     @Description(name = "删除单位",
             description = "删除单位时，单位、下属单位、部门应没有人员方可删除，下属单位、部门、职位均被删除。"
                     + "LOGGING: deleted 所有被删除的实体信息")
-    @MicroService("{id}")
+    @ConcreteService("{id}")
     void delete(
             @Parameter("id") String id);
 }

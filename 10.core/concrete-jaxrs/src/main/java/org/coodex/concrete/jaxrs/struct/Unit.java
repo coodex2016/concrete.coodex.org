@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.jaxrs.struct;
 
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.modules.AbstractUnit;
@@ -138,7 +138,7 @@ public class Unit extends AbstractUnit<Param, Module> {
 //                    buffer.append(slash(Common.camelCase(serviceName, true)));
 //            }
 //
-//            MicroService microService = getMethod().getAnnotation(MicroService.class);
+//            ConcreteService microService = getMethod().getAnnotation(ConcreteService.class);
 //            buffer.append(slash(microService == null ? removePredicate(getMethod().getName()) : microService.value()));
 //
 //            String toTest = slash(getDeclaringModule().getName())
@@ -187,8 +187,8 @@ public class Unit extends AbstractUnit<Param, Module> {
                 buffer.append(slash(Common.camelCase(serviceName, true)));
         }
 
-        MicroService microService = getMethod().getAnnotation(MicroService.class);
-        buffer.append(slash(microService == null ? removePredicate(getMethod().getName()) : microService.value()));
+        ConcreteService concreteService = getMethod().getAnnotation(ConcreteService.class);
+        buffer.append(slash(concreteService == null ? removePredicate(getMethod().getName()) : concreteService.value()));
 
         return buffer.toString();
     }

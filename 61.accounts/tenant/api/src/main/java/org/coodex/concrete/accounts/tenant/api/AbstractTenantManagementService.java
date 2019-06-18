@@ -19,8 +19,8 @@ package org.coodex.concrete.accounts.tenant.api;
 import org.coodex.concrete.accounts.tenant.pojo.Tenant;
 import org.coodex.concrete.accounts.tenant.pojo.TenantQuery;
 import org.coodex.concrete.api.AccessAllow;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.api.Safely;
 import org.coodex.concrete.api.pojo.PageRequest;
 import org.coodex.concrete.api.pojo.PageResult;
@@ -34,7 +34,7 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.SYSTEM_MANAGER
  * <p>
  * Created by davidoff shen on 2017-05-25.
  */
-@MicroService(value = "tenants", abstractive = true)
+@ConcreteService(value = "tenants", abstractive = true)
 @AccessAllow(roles = {SYSTEM_MANAGER})
 @Safely
 public interface AbstractTenantManagementService<T extends Tenant> {
@@ -59,24 +59,24 @@ public interface AbstractTenantManagementService<T extends Tenant> {
     void delete(String tenant);
 
     @Description(name = "租户延续有效期")
-    @MicroService("{tenant}/goDownTo")
+    @ConcreteService("{tenant}/goDownTo")
     void goDownTo(String tenant,
                   @Description(name = "数量") int count,
                   @Description(name = "单位，0:天； 1:月; 2:季; 3:年; 其他视为天") int unit);
 
     @Description(name = "暂停使用", description = "需要计算余量")
-    @MicroService("{tenant}/layUp")
+    @ConcreteService("{tenant}/layUp")
     void layUp(String tenant);
 
     @Description(name = "恢复使用", description = "在恢复的时间基础上增加上余量")
-    @MicroService("{tenant}/desterilize")
+    @ConcreteService("{tenant}/desterilize")
     void desterilize(String tenant);
 
-    @MicroService("{tenant}/password")
+    @ConcreteService("{tenant}/password")
     @Description(name = "重置指定租户管理员登录密码")
     void resetPassword(String tenant);
 
-    @MicroService("{tenant}/authCode")
+    @ConcreteService("{tenant}/authCode")
     @Description(name = "重置指定租户管理员的认证码")
     void resetAuthCode(String tenant);
 

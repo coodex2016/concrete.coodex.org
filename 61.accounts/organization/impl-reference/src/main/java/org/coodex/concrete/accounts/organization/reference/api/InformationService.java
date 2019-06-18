@@ -22,12 +22,12 @@ import org.coodex.concrete.accounts.organization.pojo.Institution;
 import org.coodex.concrete.accounts.organization.pojo.Person;
 import org.coodex.concrete.accounts.organization.pojo.Position;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 
 /**
  * Created by davidoff shen on 2017-05-02.
  */
-@MicroService("organization")
+@ConcreteService("organization")
 @Description(name = "组织结构信息服务")
 public interface InformationService
         extends AbstractInformationService

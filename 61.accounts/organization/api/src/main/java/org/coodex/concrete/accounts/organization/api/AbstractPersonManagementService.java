@@ -18,8 +18,8 @@ package org.coodex.concrete.accounts.organization.api;
 
 import org.coodex.concrete.accounts.organization.pojo.Person;
 import org.coodex.concrete.api.AccessAllow;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.api.Safely;
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.util.Parameter;
@@ -31,7 +31,7 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 /**
  * Created by davidoff shen on 2017-04-28.
  */
-@MicroService(value = "persons", abstractive = true)
+@ConcreteService(value = "persons", abstractive = true)
 @AccessAllow(roles = {SYSTEM_MANAGER, TENANT_MANAGER, ORGANIZATION_MANAGER})
 @Safely
 public interface AbstractPersonManagementService<P extends Person> {
@@ -47,44 +47,44 @@ public interface AbstractPersonManagementService<P extends Person> {
             @Parameter("person") P person);
 
     @Description(name = "变更人员职位")
-    @MicroService("{id}/positions")
+    @ConcreteService("{id}/positions")
     void updatePositions(
             @Parameter("id") String id,
             @Parameter("positions") String[] positions);
 
     @Description(name = "调整人员顺序")
-    @MicroService("{id}/order")
+    @ConcreteService("{id}/order")
     void updateOrder(
             @Parameter("id") String id,
             @Parameter("order") Integer order);
 
     @Description(name = "删除人员")
-    @MicroService("{id}")
+    @ConcreteService("{id}")
     void delete(
             @Parameter("id") String id);
 
-    @MicroService("{id}/roles")
+    @ConcreteService("{id}/roles")
     @Description(name = "为人员赋角色", description = "以新角色为准")
     void grantTo(
             @Parameter("id") String id,
             @Parameter("roles") String[] roles);
 
-    @MicroService("{id}/roles")
+    @ConcreteService("{id}/roles")
     @Description(name = "获取人员的角色", description = "人员的直接角色，不包含人员职位的角色")
     Set<String> personRoles(
             @Parameter("id") String id);
 
-    @MicroService("{id}/allRoles")
+    @ConcreteService("{id}/allRoles")
     @Description(name = "获取人员全部角色", description = "包含职位角色")
     Set<String> allRoles(
             @Parameter("id") String id);
 
-    @MicroService("{id}/password")
+    @ConcreteService("{id}/password")
     @Description(name = "重置指定人员登录密码")
     void resetPassword(
             @Parameter("id") String id);
 
-    @MicroService("{id}/authCode")
+    @ConcreteService("{id}/authCode")
     @Description(name = "重置指定人员的认证码")
     void resetAuthCode(@Parameter("id") String id);
 

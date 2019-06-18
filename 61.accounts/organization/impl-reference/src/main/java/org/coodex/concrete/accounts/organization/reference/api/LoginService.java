@@ -18,12 +18,12 @@ package org.coodex.concrete.accounts.organization.reference.api;
 
 import org.coodex.concrete.accounts.organization.api.AbstractLoginService;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 
 /**
  * Created by davidoff shen on 2017-05-03.
  */
-@MicroService("organization")
+@ConcreteService("organization")
 @Description(name = "登录服务")
 public interface LoginService extends AbstractLoginService {
 }

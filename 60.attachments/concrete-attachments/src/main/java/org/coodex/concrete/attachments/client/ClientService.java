@@ -16,14 +16,14 @@
 
 package org.coodex.concrete.attachments.client;
 
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.attachments.AbstractAttachmentService;
 import org.coodex.util.Parameter;
 
 /**
  * Created by davidoff shen on 2016-12-13.
  */
-@MicroService("client")
+@ConcreteService("client")
 public interface ClientService extends AbstractAttachmentService {
 
     boolean readable(

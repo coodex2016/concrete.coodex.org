@@ -16,11 +16,11 @@
 
 package org.coodex.concrete.attachments;
 
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 
 /**
  * Created by davidoff shen on 2016-12-13.
  */
-@MicroService(value = "attachments",abstractive = true)
+@ConcreteService(value = "attachments",abstractive = true)
 public interface AbstractAttachmentService {
 }

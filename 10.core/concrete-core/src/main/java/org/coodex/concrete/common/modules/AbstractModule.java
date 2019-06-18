@@ -36,7 +36,7 @@ public abstract class AbstractModule<UNIT extends AbstractUnit> implements Annot
 
     public AbstractModule(Class<?> interfaceClass) {
         //ConcreteService.class.isAssignableFrom(interfaceClass)
-        //                && interfaceClass.getAnnotation(MicroService.class) != null
+        //                && interfaceClass.getAnnotation(ConcreteService.class) != null
         //                && interfaceClass.getAnnotation(Abstract.class) == null
         if (isConcreteService(interfaceClass)) {
             this.interfaceClass = interfaceClass;

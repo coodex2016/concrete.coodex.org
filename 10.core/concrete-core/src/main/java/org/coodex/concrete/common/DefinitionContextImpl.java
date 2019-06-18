@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Overlay;
 
 import java.lang.annotation.Annotation;
@@ -65,7 +65,7 @@ public class DefinitionContextImpl implements DefinitionContext {
     @Override
     public String getModuleName() {
         if (declaringClass == null) return null;
-        MicroService concreteService = declaringClass.getAnnotation(MicroService.class);
+        ConcreteService concreteService = declaringClass.getAnnotation(ConcreteService.class);
         if (concreteService == null) return null;
         return concreteService.value();
 //        return ConcreteHelper.getServiceName(getDeclaringClass());

@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Priority;
 import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.common.modules.AbstractUnit;
@@ -50,7 +50,7 @@ public class ConcreteHelper {
 //            return clazz != null
 //                    && clazz.isInterface() //是接口
 ////                    && ConcreteService.class.isAssignableFrom(clazz) //是ConcreteService
-//                    && clazz.getAnnotation(MicroService.class) != null //定义了MicroService;
+//                    && clazz.getAnnotation(ConcreteService.class) != null //定义了MicroService;
 //                    && clazz.getAnnotation(Abstract.class) == null //非抽象
 //                    ;
             return isConcreteService(clazz);
@@ -221,7 +221,7 @@ public class ConcreteHelper {
 
     public static String getServiceName(Class<?> clz) {
         if (clz == null /*|| !ConcreteService.class.isAssignableFrom(clz)*/) return null;
-        MicroService concreteService = clz.getAnnotation(MicroService.class);
+        ConcreteService concreteService = clz.getAnnotation(ConcreteService.class);
 
         if (concreteService == null) return null;
 
@@ -233,7 +233,7 @@ public class ConcreteHelper {
 
     public static String getMethodName(Method method) {
         if (method == null) return null;
-        MicroService concreteService = method.getAnnotation(MicroService.class);
+        ConcreteService concreteService = method.getAnnotation(ConcreteService.class);
         if (concreteService == null) return method.getName();
         if (concreteService.notService()) return null;
         return Common.isBlank(concreteService.value()) ? method.getName() : concreteService.value();
@@ -297,12 +297,12 @@ public class ConcreteHelper {
     }
 
     public static boolean isAbstract(Class<?> clz){
-        MicroService service = clz.getAnnotation(MicroService.class);
+        ConcreteService service = clz.getAnnotation(ConcreteService.class);
         return service != null && service.abstractive();
     }
 
     public static boolean isConcreteService(Method method) {
-        MicroService service = method.getAnnotation(MicroService.class);
+        ConcreteService service = method.getAnnotation(ConcreteService.class);
         return service == null || !service.notService();
     }
 
@@ -310,8 +310,8 @@ public class ConcreteHelper {
         return clz != null &&
                 clz.isInterface() &&
                 // ConcreteService.class.isAssignableFrom(clz) &&
-                clz.getAnnotation(MicroService.class) != null &&
-                !clz.getAnnotation(MicroService.class).abstractive();
+                clz.getAnnotation(ConcreteService.class) != null &&
+                !clz.getAnnotation(ConcreteService.class).abstractive();
 //                clz.getAnnotation(Abstract.class) == null;
     }
 
@@ -418,7 +418,7 @@ public class ConcreteHelper {
         }
 
         // 查找服务定义
-        //  clz.getAnnotation(MicroService.class) != null && clz.getAnnotation(Abstract.class) == null
+        //  clz.getAnnotation(ConcreteService.class) != null && clz.getAnnotation(Abstract.class) == null
         if (isConcreteService(clz)) {
 
             DefinitionContextImpl context = new DefinitionContextImpl();
@@ -496,7 +496,7 @@ public class ConcreteHelper {
 
     @SuppressWarnings("unchecked")
     public static List<Class> inheritedChain(Class root, Class sub) {
-        if (root == null || root.getAnnotation(MicroService.class) == null) return null;
+        if (root == null || root.getAnnotation(ConcreteService.class) == null) return null;
 //        Stack<Class<?>> inheritedChain = new Stack<Class<?>>();
         if (root.equals(sub)) {
             return Arrays.asList();

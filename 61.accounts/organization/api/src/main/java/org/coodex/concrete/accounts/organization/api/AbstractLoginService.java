@@ -17,14 +17,14 @@
 package org.coodex.concrete.accounts.organization.api;
 
 import org.coodex.concrete.api.AccessAllow;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.MicroService;
 import org.coodex.util.Parameter;
 
 /**
  * Created by davidoff shen on 2017-05-03.
  */
-@MicroService(abstractive = true)
+@ConcreteService(abstractive = true)
 public interface AbstractLoginService {
 
     @Description(name = "帐号登录", description = "返回值为缓存信息，用于有效期内免秘登录")
@@ -42,14 +42,14 @@ public interface AbstractLoginService {
             @Parameter("authCode")
                     String authCode);
 
-    @MicroService("login/administrator")
+    @ConcreteService("login/administrator")
     @Description(name = "系统管理员登录", description = "用于系统初始化管理")
     void administratorLogin(
             @Parameter("tenant") String tenant,
             @Parameter("password") String password,
             @Parameter("authCode") String authCode);
 
-    @MicroService("login/credential")
+    @ConcreteService("login/credential")
     @Description(name = "使用缓存的令牌登录", description = "登录后账户为不可信状态")
     void loginWith(
             @Parameter("credential")
@@ -57,7 +57,7 @@ public interface AbstractLoginService {
 
 
     @Description(name = "使用授权码验证身份", description = "验证成功后，当前令牌账户置为可信状态")
-    @MicroService("login/identification")
+    @ConcreteService("login/identification")
     @AccessAllow
     String identification(
             @Parameter("authCode")

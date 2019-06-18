@@ -16,8 +16,6 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.concrete.api.ConcreteService;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 

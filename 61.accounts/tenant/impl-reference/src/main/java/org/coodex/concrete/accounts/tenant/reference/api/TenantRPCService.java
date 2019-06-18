@@ -16,11 +16,11 @@
 
 package org.coodex.concrete.accounts.tenant.reference.api;
 
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 
 /**
  * Created by davidoff shen on 2017-05-27.
  */
-@MicroService("RPC")
+@ConcreteService("RPC")
 public interface TenantRPCService extends org.coodex.concrete.accounts.TenantRPCService {
 }

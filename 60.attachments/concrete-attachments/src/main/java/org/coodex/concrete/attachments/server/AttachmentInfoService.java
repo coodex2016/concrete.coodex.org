@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.attachments.server;
 
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.attachments.AbstractAttachmentService;
 import org.coodex.concrete.attachments.AttachmentEntityInfo;
 import org.coodex.util.Parameter;
@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Created by davidoff shen on 2016-12-13.
  */
-@MicroService("AttachmentEntityInfo")
+@ConcreteService("AttachmentEntityInfo")
 public interface AttachmentInfoService extends AbstractAttachmentService {
 
     AttachmentEntityInfo get(

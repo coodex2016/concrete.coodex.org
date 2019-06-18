@@ -18,11 +18,11 @@ package org.coodex.concrete.accounts.tenant.reference.api;
 
 import org.coodex.concrete.accounts.tenant.api.AbstractTenantManagementService;
 import org.coodex.concrete.accounts.tenant.pojo.Tenant;
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 
 /**
  * Created by davidoff shen on 2017-05-27.
  */
-@MicroService("maintain")
+@ConcreteService("maintain")
 public interface TenantManagementService extends AbstractTenantManagementService<Tenant> {
 }

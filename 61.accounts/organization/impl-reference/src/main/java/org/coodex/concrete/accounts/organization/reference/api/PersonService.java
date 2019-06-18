@@ -19,12 +19,12 @@ package org.coodex.concrete.accounts.organization.reference.api;
 import org.coodex.concrete.accounts.organization.api.AbstractPersonManagementService;
 import org.coodex.concrete.accounts.organization.pojo.Person;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.ConcreteService;
 
 /**
  * Created by davidoff shen on 2017-05-02.
  */
-@MicroService("organization")
+@ConcreteService("organization")
 @Description(name = "人员管理", description = "人员管理的参考实现")
 public interface PersonService extends AbstractPersonManagementService<Person> {
 }

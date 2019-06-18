@@ -28,7 +28,7 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 /**
  * Created by davidoff shen on 2017-04-28.
  */
-@MicroService(value = "positions",abstractive = true)
+@ConcreteService(value = "positions",abstractive = true)
 @AccessAllow(roles = {SYSTEM_MANAGER, TENANT_MANAGER, ORGANIZATION_MANAGER})
 @Safely
 public interface AbstractPositionManagementService<P extends Position> {
@@ -39,34 +39,34 @@ public interface AbstractPositionManagementService<P extends Position> {
             @Parameter("belong") String belong);
 
     @Description(name = "修改职位信息")
-    @MicroService("{id}")
+    @ConcreteService("{id}")
     void update(
             @Parameter("id") String id,
             @Parameter("position") P position);
 
     @Description(name = "变更职位归属")
-    @MicroService("{id}/changeTo")
+    @ConcreteService("{id}/changeTo")
     void updateBelongTo(
             @Parameter("id") String id,
             @Parameter("belong") String belong);
 
     @Description(name = "调整职位顺序")
-    @MicroService("{id}/order")
+    @ConcreteService("{id}/order")
     void updateOrder(
             @Parameter("id") String id,
             @Parameter("order") Integer order);
 
     @Description(name = "删除职位")
-    @MicroService("{id}")
+    @ConcreteService("{id}")
     void delete(@Parameter("id") String id);
 
-    @MicroService("{id}/roles")
+    @ConcreteService("{id}/roles")
     @Description(name = "为职位赋角色", description = "以新角色为准")
     void grantTo(
             @Parameter("id") String id,
             @Parameter("roles") String[] roles);
 
-    @MicroService("{id}/roles")
+    @ConcreteService("{id}/roles")
     @Description(name = "获取职位角色")
     @AccessAllow
     Set<String> roles(@Parameter("id") String id);
