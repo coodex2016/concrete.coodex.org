@@ -26,6 +26,11 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+
+## 2019-06-18
+
+- angualr代码生成：export runtimeContext对象，可由开发者修改运行时变量
+
 ## 2019-06-15
 
 - Destination 增加timeout属性
