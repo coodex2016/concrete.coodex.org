@@ -17,7 +17,6 @@
 package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.api.NotService;
 import org.coodex.concrete.api.ServiceTiming;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.IF;
@@ -126,7 +125,7 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
     }
 
     public boolean isTimingLimitService(RuntimeContext context) {
-        return context.getDeclaringMethod().getAnnotation(NotService.class) == null
+        return isServiceMethod(context)
                 && (context.getAnnotation(ServiceTiming.class) != null);
     }
 

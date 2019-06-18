@@ -18,7 +18,7 @@ package org.coodex.concrete.apitools.websocket.jquery;
 
 import org.coodex.concrete.apitools.AbstractRender;
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.struct.AbstractParam;
+import org.coodex.concrete.common.modules.AbstractParam;
 import org.coodex.concrete.websocket.WebSocketModule;
 import org.coodex.concrete.websocket.WebSocketUnit;
 import org.coodex.util.Common;

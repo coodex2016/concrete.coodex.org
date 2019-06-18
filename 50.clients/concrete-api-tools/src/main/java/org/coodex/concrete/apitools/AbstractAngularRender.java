@@ -18,9 +18,9 @@ package org.coodex.concrete.apitools;
 
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.apitools.jaxrs.angular.meta.*;
-import org.coodex.concrete.common.struct.AbstractModule;
-import org.coodex.concrete.common.struct.AbstractParam;
-import org.coodex.concrete.common.struct.AbstractUnit;
+import org.coodex.concrete.common.modules.AbstractModule;
+import org.coodex.concrete.common.modules.AbstractParam;
+import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.util.Common;
 import org.coodex.util.TypeHelper;
 

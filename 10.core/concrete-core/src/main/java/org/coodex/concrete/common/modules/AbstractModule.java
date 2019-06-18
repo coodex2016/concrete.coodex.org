@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common.struct;
+package org.coodex.concrete.common.modules;
 
-import org.coodex.concrete.api.*;
+import org.coodex.concrete.api.Description;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.coodex.concrete.common.ConcreteHelper.isConcreteService;
 
 /**
  * Created by davidoff shen on 2016-11-30.
@@ -33,9 +35,10 @@ public abstract class AbstractModule<UNIT extends AbstractUnit> implements Annot
     private List<UNIT> units = new ArrayList<UNIT>();
 
     public AbstractModule(Class<?> interfaceClass) {
-        if (ConcreteService.class.isAssignableFrom(interfaceClass)
-                && interfaceClass.getAnnotation(MicroService.class) != null
-                && interfaceClass.getAnnotation(Abstract.class) == null) {
+        //ConcreteService.class.isAssignableFrom(interfaceClass)
+        //                && interfaceClass.getAnnotation(MicroService.class) != null
+        //                && interfaceClass.getAnnotation(Abstract.class) == null
+        if (isConcreteService(interfaceClass)) {
             this.interfaceClass = interfaceClass;
         } else {
             throw new RuntimeException(interfaceClass.getName() + " is NOT a concrete ConcreteService");
@@ -44,7 +47,8 @@ public abstract class AbstractModule<UNIT extends AbstractUnit> implements Annot
         for (Method method : interfaceClass.getMethods()) {
             if (Object.class.equals(method.getDeclaringClass())) continue;
 
-            if (method.getAnnotation(NotService.class) == null) {
+            //method.getAnnotation(NotService.class) == null
+            if (isConcreteService(method)) {
                 UNIT unit = buildUnit(method);
                 if (unit != null)
                     units.add(unit);

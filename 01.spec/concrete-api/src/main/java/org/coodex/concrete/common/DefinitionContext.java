@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
  * Created by davidoff shen on 2017-04-28.
  */
 public interface DefinitionContext {
-    Class<? extends ConcreteService> getDeclaringClass();
+    Class<?> getDeclaringClass();
 
     Method getDeclaringMethod();
 

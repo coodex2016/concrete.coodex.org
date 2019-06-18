@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.common.ModuleMaker;
+import org.coodex.concrete.common.modules.ModuleMaker;
 import org.coodex.concrete.jaxrs.struct.Module;
 
 /**

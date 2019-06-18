@@ -20,7 +20,7 @@ import org.coodex.concrete.apitools.AbstractAngularRender;
 import org.coodex.concrete.apitools.jaxrs.JaxrsRenderHelper;
 import org.coodex.concrete.apitools.jaxrs.angular.meta.TSClass;
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.struct.AbstractModule;
+import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.Module;

@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.concrete.common.struct.AbstractModule;
+import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.util.SingletonMap;
 
 import java.lang.reflect.Method;

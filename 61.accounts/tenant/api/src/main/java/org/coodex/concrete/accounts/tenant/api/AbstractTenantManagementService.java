@@ -18,7 +18,10 @@ package org.coodex.concrete.accounts.tenant.api;
 
 import org.coodex.concrete.accounts.tenant.pojo.Tenant;
 import org.coodex.concrete.accounts.tenant.pojo.TenantQuery;
-import org.coodex.concrete.api.*;
+import org.coodex.concrete.api.AccessAllow;
+import org.coodex.concrete.api.Description;
+import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.Safely;
 import org.coodex.concrete.api.pojo.PageRequest;
 import org.coodex.concrete.api.pojo.PageResult;
 import org.coodex.concrete.api.pojo.StrID;
@@ -31,11 +34,10 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.SYSTEM_MANAGER
  * <p>
  * Created by davidoff shen on 2017-05-25.
  */
-@Abstract
-@MicroService("tenants")
+@MicroService(value = "tenants", abstractive = true)
 @AccessAllow(roles = {SYSTEM_MANAGER})
 @Safely
-public interface AbstractTenantManagementService<T extends Tenant> extends ConcreteService {
+public interface AbstractTenantManagementService<T extends Tenant> {
 
     @Description(name = "新建租户", description = "LOGGING: new 新建的租户实体信息")
     StrID<T> save(String tenant, T tenantInfo);

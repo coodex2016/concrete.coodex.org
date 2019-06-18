@@ -16,8 +16,7 @@
 
 package org.coodex.concrete.accounts;
 
-import org.coodex.concrete.api.Abstract;
-import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.api.Signable;
 
 /**
@@ -25,9 +24,9 @@ import org.coodex.concrete.api.Signable;
  * <p>
  * Created by davidoff shen on 2017-05-26.
  */
-@Abstract
 @Signable(paperName = "tenantRPCService")
-public interface TenantRPCService extends ConcreteService {
+@MicroService(abstractive = true)
+public interface TenantRPCService {
 
     /**
      * 如果租户不存在，抛出AccountsErrorCodes.TENANT_NOT_EXISTS;

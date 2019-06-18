@@ -18,8 +18,8 @@ package org.coodex.concrete.own;
 
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
-import org.coodex.concrete.common.struct.AbstractParam;
-import org.coodex.concrete.common.struct.AbstractUnit;
+import org.coodex.concrete.common.modules.AbstractParam;
+import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.util.Common;
 
 import java.lang.reflect.Method;

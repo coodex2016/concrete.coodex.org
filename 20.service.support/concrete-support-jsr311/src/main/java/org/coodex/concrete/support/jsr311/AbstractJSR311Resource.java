@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.support.jsr311;
 
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.jaxrs.AbstractJAXRSResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,7 @@ import java.lang.reflect.Method;
 /**
  * Created by davidoff shen on 2016-11-24.
  */
-public abstract class AbstractJSR311Resource<T extends ConcreteService>
+public abstract class AbstractJSR311Resource<T>
         extends AbstractJAXRSResource<T> {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractJSR311Resource.class);

@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.own;
 
-import org.coodex.concrete.common.struct.AbstractModule;
+import org.coodex.concrete.common.modules.AbstractModule;
 
 public abstract class OwnServiceModule<T extends OwnServiceUnit> extends AbstractModule<T> {
 

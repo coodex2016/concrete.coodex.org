@@ -19,10 +19,7 @@ package org.coodex.concrete.core.intercept;
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.LocalServiceContext;
-import org.coodex.concrete.common.RuntimeContext;
-import org.coodex.concrete.common.ServerSideContext;
-import org.coodex.concrete.common.ServiceContext;
-import org.coodex.concrete.common.TestServiceContext;
+import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +43,10 @@ public abstract class AbstractInterceptor implements ConcreteInterceptor {
     protected final static RuntimeContext getContext(MethodInvocation joinPoint) {
         return RuntimeContext.getRuntimeContext(joinPoint.getMethod(),
                 joinPoint.getThis().getClass());
+    }
+
+    protected final static boolean isServiceMethod(RuntimeContext context) {
+        return ConcreteHelper.isConcreteService(context.getDeclaringMethod());
     }
 
     @Override

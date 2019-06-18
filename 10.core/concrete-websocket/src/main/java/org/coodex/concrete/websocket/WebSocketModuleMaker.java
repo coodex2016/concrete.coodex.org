@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.websocket;
 
-import org.coodex.concrete.common.ModuleMaker;
+import org.coodex.concrete.common.modules.ModuleMaker;
 
 public class WebSocketModuleMaker implements ModuleMaker<WebSocketModule> {
     public final static String WEB_SOCKET_SUPPORT = "WebSocket.";

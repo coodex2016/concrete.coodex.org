@@ -16,8 +16,6 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.concrete.api.ConcreteService;
-
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,16 +27,16 @@ import java.util.Set;
 public class ServiceDefinition {
 
 
-    private Class<? extends ConcreteService> serviceClass;
+    private Class<?> serviceClass;
 
     private Set<Method> methods = new HashSet<Method>();
 
-    ServiceDefinition(Class<? extends ConcreteService> serviceClass, Collection<Method> methods) {
+    ServiceDefinition(Class<?> serviceClass, Collection<Method> methods) {
         this.serviceClass = serviceClass;
         this.methods.addAll(methods);
     }
 
-    public Class<? extends ConcreteService> getServiceClass() {
+    public Class<?> getServiceClass() {
         return serviceClass;
     }
 

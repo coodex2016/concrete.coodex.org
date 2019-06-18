@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.client;
 
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;

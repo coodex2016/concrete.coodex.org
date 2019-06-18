@@ -17,7 +17,6 @@
 package org.coodex.concrete.accounts.api;
 
 import org.coodex.concrete.api.AccessAllow;
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.api.Safely;
 import org.coodex.util.Parameter;
@@ -27,7 +26,7 @@ import org.coodex.util.Parameter;
  * Created by davidoff shen on 2017-05-26.
  */
 @MicroService("tenant")
-public interface TenantSelfManagementService extends ConcreteService {
+public interface TenantSelfManagementService {
 
     @MicroService("{tenantAccountName}/login")
     void login(

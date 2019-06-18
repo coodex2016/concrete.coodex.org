@@ -17,7 +17,10 @@
 package org.coodex.concrete.accounts.organization.api;
 
 import org.coodex.concrete.accounts.organization.pojo.Person;
-import org.coodex.concrete.api.*;
+import org.coodex.concrete.api.AccessAllow;
+import org.coodex.concrete.api.Description;
+import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.Safely;
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.util.Parameter;
 
@@ -28,11 +31,10 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 /**
  * Created by davidoff shen on 2017-04-28.
  */
-@MicroService("persons")
-@Abstract
+@MicroService(value = "persons", abstractive = true)
 @AccessAllow(roles = {SYSTEM_MANAGER, TENANT_MANAGER, ORGANIZATION_MANAGER})
 @Safely
-public interface AbstractPersonManagementService<P extends Person> extends ConcreteService {
+public interface AbstractPersonManagementService<P extends Person> {
 
     @Description(name = "新建人员")
     StrID<P> save(

@@ -28,4 +28,7 @@ public @interface MicroService {
 
     String value() default "";
 
+    boolean abstractive() default false;
+
+    boolean notService() default false;
 }

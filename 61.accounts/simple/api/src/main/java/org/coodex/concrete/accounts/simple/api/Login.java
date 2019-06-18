@@ -17,7 +17,6 @@
 package org.coodex.concrete.accounts.simple.api;
 
 import org.coodex.concrete.api.AccessAllow;
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.MicroService;
 import org.coodex.util.Parameter;
@@ -26,7 +25,7 @@ import org.coodex.util.Parameter;
  * Created by davidoff shen on 2017-07-05.
  */
 @MicroService("Simple")
-public interface Login extends ConcreteService {
+public interface Login {
 
     @Description(name = "帐号登录")
     String login(

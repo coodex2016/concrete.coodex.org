@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.jaxrs.struct;
 
-import org.coodex.concrete.common.struct.AbstractParam;
+import org.coodex.concrete.common.modules.AbstractParam;
 
 import java.lang.reflect.Method;
 

@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.support.jsr339;
 
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.AbstractJAXRSResource;
 import org.coodex.concrete.jaxrs.Polling;
@@ -33,7 +32,7 @@ import java.util.concurrent.Executor;
 /**
  * Created by davidoff shen on 2016-11-25.
  */
-public abstract class AbstractJSR339Resource<T extends ConcreteService> extends AbstractJAXRSResource<T> {
+public abstract class AbstractJSR339Resource<T> extends AbstractJAXRSResource<T> {
 
     /**
      * @return
@@ -51,23 +50,16 @@ public abstract class AbstractJSR339Resource<T extends ConcreteService> extends 
 
         final Method method = findMethod(methodName, null);
 
-        getExecutor().execute(new PriorityRunnable(getPriority(method), new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (method.getDeclaringClass().equals(Polling.class)) {
-//                        JaxRSCourier.asyncMessageReceive(tokenId,
-//                                new Jsr339AsyncMessageReceiver(asyncResponse,
-//                                        ((Integer) params[0]).intValue() * 1000L,
-//                                        new ResponseBuilder(tokenId, method, params)));
-                        asyncResponse.resume(TBMContainer.getInstance().getMessages(
-                                tokenId, ((Integer) params[0]).intValue() * 1000L));
-                    } else {
-                        asyncResponse.resume(invokeByTokenId(tokenId, method, params));
-                    }
-                } catch (Throwable th) {
-                    asyncResponse.resume(th);
+        getExecutor().execute(new PriorityRunnable(getPriority(method), () -> {
+            try {
+                if (method.getDeclaringClass().equals(Polling.class)) {
+                    asyncResponse.resume(TBMContainer.getInstance().getMessages(
+                            tokenId, ((Integer) params[0]).intValue() * 1000L));
+                } else {
+                    asyncResponse.resume(invokeByTokenId(tokenId, method, params));
                 }
+            } catch (Throwable th) {
+                asyncResponse.resume(th);
             }
         }));
     }

@@ -16,8 +16,6 @@
 
 package org.coodex.concrete.rx;
 
-import org.coodex.concrete.api.ConcreteService;
-
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -25,5 +23,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface ReactiveExtensionFor {
 
-    Class<? extends ConcreteService> value();
+    Class<?> value();
 }

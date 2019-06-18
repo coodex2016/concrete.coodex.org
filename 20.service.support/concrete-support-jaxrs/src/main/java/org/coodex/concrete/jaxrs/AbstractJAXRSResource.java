@@ -17,7 +17,6 @@
 package org.coodex.concrete.jaxrs;
 
 import org.coodex.closure.CallableClosure;
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
@@ -46,7 +45,7 @@ import static org.coodex.util.TypeHelper.typeToClass;
  * <p>
  * Created by davidoff shen on 2016-11-01.
  */
-public abstract class AbstractJAXRSResource<T extends ConcreteService> {
+public abstract class AbstractJAXRSResource<T> {
 
 
 //    public static final String TOKEN_ID_IN_COOKIE = CONCRETE_TOKEN_ID_KEY;

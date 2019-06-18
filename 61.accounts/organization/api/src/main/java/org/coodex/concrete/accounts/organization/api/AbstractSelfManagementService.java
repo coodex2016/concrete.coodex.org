@@ -20,7 +20,10 @@ import org.coodex.concrete.accounts.organization.pojo.Department;
 import org.coodex.concrete.accounts.organization.pojo.Institution;
 import org.coodex.concrete.accounts.organization.pojo.Person;
 import org.coodex.concrete.accounts.organization.pojo.Position;
-import org.coodex.concrete.api.*;
+import org.coodex.concrete.api.AccessAllow;
+import org.coodex.concrete.api.Description;
+import org.coodex.concrete.api.MicroService;
+import org.coodex.concrete.api.Safely;
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.util.Parameter;
 
@@ -30,14 +33,13 @@ import java.util.Set;
 /**
  * Created by davidoff shen on 2017-05-03.
  */
-@MicroService("mine")
-@Abstract
+@MicroService(value = "mine",abstractive = true)
 @AccessAllow
 public interface AbstractSelfManagementService<
         I extends Institution,
         D extends Department,
         J extends Position,
-        P extends Person> extends ConcreteService {
+        P extends Person> {
 
     @MicroService("institutions")
     @Description(name = "当前用户所在单位", description = "TODO：界定排序原则")

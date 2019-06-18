@@ -18,7 +18,6 @@ package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.Limiting;
-import org.coodex.concrete.api.NotService;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.RuntimeContext;
@@ -60,7 +59,7 @@ public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
 
     @Override
     protected boolean accept_(RuntimeContext context) {
-        return context.getDeclaringMethod().getAnnotation(NotService.class) == null
+        return isServiceMethod(context)
                 && (context.getAnnotation(Limiting.class) != null);
     }
 

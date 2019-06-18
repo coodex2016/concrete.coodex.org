@@ -26,11 +26,10 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 /**
  * Created by davidoff shen on 2017-04-28.
  */
-@Abstract
-@MicroService("departments")
+@MicroService(value = "departments", abstractive = true)
 @AccessAllow(roles = {SYSTEM_MANAGER, TENANT_MANAGER, ORGANIZATION_MANAGER})
 @Safely
-public interface AbstractDepartmentManagementService<D extends Department> extends ConcreteService {
+public interface AbstractDepartmentManagementService<D extends Department>  {
 
     @Description(name = "新建部门", description = "LOGGING: new 新建的部门实体信息")
     StrID<D> save(

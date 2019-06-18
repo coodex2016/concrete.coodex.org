@@ -21,7 +21,6 @@ import org.coodex.concrete.common.AbstractErrorCodes;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.ErrorMessageFacade;
-import org.coodex.util.ReflectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +38,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
 
     protected static final JaxRSModuleMaker moduleMaker = new JaxRSModuleMaker();
     private final static Logger log = LoggerFactory.getLogger(ConcreteJaxrsApplication.class);
-    private Set<Class<? extends ConcreteService>> servicesClasses = new HashSet<Class<? extends ConcreteService>>();
+    private Set<Class<?>> servicesClasses = new HashSet<>();
     private Set<Class<?>> jaxrsClasses = new HashSet<Class<?>>();
     private Set<Object> singletonInstances = new HashSet<Object>();
     private Set<Class<?>> othersClasses = new HashSet<Class<?>>();
@@ -58,7 +57,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     }
 
     @SuppressWarnings({"unsafe", "unchecked"})
-    public Set<Class<? extends ConcreteService>> getServicesClasses() {
+    public Set<Class<?>> getServicesClasses() {
         return servicesClasses;
     }
 
@@ -88,12 +87,9 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     @Override
     public void registerPackage(String... packages) {
 
-        foreachClassInPackages(new ReflectHelper.Processor() {
-            @Override
-            public void process(Class<?> serviceClass) {
-                registerClass(serviceClass);
-            }
-        }, packages);
+        foreachClassInPackages(
+                (Class<?> serviceClass) -> registerClass(serviceClass),
+                packages);
     }
 
     @Override
@@ -114,7 +110,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     }
 
 
-    protected void registerConcreteService(Class<? extends ConcreteService> concreteServiceClass) {
+    protected void registerConcreteService(Class<?> concreteServiceClass) {
         if (!servicesClasses.contains(concreteServiceClass)) {
             servicesClasses.add(concreteServiceClass);
             Class<?> jaxrs = generateJaxrsClass(concreteServiceClass);
@@ -140,7 +136,6 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
                     log.debug("class info:{}", builder.toString());
                 }
                 jaxrsClasses.add(jaxrs);
-//                singletonInstances.add(newInstance(jaxrs));
             }
         }
     }
@@ -157,11 +152,11 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
 
     public void registerClass(Class<?> clz) {
         if (ConcreteHelper.isConcreteService(clz)) {
-            registerConcreteService((Class<? extends ConcreteService>) clz);
+            registerConcreteService(clz);
         } else if (AbstractErrorCodes.class.isAssignableFrom(clz)) {
             ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) clz);
         } else {
-            if(ConcreteExceptionMapper.class.isAssignableFrom(clz)){
+            if (ConcreteExceptionMapper.class.isAssignableFrom(clz)) {
                 exceptionMapperRegisted = true;
             }
             if (!othersClasses.contains(clz)) {
@@ -175,7 +170,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
 
     @Override
     public Set<Class<?>> getClasses() {
-        if(!exceptionMapperRegisted){
+        if (!exceptionMapperRegisted) {
             register(ConcreteExceptionMapper.class);
         }
         Set<Class<?>> set = new HashSet<Class<?>>();
@@ -189,7 +184,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
 
     @Override
     public Set<Object> getSingletons() {
-        if(!exceptionMapperRegisted){
+        if (!exceptionMapperRegisted) {
             register(ConcreteExceptionMapper.class);
         }
         Set<Object> set = new HashSet<Object>();

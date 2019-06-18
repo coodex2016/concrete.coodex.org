@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.concrete.common.struct.AbstractUnit;
+import org.coodex.concrete.common.modules.AbstractUnit;
 
 import java.lang.reflect.Method;
 import java.util.List;

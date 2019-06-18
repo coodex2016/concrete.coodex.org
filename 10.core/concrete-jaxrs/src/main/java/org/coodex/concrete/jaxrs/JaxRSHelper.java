@@ -16,8 +16,6 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.api.Abstract;
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
@@ -26,7 +24,6 @@ import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
 import org.coodex.config.Config;
-import org.coodex.util.ClassNameFilter;
 import org.coodex.util.Common;
 import org.coodex.util.ReflectHelper;
 import org.coodex.util.TypeHelper;
@@ -34,98 +31,44 @@ import org.coodex.util.TypeHelper;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import static org.coodex.concrete.common.ConcreteHelper.isAbstract;
+
 
 /**
  * Created by davidoff shen on 2016-11-30.
  */
 public class JaxRSHelper {
 
-    //    public static final String KEY_ERROR_CODE = "code";
-//    public static final String KEY_ERROR_MESSAGE = "msg";
     public static final String HEADER_ERROR_OCCURRED = "CONCRETE-ERROR-OCCURRED";
     public static final String KEY_CLIENT_PROVIDER = "X-CLIENT-PROVIDER";
 
-//    public static final String JAXRS_MODEL = "jaxrs_model";
-
-    //    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
-//            String.class,
-//            Boolean.class,
-//            Character.class,
-//            Byte.class,
-//            Short.class,
-//            Integer.class,
-//            Long.class,
-//            Float.class,
-//            Double.class,
-//            Void.class,
-//            boolean.class,
-//            char.class,
-//            byte.class,
-//            short.class,
-//            int.class,
-//            long.class,
-//            float.class,
-//            double.class,
-//            void.class,
-//    };
-    private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<Class<?>, Module>();
+    private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<>();
 
     /**
      * 0.2.4-SNAPSHOT以前版本，基础类型参数默认使用path传递，之后，默认使用body传递，除非明确定义了path变量
+     *
      * @return 是否使用旧版本的默认传参行为
      */
     public static boolean used024Behavior() {
         String style = System.getProperty("jaxrs.style.before.024");
-        if(style == null){
+        if (style == null) {
             style = Config.get("jaxrs.style.before.024");
         }
         return Common.toBool(style, false);
     }
 
-//    @Deprecated
-//    public static boolean isPrimitive(Class c) {
-////        return Common.inArray(c, PRIMITIVE_CLASSES);
-//        return TypeHelper.isPrimitive(c);
-//    }
-
     public static boolean postPrimitive(Param param) {
-//        return param.getDeclaredAnnotation(Body.class) != null;
         return !param.isPathParam();
     }
-
-//    private static final int TO_LOWER = 'a' - 'A';
-
-//    @Deprecated
-//    public static boolean isBigString(Param param) {
-//        return String.class.isAssignableFrom(param.getType())
-//                && param.getDeclaredAnnotation(BigString.class) != null;
-//    }
 
     @Deprecated
     public static String lowerFirstChar(String string) {
         return Common.lowerFirstChar(string);
-//        if (string == null) return string;
-//        char[] charSeq = string.toCharArray();
-//        if (charSeq.length > 1 && charSeq[0] >= 'A' && charSeq[0] <= 'Z') {
-//            charSeq[0] = (char) (charSeq[0] + TO_LOWER);
-//            return new String(charSeq);
-//        }
-//        return string;
     }
-
-
-//    private final static String DEFAULT_DELIM = ".-_ /\\";
 
     @Deprecated
     public static String upperFirstChar(String string) {
         return Common.upperFirstChar(string);
-//        if (string == null) return string;
-//        char[] charSeq = string.toCharArray();
-//        if (charSeq.length > 1 && charSeq[0] >= 'a' && charSeq[0] <= 'z') {
-//            charSeq[0] = (char) (charSeq[0] - TO_LOWER);
-//            return new String(charSeq);
-//        }
-//        return string;
     }
 
     @Deprecated
@@ -141,22 +84,11 @@ public class JaxRSHelper {
     @Deprecated
     public static String camelCase(String s, boolean firstCharUpperCase) {
         return Common.camelCase(s, firstCharUpperCase);
-//        return camelCase(s, firstCharUpperCase, DEFAULT_DELIM);
     }
 
     @Deprecated
     public static String camelCase(String s, boolean firstCharUpperCase, String delimiters) {
         return Common.camelCase(s, firstCharUpperCase, delimiters);
-//        StringTokenizer st = new StringTokenizer(s, delimiters);
-//        StringBuilder builder = new StringBuilder();
-//        while (st.hasMoreElements()) {
-//            String node = st.nextToken();
-//            if (node.length() == 0) continue;
-//            builder.append(upperFirstChar(node));
-//        }
-//        return firstCharUpperCase ?
-//                upperFirstChar(builder.toString()) :
-//                lowerFirstChar(builder.toString());
     }
 
     public static String camelCaseByPath(String s) {
@@ -175,29 +107,21 @@ public class JaxRSHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static final synchronized Module getModule(final Class<? extends ConcreteService> type, String... packages) {
+    public static final synchronized Module getModule(final Class<?> type, String... packages) {
         Module module = MODULE_CACHE.get(type);
         if (module == null) {
-            if (type.getAnnotation(Abstract.class) != null) { //抽象的服务定义，则找具体定义
+            if (isAbstract(type)) { //抽象的服务定义，则找具体定义
                 if (packages == null || packages.length == 0) {
                     packages = ConcreteHelper.getApiPackages();
                 }
-                final Set<Class<? extends ConcreteService>> serviceType = new HashSet<Class<? extends ConcreteService>>();
-                ReflectHelper.foreachClass(new ReflectHelper.Processor() {
-                    @Override
-                    public void process(Class<?> serviceClass) {
-                        if (serviceClass.isInterface() &&
-                                type.isAssignableFrom(serviceClass) &&
-                                serviceClass.getAnnotation(Abstract.class) == null) {
-                            serviceType.add((Class<? extends ConcreteService>) serviceClass);
-                        }
+                final Set<Class<?>> serviceType = new HashSet<>();
+                ReflectHelper.foreachClass((Class<?> serviceClass) -> {
+                    if (serviceClass.isInterface() &&
+                            type.isAssignableFrom(serviceClass) &&
+                            !isAbstract(serviceClass)) {
+                        serviceType.add(serviceClass);
                     }
-                }, new ClassNameFilter() {
-                    @Override
-                    public boolean accept(String className) {
-                        return true;
-                    }
-                }, packages);
+                }, (String className) -> true, packages);
 
                 switch (serviceType.size()) {
                     case 0:
@@ -216,22 +140,22 @@ public class JaxRSHelper {
         return module;
     }
 
-    @SuppressWarnings("unchecked")
-    private static final Set<Class<? extends ConcreteService>> getConcreteServiceClassFrom(
-            Class<?> clz, Class<? extends ConcreteService> type) {
-        Set<Class<? extends ConcreteService>> set = new HashSet<Class<? extends ConcreteService>>();
-        if (type.isAssignableFrom(clz)) {
-            if (clz.isInterface() && clz.getAnnotation(Abstract.class) != null)
-                set.add((Class<? extends ConcreteService>) clz);
-            else {
-                set.addAll(getConcreteServiceClassFrom(clz.getSuperclass(), type));
-                for (Class<?> interfaceClz : clz.getInterfaces()) {
-                    set.addAll(getConcreteServiceClassFrom(interfaceClz, type));
-                }
-            }
-        }
-        return set;
-    }
+//    @SuppressWarnings("unchecked")
+//    private static final Set<Class<? >> getConcreteServiceClassFrom(
+//            Class<?> clz, Class<?> type) {
+//        Set<Class<?>> set = new HashSet<>();
+//        if (type.isAssignableFrom(clz)) {
+//            if (clz.isInterface() && clz.getAnnotation(Abstract.class) != null)
+//                set.add(clz);
+//            else {
+//                set.addAll(getConcreteServiceClassFrom(clz.getSuperclass(), type));
+//                for (Class<?> interfaceClz : clz.getInterfaces()) {
+//                    set.addAll(getConcreteServiceClassFrom(interfaceClz, type));
+//                }
+//            }
+//        }
+//        return set;
+//    }
 
 
     public static final Unit getUnitFromContext(DefinitionContext context/*, Object[] params*/) {

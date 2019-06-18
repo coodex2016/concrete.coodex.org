@@ -16,9 +16,7 @@
 
 package org.coodex.concrete.jaxrs.saas;
 
-import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.Client;
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.ReverseProxyErrorCodes;
@@ -37,7 +35,7 @@ import java.lang.reflect.Method;
 /**
  * Created by davidoff shen on 2017-03-22.
  */
-public class ReverseResource<T extends ConcreteService> extends AbstractJSR339Resource<T> {
+public class ReverseResource<T> extends AbstractJSR339Resource<T> {
 
     @Context
     private HttpHeaders httpHeaders;
@@ -48,51 +46,47 @@ public class ReverseResource<T extends ConcreteService> extends AbstractJSR339Re
         final DeliveryContext deliveryContext = new DeliveryContext(asyncResponse,
                 new MultivaluedHashMap<String, String>(httpHeaders.getRequestHeaders()));
 
-        getExecutor().execute(new PriorityRunnable(getPriority(method), new Runnable() {
-            @Override
-            public void run() {
-                try {
+        getExecutor().execute(new PriorityRunnable(getPriority(method), () -> {
+            try {
 
-                    Unit unit = JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())/*, params*/);
+                Unit unit = JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())/*, params*/);
 
-                    String routeBy = IF.isNull(unit.getAnnotation(RouteBy.class),
-                            ReverseProxyErrorCodes.ROUTE_BY_NOT_FOUND,
-                            unit.getDeclaringModule().getInterfaceClass()).value();
-                    Reverser reverser = ReverserFactory.getReverser(routeBy);
+                String routeBy = IF.isNull(unit.getAnnotation(RouteBy.class),
+                        ReverseProxyErrorCodes.ROUTE_BY_NOT_FOUND,
+                        unit.getDeclaringModule().getInterfaceClass()).value();
+                Reverser reverser = ReverserFactory.getReverser(routeBy);
 
-                    // get domain from method
-                    String server = null;
-                    boolean found = false;
-                    for (int i = 0; i < unit.getParameters().length; i++) {
-                        Param param = unit.getParameters()[i];
-                        if (param.getName().equals(routeBy)) {
-                            server = reverser.resolve((String) params[i]);
-                            found = true;
-                            break;
-                        }
+                // get domain from method
+                String server = null;
+                boolean found = false;
+                for (int i = 0; i < unit.getParameters().length; i++) {
+                    Param param = unit.getParameters()[i];
+                    if (param.getName().equals(routeBy)) {
+                        server = reverser.resolve((String) params[i]);
+                        found = true;
+                        break;
                     }
-                    final String finalServer = server;
-                    IF.not(found, ReverseProxyErrorCodes.ROUT_BY_PARAMETER_NOT_FOUND, unit, routeBy);
-
-                    // closure
-                    DeliveryContext.closureRun(deliveryContext, new CallableClosure() {
-                        @Override
-                        public Object call() throws Throwable {
-
-                            // todo....
-                            ConcreteService client = finalServer == null ?
-                                    Client.getInstance(getInterfaceClass()) :
-                                    Client.getInstance(getInterfaceClass(), finalServer);
-
-                            method.invoke(client, params);
-                            return null;
-                        }
-                    });
-
-                } catch (Throwable th) {
-                    asyncResponse.resume(th);
                 }
+                final String finalServer = server;
+                IF.not(found, ReverseProxyErrorCodes.ROUT_BY_PARAMETER_NOT_FOUND, unit, routeBy);
+
+                // closure
+                DeliveryContext.closureRun(deliveryContext,
+                        () -> {
+
+                        // todo....
+                        Object client = finalServer == null ?
+                                Client.getInstance(getInterfaceClass()) :
+                                Client.getInstance(getInterfaceClass(), finalServer);
+
+                        method.invoke(client, params);
+                        return null;
+                });
+
+            } catch (Throwable th) {
+                asyncResponse.resume(th);
             }
+
         }));
     }
 }

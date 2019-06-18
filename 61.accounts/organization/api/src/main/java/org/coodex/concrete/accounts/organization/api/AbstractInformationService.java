@@ -19,8 +19,6 @@ package org.coodex.concrete.accounts.organization.api;
 import org.coodex.concrete.accounts.organization.pojo.*;
 import org.coodex.concrete.accounts.organization.pojo.full.DepartmentFull;
 import org.coodex.concrete.accounts.organization.pojo.full.InstitutionFull;
-import org.coodex.concrete.api.Abstract;
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.api.pojo.StrID;
@@ -32,12 +30,12 @@ import java.util.List;
  * 信息浏览服务
  * Created by davidoff shen on 2017-05-02.
  */
-@Abstract
+@MicroService(abstractive = true)
 public interface AbstractInformationService<
         I extends Institution,
         D extends Department,
         J extends Position,
-        P extends Person> extends ConcreteService {
+        P extends Person>  {
 
 
     @MicroService("all")

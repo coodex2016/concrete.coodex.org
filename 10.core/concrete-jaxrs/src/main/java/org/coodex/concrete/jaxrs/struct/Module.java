@@ -17,7 +17,7 @@
 package org.coodex.concrete.jaxrs.struct;
 
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.struct.AbstractModule;
+import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.Predicates;
 import org.coodex.concrete.jaxrs.saas.RouteBy;

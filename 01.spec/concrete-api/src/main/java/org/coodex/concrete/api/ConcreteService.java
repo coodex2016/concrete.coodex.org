@@ -21,5 +21,6 @@ package org.coodex.concrete.api;
  * <p>
  * Created by davidoff shen on 2016-08-29.
  */
+@Deprecated
 public interface ConcreteService {
 }

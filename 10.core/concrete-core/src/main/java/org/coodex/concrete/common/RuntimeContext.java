@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Overlay;
 
 import java.lang.annotation.Annotation;
@@ -28,7 +27,7 @@ import java.lang.reflect.Method;
  */
 public class RuntimeContext extends DefinitionContextImpl {
 
-    private Class<? extends ConcreteService> actualClass;
+    private Class<?> actualClass;
     private Method actualMethod;
 
     private RuntimeContext() {
@@ -41,17 +40,17 @@ public class RuntimeContext extends DefinitionContextImpl {
         RuntimeContext runtimeContext = new RuntimeContext();
         runtimeContext.setDeclaringMethod(context.getDeclaringMethod());
         runtimeContext.setDeclaringClass(context.getDeclaringClass());
-        runtimeContext.setActualClass((Class<? extends ConcreteService>) clz);
+        runtimeContext.setActualClass(clz);
         // find actual method
         runtimeContext.setActualMethod(method);
         return runtimeContext;
     }
 
-    public Class<? extends ConcreteService> getActualClass() {
+    public Class<?> getActualClass() {
         return actualClass;
     }
 
-    void setActualClass(Class<? extends ConcreteService> actualClass) {
+    void setActualClass(Class<?> actualClass) {
         this.actualClass = actualClass;
     }
 

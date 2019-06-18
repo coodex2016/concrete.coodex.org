@@ -20,7 +20,7 @@ import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.common.struct.AbstractUnit;
+import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.concrete.message.ServerSideMessage;
 import org.coodex.concrete.message.TBMContainer;
 import org.coodex.concurrent.components.PriorityRunnable;

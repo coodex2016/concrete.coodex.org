@@ -19,7 +19,7 @@ package org.coodex.concrete.jaxrs.struct;
 import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
-import org.coodex.concrete.common.struct.AbstractUnit;
+import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.concrete.jaxrs.Body;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.Common;

@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.apitools.jaxrs;
 
-import org.coodex.concrete.common.struct.AbstractModule;
+import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.jaxrs.struct.Param;
 import org.coodex.concrete.jaxrs.struct.Unit;
 

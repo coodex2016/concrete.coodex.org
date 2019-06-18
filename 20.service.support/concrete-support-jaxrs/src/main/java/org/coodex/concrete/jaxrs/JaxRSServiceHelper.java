@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.jaxrs.struct.Module;
 import org.coodex.util.ClassNameFilter;
@@ -36,7 +35,7 @@ public class JaxRSServiceHelper {
     };
 
 
-    private static final Set<Class> REGISTERED = new HashSet<Class>();
+    private static final Set<Class> REGISTERED = new HashSet<>();
     private static final ClassNameFilter CONCRETE_ERROR = new ConcreteClassFilter() {
         @Override
         protected boolean accept(Class<?> clazz) {
@@ -54,7 +53,7 @@ public class JaxRSServiceHelper {
     }
 
     private static String[] addDefaults(String[] packages) {
-        Set<String> set = packages == null ? new HashSet<String>() : Common.arrayToSet(packages);
+        Set<String> set = packages == null ? new HashSet<>() : Common.arrayToSet(packages);
         set.add(Polling.class.getPackage().getName());
         return set.toArray(new String[0]);
     }
@@ -64,9 +63,9 @@ public class JaxRSServiceHelper {
         return generateByPackages(desc, packages);
     }
 
-    private static Class<?> buildServiceImpl(String desc, Class<? extends ConcreteService> serviceClass) {
+    private static Class<?> buildServiceImpl(String desc, Class<?> serviceClass) {
         try {
-            return getGenerator(desc).generatesImplClass((Module) ConcreteHelper.loadModule(desc, Polling.class));
+            return getGenerator(desc).generatesImplClass(ConcreteHelper.loadModule(desc, Polling.class));
         } catch (RuntimeException th) {
             throw th;
         } catch (Throwable throwable) {
@@ -90,7 +89,7 @@ public class JaxRSServiceHelper {
                 ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) clz);
             } else if (ConcreteHelper.isConcreteService(clz)) {
                 if (!REGISTERED.contains(clz) && !set.contains(clz)) {
-                    result.add(buildServiceImpl(desc, (Class<? extends ConcreteService>) clz));
+                    result.add(buildServiceImpl(desc, clz));
                     set.add(clz);
                 }
             } else {
@@ -137,13 +136,9 @@ public class JaxRSServiceHelper {
 
     @SuppressWarnings("unchecked")
     private static void registErrorCodes(String[] packages) {
-//        ErrorMessageFacade.register(AbstractErrorCodes.class, ErrorCodes.class);
-        ReflectHelper.Processor processor = new ReflectHelper.Processor() {
-            @Override
-            public void process(Class<?> serviceClass) {
-                if (AbstractErrorCodes.class.isAssignableFrom(serviceClass))
-                    ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) serviceClass);
-            }
+        ReflectHelper.Processor processor = (Class<?> serviceClass) -> {
+            if (AbstractErrorCodes.class.isAssignableFrom(serviceClass))
+                ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) serviceClass);
         };
 
         foreachErrorClass(processor, AbstractErrorCodes.class.getPackage().getName());

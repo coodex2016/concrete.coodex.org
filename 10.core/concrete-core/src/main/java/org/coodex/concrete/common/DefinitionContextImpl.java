@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.MicroService;
 import org.coodex.concrete.api.Overlay;
 
@@ -29,7 +28,7 @@ import java.lang.reflect.Method;
  */
 public class DefinitionContextImpl implements DefinitionContext {
 
-    private Class<? extends ConcreteService> declaringClass;
+    private Class<?> declaringClass;
     private Method declaringMethod;
 
     DefinitionContextImpl() {
@@ -41,11 +40,11 @@ public class DefinitionContextImpl implements DefinitionContext {
      * @return
      */
     @Override
-    public Class<? extends ConcreteService> getDeclaringClass() {
+    public Class<?> getDeclaringClass() {
         return declaringClass;
     }
 
-    void setDeclaringClass(Class<? extends ConcreteService> declaringClass) {
+    void setDeclaringClass(Class<?> declaringClass) {
         this.declaringClass = declaringClass;
     }
 

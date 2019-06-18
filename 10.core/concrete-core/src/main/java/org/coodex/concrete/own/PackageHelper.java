@@ -18,8 +18,8 @@ package org.coodex.concrete.own;
 
 import org.coodex.concrete.common.JSONSerializer;
 import org.coodex.concrete.common.JSONSerializerFactory;
-import org.coodex.concrete.common.struct.AbstractParam;
-import org.coodex.concrete.common.struct.AbstractUnit;
+import org.coodex.concrete.common.modules.AbstractParam;
+import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.util.GenericType;
 import org.coodex.util.TypeHelper;
 

@@ -16,14 +16,16 @@
 
 package org.coodex.concrete.accounts.organization.api;
 
-import org.coodex.concrete.api.*;
+import org.coodex.concrete.api.AccessAllow;
+import org.coodex.concrete.api.Description;
+import org.coodex.concrete.api.MicroService;
 import org.coodex.util.Parameter;
 
 /**
  * Created by davidoff shen on 2017-05-03.
  */
-@Abstract
-public interface AbstractLoginService extends ConcreteService {
+@MicroService(abstractive = true)
+public interface AbstractLoginService {
 
     @Description(name = "帐号登录", description = "返回值为缓存信息，用于有效期内免秘登录")
     String login(
