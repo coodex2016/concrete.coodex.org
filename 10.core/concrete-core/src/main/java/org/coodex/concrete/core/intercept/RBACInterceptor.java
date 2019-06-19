@@ -20,8 +20,8 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.AccessAllow;
 import org.coodex.concrete.api.Domain;
 import org.coodex.concrete.api.Safely;
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.RBACHelper;
-import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.core.intercept.annotations.Default;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
@@ -44,7 +44,7 @@ public class RBACInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    protected boolean accept_(RuntimeContext context) {
+    protected boolean accept_(DefinitionContext context) {
         return context.getAnnotation(AccessAllow.class) != null;
     }
 
@@ -52,7 +52,7 @@ public class RBACInterceptor extends AbstractInterceptor {
 
 
     @Override
-    public void before(RuntimeContext context, MethodInvocation joinPoint) {
+    public void before(DefinitionContext context, MethodInvocation joinPoint) {
 
         if (context.getDeclaringMethod() != null) {
             // 找profile

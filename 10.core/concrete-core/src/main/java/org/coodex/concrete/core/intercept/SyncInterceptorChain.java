@@ -17,7 +17,7 @@
 package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
@@ -47,7 +47,7 @@ public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set
     }
 
     @Override
-    protected boolean accept_(RuntimeContext context) {
+    protected boolean accept_(DefinitionContext context) {
         return true;
     }
 
@@ -58,7 +58,10 @@ public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        return super.invoke(new MethodInvocationChain(createQueue(), invocation));
+        if (invocation instanceof ConcreteMethodInvocation)
+            return super.invoke(new MethodInvocationChain(createQueue(), (ConcreteMethodInvocation) invocation));
+        else
+            throw new IllegalArgumentException("Need ConcreteMethodInvocation." + invocation);
     }
 
     private Queue<ConcreteSyncInterceptor> createQueue() {
@@ -145,12 +148,12 @@ public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set
         interceptors.clear();
     }
 
-    private static class MethodInvocationChain implements MethodInvocation {
+    private static class MethodInvocationChain implements ConcreteMethodInvocation {
 
         private final Queue<ConcreteSyncInterceptor> queue;
-        private final MethodInvocation invocation;
+        private final ConcreteMethodInvocation invocation;
 
-        public MethodInvocationChain(Queue<ConcreteSyncInterceptor> queue, MethodInvocation invocation) {
+        public MethodInvocationChain(Queue<ConcreteSyncInterceptor> queue, ConcreteMethodInvocation invocation) {
             this.queue = queue;
             this.invocation = invocation;
         }
@@ -181,6 +184,11 @@ public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set
         @Override
         public AccessibleObject getStaticPart() {
             return invocation.getStaticPart();
+        }
+
+        @Override
+        public Class<?> getInterfaceClass() {
+            return invocation.getInterfaceClass();
         }
     }
 

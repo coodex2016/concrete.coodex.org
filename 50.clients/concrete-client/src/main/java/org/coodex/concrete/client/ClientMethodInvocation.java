@@ -16,12 +16,12 @@
 
 package org.coodex.concrete.client;
 
-import org.aopalliance.intercept.MethodInvocation;
+import org.coodex.concrete.core.intercept.ConcreteMethodInvocation;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 
-public abstract class ClientMethodInvocation implements MethodInvocation {
+public abstract class ClientMethodInvocation implements ConcreteMethodInvocation {
 
     private final Class<?> clazz;
     private final Method method;
@@ -55,7 +55,8 @@ public abstract class ClientMethodInvocation implements MethodInvocation {
         return null;
     }
 
-    public Class<?> getClazz() {
+    @Override
+    public Class<?> getInterfaceClass() {
         return clazz;
     }
 }

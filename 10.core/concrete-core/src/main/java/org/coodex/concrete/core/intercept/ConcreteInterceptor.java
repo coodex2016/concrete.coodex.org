@@ -17,7 +17,7 @@
 package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 
 /**
  * Created by davidoff shen on 2017-03-09.
@@ -26,16 +26,16 @@ public interface ConcreteInterceptor extends InterceptOrdered {
 //    @Override
 //    Object invoke(MethodInvocation invocation) throws Throwable;
 
-    boolean accept(RuntimeContext context);
+    boolean accept(DefinitionContext context);
 
 //    @Deprecated
 //    Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable;
 
-    void before(RuntimeContext context, MethodInvocation joinPoint);
+    void before(DefinitionContext context, MethodInvocation joinPoint);
 
-    Object after(RuntimeContext context, MethodInvocation joinPoint, Object result);
+    Object after(DefinitionContext context, MethodInvocation joinPoint, Object result);
 
-    Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th);
+    Throwable onError(DefinitionContext context, MethodInvocation joinPoint, Throwable th);
 
 
 }

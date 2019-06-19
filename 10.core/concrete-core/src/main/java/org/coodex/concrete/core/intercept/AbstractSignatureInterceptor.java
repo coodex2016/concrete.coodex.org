@@ -57,10 +57,10 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     private final static Logger log = LoggerFactory.getLogger(AbstractSignatureInterceptor.class);
 
 
-    protected final String KEY_FIELD_ALGORITHM = "algorithm";
-    protected final String KEY_FIELD_SIGN = "sign";
-    protected final String KEY_FIELD_KEY_ID = "keyId";
-    protected final String KEY_FIELD_NOISE = "noise";
+    private final String KEY_FIELD_ALGORITHM = "algorithm";
+    private final String KEY_FIELD_SIGN = "sign";
+    private final String KEY_FIELD_KEY_ID = "keyId";
+    private final String KEY_FIELD_NOISE = "noise";
 
     @Override
     public int getOrder() {
@@ -68,7 +68,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    protected boolean accept_(RuntimeContext context) {
+    protected boolean accept_(DefinitionContext context) {
 //        ServiceContext serviceContext = getServiceContext();
         return context.getAnnotation(Signable.class) != null;
 //        &&
@@ -81,7 +81,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 //    }
 
     @Override
-    public void before(RuntimeContext context, MethodInvocation joinPoint) {
+    public void before(DefinitionContext context, MethodInvocation joinPoint) {
         SignUtil.HowToSign howToSign = SignUtil.howToSign(context);
         ServiceContext serviceContext = getServiceContext();
         if (serviceContext instanceof ServerSideContext) {
@@ -93,14 +93,9 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
     /**
      * TODO 通过subjoin来传递
-     *
-     * @param context
-     * @param joinPoint
-     * @param result
-     * @return
      */
     @Override
-    public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+    public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
         SignUtil.HowToSign howToSign = SignUtil.howToSign(context);
         ServiceContext serviceContext = getServiceContext();
         if (serviceContext instanceof ServerSideContext) {
@@ -135,10 +130,10 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
 //    protected abstract Map<String, Object> buildContent(RuntimeContext context, Object[] args);
 
-    protected Map<String, Object> buildContent(RuntimeContext context, Object[] args) {
+    private Map<String, Object> buildContent(DefinitionContext context, Object[] args) {
         AbstractUnit unit = AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());
         AbstractParam[] params = unit.getParameters();
-        if (params == null) return new HashMap<String, Object>();
+        if (params == null) return new HashMap<>();
         // 1个参数的情况
         if (params.length == 1) {
             Class c = params[0].getType();
@@ -152,7 +147,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
             }
         }
 
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
 
         for (AbstractParam param : unit.getParameters()) {
             result.put(param.getName(), args[param.getIndex()]);
@@ -165,7 +160,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         return Config.getValue("property." + propertyName, propertyName, TAG_SIGNATRUE, getAppSet());
     }
 
-    private void serverSide_Verify(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
+    private void serverSide_Verify(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
         Map<String, Object> content = buildContent(
                 context, joinPoint.getArguments());
         String noise = IF.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
@@ -186,9 +181,9 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
     }
 
-    private Object serverSide_Sign(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign, Object o) {
+    private Object serverSide_Sign(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign, Object o) {
         try {
-            if (o != null && o instanceof Signature) {
+            if (o instanceof Signature) {
                 Map<String, Object> content = buildContent(
                         context, joinPoint.getArguments());
 
@@ -239,11 +234,11 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 //    }
 
     /**
-     * @param signature
+     * @param signature 签名对象
      * @param algorithm  客户端传递的算法
      * @param keyId      客户端keyId
-     * @param ironPen
-     * @param serializer
+     * @param ironPen   ironPen
+     * @param serializer    serializer
      * @return
      * @throws IllegalAccessException
      */
@@ -293,7 +288,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     }
 
     ////////////
-    private String putKeyField(Map<String, Object> content, String keyName, Object value, RuntimeContext context, MethodInvocation joinPoint) {
+    private String putKeyField(Map<String, Object> content, String keyName, Object value, DefinitionContext context, MethodInvocation joinPoint) {
         String propertyName = getPropertyName(keyName);
         if (content.containsKey(propertyName)) {
             //参数中包含
@@ -307,7 +302,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         return value == null ? null : value.toString();
     }
 
-    private void clientSide_Sign(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
+    private void clientSide_Sign(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
         // 0 签名
         Map<String, Object> content = buildContent(
                 context, joinPoint.getArguments());
@@ -340,7 +335,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         putKeyField(content, KEY_FIELD_SIGN, sign, context, joinPoint);
         if(log.isDebugEnabled()) {
             log.debug("signature for[ {} ]: \n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}",
-                    context.getActualMethod().getName(),
+                    context.getDeclaringMethod().getName(),
                     getPropertyName(KEY_FIELD_NOISE), noise,
                     getPropertyName(KEY_FIELD_ALGORITHM), algorithm,
                     getPropertyName(KEY_FIELD_KEY_ID), keyId,
@@ -351,7 +346,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         }
     }
 
-    private Object clientSide_Verify(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign, Object o) {
+    private Object clientSide_Verify(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign, Object o) {
         try {
             if (o != null && o instanceof Signature) {
                 // 0 签名
@@ -438,7 +433,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 //    protected abstract void setArgument(RuntimeContext context, MethodInvocation joinPoint, String parameterName, Object value);
 
 
-    protected void setArgument(RuntimeContext context, MethodInvocation joinPoint, String parameterName, Object value) {
+    protected void setArgument(DefinitionContext context, MethodInvocation joinPoint, String parameterName, Object value) {
         AbstractUnit unit = AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());//getServiceContext().getCurrentUnit();
         for (AbstractParam param : unit.getParameters()) {
             if (param.getName().equals(parameterName)) {

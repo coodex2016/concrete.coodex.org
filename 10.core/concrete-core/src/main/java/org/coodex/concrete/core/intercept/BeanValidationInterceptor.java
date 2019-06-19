@@ -96,13 +96,13 @@ public class BeanValidationInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    protected boolean accept_(RuntimeContext context) {
+    protected boolean accept_(DefinitionContext context) {
         return Config.getValue("aspect.bean.validation", true, getAppSet())
                 && getValidator() != null;
     }
 
     @Override
-    public void before(RuntimeContext context, MethodInvocation joinPoint) {
+    public void before(DefinitionContext context, MethodInvocation joinPoint) {
         if (context.getDeclaringMethod().getParameterTypes().length > 0) {
             checkViolations(getValidator().validateParameters(
                     joinPoint.getThis(), context.getDeclaringMethod(), joinPoint.getArguments()));

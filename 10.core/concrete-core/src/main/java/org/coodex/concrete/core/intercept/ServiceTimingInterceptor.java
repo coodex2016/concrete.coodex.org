@@ -18,10 +18,7 @@ package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.ServiceTiming;
-import org.coodex.concrete.common.ErrorCodes;
-import org.coodex.concrete.common.IF;
-import org.coodex.concrete.common.RuntimeContext;
-import org.coodex.concrete.common.ServiceTimingChecker;
+import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.annotations.Local;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
@@ -109,7 +106,7 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    protected boolean accept_(RuntimeContext context) {
+    protected boolean accept_(DefinitionContext context) {
         return isTimingLimitService(context);
     }
 
@@ -119,12 +116,12 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    public void before(RuntimeContext context, MethodInvocation joinPoint) {
+    public void before(DefinitionContext context, MethodInvocation joinPoint) {
         IF.not(getValidator(context.getAnnotation(ServiceTiming.class)).isAllowed(),
                 ErrorCodes.OUT_OF_SERVICE_TIME);
     }
 
-    public boolean isTimingLimitService(RuntimeContext context) {
+    public boolean isTimingLimitService(DefinitionContext context) {
         return isServiceMethod(context)
                 && (context.getAnnotation(ServiceTiming.class) != null);
     }

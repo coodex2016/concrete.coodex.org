@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.common;
 
+import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Priority;
 import org.coodex.concrete.common.modules.AbstractModule;
@@ -513,6 +514,13 @@ public class ConcreteHelper {
             }
         }
         return null;
+    }
+
+    public static DefinitionContext getDefinitionContext(Class<?> cls, Method method){
+        DefinitionContextImpl definitionContext = new DefinitionContextImpl();
+        definitionContext.setDeclaringClass(cls);
+        definitionContext.setDeclaringMethod(method);
+        return definitionContext;
     }
 
 

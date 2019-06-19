@@ -18,12 +18,26 @@ package org.coodex.testcase.client;
 
 import org.coodex.concrete.Client;
 import org.coodex.testcase.api.TestCase;
+import org.coodex.testcase.api.TestCase2;
 
 public class ClientTest {
 
     private static void test(String module){
-        TestCase testCase = Client.getInstance(TestCase.class,module);
-        System.out.println(testCase.add(1,2) == 3);
+        try {
+            TestCase testCase = Client.getInstance(TestCase.class, module);
+            System.out.println(testCase.add(1, 2) == 3);
+        }catch (Throwable th){
+            th.printStackTrace();
+        }
+    }
+
+    private static void test2(String module){
+        try {
+            TestCase2 testCase = Client.getInstance(TestCase2.class, module);
+            System.out.println(testCase.add(1, 2) == 3);
+        }catch (Throwable th){
+            th.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
@@ -35,5 +49,11 @@ public class ClientTest {
         test("jaxrs");
 
         test("websocket");
+
+        test2("amqp");
+
+        test2("jaxrs");
+
+        test2("websocket");
     }
 }

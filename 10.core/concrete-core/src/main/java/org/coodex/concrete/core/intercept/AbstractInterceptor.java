@@ -21,8 +21,6 @@ import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.LocalServiceContext;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.annotations.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 
@@ -31,7 +29,7 @@ import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
  */
 public abstract class AbstractInterceptor implements ConcreteInterceptor {
 
-    private final static Logger log = LoggerFactory.getLogger(AbstractInterceptor.class);
+//    private final static Logger log = LoggerFactory.getLogger(AbstractInterceptor.class);
 
 
 //    private final static ThreadLocal<Object> atom = new ThreadLocal<>();
@@ -40,17 +38,28 @@ public abstract class AbstractInterceptor implements ConcreteInterceptor {
 //    private final static Logger log = LoggerFactory.getLogger(AbstractInterceptor.class);
 
 
-    protected final static RuntimeContext getContext(MethodInvocation joinPoint) {
-        return RuntimeContext.getRuntimeContext(joinPoint.getMethod(),
-                joinPoint.getThis().getClass());
+//    @Deprecated
+//    protected final static RuntimeContext getContext(MethodInvocation joinPoint) {
+//        return RuntimeContext.getRuntimeContext(joinPoint.getMethod(),
+//                joinPoint.getThis().getClass());
+//    }
+
+    protected final static DefinitionContext getContext(MethodInvocation invocation) {
+        if (invocation instanceof ConcreteMethodInvocation) {
+            return ConcreteHelper.getDefinitionContext(((ConcreteMethodInvocation) invocation).getInterfaceClass(),
+                    invocation.getMethod());
+        } else {
+            throw new IllegalArgumentException("need ConcreteMethodInvocation. " + invocation);
+        }
     }
 
-    protected final static boolean isServiceMethod(RuntimeContext context) {
+
+    protected final static boolean isServiceMethod(DefinitionContext context) {
         return ConcreteHelper.isConcreteService(context.getDeclaringMethod());
     }
 
     @Override
-    public final boolean accept(RuntimeContext context) {
+    public final boolean accept(DefinitionContext context) {
         return sideAccept() && accept_(context);
     }
 
@@ -72,7 +81,7 @@ public abstract class AbstractInterceptor implements ConcreteInterceptor {
                             && clz.getAnnotation(Default.class) == null);
     }
 
-    protected abstract boolean accept_(RuntimeContext context);
+    protected abstract boolean accept_(DefinitionContext context);
 
     //    private boolean isAtomLevel(){
 //        return false;
@@ -122,16 +131,16 @@ public abstract class AbstractInterceptor implements ConcreteInterceptor {
 //    }
 
     @Override
-    public void before(RuntimeContext context, MethodInvocation joinPoint) {
+    public void before(DefinitionContext context, MethodInvocation joinPoint) {
     }
 
     @Override
-    public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+    public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
         return result;
     }
 
     @Override
-    public Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
+    public Throwable onError(DefinitionContext context, MethodInvocation joinPoint, Throwable th) {
         return th;
     }
 

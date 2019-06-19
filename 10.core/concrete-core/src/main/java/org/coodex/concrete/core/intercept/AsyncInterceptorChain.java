@@ -17,7 +17,7 @@
 package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 
 import java.util.*;
 
@@ -36,7 +36,7 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
     }
 
     @Override
-    protected boolean accept_(RuntimeContext context) {
+    protected boolean accept_(DefinitionContext context) {
         return true;
     }
 
@@ -46,7 +46,7 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
     }
 
     @Override
-    public void before(RuntimeContext context, MethodInvocation joinPoint) {
+    public void before(DefinitionContext context, MethodInvocation joinPoint) {
         ConcreteInterceptor[] interceptors = this.interceptors.toArray(new ConcreteInterceptor[0]);
         Arrays.sort(interceptors, comparatorAsc);
         for (ConcreteInterceptor interceptor : interceptors) {
@@ -56,7 +56,7 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
     }
 
     @Override
-    public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+    public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
         ConcreteInterceptor[] interceptors = this.interceptors.toArray(new ConcreteInterceptor[0]);
         Arrays.sort(interceptors, comparatorDesc);
 
@@ -70,7 +70,7 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
     }
 
     @Override
-    public Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
+    public Throwable onError(DefinitionContext context, MethodInvocation joinPoint, Throwable th) {
         ConcreteInterceptor[] interceptors = this.interceptors.toArray(new ConcreteInterceptor[0]);
         Arrays.sort(interceptors, comparatorDesc);
 

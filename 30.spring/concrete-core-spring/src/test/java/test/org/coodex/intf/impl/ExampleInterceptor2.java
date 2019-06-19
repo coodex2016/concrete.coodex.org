@@ -17,7 +17,7 @@
 package test.org.coodex.intf.impl;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.core.intercept.AbstractInterceptor;
 
 /**
@@ -31,18 +31,18 @@ public class ExampleInterceptor2 extends AbstractInterceptor {
     }
 
     @Override
-    protected boolean accept_(RuntimeContext context) {
+    protected boolean accept_(DefinitionContext context) {
         return true;
     }
 
     @Override
-    public void before(RuntimeContext context, MethodInvocation joinPoint) {
+    public void before(DefinitionContext context, MethodInvocation joinPoint) {
         System.out.println(22220);
         super.before(context, joinPoint);
     }
 
     @Override
-    public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+    public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
         System.out.println(22222);
         return super.after(context, joinPoint, result);
     }

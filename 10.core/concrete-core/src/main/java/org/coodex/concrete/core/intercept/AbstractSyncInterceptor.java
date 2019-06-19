@@ -18,7 +18,7 @@ package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.core.intercept.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public abstract class AbstractSyncInterceptor extends AbstractInterceptor implem
 //            return invocation.proceed();
 //        }
 
-        RuntimeContext context = getContext(invocation);
+        DefinitionContext context = getContext(invocation);
         if (context == null || !accept(context)) {
             return invocation.proceed();
         }
@@ -62,7 +62,7 @@ public abstract class AbstractSyncInterceptor extends AbstractInterceptor implem
     }
 
     @Override
-    public Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable {
+    public Object around(DefinitionContext context, MethodInvocation joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
@@ -116,22 +116,22 @@ public abstract class AbstractSyncInterceptor extends AbstractInterceptor implem
         }
 
         @Override
-        public boolean accept_(RuntimeContext context) {
+        public boolean accept_(DefinitionContext context) {
             return interceptor.accept(context);
         }
 
         @Override
-        public void before(RuntimeContext context, MethodInvocation joinPoint) {
+        public void before(DefinitionContext context, MethodInvocation joinPoint) {
             interceptor.before(context, joinPoint);
         }
 
         @Override
-        public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+        public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
             return interceptor.after(context, joinPoint, result);
         }
 
         @Override
-        public Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
+        public Throwable onError(DefinitionContext context, MethodInvocation joinPoint, Throwable th) {
             return interceptor.onError(context, joinPoint, th);
         }
     }

@@ -28,7 +28,7 @@ import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.AbstractInvoker;
 import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.concrete.rx.ReactiveExtensionFor;
 import org.coodex.pojomocker.MockerFacade;
@@ -64,10 +64,10 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
         return targetMethod;
     }
 
-    public static RuntimeContext getRuntimeContext(Class rxClass, Method method) {
+    public static DefinitionContext getDefinitionContext(Class rxClass, Method method) {
         final Class targetClass = ((ReactiveExtensionFor) rxClass.getAnnotation(ReactiveExtensionFor.class)).value();
         final Method targetMethod = findTargetMethod(targetClass, method);
-        return RuntimeContext.getRuntimeContext(targetMethod, targetClass);
+        return ConcreteHelper.getDefinitionContext(targetClass, targetMethod);
     }
 
     protected static Object buildSyncInstance(Class targetClass) throws IllegalAccessException, InvocationTargetException {
@@ -106,9 +106,9 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
      * @param args
      * @return
      */
-    protected abstract Observable invoke(RuntimeContext context, Object... args);
+    protected abstract Observable invoke(DefinitionContext context, Object... args);
 
-    private Observable invokeP(final RuntimeContext context, Object... args) {
+    private Observable invokeP(final DefinitionContext context, Object... args) {
         if (isMock()) {
             return Observable.create(new ObservableOnSubscribe() {
                 @Override
@@ -124,12 +124,12 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
     @Override
     public final Object invoke(Object instance, Class clz, Method method, final Object... args) throws Throwable {
 
-        return invokerWithAop(getRuntimeContext(clz, method), args);
+        return invokerWithAop(getDefinitionContext(clz, method), args);
     }
 
     @SuppressWarnings({"unchecked", "unsafe"})
-    Observable invokerWithAop(final RuntimeContext runtimeContext, final Object[] args) throws InvocationTargetException, IllegalAccessException {
-        final ServiceContext serviceContext = buildContext(runtimeContext.getDeclaringClass(), runtimeContext.getDeclaringMethod());
+    Observable invokerWithAop(final DefinitionContext runtimeContext, final Object[] args) throws InvocationTargetException, IllegalAccessException {
+        final ServiceContext serviceContext = buildContext(runtimeContext);
         final MethodInvocation invocation = new RXMethodInvocation(runtimeContext, args);
         // 调用前切片
         ConcreteContext.runWithContext(serviceContext, new CallableClosure() {

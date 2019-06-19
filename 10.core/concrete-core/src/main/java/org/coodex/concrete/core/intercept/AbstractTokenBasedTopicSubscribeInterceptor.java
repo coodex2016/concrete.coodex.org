@@ -17,10 +17,7 @@
 package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.ErrorCodes;
-import org.coodex.concrete.common.RuntimeContext;
-import org.coodex.concrete.common.Token;
+import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.concrete.message.*;
@@ -76,7 +73,7 @@ public abstract class AbstractTokenBasedTopicSubscribeInterceptor<M extends Seri
     }
 
     @Override
-    protected boolean accept_(RuntimeContext context) {
+    protected boolean accept_(DefinitionContext context) {
         return check_();
     }
 
@@ -102,7 +99,7 @@ public abstract class AbstractTokenBasedTopicSubscribeInterceptor<M extends Seri
     }
 
     @Override
-    public final Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+    public final Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
         if (token.isValid()) {
             if (!Common.isBlank(token.getTokenId())) {
                 synchronized (tokenLock(token)) {

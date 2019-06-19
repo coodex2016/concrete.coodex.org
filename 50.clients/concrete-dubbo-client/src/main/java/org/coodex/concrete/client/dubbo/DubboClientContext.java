@@ -18,10 +18,10 @@ package org.coodex.concrete.client.dubbo;
 
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 
 public class DubboClientContext extends ClientSideContext {
-    public DubboClientContext(Destination destination, RuntimeContext context) {
+    public DubboClientContext(Destination destination, DefinitionContext context) {
         super(destination, context);
     }
 

@@ -22,7 +22,8 @@ import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.AbstractInvoker;
 import org.coodex.concrete.common.ConcreteContext;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ServiceContext;
 
 import java.lang.reflect.Method;
@@ -39,8 +40,9 @@ public abstract class RxToSyncInvoker extends AbstractInvoker {
     public Object invoke(Object instance, Class clz, Method method, final Object... args) throws Throwable {
 
         final RxResult rxResult = new RxResult();
-        final RuntimeContext runtimeContext = RuntimeContext.getRuntimeContext(method, clz);
-        ServiceContext context = rxInvoker.buildContext(clz, method);
+
+        final DefinitionContext runtimeContext = ConcreteHelper.getDefinitionContext(clz, method);
+        ServiceContext context = rxInvoker.buildContext(runtimeContext);
 
         ConcreteContext.runWithContext(context, new CallableClosure() {
             @Override
@@ -59,6 +61,7 @@ public abstract class RxToSyncInvoker extends AbstractInvoker {
                     public void onError(Throwable e) {
                         e.printStackTrace();
                         rxResult.throwable = e;
+                        onComplete();
                     }
 
                     @Override
@@ -68,44 +71,12 @@ public abstract class RxToSyncInvoker extends AbstractInvoker {
                             if (rxResult.waiting)
                                 rxResult.notify();
                         }
-
                     }
                 });
                 return null;
             }
         });
-//        ConcreteContext.runWithContext(context, new ConcreteClosure() {
-//            @Override
-//            public Object concreteRun() throws Throwable {
-//                rxInvoker.invokerWithAop(runtimeContext, args).subscribe(new Observer() {
-//                    @Override
-//                    public void onSubscribe(Disposable d) {
-//                    }
-//
-//                    @Override
-//                    public void onNext(Object o) {
-//                        rxResult.object = o;
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        e.printStackTrace();
-//                        rxResult.throwable = e;
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//                        synchronized (rxResult) {
-//                            rxResult.completed = true;
-//                            if (rxResult.waiting)
-//                                rxResult.notify();
-//                        }
-//
-//                    }
-//                });
-//                return null;
-//            }
-//        });
+
 
         if (!rxResult.completed) {
             synchronized (rxResult) {

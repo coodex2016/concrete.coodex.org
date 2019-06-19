@@ -288,8 +288,8 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
     }
 
     @Override
-    public ServiceContext buildContext(Class concreteClass, Method method) {
-        return new JaxRSClientContext(getDestination(), RuntimeContext.getRuntimeContext(method, concreteClass));
+    public ServiceContext buildContext(DefinitionContext context) {
+        return new JaxRSClientContext(getDestination(), context);
     }
 
 }

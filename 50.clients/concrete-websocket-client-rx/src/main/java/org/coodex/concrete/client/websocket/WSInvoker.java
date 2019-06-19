@@ -30,8 +30,6 @@ import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 import org.coodex.util.TypeHelper;
 
-import java.lang.reflect.Method;
-
 import static org.coodex.concrete.own.PackageHelper.buildRequest;
 import static org.coodex.concrete.websocket.WebSocketHelper.findUnit;
 
@@ -54,9 +52,8 @@ public class WSInvoker extends AbstractRxInvoker {
     }
 
     @Override
-    public ServiceContext buildContext(Class concreteClass, Method method) {
-        return new WSClientServiceContext(getDestination(),
-                RuntimeContext.getRuntimeContext(method, concreteClass));
+    public ServiceContext buildContext(DefinitionContext context) {
+        return new WSClientServiceContext(getDestination(), context);
     }
 
     private WSClientServiceContext getContext() {
@@ -68,7 +65,7 @@ public class WSInvoker extends AbstractRxInvoker {
     }
 
     @Override
-    public Observable invoke(final RuntimeContext context, final Object... args) {
+    public Observable invoke(final DefinitionContext context, final Object... args) {
         final WSClientServiceContext wsClientServiceContext = getContext();
         final WebSocketUnit unit = findUnit(context);
 
@@ -105,13 +102,13 @@ public class WSInvoker extends AbstractRxInvoker {
                             try {
                                 ClientTokenManagement.setTokenId(getDestination(), responsePackage.getConcreteTokenId());
                                 if (responsePackage.getContent() == null || void.class.equals(context.getDeclaringMethod().getReturnType())) {
-                                    emitter.onNext(null);
+
                                 } else {
-                                    emitter.onNext(
-                                            serializer.parse(responsePackage.getContent(),
-                                                    TypeHelper.toTypeReference(context.getDeclaringMethod().getGenericReturnType(),
-                                                            context.getDeclaringClass()))
-                                    );
+                                    Object result = serializer.parse(responsePackage.getContent(),
+                                            TypeHelper.toTypeReference(context.getDeclaringMethod().getGenericReturnType(),
+                                                    context.getDeclaringClass()));
+                                    if (result != null)
+                                        emitter.onNext(result);
                                 }
                             } catch (Throwable throwable) {
                                 emitter.onError(throwable);

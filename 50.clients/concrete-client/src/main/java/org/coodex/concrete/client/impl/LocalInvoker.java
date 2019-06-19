@@ -19,9 +19,7 @@ package org.coodex.concrete.client.impl;
 import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.LocalServiceContext;
-import org.coodex.concrete.common.BeanProviderFacade;
-import org.coodex.concrete.common.ConcreteContext;
-import org.coodex.concrete.common.ServiceContext;
+import org.coodex.concrete.common.*;
 
 import java.lang.reflect.Method;
 
@@ -38,11 +36,16 @@ public class LocalInvoker extends AbstractSyncInvoker {
     }
 
 
+//    @Override
+//    public ServiceContext buildContext(Class concreteClass, Method method) {
+//        return new LocalServiceContext();
+//    }
+
+
     @Override
-    public ServiceContext buildContext(Class concreteClass, Method method) {
+    public ServiceContext buildContext(DefinitionContext context) {
         return new LocalServiceContext();
     }
-
 
     /**
      * 本地调用不走客户端切片
@@ -57,7 +60,7 @@ public class LocalInvoker extends AbstractSyncInvoker {
     public Object invoke(final Object instance, final Class clz, final Method method, final Object... args) {
 
         return ConcreteContext.runWithContext(
-                buildContext(clz, method),
+                buildContext(ConcreteHelper.getDefinitionContext(clz, method)),
                 new CallableClosure() {
                     @Override
                     public Object call() throws Throwable {

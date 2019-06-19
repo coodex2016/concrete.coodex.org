@@ -117,7 +117,7 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
     }
 
     @Override
-    protected boolean accept_(RuntimeContext context) {
+    protected boolean accept_(DefinitionContext context) {
         return context.getAnnotation(OperationLog.class) != null || context.getAnnotation(LogAtomic.class) != null;
     }
 
@@ -132,7 +132,7 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
     }
 
     @Override
-    public Object around(final RuntimeContext context, final MethodInvocation joinPoint) throws Throwable {
+    public Object around(final DefinitionContext context, final MethodInvocation joinPoint) throws Throwable {
 //        return runWithContext(new AtomServiceContext(getServiceContext()),
 //                new ConcreteClosure() {
 //                    @Override
@@ -157,7 +157,7 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
     }
 
     //    @Override
-    private Object $$after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+    private Object $$after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
         try {
             Account<? extends AccountID> account = getOperator();
             String accountId = account == null ? null : account.getId().serialize();

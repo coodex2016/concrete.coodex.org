@@ -16,20 +16,20 @@
 
 package org.coodex.concrete.client.rx;
 
-import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
+import org.coodex.concrete.core.intercept.ConcreteMethodInvocation;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class RXMethodInvocation implements MethodInvocation {
+public class RXMethodInvocation implements ConcreteMethodInvocation {
 
-    private final RuntimeContext runtimeContext;
+    private final DefinitionContext runtimeContext;
     private final Object[] arguments;
     private final Object instance;
 
-    public RXMethodInvocation(RuntimeContext runtimeContext, Object[] arguments) throws InvocationTargetException, IllegalAccessException {
+    public RXMethodInvocation(DefinitionContext runtimeContext, Object[] arguments) throws InvocationTargetException, IllegalAccessException {
         this.runtimeContext = runtimeContext;
         this.arguments = arguments;
         this.instance = AbstractRxInvoker.buildSyncInstance(runtimeContext.getDeclaringClass());
@@ -58,5 +58,10 @@ public class RXMethodInvocation implements MethodInvocation {
     @Override
     public AccessibleObject getStaticPart() {
         return null;
+    }
+
+    @Override
+    public Class<?> getInterfaceClass() {
+        return runtimeContext.getDeclaringClass();
     }
 }

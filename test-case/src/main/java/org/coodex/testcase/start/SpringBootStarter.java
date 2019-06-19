@@ -18,12 +18,15 @@ package org.coodex.testcase.start;
 
 
 import org.coodex.concrete.amqp.AMQPConnectionConfig;
+import org.coodex.concrete.core.intercept.ConcreteInterceptor;
+import org.coodex.concrete.core.intercept.RBACInterceptor;
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
 import org.coodex.concrete.support.amqp.AMQPApplication;
 import org.coodex.concrete.support.jsr339.ConcreteJSR339Application;
 import org.coodex.concrete.support.websocket.CallerHackConfigurator;
 import org.coodex.concrete.support.websocket.ConcreteWebSocketApplication;
 import org.coodex.testcase.api.TestCase;
+import org.coodex.testcase.api.TestCase2;
 import org.coodex.util.Profile;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
@@ -59,7 +62,7 @@ public class SpringBootStarter {
         AMQPApplication amqpApplication = new AMQPApplication(
                 config
         );
-        amqpApplication.registerClasses(TestCase.class);
+        amqpApplication.registerClasses(TestCase.class,TestCase2.class);
         return amqpApplication;
     }
 
@@ -112,12 +115,19 @@ public class SpringBootStarter {
     }
 
 
+    @Bean
+    public ConcreteInterceptor rbac(){
+        return new RBACInterceptor();
+    }
+
+
 
     public static class JaxRSApplication extends ConcreteJSR339Application {
         public JaxRSApplication() {
             register(JacksonFeature.class,
                     LoggingFeature.class,
-                    TestCase.class);
+                    TestCase.class,
+                    TestCase2.class);
         }
     }
 
@@ -125,7 +135,7 @@ public class SpringBootStarter {
     public static class WebsocketApplication extends ConcreteWebSocketApplication {
         public WebsocketApplication() {
             super();
-            register(TestCase.class);
+            register(TestCase.class,TestCase2.class);
         }
     }
 

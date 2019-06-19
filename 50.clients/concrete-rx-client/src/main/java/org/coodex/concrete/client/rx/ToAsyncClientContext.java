@@ -18,11 +18,11 @@ package org.coodex.concrete.client.rx;
 
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 
 public final class ToAsyncClientContext extends ClientSideContext {
 
-    public ToAsyncClientContext(Destination destination, RuntimeContext context) {
+    public ToAsyncClientContext(Destination destination, DefinitionContext context) {
         super(destination, context);
 //        ServiceContext serviceContext = ConcreteContext.getServiceContext();
 //        if(serviceContext != null) {

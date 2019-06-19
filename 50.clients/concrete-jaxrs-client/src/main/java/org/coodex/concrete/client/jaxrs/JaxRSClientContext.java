@@ -18,7 +18,7 @@ package org.coodex.concrete.client.jaxrs;
 
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 
 import static org.coodex.concrete.common.ConcreteHelper.VERSION;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.KEY_CLIENT_PROVIDER;
@@ -39,7 +39,7 @@ public class JaxRSClientContext extends ClientSideContext {
 //    };
 
 
-    public JaxRSClientContext(Destination destination, RuntimeContext context) {
+    public JaxRSClientContext(Destination destination, DefinitionContext context) {
         super(destination, context);
 //        this.caller = CLIENT_CALLER;
 //        this.model = JaxRSHelper.JAXRS_MODEL;

@@ -49,9 +49,4 @@ public class ConcreteSpringConfiguration {
         return SubjoinWrapper.getInstance();
     }
 
-    @Bean
-    public ConcreteAOPChain concreteAOPChain() {
-        return new ConcreteAOPChain();
-    }
-
 }

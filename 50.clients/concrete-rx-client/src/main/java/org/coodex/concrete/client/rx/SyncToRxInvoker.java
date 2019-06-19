@@ -24,11 +24,9 @@ import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.common.ConcreteContext;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.util.Common;
-
-import java.lang.reflect.Method;
 
 
 public class SyncToRxInvoker extends AbstractRxInvoker {
@@ -38,8 +36,8 @@ public class SyncToRxInvoker extends AbstractRxInvoker {
     }
 
     @Override
-    public ServiceContext buildContext(Class concreteClass, Method method) {
-        return new ToAsyncClientContext(getDestination(), RuntimeContext.getRuntimeContext(method, concreteClass));
+    public ServiceContext buildContext(DefinitionContext context) {
+        return new ToAsyncClientContext(getDestination(), context);
     }
 
     private Destination getSyncDestination() {
@@ -54,7 +52,7 @@ public class SyncToRxInvoker extends AbstractRxInvoker {
 
 
     @Override
-    public Observable invoke(final RuntimeContext runtimeContext, final Object... args) {
+    public Observable invoke(final DefinitionContext runtimeContext, final Object... args) {
         final ClientSideContext clientServiceContext = new ToAsyncClientContext(getDestination(), runtimeContext);
 
         return Observable.create(new ObservableOnSubscribe() {

@@ -22,6 +22,7 @@ import org.coodex.closure.ClosureContext;
 import org.coodex.closure.StackClosureContext;
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
+import org.coodex.concrete.core.intercept.ConcreteMethodInvocation;
 import org.coodex.concrete.core.intercept.InterceptorChain;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
 import org.coodex.util.ServiceLoader;
@@ -190,16 +191,27 @@ public final class ConcreteContext {
             try {
                 return CONTEXT.call(context, () -> {
                     Object instance = BeanProviderFacade.getBeanProvider().getBean(interfaceClass);
-                    RuntimeContext runtimeContext = RuntimeContext.getRuntimeContext(method, interfaceClass);
-                    ServiceMethodInvocation invocation = new ServiceMethodInvocation(method, params, instance);
-                    interceptorChainSingleton.getInstance().before(runtimeContext, invocation);
-                    try {
-                        return interceptorChainSingleton.getInstance()
-                                .after(runtimeContext, invocation, callable.call());
-                    } catch (Throwable th) {
-                        throw ConcreteHelper.findException(interceptorChainSingleton.getInstance()
-                                .onError(runtimeContext, invocation, th));
-                    }
+//                    RuntimeContext runtimeContext = RuntimeContext.getRuntimeContext(method, interfaceClass);
+                    ServiceMethodInvocation invocation = new ServiceMethodInvocation(method, params, instance) {
+                        @Override
+                        public Class<?> getInterfaceClass() {
+                            return interfaceClass;
+                        }
+
+                        @Override
+                        public Object proceed() throws Throwable {
+                            return callable.call();
+                        }
+                    };
+                    return interceptorChainSingleton.getInstance().invoke(invocation);
+//                    interceptorChainSingleton.getInstance().before(runtimeContext, invocation);
+//                    try {
+//                        return interceptorChainSingleton.getInstance()
+//                                .after(runtimeContext, invocation, callable.call());
+//                    } catch (Throwable th) {
+//                        throw ConcreteHelper.findException(interceptorChainSingleton.getInstance()
+//                                .onError(runtimeContext, invocation, th));
+//                    }
                 });
             } catch (Throwable throwable) {
                 throw ConcreteHelper.getException(throwable);
@@ -207,7 +219,7 @@ public final class ConcreteContext {
         }
     }
 
-    private static class ServiceMethodInvocation implements MethodInvocation {
+    private abstract static class ServiceMethodInvocation implements ConcreteMethodInvocation {
         private final Object[] arguments;
         private final Object instance;
         private final Method method;
@@ -226,12 +238,6 @@ public final class ConcreteContext {
         @Override
         public Object[] getArguments() {
             return arguments;
-        }
-
-        @Override
-        public Object proceed() throws Throwable {
-            // DO nothing
-            return null;
         }
 
         @Override

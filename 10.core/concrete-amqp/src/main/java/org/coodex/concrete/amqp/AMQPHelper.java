@@ -16,8 +16,8 @@
 
 package org.coodex.concrete.amqp;
 
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.IF;
-import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
 
@@ -40,7 +40,7 @@ public class AMQPHelper {
 
 
     @SuppressWarnings("unchecked")
-    public static AMQPUnit findUnit(RuntimeContext context) {
+    public static AMQPUnit findUnit(DefinitionContext context) {
         AMQPModule module = IF.isNull(modules.getInstance(context.getDeclaringClass()),
                 context.getDeclaringClass() + "is not a concrete service.");
         Method method = context.getDeclaringMethod();

@@ -83,6 +83,11 @@ public class TokenWrapper implements Token {
     }
 
     @Override
+    public String toString() {
+        return "tokenId: " + getTokenId();
+    }
+
+    @Override
     public void renew() {
         getToken(false).renew();
     }

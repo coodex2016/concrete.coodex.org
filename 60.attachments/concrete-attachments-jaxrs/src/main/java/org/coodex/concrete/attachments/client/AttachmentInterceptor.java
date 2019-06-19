@@ -18,7 +18,7 @@ package org.coodex.concrete.attachments.client;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.attachments.Attachment;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.core.intercept.AbstractInterceptor;
 import org.coodex.concrete.core.intercept.InterceptOrders;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
@@ -45,12 +45,12 @@ public class AttachmentInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    protected boolean accept_(RuntimeContext context) {
+    protected boolean accept_(DefinitionContext context) {
         return true;
     }
 
     @Override
-    public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+    public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
         try {
             Set<String> attachments = new HashSet<String>();
             grant(result, attachments, null, false);

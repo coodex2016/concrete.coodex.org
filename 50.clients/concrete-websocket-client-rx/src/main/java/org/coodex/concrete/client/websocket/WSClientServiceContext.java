@@ -18,12 +18,12 @@ package org.coodex.concrete.client.websocket;
 
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 
 public class WSClientServiceContext extends ClientSideContext {
 
 
-    public WSClientServiceContext(Destination destination, RuntimeContext context) {
+    public WSClientServiceContext(Destination destination, DefinitionContext context) {
         super(destination, context);
 //        this.model = Constants.WEB_SOCKET_MODEL;
     }

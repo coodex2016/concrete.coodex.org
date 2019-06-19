@@ -23,10 +23,10 @@ import org.coodex.concrete.ClientException;
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.ClientTokenManagement;
 import org.coodex.concrete.client.Destination;
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.common.JSONSerializer;
 import org.coodex.concrete.common.JSONSerializerFactory;
-import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;
@@ -85,15 +85,16 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
                 ClientTokenManagement.setTokenId(callBack.getDestination(), responsePackage.getConcreteTokenId());
                 if (responsePackage.getContent() == null ||
                         void.class.equals(callBack.getContext().getDeclaringMethod().getReturnType())) {
-                    callBack.getEmitter().onNext(null);
+
                     completed = true;
                 } else {
-                    callBack.getEmitter().onNext(
+                    Object result =
                             serializer.parse(responsePackage.getContent(),
                                     TypeHelper.toTypeReference(
                                             callBack.getContext().getDeclaringMethod().getGenericReturnType(),
-                                            callBack.getContext().getDeclaringClass()))
-                    );
+                                            callBack.getContext().getDeclaringClass()));
+                    if (result != null)
+                        callBack.getEmitter().onNext(result);
                     completed = true;
                 }
             } catch (Throwable th) {
@@ -123,10 +124,10 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
     protected abstract ClientSideContext getContext();
 
-    protected abstract OwnServiceUnit findUnit(RuntimeContext context);
+    protected abstract OwnServiceUnit findUnit(DefinitionContext context);
 
     @Override
-    protected Observable invoke(final RuntimeContext context, final Object... args) {
+    protected Observable invoke(final DefinitionContext context, final Object... args) {
         final OwnServiceUnit unit = findUnit(context);
         return Observable.create(new ObservableOnSubscribe() {
             @Override
@@ -166,11 +167,11 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
     private static class CallBack {
         private final ObservableEmitter emitter;
-        private final RuntimeContext context;
+        private final DefinitionContext context;
         private final Logger logger;
         private final Destination destination;
 
-        private CallBack(ObservableEmitter emitter, RuntimeContext context, Logger logger, Destination destination) {
+        private CallBack(ObservableEmitter emitter, DefinitionContext context, Logger logger, Destination destination) {
             this.emitter = emitter;
             this.context = context;
             this.logger = logger;
@@ -181,7 +182,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
             return emitter;
         }
 
-        public RuntimeContext getContext() {
+        public DefinitionContext getContext() {
             return context;
         }
 

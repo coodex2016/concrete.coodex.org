@@ -19,8 +19,8 @@ package org.coodex.concrete.core.intercept;
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.Limiting;
 import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ErrorCodes;
-import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.concrete.core.intercept.annotations.Local;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.config.Config;
@@ -58,13 +58,13 @@ public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    protected boolean accept_(RuntimeContext context) {
+    protected boolean accept_(DefinitionContext context) {
         return isServiceMethod(context)
                 && (context.getAnnotation(Limiting.class) != null);
     }
 
     @Override
-    public void before(RuntimeContext context, MethodInvocation joinPoint) {
+    public void before(DefinitionContext context, MethodInvocation joinPoint) {
         ConcurrencyStrategy strategy = getConcurrencyStrategy(context);
 
         if (strategy != null && !strategy.alloc())
@@ -91,24 +91,24 @@ public class MaximumConcurrencyInterceptor extends AbstractInterceptor {
 //    }
 
     @Override
-    public Object after(RuntimeContext context, MethodInvocation joinPoint, Object result) {
+    public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
         release(context);
         return super.after(context, joinPoint, result);
     }
 
-    private void release(RuntimeContext context) {
+    private void release(DefinitionContext context) {
         ConcurrencyStrategy strategy = getConcurrencyStrategy(context);
         if (strategy != null)
             strategy.release();
     }
 
     @Override
-    public Throwable onError(RuntimeContext context, MethodInvocation joinPoint, Throwable th) {
+    public Throwable onError(DefinitionContext context, MethodInvocation joinPoint, Throwable th) {
         release(context);
         return super.onError(context, joinPoint, th);
     }
 
-    private ConcurrencyStrategy getConcurrencyStrategy(RuntimeContext context) {
+    private ConcurrencyStrategy getConcurrencyStrategy(DefinitionContext context) {
         ConcurrencyStrategy strategy = null;
         Limiting limiting = context.getAnnotation(Limiting.class);
 //        if (limiting == null)

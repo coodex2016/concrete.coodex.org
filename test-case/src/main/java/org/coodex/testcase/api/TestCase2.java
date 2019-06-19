@@ -14,30 +14,14 @@
  * limitations under the License.
  */
 
-package org.coodex.testcase.impl;
+package org.coodex.testcase.api;
 
-import org.coodex.concrete.common.Token;
-import org.coodex.testcase.api.TestCase;
-import org.coodex.testcase.api.TestCase2;
+import org.coodex.concrete.api.AccessAllow;
+import org.coodex.concrete.api.ConcreteService;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+@ConcreteService
+@AccessAllow
+public interface TestCase2 extends TestCase {
 
-@Named
-public class TestCaseImpl implements TestCase2 {
-
-    @Inject
-    private Token token;
-
-    @Override
-    public int add(Integer x1, Integer x2) {
-        token.setAttribute("key","key");
-//        throw new RuntimeException("hello world.");
-        return x1 + x2;
-    }
-
-    @Override
-    public String helloWorld() {
-        return "hello world.";
-    }
+    String helloWorld();
 }

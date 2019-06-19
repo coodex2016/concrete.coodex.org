@@ -16,8 +16,8 @@
 
 package org.coodex.concrete.websocket;
 
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.IF;
-import org.coodex.concrete.common.RuntimeContext;
 import org.coodex.util.SingletonMap;
 
 import java.lang.reflect.Method;
@@ -37,7 +37,7 @@ public class WebSocketHelper {
 
 
     @SuppressWarnings("unchecked")
-    public static WebSocketUnit findUnit(RuntimeContext context) {
+    public static WebSocketUnit findUnit(DefinitionContext context) {
         WebSocketModule module = IF.isNull(modules.getInstance(context.getDeclaringClass()),
                 context.getDeclaringClass() + "is not a concrete service.");
         Method method = context.getDeclaringMethod();

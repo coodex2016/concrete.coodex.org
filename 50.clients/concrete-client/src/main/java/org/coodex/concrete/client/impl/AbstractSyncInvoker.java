@@ -23,6 +23,7 @@ import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.client.ClientMethodInvocation;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.common.ConcreteContext;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
@@ -41,7 +42,7 @@ public abstract class AbstractSyncInvoker extends AbstractInvoker {
 
     @Override
     public Object invoke(final Object instance, final Class clz, final Method method, final Object... args) {
-        ServiceContext serviceContext = buildContext(clz, method);
+        ServiceContext serviceContext = buildContext(ConcreteHelper.getDefinitionContext(clz, method));
         Trace trace = APM.build().tag("interface", clz.getName())
                 .tag("method", method.getName())
                 .start(String.format("client invoke: %s", getDestination().getLocation()));

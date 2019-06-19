@@ -139,8 +139,8 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
     }
 
     @Override
-    public ServiceContext buildContext(Class concreteClass, Method method) {
-        return new DubboClientContext(getDestination(), RuntimeContext.getRuntimeContext(method, concreteClass));
+    public ServiceContext buildContext(DefinitionContext context) {
+        return new DubboClientContext(getDestination(), context);
     }
 
     static class DubboCacheKey {

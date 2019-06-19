@@ -19,10 +19,8 @@ package org.coodex.concrete.client.amqp;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.rx.AbstractRxInvoker;
 import org.coodex.concrete.client.rx.RxToSyncInvoker;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ServiceContext;
-
-import java.lang.reflect.Method;
 
 public class AMQPSyncInvoker extends RxToSyncInvoker {
 
@@ -31,8 +29,7 @@ public class AMQPSyncInvoker extends RxToSyncInvoker {
     }
 
     @Override
-    public ServiceContext buildContext(Class concreteClass, Method method) {
-        return new AMQPClientContext(getDestination(),
-                RuntimeContext.getRuntimeContext(method, concreteClass));
+    public ServiceContext buildContext(DefinitionContext context) {
+        return new AMQPClientContext(getDestination(), context);
     }
 }

@@ -25,7 +25,7 @@ import org.coodex.concrete.client.rx.AbstractOwnRxInvoker;
 import org.coodex.concrete.client.rx.OwnRXMessageListener;
 import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.concrete.own.RequestPackage;
@@ -35,8 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -97,7 +95,7 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
     }
 
     @Override
-    protected OwnServiceUnit findUnit(RuntimeContext context) {
+    protected OwnServiceUnit findUnit(DefinitionContext context) {
         return AMQPHelper.findUnit(context);
     }
 
@@ -117,10 +115,15 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
     }
 
     @Override
-    public ServiceContext buildContext(Class concreteClass, Method method) {
-        return new AMQPClientContext(getDestination(),
-                RuntimeContext.getRuntimeContext(method, concreteClass));
+    public ServiceContext buildContext(DefinitionContext context) {
+        return new AMQPClientContext(getDestination(), context);
     }
+
+    //    @Override
+//    public ServiceContext buildContext(Class concreteClass, Method method) {
+//        return new AMQPClientContext(getDestination(),
+//                ConcreteHelper.getDefinitionContext(concreteClass, method));
+//    }
 
     private static class Facade {
         private final Channel channel;

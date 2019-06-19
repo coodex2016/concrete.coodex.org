@@ -18,9 +18,9 @@ package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.common.RuntimeContext;
+import org.coodex.concrete.common.DefinitionContext;
 
 public interface ConcreteSyncInterceptor extends MethodInterceptor, ConcreteInterceptor {
 
-    Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable;
+    Object around(DefinitionContext context, MethodInvocation joinPoint) throws Throwable;
 }
