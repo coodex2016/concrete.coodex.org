@@ -157,10 +157,8 @@ public class JaxRSHelper {
 //        return set;
 //    }
 
-
-    public static final Unit getUnitFromContext(DefinitionContext context/*, Object[] params*/) {
-        Module module = getModule(context.getDeclaringClass());
-        Method method = context.getDeclaringMethod();
+    public static final Unit getUnitFrom(Class clz, Method method) {
+        Module module = getModule(clz);
         int count = method.getParameterTypes().length;// == null ? 0 : params.length;
         for (Unit unit : module.getUnits()) {
             if (method.getName().equals(unit.getMethod().getName())
@@ -169,6 +167,20 @@ public class JaxRSHelper {
             }
         }
         return null;
+    }
+
+    public static final Unit getUnitFromContext(DefinitionContext context/*, Object[] params*/) {
+//        Module module = getModule(context.getDeclaringClass());
+//        Method method = context.getDeclaringMethod();
+//        int count = method.getParameterTypes().length;// == null ? 0 : params.length;
+//        for (Unit unit : module.getUnits()) {
+//            if (method.getName().equals(unit.getMethod().getName())
+//                    && count == unit.getParameters().length) {
+//                return unit;
+//            }
+//        }
+//        return null;
+        return getUnitFrom(context.getDeclaringClass(), context.getDeclaringMethod());
     }
 
 //    public static final Unit getUnitFromContext(DefinitionContext context/*, MethodInvocation invocation*/) {

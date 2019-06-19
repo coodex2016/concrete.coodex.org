@@ -76,10 +76,4 @@ public class ConcreteTestRule implements TestRule {
         return subjoin;
     }
 
-
-//    private Subjoin getSubjoin() {
-//        return new SubjoinWrapper.DefaultSubjoin();
-//    }
-
-
 }

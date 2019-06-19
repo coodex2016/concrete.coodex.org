@@ -16,15 +16,23 @@
 
 package org.coodex.concrete.common;
 
+import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.closure.CallableClosure;
 import org.coodex.closure.ClosureContext;
 import org.coodex.closure.StackClosureContext;
+import org.coodex.concrete.client.ClientSideContext;
+import org.coodex.concrete.core.intercept.ConcreteInterceptor;
+import org.coodex.concrete.core.intercept.InterceptorChain;
+import org.coodex.concrete.core.intercept.SyncInterceptorChain;
+import org.coodex.util.ServiceLoader;
+import org.coodex.util.Singleton;
 
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by davidoff shen on 2017-04-20.
@@ -35,8 +43,20 @@ public final class ConcreteContext {
     public static final String KEY_LOCALE = "CONCRETE-LOCALE";
 
     private static final ClosureContext<ServiceContext> CONTEXT = new StackClosureContext<ServiceContext>();
-
     private static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<Map<String, Object>>();
+
+    private static Singleton<SyncInterceptorChain> interceptorChainSingleton = new Singleton<>(
+            () -> {
+                SyncInterceptorChain syncInterceptorChain = new SyncInterceptorChain();
+                ServiceLoader<ConcreteInterceptor> serviceLoader = new ConcreteServiceLoader<ConcreteInterceptor>() {
+                };
+                for (ConcreteInterceptor interceptor : serviceLoader.getAllInstances()) {
+                    if (interceptor instanceof InterceptorChain) continue;
+                    syncInterceptorChain.add(interceptor);
+                }
+                return syncInterceptorChain;
+            }
+    );
     private static Map<String, Object> emptyLogging = new Map<String, Object>() {
         @Override
         public int size() {
@@ -114,7 +134,6 @@ public final class ConcreteContext {
     }
 
     public static final Map<String, Object> getLoggingData() {
-//        return LOGGING.get();
         return getLogging();
     }
 
@@ -124,29 +143,19 @@ public final class ConcreteContext {
     }
 
 
-//    @Deprecated
-//    public static final Object runWithContext(final ServiceContext context, final ConcreteClosure runnable) {
-//        return new ConcreteClosure() {
-//            @Override
-//            public Object concreteRun() throws Throwable {
-//                return CONTEXT.run(context, runnable);
-//            }
-//        }.run();
+//    /**
+//     * TO DO 需要考虑分离出去，Logging非必要模型
+//     *
+//     * @param callable
+//     * @return
+//     */
+//    public static final Object runWithLoggingContext(final CallableClosure callable) {
+//        try {
+//            return LOGGING.call(new ConcurrentHashMap<String, Object>(), callable);
+//        } catch (Throwable th) {
+//            throw ConcreteHelper.getException(th);
+//        }
 //    }
-
-    /**
-     * TODO 需要考虑分离出去，Logging非必要模型
-     *
-     * @param callable
-     * @return
-     */
-    public static final Object runWithLoggingContext(final CallableClosure callable) {
-        try {
-            return LOGGING.call(new ConcurrentHashMap<String, Object>(), callable);
-        } catch (Throwable th) {
-            throw ConcreteHelper.getException(th);
-        }
-    }
 
 
     public static final Object runWithContext(final ServiceContext context, final CallableClosure callable) {
@@ -155,44 +164,85 @@ public final class ConcreteContext {
         } catch (Throwable throwable) {
             throw ConcreteHelper.getException(throwable);
         }
-//        return new ConcreteClosure() {
-//            @Override
-//            public Object concreteRun() throws Throwable {
-//                return CONTEXT.run(context, runnable);
-//            }
-//        }.run();
     }
 
-//    @Deprecated
-//    public static final <T> ConcreteClosure run(final ClosureContext<T> closureContext, final T var, final ConcreteClosure runnable) {
-//        return new ConcreteClosure() {
-//            @Override
-//            public Object concreteRun() throws Throwable {
-//                return closureContext.run(var, runnable);
-//            }
-//        };
-//    }
 
-//    @Deprecated
-//    public static final Object runWith(/*AbstractUnit unit, */String model, Subjoin subjoin, Token token, ConcreteClosure runnable) {
-//        return
-////                run(CURRENT_UNIT, unit,
-//                run(MODEL, model,
-//                        run(SIDE, SIDE_SERVER,
-//                                run(SUBJOIN, subjoin,
-//                                        run(LOCALE, getLocale(),
-////                                        run(LOGGING, new HashMap<String, Object>(),
-//                                                run(TOKEN, token, runnable)
-////                                )
-//                                        )
-//                                )
-//                        )
-////                        )
-//                ).run();
-//    }
+    /**
+     * 服务端运行
+     *
+     * @param context
+     * @param callable
+     * @param interfaceClass
+     * @param method
+     * @param params
+     * @return
+     */
+    public static final Object runServiceWithContext(
+            final ServiceContext context,
+            final CallableClosure callable,
+//            AbstractUnit unit,
+            Class<?> interfaceClass,
+            Method method,
+            Object[] params) {
+        if (context instanceof ClientSideContext) {
+            return runWithContext(context, callable);
+        } else {
+            try {
+                return CONTEXT.call(context, () -> {
+                    Object instance = BeanProviderFacade.getBeanProvider().getBean(interfaceClass);
+                    RuntimeContext runtimeContext = RuntimeContext.getRuntimeContext(method, interfaceClass);
+                    ServiceMethodInvocation invocation = new ServiceMethodInvocation(method, params, instance);
+                    interceptorChainSingleton.getInstance().before(runtimeContext, invocation);
+                    try {
+                        return interceptorChainSingleton.getInstance()
+                                .after(runtimeContext, invocation, callable.call());
+                    } catch (Throwable th) {
+                        throw ConcreteHelper.findException(interceptorChainSingleton.getInstance()
+                                .onError(runtimeContext, invocation, th));
+                    }
+                });
+            } catch (Throwable throwable) {
+                throw ConcreteHelper.getException(throwable);
+            }
+        }
+    }
 
-//    private static Locale getLocale() {
-//        return CONTEXT.get().getSubjoin() == null ? Locale.getDefault() : CONTEXT.get().getSubjoin().getLocale();
-////        return SUBJOIN.get() == null ? Locale.getDefault() : SUBJOIN.get().getLocale();
-//    }
+    private static class ServiceMethodInvocation implements MethodInvocation {
+        private final Object[] arguments;
+        private final Object instance;
+        private final Method method;
+
+        private ServiceMethodInvocation(Method method, Object[] arguments, Object instance) {
+            this.arguments = arguments;
+            this.instance = instance;
+            this.method = method;
+        }
+
+        @Override
+        public Method getMethod() {
+            return method;
+        }
+
+        @Override
+        public Object[] getArguments() {
+            return arguments;
+        }
+
+        @Override
+        public Object proceed() throws Throwable {
+            // DO nothing
+            return null;
+        }
+
+        @Override
+        public Object getThis() {
+            return instance;
+        }
+
+        @Override
+        public AccessibleObject getStaticPart() {
+            // TODO 待验证
+            return null;
+        }
+    }
 }

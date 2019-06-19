@@ -187,7 +187,7 @@ public class DubboApplication implements Application {
                                     .start(String.format("dubbo: %s.%s", method.getDeclaringClass().getName(), method.getName()));
 
                             try {
-                                Object result = ConcreteContext.runWithContext(
+                                Object result = ConcreteContext.runServiceWithContext(
                                         serverSideContext,
                                         new CallableClosure() {
                                             @Override
@@ -195,7 +195,7 @@ public class DubboApplication implements Application {
                                                 return m.invoke(BeanProviderFacade.getBeanProvider()
                                                         .getBean(concreteClass), objects);
                                             }
-                                        });
+                                        }, concreteClass, m, objects);
                                 Map<String, String> toClient = new ConcurrentHashMap<String, String>();
                                 Map<String, String> subjoinMap = updatedMap(subjoin);
                                 if (subjoinMap.size() > 0)

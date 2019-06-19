@@ -31,12 +31,12 @@
     <dependencyManagement>
         <dependencies>
 
-            <!-- JSR 349 Bean Validation 1.1  -->
-            <dependency>
-                <groupId>javax.validation</groupId>
-                <artifactId>validation-api</artifactId>
-                <version>${jsr-349.version}</version>
-            </dependency>
+<!--            &lt;!&ndash; JSR 349 Bean Validation 1.1  &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>javax.validation</groupId>-->
+<!--                <artifactId>validation-api</artifactId>-->
+<!--                <version>${jsr-349.version}</version>-->
+<!--            </dependency>-->
 
             <!-- JSR 311 JAX-RS: The JavaTM API for RESTful Web Services 1.0 -->
             <dependency>
@@ -148,11 +148,11 @@
             </dependency>
 
             <!-- hibernate validator -->
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-validator</artifactId>
-                <version>${hibernate.validator.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.hibernate.validator</groupId>-->
+<!--                <artifactId>hibernate-validator</artifactId>-->
+<!--                <version>${hibernate.validator.version}</version>-->
+<!--            </dependency>-->
 
 
             <!-- hibernate -->

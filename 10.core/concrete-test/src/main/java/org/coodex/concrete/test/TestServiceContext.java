@@ -34,20 +34,6 @@ public class TestServiceContext extends AbstractContainerContext implements org.
                 @Override
                 public Token build(final String key) {
                     return newToken();
-//                    return (Token) Proxy.newProxyInstance(
-//                            Token.class.getClassLoader(),
-//                            new Class[]{Token.class},
-//                            new InvocationHandler() {
-//                                @Override
-//                                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-//                                    if (method.getName().equals("getTokenId")) {
-//                                        return key;
-//                                    } else {
-//                                        return method.invoke(newToken, args);
-//                                    }
-//                                }
-//                            }
-//                    );
                 }
             });
 

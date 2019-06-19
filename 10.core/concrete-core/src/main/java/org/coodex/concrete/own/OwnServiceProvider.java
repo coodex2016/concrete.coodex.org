@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.coodex.concrete.common.ConcreteContext.runWithContext;
+import static org.coodex.concrete.common.ConcreteContext.runServiceWithContext;
 import static org.coodex.concrete.common.ConcreteHelper.*;
 import static org.coodex.concrete.common.ErrorCodes.SERVICE_ID_NOT_EXISTS;
 import static org.coodex.concrete.own.PackageHelper.analysisParameters;
@@ -135,7 +135,7 @@ public abstract class OwnServiceProvider {
                         .start(String.format("%s: %s.%s", getModuleName(), method.getDeclaringClass().getName(), method.getName()));
                 try {
 
-                    Object result = runWithContext(
+                    Object result = runServiceWithContext(
                             context,
                             new CallableClosure() {
 
@@ -153,7 +153,10 @@ public abstract class OwnServiceProvider {
                                     }
 
                                 }
-                            });
+                            },
+                            unit.getDeclaringModule().getInterfaceClass(),
+                            unit.getMethod(),
+                            objects);
 
                     ResponsePackage responsePackage = new ResponsePackage();
                     final String tokenIdAfterInvoke = context.getTokenId();
@@ -187,20 +190,13 @@ public abstract class OwnServiceProvider {
                     responsePackage.setOk(true);
                     responsePackage.setContent(result);
                     responseVisitor.visit(responsePackage);
-//                    sendText(JSONSerializerFactory.getInstance().toJson(responsePackage), session);
                 } catch (final Throwable th) {
                     trace.error(th);
-                    runWithContext(context, new CallableClosure() {
-                        @Override
-                        public Object call() throws Throwable {
-                            if (errorVisitor != null) {
-                                errorVisitor.visit(requestPackage.getMsgId(), th);
-                            } else {
-                                log.warn("no error visitor: {}", getModuleName());
-                            }
-                            return null;
-                        }
-                    });
+                    if (errorVisitor != null) {
+                        errorVisitor.visit(requestPackage.getMsgId(), th);
+                    } else {
+                        log.warn("no error visitor: {}", getModuleName());
+                    }
 
                 } finally {
                     trace.finish();

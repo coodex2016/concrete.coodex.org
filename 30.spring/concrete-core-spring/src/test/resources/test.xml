@@ -29,14 +29,14 @@
     <!--<bean class="org.coodex.concrete.impl.aspects.RBAC_Aspect"></bean>-->
     <bean class="test.org.coodex.intf.impl.AspectTestImpl"></bean>
 
-    <bean class="org.coodex.concrete.spring.aspects.ConcreteAOPChain">
-        <constructor-arg index="0">
-            <list>
-                <!--<bean class="org.coodex.concrete.core.intercept.BeanValidationInterceptor"></bean>-->
-                <bean class="test.org.coodex.intf.impl.ExampleInterceptor1"></bean>
-                <bean class="test.org.coodex.intf.impl.ExampleInterceptor2"></bean>
-            </list>
-        </constructor-arg>
-    </bean>
+<!--    <bean class="org.coodex.concrete.spring.aspects.ConcreteAOPChain">-->
+<!--        <constructor-arg index="0">-->
+<!--            <list>-->
+<!--                &lt;!&ndash;<bean class="org.coodex.concrete.core.intercept.BeanValidationInterceptor"></bean>&ndash;&gt;-->
+<!--                <bean class="test.org.coodex.intf.impl.ExampleInterceptor1"></bean>-->
+<!--                <bean class="test.org.coodex.intf.impl.ExampleInterceptor2"></bean>-->
+<!--            </list>-->
+<!--        </constructor-arg>-->
+<!--    </bean>-->
 
 </beans>

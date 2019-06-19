@@ -18,7 +18,6 @@ package org.coodex.concrete.spring;
 
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenWrapper;
-import org.coodex.concrete.spring.aspects.ConcreteAOPChain;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

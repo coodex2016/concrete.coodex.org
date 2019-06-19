@@ -35,7 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import static org.coodex.concrete.common.ConcreteContext.KEY_TOKEN;
-import static org.coodex.concrete.common.ConcreteContext.runWithContext;
+import static org.coodex.concrete.common.ConcreteContext.runServiceWithContext;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.KEY_CLIENT_PROVIDER;
 import static org.coodex.util.TypeHelper.solve;
 import static org.coodex.util.TypeHelper.typeToClass;
@@ -62,6 +62,9 @@ public abstract class AbstractJAXRSResource<T> {
     private static boolean isDevModel() {
         return ConcreteHelper.isDevModel("jaxrs");
     }
+
+
+//    private static
 
     private static String getMethodNameInStack(int deep) {
         // getStackTrace +1, getMethodInStack +2
@@ -116,9 +119,6 @@ public abstract class AbstractJAXRSResource<T> {
     }
 
     private Method findActualMethod(String methodName, Class<?> clz, CreatedByConcrete concrete) {
-//        Class<?>[] parameterTypes = method.getDeclaredAnnotation(CreatedByConcrete.class).paramClasses();
-        // 不确定原因，javassist int[]生成的注解不受支持
-        //getParameterTypes(method.getParameterTypes());
 
         for (Method m : clz.getMethods()) {
             if (m.getName().equals(methodName) && getParameterCount(m) == concrete.paramCount()) {
@@ -182,25 +182,17 @@ public abstract class AbstractJAXRSResource<T> {
     }
 
     protected Response buildResponse(String tokenId, final Method method, final Object[] params, /*RunWithToken runWithToken*/ CallableClosure callable) {
-//        final int paramCount = params == null ? 0 : params.length;
-//        boolean newToken = false;
-//        Token token = Common.isBlank(tokenId) ? null : getToken(tokenId, false);
-//        if (token == null || !token.isValid()) {
-//            token = getToken(Common.getUUIDStr(), true);
-//            newToken = true;
-//        }
-//        Token token
 
-//        Object result = runWithToken.runWithToken(getToken(tokenId));
         JAXRSServiceContext serviceContext = buildContext(tokenId);
         // apm
-
+//        JaxRSServiceHelper.
         Trace trace = APM.build(serviceContext.getSubjoin())
                 .tag("remote", serviceContext.getCaller().getAddress())
                 .tag("agent", serviceContext.getCaller().getClientProvider())
                 .start(String.format("jaxrs: %s.%s", method.getDeclaringClass().getName(), method.getName()));
         try {
-            Object result = runWithContext(serviceContext, callable);
+            Object result = runServiceWithContext(serviceContext, callable,
+                    getInterfaceClass(), method, params);
             Response.ResponseBuilder builder = result == null ? Response.noContent() : Response.ok();
             String tokenIdAfterInvoke = serviceContext.getTokenId();
             if (!Common.isSameStr(tokenId, tokenIdAfterInvoke) && !Common.isBlank(tokenIdAfterInvoke)) {
@@ -217,8 +209,8 @@ public abstract class AbstractJAXRSResource<T> {
             }
 
             Map<String, String> map = ConcreteHelper.updatedMap(serviceContext.getSubjoin());
-            if(map != null && map.size() > 0){
-                for(String key: map.keySet()){
+            if (map != null && map.size() > 0) {
+                for (String key : map.keySet()) {
                     builder = builder.header(key, map.get(key));
                 }
             }
@@ -231,16 +223,6 @@ public abstract class AbstractJAXRSResource<T> {
         }
     }
 
-//    private Object[] revert(Object [] params, Method method){
-//        Unit unit = getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass()));
-//        if(unit.getPojoCount() == 0) return params;
-//        Object[] result = new Object[method.getParameterTypes().length];
-//        for(int i = 0; i < method.getParameterTypes().length; i ++){
-//
-////            result[i] =
-//        }
-//        return params;
-//    }
 
     protected Response invokeByTokenId(final String tokenId, final Method method, final Object[] params) {
         final int paramCount = params == null ? 0 : params.length;
@@ -264,35 +246,6 @@ public abstract class AbstractJAXRSResource<T> {
 
                     }
                 });
-
-//        return buildResponse(tokenId, method, params, new RunWithToken() {
-//            @Override
-//            public Object runWithToken(Token token) {
-//                return convert(
-//                        runWithContext(
-//                                buildContext(
-//                                        tokenId,
-//                                        JaxRSHelper.getUnitFromContext(
-//                                                ConcreteHelper.getContext(method, getInterfaceClass()))),
-//
-//                                new CallableClosure() {
-//
-//                                    public Object call() throws Throwable {
-//                                        if (!Polling.class.equals(method.getDeclaringClass()) && isDevModel()) {
-//                                            return void.class.equals(method.getGenericReturnType()) ? null :
-//                                                    MockerFacade.mock(method, getInterfaceClass());
-//                                        } else {
-//                                            Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
-//                                            if (paramCount == 0)
-//                                                return method.invoke(instance);
-//                                            else
-//                                                return method.invoke(instance, params);
-//                                        }
-//
-//                                    }
-//                                }));
-//            }
-//        });
 
     }
 

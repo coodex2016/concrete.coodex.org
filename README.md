@@ -26,9 +26,13 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-06-19
+
+- 服务端AOP不再依赖DI容器
+
+## 2019-06-18
+
 - 移除Abstract/MicroService/NotService注解，移除ConcreteService接口，增加ConcreteService注解，在原MicroService能力基础上增加了Abstract和NotService的能力
-- TODO 验证
-- TODO aop
 - 【merge from 0.2.4-SNAPSHOT】angualr代码生成：export runtimeContext对象，可由开发者修改运行时变量
 
 ## 2019-06-17
