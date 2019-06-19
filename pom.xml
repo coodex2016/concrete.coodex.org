@@ -109,6 +109,7 @@
         <module>plugins/concrete-apm-zipkin</module>
         <module>plugins/concrete-apm-plugin-mysql</module>
         <module>test-case</module>
+        <module>plugins/concrete-apm-plugin-mysql8</module>
 
     </modules>
 

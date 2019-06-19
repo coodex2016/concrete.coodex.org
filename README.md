@@ -30,6 +30,7 @@ public interface SomeService {
 
 - 服务端AOP不再依赖DI容器
 - 废弃运行期服务上下文，所有的设置均遵循服务定义
+- 切换到spring boot 2后，默认mysql的jdbc版本为8，增加concrete-apm-plugin-mysql8进行适配
 
 ## 2019-06-18
 
