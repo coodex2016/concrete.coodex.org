@@ -1,3 +1,4 @@
+/* tslint:disable */
 import {HttpClient, HttpResponse, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 <#if rxjsVersion?default(6) lt 6>import {Observable} from 'rxjs/Observable';
