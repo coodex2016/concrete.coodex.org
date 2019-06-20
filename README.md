@@ -26,6 +26,10 @@ public interface SomeService extends ConcreteService{
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-06-20
+
+- angular代码生成(v2),默认rxjs版本为6,严格按照6规范使用
+    
 
 ## 2019-06-18
 

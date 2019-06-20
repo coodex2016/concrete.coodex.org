@@ -33,7 +33,7 @@ public class JaxrsRenderHelper {
                 StringBuilder builder = new StringBuilder("{ ");
                 for (int i = 0; i < pojoParams.length; i++) {
                     if (i > 0) builder.append(", ");
-                    builder.append(pojoParams[i].getName()).append(": ").append(pojoParams[i].getName());
+                    builder.append(pojoParams[i].getName())/*.append(": ").append(pojoParams[i].getName())*/;
                 }
                 builder.append(" }");
                 return builder.toString();
