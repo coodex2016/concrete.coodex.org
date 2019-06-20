@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-06-20
+
+- 【merge from 0.2.4-SNAPSHOT】angular代码生成(v2),默认rxjs版本为6,严格按照6规范使用
+
 ## 2019-06-19
 
 - 服务端AOP不再依赖DI容器
