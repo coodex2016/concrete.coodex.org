@@ -1,3 +1,4 @@
+/* tslint:disable */
 <#macro classNameList classes><#list classes?sort as clazz>${clazz}<#if clazz_has_next>, </#if></#list></#macro>
 import { NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
