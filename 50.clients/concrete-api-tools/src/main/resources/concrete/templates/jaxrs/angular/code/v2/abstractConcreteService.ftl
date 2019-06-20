@@ -1,18 +1,21 @@
 import {HttpClient, HttpResponse, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent} from '@angular/common/http';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
-<#if rxjsVersion lt 6>import 'rxjs/add/observable/throw';<#else >import {throwError} from 'rxjs';</#if>
 import {Injectable} from '@angular/core';
-import {Subject} from 'rxjs/Subject';
-
+<#if rxjsVersion?default(6) lt 6>import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
+import 'rxjs/add/observable/throw';<#else>import {Observable, Observer, Subject, throwError} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';</#if>
 
 class RuntimeContext {
 
-    // change it
-    private localTokenId: string = null;
-    private globalTokenKey: string = null;
+    public localTokenId: string = null;
+    public globalTokenKey: string = null;
     public root = 'http://localhost:8080/jaxrs';
     public pollingTimeout = 10;
+    // 统一异常处理，返回值为true，说明已被处理
+    public errorHandle = (errorInfo: ErrorInfo) => {
+        console.log(errorInfo);
+        return false;
+    }
 
     public getTokenId(): string {
         return (this.globalTokenKey ?
@@ -33,20 +36,30 @@ export const runtimeContext: RuntimeContext = new RuntimeContext();
 
 export abstract class AbstractConcreteService {
 
-    protected $$getServiceRoot(): string {
+
+    private static onError(code: number, message: string): ErrorInfo {
+        const errorInfo: ErrorInfo = new ErrorInfo(code, message);
+        let handled = false;
+        if (runtimeContext.errorHandle && typeof runtimeContext.errorHandle === 'function') {
+            handled = runtimeContext.errorHandle(errorInfo);
+        }
+        if (!handled) {return errorInfo; }
+    }
+
+    protected static $$getServiceRoot(): string {
         return runtimeContext.root;
     }
 
-    protected defaultRequestOptions(body?: any): any {
+    protected static defaultRequestOptions(body?: any): any {
         return {
             responseType: 'text',
-            body: body,
+            body,
             observe: 'response',
             withCredentials: true
         };
     }
 
-    protected extractData(result: any) {
+    protected static extractData(result: any) {
         const res: HttpResponse<any> = result;
         if (res.headers) {
             runtimeContext.setTokenId(res.headers.get('concrete-token-id'));
@@ -55,7 +68,7 @@ export abstract class AbstractConcreteService {
             return null;
         }
 
-        if(typeof res.body === 'object'){
+        if (typeof res.body === 'object') {
             return res.body;
         }
 
@@ -67,18 +80,16 @@ export abstract class AbstractConcreteService {
         }
     }
 
-    private static onError(code: number, message: String): ErrorInfo {
-        const errorInfo: ErrorInfo = new ErrorInfo(code, message);
-        // TODO: change it
-        console.log(errorInfo.toString());
-        return errorInfo;
-    }
-
-    protected handleError(res: Response | any) {
+    protected static handleError(res: Response | any) {
         const errorInfo = typeof res.error === 'object' ? res.error : (JSON.parse(res.error) || {});
-        return <#if rxjsVersion lt 6>Observable.throw<#else>throwError</#if>(AbstractConcreteService.onError(
-            errorInfo.code || res.status,
-            errorInfo.msg || res.statusText));
+        const error = AbstractConcreteService.onError(errorInfo.code || res.status,
+            errorInfo.msg || res.statusText);
+
+        if (error) {
+            return <#if rxjsVersion?default(6) lt 6>Observable.throw<#else>throwError</#if>(error);
+        } else {
+            return new Observable();
+        }
     }
 }
 
@@ -86,7 +97,7 @@ export abstract class AbstractConcreteService {
 export class ConcreteHeadersInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         let concreteHeaders = req.headers.set('content-type', 'application/json')
-            .set('Cache-Control','no-cache, no-store')
+            .set('Cache-Control', 'no-cache, no-store')
             .set('X-CLIENT-PROVIDER', 'CONCRETE-ANGULAR-V2-${version}');
         const tokenId = runtimeContext.getTokenId();
         if (tokenId) {
@@ -106,7 +117,7 @@ export class Broadcast extends AbstractConcreteService {
         super();
     }
 
-    private notify(messages: any[], pollingFunc: Function) {
+    private notify(messages: any[], pollingFunc) {
         if (messages && messages.length > 0) {
             for (const message of messages) {
                 const subject = this.bcSubject.get(message.subject);
@@ -121,15 +132,15 @@ export class Broadcast extends AbstractConcreteService {
     }
 
     private polling(timeOut: number): Observable<any> {
-        return this.http.request(<#if style>'GET', this.$$getServiceRoot() + `/Concrete/polling/${timeOut}`, this.defaultRequestOptions()<#else>'POST', this.$$getServiceRoot() + `/Concrete/polling`, this.defaultRequestOptions(timeOut)</#if>)
-            .map(this.extractData)
-            .catch(this.handleError);
+        return this.http.request(<#if style>'GET', Broadcast.$$getServiceRoot() + `/Concrete/polling/${timeOut}`, Broadcast.defaultRequestOptions()<#else>'POST', Broadcast.$$getServiceRoot() + `/Concrete/polling`, Broadcast.defaultRequestOptions(timeOut)</#if>)
+            <#if rxjsVersion?default(6) lt 6>.map(Broadcast.extractData)
+            .catch(Broadcast.handleError);<#else>.pipe(map(Broadcast.extractData), catchError(Broadcast.handleError));</#if>
     }
 
     public doPolling() {
         if (!this.pollingStart) {
             const self = this;
-            const pollingFunc = function () {
+            const pollingFunc = () => {
                 self.polling(runtimeContext.pollingTimeout).subscribe(
                     messageArray => self.notify(messageArray, pollingFunc),
                     () => self.pollingStart = false);
@@ -150,8 +161,8 @@ export class Broadcast extends AbstractConcreteService {
 }
 
 export class ErrorInfo {
-    private code: number;
-    private errorMsg: string;
+    code: number;
+    errorMsg: string;
 
     constructor(code, errorMsg) {
         this.code = code;

@@ -4,10 +4,10 @@
 <#if includeServices??>
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+<#if rxjsVersion?default(6) lt 6>import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
-
+import 'rxjs/add/operator/map';<#else>import { Observable } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';</#if>
 import { AbstractConcreteService } from '${contextPath}AbstractConcreteService';
 </#if>
 
@@ -22,15 +22,15 @@ import { <@importsList classes=import.classes/> } from '${contextPath}${import.p
 @Injectable()
 export class ${module.className} extends AbstractConcreteService {
 
-    constructor (private http: HttpClient) {
+    constructor(private http: HttpClient) {
         super();
     }
 
 <#list module.methods?sort_by("name") as method>
     public ${method.name}(<@paramList params=method.params/>): Observable<${method.returnType}> {
-        return this.http.request('${method.httpMethod}', this.$$getServiceRoot() + `${method.methodPath}`, this.defaultRequestOptions(<#if method.body??>${method.body}</#if>))
-                .map(this.extractData)
-                .catch(this.handleError);
+        return this.http.request('${method.httpMethod}', ${module.className}.$$getServiceRoot() + `${method.methodPath}`, ${module.className}.defaultRequestOptions(<#if method.body??>${method.body}</#if>))
+                <#if rxjsVersion?default(6) lt 6>.map(${module.className}.extractData)
+                .catch(${module.className}.handleError);<#else>.pipe(map(${module.className}.extractData), catchError(${module.className}.handleError));</#if>
     }
 </#list>
 }
