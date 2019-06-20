@@ -47,6 +47,9 @@
     <logger name="org.apache" level="warn">
         <appender-ref ref="console"/>
     </logger>
+    <logger name="com.rabbitmq" level="warn">
+        <appender-ref ref="console"/>
+    </logger>
     <logger name="com.alibaba.dubbo" level="warn">
         <appender-ref ref="console"/>
     </logger>
