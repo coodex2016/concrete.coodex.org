@@ -111,6 +111,10 @@
         <module>test-case</module>
         <module>plugins/concrete-apm-plugin-mysql8</module>
 
+
+        <module>s2/concrete-s2-api</module>
+        <module>s2/concrete-s2-impl</module>
+
     </modules>
 
 

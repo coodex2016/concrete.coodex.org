@@ -25,7 +25,10 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @Configuration
 @EnableAspectJAutoProxy
-@ComponentScan("org.coodex.concrete.spring.components")
+@ComponentScan({
+        "org.coodex.concrete.spring.components",
+        "org.coodex.concrete.**.injectable"
+})
 public class ConcreteSpringConfiguration {
 
 

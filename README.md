@@ -29,6 +29,8 @@ public interface SomeService {
 ## 2019-06-21
 
 - Client方式本地调用时也调用切片
+- concrete-core-spring增加自动检索的包`org.coodex.concrete.**.injectable`
+- 增加concrete-s2-api/impl模块
 
 ## 2019-06-20
 
