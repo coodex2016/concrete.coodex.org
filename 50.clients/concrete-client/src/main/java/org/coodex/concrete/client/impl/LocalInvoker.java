@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.client.impl;
 
-import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.LocalServiceContext;
 import org.coodex.concrete.common.*;
@@ -59,24 +58,10 @@ public class LocalInvoker extends AbstractSyncInvoker {
     @Override
     public Object invoke(final Object instance, final Class clz, final Method method, final Object... args) {
 
-        return ConcreteContext.runWithContext(
+        return ConcreteContext.runServiceWithContext(
                 buildContext(ConcreteHelper.getDefinitionContext(clz, method)),
-                new CallableClosure() {
-                    @Override
-                    public Object call() throws Throwable {
-                        return execute(clz, method, args);
-                    }
-                }
-        );
-//        return ConcreteContext.runWithContext(
-//                buildContext(clz, method),
-//                new ConcreteClosure() {
-//                    @Override
-//                    public Object concreteRun() throws Throwable {
-//                        return execute(clz, method, args);
-//                    }
-//                }
-//        );
+                () -> execute(clz, method, args),
+                clz, method, args);
     }
 
 }

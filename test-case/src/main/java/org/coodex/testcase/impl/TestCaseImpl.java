@@ -32,9 +32,9 @@ public class TestCaseImpl implements TestCase2 {
     @Override
     public int add(Integer x1, Integer x2) {
 
-//        token.setAttribute("key","key");
-        throw new RuntimeException("hello world.");
-//        return x1 + x2;
+        token.setAttribute("key","key");
+//        throw new RuntimeException("hello world.");
+        return x1 + x2;
     }
 
     @Override

@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-06-21
+
+- Client方式本地调用时也调用切片
+
 ## 2019-06-20
 
 - 【merge from 0.2.4-SNAPSHOT】angular代码生成(v2),默认rxjs版本为6,严格按照6规范使用
