@@ -31,7 +31,7 @@ public class ReverseClassGenerator extends JSR339ClassGenerator {
 
 
     @Override
-    public boolean isAccept(String desc) {
+    public boolean accept(String desc) {
         return GENERATOR_NAME.equalsIgnoreCase(desc);
     }
 

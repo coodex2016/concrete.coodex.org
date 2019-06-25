@@ -26,7 +26,6 @@ import org.coodex.concrete.message.TBMContainer;
 import org.coodex.concurrent.components.PriorityRunnable;
 import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
-import org.coodex.util.ReflectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,12 +67,7 @@ public abstract class OwnServiceProvider {
     }
 
     public final void registerPackage(String... packages) {
-        foreachClassInPackages(new ReflectHelper.Processor() {
-            @Override
-            public void process(Class<?> serviceClass) {
-                registerClasses(serviceClass);
-            }
-        }, packages);
+        foreachClassInPackages(this::registerClasses, packages);
 //        if (packages == null || packages.length == 0) {
 //            packages = ConcreteHelper.getApiPackages();
 //        }

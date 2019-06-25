@@ -18,7 +18,7 @@ package org.coodex.concrete.support.jsr311.javassist;
 
 
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.concrete.support.jaxrs.javassist.AbstractJavassistClassGenerator;
 import org.coodex.concrete.support.jaxrs.javassist.AbstractMethodGenerator;
 import org.coodex.concrete.support.jaxrs.javassist.CGContext;
@@ -33,10 +33,10 @@ public final class JSR311ClassGenerator extends AbstractJavassistClassGenerator 
             JaxRSModuleMaker.JAX_RS_PREV + ".jsr311." + BYTE_CODE_TOOLS_NAME + ".v1";
 
 
-    @Override
-    public boolean isAccept(String desc) {
-        return GENERATOR_NAME.equalsIgnoreCase(desc);
-    }
+//    @Override
+//    public boolean isAccept(String desc) {
+//        return GENERATOR_NAME.equalsIgnoreCase(desc);
+//    }
 
     @Override
     public String getImplPostfix() {
@@ -50,7 +50,12 @@ public final class JSR311ClassGenerator extends AbstractJavassistClassGenerator 
     }
 
     @Override
-    protected AbstractMethodGenerator getMethodGenerator(CGContext context, Unit unit) {
+    protected AbstractMethodGenerator getMethodGenerator(CGContext context, JaxrsUnit unit) {
         return new JSR311MethodGenerator(context, unit);
+    }
+
+    @Override
+    public boolean accept(String desc) {
+        return GENERATOR_NAME.equalsIgnoreCase(desc);
     }
 }

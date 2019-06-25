@@ -39,38 +39,51 @@ import java.util.zip.ZipFile;
 public class ReflectHelper {
 
     public static final ClassDecision NOT_NULL = new NotNullDecision();
-    public static final ClassDecision ALL_OBJECT = new AllObjectDecision();
-    public static final ClassDecision ALL_OBJECT_EXCEPT_JDK = new AllObjectExceptJavaSDK();
+//    public static final ClassDecision ALL_OBJECT = new AllObjectDecision();
+//    public static final ClassDecision ALL_OBJECT_EXCEPT_JDK = new AllObjectExceptJavaSDK();
     private static Logger log = LoggerFactory.getLogger(ReflectHelper.class);
 
     private ReflectHelper() {
     }
 
-    public static String getParameterName(Method method, int index, String prefix) {
-        try {
-            return getParameterName(method, index);
-        } catch (Throwable th) {
-            return prefix + index;
+    public static String getParameterName(Object executable, int index, String prefix){
+        if(executable instanceof Method){
+            return getMethodParameterName((Method) executable, index,prefix);
+        } else if(executable instanceof Constructor){
+            return getConstructorParameterName((Constructor) executable,index,prefix);
+        } else {
+            throw new IllegalArgumentException("none Executable object: " + executable);
         }
     }
 
-    public static String getParameterName(Method method, int index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+    private static String getMethodParameterName(Method method, int index, String prefix) {
+        String str = null;
+        try {
+            str =  getParameterName(method, index);
+        } catch (Throwable th) {
+//            str = prefix + index;
+        }
+        return Common.isBlank(str) ? (prefix + index): str;
+    }
+
+    private static String getParameterName(Method method, int index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
         String s = getParameterNameByAnnotation(method.getParameterAnnotations(), index);
         return s == null ? getParameterNameByJava8(method, index) : s;
     }
 
     private static String getParameterNameByJava8(Method method, int index) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException {
-        Method getParameters = Method.class.getMethod("getParameters");
-        Object[] parameters = (Object[]) getParameters.invoke(method);
-        if (parameters != null) {
-            Class<?> methodParameterClass = Class.forName("java.lang.reflect.Parameter");
-            Method getName = methodParameterClass.getMethod("getName");
-            return (String) getName.invoke(parameters[index]);
-        }
-        return null;
+        return getExecutableParameterNameByJava8(method, index);
+//        Method getParameters = Method.class.getMethod("getParameters");
+//        Object[] parameters = (Object[]) getParameters.invoke(method);
+//        if (parameters != null) {
+//            Class<?> methodParameterClass = Class.forName("java.lang.reflect.Parameter");
+//            Method getName = methodParameterClass.getMethod("getName");
+//            return (String) getName.invoke(parameters[index]);
+//        }
+//        return null;
     }
 
-    public static String getParameterName(Constructor constructor, int index, String prefix) {
+    private static String getConstructorParameterName(Constructor constructor, int index, String prefix) {
         try {
             return getParameterName(constructor, index);
         } catch (Throwable th) {
@@ -95,9 +108,15 @@ public class ReflectHelper {
         return s == null ? getParameterNameByJava8(constructor, index) : s;
     }
 
-    private static String getParameterNameByJava8(Constructor constructor, int index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+    private static String getParameterNameByJava8(Constructor constructor, int index)
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+        return getExecutableParameterNameByJava8(constructor, index);
+    }
+
+    private static String getExecutableParameterNameByJava8(Object executable, int index)
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
         Method getParameters = Method.class.getMethod("getParameters");
-        Object[] parameters = (Object[]) getParameters.invoke(constructor);
+        Object[] parameters = (Object[]) getParameters.invoke(executable);
         if (parameters != null) {
             Class<?> methodParameterClass = Class.forName("java.lang.reflect.Parameter");
             Method getName = methodParameterClass.getMethod("getName");
@@ -132,16 +151,16 @@ public class ReflectHelper {
         return fields.values().toArray(new Field[0]);
     }
 
-    public static boolean belong(Method method, Class<?> clz) {
-        try {
-            Method m = clz.getMethod(method.getName(), method.getParameterTypes());
-            return m != null;
-        } catch (SecurityException e) {
-            return false;
-        } catch (NoSuchMethodException e) {
-            return false;
-        }
-    }
+//    public static boolean belong(Method method, Class<?> clz) {
+//        try {
+//            Method m = clz.getMethod(method.getName(), method.getParameterTypes());
+//            return m != null;
+//        } catch (SecurityException e) {
+//            return false;
+//        } catch (NoSuchMethodException e) {
+//            return false;
+//        }
+//    }
 
     public static Object invoke(Object obj, Method method, Object[] args)
             throws IllegalAccessException, IllegalArgumentException,
@@ -158,11 +177,11 @@ public class ReflectHelper {
         }
     }
 
-    public static Collection<Class<?>> getClasses(String packageName) {
-        return getClasses(packageName, null);
-    }
+//    public static Collection<Class<?>> getClasses(String packageName) {
+//        return getClasses(packageName, null);
+//    }
 
-    public static Collection<Class<?>> getClasses(String packageName,
+    private static Collection<Class<?>> getClasses(String packageName,
                                                   ClassNameFilter filter) {
         ClassLoader classLoader = ReflectHelper.class.getClassLoader();
 
@@ -275,7 +294,7 @@ public class ReflectHelper {
         Set<Class> submittedClasses = new HashSet<Class>();
         try {
             for (String pkg : packages) {
-                for (Class clazz : ReflectHelper.getClasses(pkg, filter)) {
+                for (Class clazz : getClasses(pkg, filter)) {
                     if (!submittedClasses.contains(clazz)) {
                         processor.process(clazz);
                         submittedClasses.add(clazz);
@@ -287,20 +306,20 @@ public class ReflectHelper {
         }
     }
 
-    public static void foreachClass(Processor processor, Class<?>... classes) {
-        if (processor == null) return;
-        Set<Class> submittedClasses = new HashSet<Class>();
-        try {
-            for (Class clazz : classes) {
-                if (!submittedClasses.contains(clazz)) {
-                    processor.process(clazz);
-                    submittedClasses.add(clazz);
-                }
-            }
-        } finally {
-            submittedClasses.clear();
-        }
-    }
+//    public static void foreachClass(Processor processor, Class<?>... classes) {
+//        if (processor == null) return;
+//        Set<Class> submittedClasses = new HashSet<Class>();
+//        try {
+//            for (Class clazz : classes) {
+//                if (!submittedClasses.contains(clazz)) {
+//                    processor.process(clazz);
+//                    submittedClasses.add(clazz);
+//                }
+//            }
+//        } finally {
+//            submittedClasses.clear();
+//        }
+//    }
 
     @SuppressWarnings("unchecked")
     public static <T> T throwExceptionObject(Class<T> interfaceClass, final Throwable th) {

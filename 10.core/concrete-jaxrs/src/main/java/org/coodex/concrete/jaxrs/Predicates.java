@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
 
@@ -121,7 +121,7 @@ public class Predicates {
      * @return
      * @see #PREDICATES
      */
-    public static String getHttpMethod(Unit unit) {
+    public static String getHttpMethod(JaxrsUnit unit) {
 //        String methodName = ConcreteHelper.getMethodName(unit.getMethod());
 //        String[] paths = paths(methodName);
 //        int index = getLastNodeIndex(paths);

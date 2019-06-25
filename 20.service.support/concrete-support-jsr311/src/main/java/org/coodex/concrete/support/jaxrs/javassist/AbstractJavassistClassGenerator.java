@@ -21,8 +21,8 @@ import javassist.CtConstructor;
 import javassist.bytecode.SignatureAttribute;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concrete.jaxrs.ClassGenerator;
-import org.coodex.concrete.jaxrs.struct.Module;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsModule;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -47,10 +47,10 @@ public abstract class AbstractJavassistClassGenerator implements ClassGenerator 
      * @return
      * @throws CannotCompileException
      */
-    public Class<?> generatesImplClass(Module module) throws CannotCompileException {
+    public Class<?> generatesImplClass(JaxrsModule module) throws CannotCompileException {
 
         CGContext context = initImplClass(module);
-        for (Unit unit : module.getUnits()) {
+        for (JaxrsUnit unit : module.getUnits()) {
             AbstractMethodGenerator methodGenerator = getMethodGenerator(context, unit);
             if (methodGenerator != null)
                 context.getNewClass().addMethod(methodGenerator.generateMethod(
@@ -67,7 +67,7 @@ public abstract class AbstractJavassistClassGenerator implements ClassGenerator 
         return context.getNewClass().toClass();
     }
 
-    private CGContext initImplClass(Module module) throws CannotCompileException {
+    private CGContext initImplClass(JaxrsModule module) throws CannotCompileException {
 
         Class<?> serviceClass = module.getInterfaceClass();
 
@@ -95,7 +95,7 @@ public abstract class AbstractJavassistClassGenerator implements ClassGenerator 
         return context;
     }
 
-    protected abstract AbstractMethodGenerator getMethodGenerator(CGContext context, Unit unit);
+    protected abstract AbstractMethodGenerator getMethodGenerator(CGContext context, JaxrsUnit unit);
 
 
 }

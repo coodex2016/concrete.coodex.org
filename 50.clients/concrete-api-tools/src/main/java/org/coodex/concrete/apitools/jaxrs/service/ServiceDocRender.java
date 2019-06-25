@@ -18,15 +18,15 @@ package org.coodex.concrete.apitools.jaxrs.service;
 
 import org.coodex.concrete.apitools.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
-import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.jaxrs.ErrorDefinition;
+import org.coodex.concrete.common.ErrorDefinition;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
-import org.coodex.concrete.jaxrs.JaxRSServiceHelper;
-import org.coodex.concrete.jaxrs.struct.Module;
+import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+
+import static org.coodex.concrete.apitools.APIHelper.loadModules;
+import static org.coodex.concrete.common.ErrorMessageFacade.getAllErrorInfo;
 
 /**
  * Created by davidoff shen on 2016-11-30.
@@ -51,25 +51,25 @@ public class ServiceDocRender extends AbstractRender {
     }
 
 
-    private void writeSummary(List<Module> modules) throws IOException {
+    private void writeSummary(List<JaxrsModule> modules) throws IOException {
         writeTo("SUMMARY.md",
                 "SUMMARY.md",
                 "modules", modules, toolkit);
     }
 
-    private void writeModuleList(List<Module> modules) throws IOException {
+    private void writeModuleList(List<JaxrsModule> modules) throws IOException {
         writeTo("moduleList.md",
                 "moduleList.md",
                 "modules", modules, toolkit);
     }
 
-    private void writeModule(Module module) throws IOException {
+    private void writeModule(JaxrsModule module) throws IOException {
         writeTo("modules" + FS + module.getInterfaceClass().getName() + ".md",
                 "module.md",
                 "module", module, toolkit);
     }
 
-    public void writeTo(List<Module> modules) throws IOException {
+    public void writeTo(List<JaxrsModule> modules) throws IOException {
         // book.json
         if (!exists("book.json"))
             copyTo("book.json", "book.json");
@@ -83,7 +83,7 @@ public class ServiceDocRender extends AbstractRender {
         writeModuleList(modules);
 
         // modules
-        for (Module module : modules) {
+        for (JaxrsModule module : modules) {
             writeModule(module);
         }
 
@@ -100,11 +100,11 @@ public class ServiceDocRender extends AbstractRender {
 
     @Override
     public void writeTo(String... packages) throws IOException {
-        writeTo(ConcreteHelper.<Module>loadModules(RENDER_NAME, packages));
+        writeTo(loadModules(RENDER_NAME, packages));
 
-        List<ErrorDefinition> errors = new ArrayList<ErrorDefinition>();
+//        List<ErrorDefinition> errors = new ArrayList<ErrorDefinition>();
 
         // write errorInfo
-        writeErrorInfo(JaxRSServiceHelper.getAllErrorInfo(packages));
+        writeErrorInfo(getAllErrorInfo());
     }
 }

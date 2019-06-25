@@ -18,12 +18,13 @@ package org.coodex.concrete.apitools.jaxrs.jquery;
 
 import org.coodex.concrete.apitools.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
-import org.coodex.concrete.jaxrs.struct.Module;
+import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 
 import java.io.IOException;
 import java.util.List;
+
+import static org.coodex.concrete.apitools.APIHelper.loadModules;
 
 /**
  * Created by davidoff shen on 2016-12-05.
@@ -36,19 +37,19 @@ public class JQueryDocRender extends AbstractRender {
 
     private DocToolkit toolkit = new JQueryDocToolkit(this);
 
-    private void writeSummary(List<Module> modules) throws IOException {
+    private void writeSummary(List<JaxrsModule> modules) throws IOException {
         writeTo("SUMMARY.md",
                 "SUMMARY.md",
                 "modules", modules, toolkit);
     }
 
-    private void writeModuleList(List<Module> modules) throws IOException {
+    private void writeModuleList(List<JaxrsModule> modules) throws IOException {
         writeTo("moduleList.md",
                 "moduleList.md",
                 "modules", modules, toolkit);
     }
 
-    private void writeModule(Module module) throws IOException {
+    private void writeModule(JaxrsModule module) throws IOException {
         writeTo("modules" + FS + module.getInterfaceClass().getName() + ".md",
                 "module.md",
                 "module", module, toolkit);
@@ -56,7 +57,7 @@ public class JQueryDocRender extends AbstractRender {
 
     @Override
     public void writeTo(String... packages) throws IOException {
-        List<Module> modules = ConcreteHelper.loadModules(RENDER_NAME, packages);
+        List<JaxrsModule> modules = loadModules(RENDER_NAME, packages);
 
 
         // book.json
@@ -72,7 +73,7 @@ public class JQueryDocRender extends AbstractRender {
         writeModuleList(modules);
 
         // modules
-        for (Module module : modules) {
+        for (JaxrsModule module : modules) {
             writeModule(module);
         }
 

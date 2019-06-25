@@ -19,8 +19,8 @@ package org.coodex.concrete.apitools.jaxrs.jquery;
 import com.alibaba.fastjson.JSON;
 import org.coodex.concrete.apitools.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.service.ServiceDocToolkit;
-import org.coodex.concrete.jaxrs.struct.Module;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsModule;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
 
@@ -37,7 +37,7 @@ public class JQueryDocToolkit extends ServiceDocToolkit {
         return Common.camelCase(s);
     }
 
-    public String mockParameters(Unit unit, Module module) {
+    public String mockParameters(JaxrsUnit unit, JaxrsModule module) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < unit.getParameters().length; i++) {
             if (i > 0) {

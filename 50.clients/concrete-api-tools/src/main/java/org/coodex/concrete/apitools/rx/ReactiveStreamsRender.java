@@ -17,11 +17,10 @@
 package org.coodex.concrete.apitools.rx;
 
 import org.coodex.concrete.apitools.AbstractRender;
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
-import org.coodex.concrete.jaxrs.struct.Module;
-import org.coodex.concrete.jaxrs.struct.Param;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsModule;
+import org.coodex.concrete.jaxrs.struct.JaxrsParam;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.util.TypeHelper;
 
 import java.io.IOException;
@@ -29,6 +28,8 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+
+import static org.coodex.concrete.apitools.APIHelper.loadModules;
 
 public class ReactiveStreamsRender extends AbstractRender {
 
@@ -51,9 +52,9 @@ public class ReactiveStreamsRender extends AbstractRender {
     @Override
     public void writeTo(String... packages) throws IOException {
         // TODO 建立rx的modulesLoader
-        List<Module> modules = ConcreteHelper.loadModules(JaxRSModuleMaker.JAX_RS_PREV + ".loader", packages);
+        List<JaxrsModule> modules = loadModules(JaxRSModuleMaker.JAX_RS_PREV + ".loader", packages);
 
-        for (Module module : modules) {
+        for (JaxrsModule module : modules) {
             Map<String, Object> toWrite = new HashMap<String, Object>();
             Set<String> imports = new HashSet<String>();
             toWrite.put("imports", imports);
@@ -71,7 +72,7 @@ public class ReactiveStreamsRender extends AbstractRender {
             Set<MethodInfo> methods = new HashSet<MethodInfo>();
             toWrite.put("methods", methods);
 
-            for (Unit unit : module.getUnits()) {
+            for (JaxrsUnit unit : module.getUnits()) {
                 methods.add(unitToMethod(unit, imports));
             }
 
@@ -153,12 +154,12 @@ public class ReactiveStreamsRender extends AbstractRender {
         }
     }
 
-    private MethodInfo unitToMethod(Unit unit, Set<String> imports) {
+    private MethodInfo unitToMethod(JaxrsUnit unit, Set<String> imports) {
         MethodInfo methodInfo = new MethodInfo();
         methodInfo.setName(unit.getFunctionName());
         Class context = unit.getDeclaringModule().getInterfaceClass();
         methodInfo.setReturnType(typeToStr(unit.getGenericReturnType(), context, imports, true));
-        for (Param param : unit.getParameters()) {
+        for (JaxrsParam param : unit.getParameters()) {
             ParamInfo paramInfo = new ParamInfo();
             paramInfo.setName(param.getName());
             paramInfo.setType(typeToStr(param.getGenericType(), context, imports, false));

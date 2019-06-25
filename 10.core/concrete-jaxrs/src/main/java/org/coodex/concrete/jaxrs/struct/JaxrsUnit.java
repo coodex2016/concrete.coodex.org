@@ -41,22 +41,22 @@ import static org.coodex.concrete.jaxrs.Predicates.removePredicate;
 /**
  * Created by davidoff shen on 2016-11-30.
  */
-public class Unit extends AbstractUnit<Param, Module> {
+public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
 
 
-    private List<Param> pojo;
+    private List<JaxrsParam> pojo;
     private String name;
     private String declaredName = null;
 
-    public Unit(Method method, Module module) {
+    public JaxrsUnit(Method method, JaxrsModule module) {
         super(method, module);
         name = getNameOnInit();
         validation();
     }
 
-    private synchronized List<Param> _getPojo() {
+    private synchronized List<JaxrsParam> _getPojo() {
         if (pojo == null) {
-            pojo = new ArrayList<Param>();
+            pojo = new ArrayList<JaxrsParam>();
         }
         return pojo;
     }
@@ -158,7 +158,7 @@ public class Unit extends AbstractUnit<Param, Module> {
             StringBuilder unitName = new StringBuilder(getDeclaredName());
             String toTest = slash(getDeclaringModule().getName()) + getDeclaredName();
 
-            for (Param parameter : getParameters()) {
+            for (JaxrsParam parameter : getParameters()) {
                 String pathParamValue = getPathParam(parameter);
                 if (pathParamValue != null) {
                     String restfulNode = "{" + pathParamValue + "}";
@@ -194,7 +194,7 @@ public class Unit extends AbstractUnit<Param, Module> {
     }
 
 
-    protected String getPathParam(Param parameter) {
+    protected String getPathParam(JaxrsParam parameter) {
 //        PathParam pathParam = parameter.getDeclaredAnnotation(PathParam.class);
 //        if (pathParam != null) return pathParam.value();
 //        PathParam pathParam1 = parameter.getDeclaredAnnotation(PathParam.class);
@@ -230,12 +230,12 @@ public class Unit extends AbstractUnit<Param, Module> {
         return name;
     }
 
-    private void addToBody(Param param) {
+    private void addToBody(JaxrsParam param) {
         param.setPathParam(false);
         _getPojo().add(param);
     }
 
-    private boolean isBodyPrimitive(Param param) {
+    private boolean isBodyPrimitive(JaxrsParam param) {
         if (used024Behavior()) {
             return param.getDeclaredAnnotation(Body.class) != null;
         } else {
@@ -244,12 +244,12 @@ public class Unit extends AbstractUnit<Param, Module> {
     }
 
     @Override
-    protected Param buildParam(Method method, int index) {
+    protected JaxrsParam buildParam(Method method, int index) {
 //        String toTest = getDeclaredName();
 //        int paramCount = method.getParameterTypes().length;
 //        parameters = new Param[paramCount];
 //        for (int i = 0; i < paramCount; i++) {
-        Param param = new Param(method, index);
+        JaxrsParam param = new JaxrsParam(method, index);
 
 //            parameters[i] = new Param(method, i);
 //            Param param = parameters[i];
@@ -276,8 +276,8 @@ public class Unit extends AbstractUnit<Param, Module> {
 //    }
 
     @Override
-    protected Param[] toArrays(List<Param> params) {
-        return params.toArray(new Param[0]);
+    protected JaxrsParam[] toArrays(List<JaxrsParam> params) {
+        return params.toArray(new JaxrsParam[0]);
     }
 
     @Override
@@ -298,7 +298,7 @@ public class Unit extends AbstractUnit<Param, Module> {
         return _getPojo().size();
     }
 
-    public Param[] getPojo() {
-        return _getPojo().toArray(new Param[0]);
+    public JaxrsParam[] getPojo() {
+        return _getPojo().toArray(new JaxrsParam[0]);
     }
 }

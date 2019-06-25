@@ -29,6 +29,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @author davidoff
@@ -908,6 +909,32 @@ public class Common {
 
     public static Long getSystemStart() {
         return ManagementFactory.getRuntimeMXBean().getStartTime();
+    }
+
+
+    private static boolean isMatch(Pattern p, String str){
+        return p.matcher(str).find();
+    }
+    public static void main(String[] args) {
+        String patternStr = "org.coodex.*.api.**.impl";
+        Pattern pattern = Pattern.compile("^"+
+                patternStr.replaceAll("\\.","\\\\.")
+                .replaceAll("\\*\\*",".+")
+                .replaceAll("\\*","[\\\\w]+")
+        );
+        System.out.println(pattern.toString());
+        String[] matchStrings = {
+                "org.coodex.api.impl",// false
+                "org.concrete.api.s.impl.b", //false
+                "org.coodex.concrete.api.a.impl.b",//true
+                "org.coodex.concrete.api.a.b.impl.b",//true
+                "C.org.coodex.concrete.api.a.b.impl.b",//false
+                "org.coodex.concrete.x.api.a.impl",//false
+                ""
+        };
+        for(String s : matchStrings){
+            System.out.println(isMatch(pattern, s));
+        }
     }
 
 }

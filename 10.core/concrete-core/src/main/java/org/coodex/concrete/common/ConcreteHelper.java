@@ -16,22 +16,22 @@
 
 package org.coodex.concrete.common;
 
-import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.Priority;
-import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.common.modules.AbstractUnit;
-import org.coodex.concrete.common.modules.ModuleMaker;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.config.Config;
-import org.coodex.util.ServiceLoader;
-import org.coodex.util.*;
+import org.coodex.util.ClassNameFilter;
+import org.coodex.util.Common;
+import org.coodex.util.ReflectHelper;
+import org.coodex.util.SingletonMap;
 
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.regex.Pattern;
 
 import static org.coodex.util.ReflectHelper.foreachClass;
 
@@ -57,8 +57,11 @@ public class ConcreteHelper {
             return isConcreteService(clazz);
         }
     };
-    private final static ServiceLoader<ModuleMaker> MODULE_MAKERS = new ConcreteServiceLoader<ModuleMaker>() {
-    };
+
+
+//    private final static ServiceLoader<ModuleMaker> MODULE_MAKERS = new ConcreteServiceLoader<ModuleMaker>() {
+//
+//    };
     //    private static ExecutorService executorService;
 //    private static Singleton<ExecutorService> executorService = new Singleton<ExecutorService>(new Singleton.Builder<ExecutorService>() {
 //        @Override
@@ -198,27 +201,27 @@ public class ConcreteHelper {
         return executorServiceMap.getInstance(executorName);
     }
 
-    public static Method[] getAllMethod(Class<?> serviceClass) {
-        Set<Method> methods = new HashSet<Method>();
-        loadAllMethod(serviceClass, methods, null);
-        return methods.toArray(new Method[0]);
-    }
+//    public static Method[] getAllMethod(Class<?> serviceClass) {
+//        Set<Method> methods = new HashSet<Method>();
+//        loadAllMethod(serviceClass, methods, null);
+//        return methods.toArray(new Method[0]);
+//    }
 
-    private static void loadAllMethod(Class<?> clz, Set<Method> methods, Set<Class> classes) {
-        if (clz == null) return;
-        if (methods == null) methods = new HashSet<Method>();
-        if (classes == null) classes = new HashSet<Class>();
-
-        if (classes.contains(clz)) return;
-        classes.add(clz);
-
-        for (Method method : clz.getMethods()) {
-            if (isConcreteService(method)) {
-                methods.add(method);
-            }
-        }
-
-    }
+//    private static void loadAllMethod(Class<?> clz, Set<Method> methods, Set<Class> classes) {
+//        if (clz == null) return;
+//        if (methods == null) methods = new HashSet<Method>();
+//        if (classes == null) classes = new HashSet<Class>();
+//
+//        if (classes.contains(clz)) return;
+//        classes.add(clz);
+//
+//        for (Method method : clz.getMethods()) {
+//            if (isConcreteService(method)) {
+//                methods.add(method);
+//            }
+//        }
+//
+//    }
 
     public static String getServiceName(Class<?> clz) {
         if (clz == null /*|| !ConcreteService.class.isAssignableFrom(clz)*/) return null;
@@ -232,22 +235,31 @@ public class ConcreteHelper {
                 concreteService.value();
     }
 
-    public static String getMethodName(Method method) {
-        if (method == null) return null;
-        ConcreteService concreteService = method.getAnnotation(ConcreteService.class);
-        if (concreteService == null) return method.getName();
-        if (concreteService.notService()) return null;
-        return Common.isBlank(concreteService.value()) ? method.getName() : concreteService.value();
-    }
+//    public static String getMethodName(Method method) {
+//        if (method == null) return null;
+//        ConcreteService concreteService = method.getAnnotation(ConcreteService.class);
+//        if (concreteService == null) return method.getName();
+//        if (concreteService.notService()) return null;
+//        return Common.isBlank(concreteService.value()) ? method.getName() : concreteService.value();
+//    }
 
-    public static void foreachService(ReflectHelper.Processor processor, String... packages) {
-        ReflectHelper.foreachClass(processor, CONCRETE_SERVICE_INTERFACE_FILTER, packages);
-    }
+//    @Deprecated
+//    public static void foreachService(ReflectHelper.Processor processor, String... packages) {
+//        ReflectHelper.foreachClass(processor, CONCRETE_SERVICE_INTERFACE_FILTER, packages);
+//    }
+
 
     public static void foreachClassInPackages(ReflectHelper.Processor processor, String... packages) {
-        if (packages == null || packages.length == 0) {
-            packages = getApiPackages();
+        String[] packageParrterns = packages;
+        if (packageParrterns == null || packageParrterns.length == 0) {
+            packageParrterns = getApiPackages();
         }
+        if (packageParrterns == null) {
+            packageParrterns = new String[0];
+        }
+        final String[] finalParrterns = packageParrterns;
+
+        packages = toPackages(packageParrterns);
         // 排序
         for (int i = 0, l = packages.length; i < l; i++) {
             for (int j = i + 1; j < l; j++) {
@@ -272,30 +284,53 @@ public class ConcreteHelper {
             forSearch.add(pkg);
         }
         // 注册
-        foreachClass(processor, new ConcreteClassFilter() {
+        foreachClass((clazz) -> {
+            if (AbstractErrorCodes.class.isAssignableFrom(clazz)) {
+                //noinspection unchecked
+                ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) clazz);
+            }
+            processor.process(clazz);
+
+        }, new ConcreteClassFilter() {
             @Override
             protected boolean accept(Class<?> clazz) {
-                return ConcreteHelper.isConcreteService(clazz) || AbstractErrorCodes.class.isAssignableFrom(clazz);
+                return isMatch(clazz, finalParrterns) &&
+                        (ConcreteHelper.isConcreteService(clazz) ||
+                                AbstractErrorCodes.class.isAssignableFrom(clazz));
             }
         }, forSearch.toArray(new String[0]));
     }
 
-    @SuppressWarnings("unchecked")
-    public final static <MODULE extends AbstractModule> List<MODULE> loadModules(
-            String desc, String... packages) {
-
-//        if (MODULE_MAKERS.getAllInstances().size() == 0)
-//            throw new RuntimeException("No service provider for " + ModuleMaker.class.getName());
-
-//        for (ModuleMaker moduleMaker : MODULE_MAKERS.getAllInstances()) {
-//            if (moduleMaker.isAccept(desc)) {
-//                return loadModules(moduleMaker, packages);
-//            }
-//        }
-//
-//        throw new RuntimeException("No service provider supported '" + desc + "' ");
-        return loadModules(getInstance(desc), packages);
+    private static String[] toPackages(String[] patterns) {
+        String[] result = new String[patterns.length];
+        for (int i = 0, l = patterns.length; i < l; i++) {
+            result[i] = toPackage(patterns[i]);
+        }
+        return result;
     }
+
+    private static String toPackage(String parttern) {
+        int i = parttern.indexOf('*');
+        return i > 0 ? parttern.substring(0, i) : parttern;
+    }
+
+    private static boolean isMatch(Class<?> clazz, String... packagePartterns) {
+        String className = clazz.getName();
+        for (String s : packagePartterns) {
+            if (s.indexOf('*') > 0) {
+                if (Pattern.compile("^" +
+                        s.replaceAll("\\.", "\\\\.")
+                                .replaceAll("\\*\\*", ".+")
+                                .replaceAll("\\*", "[\\\\w]+")).matcher(className).find())
+                    return true;
+            } else {
+                if (className.startsWith(s))
+                    return true;
+            }
+        }
+        return false;
+    }
+
 
     public static boolean isAbstract(Class<?> clz){
         ConcreteService service = clz.getAnnotation(ConcreteService.class);
@@ -312,62 +347,23 @@ public class ConcreteHelper {
                 clz.isInterface() &&
                 // ConcreteService.class.isAssignableFrom(clz) &&
                 clz.getAnnotation(ConcreteService.class) != null &&
-                !clz.getAnnotation(ConcreteService.class).abstractive();
+                !isAbstract(clz);
 //                clz.getAnnotation(Abstract.class) == null;
     }
 
-    private static ModuleMaker getInstance(String desc) {
-        if (MODULE_MAKERS.getAllInstances().size() == 0)
-            throw new RuntimeException("No service provider for " + ModuleMaker.class.getName());
 
-        for (ModuleMaker moduleMaker : MODULE_MAKERS.getAllInstances()) {
-            if (moduleMaker.isAccept(desc)) {
-                return moduleMaker;
-            }
-        }
-        throw new RuntimeException("No service provider supported '" + desc + "' ");
-    }
+//    public static <MODULE extends AbstractModule> MODULE loadModule(
+//            String desc, Class<?> serviceClass) {
+//        return (MODULE) loadModule(getInstance(desc), serviceClass);
+//    }
 
-    public static <MODULE extends AbstractModule> MODULE loadModule(
-            String desc, Class<?> serviceClass) {
-        return (MODULE) loadModule(getInstance(desc), serviceClass);
-    }
+//    public static <MODULE extends AbstractModule> MODULE loadModule(
+//            ModuleMaker<MODULE> moduleMaker, Class<?> serviceClass) {
+//
+//        return moduleMaker.make(serviceClass);
+//    }
 
-    public static <MODULE extends AbstractModule> MODULE loadModule(
-            ModuleMaker<MODULE> moduleMaker, Class<?> serviceClass) {
 
-        return moduleMaker.make(serviceClass);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <MODULE extends AbstractModule> List<MODULE> loadModules(
-            final ModuleMaker<MODULE> maker, String... packages) {
-
-        final Map<Class, MODULE> moduleMap = new HashMap<Class, MODULE>();
-        foreachService(new ReflectHelper.Processor() {
-            @Override
-            public void process(Class<?> serviceClass) {
-                MODULE module = maker.make(serviceClass);
-
-                Class key = module.getInterfaceClass();//.getName();
-                MODULE exists = moduleMap.get(key);
-
-                if (exists != null) {
-                    throw new RuntimeException(
-                            String.format("Module %s duplicated. %s & %s",
-                                    key,
-                                    exists.getInterfaceClass().getName(),
-                                    module.getInterfaceClass().getName()));
-                }
-                moduleMap.put(key, module);
-            }
-        }, packages);
-
-        List<MODULE> moduleList = new ArrayList<MODULE>(moduleMap.values());
-        Collections.sort(moduleList);
-
-        return moduleList;
-    }
 
 
     public static int getPriority(Method method, Class<?> clz) {
@@ -528,9 +524,9 @@ public class ConcreteHelper {
         return Config.getArray("api.packages", ",", new String[0], "concrete", getAppSet());
     }
 
-    public static String[] getRemoteApiPackages() {
-        return Config.getArray("remoteapi.packages", ",", new String[0], "concrete", getAppSet());
-    }
+//    public static String[] getRemoteApiPackages() {
+//        return Config.getArray("remoteapi.packages", ",", new String[0], "concrete", getAppSet());
+//    }
 
     public static String getAppSet() {
 //        return getProfile().getString("concrete.appSet");

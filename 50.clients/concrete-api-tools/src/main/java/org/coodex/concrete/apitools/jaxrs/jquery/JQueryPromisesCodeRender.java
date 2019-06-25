@@ -17,16 +17,17 @@
 package org.coodex.concrete.apitools.jaxrs.jquery;
 
 import org.coodex.concrete.apitools.AbstractRender;
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.Polling;
-import org.coodex.concrete.jaxrs.struct.Module;
-import org.coodex.concrete.jaxrs.struct.Param;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsModule;
+import org.coodex.concrete.jaxrs.struct.JaxrsParam;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.util.Common;
 
 import java.io.IOException;
 import java.util.*;
+
+import static org.coodex.concrete.apitools.APIHelper.loadModules;
 
 /**
  * Created by davidoff shen on 2016-12-04.
@@ -48,12 +49,12 @@ public class JQueryPromisesCodeRender extends AbstractRender {
         return RENDER_NAME;
     }
 
-    private String buildMethod(Unit unit, Module module) {
+    private String buildMethod(JaxrsUnit unit, JaxrsModule module) {
         StringBuilder builder = new StringBuilder();
         StringBuilder parameters = new StringBuilder();
         builder.append("function (");
         for (int i = 0; i < unit.getParameters().length; i++) {
-            Param param = unit.getParameters()[i];
+            JaxrsParam param = unit.getParameters()[i];
             if (i > 0) {
                 builder.append(", ");
                 parameters.append(", ");
@@ -70,13 +71,13 @@ public class JQueryPromisesCodeRender extends AbstractRender {
         return builder.toString();
     }
 
-    private String overload(Module module) {
-        Map<String, Set<Unit>> methods = new HashMap<String, Set<Unit>>();
-        for (Unit unit : module.getUnits()) {
+    private String overload(JaxrsModule module) {
+        Map<String, Set<JaxrsUnit>> methods = new HashMap<String, Set<JaxrsUnit>>();
+        for (JaxrsUnit unit : module.getUnits()) {
             String key = unit.getMethod().getName();
-            Set<Unit> units = methods.get(key);
+            Set<JaxrsUnit> units = methods.get(key);
             if (units == null) {
-                units = new HashSet<Unit>();
+                units = new HashSet<JaxrsUnit>();
                 methods.put(key, units);
             }
 
@@ -90,7 +91,7 @@ public class JQueryPromisesCodeRender extends AbstractRender {
             }
             builder.append("\"").append(methodName).append("\": ");
 
-            Unit[] units = methods.get(methodName).toArray(new Unit[0]);
+            JaxrsUnit[] units = methods.get(methodName).toArray(new JaxrsUnit[0]);
             if (units.length > 1) {
                 // overload
                 builder.append("overload(\"").append(methodName).append("\", {");
@@ -112,10 +113,10 @@ public class JQueryPromisesCodeRender extends AbstractRender {
     public void writeTo(String... packages) throws IOException {
         Set<String> set = new HashSet<String>(Arrays.asList(packages));
         set.add(Polling.class.getPackage().getName());
-        List<Module> moduleList = ConcreteHelper.loadModules(RENDER_NAME, set.toArray(new String[0]));
+        List<JaxrsModule> moduleList = loadModules(RENDER_NAME, set.toArray(new String[0]));
 
         Set<String> modules = new HashSet<String>();
-        for (Module module : moduleList) {
+        for (JaxrsModule module : moduleList) {
             StringBuilder builder = new StringBuilder();
             builder.append("register(\"").append(module.getInterfaceClass().getSimpleName()).append("\", \"")
                     .append(module.getInterfaceClass().getPackage().getName()).append("\", { ")

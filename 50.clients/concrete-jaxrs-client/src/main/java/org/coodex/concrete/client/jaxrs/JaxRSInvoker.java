@@ -20,8 +20,8 @@ import org.coodex.concrete.AbstractClientException;
 import org.coodex.concrete.client.ClientTokenManagement;
 import org.coodex.concrete.client.impl.AbstractSyncInvoker;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.jaxrs.struct.Param;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsParam;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
 import org.coodex.util.TypeHelper;
@@ -106,7 +106,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         return builder;
     }
 
-    private static JaxRSClientException throwException(boolean errorOccurred, int code, String body, Unit unit, String url) {
+    private static JaxRSClientException throwException(boolean errorOccurred, int code, String body, JaxrsUnit unit, String url) {
         if (errorOccurred) {
             ErrorInfo errorInfo = getJSONSerializer().parse(body, ErrorInfo.class);
             return new JaxRSClientException(errorInfo.getCode(), errorInfo.getMsg(), url, unit.getInvokeType());
@@ -115,7 +115,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         }
     }
 
-    public static Object processResult(int code, String body, Unit unit, boolean errorOccurred, String url) {
+    public static Object processResult(int code, String body, JaxrsUnit unit, boolean errorOccurred, String url) {
 
 
         if (code >= 200 && code < 300) {
@@ -129,9 +129,9 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         }
     }
 
-    public static Object getSubmitObject(Unit unit, Object[] args) {
+    public static Object getSubmitObject(JaxrsUnit unit, Object[] args) {
         Object toSubmit = null;
-        Param[] pojoParams = unit.getPojo();
+        JaxrsParam[] pojoParams = unit.getPojo();
         if (args != null) {
             switch (pojoParams.length) {
                 case 0:
@@ -141,7 +141,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                     break;
                 default:
                     Map<String, Object> body = new HashMap<String, Object>();
-                    for (Param param : pojoParams) {
+                    for (JaxrsParam param : pojoParams) {
                         body.put(param.getName(), args[param.getIndex()]);
                     }
                     toSubmit = body;
@@ -183,7 +183,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 
     @Override
     protected Object execute(Class clz, Method method, Object[] args) throws Throwable {
-        Unit unit = getUnitFromContext(ConcreteHelper.getContext(method, clz));
+        JaxrsUnit unit = getUnitFromContext(ConcreteHelper.getContext(method, clz));
         if (isDevModel("jaxrs.client")) {
             return MockerFacade.mock(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
         } else {
@@ -202,9 +202,9 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                 if (node.startsWith("{") && node.endsWith("}")) {
                     //参数
                     String paramName = new String(node.toCharArray(), 1, node.length() - 2);
-                    Param[] params = unit.getParameters();
+                    JaxrsParam[] params = unit.getParameters();
                     for (int i = 0; i < params.length; i++) {
-                        Param param = params[i];
+                        JaxrsParam param = params[i];
 
                         if (paramName.equals(param.getName())) {
                             node = toStr(args[i]);

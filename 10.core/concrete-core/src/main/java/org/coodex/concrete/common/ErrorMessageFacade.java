@@ -23,10 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 
@@ -130,5 +127,14 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
         return (pattern != null) ? (format ? formatter.format(pattern, objects) : pattern) : null;
     }
 
+
+    public static List<ErrorDefinition> getAllErrorInfo() {
+        final List<ErrorDefinition> errorDefinitions = new ArrayList<ErrorDefinition>();
+        for (Integer i : allRegisteredErrorCodes()) {
+            errorDefinitions.add(new ErrorDefinition(i.intValue()));
+        }
+        Collections.sort(errorDefinitions);
+        return errorDefinitions;
+    }
 
 }

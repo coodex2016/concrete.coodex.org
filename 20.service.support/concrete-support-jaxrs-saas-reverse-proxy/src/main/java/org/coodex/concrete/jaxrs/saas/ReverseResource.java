@@ -21,8 +21,8 @@ import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.ReverseProxyErrorCodes;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
-import org.coodex.concrete.jaxrs.struct.Param;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsParam;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.concrete.support.jsr339.AbstractJSR339Resource;
 import org.coodex.concurrent.components.PriorityRunnable;
 
@@ -49,7 +49,7 @@ public class ReverseResource<T> extends AbstractJSR339Resource<T> {
         getExecutor().execute(new PriorityRunnable(getPriority(method), () -> {
             try {
 
-                Unit unit = JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())/*, params*/);
+                JaxrsUnit unit = JaxRSHelper.getUnitFromContext(ConcreteHelper.getContext(method, getInterfaceClass())/*, params*/);
 
                 String routeBy = IF.isNull(unit.getAnnotation(RouteBy.class),
                         ReverseProxyErrorCodes.ROUTE_BY_NOT_FOUND,
@@ -60,7 +60,7 @@ public class ReverseResource<T> extends AbstractJSR339Resource<T> {
                 String server = null;
                 boolean found = false;
                 for (int i = 0; i < unit.getParameters().length; i++) {
-                    Param param = unit.getParameters()[i];
+                    JaxrsParam param = unit.getParameters()[i];
                     if (param.getName().equals(routeBy)) {
                         server = reverser.resolve((String) params[i]);
                         found = true;

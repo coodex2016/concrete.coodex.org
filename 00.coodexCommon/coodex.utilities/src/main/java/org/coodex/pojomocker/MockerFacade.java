@@ -126,28 +126,47 @@ public class MockerFacade {
     }
 
     private static String executableDeclaration(Method method, Class... context) {
+        return new StringBuilder()
+                .append(method.getDeclaringClass().getName())
+                .append(".").append(method.getName())
+                .append('(')
+                .append(parametersDeclaration(
+                        method,
+                        method.getGenericParameterTypes(),
+                        context
+                )).append(')').toString();
+    }
+
+    private static String parametersDeclaration(Object executable, Type[] paramTyps, Class... context) {
         StringBuilder builder = new StringBuilder();
-        builder.append(method.getDeclaringClass().getName())
-                .append(".").append(method.getName()).append('(');
-        int i = 0;
-        for (Type t : method.getGenericParameterTypes()) {
+        for (int i = 0, l = paramTyps.length; i < l; i++) {
             if (i > 0) builder.append(", ");
-            builder.append(toTypeReference(t, context))
-                    .append(' ').append(getParameterName(method, i, "arg"));
+            builder.append(toTypeReference(paramTyps[i], context))
+                    .append(' ').append(getParameterName(executable, i, "arg"));
         }
-        return builder.append(')').toString();
+        return builder.toString();
     }
 
     private static String executableDeclaration(Constructor constructor, Class... context) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(constructor.getDeclaringClass().getName()).append('(');
-        int i = 0;
-        for (Type t : constructor.getGenericParameterTypes()) {
-            if (i > 0) builder.append(", ");
-            builder.append(toTypeReference(t, context))
-                    .append(' ').append(getParameterName(constructor, i, "arg"));
-        }
-        return builder.append(')').toString();
+        return new StringBuilder()
+                .append(constructor.getDeclaringClass().getName())
+                .append('(')
+                .append(parametersDeclaration(
+                        constructor,
+                        constructor.getGenericParameterTypes(),
+                        context
+                ))
+                .append(')').toString();
+//        StringBuilder builder = new StringBuilder();
+//        builder.append(constructor.getDeclaringClass().getName())
+//                .append('(');
+//        int i = 0;
+//        for (Type t : constructor.getGenericParameterTypes()) {
+//            if (i > 0) builder.append(", ");
+//            builder.append(toTypeReference(t, context))
+//                    .append(' ').append(getParameterName(constructor, i, "arg"));
+//        }
+//        return builder.append(')').toString();
     }
 
     private static <T> T $mock(

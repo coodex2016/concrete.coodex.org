@@ -26,8 +26,8 @@ import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
-import org.coodex.concrete.jaxrs.struct.Param;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsParam;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.util.Common;
 import org.coodex.util.TypeHelper;
 
@@ -59,10 +59,10 @@ public abstract class AbstractMethodGenerator {
             Long.class, Float.class, Double.class
     };
     final private CGContext context;
-    final private Unit unit;
+    final private JaxrsUnit unit;
 
 
-    public AbstractMethodGenerator(CGContext context, Unit unit) {
+    public AbstractMethodGenerator(CGContext context, JaxrsUnit unit) {
         this.context = context;
         this.unit = unit;
     }
@@ -75,7 +75,7 @@ public abstract class AbstractMethodGenerator {
 //        return getParameterTypesWith(pojoClass);
 //    }
 
-    public Unit getUnit() {
+    public JaxrsUnit getUnit() {
         return unit;
     }
 
@@ -86,8 +86,8 @@ public abstract class AbstractMethodGenerator {
 
     protected final CtClass[] getParameterTypesWith(Class pojoClass, CtClass... addingCtClass) {
         int additionParamCount = addingCtClass == null ? 0 : addingCtClass.length;
-        Param[] params = getUnit().getParameters();
-        Param[] pojoParam = getUnit().getPojo();
+        JaxrsParam[] params = getUnit().getParameters();
+        JaxrsParam[] pojoParam = getUnit().getPojo();
 
         CtClass[] parameters = new CtClass[actualParamCount() + additionParamCount];
         boolean pojoAdded = false;
@@ -140,8 +140,8 @@ public abstract class AbstractMethodGenerator {
 
     protected final SignatureAttribute.Type[] getSignatureTypesWith(Class pojoClass, SignatureAttribute.Type... addingTypes) {
         int additionParamCount = addingTypes == null ? 0 : addingTypes.length;
-        Param[] params = getUnit().getParameters();
-        Param[] pojoParam = getUnit().getPojo();
+        JaxrsParam[] params = getUnit().getParameters();
+        JaxrsParam[] pojoParam = getUnit().getPojo();
 
         SignatureAttribute.Type pojoType = pojoClass == null ? null : new SignatureAttribute.ClassType(pojoClass.getName());
         int paramCount = additionParamCount + actualParamCount();
@@ -171,10 +171,10 @@ public abstract class AbstractMethodGenerator {
 //        return "{return ($r)mockResult(\"" + getUnit().getFunctionName() + "\");}";
 //    }
 
-    private Class createPojoClass(Param[] pojoParams, String className) throws CannotCompileException {
+    private Class createPojoClass(JaxrsParam[] pojoParams, String className) throws CannotCompileException {
         CtClass ctClass = CLASS_POOL.makeClass(className);
 
-        for (Param param : pojoParams) {
+        for (JaxrsParam param : pojoParams) {
             CtField field = new CtField(CLASS_POOL.getOrNull(param.getType().getName()), param.getName(), ctClass);
             field.setModifiers(javassist.Modifier.PUBLIC);
             field.setGenericSignature(
@@ -222,8 +222,8 @@ public abstract class AbstractMethodGenerator {
         ParameterAnnotationsAttribute attributeInfo = new ParameterAnnotationsAttribute(
                 getContext().getConstPool(), ParameterAnnotationsAttribute.visibleTag);
 
-        Param[] params = getUnit().getParameters();
-        Param[] pojoParams = getUnit().getPojo();
+        JaxrsParam[] params = getUnit().getParameters();
+        JaxrsParam[] pojoParams = getUnit().getPojo();
 
         int paramCount = additionParamCount + actualParamCount();
         Annotation[][] annotations = new Annotation[paramCount][];
@@ -328,8 +328,8 @@ public abstract class AbstractMethodGenerator {
 
     protected String getParamListSrc(Class pojoClass, int startIndex) {
         StringBuilder buffer = new StringBuilder();
-        Param[] params = unit.getParameters();
-        Param[] pojoParams = unit.getPojo();
+        JaxrsParam[] params = unit.getParameters();
+        JaxrsParam[] pojoParams = unit.getPojo();
         int pojoIndex = -1;
         for (int i = 0, index = 0; i < params.length; i++) {
             if (i > 0) buffer.append(", ");
@@ -352,7 +352,7 @@ public abstract class AbstractMethodGenerator {
     }
 
 
-    protected String getPathParam(Param parameter) {
+    protected String getPathParam(JaxrsParam parameter) {
 //        PathParam pathParam = parameter.getDeclaredAnnotation(PathParam.class);
 //        if (pathParam != null) return pathParam.value();
         PathParam pathParam1 = parameter.getDeclaredAnnotation(PathParam.class);

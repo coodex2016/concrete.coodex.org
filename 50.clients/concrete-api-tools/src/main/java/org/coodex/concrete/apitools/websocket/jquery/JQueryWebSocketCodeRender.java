@@ -26,6 +26,7 @@ import org.coodex.util.Common;
 import java.io.IOException;
 import java.util.*;
 
+import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.concrete.websocket.WebSocketModuleMaker.WEB_SOCKET_SUPPORT;
 
 public class JQueryWebSocketCodeRender extends AbstractRender {
@@ -116,7 +117,7 @@ public class JQueryWebSocketCodeRender extends AbstractRender {
 
     @Override
     public void writeTo(String... packages) throws IOException {
-        List<WebSocketModule> moduleList = ConcreteHelper.loadModules(RENDER_NAME, packages);
+        List<WebSocketModule> moduleList = loadModules(RENDER_NAME, packages);
         Set<String> modules = new HashSet<String>();
         for (WebSocketModule module : moduleList) {
             StringBuilder builder = new StringBuilder();

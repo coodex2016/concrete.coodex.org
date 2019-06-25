@@ -18,7 +18,6 @@ package org.coodex.concrete.apitools.websocket.angular;
 
 import org.coodex.concrete.apitools.AbstractAngularRender;
 import org.coodex.concrete.apitools.jaxrs.angular.meta.TSClass;
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.common.modules.AbstractParam;
 import org.coodex.concrete.websocket.WebSocketModule;
@@ -30,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.concrete.websocket.WebSocketModuleMaker.WEB_SOCKET_SUPPORT;
 
 public class AngularWebSocketCodeRender extends AbstractAngularRender<WebSocketUnit> {
@@ -53,7 +53,7 @@ public class AngularWebSocketCodeRender extends AbstractAngularRender<WebSocketU
     public void writeTo(String... packages) throws IOException {
         String moduleName = getRenderDesc().substring(getRenderName().length());
         moduleName = Common.isBlank(moduleName) ? null : moduleName.substring(1);
-        List<WebSocketModule> modules = ConcreteHelper.loadModules(getRenderName(), packages);
+        List<WebSocketModule> modules = loadModules(getRenderName(), packages);
         String contextPath = Common.isBlank(moduleName) ? "@concrete/" : (getModuleName(moduleName) + "/");
 
         // 按包归类

@@ -23,8 +23,8 @@ import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
-import org.coodex.concrete.jaxrs.struct.Module;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsModule;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.util.Common;
 
 import java.io.IOException;
@@ -32,10 +32,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.coodex.concrete.apitools.APIHelper.loadModules;
+
 /**
  * Created by davidoff shen on 2017-04-10.
  */
-public class AngularCodeRender extends AbstractAngularRender<Unit> {
+public class AngularCodeRender extends AbstractAngularRender<JaxrsUnit> {
 
     public static final String RENDER_NAME =
             JaxRSModuleMaker.JAX_RS_PREV + ".code.angular.ts.v1";
@@ -46,13 +48,13 @@ public class AngularCodeRender extends AbstractAngularRender<Unit> {
     public void writeTo(String... packages) throws IOException {
         String moduleName = getRenderDesc().substring(RENDER_NAME.length());
         moduleName = Common.isBlank(moduleName) ? null : moduleName.substring(1);
-        List<Module> jaxrsModules = ConcreteHelper.loadModules(RENDER_NAME, packages);
+        List<JaxrsModule> jaxrsModules = loadModules(RENDER_NAME, packages);
         String contextPath = Common.isBlank(moduleName) ? "@concrete/" : (getModuleName(moduleName) + "/");
 
         // 按包归类
         CLASSES.set(new HashMap<String, Map<Class, TSClass>>());
         try {
-            for (Module module : jaxrsModules) {
+            for (JaxrsModule module : jaxrsModules) {
                 process(moduleName, module);
             }
 
@@ -84,12 +86,12 @@ public class AngularCodeRender extends AbstractAngularRender<Unit> {
     }
 
     @Override
-    protected String getMethodPath(AbstractModule<Unit> module, Unit unit) {
+    protected String getMethodPath(AbstractModule<JaxrsUnit> module, JaxrsUnit unit) {
         return JaxrsRenderHelper.getMethodPath(module, unit);
     }
 
     @Override
-    protected String getBody(Unit unit) {
+    protected String getBody(JaxrsUnit unit) {
         return JaxrsRenderHelper.getBody(unit);
 //        Param[] pojoParams = unit.getPojo();
 //        switch (unit.getPojoCount()) {

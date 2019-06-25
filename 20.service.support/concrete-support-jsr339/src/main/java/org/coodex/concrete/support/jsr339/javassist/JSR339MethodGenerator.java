@@ -20,7 +20,7 @@ import javassist.CtClass;
 import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.concrete.support.jaxrs.javassist.AbstractMethodGenerator;
 import org.coodex.concrete.support.jaxrs.javassist.CGContext;
 import org.coodex.concrete.support.jsr339.JSR339Common;
@@ -39,7 +39,7 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
     private final static Logger log = LoggerFactory.getLogger(JSR339MethodGenerator.class);
 
 
-    public JSR339MethodGenerator(CGContext context, Unit unit) {
+    public JSR339MethodGenerator(CGContext context, JaxrsUnit unit) {
         super(context, unit);
     }
 

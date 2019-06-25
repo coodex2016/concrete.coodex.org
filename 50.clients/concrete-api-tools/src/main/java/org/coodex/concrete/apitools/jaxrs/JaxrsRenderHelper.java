@@ -17,13 +17,13 @@
 package org.coodex.concrete.apitools.jaxrs;
 
 import org.coodex.concrete.common.modules.AbstractModule;
-import org.coodex.concrete.jaxrs.struct.Param;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
+import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 
 public class JaxrsRenderHelper {
 
-    public static String getBody(Unit unit){
-        Param[] pojoParams = unit.getPojo();
+    public static String getBody(JaxrsUnit unit){
+        JaxrsParam[] pojoParams = unit.getPojo();
         switch (unit.getPojoCount()) {
             case 1:
                 return pojoParams[0].getName();
@@ -40,7 +40,7 @@ public class JaxrsRenderHelper {
         }
     }
 
-    public static String getMethodPath(AbstractModule<Unit> module, Unit unit) {
+    public static String getMethodPath(AbstractModule<JaxrsUnit> module, JaxrsUnit unit) {
         return (module.getName() + unit.getName()).replace("{", "${");
     }
 }

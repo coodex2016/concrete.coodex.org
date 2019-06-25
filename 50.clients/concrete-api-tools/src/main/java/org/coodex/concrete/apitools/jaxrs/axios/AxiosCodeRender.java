@@ -21,9 +21,9 @@ import org.coodex.concrete.apitools.jaxrs.JaxrsRenderHelper;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
-import org.coodex.concrete.jaxrs.struct.Module;
-import org.coodex.concrete.jaxrs.struct.Param;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsModule;
+import org.coodex.concrete.jaxrs.struct.JaxrsParam;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.util.Common;
 
 import java.io.IOException;
@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.coodex.concrete.apitools.APIHelper.loadModules;
 
 public class AxiosCodeRender extends AbstractRender {
 
@@ -52,20 +54,20 @@ public class AxiosCodeRender extends AbstractRender {
     public void writeTo(String... packages) throws IOException {
         String moduleName = getRenderDesc().substring(RENDER_NAME.length());
         moduleName = Common.isBlank(moduleName) ? "concrete" : moduleName.substring(1);
-        List<Module> moduleList = ConcreteHelper.loadModules(RENDER_NAME, packages);
+        List<JaxrsModule> moduleList = loadModules(RENDER_NAME, packages);
         Map<String, Object> versionAndStyle = new HashMap<String, Object>();
         versionAndStyle.put("version", ConcreteHelper.VERSION);
         versionAndStyle.put("style", JaxRSHelper.used024Behavior());
 
         writeTo("jaxrs/concrete.js", "concrete.ftl", versionAndStyle);
-        for (Module module : moduleList) {
+        for (JaxrsModule module : moduleList) {
             Map<String, Object> param = new HashMap<String, Object>();
             param.put("moduleName", moduleName);
             param.put("serviceName", module.getInterfaceClass().getSimpleName());
 
             Map<String,Map<String,Object>> methods = new HashMap<String,Map<String,Object>>();
 
-            for(Unit unit : module.getUnits()){
+            for(JaxrsUnit unit : module.getUnits()){
                 String methodName = unit.getMethod().getName();
                 Map<String, Object> method = methods.get(methodName);
                 if(method == null){
@@ -81,7 +83,7 @@ public class AxiosCodeRender extends AbstractRender {
                 Map<String, Object> overload = new HashMap<String, Object>();
                 overloads.add(overload);
                 List<String> params = new ArrayList<String>();
-                for(Param p: unit.getParameters()){
+                for(JaxrsParam p: unit.getParameters()){
                     params.add(p.getName());
                 }
                 overload.put("paramCount", unit.getParameters().length);

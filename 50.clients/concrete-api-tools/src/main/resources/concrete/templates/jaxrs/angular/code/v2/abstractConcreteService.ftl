@@ -6,7 +6,7 @@ import {Observer} from 'rxjs/Observer';
 import 'rxjs/add/observable/throw';<#else>import {Observable, Observer, Subject, throwError} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';</#if>
 
-class RuntimeContext {
+export class RuntimeContext {
 
     public localTokenId: string = null;
     public globalTokenKey: string = null;

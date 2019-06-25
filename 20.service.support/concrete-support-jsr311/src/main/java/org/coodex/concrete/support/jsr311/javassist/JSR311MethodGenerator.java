@@ -20,7 +20,7 @@ import javassist.CtClass;
 import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.SignatureAttribute;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.concrete.support.jaxrs.javassist.AbstractMethodGenerator;
 import org.coodex.concrete.support.jaxrs.javassist.CGContext;
 
@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
  */
 public class JSR311MethodGenerator extends AbstractMethodGenerator {
 
-    public JSR311MethodGenerator(CGContext context, Unit unit) {
+    public JSR311MethodGenerator(CGContext context, JaxrsUnit unit) {
         super(context, unit);
     }
 

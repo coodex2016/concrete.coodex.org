@@ -38,6 +38,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.coodex.concrete.common.ConcreteHelper.isConcreteService;
 import static org.coodex.concrete.common.ConcreteHelper.updatedMap;
 import static org.coodex.concrete.dubbo.DubboHelper.*;
 
@@ -79,22 +80,33 @@ public class DubboApplication implements Application {
 
     @Override
     public void registerPackage(String... packages) {
-        ConcreteHelper.foreachService(new ReflectHelper.Processor() {
+        ConcreteHelper.foreachClassInPackages(new ReflectHelper.Processor() {
             @Override
             public void process(Class<?> serviceClass) {
-                registerClass(serviceClass);
+                _register(serviceClass);
             }
         }, packages);
     }
 
     @Override
     public void register(Class<?>... classes) {
-        for (Class<?> clz : classes)
-            registerClass(clz);
+        for (Class<?> clz : classes) {
+            _register(clz);
+        }
+    }
+
+    private void _register(Class<?> clazz) {
+        if (isConcreteService(clazz)) {
+            registerClass(clazz);
+        } else if (AbstractErrorCodes.class.isAssignableFrom(clazz)) {
+            //noinspection unchecked
+            ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) clazz);
+        }
+
     }
 
     private void registerClass(Class<?> concreteClass) {
-        IF.not(ConcreteHelper.isConcreteService(concreteClass), concreteClass + " NOT concrete service.");
+//        IF.not(ConcreteHelper.isConcreteService(concreteClass), concreteClass + " NOT concrete service.");
 
         concreteClass = getDubboInterface(concreteClass);
         if (!registered.contains(concreteClass)) {

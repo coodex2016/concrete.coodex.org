@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,31 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common.modules;
+package org.coodex.concrete.jaxrs.struct;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.concrete.common.modules.AbstractParam;
+
+import java.lang.reflect.Method;
+
 
 /**
  * Created by davidoff shen on 2016-11-30.
  */
-public interface ModuleMaker<MODULE extends AbstractModule> extends AcceptableService<String> {
+public class JaxrsParam extends AbstractParam {
 
-//    boolean isAccept(String desc);
 
-    MODULE make(Class<?> interfaceClass);
+    //    private final Description description;
+    private boolean pathParam = true;
+
+    public JaxrsParam(Method method, int index) {
+        super(method, index);
+    }
+
+    public boolean isPathParam() {
+        return pathParam;
+    }
+
+    public void setPathParam(boolean pathParam) {
+        this.pathParam = pathParam;
+    }
 }

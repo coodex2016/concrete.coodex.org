@@ -16,22 +16,16 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
-import org.coodex.concrete.common.ErrorCodes;
-import org.coodex.concrete.jaxrs.struct.Module;
-import org.coodex.concrete.jaxrs.struct.Param;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsModule;
+import org.coodex.concrete.jaxrs.struct.JaxrsParam;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
-import org.coodex.util.ReflectHelper;
 import org.coodex.util.TypeHelper;
 
 import java.lang.reflect.Method;
 import java.util.*;
-
-import static org.coodex.concrete.common.ConcreteHelper.isAbstract;
 
 
 /**
@@ -42,7 +36,8 @@ public class JaxRSHelper {
     public static final String HEADER_ERROR_OCCURRED = "CONCRETE-ERROR-OCCURRED";
     public static final String KEY_CLIENT_PROVIDER = "X-CLIENT-PROVIDER";
 
-    private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<>();
+//    private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<>();
+
 
     /**
      * 0.2.4-SNAPSHOT以前版本，基础类型参数默认使用path传递，之后，默认使用body传递，除非明确定义了path变量
@@ -57,7 +52,7 @@ public class JaxRSHelper {
         return Common.toBool(style, false);
     }
 
-    public static boolean postPrimitive(Param param) {
+    public static boolean postPrimitive(JaxrsParam param) {
         return !param.isPathParam();
     }
 
@@ -107,38 +102,38 @@ public class JaxRSHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static final synchronized Module getModule(final Class<?> type, String... packages) {
-        Module module = MODULE_CACHE.get(type);
-        if (module == null) {
-            if (isAbstract(type)) { //抽象的服务定义，则找具体定义
-                if (packages == null || packages.length == 0) {
-                    packages = ConcreteHelper.getApiPackages();
-                }
-                final Set<Class<?>> serviceType = new HashSet<>();
-                ReflectHelper.foreachClass((Class<?> serviceClass) -> {
-                    if (serviceClass.isInterface() &&
-                            type.isAssignableFrom(serviceClass) &&
-                            !isAbstract(serviceClass)) {
-                        serviceType.add(serviceClass);
-                    }
-                }, (String className) -> true, packages);
-
-                switch (serviceType.size()) {
-                    case 0:
-                        throw new ConcreteException(ErrorCodes.MODULE_DEFINITION_NOT_FOUND, type);
-                    case 1:
-                        module = new Module(serviceType.iterator().next());
-                        break;
-                    default:
-                        throw new ConcreteException(ErrorCodes.MODULE_DEFINITION_NON_UNIQUENESS, type);
-                }
-            } else {
-                module = new Module(type);
-            }
-            MODULE_CACHE.put(type, module);
-        }
-        return module;
-    }
+//    public static final synchronized Module getModule(final Class<?> type, String... packages) {
+//        Module module = MODULE_CACHE.get(type);
+//        if (module == null) {
+//            if (isAbstract(type)) { //抽象的服务定义，则找具体定义
+//                if (packages == null || packages.length == 0) {
+//                    packages = ConcreteHelper.getApiPackages();
+//                }
+//                final Set<Class<?>> serviceType = new HashSet<>();
+//                ReflectHelper.foreachClass((Class<?> serviceClass) -> {
+//                    if (serviceClass.isInterface() &&
+//                            type.isAssignableFrom(serviceClass) &&
+//                            !isAbstract(serviceClass)) {
+//                        serviceType.add(serviceClass);
+//                    }
+//                }, (String className) -> true, packages);
+//
+//                switch (serviceType.size()) {
+//                    case 0:
+//                        throw new ConcreteException(ErrorCodes.MODULE_DEFINITION_NOT_FOUND, type);
+//                    case 1:
+//                        module = new Module(serviceType.iterator().next());
+//                        break;
+//                    default:
+//                        throw new ConcreteException(ErrorCodes.MODULE_DEFINITION_NON_UNIQUENESS, type);
+//                }
+//            } else {
+//                module = new Module(type);
+//            }
+//            MODULE_CACHE.put(type, module);
+//        }
+//        return module;
+//    }
 
 //    @SuppressWarnings("unchecked")
 //    private static final Set<Class<? >> getConcreteServiceClassFrom(
@@ -157,10 +152,11 @@ public class JaxRSHelper {
 //        return set;
 //    }
 
-    public static final Unit getUnitFrom(Class clz, Method method) {
-        Module module = getModule(clz);
+    private static final JaxRSModuleMaker JAX_RS_MODULE_MAKER = new JaxRSModuleMaker();
+    public static final JaxrsUnit getUnitFrom(Class clz, Method method) {
+        JaxrsModule module = JAX_RS_MODULE_MAKER.make(clz);//getModule(clz);
         int count = method.getParameterTypes().length;// == null ? 0 : params.length;
-        for (Unit unit : module.getUnits()) {
+        for (JaxrsUnit unit : module.getUnits()) {
             if (method.getName().equals(unit.getMethod().getName())
                     && count == unit.getParameters().length) {
                 return unit;
@@ -169,7 +165,7 @@ public class JaxRSHelper {
         return null;
     }
 
-    public static final Unit getUnitFromContext(DefinitionContext context/*, Object[] params*/) {
+    public static final JaxrsUnit getUnitFromContext(DefinitionContext context/*, Object[] params*/) {
 //        Module module = getModule(context.getDeclaringClass());
 //        Method method = context.getDeclaringMethod();
 //        int count = method.getParameterTypes().length;// == null ? 0 : params.length;
@@ -188,10 +184,10 @@ public class JaxRSHelper {
 //    }
 
 
-    public static Param getSubmitBody(Unit unit) {
-        Param toSubmit = null;
+    public static JaxrsParam getSubmitBody(JaxrsUnit unit) {
+        JaxrsParam toSubmit = null;
         for (int i = 0; i < unit.getParameters().length; i++) {
-            Param param = unit.getParameters()[i];
+            JaxrsParam param = unit.getParameters()[i];
             if (!TypeHelper.isPrimitive(param.getType()) || JaxRSHelper.postPrimitive(param)) {
                 toSubmit = param;
                 break;

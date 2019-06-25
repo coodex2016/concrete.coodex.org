@@ -17,7 +17,7 @@
 package org.coodex.concrete.support.jsr339.javassist;
 
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
-import org.coodex.concrete.jaxrs.struct.Unit;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.concrete.support.jaxrs.javassist.AbstractJavassistClassGenerator;
 import org.coodex.concrete.support.jaxrs.javassist.AbstractMethodGenerator;
 import org.coodex.concrete.support.jaxrs.javassist.CGContext;
@@ -33,7 +33,7 @@ public class JSR339ClassGenerator extends AbstractJavassistClassGenerator {
 
 
     @Override
-    public boolean isAccept(String desc) {
+    public boolean accept(String desc) {
         return GENERATOR_NAME.equalsIgnoreCase(desc);
     }
 
@@ -48,7 +48,7 @@ public class JSR339ClassGenerator extends AbstractJavassistClassGenerator {
     }
 
     @Override
-    protected AbstractMethodGenerator getMethodGenerator(CGContext context, Unit unit) {
+    protected AbstractMethodGenerator getMethodGenerator(CGContext context, JaxrsUnit unit) {
         return new JSR339MethodGenerator(context, unit);
     }
 

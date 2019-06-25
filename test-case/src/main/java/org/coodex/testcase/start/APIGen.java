@@ -24,7 +24,10 @@ import java.io.IOException;
 public class APIGen {
 
     public static void main(String[] args) throws IOException {
-        API.generateFor("test", TestCase.class.getPackage().getName());
+        API.generateFor("test",
+                "org.**.api"
+//                ,TestCase.class.getPackage().getName()
+        );
     }
 
 }

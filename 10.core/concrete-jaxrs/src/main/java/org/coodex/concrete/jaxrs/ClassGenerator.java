@@ -16,22 +16,23 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.jaxrs.struct.Module;
+import org.coodex.concrete.jaxrs.struct.JaxrsModule;
+import org.coodex.util.AcceptableService;
 
 /**
  * Created by davidoff shen on 2016-11-26.
  */
-public interface ClassGenerator {
+public interface ClassGenerator extends AcceptableService<String> {
 
 //    @Deprecated
 //    boolean FRONTEND_DEV_MODE = ConcreteHelper.isDevModel()            ;
 
-    boolean isAccept(String desc);
+//    boolean isAccept(String desc);
 
     String getImplPostfix();
 
     Class<?> getSuperClass();
 
-    Class<?> generatesImplClass(Module module) throws Throwable;
+    Class<?> generatesImplClass(JaxrsModule module) throws Throwable;
 
 }

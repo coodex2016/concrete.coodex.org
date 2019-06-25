@@ -17,29 +17,29 @@
 package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.common.modules.ModuleMaker;
-import org.coodex.concrete.jaxrs.struct.Module;
+import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 
 /**
  * Created by davidoff shen on 2016-11-30.
  */
-public class JaxRSModuleMaker implements ModuleMaker<Module> {
+public class JaxRSModuleMaker implements ModuleMaker<JaxrsModule> {
 
     public static final String JAX_RS_PREV = "JaxRS";
 
-    //    @Override
+    @Override
     public boolean accept(String desc) {
         return desc != null
                 && desc.length() >= JAX_RS_PREV.length()
                 && JAX_RS_PREV.equalsIgnoreCase(desc.substring(0, JAX_RS_PREV.length()));
     }
 
-    @Override
-    public boolean isAccept(String desc) {
-        return accept(desc);
-    }
+//    @Override
+//    public boolean isAccept(String desc) {
+//        return accept(desc);
+//    }
 
     @Override
-    public Module make(Class<?> interfaceClass) {
-        return new Module(interfaceClass);
+    public JaxrsModule make(Class<?> interfaceClass) {
+        return new JaxrsModule(interfaceClass);
     }
 }
