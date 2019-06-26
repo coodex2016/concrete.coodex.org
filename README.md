@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-06-26
+
+- 设计[concrete for product](01.spec/concrete-prod-spec/README.md)，尚未启用
+
 ## 2019-06-25
 
 - `org.coodex.concrete.api.Application` 的 `registerPackage` 和 `API.generate` 及 `API.generateFor` 支持通配符。一个`*`表示一级包，两个`*`表示一级或多级

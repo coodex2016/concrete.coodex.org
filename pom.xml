@@ -114,6 +114,7 @@
 
         <module>s2/concrete-s2-api</module>
         <module>s2/concrete-s2-impl</module>
+        <module>01.spec/concrete-prod-spec</module>
 
     </modules>
 
