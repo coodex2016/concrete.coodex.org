@@ -29,7 +29,9 @@ public interface SomeService {
 ## 2019-06-26
 
 - 设计[concrete for product](01.spec/concrete-prod-spec/README.md)，尚未启用
-
+- Subjoin增加Warning相关操作接口，支持Warning随Subjoin返回调用方
+- TODO：java client端支持、jaxrs angular code v2支持、jaxrs axios 支持、jaxrs jquery 支持
+- TODO：websocket angular支持、websocket jquery 支持
 ## 2019-06-25
 
 - `org.coodex.concrete.api.Application` 的 `registerPackage` 和 `API.generate` 及 `API.generateFor` 支持通配符。一个`*`表示一级包，两个`*`表示一级或多级

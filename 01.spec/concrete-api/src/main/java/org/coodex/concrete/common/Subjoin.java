@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.common;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +24,8 @@ import java.util.Set;
  * Created by davidoff shen on 2017-04-20.
  */
 public interface Subjoin {
+
+    String KEY_WARNINGS = "CONCRETE-WARNINGS";
 
 //    Locale getLocale();
 
@@ -41,4 +44,16 @@ public interface Subjoin {
     void add(String name, String value);
 
 //    void remove(String name);
+
+    // waring 相关
+    List<Warning> getWarnings();
+
+    void clearWarning();
+
+    void setWarnings(Collection<Warning> warings);
+
+    void addAll(Collection<Warning> warnings);
+
+    void putWarning(Warning warning);
+
 }

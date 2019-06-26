@@ -78,6 +78,31 @@ public class SubjoinWrapper implements Subjoin {
         getSubjoin().add(name, value);
     }
 
+    @Override
+    public List<Warning> getWarnings() {
+        return getSubjoin().getWarnings();
+    }
+
+    @Override
+    public void clearWarning() {
+        getSubjoin().clearWarning();
+    }
+
+    @Override
+    public void setWarnings(Collection<Warning> warings) {
+        getSubjoin().setWarnings(warings);
+    }
+
+    @Override
+    public void addAll(Collection<Warning> warnings) {
+        getSubjoin().addAll(warnings);
+    }
+
+    @Override
+    public void putWarning(Warning warning) {
+        getSubjoin().putWarning(warning);
+    }
+
     public static class DefaultSubjoin extends AbstractSubjoin {
         @Override
         protected Collection<String> skipKeys() {

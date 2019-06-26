@@ -24,6 +24,7 @@ import java.util.Set;
 /**
  * Created by davidoff shen on 2016-09-09.
  */
+@Deprecated
 public class ServiceDefinition {
 
 

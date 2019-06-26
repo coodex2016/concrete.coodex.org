@@ -18,11 +18,13 @@ package org.coodex.concrete.common;
 
 import org.coodex.util.Common;
 
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 public abstract class AbstractSubjoin implements Subjoin {
 
     private Map<String, List<String>> stringMap = new HashMap<String, List<String>>();
+    private Set<Warning> warnings = new HashSet<>();
 
     public AbstractSubjoin() {
         this(null);
@@ -69,10 +71,10 @@ public abstract class AbstractSubjoin implements Subjoin {
 
     @Override
     public void set(String name, List<String> values) {
-        if (values == null)
+        if (values == null || values.size() == 0)
             stringMap.remove(name);
         else
-            stringMap.put(name, new ArrayList<String>(values));
+            stringMap.put(name, new ArrayList<>(values));
     }
 
     @Override
@@ -95,4 +97,45 @@ public abstract class AbstractSubjoin implements Subjoin {
     }
 
 
+    @Override
+    public List<Warning> getWarnings() {
+        List<Warning> warnings = Collections.list(Collections.enumeration(this.warnings));
+        warnings.sort(Comparator.comparingInt(Warning::getCode));
+        return warnings;
+    }
+
+    @Override
+    public void clearWarning() {
+        this.warnings.clear();
+        warningsUpdate();
+    }
+
+    @Override
+    public void setWarnings(@NotNull Collection<Warning> warings) {
+        this.warnings.clear();
+        addAll(warnings);
+    }
+
+    private void warningsUpdate() {
+        // TODO serialize
+        if (this.warnings == null || this.warnings.size() == 0) {
+            set(KEY_WARNINGS, null);
+        } else {
+            set(KEY_WARNINGS, Arrays.asList(
+                    JSONSerializerFactory.getInstance().toJson(this.warnings)
+            ));
+        }
+    }
+
+    @Override
+    public void addAll(Collection<Warning> warnings) {
+        this.warnings.addAll(warnings);
+        warningsUpdate();
+    }
+
+    @Override
+    public void putWarning(Warning warning) {
+        this.warnings.add(warning);
+        warningsUpdate();
+    }
 }

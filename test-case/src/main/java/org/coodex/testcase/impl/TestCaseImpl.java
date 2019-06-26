@@ -16,12 +16,14 @@
 
 package org.coodex.testcase.impl;
 
+import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.common.Token;
-import org.coodex.testcase.api.TestCase;
+import org.coodex.concrete.common.Warning;
 import org.coodex.testcase.api.TestCase2;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Arrays;
 
 @Named
 public class TestCaseImpl implements TestCase2 {
@@ -29,10 +31,25 @@ public class TestCaseImpl implements TestCase2 {
     @Inject
     private Token token;
 
+    @Inject
+    private Subjoin subjoin;
+
     @Override
     public int add(Integer x1, Integer x2) {
 
         token.setAttribute("key","key");
+        subjoin.set("abcd", Arrays.asList("sadfaf"));
+        subjoin.putWarning(new Warning() {
+            @Override
+            public Integer getCode() {
+                return 3333;
+            }
+
+            @Override
+            public String getMessage() {
+                return "safaf";
+            }
+        });
 //        throw new RuntimeException("hello world.");
         return x1 + x2;
     }
