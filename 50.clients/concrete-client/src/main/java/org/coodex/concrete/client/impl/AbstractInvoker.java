@@ -16,8 +16,10 @@
 
 package org.coodex.concrete.client.impl;
 
+import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.Invoker;
+import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.config.Config;
@@ -37,6 +39,7 @@ public abstract class AbstractInvoker implements Invoker {
     }
 
     public abstract ServiceContext buildContext(/*final Class concreteClass, final Method method*/DefinitionContext context);
+
 
     protected boolean isMock() {
         String key = Common.isBlank(destination.getIdentify()) ? "client" : ("client." + destination.getIdentify());

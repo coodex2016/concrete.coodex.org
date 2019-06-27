@@ -68,4 +68,8 @@ public abstract class ClientSideContext implements ServiceContext {
     public Locale getLocale() {
         return locale;
     }
+
+    public void responseSubjoin(Subjoin subjoin){
+        this.subjoin = subjoin;
+    }
 }

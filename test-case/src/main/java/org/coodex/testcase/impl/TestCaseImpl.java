@@ -24,6 +24,7 @@ import org.coodex.testcase.api.TestCase2;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Arrays;
+import java.util.Map;
 
 @Named
 public class TestCaseImpl implements TestCase2 {
@@ -48,6 +49,11 @@ public class TestCaseImpl implements TestCase2 {
             @Override
             public String getMessage() {
                 return "safaf";
+            }
+
+            @Override
+            public Map<String, String> getData() {
+                return null;
             }
         });
 //        throw new RuntimeException("hello world.");

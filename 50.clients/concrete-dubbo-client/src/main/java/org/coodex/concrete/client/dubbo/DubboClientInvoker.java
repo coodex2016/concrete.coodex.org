@@ -132,6 +132,7 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
             ClientTokenManagement.setTokenId(getDestination(), tokenId);
         }
         String content = result.get(RESULT);
+
         return content == null ? null : JSONSerializerFactory.getInstance()
                 .parse(content, TypeHelper.toTypeReference(
                         method.getGenericReturnType(), clz

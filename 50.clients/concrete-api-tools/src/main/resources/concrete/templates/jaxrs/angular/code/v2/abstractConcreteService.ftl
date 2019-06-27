@@ -17,7 +17,11 @@ export class RuntimeContext {
         console.log(errorInfo);
         return false;
     }
-
+    // warning 统一处理
+    public warningHandle = (warningInfo) => {
+        console.log(warningInfo);
+    }
+	
     public getTokenId(): string {
         return (this.globalTokenKey ?
             localStorage.getItem(this.globalTokenKey) : null) || this.localTokenId;
@@ -64,6 +68,19 @@ export abstract class AbstractConcreteService {
         const res: HttpResponse<any> = result;
         if (res.headers) {
             runtimeContext.setTokenId(res.headers.get('concrete-token-id'));
+            let warnings = res.headers.get('concrete-warnings');
+            if(warnings && runtimeContext.warningHandle){
+                let warningsArray = JSON.parse(warnings);
+                if (warningsArray instanceof Array){
+                    for(let i =0;i < warningsArray.length; i ++){
+                        try{
+                            runtimeContext.warningHandle(warningsArray[i]);
+                        }catch(e){
+                            console.warn(e);
+                        }
+                    }
+                }
+            }
         }
         if (res.status === 204) {
             return null;

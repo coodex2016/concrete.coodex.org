@@ -97,12 +97,12 @@ public abstract class AbstractSubjoin implements Subjoin {
     }
 
 
-    @Override
-    public List<Warning> getWarnings() {
-        List<Warning> warnings = Collections.list(Collections.enumeration(this.warnings));
-        warnings.sort(Comparator.comparingInt(Warning::getCode));
-        return warnings;
-    }
+//    @Override
+//    public List<Warning> getWarnings() {
+//        List<Warning> warnings = Collections.list(Collections.enumeration(this.warnings));
+//        warnings.sort(Comparator.comparingInt(Warning::getCode));
+//        return warnings;
+//    }
 
     @Override
     public void clearWarning() {

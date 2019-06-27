@@ -78,10 +78,10 @@ public class SubjoinWrapper implements Subjoin {
         getSubjoin().add(name, value);
     }
 
-    @Override
-    public List<Warning> getWarnings() {
-        return getSubjoin().getWarnings();
-    }
+//    @Override
+//    public List<Warning> getWarnings() {
+//        return getSubjoin().getWarnings();
+//    }
 
     @Override
     public void clearWarning() {

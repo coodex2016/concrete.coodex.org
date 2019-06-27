@@ -46,7 +46,7 @@ public interface Subjoin {
 //    void remove(String name);
 
     // waring 相关
-    List<Warning> getWarnings();
+//    List<Warning> getWarnings();
 
     void clearWarning();
 

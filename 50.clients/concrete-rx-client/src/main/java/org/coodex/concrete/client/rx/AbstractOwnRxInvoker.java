@@ -27,6 +27,7 @@ import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.common.JSONSerializer;
 import org.coodex.concrete.common.JSONSerializerFactory;
+import org.coodex.concrete.own.MapSubjoin;
 import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;
@@ -81,6 +82,10 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
         Throwable throwable = null;
         boolean completed = false;
         if (responsePackage.isOk()) {
+            callBack.clientSideContext.responseSubjoin(
+                    new MapSubjoin(responsePackage.getSubjoin())
+            );
+
             try {
                 ClientTokenManagement.setTokenId(callBack.getDestination(), responsePackage.getConcreteTokenId());
                 if (responsePackage.getContent() == null ||
@@ -137,7 +142,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
                 final RequestPackage requestPackage = buildRequest(msgId, unit, args);
 
                 CallBack callBack = new CallBack(observableEmitter,
-                        context, getLogger(), getDestination());
+                        context, getLogger(), getDestination(), getContext());
 
                 callbackMap.put(msgId, callBack, getDestination().getTimeout(),
                         new TimeLimitedMap.TimeoutCallback() {
@@ -170,12 +175,14 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
         private final DefinitionContext context;
         private final Logger logger;
         private final Destination destination;
+        private final ClientSideContext clientSideContext;
 
-        private CallBack(ObservableEmitter emitter, DefinitionContext context, Logger logger, Destination destination) {
+        private CallBack(ObservableEmitter emitter, DefinitionContext context, Logger logger, Destination destination, ClientSideContext clientSideContext) {
             this.emitter = emitter;
             this.context = context;
             this.logger = logger;
             this.destination = destination;
+            this.clientSideContext = clientSideContext;
         }
 
         public ObservableEmitter getEmitter() {

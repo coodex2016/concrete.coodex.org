@@ -17,6 +17,7 @@
 package org.coodex.concrete.common;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * 当Concrete服务可以正常执行，但是需要额外通知调用者警告信息(例如，服务快到期了，服务端资源快满了等)时，
@@ -32,5 +33,10 @@ public interface Warning extends Serializable {
      * @return 警告文本信息，同ErrorMessage体系
      */
     String getMessage();
+
+    /**
+     * @return 附加数据，使用字符串键值对，自行处理
+     */
+    Map<String, String> getData();
 
 }

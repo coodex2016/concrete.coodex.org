@@ -49,6 +49,7 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
         super(destination);
     }
 
+
     protected static Method findTargetMethod(Class targetClass, Method method) {
         Method targetMethod = null;
         for (Method m : targetClass.getMethods()) {
@@ -158,6 +159,7 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
 
                     public Object call() throws Throwable {
                         invokeP(runtimeContext, args).subscribe(new Observer() {
+                            private boolean notNull = false;
                             @Override
                             public void onSubscribe(Disposable d) {
                             }
@@ -165,24 +167,34 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
                             @Override
                             public void onNext(final Object o) {
                                 //响应后切片
-                                ConcreteContext.runWithContext(serviceContext, new CallableClosure() {
-                                    @Override
-                                    public Object call() throws Throwable {
+                                notNull = true;
+                                ConcreteContext.runWithContext(serviceContext,
+                                        () -> {
                                         ClientHelper.getAsyncInterceptorChain().after(runtimeContext, invocation, o);
                                         emitter.onNext(o);
                                         return null;
-                                    }
                                 });
                             }
 
                             @Override
                             public void onError(Throwable e) {
-                                emitter.onError(e);
+                                ConcreteContext.runWithContext(serviceContext,
+                                        () -> {
+                                            ClientHelper.getAsyncInterceptorChain().onError(runtimeContext, invocation, e);
+                                            emitter.onError(e);
+                                            return null;
+                                        });
                             }
 
                             @Override
                             public void onComplete() {
-                                emitter.onComplete();
+                                ConcreteContext.runWithContext(serviceContext,
+                                        () -> {
+                                            if (!notNull)
+                                                ClientHelper.getAsyncInterceptorChain().after(runtimeContext, invocation, null);
+                                            emitter.onComplete();
+                                            return null;
+                                        });
                             }
                         });
                         return null;

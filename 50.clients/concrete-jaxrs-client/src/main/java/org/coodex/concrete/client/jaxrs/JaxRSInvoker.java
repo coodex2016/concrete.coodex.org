@@ -20,6 +20,7 @@ import org.coodex.concrete.AbstractClientException;
 import org.coodex.concrete.client.ClientTokenManagement;
 import org.coodex.concrete.client.impl.AbstractSyncInvoker;
 import org.coodex.concrete.common.*;
+import org.coodex.concrete.jaxrs.JaxRSSubjoin;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.pojomocker.MockerFacade;
@@ -238,7 +239,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                     builder.append("result:\n").append(body);
                     log.debug(builder.toString());
                 }
-
+                getContext().responseSubjoin(new JaxRSSubjoin(response.getHeaders()));
                 return processResult(response.getStatus(), body, unit,
                         response.getHeaders().keySet().contains(HEADER_ERROR_OCCURRED), path);
             } catch (AbstractClientException clientEx) {

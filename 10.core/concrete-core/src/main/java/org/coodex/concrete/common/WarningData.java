@@ -16,9 +16,14 @@
 
 package org.coodex.concrete.common;
 
+import java.util.Map;
+
 public class WarningData implements Warning {
-    private final Integer code;
+    private Integer code;
     private String message;
+    private Map<String, String> data;
+
+    public WarningData(){}
 
     public WarningData(Integer code, Object ... objects) {
         this.code = code;
@@ -34,5 +39,22 @@ public class WarningData implements Warning {
     @Override
     public String getMessage() {
         return message;
+    }
+
+    @Override
+    public Map<String, String> getData() {
+        return data;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setData(Map<String, String> data) {
+        this.data = data;
     }
 }
