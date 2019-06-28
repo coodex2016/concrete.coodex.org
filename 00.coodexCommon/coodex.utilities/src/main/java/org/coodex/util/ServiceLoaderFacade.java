@@ -71,19 +71,15 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
 
     protected void loadInstances() {
         if (instances == null) {
-            synchronized (this) {
-                if (instances == null) {
-                    instances = new HashMap<String, T>();
-                    java.util.ServiceLoader<T> loader = java.util.ServiceLoader.<T>load(getInterfaceClass());
-                    for (T service : loader) {
-                        if (service != null) {
-                            instances.put(service.getClass().getCanonicalName(), service);
-                        }
-                    }
-                    if (instances.size() == 0) {
-                        log.debug("no ServiceProvider found for [{}], using default provider.", getInterfaceClass().getCanonicalName());
-                    }
+            instances = new HashMap<String, T>();
+            java.util.ServiceLoader<T> loader = java.util.ServiceLoader.<T>load(getInterfaceClass());
+            for (T service : loader) {
+                if (service != null) {
+                    instances.put(service.getClass().getCanonicalName(), service);
                 }
+            }
+            if (instances.size() == 0) {
+                log.debug("no ServiceProvider found for [{}], using default provider.", getInterfaceClass().getCanonicalName());
             }
         }
     }
@@ -118,7 +114,7 @@ public abstract class ServiceLoaderFacade<T> implements ServiceLoader<T> {
         }
         switch (copy.size()) {
             case 0:
-                throw null;
+                throw new RuntimeException();
             case 1:
                 return copy.values().iterator().next();
         }

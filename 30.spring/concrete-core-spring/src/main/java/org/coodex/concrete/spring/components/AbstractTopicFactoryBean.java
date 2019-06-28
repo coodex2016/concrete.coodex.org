@@ -30,11 +30,7 @@ public abstract class AbstractTopicFactoryBean<T> /*implements FactoryBean<T>*/ 
 
     protected Type getType() {
         if (topicType == null) {
-            synchronized (this) {
-                if (topicType == null) {
-                    topicType = solve(AbstractTopicFactoryBean.class.getTypeParameters()[0], getClass());
-                }
-            }
+            topicType = solve(AbstractTopicFactoryBean.class.getTypeParameters()[0], getClass());
         }
         return topicType;
     }

@@ -24,14 +24,9 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.Serializable;
 
 public class CallerHackFilter implements Filter {
-    private final static Logger log = LoggerFactory.getLogger(CallerHackFilter.class);
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-
-    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -40,24 +35,42 @@ public class CallerHackFilter implements Filter {
                 HttpServletRequest httpServletRequest = (HttpServletRequest) request;
                 HttpSession session = httpServletRequest.getSession(true);
                 String xff = httpServletRequest.getHeader("X-Forwarded-For");
-                final String ip = xff == null ? httpServletRequest.getRemoteAddr() : xff.split(",")[0].trim();
-                final String userAgent = httpServletRequest.getHeader("User-Agent");
-                session.setAttribute(CallerHackConfigurator.WEB_SOCKET_CALLER_INFO, new Caller() {
-                    @Override
-                    public String getAddress() {
-                        return ip;
-                    }
-
-                    @Override
-                    public String getClientProvider() {
-                        return userAgent;
-                    }
-                });
+                session.setAttribute(CallerHackConfigurator.WEB_SOCKET_CALLER_INFO,
+                        new HackedCaller(
+                                xff == null ? httpServletRequest.getRemoteAddr() : xff.split(",")[0].trim(),
+                                httpServletRequest.getHeader("User-Agent")));
             }
         } catch (Throwable th) {
             log.warn(th.getLocalizedMessage(), th);
         } finally {
             chain.doFilter(request, response);
+        }
+    }
+
+    private final static Logger log = LoggerFactory.getLogger(CallerHackFilter.class);
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+
+    }
+
+    private static class HackedCaller implements Caller, Serializable {
+        private final String ip;
+        private final String userAgent;
+
+        private HackedCaller(String ip, String userAgent) {
+            this.ip = ip;
+            this.userAgent = userAgent;
+        }
+
+        @Override
+        public String getAddress() {
+            return ip;
+        }
+
+        @Override
+        public String getClientProvider() {
+            return userAgent;
         }
     }
 

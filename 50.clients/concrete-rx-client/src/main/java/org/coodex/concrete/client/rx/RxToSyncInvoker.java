@@ -69,7 +69,7 @@ public abstract class RxToSyncInvoker extends AbstractInvoker {
                         synchronized (rxResult) {
                             rxResult.completed = true;
                             if (rxResult.waiting)
-                                rxResult.notify();
+                                rxResult.notifyAll();
                         }
                     }
                 });

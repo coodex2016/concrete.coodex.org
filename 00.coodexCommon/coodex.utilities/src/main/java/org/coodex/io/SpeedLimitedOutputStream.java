@@ -54,6 +54,7 @@ public class SpeedLimitedOutputStream extends OutputStream {
                 try {
                     Clock.sleep(toSleep);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
             }
             startCount();

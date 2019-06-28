@@ -78,9 +78,9 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
             return;
         }
         try {
-            synchronized (session) {
-                session.getBasicRemote().sendText(text);
-            }
+//            synchronized (session) {
+            session.getBasicRemote().sendText(text);
+//            }
         } catch (IllegalStateException | IOException e) {
             log.warn("send text failed. session: {}", session.getId(), e);
             getScheduler("websocket.retry").schedule(new Runnable() {

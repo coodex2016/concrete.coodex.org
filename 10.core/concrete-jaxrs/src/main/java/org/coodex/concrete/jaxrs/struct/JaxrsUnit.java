@@ -114,11 +114,7 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
 
     private String getDeclaredName() {
         if (declaredName == null) {
-            synchronized (this) {
-                if (declaredName == null) {
-                    declaredName = getUnitDeclaredName();
-                }
-            }
+            declaredName = getUnitDeclaredName();
         }
         return declaredName;
     }

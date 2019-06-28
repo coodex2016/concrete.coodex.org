@@ -59,7 +59,7 @@ public abstract class AbstractPositionManagementServiceImpl
     }
 
     protected E getPositionEntity(String id) {
-        return IF.isNull(getPositionRepo().findById(id).get(), OrganizationErrorCodes.POSITION_NOT_EXISTS);
+        return IF.isNull(getPositionRepo().findById(id).orElse(null), OrganizationErrorCodes.POSITION_NOT_EXISTS);
     }
 
     protected E getPositionWithPermissionCheck(String id) {

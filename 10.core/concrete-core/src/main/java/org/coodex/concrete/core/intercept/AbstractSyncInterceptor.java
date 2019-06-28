@@ -45,14 +45,11 @@ public abstract class AbstractSyncInterceptor extends AbstractInterceptor implem
         try {
             Object result = around(context, invocation);
             try {
-                after(context, invocation, result);
-//            }catch(ConcreteException ce){
-//                throw ce;
+                result = after(context, invocation, result);
             } catch (Throwable t) {
                 log.warn("Error occurred in afterAdvice. {}", t.getLocalizedMessage(), t);
-            } finally {
-                return result;
             }
+            return result;
         } catch (ConcreteException ce) {
             throw ce;
         } catch (Throwable t) {

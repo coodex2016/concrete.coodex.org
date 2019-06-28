@@ -148,8 +148,7 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
     protected void process(String moduleName, AbstractModule<U> module) {
         Class<?> clz = module.getInterfaceClass();
         Map<Class, TSClass> moduleMap = getTSClassMap(clz);
-        if (moduleMap == null) return;
-
+//        if (moduleMap == null) return;
         TSModule tsModule = new TSModule(clz);
         tsModule.setBelong(moduleName);
 

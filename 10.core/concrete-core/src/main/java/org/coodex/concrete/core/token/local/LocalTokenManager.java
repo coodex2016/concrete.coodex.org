@@ -86,7 +86,7 @@ public class LocalTokenManager implements TokenManager {
 
         void active() {
 
-            long maxIdleTime = getTokenMaxIdleInMinute() * 60 * 1000;
+            long maxIdleTime = getTokenMaxIdleInMinute() * 60L * 1000L;
 
             if (maxIdleTime <= 0) {
                 maxIdleTime = DEFAULT_MAX_IDLE * 60 * 1000;

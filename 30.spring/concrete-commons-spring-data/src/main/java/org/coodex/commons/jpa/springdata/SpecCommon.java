@@ -57,7 +57,7 @@ public class SpecCommon {
                 }
             }
         }
-        return f.get(attr);
+        return f == null ? null :f.get(attr);
     }
 
     public static <T> Specification<T> not(final Specification<T> spec) {

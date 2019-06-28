@@ -29,7 +29,7 @@ public class Topics {
 
     public static final String TAG_QUEUE = "queue";
     public static final String QUEUE_USERNAME = "username";
-    public static final String QUEUE_PASSWORD = "password";
+    public static final String QUEUE_PA55W0RD = "password";
     public static final String SERIALIZER_TYPE = "serializer";
     private static final Serializer DEFAULT_SERIALIZER = new DefaultSerializer();
     private static AcceptableServiceLoader<String, Serializer> serializerAcceptableServiceLoader =

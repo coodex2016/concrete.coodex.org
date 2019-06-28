@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.client.websocket;
+package test.org.coodex.util;
 
-import org.coodex.concrete.ClientException;
-import org.coodex.concrete.common.ErrorInfo;
+import org.coodex.util.Common;
 
-public class WSClientException extends ClientException {
-    public WSClientException(ErrorInfo errorInfo) {
-        super(errorInfo.getCode(), errorInfo.getMsg());
+public class CommonTest {
+
+    public static void main(String[] args) {
+        System.out.println(Common.FILE_SEPARATOR);
+        System.out.println(Common.PATH_SEPARATOR);
+        System.out.println(Common.DEFAULT_TIME_FORMAT);
+        System.out.println(Common.sameString("1","2"));
     }
 }

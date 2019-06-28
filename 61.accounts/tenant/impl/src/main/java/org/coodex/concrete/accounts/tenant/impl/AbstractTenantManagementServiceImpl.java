@@ -173,6 +173,7 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
         return result;
     }
 
+
     @Override
     public void layUp(String tenant) {
         E tenantEntity = getTenantEntity(tenant);
@@ -181,9 +182,11 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
         IF.not(tenantEntity.isUsing() && validation != null &&
                         validation.getTimeInMillis() >= now,
                 AccountsErrorCodes.TENANT_UNAVAILABLE);
-        long remainder = validation.getTimeInMillis() - now;
-        tenantEntity.setSurplus(remainder);
-        tenantEntity.setValidation(null);
+        if(validation != null) {
+            long remainder = validation.getTimeInMillis() - now;
+            tenantEntity.setSurplus(remainder);
+            tenantEntity.setValidation(null);
+        }
         tenantEntity.setUsing(false);
         putLoggingData("tenant", tenantRepo.save(tenantEntity));
     }

@@ -72,7 +72,7 @@ public class DefaultSignatureSerializer implements SignatureSerializer {
 
     @Override
     public byte[] serialize(Map<String, Object> values) {
-        if (values == null && values.size() == 0)
+        if (values == null || values.size() == 0)
             return new byte[0];
         else
             return toSign(values).getBytes();

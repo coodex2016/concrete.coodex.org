@@ -62,40 +62,45 @@ public class ClockAgentService extends Thread {
     public void run() {
         try {
             ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-            serverSocketChannel.configureBlocking(false);
-            serverSocketChannel.socket().bind(new InetSocketAddress(host, port));
-            log.info("Clock Agent Service start [{}:{}]....", host, port);
-            listening = true;
-            Selector selector = Selector.open();
-            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-            while (listening) {
-                if (selector.select(3000) == 0) {
-                    continue;
-                }
+            try {
+                serverSocketChannel.configureBlocking(false);
+                serverSocketChannel.socket().bind(new InetSocketAddress(host, port));
+                log.info("Clock Agent Service start [{}:{}]....", host, port);
+                this.listening = true;
+                Selector selector = Selector.open();
+                serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+                while (true) {
+                    if(!this.listening) break;
 
-                Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
-                while (keyIterator.hasNext()) {
-                    SelectionKey key = keyIterator.next();
-                    if (key.isAcceptable()) {
-                        SocketChannel socketChannel = ((ServerSocketChannel) key.channel()).accept();
-                        socketChannel.configureBlocking(false);
-                        ByteBuffer buffer = ByteBuffer.allocate(8 + 8 + 4);// start/ baseline/ magnification
-                        buffer.putLong(0, defaultClockAgent.getStart());
-                        buffer.putLong(8, defaultClockAgent.getBaseLine());
-                        buffer.putFloat(16, defaultClockAgent.getMagnification());
-                        socketChannel.write(buffer);
+                    if (selector.select(3000) == 0) {
+                        continue;
                     }
-                    keyIterator.remove();
+
+                    Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
+                    while (keyIterator.hasNext()) {
+                        SelectionKey key = keyIterator.next();
+                        if (key.isAcceptable()) {
+                            SocketChannel socketChannel = ((ServerSocketChannel) key.channel()).accept();
+                            socketChannel.configureBlocking(false);
+                            ByteBuffer buffer = ByteBuffer.allocate(8 + 8 + 4);// start/ baseline/ magnification
+                            buffer.putLong(0, defaultClockAgent.getStart());
+                            buffer.putLong(8, defaultClockAgent.getBaseLine());
+                            buffer.putFloat(16, defaultClockAgent.getMagnification());
+                            socketChannel.write(buffer);
+                        }
+                        keyIterator.remove();
+                    }
                 }
+            } finally {
+                serverSocketChannel.close();
+                log.debug("Clock Agent Service shutdown.");
             }
-            serverSocketChannel.close();
-            log.debug("Clock Agent Service shutdown.");
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
         }
     }
 
     public void shutdown(){
-        listening = false;
+        this.listening = false;
     }
 }

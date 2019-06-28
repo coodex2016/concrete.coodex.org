@@ -30,6 +30,12 @@ public abstract class OwnServiceUnit<M extends OwnServiceModule> extends Abstrac
 
     public OwnServiceUnit(Method method, M module) {
         super(method, module);
+        key = Common.sha1(String.format("%s:%s(%d)", // TODO "%s:%s(%s)",
+                getDeclaringModule().getInterfaceClass().getName(),
+                getName(),
+                getParameters().length
+                // TODO builder.toString()
+        ));
     }
 
     @Override
@@ -38,27 +44,6 @@ public abstract class OwnServiceUnit<M extends OwnServiceModule> extends Abstrac
     }
 
     public String getKey() {
-        if (key == null) {
-            synchronized (this) {
-                if (key == null) {
-                    // TODO 0.2.5
-//                    AbstractParam[] params = getParameters();
-//                    StringBuilder builder = new StringBuilder();
-//                    if (params != null || params.length > 0) {
-//                        for (int i = 0; i < params.length; i++) {
-//                            if (i > 0) builder.append(", ");
-//                            builder.append(params[i].getGenericType().toString());
-//                        }
-//                    }
-                    key = Common.sha1(String.format("%s:%s(%d)", // TODO "%s:%s(%s)",
-                            getDeclaringModule().getInterfaceClass().getName(),
-                            getName(),
-                            getParameters().length
-                            // TODO builder.toString()
-                    ));
-                }
-            }
-        }
         return key;
     }
 

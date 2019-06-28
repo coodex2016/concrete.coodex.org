@@ -39,6 +39,8 @@ import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
 
 public class ClientHelper {
 
+    private ClientHelper(){}
+
 
     private static Singleton<InstanceBuilder> instanceBuilder = new Singleton<InstanceBuilder>(new Singleton.Builder<InstanceBuilder>() {
         @Override

@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.client.jaxrs;
 
-import org.coodex.concrete.AbstractClientException;
+import org.coodex.concrete.ClientException;
 import org.coodex.concrete.client.ClientTokenManagement;
 import org.coodex.concrete.client.impl.AbstractSyncInvoker;
 import org.coodex.concrete.common.*;
@@ -242,7 +242,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                 getContext().responseSubjoin(new JaxRSSubjoin(response.getHeaders()));
                 return processResult(response.getStatus(), body, unit,
                         response.getHeaders().keySet().contains(HEADER_ERROR_OCCURRED), path);
-            } catch (AbstractClientException clientEx) {
+            } catch (ClientException clientEx) {
                 throw clientEx;
             } catch (Throwable th) {
                 JaxRSClientException ce = new JaxRSClientException(-1, th.getLocalizedMessage(), path, unit.getInvokeType());

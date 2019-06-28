@@ -25,6 +25,6 @@ public class PollingImpl implements Polling {
     public Object polling(Integer timeOut) {
         timeOut = timeOut == null ? 15 : Math.min(timeOut, 30);
 //        return JaxRSCourier.getMessage(TokenWrapper.getInstance().getTokenId(), timeOut * 1000);
-        return TBMContainer.getInstance().getMessages(timeOut * 1000);
+        return TBMContainer.getInstance().getMessages(timeOut * 1000L);
     }
 }

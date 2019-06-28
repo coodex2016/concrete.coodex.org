@@ -67,7 +67,7 @@ public abstract class AbstractTenantRPCServiceImpl<E extends AbstractTenantEntit
 
     @Override
     public TenantAccount getTenantAccountById(String id) {
-        return accountFactory.newAccount(IF.isNull(repo.findById(id).get(), TENANT_NOT_EXISTS).getId());
+        return accountFactory.newAccount(IF.isNull(repo.findById(id).orElse(null), TENANT_NOT_EXISTS).getId());
     }
 
     @Override

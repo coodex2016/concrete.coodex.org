@@ -79,14 +79,18 @@ public class DefaultStringMocker implements Mocker<STRING> {
             }
 
             if (reader != null) {
-                String line;
-                List<String> stringList = new ArrayList<String>();
-                while ((line = reader.readLine()) != null) {
-                    if (!Common.isBlank(line) && !line.trim().startsWith("#"))
-                        stringList.add(line);
+                try {
+                    String line;
+                    List<String> stringList = new ArrayList<String>();
+                    while ((line = reader.readLine()) != null) {
+                        if (!Common.isBlank(line) && !line.trim().startsWith("#"))
+                            stringList.add(line);
+                    }
+                    if (stringList.size() > 0)
+                        return stringList.toArray(new String[0]);
+                } finally {
+                    reader.close();
                 }
-                if (stringList.size() > 0)
-                    return stringList.toArray(new String[0]);
             }
             return null;
         } catch (Throwable th) {

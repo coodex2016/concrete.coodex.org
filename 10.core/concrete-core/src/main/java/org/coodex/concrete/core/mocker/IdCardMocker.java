@@ -147,16 +147,14 @@ public class IdCardMocker extends AbstractMocker<IdCard> {
     private void loadDivisions() throws IOException {
         URL url = Common.getResource("administrative_divisions.txt", IdCardMocker.class.getClassLoader());
         InputStream is = url.openStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-        try {
+
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.length() > 8 && line.charAt(0) == '　' && line.charAt(1) == '　' && !line.endsWith("市辖区")) {
                     administrative_divisions.add(line.substring(2, 8));
                 }
             }
-        } finally {
-            is.close();
         }
     }
 

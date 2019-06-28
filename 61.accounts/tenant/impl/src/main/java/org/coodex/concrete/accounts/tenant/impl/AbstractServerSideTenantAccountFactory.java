@@ -53,7 +53,7 @@ public abstract class AbstractServerSideTenantAccountFactory<E extends AbstractT
 
     @Override
     protected TenantAccount newAccount(String key) {
-        E person = tenantRepo.findById(key).get();
+        E person = tenantRepo.findById(key).orElse(null);
         return person == null ? null : copier.copy(person);
     }
 

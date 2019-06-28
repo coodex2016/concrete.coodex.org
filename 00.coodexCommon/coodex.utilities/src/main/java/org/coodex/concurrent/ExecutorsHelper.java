@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by davidoff shen on 2016-09-05.
  */
 public class ExecutorsHelper {
+    private ExecutorsHelper(){}
 
     /**
      * 基于 Executors.DefaultThreadFactory 改造

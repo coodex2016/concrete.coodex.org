@@ -68,7 +68,7 @@ public abstract class AbstractInstitutionManagementServiceImpl
 
     private E getInstitutionEntity(String id) {
         IF.isNull(id, NONE_THIS_INSTITUTION);
-        return IF.isNull(institutionRepo.findById(id).get(), NONE_THIS_INSTITUTION);
+        return IF.isNull(institutionRepo.findById(id).orElse(null), NONE_THIS_INSTITUTION);
     }
 
     @Override

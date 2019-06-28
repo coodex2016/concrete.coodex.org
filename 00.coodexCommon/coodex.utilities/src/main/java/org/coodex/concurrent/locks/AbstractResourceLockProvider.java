@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractResourceLockProvider implements ResourceLockProvider {
-    public final static long RESOURCE_CACHE_MAX_LIFE = 10 * 1000; // 10 seconds
+    public final static long RESOURCE_CACHE_MAX_LIFE = 10000L; // 10 seconds
     public final static long POLLING_CYCLE = RESOURCE_CACHE_MAX_LIFE / 2;
     private final static Logger log = LoggerFactory.getLogger(AbstractResourceLockProvider.class);
     private static AbstractResourceLock[] toArraysParam = new AbstractResourceLock[0];
@@ -83,9 +83,8 @@ public abstract class AbstractResourceLockProvider implements ResourceLockProvid
         if (locksMap.size() == 0) return;
 
         synchronized (locksMap) {
-            StringBuilder builder = null;
+            StringBuilder builder = new StringBuilder();
             if (log.isDebugEnabled()) {
-                builder = new StringBuilder();
                 builder.append(getClass().getName()).append(" before clean: ").append(locksMap.size())
                         .append(" resource(s)");
             }

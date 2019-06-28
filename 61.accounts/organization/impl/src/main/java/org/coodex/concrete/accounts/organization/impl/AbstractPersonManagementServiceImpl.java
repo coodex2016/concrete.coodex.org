@@ -49,9 +49,6 @@ public abstract class AbstractPersonManagementServiceImpl
     @Inject
     protected TwoWayCopier<P, E> personCopier;
 
-    @Inject
-    protected AbstractPersonAccountRepo<E> personAccountRepo;
-
     @Override
     public StrID<P> save(P person, String[] positions) {
         if (person.getCellphone() != null) {
@@ -73,7 +70,7 @@ public abstract class AbstractPersonManagementServiceImpl
     protected Set<J> getPositionsWithPermissionCheck(String[] positions) {
         Set<J> positionEntities = new HashSet<J>();
         for (String positionId : positions) {
-            J positionEntity = IF.isNull(getPositionRepo().findById(positionId).get(), POSITION_NOT_EXISTS);
+            J positionEntity = IF.isNull(getPositionRepo().findById(positionId).orElse(null), POSITION_NOT_EXISTS);
             checkManagementPermission(positionEntity.getBelong());
             positionEntities.add(positionEntity);
         }
@@ -82,7 +79,7 @@ public abstract class AbstractPersonManagementServiceImpl
 
 
     protected E getPersonEntity(String id) {
-        return IF.isNull(personAccountRepo.findById(id).get(), PERSON_NOT_EXISTS);
+        return IF.isNull(personAccountRepo.findById(id).orElse(null), PERSON_NOT_EXISTS);
     }
 
 

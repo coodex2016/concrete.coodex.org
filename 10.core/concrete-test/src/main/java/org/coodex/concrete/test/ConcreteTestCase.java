@@ -31,7 +31,7 @@ public abstract class ConcreteTestCase {
         try {
             Clock.sleep(millis);
         } catch (InterruptedException e) {
-
+            Thread.currentThread().interrupt();
         }
     }
 }

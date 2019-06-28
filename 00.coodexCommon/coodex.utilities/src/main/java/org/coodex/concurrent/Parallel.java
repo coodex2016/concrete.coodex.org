@@ -69,6 +69,7 @@ public class Parallel {
                 latch.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
 //            while (!batch.isAllFinished()) {
 //                synchronized (batch) {

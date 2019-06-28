@@ -76,7 +76,7 @@ public abstract class AbstractSelfManagementServiceImpl<
     protected PE getCurrentAccountEntity() {
         Account<AccountIDImpl> currentAccount = token.currentAccount();
         IF.is(currentAccount.getId().getType() != AccountIDImpl.TYPE_ORGANIZATION, NOT_ORGANIZATION_ACCOUNT);
-        return personAccountRepo.findById(currentAccount.getId().getId()).get();
+        return personAccountRepo.findById(currentAccount.getId().getId()).orElse(null);
     }
 
     @Override
@@ -91,12 +91,14 @@ public abstract class AbstractSelfManagementServiceImpl<
                 organizationEntity = organizationEntity.getHigherLevel();
                 if (organizationEntity == null) break;
             }
+            //noinspection unchecked
             institutionEntity = (IE) organizationEntity;
             while (institutionEntity != null) {
                 if (!institutionIdSet.contains(institutionEntity.getId())) {
                     institutionIdSet.add(institutionEntity.getId());
                     institutions.add(new StrID<I>(institutionEntity.getId(), institutionCopier.copyB2A(institutionEntity)));
                 }
+                //noinspection unchecked
                 institutionEntity = (IE) institutionEntity.getHigherLevel();
             }
         }
@@ -111,6 +113,7 @@ public abstract class AbstractSelfManagementServiceImpl<
         for (JE position : personEntity.getPositions()) {
             OrganizationEntity organizationEntity = position.getBelongTo();
             while (organizationEntity instanceof AbstractDepartmentEntity) {
+                //noinspection unchecked
                 DE departmentEntity = (DE) organizationEntity;
                 if (!departmentIdSet.contains(departmentEntity.getId())) {
                     departmentIdSet.add(departmentEntity.getId());

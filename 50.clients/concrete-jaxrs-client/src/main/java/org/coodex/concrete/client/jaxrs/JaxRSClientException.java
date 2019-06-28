@@ -16,9 +16,9 @@
 
 package org.coodex.concrete.client.jaxrs;
 
-import org.coodex.concrete.AbstractClientException;
+import org.coodex.concrete.ClientException;
 
-public class JaxRSClientException extends AbstractClientException {
+public class JaxRSClientException extends ClientException {
 
     private final String path;
     private final String method;

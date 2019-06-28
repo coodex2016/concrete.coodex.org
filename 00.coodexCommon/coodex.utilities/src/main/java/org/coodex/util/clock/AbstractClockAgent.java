@@ -80,7 +80,9 @@ public abstract class AbstractClockAgent implements ClockAgent {
     @Override
     public void objWait(Object obj, long millis) throws InterruptedException {
         if (millis <= 0) return;
-        obj.wait((long) Math.max(millis / magnification, 1));
+        synchronized (obj) {
+            obj.wait((long) Math.max(millis / magnification, 1));
+        }
     }
 
     @Override

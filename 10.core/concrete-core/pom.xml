@@ -69,6 +69,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>concrete-api</artifactId>
             <version>${project.parent.version}</version>

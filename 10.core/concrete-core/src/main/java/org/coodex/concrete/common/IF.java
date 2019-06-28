@@ -24,20 +24,20 @@ public class IF {
     /**
      * 当表达式exp为真时，抛出code异常
      *
-     * @param exp
-     * @param code
-     * @param objects
+     * @param exp test
+     * @param code error code
+     * @param objects error message params
      */
-    public static final void is(boolean exp, int code, Object... objects) {
+    public static void is(boolean exp, int code, Object... objects) {
 //        is(exp, new ConcreteException(code, objects));
         if (exp) throw new ConcreteException(code, objects);
     }
 
-    public static final void is(boolean exp, ConcreteException ex) {
+    public static void is(boolean exp, ConcreteException ex) {
         if (exp) throw ex;
     }
 
-    public static final void is(boolean exp, String message) {
+    public static void is(boolean exp, String message) {
 //        is(exp, ConcreteHelper.getException(new RuntimeException(message)));
         if (exp) throw ConcreteHelper.getException(new RuntimeException(message));
     }
@@ -45,42 +45,42 @@ public class IF {
     /**
      * 表达式为否事，抛出code异常
      *
-     * @param exp
-     * @param code
-     * @param objects
+     * @param exp exp
+     * @param code error code
+     * @param objects error message params
      */
-    public static final void not(boolean exp, int code, Object... objects) {
+    public static void not(boolean exp, int code, Object... objects) throws ConcreteException {
         is(!exp, code, objects);
     }
 
-    public static final void not(boolean exp, ConcreteException ex) {
+    public static void not(boolean exp, ConcreteException ex) throws ConcreteException {
         is(!exp, ex);
     }
 
-    public static final void not(boolean exp, String message) {
+    public static void not(boolean exp, String message) throws ConcreteException {
         is(!exp, message);
     }
 
     /**
      * 当对象o为null是，抛出code异常
      *
-     * @param o
-     * @param code
-     * @param objects
-     * @return
+     * @param o test object
+     * @param code error code
+     * @param objects error message params
+     * @return non null
      */
-    public static final <T> T isNull(T o, int code, Object... objects) {
+    public static <T> T isNull(T o, int code, Object... objects) throws ConcreteException {
         is(o == null, code, objects);
         return o;
 //        return isNull(o, new ConcreteException(code, objects));
     }
 
-    public static final <T> T isNull(T o, ConcreteException exp) {
+    public static <T> T isNull(T o, ConcreteException exp) throws ConcreteException {
         is(o == null, exp);
         return o;
     }
 
-    public static final <T> T isNull(T o, String message) {
+    public static <T> T isNull(T o, String message) throws ConcreteException {
         is(o == null, message);
         return o;
 //        return isNull(o, ConcreteHelper.getException(new RuntimeException(message)));
@@ -90,20 +90,20 @@ public class IF {
     /**
      * 当对象o不为null时，抛出code异常
      *
-     * @param o
-     * @param code
-     * @param objects
+     * @param o object
+     * @param code error code
+     * @param objects error message params
      */
-    public static final void notNull(Object o, int code, Object... objects) {
+    public static void notNull(Object o, int code, Object... objects) throws ConcreteException {
 //        notNull(o, new ConcreteException(code, objects));
         is(o != null, code, objects);
     }
 
-    public static final void notNull(Object o, ConcreteException ex) {
+    public static void notNull(Object o, ConcreteException ex) throws ConcreteException {
         is(o != null, ex);
     }
 
-    public static final void notNull(Object o, String message) {
+    public static void notNull(Object o, String message) throws ConcreteException {
 //        notNull(o, ConcreteHelper.getException(new RuntimeException(message)));
         is(o != null, message);
     }

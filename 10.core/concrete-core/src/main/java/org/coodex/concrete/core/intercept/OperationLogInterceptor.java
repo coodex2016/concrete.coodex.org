@@ -201,9 +201,8 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
 
         } catch (Throwable th) {
             log.warn("{}", th.getLocalizedMessage(), th);
-        } finally {
-            return super.after(context, joinPoint, result);
         }
+        return super.after(context, joinPoint, result);
     }
 
     private boolean isDoLog(LogAtomic.LoggingType loggingType) {

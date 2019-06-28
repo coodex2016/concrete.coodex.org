@@ -85,7 +85,7 @@ class JMSFacade {
         };
         this.connectionFactory = connectionFactorySingletonMap.getInstance(driver);
         this.userName = ConcreteHelper.getString(TAG_QUEUE, name, QUEUE_USERNAME);
-        this.password = ConcreteHelper.getString(TAG_QUEUE, name, QUEUE_PASSWORD);
+        this.password = ConcreteHelper.getString(TAG_QUEUE, name, QUEUE_PA55W0RD);
         this.serializer = Topics.getSerializer(
                 ConcreteHelper.getString(TAG_QUEUE, name, SERIALIZER_TYPE)
         );

@@ -71,20 +71,18 @@ public class JMSCourierPrototype<M extends Serializable> extends CourierPrototyp
     }
 
     @Override
-    public boolean isConsumer() {
+    public synchronized boolean isConsumer() {
         return consumer;
     }
 
     @Override
-    public void setConsumer(boolean consumer) {
-        synchronized (this) {
-            if (consumer != this.consumer) {
-                try {
-                    jmsFacadeSingleton.getInstance().setConsumer(consumer);
-                    this.consumer = consumer;
-                } catch (JMSException e) {
-                    log.error(e.getLocalizedMessage(), e);
-                }
+    public synchronized void setConsumer(boolean consumer) {
+        if (consumer != this.consumer) {
+            try {
+                jmsFacadeSingleton.getInstance().setConsumer(consumer);
+                this.consumer = consumer;
+            } catch (JMSException e) {
+                log.error(e.getLocalizedMessage(), e);
             }
         }
     }

@@ -38,28 +38,30 @@ public class DefaultMockers implements Mocker<Annotation> {
     @Override
     public Object mock(Annotation mockAnnotation, Class clazz) {
 
+        Annotation annotation;
+
         if (byte.class == clazz || Byte.class.equals(clazz)) {
-            mockAnnotation = DEFAULT_ANNOTATIONS.byteM();
+            annotation = DEFAULT_ANNOTATIONS.byteM();
         } else if (char.class == clazz || Character.class.equals(clazz)) {
-            mockAnnotation = DEFAULT_ANNOTATIONS.charM();
+            annotation = DEFAULT_ANNOTATIONS.charM();
         } else if (short.class == clazz || Short.class.equals(clazz)) {
-            mockAnnotation = DEFAULT_ANNOTATIONS.shortM();
+            annotation = DEFAULT_ANNOTATIONS.shortM();
         } else if (int.class == clazz || Integer.class.equals(clazz)) {
-            mockAnnotation = DEFAULT_ANNOTATIONS.intM();
+            annotation = DEFAULT_ANNOTATIONS.intM();
         } else if (long.class == clazz || Long.class.equals(clazz)) {
-            mockAnnotation = DEFAULT_ANNOTATIONS.longM();
+            annotation = DEFAULT_ANNOTATIONS.longM();
         } else if (float.class == clazz || Float.class.equals(clazz)) {
-            mockAnnotation = (DEFAULT_ANNOTATIONS.floatM());
+            annotation = (DEFAULT_ANNOTATIONS.floatM());
         } else if (double.class == clazz || Double.class.equals(clazz)) {
-            mockAnnotation = (DEFAULT_ANNOTATIONS.doubleM());
+            annotation = (DEFAULT_ANNOTATIONS.doubleM());
         } else if (boolean.class == clazz || Boolean.class.equals(clazz)) {
-            mockAnnotation = (DEFAULT_ANNOTATIONS.booleanM());
+            annotation = (DEFAULT_ANNOTATIONS.booleanM());
         } else if (String.class.equals(clazz)) {
-            mockAnnotation = (DEFAULT_ANNOTATIONS.stringM());
+            annotation = (DEFAULT_ANNOTATIONS.stringM());
         } else {
             return null;
         }
-        return MOCKER_LOADER.getServiceInstance(mockAnnotation).mock(mockAnnotation, clazz);
+        return MOCKER_LOADER.getServiceInstance(annotation).mock(mockAnnotation, clazz);
     }
 
     @Retention(RetentionPolicy.RUNTIME)

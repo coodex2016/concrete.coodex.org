@@ -91,8 +91,10 @@ class TopicBuilder
                     provider = defaultTopicPrototypeProvider;
                 }
             }
-            IF.isNull(provider, "No provider for " + topicClass.getName());
-            Class<? extends AbstractTopicPrototype> prototype = provider.getPrototype();
+
+            Class<? extends AbstractTopicPrototype> prototype =
+                    IF.isNull(provider, "No provider for " + topicClass.getName())
+                            .getPrototype();
 
             Courier courier = CourierBuilder.buildCourier(key);
 
@@ -130,6 +132,7 @@ class TopicBuilder
             ctConstructor.setBody("{super($$);}");
             ctClass.addConstructor(ctConstructor);
 
+            //noinspection unchecked
             Class<? extends AbstractTopic> newClass = (Class<? extends AbstractTopic>) ctClass.toClass();
             Constructor constructor = newClass.getConstructor(Courier.class);
             return (AbstractTopic) constructor.newInstance(courier);

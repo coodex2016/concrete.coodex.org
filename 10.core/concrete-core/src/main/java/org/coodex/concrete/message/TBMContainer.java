@@ -94,6 +94,7 @@ public class TBMContainer {
                         Clock.objWait(lock, timeOut);
                     } catch (InterruptedException e) {
                         log.warn(e.getLocalizedMessage(), e);
+                        Thread.currentThread().interrupt();
                     }
                 }
             }
@@ -258,6 +259,7 @@ public class TBMContainer {
                         queue.wait(timeOut);
                     } catch (InterruptedException e) {
                         log.warn(e.getLocalizedMessage(), e);
+                        Thread.currentThread().interrupt();
                     }
                 }
             }

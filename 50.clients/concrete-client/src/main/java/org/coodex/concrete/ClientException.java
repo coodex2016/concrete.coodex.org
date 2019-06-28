@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,29 @@
 
 package org.coodex.concrete;
 
+import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.ErrorInfo;
 
-public class ClientException extends AbstractClientException {
-    public ClientException(ErrorInfo errorInfo) {
-        super(errorInfo.getCode(), errorInfo.getMsg());
+public class ClientException extends ConcreteException {
+    protected final int code;
+    protected final String msg;
+
+    public ClientException(ErrorInfo errorInfo){
+        this(errorInfo.getCode(), errorInfo.getMsg());
+    }
+    public ClientException(int code, String msg) {
+        super(ErrorCodes.CLIENT_ERROR);
+        this.msg = msg;
+        this.code = code;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    @Override
+    public String getMessage() {
+        return msg;
     }
 }

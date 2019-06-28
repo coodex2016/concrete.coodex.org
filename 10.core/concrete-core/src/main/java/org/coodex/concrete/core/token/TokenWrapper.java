@@ -20,6 +20,7 @@ import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.local.LocalTokenManager;
 import org.coodex.util.Singleton;
 
+import javax.annotation.CheckForNull;
 import java.io.Serializable;
 import java.util.Enumeration;
 
@@ -79,7 +80,7 @@ public class TokenWrapper implements Token {
                 ErrorCodes.TOKEN_INVALIDATE,
                 token == null ? null : token.getTokenId());
 
-        return token;
+        return token == null ? TokenProxy.proxy(null) : token;
     }
 
     @Override

@@ -37,9 +37,6 @@ import java.lang.reflect.Method;
  */
 public class ReverseResource<T> extends AbstractJSR339Resource<T> {
 
-    @Context
-    private HttpHeaders httpHeaders;
-
     @Override
     protected void __execute(String methodName, final AsyncResponse asyncResponse, final String tokenId, final Object... params) {
         final Method method = findMethod(methodName, null);

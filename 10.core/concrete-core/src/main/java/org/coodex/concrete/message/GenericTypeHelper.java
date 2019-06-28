@@ -128,8 +128,8 @@ public class GenericTypeHelper {
             if (o == null || getClass() != o.getClass()) return false;
 
             GenericArrayTypeImpl that = (GenericArrayTypeImpl) o;
-
-            return genericComponentType != null ? genericComponentType.equals(that.genericComponentType) : that.genericComponentType == null;
+//            return genericComponentType != null ? genericComponentType.equals(that.genericComponentType) : that.genericComponentType == null;
+            return Objects.equals(genericComponentType, that.genericComponentType);
         }
 
         @Override
@@ -159,7 +159,7 @@ public class GenericTypeHelper {
                                     builder.append(((TypeVariable) t).getName())
                                             .append(" in ").append(((TypeVariable) t).getGenericDeclaration());
                                 } else {
-                                    builder.append(t == null ? null : t.toString());
+                                    builder.append(t.toString());
                                 }
                             }
                             builder.append(">");

@@ -30,6 +30,8 @@ import org.coodex.util.Common;
 
 import javax.inject.Inject;
 
+import java.util.Optional;
+
 import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
 import static org.coodex.concrete.common.OrganizationErrorCodes.NONE_THIS_DEPARTMENT;
 
@@ -51,7 +53,7 @@ public abstract class AbstractDepartmentManagementServiceImpl
 
     protected E getDepartmentEntity(String id) {
         IF.isNull(id, NONE_THIS_DEPARTMENT);
-        return IF.isNull(departmentRepo.findById(id).get(), NONE_THIS_DEPARTMENT);
+        return IF.isNull(departmentRepo.findById(id).orElse(null), NONE_THIS_DEPARTMENT);
     }
 
 

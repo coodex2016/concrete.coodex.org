@@ -90,7 +90,7 @@ public abstract class AbstractLoginServiceImpl
 
     protected String updateLoginCacheEntry(PE personEntity) {
         try {
-            LoginCacheEntryEntity loginCacheEntryEntity = loginCacheEntryRepo.findById(personEntity.getId()).get();
+            LoginCacheEntryEntity loginCacheEntryEntity = loginCacheEntryRepo.findById(personEntity.getId()).orElse(null);
             if (loginCacheEntryEntity == null) {
                 loginCacheEntryEntity = new LoginCacheEntryEntity();
                 loginCacheEntryEntity.setAccountId(personEntity.getId());
@@ -224,7 +224,7 @@ public abstract class AbstractLoginServiceImpl
                 IF.isNull(
                         loginCacheEntryRepo.findFirstByCredential(credential), NONE_THIS_CREDENTIAL);
         PE personEntity = IF.isNull(
-                personAccountRepo.findById(loginCacheEntryEntity.getAccountId()).get(), NONE_THIS_ACCOUNT);
+                personAccountRepo.findById(loginCacheEntryEntity.getAccountId()).orElse(null), NONE_THIS_ACCOUNT);
         tenantRPCServiceClient.checkTenant(personEntity.getTenant());
         token.setAccount(
                 abstractOrganizationAccountFactory.getAccountByID(
@@ -237,7 +237,7 @@ public abstract class AbstractLoginServiceImpl
     public String identification(String authCode) {
         // TODO: 丑陋
         PE personEntity = IF.isNull(
-                personAccountRepo.findById(((AccountIDImpl) (token.currentAccount().getId())).getId()).get(),
+                personAccountRepo.findById(((AccountIDImpl) (token.currentAccount().getId())).getId()).orElse(null),
                 NONE_THIS_ACCOUNT);
         String credential = null;
         if (isCredible(authCode, personEntity)) {

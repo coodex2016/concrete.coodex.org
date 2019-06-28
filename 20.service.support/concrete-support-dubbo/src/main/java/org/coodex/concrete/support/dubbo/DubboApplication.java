@@ -52,7 +52,7 @@ public class DubboApplication implements Application {
                         @Override
                         public ProtocolConfig build(Integer key) {
                             ProtocolConfig protocolConfig = new ProtocolConfig();
-                            protocolConfig.setPort(key.intValue());
+                            protocolConfig.setPort(key);
                             protocolConfig.setHost("0.0.0.0");
 //                            protocolConfig.setName();
                             // TODO 确认是否需要

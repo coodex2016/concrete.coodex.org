@@ -73,8 +73,8 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
         if (roles.contains(SYSTEM_MANAGER)) return;
         if (roles.contains(TENANT_MANAGER)) {
             if (!Common.isBlank(orgId)) {
-                OrganizationEntity organizationEntity = organizationRepo.findById(orgId).get();
-                if (Common.isSameStr(organizationEntity.getTenant(), getTenant())) return;
+                OrganizationEntity organizationEntity = organizationRepo.findById(orgId).orElse(null);
+                if (Common.isSameStr(organizationEntity == null ? null : organizationEntity.getTenant(), getTenant())) return;
             } else {
                 if (account instanceof TenantAccount) {
                     TenantAccount tenantAccount = (TenantAccount) account;
@@ -91,15 +91,18 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
         }
 
         if (!Common.isBlank(orgId)) {
-            for (J position : personAccountRepo.findById(account.getId().getId()).get().getPositions()) {
-                if (position.getRoles() != null & position.getRoles().contains(ORGANIZATION_MANAGER)) {
-                    // orgId是否是position.belongTo的下级机构
-                    String positionBelongTo = position.getBelongTo().getId();
-                    OrganizationEntity organizationEntity = organizationRepo.findById(orgId).get();
-                    while (organizationEntity != null) {
-                        if (positionBelongTo.equals(organizationEntity.getId()))
-                            return;
-                        organizationEntity = organizationEntity.getHigherLevel();
+            P person = personAccountRepo.findById(account.getId().getId()).orElse(null);
+            if(person != null) {
+                for (J position : person.getPositions()) {
+                    if (position.getRoles() != null && position.getRoles().contains(ORGANIZATION_MANAGER)) {
+                        // orgId是否是position.belongTo的下级机构
+                        String positionBelongTo = position.getBelongTo().getId();
+                        OrganizationEntity organizationEntity = organizationRepo.findById(orgId).orElse(null);
+                        while (organizationEntity != null) {
+                            if (positionBelongTo.equals(organizationEntity.getId()))
+                                return;
+                            organizationEntity = organizationEntity.getHigherLevel();
+                        }
                     }
                 }
             }
@@ -145,6 +148,6 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
      */
     protected OrganizationEntity checkBelongToExists(String belongTo) {
         IF.isNull(belongTo, NONE_THIS_ORGANIZATION);
-        return IF.isNull(organizationRepo.findById(belongTo).get(), NONE_THIS_ORGANIZATION);
+        return IF.isNull(organizationRepo.findById(belongTo).orElse(null), NONE_THIS_ORGANIZATION);
     }
 }

@@ -52,7 +52,7 @@ public abstract class AbstractConfiguration implements Configuration {
 
     private List<String> buildKeys(String key, List<String> namespaces, int deep) {
         List<String> keys = new ArrayList<String>();
-        if(namespaces != null && namespaces.size() >= 0) {
+        if(namespaces != null) {
             for (int i = deep - 1; i < namespaces.size(); i++) {
                 String temp = "";
                 for (int j = i + 1; j < namespaces.size(); j++) {

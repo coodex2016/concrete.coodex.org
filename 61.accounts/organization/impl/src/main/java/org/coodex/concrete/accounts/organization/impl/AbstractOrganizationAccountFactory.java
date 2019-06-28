@@ -61,7 +61,7 @@ public abstract class AbstractOrganizationAccountFactory
             new SingletonMap.Builder<String, OrganizationAccount>() {
                 @Override
                 public OrganizationAccount build(String key) {
-                    P person = accountRepo.findById(key).get();
+                    P person = accountRepo.findById(key).orElse(null);
                     return person == null ? null : accountCopier.copy(person);
                 }
             },

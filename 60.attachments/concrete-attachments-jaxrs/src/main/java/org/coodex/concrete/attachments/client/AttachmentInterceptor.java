@@ -51,15 +51,12 @@ public class AttachmentInterceptor extends AbstractInterceptor {
 
     @Override
     public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
-        try {
-            Set<String> attachments = new HashSet<String>();
-            grant(result, attachments, null, false);
-            if (attachments.size() > 0) {
-                ClientServiceImpl.allow(attachments);
-            }
-        } finally {
-            return super.after(context, joinPoint, result);
+        Set<String> attachments = new HashSet<String>();
+        grant(result, attachments, null, false);
+        if (attachments.size() > 0) {
+            ClientServiceImpl.allow(attachments);
         }
+        return super.after(context, joinPoint, result);
     }
 
 

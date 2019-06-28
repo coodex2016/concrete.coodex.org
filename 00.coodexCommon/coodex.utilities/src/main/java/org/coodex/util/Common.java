@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/**
- *
- */
 package org.coodex.util;
 
 import org.slf4j.Logger;
@@ -36,7 +33,9 @@ import java.util.regex.Pattern;
  */
 public class Common {
 
-    public static final String LINE_SEPARATOR = System
+    private Common(){}
+
+    private static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
     public static final String PATH_SEPARATOR = System
             .getProperty("path.separator");
@@ -65,13 +64,8 @@ public class Common {
     );
 
 
-    @SuppressWarnings("unchecked")
     public static <T> Set<T> arrayToSet(T[] array) {
-        Set<T> set = new HashSet<T>();
-        for (T t : array) {
-            set.add(t);
-        }
-        return set;
+        return new HashSet<T>(Arrays.asList(array));
     }
 
     public static String getUUIDStr() {
@@ -135,28 +129,10 @@ public class Common {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static <T extends Serializable> T deepCopy(T object)
             throws IOException, ClassNotFoundException {
+        //noinspection unchecked
         return (T) deserialize(serialize(object));
-//        // 序列化obj
-//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//        ObjectOutputStream oos = new ObjectOutputStream(bos);
-//        try {
-//            oos.writeObject(object);
-//        } finally {
-//            oos.close();
-//        }
-//
-//        // 反序列化成一个clone对象
-//        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-//        ObjectInputStream ois = new ObjectInputStream(bis);
-//        try {
-//            return (T) ois.readObject();
-//        } finally {
-//            ois.close();
-//        }
-
     }
 
     public static int random(int max) {
@@ -203,18 +179,6 @@ public class Common {
         return s == null || s.trim().length() == 0;
     }
 
-//    public static <T> List<T> joinList(List<T> ... lists) {
-////        List<T> result = new ArrayList<T>();
-////        if(lists != null && lists.length > 0){
-////            for(List<T> set : lists){
-////                if(set != null) result.addAll(set);
-////            }
-////        }
-////        result.addAll(ary1);
-////        result.addAll(ary2);
-//        return join(new ArrayList<T>(), lists);
-//    }
-
     public static void copyStream(InputStream is, OutputStream os) throws IOException {
         copyStream(is, os, 4096, false, Integer.MAX_VALUE);
     }
@@ -222,7 +186,7 @@ public class Common {
     public static void copyStream(InputStream is, OutputStream os,
                                   int blockSize, boolean flushPerBlock, int bps) throws IOException {
         byte[] buf = new byte[blockSize];
-        int cached = -1;
+        int cached;
         long start = Clock.currentTimeMillis();
         long wrote = 0;
         while ((cached = is.read(buf)) > 0) {
@@ -235,6 +199,7 @@ public class Common {
                     if (interval < 1000 * n)
                         Clock.sleep(interval);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
             }
             // 重新开始计时
@@ -250,30 +215,10 @@ public class Common {
     }
 
     public static String byte2hex(byte[] b) {
-//        String hs = "";
-//        for (int n = 0; n < b.length; n++) {
-//            String sTmp = Integer.toHexString(b[n] & 0XFF);
-//            if (sTmp.length() == 1) {
-//                hs = hs + "0" + sTmp;
-//            } else {
-//                hs = hs + sTmp;
-//            }
-//        }
-//        return hs.toUpperCase();
         return byte2hex(b, 0, b.length);
     }
 
     public static String byte2hex(byte[] b, int offset, int length) {
-//        String hs = "";
-//        for (int n = offset, l = Math.min(offset + length, b.length); n < l; n++) {
-//            String sTmp = Integer.toHexString(b[n] & 0XFF);
-//            if (sTmp.length() == 1) {
-//                hs = hs + "0" + sTmp;
-//            } else {
-//                hs = hs + sTmp;
-//            }
-//        }
-//        return hs.toUpperCase();
         return byte2hex(b, offset, length, 0, null);
     }
 
@@ -354,8 +299,7 @@ public class Common {
      * @return
      */
     public static <T> Set<T> intersection(Set<T> set1, Set<T> set2) {
-        Set<T> result = new HashSet<T>();
-        result.addAll(set1);
+        Set<T> result = new HashSet<T>(set1);
         result.retainAll(set2);
         return result;
     }
@@ -368,8 +312,7 @@ public class Common {
      * @return
      */
     public static <T> Set<T> difference(Set<T> org, Set<T> todiv) {
-        Set<T> result = new HashSet<T>();
-        result.addAll(org);
+        Set<T> result = new HashSet<T>(org);
         result.removeAll(todiv);
         return result;
     }
@@ -391,14 +334,6 @@ public class Common {
      * @return
      */
     public static <T> Set<T> join(Collection<T>... sets) {
-//        Set<T> result = new HashSet<T>();
-//        if(sets != null && sets.length > 0){
-//            for(Set<T> set : sets){
-//                if(set != null) result.addAll(set);
-//            }
-//        }
-//        result.addAll(ary1);
-//        result.addAll(ary2);
         return join(new HashSet<T>(), sets);
     }
 
@@ -415,18 +350,10 @@ public class Common {
         return strBuf.toString();
     }
 
-    @Deprecated
-    public static File getFile(String fileName) throws IOException {
-//        File f = new File(fileName);
-//        if (!f.getParentFile().exists()) {
-//            f.getParentFile().mkdirs();
-//        }
-//        if (f.exists())
-//            f.delete();
-//        f.createNewFile();
-//        return f;
-        return getNewFile(fileName);
-    }
+//    @Deprecated
+//    public static File getFile(String fileName) throws IOException {
+//        return getNewFile(fileName);
+//    }
 
     public static File getNewFile(String fileName) throws IOException {
         File f = new File(fileName);
@@ -440,8 +367,8 @@ public class Common {
     }
 
     public static URL getResource(String resource, ClassLoader... classLoaders) {
-        ClassLoader classLoader = null;
-        URL url = null;
+        ClassLoader classLoader;
+        URL url;
 
         classLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader != null) {
@@ -509,15 +436,18 @@ public class Common {
         }
         Class cls = value.getClass();
         if (cls.equals(String.class)) {
+            //noinspection unchecked
             return (T) (str == null ? value : str);
         }
         if (cls.isArray() && cls.getComponentType().equals(String.class)) {
+            //noinspection unchecked
             return (T) toArray(str, ",", (String[]) value);
         }
         StringConvertWithDefaultValue defaultValue = converterServiceLoader.getInstance().getServiceInstance(cls);
         if (defaultValue == null) {
             throw new RuntimeException("String to " + cls + " is not supported.");
         }
+        //noinspection unchecked
         return (T) defaultValue.convertTo(str, value, cls);
     }
 

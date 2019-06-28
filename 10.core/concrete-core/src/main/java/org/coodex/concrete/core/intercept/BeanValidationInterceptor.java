@@ -67,7 +67,7 @@ public class BeanValidationInterceptor extends AbstractInterceptor {
     private boolean hasProvider = true;
 
 
-    private synchronized ExecutableValidator getValidator() {
+    private ExecutableValidator getValidator() {
         if (executableValidator == null) {
             if (hasProvider) {
                 try {
@@ -103,8 +103,9 @@ public class BeanValidationInterceptor extends AbstractInterceptor {
 
     @Override
     public void before(DefinitionContext context, MethodInvocation joinPoint) {
-        if (context.getDeclaringMethod().getParameterTypes().length > 0) {
-            checkViolations(getValidator().validateParameters(
+        ExecutableValidator validator = getValidator();
+        if (validator != null && context.getDeclaringMethod().getParameterTypes().length > 0) {
+            checkViolations(validator.validateParameters(
                     joinPoint.getThis(), context.getDeclaringMethod(), joinPoint.getArguments()));
         }
     }

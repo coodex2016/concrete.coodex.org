@@ -74,7 +74,7 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
             }
             // set username and password
             String username = ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_USERNAME);
-            String password = ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_PASSWORD);
+            String password = ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_PA55W0RD);
             serializer = Topics.getSerializer(
                     ConcreteHelper.getString(TAG_QUEUE, queue, SERIALIZER_TYPE)
             );
@@ -121,37 +121,37 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
     }
 
     @Override
-    public boolean isConsumer() {
+    public synchronized boolean isConsumer() {
         return consumer;
     }
 
     @Override
-    public void setConsumer(boolean consumer) {
-        synchronized (this) {
-            if (consumer != this.consumer) {
-                try {
-                    if (consumer) {
-                        consumerStr = channel.basicConsume(queueName, true, new DefaultConsumer(channel) {
-                            @Override
-                            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                                try {
-                                    getTopic().notify(serializer.<M>deserialize(body, getMessageType()));
-                                } catch (Throwable th) {
-                                    log.warn("notify error: {}", th.getLocalizedMessage(), th);
-                                }
+    public synchronized void setConsumer(boolean consumer) {
+
+        if (consumer != this.consumer) {
+            try {
+                if (consumer) {
+                    consumerStr = channel.basicConsume(queueName, true, new DefaultConsumer(channel) {
+                        @Override
+                        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                            try {
+                                getTopic().notify(serializer.<M>deserialize(body, getMessageType()));
+                            } catch (Throwable th) {
+                                log.warn("notify error: {}", th.getLocalizedMessage(), th);
                             }
-                        });
-                    } else if (consumerStr != null) {
-                        try {
-                            channel.basicCancel(consumerStr);
-                        } finally {
-                            consumerStr = null;
                         }
+                    });
+                } else if (consumerStr != null) {
+                    try {
+                        channel.basicCancel(consumerStr);
+                    } finally {
+                        consumerStr = null;
                     }
-                } catch (IOException e) {
-                    log.error(e.getLocalizedMessage(), e);
                 }
+            } catch (IOException e) {
+                log.error(e.getLocalizedMessage(), e);
             }
         }
     }
+
 }

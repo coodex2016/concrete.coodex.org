@@ -36,10 +36,13 @@ public final class ExecutorWrapper {
 
     private static final Set<ExecutorService> executors = new HashSet<ExecutorService>();
 
+
     public static final <T extends ExecutorService> T wrap(T executorService) {
         // TODO 动态代理，当Executor shutdown或shutdownNow的时候脱离管理
         if (executorService instanceof ScheduledExecutorService) {
             final ScheduledExecutorService scheduledExecutorService = (ScheduledExecutorService) executorService;
+
+            //noinspection unchecked
             executorService = (T) Proxy.newProxyInstance(
                     ScheduledExecutorService.class.getClassLoader(),
                     scheduledExecutorService.getClass().getInterfaces(),
@@ -53,11 +56,12 @@ public final class ExecutorWrapper {
                                     argsCopy = new Object[args.length];
                                     System.arraycopy(args, 0, argsCopy, 0, args.length);
                                 }
-                                if ("schedule".equals(method.getName())) {
+                                if (argsCopy != null && argsCopy.length == 2 && "schedule".equals(method.getName())) {
                                     argsCopy[1] = Clock.toMillis((Long) args[1], (TimeUnit) args[2]);
                                     argsCopy[2] = TimeUnit.MILLISECONDS;
-                                } else if ("scheduleAtFixedRate".equals(method.getName()) ||
-                                        "scheduleWithFixedDelay".equals(method.getName())) {
+                                } else if (argsCopy != null && argsCopy.length == 2 &&
+                                        ("scheduleAtFixedRate".equals(method.getName()) ||
+                                        "scheduleWithFixedDelay".equals(method.getName()))) {
                                     argsCopy[1] = Clock.toMillis((Long) args[1], (TimeUnit) args[3]);
                                     argsCopy[2] = Clock.toMillis((Long) args[2], (TimeUnit) args[3]);
                                     argsCopy[3] = TimeUnit.MILLISECONDS;

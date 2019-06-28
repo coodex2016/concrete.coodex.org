@@ -26,6 +26,7 @@ import org.coodex.util.Common;
 import org.coodex.util.ReflectHelper;
 import org.coodex.util.SingletonMap;
 
+import javax.annotation.CheckForNull;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -367,12 +368,7 @@ public class ConcreteHelper {
 
 
     public static int getPriority(Method method, Class<?> clz) {
-        DefinitionContext context = ConcreteHelper.getContext(method, clz);
-        Priority priority = context.getAnnotation(Priority.class);
-//                method.getAnnotation(Priority.class);
-//        if (priority == null) {
-//            priority = getInterfaceClass().getAnnotation(Priority.class);
-//        }
+        Priority priority = ConcreteHelper.getContext(method, clz).getAnnotation(Priority.class);
         return priority == null ?
                 Thread.NORM_PRIORITY :
                 Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY, priority.value()));
@@ -383,8 +379,8 @@ public class ConcreteHelper {
         return getPriority(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
     }
 
-    public static DefinitionContext getContext(Method method, Class<?> clz) {
-        return getContext(method, clz, new Stack<Class<?>>());
+    public static DefinitionContext getContext(Method method, Class<?> clz) throws ConcreteException{
+        return IF.isNull(getContext(method, clz, new Stack<Class<?>>()), ErrorCodes.MODULE_DEFINITION_NOT_FOUND);
     }
 
     private static boolean isRoot(Class clz) {
