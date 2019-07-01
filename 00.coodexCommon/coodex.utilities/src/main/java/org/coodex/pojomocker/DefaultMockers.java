@@ -61,7 +61,7 @@ public class DefaultMockers implements Mocker<Annotation> {
         } else {
             return null;
         }
-        return MOCKER_LOADER.getServiceInstance(annotation).mock(mockAnnotation, clazz);
+        return MOCKER_LOADER.getServiceInstance(annotation).mock(annotation, clazz);
     }
 
     @Retention(RetentionPolicy.RUNTIME)

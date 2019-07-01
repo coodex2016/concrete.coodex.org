@@ -26,6 +26,14 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-01
+
+- 调整ConcreteService模拟数据的方式
+    - 增加服务端拦截器：MockInterceptor
+    - 增加MockValue注解，用来指定模拟的值，`json`属性以`.json`结尾时，说明通过json文件加载
+    - 原随机模拟的方式依然支持
+    
+
 ## 2019-06-27
 
 - Warning增加data属性，用来传递提醒的业务数据

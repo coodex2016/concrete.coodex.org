@@ -18,11 +18,13 @@ package org.coodex.testcase.api;
 
 
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.core.intercept.MockValue;
 import org.coodex.util.Parameter;
 
 @ConcreteService("concreteTest")
 public interface TestCase {
 
+//    @MockValue(json = "mock/add.json")
     int add(
             @Parameter("x1") Integer x1,
             @Parameter("x2") Integer x2

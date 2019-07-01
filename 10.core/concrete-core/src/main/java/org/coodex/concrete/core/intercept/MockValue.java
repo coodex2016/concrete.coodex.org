@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package org.coodex.testcase.start;
+package org.coodex.concrete.core.intercept;
 
-import org.coodex.concrete.apitools.API;
-import org.coodex.testcase.api.TestCase;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import java.io.IOException;
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface MockValue {
 
-public class APIGen {
-
-    public static void main(String[] args) throws IOException {
-        API.generateFor("test",
-                "org.**.api"
-//                ,TestCase.class.getPackage().getName()
-        );
-    }
-
+    /**
+     * @return 模拟结果的json，如果以.json结尾，则说明通过json文件mock
+     */
+    String json();
 }

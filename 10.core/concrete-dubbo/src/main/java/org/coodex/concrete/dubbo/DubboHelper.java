@@ -43,14 +43,7 @@ import static com.alibaba.dubbo.common.bytecode.ClassGenerator.getClassPool;
 public class DubboHelper {
 
     public static final SingletonMap<String, ApplicationConfig> applications =
-            new SingletonMap<String, ApplicationConfig>(
-                    new SingletonMap.Builder<String, ApplicationConfig>() {
-                        @Override
-                        public ApplicationConfig build(String key) {
-                            return new ApplicationConfig(key);
-                        }
-                    }
-            );
+            new SingletonMap<>((key) -> new ApplicationConfig(key));
 
     public static final String SUBJOIN = "subjoin";
     public static final String AGENT = "user-agent";

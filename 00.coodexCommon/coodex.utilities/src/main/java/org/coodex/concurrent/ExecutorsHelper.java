@@ -64,34 +64,8 @@ public class ExecutorsHelper {
     }
 
 
-    /**
-     * 使用 {@link ExecutorsHelper#newPriorityThreadPool(int, int, String)} 替代
-     *
-     * @param coreSize
-     * @param maxSize
-     * @return
-     * @deprecated
-     */
-    @Deprecated
-    public static ExecutorService newPriorityThreadPool(final int coreSize, int maxSize) {
-        return newPriorityThreadPool(coreSize, maxSize, null);
-    }
-
     public static ExecutorService newPriorityThreadPool(final int coreSize, int maxSize, String namePrefix) {
         return newPriorityThreadPool(coreSize, maxSize, 60L, namePrefix);
-    }
-
-    /**
-     * 使用 {@link ExecutorsHelper#newPriorityThreadPool(int, int, long, String)} 替代
-     *
-     * @param coreSize
-     * @param maxSize
-     * @param keepAliveTime
-     * @return
-     */
-    @Deprecated
-    public static ExecutorService newPriorityThreadPool(final int coreSize, int maxSize, long keepAliveTime) {
-        return newPriorityThreadPool(coreSize, maxSize, keepAliveTime, null);
     }
 
     public static ExecutorService newPriorityThreadPool(final int coreSize, int maxSize, long keepAliveTime, String namePrefix) {
@@ -115,18 +89,6 @@ public class ExecutorsHelper {
         return ExecutorWrapper.wrap(threadPool);
     }
 
-    /**
-     * 使用 {@link ExecutorsHelper#newLinkedThreadPool(int, int, long, String)} 替代
-     *
-     * @param coreSize
-     * @param maxSize
-     * @param keepAliveTime
-     * @return
-     * @deprecated
-     */
-    public static ExecutorService newLinkedThreadPool(final int coreSize, int maxSize, long keepAliveTime) {
-        return newLinkedThreadPool(coreSize, maxSize, keepAliveTime, null);
-    }
 
     public static ExecutorService newLinkedThreadPool(final int coreSize, int maxSize, long keepAliveTime, String namePrefix) {
 //        int finalCoreSize = Math.max(coreSize, 1);
@@ -147,17 +109,6 @@ public class ExecutorsHelper {
     }
 
 
-    /**
-     * 使用 {@link ExecutorsHelper#newFixedThreadPool(int, String)} 替代
-     *
-     * @param nThreads
-     * @return
-     * @deprecated
-     */
-    public static ExecutorService newFixedThreadPool(int nThreads) {
-//        return ExecutorWrapper.wrap(Executors.newFixedThreadPool(nThreads));
-        return newFixedThreadPool(nThreads, (String) null);
-    }
 
     public static ExecutorService newFixedThreadPool(int nThreads, String namePrefix) {
         return newFixedThreadPool(nThreads, new DefaultNamedThreadFactory(namePrefix));
@@ -165,18 +116,6 @@ public class ExecutorsHelper {
 
     public static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) {
         return ExecutorWrapper.wrap(Executors.newFixedThreadPool(nThreads, threadFactory));
-    }
-
-    /**
-     * 使用 {@link ExecutorsHelper#newSingleThreadExecutor(String)} 替代
-     *
-     * @return
-     * @deprecated
-     */
-    @Deprecated
-    public static ExecutorService newSingleThreadExecutor() {
-//        return ExecutorWrapper.wrap(Executors.newSingleThreadExecutor());
-        return newSingleThreadExecutor((String) null);
     }
 
     public static ExecutorService newSingleThreadExecutor(String namePrefix) {
@@ -187,17 +126,6 @@ public class ExecutorsHelper {
         return ExecutorWrapper.wrap(Executors.newSingleThreadExecutor(threadFactory));
     }
 
-    /**
-     * 使用 {@link ExecutorsHelper#newCachedThreadPool(String)}替代
-     *
-     * @return
-     * @deprecated
-     */
-    @Deprecated
-    public static ExecutorService newCachedThreadPool() {
-        return ExecutorWrapper.wrap(Executors.newCachedThreadPool());
-    }
-
     public static ExecutorService newCachedThreadPool(String namePrefix) {
         return newCachedThreadPool(new DefaultNamedThreadFactory(namePrefix));
     }
@@ -206,34 +134,12 @@ public class ExecutorsHelper {
         return ExecutorWrapper.wrap(Executors.newCachedThreadPool(threadFactory));
     }
 
-    /**
-     * 使用 {@link ExecutorsHelper#newSingleThreadScheduledExecutor(String)}替代
-     *
-     * @return
-     */
-    @Deprecated
-    public static ScheduledExecutorService newSingleThreadScheduledExecutor() {
-        return newSingleThreadScheduledExecutor((String) null);
-    }
-
     public static ScheduledExecutorService newSingleThreadScheduledExecutor(String namePrefix) {
         return newSingleThreadScheduledExecutor(new DefaultNamedThreadFactory(namePrefix));
     }
 
     public static ScheduledExecutorService newSingleThreadScheduledExecutor(ThreadFactory threadFactory) {
         return ExecutorWrapper.wrap(Executors.newSingleThreadScheduledExecutor(threadFactory));
-    }
-
-    /**
-     * 使用 {@link ExecutorsHelper#newScheduledThreadPool(int, String)} 替代
-     *
-     * @param corePoolSize
-     * @return
-     * @deprecated
-     */
-    @Deprecated
-    public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize) {
-        return newScheduledThreadPool(corePoolSize, (String) null);
     }
 
     public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize, String namePrefix) {

@@ -19,6 +19,7 @@ package org.coodex.testcase.start;
 
 import org.coodex.concrete.amqp.AMQPConnectionConfig;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
+import org.coodex.concrete.core.intercept.MockInterceptor;
 import org.coodex.concrete.core.intercept.RBACInterceptor;
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
 import org.coodex.concrete.support.amqp.AMQPApplication;
@@ -69,6 +70,7 @@ public class SpringBootStarter {
     @Bean
     public ServletRegistrationBean jaxrsServlet() {
         ServletContainer container = new ServletContainer();
+        //noinspection unchecked
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(
                 container, "/jaxrs/*");
         registrationBean.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
@@ -81,6 +83,7 @@ public class SpringBootStarter {
     @Bean
     public ServletRegistrationBean webSocketServlet() {
         ServletContainer container = new ServletContainer();
+        //noinspection unchecked
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(
                 container, "/WebSocket") {
 
@@ -120,6 +123,10 @@ public class SpringBootStarter {
         return new RBACInterceptor();
     }
 
+    @Bean
+    public ConcreteInterceptor mocker() {
+        return new MockInterceptor();
+    }
 
 
     public static class JaxRSApplication extends ConcreteJSR339Application {
