@@ -123,10 +123,10 @@ public class SpringBootStarter {
         return new RBACInterceptor();
     }
 
-    @Bean
-    public ConcreteInterceptor mocker() {
-        return new MockInterceptor();
-    }
+//    @Bean
+//    public ConcreteInterceptor mocker() {
+//        return new MockInterceptor();
+//    }
 
 
     public static class JaxRSApplication extends ConcreteJSR339Application {

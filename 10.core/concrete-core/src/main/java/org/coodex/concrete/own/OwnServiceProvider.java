@@ -45,6 +45,10 @@ public abstract class OwnServiceProvider {
     private final static Logger log = LoggerFactory.getLogger(OwnServiceProvider.class);
     private final Map<String, AbstractUnit> unitMap = new HashMap<String, AbstractUnit>();
 
+    public OwnServiceProvider() {
+        registerPackage(AbstractErrorCodes.class.getPackage().getName());
+    }
+
     protected Subjoin getSubjoin(RequestPackage requestPackage) {
         return getSubjoin(requestPackage.getSubjoin());
     }

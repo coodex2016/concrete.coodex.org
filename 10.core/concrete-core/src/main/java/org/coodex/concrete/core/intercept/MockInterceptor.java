@@ -30,17 +30,37 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.coodex.concrete.core.intercept.InterceptOrders.OTHER;
 
 
 @ServerSide
 public class MockInterceptor extends AbstractSyncInterceptor {
-    @Override
-    protected boolean accept_(DefinitionContext context) {
-        return true;
+
+    private Set<Class> exceptedClasses;
+
+    public MockInterceptor() {
+        this(new HashSet<>());
     }
 
+    public MockInterceptor(Set<Class> exceptedClasses) {
+        this.exceptedClasses = exceptedClasses;
+    }
+
+    @Override
+    protected boolean accept_(DefinitionContext context) {
+        return !exceptedClasses.contains(context.getDeclaringClass());
+    }
+
+    public Set<Class> getExceptedClasses() {
+        return exceptedClasses;
+    }
+
+    public void setExceptedClasses(Set<Class> exceptedClasses) {
+        this.exceptedClasses = exceptedClasses;
+    }
 
     @Override
     public Object around(DefinitionContext context, MethodInvocation joinPoint) throws Throwable {

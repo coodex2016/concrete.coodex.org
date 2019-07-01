@@ -22,4 +22,10 @@
 
     <context:component-scan base-package="org.coodex.testcase.impl"/>
 
+    <bean class="org.coodex.concrete.core.intercept.MockInterceptor">
+        <property name="exceptedClasses">
+            <value>org.coodex.testcase.api.TestCase</value>
+        </property>
+    </bean>
+
 </beans>
