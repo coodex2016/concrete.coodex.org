@@ -18,6 +18,7 @@ package org.coodex.concrete.core.intercept;
 
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.coodex.concrete.api.mockers.MockValue;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.core.intercept;
+package org.coodex.concrete.api.mockers;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

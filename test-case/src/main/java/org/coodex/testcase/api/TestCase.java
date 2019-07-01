@@ -18,7 +18,6 @@ package org.coodex.testcase.api;
 
 
 import org.coodex.concrete.api.ConcreteService;
-import org.coodex.concrete.core.intercept.MockValue;
 import org.coodex.util.Parameter;
 
 @ConcreteService("concreteTest")
