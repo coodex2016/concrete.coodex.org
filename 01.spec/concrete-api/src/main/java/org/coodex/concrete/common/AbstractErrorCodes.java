@@ -35,5 +35,8 @@ public abstract class AbstractErrorCodes {
 
     protected static final int WEB_SOCKET_ERROR_CODE = CONCRETE_CORE + 3000;
 
+    // 5000-5100 分配给prod
+
+
     /// 10000 - 19999 保留给concrete accounts 模块
 }

@@ -37,7 +37,7 @@ public @interface OperationLog {
 
     Class<? extends LogFormatter> formatterClass() default LogFormatter.class;
 
-    Class<? extends MessagePatternLoader> patternLoaderClass() default MessagePatternLoader.class;
+//    Class<? extends MessagePatternLoader> patternLoaderClass() default MessagePatternLoader.class;
 
     Class<? extends OperationLogger> loggerClass() default OperationLogger.class;
 }

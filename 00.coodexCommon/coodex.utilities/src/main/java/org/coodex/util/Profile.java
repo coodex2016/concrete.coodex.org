@@ -15,18 +15,6 @@
  */
 package org.coodex.util;
 
-import org.coodex.concurrent.ExecutorsHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import static org.coodex.util.Common.*;
 
 /**
@@ -55,81 +43,128 @@ import static org.coodex.util.Common.*;
  * @author davidoff
  * @version v1.0 2014-03-18
  */
-public class Profile {
+public abstract class Profile {
 
+    //    private static final Logger log = LoggerFactory.getLogger(Profile.class);
+//    //    private static final Map<String, Profile> profiles = new HashMap<String, Profile>();
+    private static final String DEFAULT_KEY = Common.getUUIDStr();
     private static final String RELOAD_INTERVAL = System.getProperty("Profile.reloadInterval");
-    private static final Logger log = LoggerFactory.getLogger(Profile.class);
-    //    private static final Map<String, Profile> profiles = new HashMap<String, Profile>();
-    private static final SingletonMap<String, Profile> profiles = new SingletonMap<String, Profile>(
+
+    private static final SingletonMap<String, Profile> PROFILES = new SingletonMap<String, Profile>(
             new SingletonMap.Builder<String, Profile>() {
+                private Boolean yamlFirst = null;
+
+                private boolean isYamlFirst() {
+                    if (yamlFirst == null) {
+                        try {
+                            Class.forName("org.yaml.snakeyaml.Yaml");
+                            yamlFirst = true;
+                        } catch (ClassNotFoundException e) {
+                            yamlFirst = false;
+                        }
+                    }
+                    return yamlFirst;
+                }
+
+                private String findPath(String path) {
+                    String[] ex = isYamlFirst() ? new String[]{".yaml", ".properties"} : new String[]{".properties"};
+                    for (String s : ex) {
+                        if (Common.getResource(path + s) != null) {
+                            return path + s;
+                        }
+                    }
+//                    String defaultResult = path + ".yaml";
+//                    if (Common.getResource(defaultResult) != null) return defaultResult;
+//                    return Common.getResource(path + ".properties") == null ?
+//                            defaultResult : DEFAULT_KEY;
+                    return DEFAULT_KEY;
+
+                }
                 @Override
                 public Profile build(String key) {
-                    return new Profile(key);
-                }
-            }
-    );
-    //    private static ScheduledExecutorService RELOAD_POOL;
-    private static Singleton<ScheduledExecutorService> RELOAD_POOL =
-            new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
-                @Override
-                public ScheduledExecutorService build() {
-                    return ExecutorsHelper.newSingleThreadScheduledExecutor("profile_reload");
-                }
-            });
-    private static Set<String> notFound = new HashSet<String>();
-    protected Properties p = new Properties();
-    private long lastModified = 0;
-    private String resourcePath;
-    private File f;
-    private String location;
-    private InputStream is;
+                    if (DEFAULT_KEY.equals(key)) return new NullProfile();
 
-    private Runnable reloadTask = new Runnable() {
-        public void run() {
-
-            try {
-                if (f == null) {
-                    loadFromPath(resourcePath, true);
-                } else if (f.lastModified() != lastModified) {
-                    lastModified = f.lastModified();
-                    try {
-                        is = new FileInputStream(f);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if (key.toLowerCase().endsWith(".properties")) {
+                        return new ProfileBaseProperties(key);
+                    } else if (key.toLowerCase().endsWith(".yaml")) {
+                        return new ProfileBaseYaml(key);
+                    } else {
+                        return PROFILES.getInstance(findPath(Common.trim(key, ":/\\.")));
                     }
-                    load();
                 }
-            } finally {
-                submitReloadTask();
-            }
-        }
-    };
+            },
+            toLong(RELOAD_INTERVAL, 0L) * 1000L
+    );
 
-    protected Profile(String path) {
-        this.resourcePath = path;
-        loadFromPath(path);
-        submitReloadTask();
-    }
-
-    private static ScheduledExecutorService getReloadPool() {
-//        if (RELOAD_POOL == null) {
-//            synchronized (Profile.class) {
-//                if (RELOAD_POOL == null)
-//                    RELOAD_POOL = ExecutorsHelper.newSingleThreadScheduledExecutor();
-//            }
-//        }
-//        return RELOAD_POOL;
-        return RELOAD_POOL.getInstance();
-    }
 
     public static Profile getProfile(String path) {
-        return profiles.getInstance(path);
+        if (path == null) {
+            throw new IllegalArgumentException("path is null");
+        }
+        return PROFILES.getInstance(path);
 //        Profile p = profiles.get(path);
 //        if (p == null) {
 //            p = new Profile(path);
 //            profiles.put(path, p);
 //        }
 //        return p;
+    }
+//    //    private static ScheduledExecutorService RELOAD_POOL;
+//    private static Singleton<ScheduledExecutorService> RELOAD_POOL =
+//            new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
+//                @Override
+//                public ScheduledExecutorService build() {
+//                    return ExecutorsHelper.newSingleThreadScheduledExecutor("profile_reload");
+//                }
+//            });
+//    private static Set<String> notFound = new HashSet<String>();
+//    protected Properties p = new Properties();
+//    private long lastModified = 0;
+//    private String resourcePath;
+//    private File f;
+//    private String location;
+//    private InputStream is;
+//
+//    private Runnable reloadTask = new Runnable() {
+//        public void run() {
+//
+//            try {
+//                if (f == null) {
+//                    loadFromPath(resourcePath, true);
+//                } else if (f.lastModified() != lastModified) {
+//                    lastModified = f.lastModified();
+//                    try {
+//                        is = new FileInputStream(f);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                    load();
+//                }
+//            } finally {
+//                submitReloadTask();
+//            }
+//        }
+//    };
+//
+//    protected Profile(String path) {
+//        this.resourcePath = path;
+//        loadFromPath(path);
+//        submitReloadTask();
+//    }
+
+//    private static ScheduledExecutorService getReloadPool() {
+////        if (RELOAD_POOL == null) {
+////            synchronized (Profile.class) {
+////                if (RELOAD_POOL == null)
+////                    RELOAD_POOL = ExecutorsHelper.newSingleThreadScheduledExecutor();
+////            }
+////        }
+////        return RELOAD_POOL;
+//        return RELOAD_POOL.getInstance();
+//    }
+
+    public boolean getBool(String key, boolean v) {
+        return toBool(getString(key), v);
     }
 
 //    public static InputStream getResourceAsStream(String resourcePath) throws IOException {
@@ -141,61 +176,61 @@ public class Profile {
 //        return Common.getResource(resource);
 //    }
 
-    private void loadFromPath(String path) {
-        loadFromPath(path, false);
-    }
+//    private void loadFromPath(String path) {
+//        loadFromPath(path, false);
+//    }
 
-    private void submitReloadTask() {
-        long inteval = -1;
-        try {
-            inteval = Long.parseLong(RELOAD_INTERVAL);
-        } catch (Throwable t) {
-        }
+//    private void submitReloadTask() {
+//        long inteval = -1;
+//        try {
+//            inteval = Long.parseLong(RELOAD_INTERVAL);
+//        } catch (Throwable t) {
+//        }
+//
+//        if (inteval > 0) {
+//            ScheduledExecutorService pool = getReloadPool();
+//            if (pool.isShutdown() || pool.isTerminated()) return;
+//            pool.schedule(reloadTask, inteval, TimeUnit.SECONDS);
+//        }
+//
+//    }
 
-        if (inteval > 0) {
-            ScheduledExecutorService pool = getReloadPool();
-            if (pool.isShutdown() || pool.isTerminated()) return;
-            pool.schedule(reloadTask, inteval, TimeUnit.SECONDS);
-        }
-
-    }
-
-    private synchronized void loadFromPath(String path, boolean reload) {
-        if (!path.startsWith("/"))
-            path = "/" + path;
-        URL uri = Profile.class.getResource(path);
-
-        if (uri == null) {
-            while (path.startsWith("/"))
-                path = path.substring(1);
-
-            uri = getResource(path);
-        }
-
-        if (uri != null) {
-            location = uri.toString();
-            if (location.indexOf('!') >= 0) {
-                f = null;
-                is = Profile.class.getResourceAsStream(path);
-            } else {
-                f = new File(uri.getFile());
-                try {
-                    is = new FileInputStream(f);
-                    lastModified = f.lastModified();
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            load();
-        } else {
-            if (!reload) {
-                if (!notFound.contains(path)) {
-                    notFound.add(path);
-                    log.info("Profile [" + path + "] not found.");
-                }
-            }
-        }
-    }
+//    private synchronized void loadFromPath(String path, boolean reload) {
+//        if (!path.startsWith("/"))
+//            path = "/" + path;
+//        URL uri = Profile.class.getResource(path);
+//
+//        if (uri == null) {
+//            while (path.startsWith("/"))
+//                path = path.substring(1);
+//
+//            uri = getResource(path);
+//        }
+//
+//        if (uri != null) {
+//            location = uri.toString();
+//            if (location.indexOf('!') >= 0) {
+//                f = null;
+//                is = Profile.class.getResourceAsStream(path);
+//            } else {
+//                f = new File(uri.getFile());
+//                try {
+//                    is = new FileInputStream(f);
+//                    lastModified = f.lastModified();
+//                } catch (FileNotFoundException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//            load();
+//        } else {
+//            if (!reload) {
+//                if (!notFound.contains(path)) {
+//                    notFound.add(path);
+//                    log.info("Profile [" + path + "] not found.");
+//                }
+//            }
+//        }
+//    }
 
 //    public String getLocation() {
 //        return location;
@@ -206,28 +241,26 @@ public class Profile {
 //    }
 
 
-    private void load() {
-        try {
-            p.clear();
-            if (is != null) {
-                p.load(is);
-                is.close();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void load() {
+//        try {
+//            p.clear();
+//            if (is != null) {
+//                p.load(is);
+//                is.close();
+//            }
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
     public boolean getBool(String key) {
         return getBool(key, false);
     }
 
-    public boolean getBool(String key, boolean v) {
-        return toBool(p.getProperty(key), v);
-    }
+    protected abstract String getStringImpl(String key);
 
     private boolean isPlaceHolder(String v) {
         return v.startsWith("${") && v.endsWith("}");
@@ -240,11 +273,11 @@ public class Profile {
             int index = x.indexOf(':');
             String namespace = null;
             String key = x;
-            if(index > 0){
-                namespace = x.substring(0,index);
+            if (index > 0) {
+                namespace = x.substring(0, index);
                 key = x.substring(index + 1);
             }
-            Profile profile = namespace == null ? this : Profile.getProfile(namespace + ".properties");
+            Profile profile = namespace == null ? this : Profile.getProfile(namespace);
 
             return profile.getString(key);
         }
@@ -252,9 +285,42 @@ public class Profile {
     }
 
     public String getString(String key, String v) {
-        String s = p.getProperty(key);
+        String s = getStringImpl(key);
         return s == null ? v : actualValue(s);
     }
+
+//    private boolean isPlaceHolder(String v) {
+//        return v.startsWith("${") && v.endsWith("}");
+//
+//    }
+
+//    private String actualValue(String v) {
+//        if (isPlaceHolder(v)) {
+//            String x = v.substring(2, v.length() - 1);
+//            int index = x.indexOf(':');
+//            String namespace = null;
+//            String key = x;
+//            if(index > 0){
+//                namespace = x.substring(0,index);
+//                key = x.substring(index + 1);
+//            }
+//            Profile profile = namespace == null ? this : Profile.getProfile(namespace + ".properties");
+//
+//            return profile.getString(key);
+//        }
+//        return v;
+//    }
+
+    private static class NullProfile extends Profile {
+        @Override
+        protected String getStringImpl(String key) {
+            return null;
+        }
+    }
+//    {
+//        String s = p.getProperty(key);
+//        return s == null ? v : actualValue(s);
+//    }
 
 
     public String getString(String key) {
@@ -288,6 +354,5 @@ public class Profile {
     public String[] getStrList(String key, String delim, String[] v) {
         return toArray(getString(key), delim, v);
     }
-
 
 }

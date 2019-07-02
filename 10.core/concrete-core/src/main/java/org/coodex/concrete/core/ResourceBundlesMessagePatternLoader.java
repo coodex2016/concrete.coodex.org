@@ -16,40 +16,50 @@
 
 package org.coodex.concrete.core;
 
+import org.coodex.concrete.common.I18NFacade;
 import org.coodex.concrete.common.MessagePatternLoader;
+import org.coodex.concrete.common.TranslateService;
 import org.coodex.config.Config;
-import org.coodex.util.Common;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * 基于 ResourceBundle 的实现
  * Created by davidoff shen on 2016-12-02.
+ * @deprecated (统一使用I18N)
  */
+@Deprecated
 public class ResourceBundlesMessagePatternLoader implements MessagePatternLoader {
+
+    public ResourceBundlesMessagePatternLoader() {
+//        TranslateService translateService = I18NFacade.getTranslateService();
+//        if(translateService instanceof ResourceBundlesTranslateService){
+//            //noinspection deprecation
+//            ((ResourceBundlesTranslateService) translateService).add(
+//                    Config.getArray("messagePattern.resourceBundles", ",", MESSAGE_PATTERN, getAppSet())
+//            );
+//        }
+    }
+
     public static final String[] MESSAGE_PATTERN = new String[]{"messagePattern"};
 
 
     private String getPatternFromBundle(String key) {
-        String[] list = Config.getArray("messagePattern.resourceBundles", ",", MESSAGE_PATTERN, getAppSet());
-        if (list == null || list.length == 0) return null;
-        for (String resource : list) {
-            Locale locale = getServiceContext() == null ? null : getServiceContext().getLocale();//.get();
-            if (locale == null)
-                locale = Locale.getDefault();
-
-            if (Common.isBlank(resource) || Common.isBlank(resource.trim())) continue;
-            try {
-                String pattern = ResourceBundle.getBundle(resource, locale).getString(key);
-                if (pattern != null) return pattern;
-            } catch (Throwable t) {
-            }
-        }
-        return null;
+//        String[] list = Config.getArray("messagePattern.resourceBundles", ",", MESSAGE_PATTERN, getAppSet());
+//        if (list == null || list.length == 0) return null;
+//        for (String resource : list) {
+//            Locale locale = getServiceContext() == null ? null : getServiceContext().getLocale();//.get();
+//            if (locale == null)
+//                locale = Locale.getDefault();
+//
+//            if (Common.isBlank(resource) || Common.isBlank(resource.trim())) continue;
+//            try {
+//                String pattern = ResourceBundle.getBundle(resource, locale).getString(key);
+//                if (pattern != null) return pattern;
+//            } catch (Throwable t) {
+//            }
+//        }
+        return I18NFacade.translate(key);
     }
 
 

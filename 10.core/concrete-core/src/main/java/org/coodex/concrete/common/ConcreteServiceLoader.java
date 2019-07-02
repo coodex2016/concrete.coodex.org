@@ -79,7 +79,7 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
         return instances.containsKey(key) ? instances.get(key) : super.conflict();
     }
 
-    protected final T getDefaultProviderFromProfile() {
+    protected final T getDefaultProviderFromConfiguration() {
         String key = Config.get(getInterfaceClass().getCanonicalName() + ".default", getAppSet());
         Map<String, T> instances = $getInstances();
         return instances.containsKey(key) ? instances.get(key) : null;
@@ -91,7 +91,7 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
 
     @Override
     public final T getDefaultProvider() {
-        T instance = getDefaultProviderFromProfile();
+        T instance = getDefaultProviderFromConfiguration();
         return instance == null ? getConcreteDefaultProvider() : instance;
     }
 }

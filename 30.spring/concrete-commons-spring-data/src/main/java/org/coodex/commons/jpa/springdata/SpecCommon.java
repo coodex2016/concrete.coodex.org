@@ -18,7 +18,6 @@ package org.coodex.commons.jpa.springdata;
 
 import org.coodex.commons.jpa.criteria.Operators;
 import org.springframework.data.jpa.domain.Specification;
-//import org.springframework.data.jpa.domain.Specifications;
 
 import javax.persistence.criteria.*;
 import java.util.Arrays;
@@ -29,16 +28,12 @@ import java.util.Collection;
  *
  * @author sujiwu@126.com
  */
-@SuppressWarnings("unchecked")
 public class SpecCommon {
 
     public static <E> Specification<E> distinct(final Specification<E> specification) {
-        return new Specification<E>() {
-            @Override
-            public Predicate toPredicate(Root<E> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                query.distinct(true);
-                return specification == null ? null : specification.toPredicate(root, query, cb);
-            }
+        return (Root<E> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            query.distinct(true);
+            return specification == null ? null : specification.toPredicate(root, query, cb);
         };
     }
 
@@ -61,12 +56,7 @@ public class SpecCommon {
     }
 
     public static <T> Specification<T> not(final Specification<T> spec) {
-        return new Specification<T>() {
-            @Override
-            public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                return cb.not(spec.toPredicate(root, query, cb));
-            }
-        };
+        return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.not(spec.toPredicate(root, query, cb));
     }
 
     public static <T> Specification<T> and(Specification<T>... specifications) {
@@ -102,24 +92,6 @@ public class SpecCommon {
         return specs;
     }
 
-    @Deprecated
-    public static <ENTITY, ATTR> Specification<ENTITY> spec(
-            Class<ENTITY> entityClass,
-            Operators.Logical logical,
-            String attributeName,
-            ATTR... attributes) {
-
-        return spec(logical, attributeName, attributes);
-    }
-
-    @Deprecated
-    public static <ENTITY, ATTR> Specification<ENTITY> spec(
-            Operators.Logical logical,
-            String attributeName,
-            ATTR... attributes) {
-
-        return $spec(logical, attributeName, attributes);
-    }
 
     protected static <E, A> Specification<E> $spec(Operators.Logical logical,
                                                    String attributeName,
@@ -128,12 +100,6 @@ public class SpecCommon {
         return new Spec<E, A>(logical, attributeName, attributes);
     }
 
-    @Deprecated
-    public static <ENTITY, ATTR> Specification<ENTITY> memberOf(
-            Class<ENTITY> entityClass, String attributeName, ATTR attr) {
-
-        return memberOf(attributeName, attr);
-    }
 
     /**
      * where attr in E.attribute
@@ -279,17 +245,9 @@ public class SpecCommon {
      * where E.attribute is NULL
      *
      * @param attributeName
-     * @param value
      * @param <E>
-     * @param <A>
      * @return
      */
-    @Deprecated
-    public static <E, A> Specification<E> isNull(String attributeName, A value) {
-//        return $spec(Operators.Logical.IS_NULL, attributeName, value);
-        return isNull(attributeName);
-    }
-
     public static <E> Specification<E> isNull(String attributeName) {
         return $spec(Operators.Logical.IS_NULL, attributeName);
     }
@@ -298,16 +256,9 @@ public class SpecCommon {
      * where E.attribute is not NULL
      *
      * @param attributeName
-     * @param value
      * @param <E>
-     * @param <A>
      * @return
      */
-    @Deprecated
-    public static <E, A> Specification<E> notNull(String attributeName, A value) {
-//        return $spec(Operators.Logical.NOT_NULL, attributeName, value);
-        return notNull(attributeName);
-    }
 
     public static <E> Specification<E> notNull(String attributeName) {
         return $spec(Operators.Logical.NOT_NULL, attributeName);
@@ -356,7 +307,7 @@ public class SpecCommon {
 
 
     public static <ENTITY> Specification<ENTITY> wrapper(Specification<ENTITY> specifications) {
-        return specifications == null ? Specification.where(specifications) : specifications;
+        return specifications == null ? Specification.where(null) : specifications;
     }
 
     static class MemberOfSpec<ATTR, ENTITY> implements Specification<ENTITY> {

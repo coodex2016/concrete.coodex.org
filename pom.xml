@@ -115,6 +115,7 @@
         <module>s2/concrete-s2-api</module>
         <module>s2/concrete-s2-impl</module>
         <module>01.spec/concrete-prod-spec</module>
+        <module>10.core/concrete-prod-impl</module>
 
     </modules>
 
@@ -159,8 +160,10 @@
         <rxjava.vesion>2.2.9</rxjava.vesion>
         <jackson2.version>2.9.8</jackson2.version>
 
-        <activemq.version>5.15.6</activemq.version>
+        <activemq.version>5.15.9</activemq.version>
         <rabbitmq.client.version>5.7.1</rabbitmq.client.version>
+
+        <snakeyaml.version>1.24</snakeyaml.version>
 
         <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>
         <coodex.shared.cache.version>${project.parent.version}</coodex.shared.cache.version>
@@ -540,6 +543,12 @@
                 <groupId>com.rabbitmq</groupId>
                 <artifactId>amqp-client</artifactId>
                 <version>${rabbitmq.client.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
             </dependency>
 
             <!-- hibernate validator -->

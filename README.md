@@ -26,6 +26,19 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-02
+
+- coodex-utilities: Profile，增加对YAML支持
+    - 加载了`snakeyaml`则自动支持
+    - Profile.getInstance(String resourceKey)接口中
+        - resourceKey 以 `.properties`结尾时，则使用properties文件，找不到则所有键值为空
+        - resourceKey 以 `.yaml`结尾时，则使用yaml文件，找不到则所有键值为空
+        - 上述以外，则按照优先级选择，支持了yaml的，则以yaml优先，否则找properties
+- concrete
+    - 增加TranslateService，解构I18N与resourceBundle的依赖，默认使用ResourceBundle实现
+    - 增加I18NFacade门面，对外提供translate服务
+    - 消息模板统一到I18NFacade上
+
 ## 2019-07-01
 
 - 调整ConcreteService模拟数据的方式

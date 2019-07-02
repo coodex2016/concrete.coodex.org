@@ -33,7 +33,6 @@ public abstract class AbstractSpecificationsMaker<C, T> implements Specification
         return wrapper(make(condition, null));
     }
 
-    @SuppressWarnings("unchecked")
     public Specification<T> make(C condition, String name) {
 
         name = name == null ? "" : name;
@@ -53,8 +52,13 @@ public abstract class AbstractSpecificationsMaker<C, T> implements Specification
 
         try {
             Method method = IF.isNull(makerFunction, "SpecificationsMaker function not exists: " + name);
-            method.setAccessible(true);
-            return (Specification<T>) method.invoke(this, condition);
+            if (method != null) {
+                method.setAccessible(true);
+                //noinspection unchecked
+                return (Specification<T>) method.invoke(this, condition);
+            } else {
+                return null;
+            }
         } catch (Throwable th) {
             throw ConcreteHelper.getException(th);
         }

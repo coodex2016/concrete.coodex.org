@@ -49,9 +49,10 @@ public class PageHelper {
         result.setNum((long) srcPage.getNumber() + 1);
         result.setPageSize(srcPage.getSize());
         result.setList(new ArrayList<TARGET>());
-        for (SRC src : srcPage.getContent()) {
-            result.getList().add(copier.copy(src));
-        }
+//        for (SRC src : srcPage.getContent()) {
+//            result.getList().add(copier.copy(src));
+//        }
+        srcPage.get().forEachOrdered((src) -> result.getList().add(copier.copy(src)));
         return result;
     }
 }

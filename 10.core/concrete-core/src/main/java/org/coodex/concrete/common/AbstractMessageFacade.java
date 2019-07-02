@@ -17,7 +17,7 @@
 package org.coodex.concrete.common;
 
 import org.coodex.concrete.core.JavaTextFormatMessageFormatter;
-import org.coodex.concrete.core.ResourceBundlesMessagePatternLoader;
+//import org.coodex.concrete.core.ResourceBundlesMessagePatternLoader;
 import org.coodex.util.ServiceLoader;
 
 import java.util.Map;
@@ -28,7 +28,8 @@ import java.util.Map;
 public class AbstractMessageFacade {
     private final static MessageFormatter DEFAULT_MESSAGE_FORMATTER = new JavaTextFormatMessageFormatter();
 
-    private final static MessagePatternLoader DEFAULT_PATTERN_LOADER = new ResourceBundlesMessagePatternLoader();
+//    @SuppressWarnings("deprecation")
+//    private final static MessagePatternLoader DEFAULT_PATTERN_LOADER = new ResourceBundlesMessagePatternLoader();
 
     private final static LogFormatter DEFAULT_LOG_FORMATTER = new LogFormatter() {
         @Override
@@ -44,12 +45,12 @@ public class AbstractMessageFacade {
         }
     };
 
-    private final static ServiceLoader<MessagePatternLoader> MESSAGE_PATTERN_LOADER_SERVICE_LOADER = new ConcreteServiceLoader<MessagePatternLoader>() {
-        @Override
-        public MessagePatternLoader getConcreteDefaultProvider() {
-            return DEFAULT_PATTERN_LOADER;
-        }
-    };
+//    private final static ServiceLoader<MessagePatternLoader> MESSAGE_PATTERN_LOADER_SERVICE_LOADER = new ConcreteServiceLoader<MessagePatternLoader>() {
+//        @Override
+//        public MessagePatternLoader getConcreteDefaultProvider() {
+//            return DEFAULT_PATTERN_LOADER;
+//        }
+//    };
 
     private final static ServiceLoader<LogFormatter> LOG_FORMATTER_SERVICE_LOADER = new ConcreteServiceLoader<LogFormatter>() {
         @Override
@@ -67,13 +68,13 @@ public class AbstractMessageFacade {
         return formatter == null ? DEFAULT_MESSAGE_FORMATTER : formatter;
     }
 
-    public static MessagePatternLoader getPatternLoader(Class<? extends MessagePatternLoader> loaderClass) {
-        MessagePatternLoader patternLoader = loaderClass == null || loaderClass == MessagePatternLoader.class ?
-                MESSAGE_PATTERN_LOADER_SERVICE_LOADER.getInstance() :
-                MESSAGE_PATTERN_LOADER_SERVICE_LOADER.getInstance(loaderClass);
-
-        return patternLoader == null ? DEFAULT_PATTERN_LOADER : patternLoader;
-    }
+//    public static MessagePatternLoader getPatternLoader(Class<? extends MessagePatternLoader> loaderClass) {
+//        MessagePatternLoader patternLoader = loaderClass == null || loaderClass == MessagePatternLoader.class ?
+//                MESSAGE_PATTERN_LOADER_SERVICE_LOADER.getInstance() :
+//                MESSAGE_PATTERN_LOADER_SERVICE_LOADER.getInstance(loaderClass);
+//
+//        return patternLoader == null ? DEFAULT_PATTERN_LOADER : patternLoader;
+//    }
 
 
     public static LogFormatter getLogFormatter(Class<? extends LogFormatter> formatterClass) {

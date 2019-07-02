@@ -38,7 +38,7 @@ public class ConfigurationBaseProfile extends AbstractConfiguration {
     @Override
     protected String search(String namespace, List<String> keys) {
         if (namespace == null) namespace = DEFAULT_PROFILE;
-        Profile profile = Profile.getProfile(PROFILES_ROOT + "/" + namespace + ".properties");
+        Profile profile = Profile.getProfile(PROFILES_ROOT + "/" + namespace /* + ".properties" */);
         for (String k : keys) {
             String x = profile.getString(k);
 //            System.out.println(String.format("search %s in: %s", k, namespace));

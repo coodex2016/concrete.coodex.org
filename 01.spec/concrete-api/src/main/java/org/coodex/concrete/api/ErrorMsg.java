@@ -36,6 +36,11 @@ public @interface ErrorMsg {
 
     Class<? extends MessageFormatter> formatterClass() default MessageFormatter.class;
 
-    Class<? extends MessagePatternLoader> patternLoaderClass() default MessagePatternLoader.class;
+//    /**
+//     * @deprecated (统一使用I18NFacade)
+//     * @return
+//     */
+//    @Deprecated
+//    Class<? extends MessagePatternLoader> patternLoaderClass() default MessagePatternLoader.class;
 
 }

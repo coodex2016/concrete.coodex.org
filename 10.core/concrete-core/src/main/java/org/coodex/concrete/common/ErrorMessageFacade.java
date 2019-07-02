@@ -117,12 +117,13 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
         String msgTemp = (errorMsg == null || Common.isBlank(errorMsg.value().trim())) ?
                 "{message." + code + "}" : errorMsg.value();
 
-        String pattern = msgTemp;
-        if (msgTemp.startsWith("{") && msgTemp.endsWith("}")) {
-            String key = msgTemp.substring(1, msgTemp.length() - 1).trim();
-            pattern = getPatternLoader(errorMsg == null ? null : errorMsg.patternLoaderClass())
-                    .getMessageTemplate(key);
-        }
+//        String pattern = msgTemp;
+//        if (msgTemp.startsWith("{") && msgTemp.endsWith("}")) {
+//            String key = msgTemp.substring(1, msgTemp.length() - 1).trim();
+//            pattern = getPatternLoader(errorMsg == null ? null : errorMsg.patternLoaderClass())
+//                    .getMessageTemplate(key);
+//        }
+        String pattern = I18NFacade.translate(msgTemp);
 
         return (pattern != null) ? (format ? formatter.format(pattern, objects) : pattern) : null;
     }

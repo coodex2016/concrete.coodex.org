@@ -30,8 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.coodex.concrete.common.AbstractMessageFacade.getLogFormatter;
-import static org.coodex.concrete.common.AbstractMessageFacade.getPatternLoader;
 import static org.coodex.concrete.common.ConcreteContext.getLoggingData;
+
+//import static org.coodex.concrete.common.AbstractMessageFacade.getPatternLoader;
 
 /**
  * Created by davidoff shen on 2017-05-08.
@@ -57,13 +58,9 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
 //
 //    }
 
-    private static final OperationLogger DEFAULT_LOGGER = new OperationLogger() {
-        @Override
-        public void log(String accountId, String accountName, String category, String subClass, String message) {
+    private static final OperationLogger DEFAULT_LOGGER = (String accountId, String accountName, String category, String subClass, String message) ->
             log.info("accountId: {}; accountName: {}; category: {}; subClass: {}; message: {}",
                     accountId, accountName, category, subClass, message);
-        }
-    };
 
     private final static ServiceLoader<OperationLogger> LOGGER_SERVICE_LOADER = new ConcreteServiceLoader<OperationLogger>() {
         @Override
@@ -74,23 +71,27 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
     static ThreadLocal<Account<? extends AccountID>> OPERATOR = new ThreadLocal<Account<? extends AccountID>>();
 
     private static String buildLog(String category, String subClass, String messageTemplate,
-                                   Class<? extends LogFormatter> formatterClass,
-                                   Class<? extends MessagePatternLoader> patternLoaderClass) {
+                                   Class<? extends LogFormatter> formatterClass) {
 
-        String key = null, template = null;
-        if (messageTemplate != null && messageTemplate.startsWith("{") && messageTemplate.endsWith("}")) {
-            key = Common.trim(messageTemplate, '{', '}', ' ');
-        } else if (messageTemplate != null) {
-            template = messageTemplate;
-        }
-        if (template == null) {
-            if (key == null) key = getMessageKey(category, subClass);
-            template = getPatternLoader(patternLoaderClass).getMessageTemplate(key);
-        }
+//        String key = null, template = null;
+//
+//        if (messageTemplate != null && messageTemplate.startsWith("{") && messageTemplate.endsWith("}")) {
+//            key = Common.trim(messageTemplate, '{', '}', ' ');
+//        } else if (messageTemplate != null) {
+//            template = messageTemplate;
+//        }
+//        if (template == null) {
+//            if (key == null) key = getMessageKey(category, subClass);
+////            template = getPatternLoader(patternLoaderClass).getMessageTemplate(key);
+//            template = I18NFacade.translate(key);
+//        }
 
 
         return getLogFormatter(formatterClass)
-                .format(messageTemplate, getLoggingData());
+                .format(Common.isBlank(messageTemplate) ?
+                                I18NFacade.translate("{" + getMessageKey(category, subClass) + "}") :
+                                I18NFacade.translate(messageTemplate),
+                        getLoggingData());
     }
 
     private static String getMessageKey(String category, String subClass) {
@@ -131,33 +132,34 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
         }
     }
 
-    @Override
-    public Object around(final DefinitionContext context, final MethodInvocation joinPoint) throws Throwable {
-//        return runWithContext(new AtomServiceContext(getServiceContext()),
-//                new ConcreteClosure() {
-//                    @Override
-//                    public Object concreteRun() throws Throwable {
-//                        return $$after(context, joinPoint, joinPoint.proceed());
-//                    }
-//    },
-//                new CallableClosure() {
-//                    @Override
-//                    public Object call() throws Throwable {
-        return $$after(context, joinPoint, joinPoint.proceed());
-//                    }
-//                }
-//
-//        );
-//        return LOGGING.run(new HashMap<String, Object>(), new ConcreteClosure() {
-//            @Override
-//            public Object concreteRun() throws Throwable {
-//                return $$after(context, joinPoint, joinPoint.proceed());
-//            }
-//        });
-    }
+//    @Override
+//    public Object around(final DefinitionContext context, final MethodInvocation joinPoint) throws Throwable {
+////        return runWithContext(new AtomServiceContext(getServiceContext()),
+////                new ConcreteClosure() {
+////                    @Override
+////                    public Object concreteRun() throws Throwable {
+////                        return $$after(context, joinPoint, joinPoint.proceed());
+////                    }
+////    },
+////                new CallableClosure() {
+////                    @Override
+////                    public Object call() throws Throwable {
+//        return $$after(context, joinPoint);
+////                    }
+////                }
+////
+////        );
+////        return LOGGING.run(new HashMap<String, Object>(), new ConcreteClosure() {
+////            @Override
+////            public Object concreteRun() throws Throwable {
+////                return $$after(context, joinPoint, joinPoint.proceed());
+////            }
+////        });
+//    }
 
-    //    @Override
-    private Object $$after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
+
+    @Override
+    public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
         try {
             Account<? extends AccountID> account = getOperator();
             String accountId = account == null ? null : account.getId().serialize();
@@ -170,7 +172,7 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
             String messageTemplate = null;
             LogAtomic.LoggingType loggingType = LogAtomic.LoggingType.DATA;
             Class<? extends LogFormatter> formatterClass = LogFormatter.class;
-            Class<? extends MessagePatternLoader> patternLoaderClass = MessagePatternLoader.class;
+//            Class<? extends MessagePatternLoader> patternLoaderClass = MessagePatternLoader.class;
             Class<? extends OperationLogger> loggerClass = OperationLogger.class;
 
 
@@ -178,7 +180,7 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
             if (operationLog != null) {
                 category = operationLog.category();
                 formatterClass = operationLog.formatterClass();
-                patternLoaderClass = operationLog.patternLoaderClass();
+//                patternLoaderClass = operationLog.patternLoaderClass();
                 loggerClass = operationLog.loggerClass();
             }
 
@@ -196,7 +198,7 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
             if (isDoLog(loggingType)) {
                 getLogger(loggerClass)
                         .log(accountId, accountName, category, subClass,
-                                buildLog(category, subClass, messageTemplate, formatterClass, patternLoaderClass));
+                                buildLog(category, subClass, messageTemplate, formatterClass));
             }
 
         } catch (Throwable th) {
@@ -204,6 +206,55 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
         }
         return super.after(context, joinPoint, result);
     }
+
+    //    @Override
+//    private Object $$after(DefinitionContext context, MethodInvocation joinPoint) {
+//        try {
+//            Account<? extends AccountID> account = getOperator();
+//            String accountId = account == null ? null : account.getId().serialize();
+//            String accountName = account == null ? "Anonymous" : null;
+//            if (account != null) {
+//                accountName = account instanceof NamedAccount ? ((NamedAccount) account).getName() : "Unknown";
+//            }
+//            String category = null;
+//            String subClass = null;
+//            String messageTemplate = null;
+//            LogAtomic.LoggingType loggingType = LogAtomic.LoggingType.DATA;
+//            Class<? extends LogFormatter> formatterClass = LogFormatter.class;
+////            Class<? extends MessagePatternLoader> patternLoaderClass = MessagePatternLoader.class;
+//            Class<? extends OperationLogger> loggerClass = OperationLogger.class;
+//
+//
+//            OperationLog operationLog = context.getAnnotation(OperationLog.class);
+//            if (operationLog != null) {
+//                category = operationLog.category();
+//                formatterClass = operationLog.formatterClass();
+////                patternLoaderClass = operationLog.patternLoaderClass();
+//                loggerClass = operationLog.loggerClass();
+//            }
+//
+//            LogAtomic logAtomic = context.getAnnotation(LogAtomic.class);
+//            if (logAtomic != null) {
+//                if (!Common.isBlank(logAtomic.category()))
+//                    category = logAtomic.category();
+//                subClass = logAtomic.subClass();
+//                loggingType = logAtomic.loggingType();
+//                messageTemplate = logAtomic.message();
+//            }
+//            if (Common.isBlank(subClass)) subClass = context.getDeclaringMethod().getName();
+//
+//
+//            if (isDoLog(loggingType)) {
+//                getLogger(loggerClass)
+//                        .log(accountId, accountName, category, subClass,
+//                                buildLog(category, subClass, messageTemplate, formatterClass));
+//            }
+//
+//        } catch (Throwable th) {
+//            log.warn("{}", th.getLocalizedMessage(), th);
+//        }
+//        return super.after(context, joinPoint, result);
+//    }
 
     private boolean isDoLog(LogAtomic.LoggingType loggingType) {
         boolean doLog = false;
