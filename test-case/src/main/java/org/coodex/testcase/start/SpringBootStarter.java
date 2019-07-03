@@ -56,7 +56,7 @@ public class SpringBootStarter {
     @Bean
     public AMQPApplication getAMQPApplication() {
         AMQPConnectionConfig config = new AMQPConnectionConfig();
-        Profile profile = Profile.getProfile("client.amqpXXX.yaml");
+        Profile profile = Profile.getProfile("client.amqp");
         config.setUri(profile.getString("location"));
         config.setUsername(profile.getString("amqp.username"));
         config.setPassword(profile.getString("amqp.password"));

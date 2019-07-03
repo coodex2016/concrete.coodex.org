@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-03
+
+- 修复MockInterceptor依赖Bean的问题
+
 ## 2019-07-02
 
 - coodex-utilities: Profile，增加对YAML支持

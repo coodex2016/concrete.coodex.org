@@ -190,9 +190,8 @@ public final class ConcreteContext {
         } else {
             try {
                 return CONTEXT.call(context, () -> {
-                    Object instance = BeanProviderFacade.getBeanProvider().getBean(interfaceClass);
 //                    RuntimeContext runtimeContext = RuntimeContext.getRuntimeContext(method, interfaceClass);
-                    ServiceMethodInvocation invocation = new ServiceMethodInvocation(method, params, instance) {
+                    ServiceMethodInvocation invocation = new ServiceMethodInvocation(method, params) {
                         @Override
                         public Class<?> getInterfaceClass() {
                             return interfaceClass;
@@ -201,6 +200,11 @@ public final class ConcreteContext {
                         @Override
                         public Object proceed() throws Throwable {
                             return callable.call();
+                        }
+
+                        @Override
+                        public Object getThis() {
+                            return BeanProviderFacade.getBeanProvider().getBean(interfaceClass);
                         }
                     };
                     return interceptorChainSingleton.getInstance().invoke(invocation);
@@ -221,12 +225,12 @@ public final class ConcreteContext {
 
     private abstract static class ServiceMethodInvocation implements ConcreteMethodInvocation {
         private final Object[] arguments;
-        private final Object instance;
+//        private final Object instance;
         private final Method method;
 
-        private ServiceMethodInvocation(Method method, Object[] arguments, Object instance) {
+        private ServiceMethodInvocation(Method method, Object[] arguments) {
             this.arguments = arguments;
-            this.instance = instance;
+//            this.instance = instance;
             this.method = method;
         }
 
@@ -240,10 +244,10 @@ public final class ConcreteContext {
             return arguments;
         }
 
-        @Override
-        public Object getThis() {
-            return instance;
-        }
+//        @Override
+//        public Object getThis() {
+//            return instance;
+//        }
 
         @Override
         public AccessibleObject getStaticPart() {

@@ -5,6 +5,7 @@ pom.xml.versionsBackup
 
 env.properties
 env.xml
+env.yaml
 
 /.idea/
 *.iml
