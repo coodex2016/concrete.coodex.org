@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
@@ -107,6 +108,7 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
     @Override
     protected void send(RequestPackage requestPackage) throws Throwable {
         // 1 set client info
+        //noinspection unchecked
         requestPackage.getSubjoin().put(SUBJOIN_KEY_CLIENT_PROVIDER,
                 "concrete-amqp-client-" + ConcreteHelper.VERSION);
         // 2 send
@@ -140,14 +142,14 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                     log.info("consumerTag: {}, envelope: {}", consumerTag, envelope.getRoutingKey());
-                    OwnRXMessageListener.getInstance().onMessage(new String(body, "UTF-8"));
+                    OwnRXMessageListener.getInstance().onMessage(new String(body, StandardCharsets.UTF_8));
                 }
             });
         }
 
         void send(String message) throws IOException {
             channel.basicPublish(exchangeName,ROUTE_KEY_REQUEST + clientId,
-                    null, message.getBytes("UTF-8"));
+                    null, message.getBytes(StandardCharsets.UTF_8));
         }
     }
 }

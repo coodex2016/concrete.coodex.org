@@ -29,6 +29,10 @@ public interface SomeService {
 ## 2019-07-03
 
 - 修复MockInterceptor依赖Bean的问题
+- AMQPApplication增加构造参数，用以保证请求可达性
+    - exchangeName: 之前就有，指使用哪个交换机，为空则表示使用默认交换机`AMQP-PROVIDER`
+    - queueName: 新增，若指定队列名，则表示是持久化队列
+    - ttl: 新增，当队列为持久化队列时，指定消息过期时间
 
 ## 2019-07-02
 

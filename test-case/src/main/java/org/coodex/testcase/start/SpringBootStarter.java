@@ -19,7 +19,6 @@ package org.coodex.testcase.start;
 
 import org.coodex.concrete.amqp.AMQPConnectionConfig;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
-import org.coodex.concrete.core.intercept.MockInterceptor;
 import org.coodex.concrete.core.intercept.RBACInterceptor;
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
 import org.coodex.concrete.support.amqp.AMQPApplication;
@@ -61,7 +60,10 @@ public class SpringBootStarter {
         config.setUsername(profile.getString("amqp.username"));
         config.setPassword(profile.getString("amqp.password"));
         AMQPApplication amqpApplication = new AMQPApplication(
-                config
+                config,
+                profile.getString("amqp.exchangeName"),
+                profile.getString("amqp.queueName"),
+                profile.getLong("amqp.ttl")
         );
         amqpApplication.registerClasses(TestCase.class,TestCase2.class);
         return amqpApplication;

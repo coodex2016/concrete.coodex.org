@@ -26,11 +26,14 @@ import org.coodex.concrete.own.OwnServiceModule;
 import org.coodex.concrete.own.OwnServiceProvider;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;
+import org.coodex.util.Common;
 import org.coodex.util.GenericType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.coodex.concrete.amqp.AMQPConstants.ROUTE_KEY_REQUEST;
@@ -53,16 +56,19 @@ public class AMQPApplication extends OwnServiceProvider {
 
 
     public AMQPApplication(AMQPConnectionConfig config) {
-        this(config, null);
+        this(config, null, null, null);
     }
 
     /**
-     * @param config
-     * @param exchangeName 服务绑定到哪个交换机上
+     *
+     * @param config 连接信息
+     * @param exchangeName 交换机名称，如果为空，则使用默认交换机名
+     * @param queueName 队列名称，如果为空，则使用auto-delete队列，否则为持久化队列
+     * @param ttl 队列消息ttl，为空则不设置
      */
-    public AMQPApplication(AMQPConnectionConfig config, String exchangeName) {
+    public AMQPApplication(AMQPConnectionConfig config, String exchangeName, String queueName, Long ttl) {
         this.exchangeName = getExchangeName(exchangeName);
-        connect(config);
+        connect(config, queueName, ttl);
     }
 
     @Override
@@ -87,7 +93,17 @@ public class AMQPApplication extends OwnServiceProvider {
         return "amqp";
     }
 
-    private void connect(AMQPConnectionConfig config) {
+    private Map<String,Object> getQueueArgumenets(Long ttl){
+        if(ttl != null && ttl > 0){
+            Map<String, Object> args = new HashMap<>();
+            args.put("x-message-ttl", 60000);
+            return args;
+        } else {
+            return null;
+        }
+    }
+
+    private void connect(AMQPConnectionConfig config, String queueName, Long ttl) {
         try {
             final JSONSerializer serializer = JSONSerializerFactory.getInstance();
             if (serializer == null) throw new RuntimeException("none json serializer found.");
@@ -95,23 +111,28 @@ public class AMQPApplication extends OwnServiceProvider {
             Connection connection = AMQPConnectionFacade.getConnection(config);
             channel = connection.createChannel();
             channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC);
-            String queueName = channel.queueDeclare().getQueue();
+            String queue = queueName;
+            if( Common.isBlank(queue) ){
+                queue =channel.queueDeclare().getQueue();
+            }  else {
+                channel.queueDeclare(queue,true,false,false,getQueueArgumenets(ttl));
+            }
             // request data use routingKey: request.clientId
-            channel.queueBind(queueName, exchangeName, ROUTE_KEY_REQUEST + "*");
-            channel.basicConsume(queueName, true, new DefaultConsumer(channel) {
+            channel.queueBind(queue, exchangeName, ROUTE_KEY_REQUEST + "*");
+            channel.basicConsume(queue, true, new DefaultConsumer(channel) {
                 private void send(String json, String clientId) throws IOException {
                     log.debug("send to {}: {}", clientId, json);
                     channel.basicPublish(exchangeName,
                             ROUTE_KEY_RESPONSE + clientId,
                             null,
-                            json.getBytes("UTF-8"));
+                            json.getBytes(StandardCharsets.UTF_8));
                 }
 
 
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                     final String clientId = envelope.getRoutingKey().substring(ROUTE_KEY_REQUEST.length());
-                    String bodyStr = new String(body, "UTF-8");
+                    String bodyStr = new String(body, StandardCharsets.UTF_8);
                     log.debug("message received: {}", bodyStr);
                     final RequestPackage<Object> requestPackage = serializer.parse(bodyStr,
                             new GenericType<RequestPackage<Object>>() {

@@ -18,4 +18,6 @@ location: ${env:amqp.url}
 amqp:
   username: ${env:amqp.username}
   password: ${env:amqp.password}
+  queueName: davidoff
+  ttl: 600000
 timeout: 10000
