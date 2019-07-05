@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.FIELD, ElementType.METHOD,ElementType.ANNOTATION_TYPE})
 /**
  * 用定义模拟用的序列数据
  */
@@ -60,7 +60,7 @@ public @interface Sequence {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.METHOD})
+    @Target({ElementType.FIELD, ElementType.METHOD,ElementType.ANNOTATION_TYPE})
             /**
              * 用在集合属性或者方法上，指示当前上下文使用哪个序列发生器
              */

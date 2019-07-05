@@ -63,7 +63,7 @@ public class MockerFacade {
     private static final AcceptableServiceLoader<String, RelationPolicy> RELATION_POLICY_LOADER =
             new AcceptableServiceLoader<String, RelationPolicy>(new ServiceLoaderFacade<RelationPolicy>() {
             });
-    private static final Map<String, PojoInfo> POJO_INFO_MAP = new HashMap<String, PojoInfo>();
+//    private static final Map<String, PojoInfo> POJO_INFO_MAP = new HashMap<String, PojoInfo>();
 
     private static final SequenceContext SEQUENCE_CONTEXT = new SequenceContext();
 
@@ -142,15 +142,15 @@ public class MockerFacade {
     }
 
     private static String executableDeclaration(Method method, Class... context) {
-        return new StringBuilder()
-                .append(method.getDeclaringClass().getName())
-                .append(".").append(method.getName())
-                .append('(')
-                .append(parametersDeclaration(
+        return method.getDeclaringClass().getName() +
+                "." + method.getName() +
+                '(' +
+                parametersDeclaration(
                         method,
                         method.getGenericParameterTypes(),
                         context
-                )).append(')').toString();
+                ) +
+                ')';
     }
 
     private static String parametersDeclaration(Object executable, Type[] paramTyps, Class... context) {
@@ -164,15 +164,14 @@ public class MockerFacade {
     }
 
     private static String executableDeclaration(Constructor constructor, Class... context) {
-        return new StringBuilder()
-                .append(constructor.getDeclaringClass().getName())
-                .append('(')
-                .append(parametersDeclaration(
+        return constructor.getDeclaringClass().getName() +
+                '(' +
+                parametersDeclaration(
                         constructor,
                         constructor.getGenericParameterTypes(),
                         context
-                ))
-                .append(')').toString();
+                ) +
+                ')';
 //        StringBuilder builder = new StringBuilder();
 //        builder.append(constructor.getDeclaringClass().getName())
 //                .append('(');
@@ -193,9 +192,7 @@ public class MockerFacade {
         Sequences sequencesAnnotation = pojoProperty.getAnnotation(Sequences.class);
 
         if (sequencesAnnotation != null) {
-            for (Sequence sequence : sequencesAnnotation.value()) {
-                sequences.add(sequence);
-            }
+            sequences.addAll(Arrays.asList(sequencesAnnotation.value()));
         }
 
         Sequence sequence = pojoProperty.getAnnotation(Sequence.class);
@@ -221,6 +218,7 @@ public class MockerFacade {
             final int dimension, final Stack<String> stack,
             final Type... context)
             throws MaxDeepException {
+
         if (type == null) return null;
 
         CallableClosure callableClosure = new CallableClosure() {
@@ -295,7 +293,7 @@ public class MockerFacade {
     }
 
     @SuppressWarnings("unchecked")
-    private static final <T> T mockParameterizedType(
+    private static <T> T mockParameterizedType(
             ParameterizedType type, PojoProperty property, int dimension, Stack<String> stack, Type... context)
             throws MaxDeepException {
         Class c = (Class) type.getRawType();
@@ -309,7 +307,7 @@ public class MockerFacade {
     }
 
     @SuppressWarnings("unchecked")
-    private static final <T> T mockGenericArray(
+    private static <T> T mockGenericArray(
             GenericArrayType type, final PojoProperty property,
             final int dimension, final Stack<String> stack, final Type... context)
             throws MaxDeepException {
@@ -318,7 +316,7 @@ public class MockerFacade {
         int size = getArraySize(property, dimension);
         final T array;
         if (componentType instanceof GenericArrayType) {
-            array = (T) Array.newInstance(getComponentClass(componentType, context), size);
+            array = (T) Array.newInstance(getComponentClass(componentType), size);
             for (int i = 0; i < size; i++) {
                 Array.set(array, i, mockGenericArray(
                         (GenericArrayType) componentType, property,
@@ -330,7 +328,7 @@ public class MockerFacade {
                 generator.reset();
                 size = generator.size();
             }
-            array = (T) Array.newInstance(getComponentClass(componentType, context), size);
+            array = (T) Array.newInstance(getComponentClass(componentType), size);
             final int finalSize = size;
             SEQUENCE_CONTEXT.call(generator, new CallableClosure() {
                 @Override
@@ -352,7 +350,7 @@ public class MockerFacade {
         return array;
     }
 
-    public static final Class getComponentClass(Type componentType, Type... context) {
+    public static Class getComponentClass(Type componentType) {
         if (componentType == null || componentType instanceof TypeVariable) {
             return Object.class;
         } else if (componentType instanceof ParameterizedType) {
@@ -360,26 +358,27 @@ public class MockerFacade {
         } else if (componentType instanceof Class) {
             return (Class) componentType;
         } else if (componentType instanceof GenericArrayType) {
+            // ???
             return Array.newInstance(
-                    getComponentClass(((GenericArrayType) componentType).getGenericComponentType(), context), 0)
+                    getComponentClass(((GenericArrayType) componentType).getGenericComponentType()), 0)
                     .getClass();
         }
         return null;
     }
 
-    private static final Annotation getAnnotation(PojoProperty property) {
-        if (property == null) return null;
-        for (Annotation annotation : property.getAnnotations()) {
-            if (annotation != null &&
-                    annotation.annotationType().getAnnotation(Mock.class) != null) {
-                return annotation;
-            }
-        }
-        return null;
-    }
+//    private static final Annotation getAnnotation(PojoProperty property) {
+//        if (property == null) return null;
+//        for (Annotation annotation : property.getAnnotations()) {
+//            if (annotation != null &&
+//                    annotation.annotationType().getAnnotation(Mock.class) != null) {
+//                return annotation;
+//            }
+//        }
+//        return null;
+//    }
 
     @SuppressWarnings("unchecked")
-    private static final <T> T mockClass(
+    private static <T> T mockClass(
             Class clazz, PojoProperty property, int dimension, Stack<String> stack, Type... context)
             throws MaxDeepException {
 
@@ -393,19 +392,16 @@ public class MockerFacade {
             // find item
             Sequence.Item item = property == null ? null : property.getAnnotation(Sequence.Item.class);
             if (item != null) {
-                SequenceGenerator generator = SEQUENCE_CONTEXT.get(item.key());
-                if (generator == null) {
-                    checkGenerator(generator, item.key(), item.notFound(), property);
-                } else {
+                SequenceGenerator generator = getSequenceGenerator(item.key(), item.notFound(), property);
+                if (generator != null) {
                     return (T) generator.next();
                 }
             }
 
+            Annotation annotation = property == null ? null : property.findDecoratedBy(Mock.class);
             if (TypeHelper.isPrimitive(clazz)) {
-                Annotation annotation = getAnnotation(property);
                 return (T) MOCKER_LOADER.getServiceInstance(annotation).mock(annotation, clazz);
             } else {
-                Annotation annotation = getAnnotation(property);
                 if (annotation != null) {
                     return (T) MOCKER_LOADER.getServiceInstance(annotation).mock(annotation, clazz);
                 } else
@@ -414,14 +410,14 @@ public class MockerFacade {
         }
     }
 
-    private static final <T extends Map> T mockMap(
+    private static <T extends Map> T mockMap(
             Class<? extends Map> mapClass,
             Type keyType, Type valueType,
             PojoProperty property,
             int dimension,
             Stack<String> stack,
             Type... context) throws MaxDeepException {
-        Map map = null;
+        Map map;
         if (Map.class.equals(mapClass)) {
             map = new HashMap();
         } else {
@@ -432,6 +428,65 @@ public class MockerFacade {
             }
         }
         MAP annotation = property.getAnnotation(MAP.class);
+        int size = 5;
+        SequenceGenerator keyGenerator = null;
+        Annotation keyMocker = null;
+        Annotation keyAnnotation = property.findDecoratedBy(MAP.Key.class);
+        if (keyAnnotation != null) {
+            size = keyAnnotation.annotationType().getAnnotation(MAP.Key.class).size();
+            // 查找优先级：Sequence.Use -> Sequence
+            Sequence.Use use = keyAnnotation.annotationType().getAnnotation(Sequence.Use.class);
+            if (use != null) {
+                keyGenerator = getSequenceGenerator(use.key(), use.notFound(), property);
+            }
+
+            if (keyGenerator == null) {
+                Sequence sequence = keyAnnotation.annotationType().getAnnotation(Sequence.class);
+                keyGenerator = buildSequenceGenerator(sequence);
+            }
+
+            if (keyGenerator == null) {
+                for (Annotation anno : keyAnnotation.annotationType().getAnnotations()) {
+                    if (anno.annotationType().getAnnotation(Mock.class) != null) {
+                        keyMocker = anno;
+                        break;
+                    }
+                }
+            } else {
+                keyGenerator.reset();
+                size = keyGenerator.size();
+            }
+        }
+
+        // 优先级 属性上Mock装饰的注解 -> 被MAP.Value装饰的注解里的Mock装饰的注解
+        Annotation valueMocker = property.findDecoratedBy(Mock.class);
+        if (valueMocker == null) {
+            Annotation a = property.findDecoratedBy(MAP.Value.class);
+            if (a != null) {
+                for (Annotation anno : a.annotationType().getAnnotations()) {
+                    if (anno.annotationType().getAnnotation(Mock.class) != null) {
+                        valueMocker = anno;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (keyGenerator != null || keyMocker != null || valueMocker != null) {
+            return mockMap(keyType, valueType, property, dimension, stack, map,
+                    context, size, keyMocker, valueMocker, keyGenerator);
+        } else {
+            // deprecated
+            return getMapUseMAPAnnotation(keyType, valueType, property,
+                    dimension, stack, map, annotation, context);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private static <T extends Map> T getMapUseMAPAnnotation(
+            Type keyType, Type valueType, final PojoProperty property,
+            int dimension, Stack<String> stack, Map map,
+            MAP annotation, Type[] context) throws MaxDeepException {
         int size = 5;
         Annotation keyMocker = null;
         Annotation valueMocker = null;
@@ -452,8 +507,7 @@ public class MockerFacade {
 
         SequenceGenerator generator = null;
         if (!Common.isBlank(keySeq)) {
-            generator = SEQUENCE_CONTEXT.get(keySeq);
-            checkGenerator(generator, keySeq, notFound, property);
+            generator = getSequenceGenerator(keySeq, notFound, property);
         }
 
         if (generator != null) {
@@ -461,8 +515,14 @@ public class MockerFacade {
             size = generator.size();
         }
 
-        while (map.size() < size) {
+        return mockMap(keyType, valueType, property, dimension, stack, map,
+                context, size, keyMocker, valueMocker, generator);
+    }
 
+    private static <T extends Map> T mockMap(final Type keyType, final Type valueType, final PojoProperty property, int dimension, Stack<String> stack, Map map, Type[] context, int size, Annotation keyMocker, Annotation valueMocker, SequenceGenerator generator) throws MaxDeepException {
+        int maxRetry = size * 10;
+        int retryTimes = 0;
+        while (map.size() < size && retryTimes++ < maxRetry) {
             final Annotation finalKeyMocker = keyMocker;
             Object key = generator == null ?
                     $mock(keyType, keyMocker == null ? null :
@@ -501,14 +561,11 @@ public class MockerFacade {
             return isCollection(((ParameterizedType) t).getRawType());
         } else if (t instanceof Class) {
             return ((Class) t).isArray() || Collection.class.isAssignableFrom((Class<?>) t);
-        } else if (t instanceof GenericArrayType) {
-            return true;
-        } else {
-            return false;
-        }
+        } else
+            return t instanceof GenericArrayType;
     }
 
-    private static final <T extends Collection> T mockCollection(
+    private static <T extends Collection> T mockCollection(
             Class<? extends Collection> collectionClass,
             Type componentType,
             final PojoProperty property,
@@ -516,7 +573,7 @@ public class MockerFacade {
             final Stack<String> stack,
             final Type... context) throws MaxDeepException {
 
-        Collection collection = null;
+        Collection collection;
         if (List.class.equals(collectionClass)) {
             collection = new ArrayList();
         } else if (Set.class.equals(collectionClass)) {
@@ -557,15 +614,15 @@ public class MockerFacade {
         return (T) collection;
     }
 
-    private static PojoInfo getPojoInfo(Type type, Type... context) {
-        synchronized (POJO_INFO_MAP) {
-            type = toTypeReference(type, context);
-            if (!POJO_INFO_MAP.containsKey(type.toString())) {
-                POJO_INFO_MAP.put(type.toString(), new PojoInfo(type, context));
-            }
-        }
-        return POJO_INFO_MAP.get(type.toString());
-    }
+//    private static PojoInfo getPojoInfo(Type type, Type... context) {
+//        synchronized (POJO_INFO_MAP) {
+//            type = toTypeReference(type, context);
+//            if (!POJO_INFO_MAP.containsKey(type.toString())) {
+//                POJO_INFO_MAP.put(type.toString(), new PojoInfo(type, context));
+//            }
+//        }
+//        return POJO_INFO_MAP.get(type.toString());
+//    }
 
     private static <T> T mockPojo(PojoInfo pojoInfo, PojoProperty property, Stack<String> stack, Type... context) throws MaxDeepException {
         if (stack == null)
@@ -586,7 +643,7 @@ public class MockerFacade {
                 Relation relation = pojoProperty.getAnnotation(Relation.class);
                 if (relations.containsKey(pojoProperty.getName())) continue;
 
-                if (relation != null && relation.properties() != null && relation.properties().length > 0) {
+                if (relation != null && relation.properties().length > 0) {
                     relations.put(pojoProperty.getName(), Arrays.asList(relation.properties()));
                     List<String> list = relations.get(pojoProperty.getName());
                     for (String dependency : list) {// field是否存在
@@ -615,7 +672,7 @@ public class MockerFacade {
 
 
     private static Object buildPojo(PojoInfo pojoInfo, Stack<String> stack, Type... context) {
-        Object instance = null;
+        Object instance;
         try {
             instance = POJO_BUILDER.newInstance(pojoInfo);
         } catch (Throwable th) {
@@ -628,10 +685,10 @@ public class MockerFacade {
                 buildProperty(instance, over, stack, pojoInfo, pojoProperty, context);
 
             } catch (Throwable th) {
-                String message = new StringBuilder("Cannot set property: ")
-                        .append(pojoProperty.getName())
-                        .append(", caused by: ")
-                        .append(th.getLocalizedMessage()).toString();
+                String message = "Cannot set property: " +
+                        pojoProperty.getName() +
+                        ", caused by: " +
+                        th.getLocalizedMessage();
 
                 if ("warn".equalsIgnoreCase(System.getProperty(Mock.POLICY_KEY))) {
                     log.warn("{}", message, th);
@@ -646,7 +703,7 @@ public class MockerFacade {
     private static void buildProperty(Object instance, Set<String> over, Stack<String> stack, PojoInfo pojoInfo, PojoProperty pojoProperty, Type[] context) throws Throwable {
         if (over.contains(pojoProperty.getName())) return;
         Relation relation = pojoProperty.getAnnotation(Relation.class);
-        if (relation != null && relation.properties() != null && relation.properties().length > 0) {
+        if (relation != null && relation.properties().length > 0) {
             List<Object> dependencies = new ArrayList<Object>();
             for (String property : relation.properties()) {
                 PojoProperty p = pojoInfo.getProperty(property);
@@ -695,8 +752,10 @@ public class MockerFacade {
         return size < 0 ? Common.random(1, 10) : size;
     }
 
-    private static void checkGenerator(SequenceGenerator generator, String key, Sequence.NotFound notFound,
+
+    private static SequenceGenerator getSequenceGenerator(String key, Sequence.NotFound notFound,
                                        PojoProperty pojoProperty) {
+        SequenceGenerator generator = SEQUENCE_CONTEXT.get(key);
         if (generator == null) {
             switch (notFound) {
                 case WARN:
@@ -708,6 +767,7 @@ public class MockerFacade {
                 default:
             }
         }
+        return generator;
     }
 
     private static SequenceGenerator getGenerator(PojoProperty pojoProperty) {
@@ -717,8 +777,7 @@ public class MockerFacade {
         Sequence.Use use = pojoProperty.getAnnotation(Sequence.Use.class);
         SequenceGenerator generator = null;
         if (use != null) {
-            generator = SEQUENCE_CONTEXT.get(use.key());
-            checkGenerator(generator, use.key(), use.notFound(), pojoProperty);
+            generator = getSequenceGenerator(use.key(), use.notFound(), pojoProperty);
         }
 
         // sequence

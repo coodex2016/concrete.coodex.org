@@ -17,6 +17,8 @@
 package test.org.coodex.util;
 
 import com.alibaba.fastjson.JSON;
+import org.coodex.concrete.api.mockers.Name;
+import org.coodex.concrete.api.mockers.VehicleNum;
 import org.coodex.pojomocker.MAP;
 import org.coodex.pojomocker.MockerFacade;
 import org.coodex.pojomocker.Sequence;
@@ -26,6 +28,10 @@ import org.coodex.pojomocker.annotations.STRING;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Map;
 
 public class MockerTest {
@@ -34,6 +40,7 @@ public class MockerTest {
     private A[][] values;
     private String[] strings;
     private Map<String, Integer> map;
+    private Map<String, String> cars;
 
     public static void main(String[] args) {
         log.debug(JSON.toJSONString(MockerFacade.mock(MockerTest.class)));
@@ -51,23 +58,59 @@ public class MockerTest {
         this.values = values;
     }
 
-    @Sequence(key = "c",sequenceType = Test2Sequence.class)
+    @NameKey
+    @VehicleNumValue
+    public Map<String, String> getCars() {
+        return cars;
+    }
+
+    public void setCars(Map<String, String> cars) {
+        this.cars = cars;
+    }
+
+    @Sequence(key = "c", sequenceType = Test2Sequence.class)
     @Sequence.Item(key = "c")
     public String[] getStrings() {
         return strings;
     }
 
-    @Sequences({
-            @Sequence(key = "a", sequenceType = TestSequence.class),
-            @Sequence(key = "b", sequenceType = Test2Sequence.class)
-    })
-    @MAP(keySeq = "a")
+    @Sequence(key = "b", sequenceType = Test2Sequence.class)
+    @TestKey
+    @TestValue
     public Map<String, Integer> getMap() {
         return map;
     }
 
     public void setMap(Map<String, Integer> map) {
         this.map = map;
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.FIELD})
+    @MAP.Key
+    @Sequence.Use(key = "b")
+    @interface TestKey {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.FIELD})
+    @MAP.Value
+    @INTEGER(min = 10, max = 50)
+    @interface TestValue {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.FIELD})
+    @MAP.Key(size = 10)
+    @Name
+    @interface NameKey {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.FIELD})
+    @MAP.Value
+    @VehicleNum
+    @interface VehicleNumValue {
     }
 
     public static class A {

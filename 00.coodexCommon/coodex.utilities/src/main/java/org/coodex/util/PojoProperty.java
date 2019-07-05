@@ -89,6 +89,16 @@ public class PojoProperty {
 //        return field == null ? annotation : field.getAnnotation(annotationClass);
     }
 
+    public Annotation findDecoratedBy(Class<? extends Annotation> decoratedClass) {
+        if (decoratedClass == null) return null;
+        for (Annotation annotation : getAnnotations()) {
+            if (annotation.annotationType().getAnnotation(decoratedClass) != null) {
+                return annotation;
+            }
+        }
+        return null;
+    }
+
     public Annotation[] getAnnotations() {
         synchronized (this) {
             if (annotations == null) {

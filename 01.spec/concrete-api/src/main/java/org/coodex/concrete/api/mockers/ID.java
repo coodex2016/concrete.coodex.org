@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * 模拟产生id,支持Long/long/String
  * Created by davidoff shen on 2017-05-15.
  */
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.FIELD, ElementType.METHOD,ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Mock
 public @interface ID {

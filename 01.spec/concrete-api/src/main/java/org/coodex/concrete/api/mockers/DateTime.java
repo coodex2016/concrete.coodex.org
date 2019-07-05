@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * 支持String, java.util.Date, java.util.Calendar
  * Created by davidoff shen on 2017-05-16.
  */
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.FIELD, ElementType.METHOD,ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Mock
 public @interface DateTime {

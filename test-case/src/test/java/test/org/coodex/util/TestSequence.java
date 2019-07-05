@@ -36,7 +36,7 @@ public class TestSequence implements SequenceGenerator<String> {
 
     @Override
     public int size() {
-        return values.length;
+        return values.length * 2;
     }
 
     @Override

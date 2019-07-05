@@ -21,7 +21,7 @@ import org.coodex.pojomocker.Mock;
 import java.lang.annotation.*;
 
 @Mock
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.FIELD, ElementType.METHOD,ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface MAC {

@@ -18,15 +18,26 @@ package org.coodex.pojomocker;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Created by davidoff shen on 2017-05-16.
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RUNTIME)
 public @interface MAP {
+
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RUNTIME)
+    @interface Key{
+        int size() default 5;
+    }
+
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RUNTIME)
+    @interface Value{}
 
     @SuppressWarnings("rawtypes")
     @Deprecated
@@ -47,6 +58,7 @@ public @interface MAP {
     @SuppressWarnings("rawtypes")
     @Deprecated
     Class valueMocker() default Mock.class;
+
     @Deprecated
     int size() default 5;
 

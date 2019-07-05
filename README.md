@@ -33,7 +33,78 @@ public interface SomeService {
     - 增加Sequence/ Sequences注解，用来定义序列发生器
     - Sequence.Use，当需要模拟序列数据时，说明内容使用哪个发生器
     - Sequence.Item，声明在实际模拟的序列属性上
-    - TODO Map模拟优化
+    - MAP模拟优化
+        - 废弃原MAP的所有属性，0.3.1移除
+        - 增加MAP.Key注解，用来装饰自定义的Map键模拟策略
+        - 增加MAP.Value注解，用来装饰自定义的Map值模拟策略
+        - 修改所有Mock策略注解，支持装饰ANNOTATION_TYPE(含concrete-api)
+- [示例](test-case/src/test/java/test/org/coodex/util/MockerTest.java)
+```java
+@Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.FIELD})
+    @MAP.Key
+    @Sequence.Use(key = "b")
+    @interface TestKey {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.FIELD})
+    @MAP.Value
+    @INTEGER(min = 10, max = 50)
+    @interface TestValue {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.FIELD})
+    @MAP.Key(size = 10)
+    @Name
+    @interface NameKey {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.FIELD})
+    @MAP.Value
+    @VehicleNum
+    @interface VehicleNumValue {
+    }
+    
+    @Sequence(key = "b", sequenceType = Test2Sequence.class)
+    @TestKey
+    @TestValue
+    public Map<String, Integer> getMap() {
+        return map;
+    }
+
+
+    @NameKey
+    @VehicleNumValue
+    public Map<String, String> getCars() {
+        return cars;
+    }
+```
+map和cars属性模拟的结果为
+```json
+{
+    "cars":{
+        "颛孙木":"吉O5085P",
+        "熊陇":"豫S1529L",
+        "路汤":"桂A2571学",
+        "扈局徐":"云Q1703M",
+        "龚俯":"甘K8645U",
+        "空宾抄":"蒙C7807E",
+        "严里苔":"新O6723S",
+        "查伏举":"津C6737Q",
+        "山仇":"辽M5344X",
+        "况棺":"琼BN46QY"
+    },
+    "map":{
+        "q":35,
+        "x":15,
+        "y":28,
+        "z":44
+    }
+}
+```
 
 ## 2019-07-03
 
