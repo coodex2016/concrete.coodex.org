@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package org.coodex.closure;
+package org.coodex.pojomocker.sequence;
 
-/**
- * Created by davidoff shen on 2017-04-20.
- */
-public interface ClosureContext<T> {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    T get();
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface NameSpace {
 
-//    T get(T defaultValue);
+    String value() default "";
 
-//    @Deprecated
-//    Object run(T var, Closure runnable);
-
-    Object call(T var, CallableClosure callable) throws Throwable;
 }

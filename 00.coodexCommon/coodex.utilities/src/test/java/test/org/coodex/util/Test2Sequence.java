@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package org.coodex.closure;
+package test.org.coodex.util;
 
-/**
- * Created by davidoff shen on 2017-04-20.
- */
-public interface ClosureContext<T> {
+public class Test2Sequence extends TestSequence {
 
-    T get();
-
-//    T get(T defaultValue);
-
-//    @Deprecated
-//    Object run(T var, Closure runnable);
-
-    Object call(T var, CallableClosure callable) throws Throwable;
+    public Test2Sequence() {
+        this.values = new String[]{"z","y","x","q"};
+    }
 }

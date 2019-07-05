@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package org.coodex.closure;
+package org.coodex.pojomocker;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.TYPE})
 /**
- * Created by davidoff shen on 2017-04-20.
+ * 定义一组序列生成器
  */
-public interface ClosureContext<T> {
+public @interface Sequences {
 
-    T get();
-
-//    T get(T defaultValue);
-
-//    @Deprecated
-//    Object run(T var, Closure runnable);
-
-    Object call(T var, CallableClosure callable) throws Throwable;
+    Sequence[] value();
 }

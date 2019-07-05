@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-package org.coodex.closure;
+package org.coodex.pojomocker.sequence;
 
-/**
- * Created by davidoff shen on 2016-11-25.
- */
-@Deprecated
-public interface Closure {
+import org.coodex.pojomocker.SequenceGenerator;
 
-    Object run();
+public abstract class AbstractSequenceGenerator<T> implements SequenceGenerator<T> {
+    private String key;
+
+    @Override
+    public String getKey() {
+        return key;
+    }
+
+    @Override
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+
 }

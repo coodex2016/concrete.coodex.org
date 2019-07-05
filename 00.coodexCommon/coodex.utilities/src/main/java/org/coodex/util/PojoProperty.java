@@ -104,4 +104,16 @@ public class PojoProperty {
         }
         return annotations;
     }
+
+    @Override
+    public String toString() {
+        return "PojoProperty{" +
+                "method=" + method +
+                ", field=" + field +
+                ", readonly=" + readonly +
+                ", type=" + type +
+                ", name='" + name + '\'' +
+                ", annotations=" + Arrays.toString(annotations) +
+                '}';
+    }
 }

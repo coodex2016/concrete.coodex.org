@@ -29,17 +29,25 @@ import java.lang.annotation.Target;
 public @interface MAP {
 
     @SuppressWarnings("rawtypes")
+    @Deprecated
     Class keyType() default String.class;
+    @Deprecated
+    String keySeq() default "";
+    @Deprecated
+    Sequence.NotFound notFound() default Sequence.NotFound.WARN;
 
     @SuppressWarnings("rawtypes")
+    @Deprecated
     Class keyMocker() default Mock.class;
 
     @SuppressWarnings("rawtypes")
+    @Deprecated
     Class valueType() default Object.class;
 
     @SuppressWarnings("rawtypes")
+    @Deprecated
     Class valueMocker() default Mock.class;
-
+    @Deprecated
     int size() default 5;
 
 }

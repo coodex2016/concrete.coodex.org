@@ -22,34 +22,61 @@ import java.util.Map;
 /**
  * Created by davidoff shen on 2016-09-04.
  */
-public class MapClosureContext<K, V> extends AbstractClosureContext<Map<K, V>> {
+public class MapClosureContext<K, V> extends StackClosureContext<Map<K, V>> {
 
-    protected Map<K, V> initValue() {
-        return new HashMap<K, V>();
-    }
+//    protected Map<K, V> initValue() {
+//        return new HashMap<K, V>();
+//    }
 
     public V get(K key) {
-        Map<K, V> map = $getVariant();
+        Map<K, V> map = get();
         return map == null ? null : map.get(key);
     }
 
-    @Deprecated
-    public Object runWith(K key, V v, Closure runnable) {
-        if (runnable == null) return null;
+    public Object call(K key, V v, CallableClosure callableClosure) throws Throwable {
+        if (key == null)
+            throw new RuntimeException("key MUST NOT null." + (v == null ? "" : v.toString()));
 
-        Map<K, V> map = $getVariant();
-        if (map == null) {
-            map = initValue();
-            map.put(key, v);
-            try {
-                return closureRun(map, runnable);
-            } finally {
-                map.clear();
-            }
-        } else {
-            map.put(key, v);
-            return runnable.run();
+        Map<K, V> map = new HashMap<K, V>();
+        Map<K, V> current = get();
+        if (current != null) {
+            map.putAll(current);
         }
-
+        map.put(key, v);
+        return super.call(map, callableClosure);
     }
+
+    @Override
+    public Object call(Map<K, V> map, CallableClosure callableClosure) throws Throwable {
+        Map<K, V> current = get();
+        Map<K, V> context = new HashMap<K, V>();
+        if(current != null && current.size() > 0){
+            context.putAll(current);
+        }
+        if(map != null && map.size() > 0){
+            context.putAll(map);
+        }
+        return super.call(context, callableClosure);
+    }
+
+
+//    @Deprecated
+//    public Object runWith(K key, V v, Closure runnable) {
+//        if (runnable == null) return null;
+//
+//        Map<K, V> map = $getVariant();
+//        if (map == null) {
+//            map = initValue();
+//            map.put(key, v);
+//            try {
+//                return closureRun(map, runnable);
+//            } finally {
+//                map.clear();
+//            }
+//        } else {
+//            map.put(key, v);
+//            return runnable.run();
+//        }
+//
+//    }
 }

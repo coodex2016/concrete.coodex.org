@@ -16,6 +16,8 @@
 
 package org.coodex.pojomocker;
 
+import org.coodex.closure.CallableClosure;
+import org.coodex.closure.MapClosureContext;
 import org.coodex.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +64,20 @@ public class MockerFacade {
             new AcceptableServiceLoader<String, RelationPolicy>(new ServiceLoaderFacade<RelationPolicy>() {
             });
     private static final Map<String, PojoInfo> POJO_INFO_MAP = new HashMap<String, PojoInfo>();
+
+    private static final SequenceContext SEQUENCE_CONTEXT = new SequenceContext();
+
+    private static SequenceGenerator buildSequenceGenerator(Sequence sequence) {
+        if (sequence == null) return null;
+        try {
+            SequenceGenerator generator = sequence.sequenceType().newInstance();
+            generator.setKey(sequence.key());
+//            generator.reset();
+            return generator;
+        } catch (Throwable e) {
+            throw Common.runtimeException(e);
+        }
+    }
 
     public static <T> T mock(GenericType<T> genericType) {
         return mock(genericType, null);
@@ -169,26 +185,113 @@ public class MockerFacade {
 //        return builder.append(')').toString();
     }
 
+    private static List<Sequence> getSequence(PojoProperty pojoProperty) {
+        if (pojoProperty == null) return null;
+
+        List<Sequence> sequences = new ArrayList<Sequence>();
+
+        Sequences sequencesAnnotation = pojoProperty.getAnnotation(Sequences.class);
+
+        if (sequencesAnnotation != null) {
+            for (Sequence sequence : sequencesAnnotation.value()) {
+                sequences.add(sequence);
+            }
+        }
+
+        Sequence sequence = pojoProperty.getAnnotation(Sequence.class);
+        if (sequence != null) {
+            sequences.add(sequence);
+        }
+
+        return sequences.size() > 0 ? sequences : null;
+    }
+
+    private static Object call(CallableClosure callableClosure) throws MaxDeepException {
+        try {
+            return callableClosure.call();
+        } catch (MaxDeepException mde) {
+            throw mde;
+        } catch (Throwable th) {
+            throw Common.runtimeException(th);
+        }
+    }
+
     private static <T> T $mock(
-            Type type, PojoProperty property, int dimension, Stack<String> stack, Type... context)
+            final Type type, final PojoProperty property,
+            final int dimension, final Stack<String> stack,
+            final Type... context)
             throws MaxDeepException {
         if (type == null) return null;
 
-        if (type instanceof ParameterizedType) {
-            return mockParameterizedType((ParameterizedType) type, property, dimension, stack, context);
+        CallableClosure callableClosure = new CallableClosure() {
+            @Override
+            public Object call() throws Throwable {
+                if (type instanceof ParameterizedType) {
+                    return mockParameterizedType((ParameterizedType) type, property, dimension, stack, context);
 //            return mockPojo(getPojoInfo(type, context), property, stack, context);
 //            return mockClass((Class) ((ParameterizedType) type).getRawType(), property, dimension, stack, context);
-        } else if (type instanceof GenericArrayType) {
-            return mockGenericArray((GenericArrayType) type, property, dimension, stack, context);
-        } else if (type instanceof Class) {
-            Class clazz = (Class) type;
-            if (clazz.isArray()) {
-                return mockArray(clazz, property, dimension, stack, context);
-            } else {
-                return mockClass(clazz, property, dimension, stack, context);
+                } else if (type instanceof GenericArrayType) {
+                    return mockGenericArray((GenericArrayType) type, property, dimension, stack, context);
+                } else if (type instanceof Class) {
+                    Class clazz = (Class) type;
+                    if (clazz.isArray()) {
+                        return mockArray(clazz, property, dimension, stack, context);
+                    } else {
+                        return mockClass(clazz, property, dimension, stack, context);
+                    }
+                }
+                return null;
             }
+        };
+
+        List<Sequence> sequenceList = getSequence(property);
+        if (sequenceList != null) {
+            Map<String, SequenceGenerator> generatorMap = new HashMap<String, SequenceGenerator>();
+            for (Sequence sequence : sequenceList) {
+                generatorMap.put(sequence.key(), buildSequenceGenerator(sequence));
+            }
+            return (T) SEQUENCE_CONTEXT.call(generatorMap, callableClosure);
+        } else {
+            return (T) call(callableClosure);
         }
-        return null;
+    }
+
+    private static <T> T mockArray(
+            Class clazz, final PojoProperty pojoProperty, final int dimension,
+            final Stack<String> stack, final Type... context)
+            throws MaxDeepException {
+        final Class componentClass = clazz.getComponentType();
+        int arraySize = getArraySize(pojoProperty, dimension);
+        final Object array;
+        if (componentClass.isArray()) {
+            array = Array.newInstance(componentClass, arraySize);
+            for (int i = 0; i < arraySize; i++) {
+                Array.set(array, i, mockArray(componentClass, pojoProperty, dimension + 1, stack, context));
+            }
+        } else {
+            SequenceGenerator generator = getGenerator(pojoProperty);
+            if (generator != null) {
+                generator.reset();
+                arraySize = generator.size();
+            }
+            array = Array.newInstance(componentClass, arraySize);
+            final int finalArraySize = arraySize;
+            SEQUENCE_CONTEXT.call(generator, new CallableClosure() {
+                @Override
+                public Object call() throws Throwable {
+                    for (int i = 0; i < finalArraySize; i++) {
+                        Array.set(array, i, mockClass(componentClass, pojoProperty, dimension + 1, stack, context));
+                    }
+                    return null;
+                }
+            });
+//            if (generator != null) {
+//                SEQUENCE_CONTEXT.call(generator.getKey(), generator, callableClosure);
+//            } else {
+//                call(callableClosure);
+//            }
+        }
+        return (T) array;
     }
 
     @SuppressWarnings("unchecked")
@@ -207,24 +310,44 @@ public class MockerFacade {
 
     @SuppressWarnings("unchecked")
     private static final <T> T mockGenericArray(
-            GenericArrayType type, PojoProperty property,
-            int dimension, Stack<String> stack, Type... context)
+            GenericArrayType type, final PojoProperty property,
+            final int dimension, final Stack<String> stack, final Type... context)
             throws MaxDeepException {
 
-        Type componentType = toTypeReference(type.getGenericComponentType(), context);
+        final Type componentType = toTypeReference(type.getGenericComponentType(), context);
         int size = getArraySize(property, dimension);
-        T array = (T) Array.newInstance(getComponentClass(componentType, context), size);
-        for (int i = 0; i < size; i++) {
-            if (componentType instanceof GenericArrayType) {
+        final T array;
+        if (componentType instanceof GenericArrayType) {
+            array = (T) Array.newInstance(getComponentClass(componentType, context), size);
+            for (int i = 0; i < size; i++) {
                 Array.set(array, i, mockGenericArray(
                         (GenericArrayType) componentType, property,
                         dimension + 1, stack, context));
-            } else if (componentType instanceof ParameterizedType) {
-                Array.set(array, i, mockParameterizedType((ParameterizedType) componentType,
-                        property, dimension + 1, stack, context));
-            } else {
-                throw new RuntimeException("unsupported component type: " + componentType.toString());
             }
+        } else if (componentType instanceof ParameterizedType) {
+            SequenceGenerator generator = getGenerator(property);
+            if (generator != null) {
+                generator.reset();
+                size = generator.size();
+            }
+            array = (T) Array.newInstance(getComponentClass(componentType, context), size);
+            final int finalSize = size;
+            SEQUENCE_CONTEXT.call(generator, new CallableClosure() {
+                @Override
+                public Object call() throws Throwable {
+                    for (int i = 0; i < finalSize; i++) {
+                        Array.set(array, i, mockParameterizedType((ParameterizedType) componentType,
+                                property, dimension + 1, stack, context));
+                    }
+                    return null;
+                }
+            });
+//            if (generator == null)
+//                call(callableClosure);
+//            else
+//                SEQUENCE_CONTEXT.call(generator.getKey(), generator, callableClosure);
+        } else {
+            throw new RuntimeException("unsupported component type: " + componentType.toString());
         }
         return array;
     }
@@ -260,21 +383,34 @@ public class MockerFacade {
             Class clazz, PojoProperty property, int dimension, Stack<String> stack, Type... context)
             throws MaxDeepException {
 
-
         if (Collection.class.isAssignableFrom(clazz)) {
             return (T) mockCollection(clazz, null, property, dimension, stack, context);
         } else if (Map.class.isAssignableFrom(clazz)) {
             return (T) mockMap(clazz, null, null,
                     property, dimension, stack, context);
-        } else if (TypeHelper.isPrimitive(clazz)) {
-            Annotation annotation = getAnnotation(property);
-            return (T) MOCKER_LOADER.getServiceInstance(annotation).mock(annotation, clazz);
         } else {
-            Annotation annotation = getAnnotation(property);
-            if (annotation != null) {
+
+            // find item
+            Sequence.Item item = property == null ? null : property.getAnnotation(Sequence.Item.class);
+            if (item != null) {
+                SequenceGenerator generator = SEQUENCE_CONTEXT.get(item.key());
+                if (generator == null) {
+                    checkGenerator(generator, item.key(), item.notFound(), property);
+                } else {
+                    return (T) generator.next();
+                }
+            }
+
+            if (TypeHelper.isPrimitive(clazz)) {
+                Annotation annotation = getAnnotation(property);
                 return (T) MOCKER_LOADER.getServiceInstance(annotation).mock(annotation, clazz);
-            } else
-                return mockPojo(new PojoInfo(clazz, context), property, stack, context);
+            } else {
+                Annotation annotation = getAnnotation(property);
+                if (annotation != null) {
+                    return (T) MOCKER_LOADER.getServiceInstance(annotation).mock(annotation, clazz);
+                } else
+                    return mockPojo(new PojoInfo(clazz, context), property, stack, context);
+            }
         }
     }
 
@@ -299,27 +435,44 @@ public class MockerFacade {
         int size = 5;
         Annotation keyMocker = null;
         Annotation valueMocker = null;
-
+        String keySeq = null;
+        Sequence.NotFound notFound = Sequence.NotFound.WARN;
         if (annotation != null) {
             size = Math.max(1, annotation.size());
             keyMocker = property.getAnnotation(annotation.keyMocker());
             valueMocker = property.getAnnotation(annotation.valueMocker());
             if (keyType == null) keyType = annotation.keyType();
             if (valueType == null) valueType = annotation.valueType();
+            keySeq = annotation.keySeq();
+            notFound = annotation.notFound();
         }
 
         if (keyType == null) keyType = String.class;
         if (valueType == null) valueType = String.class;
 
+        SequenceGenerator generator = null;
+        if (!Common.isBlank(keySeq)) {
+            generator = SEQUENCE_CONTEXT.get(keySeq);
+            checkGenerator(generator, keySeq, notFound, property);
+        }
+
+        if (generator != null) {
+            generator.reset();
+            size = generator.size();
+        }
+
         while (map.size() < size) {
 
             final Annotation finalKeyMocker = keyMocker;
-            Object key = $mock(keyType, keyMocker == null ? null : new PojoProperty(property, keyType) {
-                @Override
-                public Annotation[] getAnnotations() {
-                    return new Annotation[]{finalKeyMocker};
-                }
-            }, dimension, stack, context);
+            Object key = generator == null ?
+                    $mock(keyType, keyMocker == null ? null :
+                            new PojoProperty(property, keyType) {
+                                @Override
+                                public Annotation[] getAnnotations() {
+                                    return new Annotation[]{finalKeyMocker};
+                                }
+                            }, dimension, stack, context) :
+                    generator.next();
 
             final Annotation finalValueMocker = valueMocker;
             Object value = $mock(valueType, valueMocker == null ? null : new PojoProperty(property, valueType) {
@@ -342,13 +495,26 @@ public class MockerFacade {
 //        }
 //    }
 
+
+    private static boolean isCollection(Type t) {
+        if (t instanceof ParameterizedType) {
+            return isCollection(((ParameterizedType) t).getRawType());
+        } else if (t instanceof Class) {
+            return ((Class) t).isArray() || Collection.class.isAssignableFrom((Class<?>) t);
+        } else if (t instanceof GenericArrayType) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private static final <T extends Collection> T mockCollection(
             Class<? extends Collection> collectionClass,
             Type componentType,
-            PojoProperty property,
-            int dimension,
-            Stack<String> stack,
-            Type... context) throws MaxDeepException {
+            final PojoProperty property,
+            final int dimension,
+            final Stack<String> stack,
+            final Type... context) throws MaxDeepException {
 
         Collection collection = null;
         if (List.class.equals(collectionClass)) {
@@ -363,11 +529,31 @@ public class MockerFacade {
             }
         }
         if (componentType == null) componentType = Object.class;
+        final Type componetTypeRef = toTypeReference(componentType, context);
+        int size = getArraySize(property, dimension);
 
-        for (int i = 0, size = getArraySize(property, dimension); i < size; i++) {
-            collection.add($mock(toTypeReference(componentType, context), property, dimension + 1, stack, context));
+        if (isCollection(componetTypeRef)) {
+            for (int i = 0; i < size; i++) {
+                collection.add($mock(componetTypeRef, property, dimension + 1, stack, context));
+            }
+        } else {
+            SequenceGenerator generator = getGenerator(property);
+            if (generator != null) {
+                generator.reset();
+                size = generator.size();
+            }
+            final Collection finalCollection = collection;
+            final int finalSize = size;
+            SEQUENCE_CONTEXT.call(generator, new CallableClosure() {
+                @Override
+                public Object call() throws Throwable {
+                    for (int i = 0; i < finalSize; i++) {
+                        finalCollection.add($mock(componetTypeRef, property, dimension + 1, stack, context));
+                    }
+                    return null;
+                }
+            });
         }
-
         return (T) collection;
     }
 
@@ -509,19 +695,72 @@ public class MockerFacade {
         return size < 0 ? Common.random(1, 10) : size;
     }
 
-    private static <T> T mockArray(
-            Class clazz, PojoProperty pojoProperty, int dimension,
-            Stack<String> stack, Type... context)
-            throws MaxDeepException {
-        Class componentClass = clazz.getComponentType();
-        int arraySize = getArraySize(pojoProperty, dimension);
-        Object array = Array.newInstance(componentClass, arraySize);
-        for (int i = 0; i < arraySize; i++) {
-            Array.set(array, i, componentClass.isArray() ?
-                    mockArray(componentClass, pojoProperty, dimension + 1, stack, context) :
-                    mockClass(componentClass, pojoProperty, dimension + 1, stack, context));
+    private static void checkGenerator(SequenceGenerator generator, String key, Sequence.NotFound notFound,
+                                       PojoProperty pojoProperty) {
+        if (generator == null) {
+            switch (notFound) {
+                case WARN:
+                    log.warn("sequence [{}] not found. {}", key, pojoProperty);
+                    break;
+                case ERROR:
+                    throw new RuntimeException("sequence [" + key + "] not found. " + pojoProperty);
+                case IGNORE:
+                default:
+            }
         }
-        return (T) array;
+    }
+
+    private static SequenceGenerator getGenerator(PojoProperty pojoProperty) {
+        if (pojoProperty == null) return null;
+
+        // use
+        Sequence.Use use = pojoProperty.getAnnotation(Sequence.Use.class);
+        SequenceGenerator generator = null;
+        if (use != null) {
+            generator = SEQUENCE_CONTEXT.get(use.key());
+            checkGenerator(generator, use.key(), use.notFound(), pojoProperty);
+        }
+
+        // sequence
+        if (generator == null) {
+            Sequence sequence = pojoProperty.getAnnotation(Sequence.class);
+            if (sequence != null) {
+                generator = buildSequenceGenerator(sequence);
+            }
+        }
+        return generator;
+    }
+
+    private static class SequenceContext extends MapClosureContext<String, SequenceGenerator> {
+        @Override
+        public Object call(String key, SequenceGenerator sequenceGenerator, CallableClosure callableClosure) throws MaxDeepException {
+            try {
+                return super.call(key, sequenceGenerator, callableClosure);
+            } catch (MaxDeepException mde) {
+                throw mde;
+            } catch (Throwable th) {
+                throw Common.runtimeException(th);
+            }
+        }
+
+        @Override
+        public Object call(Map<String, SequenceGenerator> map, CallableClosure callableClosure) throws MaxDeepException {
+            try {
+                return super.call(map, callableClosure);
+            } catch (MaxDeepException mde) {
+                throw mde;
+            } catch (Throwable th) {
+                throw Common.runtimeException(th);
+            }
+        }
+
+        public Object call(SequenceGenerator generator, CallableClosure callableClosure) throws MaxDeepException {
+            if (generator == null) {
+                return MockerFacade.call(callableClosure);
+            } else {
+                return call(generator.getKey(), generator, callableClosure);
+            }
+        }
     }
 
     private static class MaxDeepException extends Exception {

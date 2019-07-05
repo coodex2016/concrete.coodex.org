@@ -29,16 +29,16 @@ public abstract class AbstractClosureContext<VariantType> {
         return threadLocal.get();
     }
 
-    @Deprecated
-    protected final Object closureRun(VariantType variant, Closure runnable) {
-        if (runnable == null) return null;
-        threadLocal.set(variant);
-        try {
-            return runnable.run();
-        } finally {
-            threadLocal.remove();
-        }
-    }
+//    @Deprecated
+//    protected final Object closureRun(VariantType variant, Closure runnable) {
+//        if (runnable == null) return null;
+//        threadLocal.set(variant);
+//        try {
+//            return runnable.run();
+//        } finally {
+//            threadLocal.remove();
+//        }
+//    }
 
     protected final Object closureRun(VariantType variant, CallableClosure callable) throws Throwable {
         if (callable == null) return null;

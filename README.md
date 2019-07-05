@@ -26,6 +26,15 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-05
+
+- MockerFacade重构，增加对序列数据的支持
+    - 增加SequenceGenerator接口，用来扩展生成序列数据的发生器
+    - 增加Sequence/ Sequences注解，用来定义序列发生器
+    - Sequence.Use，当需要模拟序列数据时，说明内容使用哪个发生器
+    - Sequence.Item，声明在实际模拟的序列属性上
+    - TODO Map模拟优化
+
 ## 2019-07-03
 
 - 修复MockInterceptor依赖Bean的问题

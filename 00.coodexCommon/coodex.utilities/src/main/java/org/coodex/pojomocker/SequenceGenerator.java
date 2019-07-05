@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package org.coodex.closure;
+package org.coodex.pojomocker;
 
-/**
- * Created by davidoff shen on 2017-04-20.
- */
-public interface ClosureContext<T> {
+public interface SequenceGenerator<T> {
 
-    T get();
+    String getKey();
 
-//    T get(T defaultValue);
+    void setKey(String key);
 
-//    @Deprecated
-//    Object run(T var, Closure runnable);
+    int size();
 
-    Object call(T var, CallableClosure callable) throws Throwable;
+    void reset();
+
+    T next();
+
 }

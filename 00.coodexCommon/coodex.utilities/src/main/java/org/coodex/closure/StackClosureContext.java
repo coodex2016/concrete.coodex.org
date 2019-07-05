@@ -29,34 +29,34 @@ public class StackClosureContext<VariantType> extends AbstractClosureContext<Sta
         return stack == null ? null : stack.lastElement();
     }
 
-    @Override
-    public VariantType get(VariantType defaultValue) {
-        return get() == null ? defaultValue : get();
-    }
-
-    @Override
-    @Deprecated
-    public Object run(VariantType variant, Closure runnable) {
-        if (runnable == null) return null;
-
-        Stack<VariantType> stack = $getVariant();
-        if (stack == null) {
-            stack = new Stack<VariantType>();
-            stack.push(variant);
-            try {
-                return closureRun(stack, runnable);
-            } finally {
-                stack.clear();
-            }
-        } else {
-            stack.push(variant);
-            try {
-                return runnable.run();
-            } finally {
-                stack.pop();
-            }
-        }
-    }
+//    @Override
+//    public VariantType get(VariantType defaultValue) {
+//        return get() == null ? defaultValue : get();
+//    }
+//
+//    @Override
+//    @Deprecated
+//    public Object run(VariantType variant, Closure runnable) {
+//        if (runnable == null) return null;
+//
+//        Stack<VariantType> stack = $getVariant();
+//        if (stack == null) {
+//            stack = new Stack<VariantType>();
+//            stack.push(variant);
+//            try {
+//                return closureRun(stack, runnable);
+//            } finally {
+//                stack.clear();
+//            }
+//        } else {
+//            stack.push(variant);
+//            try {
+//                return runnable.run();
+//            } finally {
+//                stack.pop();
+//            }
+//        }
+//    }
 
     @Override
     public Object call(VariantType var, CallableClosure callable) throws Throwable {
