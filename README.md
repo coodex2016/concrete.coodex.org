@@ -33,6 +33,7 @@ public interface SomeService {
     - 增加Sequence/ Sequences注解，用来定义序列发生器
     - Sequence.Use，当需要模拟序列数据时，说明内容使用哪个发生器
     - Sequence.Item，声明在实际模拟的序列属性上
+    - 提供可配置的SequenceGenerator抽象实现
     - MAP模拟优化
         - 废弃原MAP的所有属性，0.3.1移除
         - 增加MAP.Key注解，用来装饰自定义的Map键模拟策略
@@ -40,7 +41,7 @@ public interface SomeService {
         - 修改所有Mock策略注解，支持装饰ANNOTATION_TYPE(含concrete-api)
 - [示例](test-case/src/test/java/test/org/coodex/util/MockerTest.java)
 ```java
-@Retention(RetentionPolicy.RUNTIME)
+    @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD, ElementType.FIELD})
     @MAP.Key
     @Sequence.Use(key = "b")

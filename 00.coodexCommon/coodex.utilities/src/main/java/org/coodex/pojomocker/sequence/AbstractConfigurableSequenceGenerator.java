@@ -16,26 +16,51 @@
 
 package org.coodex.pojomocker.sequence;
 
-import org.coodex.util.Profile;
+import org.coodex.config.Config;
+import org.coodex.config.Configuration;
 import org.coodex.util.Singleton;
 
 public abstract class AbstractConfigurableSequenceGenerator<T> extends AbstractSequenceGenerator<T> {
 
 
-    private Singleton<Profile> profileSingleton = new Singleton<Profile>(new Singleton.Builder<Profile>() {
+    private Singleton<Configuration> configSingleton = new Singleton<Configuration>(new Singleton.Builder<Configuration>() {
         @Override
-        public Profile build() {
-            return Profile.getProfile(getNameSpace() + "." + getKey());
+        public Configuration build() {
+
+            return new Configuration() {
+                private String[] contextNameSpace = getNameSpace();
+
+                @Override
+                public String get(String key, String... namespaces) {
+                    if (namespaces == null || namespaces.length == 0) {
+                        return Config.get(key, contextNameSpace);
+                    } else {
+                        return Config.get(key, namespaces);
+                    }
+                }
+
+                @Override
+                public <T> T getValue(String key, T defaultValue, String... namespace) {
+                    if (namespace == null || namespace.length == 0) {
+                        return Config.getValue(key, defaultValue, contextNameSpace);
+                    } else {
+                        return Config.getValue(key, defaultValue, namespace);
+                    }
+                }
+            };
         }
     });
 
-    private String getNameSpace() {
+    private String[] getNameSpace() {
         NameSpace nameSpace = this.getClass().getAnnotation(NameSpace.class);
-        return nameSpace == null ? "seq_gen" : nameSpace.value();
+        return nameSpace == null ? new String[]{"seq_gen"} : new String[]{"seq_gen", nameSpace.value()};
     }
 
-    protected Profile getProfile() {
-        return profileSingleton.getInstance();
+    //    protected Profile getProfile() {
+//        return profileSingleton.getInstance();
+//    }
+    protected Configuration getConfig() {
+        return configSingleton.getInstance();
     }
 
 

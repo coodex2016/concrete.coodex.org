@@ -19,12 +19,11 @@ package test.org.coodex.util;
 import com.alibaba.fastjson.JSON;
 import org.coodex.concrete.api.mockers.Name;
 import org.coodex.concrete.api.mockers.VehicleNum;
-import org.coodex.pojomocker.MAP;
-import org.coodex.pojomocker.MockerFacade;
-import org.coodex.pojomocker.Sequence;
-import org.coodex.pojomocker.Sequences;
+import org.coodex.pojomocker.*;
 import org.coodex.pojomocker.annotations.INTEGER;
 import org.coodex.pojomocker.annotations.STRING;
+import org.coodex.pojomocker.sequence.NameSpace;
+import org.coodex.pojomocker.sequence.StrDateTimeSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +34,9 @@ import java.lang.annotation.Target;
 import java.util.Map;
 
 public class MockerTest {
+
+    @NameSpace("my")
+    public static class MyGenerator extends StrDateTimeSequence{}
 
     private final static Logger log = LoggerFactory.getLogger(MockerTest.class);
     private A[][] values;
@@ -68,8 +70,9 @@ public class MockerTest {
         this.cars = cars;
     }
 
-    @Sequence(key = "c", sequenceType = Test2Sequence.class)
+    @Sequence(key = "c", sequenceType = MyGenerator.class)
     @Sequence.Item(key = "c")
+//    @COLLECTION(size = 2)
     public String[] getStrings() {
         return strings;
     }
