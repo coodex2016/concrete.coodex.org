@@ -66,6 +66,7 @@ public class MockerFacade {
 //    private static final Map<String, PojoInfo> POJO_INFO_MAP = new HashMap<String, PojoInfo>();
 
     private static final SequenceContext SEQUENCE_CONTEXT = new SequenceContext();
+    private static final MockerRefContext MOCKER_REF_CONTEXT = new MockerRefContext();
 
     private static SequenceGenerator buildSequenceGenerator(Sequence sequence) {
         if (sequence == null) return null;
@@ -242,6 +243,8 @@ public class MockerFacade {
             }
         };
 
+        callableClosure = defMockerRefContext(property, callableClosure);
+
         List<Sequence> sequenceList = getSequence(property);
         if (sequenceList != null) {
             Map<String, SequenceGenerator> generatorMap = new HashMap<String, SequenceGenerator>();
@@ -252,6 +255,51 @@ public class MockerFacade {
         } else {
             return (T) call(callableClosure);
         }
+    }
+
+    private static CallableClosure defMockerRefContext(PojoProperty property, CallableClosure callableClosure) {
+        Annotation annotation = property == null ? null : property.findDecoratedBy(MockerDef.class);
+        if (annotation != null) {
+            Class c = annotation.annotationType();
+            final Map<String, Annotation> map = new HashMap<String, Annotation>();
+            for (Method method : c.getDeclaredMethods()) {
+                Annotation mocker = getAnnotationDecoratedBy(method.getDeclaredAnnotations(), Mock.class);
+                if (mocker != null) {
+                    map.put(method.getName(), mocker);
+                }
+            }
+            if (map.size() > 0) {
+                final CallableClosure finalCallableClosure = callableClosure;
+                callableClosure = new CallableClosure() {
+                    @Override
+                    public Object call() throws Throwable {
+                        return MOCKER_REF_CONTEXT.call(map, finalCallableClosure);
+                    }
+                };
+            }
+        }
+        return callableClosure;
+    }
+
+    private static String getMockerName(Annotation annotation) {
+        if (annotation == null) return null;
+        Throwable th;
+        try {
+            Method m = annotation.annotationType().getDeclaredMethod("name");
+            m.setAccessible(true);
+            return (String) m.invoke(annotation);
+        } catch (NoSuchMethodException e) {
+            th = e;
+        } catch (IllegalAccessException e) {
+            th = e;
+        } catch (InvocationTargetException e) {
+            th = e;
+        }
+        if (th != null) {
+            // do nothing
+        }
+        return null;
+
     }
 
     private static <T> T mockArray(
@@ -399,6 +447,17 @@ public class MockerFacade {
             }
 
             Annotation annotation = property == null ? null : property.findDecoratedBy(Mock.class);
+
+            MockerRef ref = property == null ? null : property.getAnnotation(MockerRef.class);
+            if (ref != null) {
+                Annotation mocker = MOCKER_REF_CONTEXT.get(ref.name());
+                if (mocker == null) {
+                    log.info("mocker reference [{}] not found in context.", ref.name());
+                } else {
+                    annotation = mocker;
+                }
+            }
+
             if (TypeHelper.isPrimitive(clazz)) {
                 return (T) MOCKER_LOADER.getServiceInstance(annotation).mock(annotation, clazz);
             } else {
@@ -790,11 +849,21 @@ public class MockerFacade {
         return generator;
     }
 
-    private static class SequenceContext extends MapClosureContext<String, SequenceGenerator> {
+    private static Annotation getAnnotationDecoratedBy(Annotation[] annotations, Class<? extends Annotation> decorater) {
+        if (annotations == null || annotations.length == 0) return null;
+        for (Annotation a : annotations) {
+            if (a.annotationType().getAnnotation(decorater) != null) {
+                return a;
+            }
+        }
+        return null;
+    }
+
+    private static class AbstractKeyValueContext<V> extends MapClosureContext<String, V> {
         @Override
-        public Object call(String key, SequenceGenerator sequenceGenerator, CallableClosure callableClosure) throws MaxDeepException {
+        public Object call(String key, V v, CallableClosure callableClosure) throws MaxDeepException {
             try {
-                return super.call(key, sequenceGenerator, callableClosure);
+                return super.call(key, v, callableClosure);
             } catch (MaxDeepException mde) {
                 throw mde;
             } catch (Throwable th) {
@@ -803,7 +872,7 @@ public class MockerFacade {
         }
 
         @Override
-        public Object call(Map<String, SequenceGenerator> map, CallableClosure callableClosure) throws MaxDeepException {
+        public Object call(Map<String, V> map, CallableClosure callableClosure) throws MaxDeepException {
             try {
                 return super.call(map, callableClosure);
             } catch (MaxDeepException mde) {
@@ -812,6 +881,22 @@ public class MockerFacade {
                 throw Common.runtimeException(th);
             }
         }
+    }
+
+    private static class MockerRefContext extends AbstractKeyValueContext<Annotation> {
+
+        public Object call(Annotation annotation, CallableClosure callableClosure) throws MaxDeepException {
+            String name = getMockerName(annotation);
+            if (Common.isBlank(name)) {
+                return MockerFacade.call(callableClosure);
+            } else {
+                return call(name, annotation, callableClosure);
+            }
+        }
+    }
+
+
+    private static class SequenceContext extends AbstractKeyValueContext<SequenceGenerator> {
 
         public Object call(SequenceGenerator generator, CallableClosure callableClosure) throws MaxDeepException {
             if (generator == null) {

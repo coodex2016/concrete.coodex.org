@@ -17,14 +17,17 @@
 package org.coodex.concrete.api.pojo;
 
 import org.coodex.concrete.api.Description;
+import org.coodex.pojomocker.MockerRef;
 
 /**
  * Created by davidoff shen on 2017-03-21.
  */
 public abstract class AbstractPage {
     @Description(name = "第几页", description = "从1开始")
+    @MockerRef(name = "pageNum")
     private Long num;
     @Description(name = "每页多少条数据")
+    @MockerRef(name = "pageSize")
     private Integer pageSize;
 
 

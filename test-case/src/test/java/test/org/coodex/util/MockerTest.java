@@ -52,6 +52,7 @@ public class MockerTest {
             @Sequence(key = "a", sequenceType = TestSequence.class),
             @Sequence(key = "b", sequenceType = Test2Sequence.class)
     })
+    @MockerDefTest
     public A[][] getValues() {
         return values;
     }
@@ -116,15 +117,30 @@ public class MockerTest {
     @interface VehicleNumValue {
     }
 
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE})
+    @MockerDef
+    @interface MockerDefTest {
+        @STRING(range = {"A", "b", "c"})
+        String str() default "";// str 是模拟器名称
+
+        @INTEGER(min = 10, max = 50)
+        int integer() default 0;// integer 是模拟器名称
+    }
+
+
     public static class A {
 
         @Sequence.Item(key = "a")
         private String name;
 
 
-        @STRING(range = {"A", "B", "C"})
+//        @STRING(range = {"A", "B", "C"})
+        @MockerRef(name = "str")
         private String name2;
 
+        @MockerRef(name = "integer")
         private Integer value;
 
         public String getName() {

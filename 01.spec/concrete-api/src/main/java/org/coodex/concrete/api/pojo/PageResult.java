@@ -17,6 +17,7 @@
 package org.coodex.concrete.api.pojo;
 
 import org.coodex.concrete.api.Description;
+import org.coodex.pojomocker.MockerRef;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +27,10 @@ import java.util.List;
  */
 public class PageResult<T> extends AbstractPage {
     @Description(name = "总共多少页")
+    @MockerRef(name = "total")
     private Long total;
     @Description(name = "总共多少条数据")
+    @MockerRef(name = "count")
     private Long count;
     private List<T> list = new ArrayList<T>();
 

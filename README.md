@@ -26,6 +26,44 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-09
+
+- Mocker（Mocker已经越来越复杂了，继续再这么修改不是办法，031会重新设计，并且将之独立出来）
+    - 增加MockerDef和MockerRef注解
+    - MockerDef负责定义模拟器配置，MockerRef用以使用上下文中指定名称的模拟器，用以解决公用Pojo的模拟问题
+    - concrete-api中，通用的PageResult增加指定模拟器设置，外部通过MockerRef注入
+        - pageNum，整数类型
+        - pageSize, 一页最大条数，建议固定
+        - total，总条数
+        - count, 当页条数
+    - 示例
+```java
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE})
+    @MockerDef
+    @interface MockerDefTest {
+        @STRING(range = {"A", "b", "c"})
+        String str() default "";// str 是模拟器名称
+
+        @INTEGER(min = 10, max = 50)
+        int integer() default 0;// integer 是模拟器名称
+    }
+    
+    
+        @MockerDefTest // 指定模拟A这个通用POJO的上下文
+        public A[][] getValues() {
+            return values;
+        }
+        
+        static class A {
+            @MockerRef(name = "str")// 使用上下文中名为 str 的模拟器配置
+            private String name2;
+    
+            @MockerRef(name = "integer")// 使用上下文中名为 integer 的模拟器配置
+            private Integer value;
+        }
+```
+
 ## 2019-07-05
 
 - MockerFacade重构，增加对序列数据的支持

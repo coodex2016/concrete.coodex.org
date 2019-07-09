@@ -40,7 +40,7 @@ public class PojoProperty {
     protected PojoProperty(PojoProperty property, Type type) {
         this.method = property == null ? null : property.getMethod();
         this.field = property == null ? null : property.getField();
-        this.readonly = property == null ? false : property.isReadonly();
+        this.readonly = property != null && property.isReadonly();
         this.type = type;
         this.name = property == null ? null : property.getName();
     }
@@ -97,6 +97,18 @@ public class PojoProperty {
             }
         }
         return null;
+    }
+
+    public List<Annotation> findAllDecoratedBy(Class<? extends Annotation> decoratedClass) {
+        if (decoratedClass == null) return null;
+        List<Annotation> annotationList = new ArrayList<Annotation>();
+        for (Annotation annotation : getAnnotations()) {
+            if (annotation.annotationType().getAnnotation(decoratedClass) != null) {
+//                return annotation;
+                annotationList.add(annotation);
+            }
+        }
+        return annotationList.size() > 0 ? annotationList : null;
     }
 
     public Annotation[] getAnnotations() {
