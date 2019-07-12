@@ -26,6 +26,11 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-12
+
+- concrete-api: 增加TimeCost注解，模拟运行时长
+- concrete-core: 增加TimeCostInterceptor，与MockInterceptor一起使用，单独使用不生效
+
 ## 2019-07-09
 
 - Mocker（Mocker已经越来越复杂了，继续再这么修改不是办法，031会重新设计，并且将之独立出来）

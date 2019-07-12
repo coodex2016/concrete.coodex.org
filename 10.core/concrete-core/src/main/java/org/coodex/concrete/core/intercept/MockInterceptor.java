@@ -64,6 +64,10 @@ public class MockInterceptor extends AbstractSyncInterceptor {
 
     @Override
     public Object around(DefinitionContext context, MethodInvocation joinPoint) throws Throwable {
+        return run(context);
+    }
+
+    private Object run(DefinitionContext context) throws IOException {
         if (void.class.equals(context.getDeclaringMethod().getReturnType())) {
             return null;
         }
