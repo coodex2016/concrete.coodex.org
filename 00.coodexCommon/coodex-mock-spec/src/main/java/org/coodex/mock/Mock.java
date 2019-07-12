@@ -276,7 +276,7 @@ public @interface Mock {
     @interface Number {
         /**
          * <pre>
-         * 指定模拟范围
+         * 指定模拟范围，不指定则为该类型数据得全域模拟
          * 范围包括两种：连续范围，单值范围
          * 连续范围规则如下
          * '['  - 表示一个连续范围开始，且包含此值
@@ -291,8 +291,9 @@ public @interface Mock {
          *
          * 多个单值范围或连续范围使用 ',' 分割
          *
-         * 各个范围不需要有序，各自模拟的权重，单值为1，连续范围则根据此连续范围内整数的个数来确定，0个权重为1，否则权重连续范围内的整数个数
+         * 特别的，MIN代表该类型的最小值，MAX代表该类型的最大值，不区分大小写，例如[min,0),MAX,15
          *
+         * 各个范围不需要有序，各自模拟的权重，单值为1，连续范围则根据此连续范围内整数的个数来确定，0个权重为1，否则权重连续范围内的整数个数
          *
          * 例如：
          * 10,[-1,5],8,(20,30),35
@@ -303,26 +304,76 @@ public @interface Mock {
          *
          * @return 模拟范围
          */
-        java.lang.String value();
+        java.lang.String value() default "";
     }
 
+    /**
+     * 模拟字符。
+     * <p>
+     * 支持的类型, char及其包装类，String
+     * <pre>
+     * 模拟优先级:
+     *  - value() 为非0元素集合，则在集合范围内模拟
+     *  - range() 为有长度的字符串时，在字符串的字符中模拟
+     *  - 默认：'0'-'9','A'-'Z','a'-'z' 中模拟
+     * </pre>
+     */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
     @Mock
     @interface Char {
+        /**
+         * @return 字符编码集范围
+         * @see CharCodeSet
+         */
+        CharCodeSet[] value() default {};
+
+        /**
+         * @return 字符可选范围
+         */
         java.lang.String range() default "";
     }
 
 
+    /**
+     * <pre>
+     * 字符串模拟配置
+     *
+     * 模拟配置优先级：
+     *  - txtResource() 存在且有内容时，在资源文件行中模拟
+     *  - range() 非0长字符串，在range范围内模拟
+     *  - charCodeSet() 非0元素宿数组时，结合minLength,maxLength模拟
+     *  - 默认，'0'-'9','A'-'Z','a'-'z'范围内，结合minLength,maxLength模拟
+     * </pre>
+     */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
     @Mock
     @interface String {
 
-        int length() default 10;
+        /**
+         * @return 最小长度
+         */
+        int minLength() default 5;
 
+        /**
+         * @return 最大长度
+         */
+        int maxLength() default 10;
+
+        /**
+         * @return 模拟的charCode范围
+         */
+        CharCodeSet[] charCodeSets() default {};
+
+        /**
+         * @return 在指定的内容中模拟
+         */
         java.lang.String[] range() default {};
 
+        /**
+         * @return 使用资源文件模拟，一行一个
+         */
         java.lang.String txtResource() default "";
     }
 
