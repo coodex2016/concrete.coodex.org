@@ -18,4 +18,11 @@ package org.coodex.mock;
 
 public class MockException extends RuntimeException {
 
+    public MockException(String message) {
+        super(message);
+    }
+
+    public MockException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

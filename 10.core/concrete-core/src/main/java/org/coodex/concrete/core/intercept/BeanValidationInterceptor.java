@@ -17,12 +17,16 @@
 package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.DefinitionContext;
+import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.ViolationsFormatter;
 import org.coodex.concrete.core.intercept.annotations.Local;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.config.Config;
 import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,12 +59,9 @@ public class BeanValidationInterceptor extends AbstractInterceptor {
         }
     };
 
-    private final static ServiceLoader<ViolationsFormatter> VIOLATIONS_FORMATTER_SPI = new ConcreteServiceLoader<ViolationsFormatter>() {
-        @Override
-        protected ViolationsFormatter getConcreteDefaultProvider() {
-            return DEFAULT_FORMMATER;
-        }
-    };
+    private final static ServiceLoader<ViolationsFormatter> VIOLATIONS_FORMATTER_SPI =
+            new ServiceLoaderImpl<ViolationsFormatter>(DEFAULT_FORMMATER) {
+            };
 
 
     private ExecutableValidator executableValidator = null; // jsr339

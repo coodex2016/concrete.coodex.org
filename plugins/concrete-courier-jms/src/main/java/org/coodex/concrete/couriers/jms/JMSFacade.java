@@ -17,7 +17,6 @@
 package org.coodex.concrete.couriers.jms;
 
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.message.Serializer;
 import org.coodex.concrete.message.Topics;
 import org.coodex.util.AcceptableServiceLoader;
@@ -38,19 +37,14 @@ class JMSFacade {
 
     private final static AcceptableServiceLoader<String, ConnectionFactoryProvider>
             connectionFactoryProviderAcceptableServiceLoader =
-            new AcceptableServiceLoader<String, ConnectionFactoryProvider>(
-                    new ConcreteServiceLoader<ConnectionFactoryProvider>() {
-                    });
+            new AcceptableServiceLoader<>();
     private final static SingletonMap<String, ConnectionFactory> connectionFactorySingletonMap
-            = new SingletonMap<String, ConnectionFactory>(new SingletonMap.Builder<String, ConnectionFactory>() {
-        @Override
-        public ConnectionFactory build(String key) {
-            ConnectionFactoryProvider cfp = connectionFactoryProviderAcceptableServiceLoader.getServiceInstance(key);
-            if (cfp == null) {
-                throw new RuntimeException("no ConnectionFactoryProvider found for :" + key);
-            } else {
-                return cfp.build(key);
-            }
+            = new SingletonMap<>(key -> {
+        ConnectionFactoryProvider cfp = connectionFactoryProviderAcceptableServiceLoader.getServiceInstance(key);
+        if (cfp == null) {
+            throw new RuntimeException("no ConnectionFactoryProvider found for :" + key);
+        } else {
+            return cfp.build(key);
         }
     });
     private final static Logger log = LoggerFactory.getLogger(JMSFacade.class);
@@ -75,12 +69,9 @@ class JMSFacade {
         this.driver = driver;
         this.topicName = topicName;
         this.messageType = messageType;
-        this.messageListener = new MessageListener() {
-            @Override
-            public void onMessage(Message message) {
-                if (message instanceof ObjectMessage) {
-                    objectListener.receive(deserialize((ObjectMessage) message));
-                }
+        this.messageListener = message -> {
+            if (message instanceof ObjectMessage) {
+                objectListener.receive(deserialize((ObjectMessage) message));
             }
         };
         this.connectionFactory = connectionFactorySingletonMap.getInstance(driver);
@@ -96,7 +87,7 @@ class JMSFacade {
         }
     }
 
-    public void publish(Serializable message) {
+    void publish(Serializable message) {
         if (message == null)
             throw new NullPointerException("message is null.");
 
@@ -117,7 +108,7 @@ class JMSFacade {
 //        return Common.serialize(message);
 //    }
 
-    public void setConsumer(boolean isConsumer) throws JMSException {
+    void setConsumer(boolean isConsumer) throws JMSException {
         if (isConsumer && consumer == null) {
             consumer = session.createConsumer(destination, null, false);
             consumer.setMessageListener(messageListener);
@@ -147,16 +138,13 @@ class JMSFacade {
 
     private void reconnect() {
         clear();
-        ConcreteHelper.getScheduler("jms.reconnect").schedule(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    connect();
-                } catch (JMSException e) {
-                    log.info("{}: connect {} failed: {}. retry...",
-                            name, driver, e.getLocalizedMessage());
-                    reconnect();
-                }
+        ConcreteHelper.getScheduler("jms.reconnect").schedule(() -> {
+            try {
+                connect();
+            } catch (JMSException e) {
+                log.info("{}: connect {} failed: {}. retry...",
+                        name, driver, e.getLocalizedMessage());
+                reconnect();
             }
         }, 5, TimeUnit.SECONDS);
     }
@@ -166,12 +154,7 @@ class JMSFacade {
                 connectionFactory.createConnection() :
                 connectionFactory.createConnection(userName, password);
 
-        connection.setExceptionListener(new ExceptionListener() {
-            @Override
-            public void onException(JMSException e) {
-                reconnect();
-            }
-        });
+        connection.setExceptionListener(e -> reconnect());
 
         connection.start();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -183,23 +166,23 @@ class JMSFacade {
         if (connection != null) {
             try {
                 producer.close();
-            } catch (JMSException e) {
+            } catch (JMSException ignored) {
             }
             try {
                 consumer.close();
-            } catch (JMSException e) {
+            } catch (JMSException ignored) {
             }
             try {
                 session.close();
-            } catch (JMSException e) {
+            } catch (JMSException ignored) {
             }
             try {
                 connection.stop();
-            } catch (JMSException e) {
+            } catch (JMSException ignored) {
             }
             try {
                 connection.close();
-            } catch (JMSException e) {
+            } catch (JMSException ignored) {
             }
             producer = null;
             consumer = null;

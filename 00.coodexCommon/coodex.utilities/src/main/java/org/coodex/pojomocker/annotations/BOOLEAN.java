@@ -29,5 +29,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD,ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Mock
+@Deprecated
 public @interface BOOLEAN {
 }

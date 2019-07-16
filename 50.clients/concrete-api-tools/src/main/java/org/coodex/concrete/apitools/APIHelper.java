@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.apitools;
 
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.common.modules.ModuleMaker;
 import org.coodex.util.AcceptableServiceLoader;
@@ -28,10 +27,7 @@ import static org.coodex.concrete.common.ConcreteHelper.isConcreteService;
 
 public class APIHelper {
 
-    private final static AcceptableServiceLoader<String, ModuleMaker<?>> MODULE_MAKERS = new AcceptableServiceLoader<>(
-            new ConcreteServiceLoader<ModuleMaker<?>>() {
-            }
-    );
+    private final static AcceptableServiceLoader<String, ModuleMaker<?>> MODULE_MAKERS = new AcceptableServiceLoader<>();
 
     private static ModuleMaker getInstance(String desc) {
 //        if (MODULE_MAKERS.getAllInstances().size() == 0)

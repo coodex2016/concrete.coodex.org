@@ -18,11 +18,12 @@ package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.mockers.TimeCost;
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
+import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,22 +34,17 @@ public class TimeCostInterceptor extends AbstractSyncInterceptor {
     private final static Logger log = LoggerFactory.getLogger(TimeCostInterceptor.class);
 
     private Boolean accept = null;
+    private static ServiceLoader<ConcreteInterceptor> loader = new ServiceLoaderImpl<ConcreteInterceptor>() {
+        @Override
+        protected ConcreteInterceptor conflict(Class<? extends ConcreteInterceptor> providerClass, Map<String, ConcreteInterceptor> map) {
+            return map.values().iterator().next();
+        }
+    };
 
     @Override
     protected boolean accept_(DefinitionContext context) {
         if (accept == null) {
             try {
-                ConcreteServiceLoader<ConcreteInterceptor> loader = new ConcreteServiceLoader<ConcreteInterceptor>() {
-                    @Override
-                    protected ConcreteInterceptor getConcreteDefaultProvider() {
-                        return null;
-                    }
-
-                    @Override
-                    protected ConcreteInterceptor conflict(Class<? extends ConcreteInterceptor> providerClass, Map<String, ConcreteInterceptor> map) {
-                        return map.values().iterator().next();
-                    }
-                };
                 accept = loader.getInstance(MockInterceptor.class) != null;
             } catch (Throwable th) {
                 log.warn(th.getLocalizedMessage(), th);

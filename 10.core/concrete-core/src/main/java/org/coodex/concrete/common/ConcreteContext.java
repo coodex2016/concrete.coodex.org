@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.common;
 
-import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.closure.CallableClosure;
 import org.coodex.closure.ClosureContext;
 import org.coodex.closure.StackClosureContext;
@@ -26,6 +25,7 @@ import org.coodex.concrete.core.intercept.ConcreteMethodInvocation;
 import org.coodex.concrete.core.intercept.InterceptorChain;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
 import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 import org.coodex.util.Singleton;
 
 import java.lang.reflect.AccessibleObject;
@@ -49,7 +49,7 @@ public final class ConcreteContext {
     private static Singleton<SyncInterceptorChain> interceptorChainSingleton = new Singleton<>(
             () -> {
                 SyncInterceptorChain syncInterceptorChain = new SyncInterceptorChain();
-                ServiceLoader<ConcreteInterceptor> serviceLoader = new ConcreteServiceLoader<ConcreteInterceptor>() {
+                ServiceLoader<ConcreteInterceptor> serviceLoader = new ServiceLoaderImpl<ConcreteInterceptor>() {
                 };
                 for (ConcreteInterceptor interceptor : serviceLoader.getAllInstances()) {
                     if (interceptor instanceof InterceptorChain) continue;
@@ -204,7 +204,7 @@ public final class ConcreteContext {
 
                         @Override
                         public Object getThis() {
-                            return BeanProviderFacade.getBeanProvider().getBean(interfaceClass);
+                            return BeanServiceLoaderProvider.getBeanProvider().getBean(interfaceClass);
                         }
                     };
                     return interceptorChainSingleton.getInstance().invoke(invocation);

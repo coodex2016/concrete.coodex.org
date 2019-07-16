@@ -16,19 +16,19 @@
 
 package test.org.coodex.concrete.fsm.identified;
 
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.fsm.FiniteStateMachineProvider;
 import org.coodex.concrete.fsm.IdentifiedStateContainer;
 import org.coodex.concrete.fsm.IdentifiedStateIsLockingException;
 import org.coodex.util.Common;
+import org.coodex.util.ServiceLoaderImpl;
 import test.org.coodex.concrete.fsm.DemoWrongStateException;
 
 public class Runner3 {
 
-    private static final FiniteStateMachineProvider provider = new ConcreteServiceLoader<FiniteStateMachineProvider>() {
+    private static final FiniteStateMachineProvider provider = new ServiceLoaderImpl<FiniteStateMachineProvider>() {
     }.getInstance();
 
-    private static final IdentifiedStateContainer container = new ConcreteServiceLoader<IdentifiedStateContainer>() {
+    private static final IdentifiedStateContainer container = new ServiceLoaderImpl<IdentifiedStateContainer>() {
     }.getInstance();
 
 

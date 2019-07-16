@@ -24,7 +24,6 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.StringMemberValue;
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.util.AcceptableServiceLoader;
@@ -46,18 +45,9 @@ class TopicBuilder
     private static final TopicPrototypeProvider defaultTopicPrototypeProvider
             = new DefaultTopicPrototypeProvider();
     private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> providers =
-            new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(
-                    new ConcreteServiceLoader<TopicPrototypeProvider>() {
-                        @Override
-                        protected TopicPrototypeProvider getConcreteDefaultProvider() {
-                            return defaultTopicPrototypeProvider;
-                        }
-                    }
-            );
+            new AcceptableServiceLoader<>(defaultTopicPrototypeProvider);
     private static SingletonMap<TopicKey, AbstractTopic> topics =
-            new SingletonMap<TopicKey, AbstractTopic>(
-                    new TopicBuilder()
-            );
+            new SingletonMap<>(new TopicBuilder());
     private AtomicLong index = new AtomicLong(0);
 
     static AbstractTopic buildTopic(TopicKey key) {
@@ -66,8 +56,10 @@ class TopicBuilder
 
     private Class<? extends AbstractTopic> getClass(Type topicType) {
         if (topicType instanceof ParameterizedType) {
+            //noinspection unchecked
             return (Class<? extends AbstractTopic>) ((ParameterizedType) topicType).getRawType();
         } else if (topicType instanceof Class && AbstractTopic.class.isAssignableFrom((Class<?>) topicType)) {
+            //noinspection unchecked
             return (Class<? extends AbstractTopic>) topicType;
         } else {
             throw new RuntimeException(topicType + " is NOT SUPPORTED.");
@@ -92,6 +84,7 @@ class TopicBuilder
                 }
             }
 
+            //noinspection ConstantConditions
             Class<? extends AbstractTopicPrototype> prototype =
                     IF.isNull(provider, "No provider for " + topicClass.getName())
                             .getPrototype();

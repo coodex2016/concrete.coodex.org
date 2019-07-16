@@ -16,15 +16,19 @@
 
 package org.coodex.concrete.accounts;
 
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.DateFormatter;
+import org.coodex.concrete.common.IF;
+import org.coodex.concrete.common.TenantBuilderWrapper;
+import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.config.Config;
 import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Clock;
+import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 import org.springframework.data.repository.CrudRepository;
 
 import java.text.DateFormat;
-import java.util.Calendar;
 
 import static org.coodex.concrete.accounts.Constants.ORGANIZATION_PREFIX;
 import static org.coodex.concrete.common.AccountsErrorCodes.*;
@@ -36,20 +40,6 @@ import static org.coodex.util.Common.*;
  * Created by davidoff shen on 2017-05-03.
  */
 public class AccountsCommon {
-    public static final String TAG_ACCOUNTS_SETTING = "concrete_accounts";
-//    public static final Profile_Deprecated SETTINGS = Profile_Deprecated.getProfile("concrete_accounts.properties");
-//    public static final RecursivelyProfile RECURSIVELY_SETTING =
-//            new RecursivelyProfile(SETTINGS);
-
-    private final static PasswordGenerator DEFAULT_PASSWORD_GENERATOR = new PasswordGeneratorImpl();
-
-    public static final AcceptableServiceLoader<String, PasswordGenerator> PASSWORD_GENERATORS =
-            new AcceptableServiceLoader<String, PasswordGenerator>(new ConcreteServiceLoader<PasswordGenerator>() {
-                @Override
-                public PasswordGenerator getConcreteDefaultProvider() {
-                    return DEFAULT_PASSWORD_GENERATOR;
-                }
-            });
 
     private final static DateFormatter DEFAULT_DATE_FORMATTER = new DateFormatter() {
 //        private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -66,12 +56,18 @@ public class AccountsCommon {
         }
     };
 
-    public static final ConcreteServiceLoader<DateFormatter> DATE_FORMATTER_SERVICE_LOADER = new ConcreteServiceLoader<DateFormatter>() {
-        @Override
-        protected DateFormatter getConcreteDefaultProvider() {
-            return DEFAULT_DATE_FORMATTER;
-        }
+    public static final ServiceLoader<DateFormatter> DATE_FORMATTER_SERVICE_LOADER = new ServiceLoaderImpl<DateFormatter>(DEFAULT_DATE_FORMATTER) {
     };
+//    public static final Profile_Deprecated SETTINGS = Profile_Deprecated.getProfile("concrete_accounts.properties");
+//    public static final RecursivelyProfile RECURSIVELY_SETTING =
+//            new RecursivelyProfile(SETTINGS);
+
+    private final static PasswordGenerator DEFAULT_PASSWORD_GENERATOR = new PasswordGeneratorImpl();
+    private static final String TAG_ACCOUNTS_SETTING = "concrete_accounts";
+
+
+    private static final AcceptableServiceLoader<String, PasswordGenerator> PASSWORD_GENERATORS =
+            new AcceptableServiceLoader<>(DEFAULT_PASSWORD_GENERATOR);
 
     public static final String getDefaultPassword() {
         return getEncodedPassword(null);

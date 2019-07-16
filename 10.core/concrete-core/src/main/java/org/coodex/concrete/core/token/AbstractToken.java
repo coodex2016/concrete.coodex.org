@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.core.token;
 
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.common.TokenEventListener;
 import org.coodex.util.AcceptableServiceLoader;
@@ -31,8 +30,7 @@ import java.util.List;
 public abstract class AbstractToken implements Token {
 
     private static final AcceptableServiceLoader<Token.Event, TokenEventListener> LISTENER_LOADER
-            = new AcceptableServiceLoader<Event, TokenEventListener>(new ConcreteServiceLoader<TokenEventListener>() {
-    });
+            = new AcceptableServiceLoader<>();
 
     private final static Logger log = LoggerFactory.getLogger(AbstractToken.class);
 

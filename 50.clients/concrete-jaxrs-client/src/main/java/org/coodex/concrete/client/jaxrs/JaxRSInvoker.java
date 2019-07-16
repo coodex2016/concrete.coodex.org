@@ -53,6 +53,7 @@ import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.getUnitFromContext;
+import static org.coodex.util.GenericTypeHelper.toReference;
 
 public class JaxRSInvoker extends AbstractSyncInvoker {
 
@@ -123,7 +124,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
             return (code == 204 || void.class.equals(unit.getReturnType())) ?
                     null :
                     getJSONSerializer().parse(body,
-                            TypeHelper.toTypeReference(unit.getGenericReturnType(),
+                            toReference(unit.getGenericReturnType(),
                                     unit.getDeclaringModule().getInterfaceClass()));
         } else {
             throw throwException(errorOccurred, code, body, unit, url);
@@ -186,6 +187,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
     protected Object execute(Class clz, Method method, Object[] args) throws Throwable {
         JaxrsUnit unit = getUnitFromContext(ConcreteHelper.getContext(method, clz));
         if (isDevModel("jaxrs.client")) {
+            // TODO 切换到新mock
             return MockerFacade.mock(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
         } else {
 

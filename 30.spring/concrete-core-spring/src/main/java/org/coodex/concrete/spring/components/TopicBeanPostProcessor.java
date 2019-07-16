@@ -48,7 +48,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.*;
-import static org.coodex.concrete.message.GenericTypeHelper.toReference;
+import static org.coodex.util.GenericTypeHelper.toReference;
 import static org.coodex.util.Common.runtimeException;
 
 

@@ -27,7 +27,7 @@ import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.util.Common;
-import org.coodex.util.GenericType;
+import org.coodex.util.GenericTypeHelper;
 import org.coodex.util.SingletonMap;
 
 import java.lang.reflect.Method;
@@ -43,7 +43,7 @@ import static com.alibaba.dubbo.common.bytecode.ClassGenerator.getClassPool;
 public class DubboHelper {
 
     public static final SingletonMap<String, ApplicationConfig> applications =
-            new SingletonMap<>((key) -> new ApplicationConfig(key));
+            new SingletonMap<>(ApplicationConfig::new);
 
     public static final String SUBJOIN = "subjoin";
     public static final String AGENT = "user-agent";
@@ -51,80 +51,74 @@ public class DubboHelper {
     public static final String RESULT = "result";
 
     private static SignatureAttribute.Type returnType = JavassistHelper.classType(
-            new GenericType<Map<String, String>>() {
-            }.genericType(),
+            new GenericTypeHelper.GenericType<Map<String, String>>() {
+            }.getType(),
             DubboHelper.class
     );
 
-    private static SingletonMap<Class, Class> dubboClasses =
-            new SingletonMap<Class, Class>(new SingletonMap.Builder<Class, Class>() {
-                @Override
-                public Class build(Class key) {
-                    try {
-                        String newClassName = key.getName() + "$DP";
-                        ClassPool classPool = getClassPool(key.getClassLoader());
-                        CtClass ctClass = classPool.makeInterface(newClassName);
-                        ClassFile classFile = ctClass.getClassFile();
-                        ConstPool constPool = classFile.getConstPool();
+    private static SingletonMap<Class, Class> dubboClasses = new SingletonMap<>(key -> {
+        try {
+            String newClassName = key.getName() + "$DP";
+            ClassPool classPool = getClassPool(key.getClassLoader());
+            CtClass ctClass = classPool.makeInterface(newClassName);
+            ClassFile classFile = ctClass.getClassFile();
+            ConstPool constPool = classFile.getConstPool();
 
-                        classFile.addAttribute(proxyFor(key, constPool));
+            classFile.addAttribute(proxyFor(key, constPool));
 
-                        classFile.setVersionToJava5();
-                        for (Method method : key.getMethods()) {
-                            CtMethod ctMethod = new CtMethod(
-                                    classPool.getCtClass(Map.class.getName()),
-                                    method.getName(),
-                                    getParameterTypes(method.getParameterTypes()),
-                                    ctClass
-                            );
-                            ctMethod.setGenericSignature(new SignatureAttribute.MethodSignature(
-                                    null,
-                                    getGenericParametersType(key, method),
-                                    returnType,
-                                    null
-                            ).encode());
-                            ctClass.addMethod(ctMethod);
-                        }
-                        return ctClass.toClass(key.getClassLoader(), key.getProtectionDomain());
-                    } catch (Throwable th) {
-                        throw th instanceof RuntimeException ?
-                                (RuntimeException) th :
-                                new RuntimeException(th.getLocalizedMessage(), th);
-                    }
-                }
-            });
+            classFile.setVersionToJava5();
+            for (Method method : key.getMethods()) {
+                CtMethod ctMethod = new CtMethod(
+                        classPool.getCtClass(Map.class.getName()),
+                        method.getName(),
+                        getParameterTypes(method.getParameterTypes()),
+                        ctClass
+                );
+                ctMethod.setGenericSignature(new SignatureAttribute.MethodSignature(
+                        null,
+                        getGenericParametersType(key, method),
+                        returnType,
+                        null
+                ).encode());
+                ctClass.addMethod(ctMethod);
+            }
+            return ctClass.toClass(key.getClassLoader(), key.getProtectionDomain());
+        } catch (Throwable th) {
+            throw th instanceof RuntimeException ?
+                    (RuntimeException) th :
+                    new RuntimeException(th.getLocalizedMessage(), th);
+        }
+    });
+
     private static SingletonMap<String, RegistryConfig> registryConfigs =
-            new SingletonMap<String, RegistryConfig>(new SingletonMap.Builder<String, RegistryConfig>() {
-                @Override
-                public RegistryConfig build(String key) {
-                    try {
-                        URI uri = new URI(key);
-                        RegistryConfig registryConfig = new RegistryConfig();
-                        registryConfig.setProtocol(uri.getScheme());
-                        registryConfig.setAddress(uri.getHost());
-                        registryConfig.setPort(uri.getPort());
+            new SingletonMap<>(key -> {
+                try {
+                    URI uri = new URI(key);
+                    RegistryConfig registryConfig = new RegistryConfig();
+                    registryConfig.setProtocol(uri.getScheme());
+                    registryConfig.setAddress(uri.getHost());
+                    registryConfig.setPort(uri.getPort());
 
-                        String userInfo = uri.getUserInfo();
-                        if (!Common.isBlank(userInfo)) {
-                            int index = userInfo.indexOf(':');
-                            if (index > 0) {
-                                registryConfig.setUsername(userInfo.substring(0, index));
-                                registryConfig.setPassword(userInfo.substring(index + 1));
-                            } else {
-                                registryConfig.setUsername(userInfo);
-                            }
+                    String userInfo = uri.getUserInfo();
+                    if (!Common.isBlank(userInfo)) {
+                        int index = userInfo.indexOf(':');
+                        if (index > 0) {
+                            registryConfig.setUsername(userInfo.substring(0, index));
+                            registryConfig.setPassword(userInfo.substring(index + 1));
+                        } else {
+                            registryConfig.setUsername(userInfo);
                         }
-                        return registryConfig;
-                    } catch (URISyntaxException e) {
-                        throw new RuntimeException(e.getLocalizedMessage(), e);
                     }
-
+                    return registryConfig;
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException(e.getLocalizedMessage(), e);
                 }
+
             });
 
     private static CtClass[] getParameterTypes(Class<?>[] parameterTypes) throws NotFoundException {
         ClassPool classPool = ClassPool.getDefault();
-        List<CtClass> ctClasses = new ArrayList<CtClass>();
+        List<CtClass> ctClasses = new ArrayList<>();
         for (Class clz : parameterTypes) {
             ctClasses.add(classPool.getCtClass(clz.getName()));
         }
@@ -132,7 +126,7 @@ public class DubboHelper {
     }
 
     private static SignatureAttribute.Type[] getGenericParametersType(Class clz, Method method) {
-        List<SignatureAttribute.Type> types = new ArrayList<SignatureAttribute.Type>();
+        List<SignatureAttribute.Type> types = new ArrayList<>();
         for (Type type : method.getGenericParameterTypes()) {
             types.add(JavassistHelper.classType(type, clz));
         }
@@ -152,12 +146,12 @@ public class DubboHelper {
         return dubboClasses.getInstance(concreteService);
     }
 
-    public static RegistryConfig buildRegistryConfig(String spec) {
+    private static RegistryConfig buildRegistryConfig(String spec) {
         return registryConfigs.getInstance(spec);
     }
 
     public static List<RegistryConfig> buildRegistryConfigs(String[] specs) {
-        List<RegistryConfig> configs = new ArrayList<RegistryConfig>();
+        List<RegistryConfig> configs = new ArrayList<>();
         for (String spec : specs) {
             configs.add(buildRegistryConfig(spec));
         }

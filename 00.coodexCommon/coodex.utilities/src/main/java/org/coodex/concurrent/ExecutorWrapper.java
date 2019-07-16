@@ -32,12 +32,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by davidoff shen on 2016-09-05.
  */
-public final class ExecutorWrapper {
+final class ExecutorWrapper {
 
     private static final Set<ExecutorService> executors = new HashSet<ExecutorService>();
 
 
-    public static final <T extends ExecutorService> T wrap(T executorService) {
+    static <T extends ExecutorService> T wrap(T executorService) {
         // TODO 动态代理，当Executor shutdown或shutdownNow的时候脱离管理
         if (executorService instanceof ScheduledExecutorService) {
             final ScheduledExecutorService scheduledExecutorService = (ScheduledExecutorService) executorService;
@@ -58,12 +58,15 @@ public final class ExecutorWrapper {
                                 }
                                 if (argsCopy != null && argsCopy.length == 2 && "schedule".equals(method.getName())) {
                                     argsCopy[1] = Clock.toMillis((Long) args[1], (TimeUnit) args[2]);
+                                    //noinspection ConstantConditions
                                     argsCopy[2] = TimeUnit.MILLISECONDS;
                                 } else if (argsCopy != null && argsCopy.length == 2 &&
                                         ("scheduleAtFixedRate".equals(method.getName()) ||
                                         "scheduleWithFixedDelay".equals(method.getName()))) {
                                     argsCopy[1] = Clock.toMillis((Long) args[1], (TimeUnit) args[3]);
+                                    //noinspection ConstantConditions
                                     argsCopy[2] = Clock.toMillis((Long) args[2], (TimeUnit) args[3]);
+                                    //noinspection ConstantConditions
                                     argsCopy[3] = TimeUnit.MILLISECONDS;
                                 }
                             }
@@ -79,14 +82,14 @@ public final class ExecutorWrapper {
         return executorService;
     }
 
-    public static void shutdown() {
+    static void shutdown() {
         for (ExecutorService service : executors) {
             if (service != null && !service.isShutdown() && !service.isTerminated())
                 service.shutdown();
         }
     }
 
-    public static List<Runnable> shutdownNow() {
+    static List<Runnable> shutdownNow() {
         List<Runnable> list = new ArrayList<Runnable>();
         for (ExecutorService service : executors) {
             if (service != null && !service.isTerminated())

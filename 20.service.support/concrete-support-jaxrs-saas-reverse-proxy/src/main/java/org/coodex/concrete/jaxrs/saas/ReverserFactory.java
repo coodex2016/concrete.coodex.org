@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.jaxrs.saas;
 
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.ReverseProxyErrorCodes;
 import org.coodex.util.AcceptableServiceLoader;
@@ -27,8 +26,7 @@ import org.coodex.util.AcceptableServiceLoader;
 public class ReverserFactory {
 
     private static final AcceptableServiceLoader<String, Reverser> REVERSER_FACTORY =
-            new AcceptableServiceLoader<String, Reverser>(new ConcreteServiceLoader<Reverser>() {
-            });
+            new AcceptableServiceLoader<>();
 
 
     public static final Reverser getReverser(String propertyName) {

@@ -28,22 +28,17 @@ import org.coodex.concrete.own.ResponsePackage;
 import org.coodex.concrete.websocket.WebSocketUnit;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
-import org.coodex.util.TypeHelper;
 
 import static org.coodex.concrete.own.PackageHelper.buildRequest;
 import static org.coodex.concrete.websocket.WebSocketHelper.findUnit;
+import static org.coodex.util.GenericTypeHelper.toReference;
 
 
 public class WSInvoker extends AbstractRxInvoker {
 
 
-    private static Singleton<WSClientHandle> handle = new Singleton<WSClientHandle>(
-            new Singleton.Builder<WSClientHandle>() {
-                @Override
-                public WSClientHandle build() {
-                    return new WSClientHandle();
-                }
-            }
+    private static Singleton<WSClientHandle> handle = new Singleton<>(
+            WSClientHandle::new
     );
     private JSONSerializer serializer = JSONSerializerFactory.getInstance();
 
@@ -69,9 +64,10 @@ public class WSInvoker extends AbstractRxInvoker {
         final WSClientServiceContext wsClientServiceContext = getContext();
         final WebSocketUnit unit = findUnit(context);
 
+        //noinspection unchecked
         return Observable.create(new ObservableOnSubscribe() {
             @Override
-            public void subscribe(final ObservableEmitter emitter) throws Exception {
+            public void subscribe(final ObservableEmitter emitter) {
                 // build request
                 String msgId = Common.getUUIDStr();
                 final RequestPackage requestPackage = buildRequest(msgId, unit, args);
@@ -101,13 +97,12 @@ public class WSInvoker extends AbstractRxInvoker {
                         public void onReturn(ResponsePackage<Object> responsePackage) {
                             try {
                                 ClientTokenManagement.setTokenId(getDestination(), responsePackage.getConcreteTokenId());
-                                if (responsePackage.getContent() == null || void.class.equals(context.getDeclaringMethod().getReturnType())) {
-
-                                } else {
+                                if (responsePackage.getContent() != null && !void.class.equals(context.getDeclaringMethod().getReturnType())) {
                                     Object result = serializer.parse(responsePackage.getContent(),
-                                            TypeHelper.toTypeReference(context.getDeclaringMethod().getGenericReturnType(),
+                                            toReference(context.getDeclaringMethod().getGenericReturnType(),
                                                     context.getDeclaringClass()));
                                     if (result != null)
+                                        //noinspection unchecked
                                         emitter.onNext(result);
                                 }
                             } catch (Throwable throwable) {

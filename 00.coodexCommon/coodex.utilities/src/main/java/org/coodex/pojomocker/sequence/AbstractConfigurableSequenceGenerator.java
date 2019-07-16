@@ -19,7 +19,7 @@ package org.coodex.pojomocker.sequence;
 import org.coodex.config.Config;
 import org.coodex.config.Configuration;
 import org.coodex.util.Singleton;
-
+@Deprecated
 public abstract class AbstractConfigurableSequenceGenerator<T> extends AbstractSequenceGenerator<T> {
 
 

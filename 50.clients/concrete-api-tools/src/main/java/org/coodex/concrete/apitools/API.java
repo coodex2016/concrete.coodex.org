@@ -19,8 +19,8 @@ package org.coodex.concrete.apitools;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class API {
     private static final ServiceLoader<ConcreteAPIRender> RENDERS =
-            new ConcreteServiceLoader<ConcreteAPIRender>() {
+            new ServiceLoaderImpl<ConcreteAPIRender>() {
             };
     private static final String TAG_API_GENERATOR = "api_gen";
 

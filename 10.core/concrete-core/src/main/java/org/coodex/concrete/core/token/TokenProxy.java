@@ -36,7 +36,7 @@ public class TokenProxy implements Token {
 //            new Singleton<TokenManager>(new Singleton.Builder<TokenManager>() {
 //                @Override
 //                public TokenManager build() {
-//                    return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
+//                    return BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class);
 //                }
 //            });
 

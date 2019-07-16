@@ -21,7 +21,7 @@ import org.coodex.concrete.attachments.AttachmentEntityInfo;
 import org.coodex.concrete.attachments.Repository;
 import org.coodex.concrete.attachments.client.ClientService;
 import org.coodex.concrete.common.AttachmentInfoErrorCodes;
-import org.coodex.concrete.common.BeanProviderFacade;
+import org.coodex.concrete.common.BeanServiceLoaderProvider;
 import org.coodex.concrete.common.IF;
 import org.coodex.config.Config;
 
@@ -41,7 +41,7 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
  */
 public class AbstractDownloadResource {
 
-    private Repository repository = BeanProviderFacade.getBeanProvider().getBean(Repository.class);
+    private Repository repository = BeanServiceLoaderProvider.getBeanProvider().getBean(Repository.class);
 
     protected Response download(String clientId, String tokenId, final String attachmentId) throws UnsupportedEncodingException {
 

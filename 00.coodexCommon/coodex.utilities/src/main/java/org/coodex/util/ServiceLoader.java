@@ -33,4 +33,6 @@ public interface ServiceLoader<T> {
 
     @SuppressWarnings("unchecked")
     T getInstance();
+
+    T getDefaultProvider();
 }

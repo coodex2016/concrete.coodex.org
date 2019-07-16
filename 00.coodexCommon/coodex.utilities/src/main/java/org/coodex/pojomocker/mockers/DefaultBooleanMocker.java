@@ -22,6 +22,7 @@ import org.coodex.pojomocker.annotations.BOOLEAN;
 /**
  * Created by davidoff shen on 2017-05-15.
  */
+@Deprecated
 public class DefaultBooleanMocker extends AbstractPrimitiveMocker<Boolean, BOOLEAN> {
 
     @Override

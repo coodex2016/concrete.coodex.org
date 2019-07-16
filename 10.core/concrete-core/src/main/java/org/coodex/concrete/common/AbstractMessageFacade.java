@@ -17,10 +17,10 @@
 package org.coodex.concrete.common;
 
 import org.coodex.concrete.core.JavaTextFormatMessageFormatter;
-//import org.coodex.concrete.core.ResourceBundlesMessagePatternLoader;
 import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 
-import java.util.Map;
+//import org.coodex.concrete.core.ResourceBundlesMessagePatternLoader;
 
 /**
  * Created by davidoff shen on 2017-05-08.
@@ -31,18 +31,9 @@ public class AbstractMessageFacade {
 //    @SuppressWarnings("deprecation")
 //    private final static MessagePatternLoader DEFAULT_PATTERN_LOADER = new ResourceBundlesMessagePatternLoader();
 
-    private final static LogFormatter DEFAULT_LOG_FORMATTER = new LogFormatter() {
-        @Override
-        public String format(String pattern, Map<String, Object> values) {
-            return values == null ? null : values.toString();
-        }
-    };
+    private final static LogFormatter DEFAULT_LOG_FORMATTER = (pattern, values) -> values == null ? null : values.toString();
 
-    private final static ServiceLoader<MessageFormatter> MESSAGE_FORMATTER_SERVICE_LOADER = new ConcreteServiceLoader<MessageFormatter>() {
-        @Override
-        public MessageFormatter getConcreteDefaultProvider() {
-            return DEFAULT_MESSAGE_FORMATTER;
-        }
+    private final static ServiceLoader<MessageFormatter> MESSAGE_FORMATTER_SERVICE_LOADER = new ServiceLoaderImpl<MessageFormatter>(DEFAULT_MESSAGE_FORMATTER) {
     };
 
 //    private final static ServiceLoader<MessagePatternLoader> MESSAGE_PATTERN_LOADER_SERVICE_LOADER = new ConcreteServiceLoader<MessagePatternLoader>() {
@@ -52,11 +43,7 @@ public class AbstractMessageFacade {
 //        }
 //    };
 
-    private final static ServiceLoader<LogFormatter> LOG_FORMATTER_SERVICE_LOADER = new ConcreteServiceLoader<LogFormatter>() {
-        @Override
-        public LogFormatter getConcreteDefaultProvider() {
-            return DEFAULT_LOG_FORMATTER;
-        }
+    private final static ServiceLoader<LogFormatter> LOG_FORMATTER_SERVICE_LOADER = new ServiceLoaderImpl<LogFormatter>(DEFAULT_LOG_FORMATTER) {
     };
 
     public static MessageFormatter getFormatter(Class<? extends MessageFormatter> formatterClass) {

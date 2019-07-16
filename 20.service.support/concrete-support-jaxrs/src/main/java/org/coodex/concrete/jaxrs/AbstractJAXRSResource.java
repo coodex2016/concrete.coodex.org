@@ -37,8 +37,8 @@ import java.util.Map;
 import static org.coodex.concrete.common.ConcreteContext.KEY_TOKEN;
 import static org.coodex.concrete.common.ConcreteContext.runServiceWithContext;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.KEY_CLIENT_PROVIDER;
-import static org.coodex.util.TypeHelper.solve;
-import static org.coodex.util.TypeHelper.typeToClass;
+import static org.coodex.util.GenericTypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.typeToClass;
 
 /**
  * 默认的JaxRS Resource，提供数据模拟功能
@@ -81,11 +81,11 @@ public abstract class AbstractJAXRSResource<T> {
     }
 
     //    private Token getToken(String tokenId, boolean force) {
-//        return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(tokenId, force);
+//        return BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class).getToken(tokenId, force);
 //    }
 //    private Token getToken(String tokenId) {
 //        return tokenId == null ? null :
-//                BeanProviderFacade.getBeanProvider().getBean(TokenManager.class)
+//                BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class)
 //                        .getToken(tokenId);
 //    }
 
@@ -236,7 +236,7 @@ public abstract class AbstractJAXRSResource<T> {
                             return void.class.equals(method.getGenericReturnType()) ? null :
                                     MockerFacade.mock(method, getInterfaceClass());
                         } else {
-                            Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
+                            Object instance = BeanServiceLoaderProvider.getBeanProvider().getBean(getInterfaceClass());
                             if (paramCount == 0)
                                 return method.invoke(instance);
                             else {

@@ -24,8 +24,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.coodex.util.TypeHelper.solve;
-import static org.coodex.util.TypeHelper.typeToClass;
+import static org.coodex.util.GenericTypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.typeToClass;
+
+//import static org.coodex.util.TypeHelper.solve;
+//import static org.coodex.util.TypeHelper.typeToClass;
 
 /**
  * Created by davidoff shen on 2017-03-09.
@@ -34,10 +37,24 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
 
     private final static Logger log = LoggerFactory.getLogger(AcceptableServiceLoader.class);
 
-    private final ServiceLoaderFacade<T> serviceLoaderFacade;
+    private final ServiceLoader<T> serviceLoaderFacade;
 
-    public AcceptableServiceLoader(ServiceLoaderFacade<T> serviceLoaderFacade) {
-        this.serviceLoaderFacade = serviceLoaderFacade;
+    public AcceptableServiceLoader() {
+        this((ServiceLoader<T>) null);
+    }
+
+    public AcceptableServiceLoader(final T defaultService) {
+        this(new ServiceLoaderImpl<T>(defaultService) {
+        });
+    }
+
+    public AcceptableServiceLoader(ServiceLoader<T> serviceLoaderFacade) {
+        if (serviceLoaderFacade == null) {
+            this.serviceLoaderFacade = new ServiceLoaderImpl<T>() {
+            };
+        } else {
+            this.serviceLoaderFacade = serviceLoaderFacade;
+        }
     }
 
 
@@ -49,6 +66,7 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
         if (paramClass == null)
             return instance.accept(null);
 
+        // todo 需要考虑泛型数组的问题
         Class required = typeToClass(solve(
                 AcceptableService.class.getTypeParameters()[0], tClass));
         //(t instanceof ParameterizedType) ? (Class) ((ParameterizedType) t).getRawType() : (Class) t;
@@ -111,6 +129,11 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
     @Override
     public T getInstance() {
         return serviceLoaderFacade.getInstance();
+    }
+
+    @Override
+    public T getDefaultProvider() {
+        return serviceLoaderFacade.getDefaultProvider();
     }
 
     @Override

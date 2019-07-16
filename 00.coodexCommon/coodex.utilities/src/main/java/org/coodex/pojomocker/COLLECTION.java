@@ -28,6 +28,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface COLLECTION {
     int[] DEFAULT_SIZE = {-1};
 

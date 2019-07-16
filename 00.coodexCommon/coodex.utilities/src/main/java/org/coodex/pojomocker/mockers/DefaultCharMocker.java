@@ -24,6 +24,7 @@ import org.coodex.util.Common;
 /**
  * Created by davidoff shen on 2017-05-15.
  */
+@Deprecated
 public class DefaultCharMocker extends AbstractPrimitiveMocker<Character, CHAR> {
 
     static final String DEFAULT_RANGE_STR = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:;{}[]`!@#$%^&*()_+-='\",./<>?|\\";

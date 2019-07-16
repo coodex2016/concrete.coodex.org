@@ -25,7 +25,8 @@ import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;
 import org.coodex.concurrent.TimeLimitedMap;
 import org.coodex.util.Clock;
-import org.coodex.util.GenericType;
+//import org.coodex.util.GenericType;
+import org.coodex.util.GenericTypeHelper;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,8 +95,8 @@ public class WSClientHandle {
     public void onMessage(String message, Session session) throws IOException {
         // parse to ResponsePackage
         ResponsePackage<Object> responsePackage = serializer.parse(message,
-                new GenericType<ResponsePackage<Object>>() {
-                }.genericType());
+                new GenericTypeHelper.GenericType<ResponsePackage<Object>>() {
+                }.getType());
         // broadcast ?
 //        if(responsePackage.)
 

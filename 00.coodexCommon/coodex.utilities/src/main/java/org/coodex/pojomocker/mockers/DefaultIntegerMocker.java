@@ -23,6 +23,7 @@ import org.coodex.util.Common;
 /**
  * Created by davidoff shen on 2017-05-15.
  */
+@Deprecated
 public class DefaultIntegerMocker extends AbstractPrimitiveMocker<Integer, INTEGER> {
     @Override
     protected Object toPrimitive(Integer integer) {

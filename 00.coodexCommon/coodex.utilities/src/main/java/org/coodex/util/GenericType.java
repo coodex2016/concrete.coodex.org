@@ -24,6 +24,7 @@ import static org.coodex.util.TypeHelper.solve;
 /**
  * Created by davidoff shen on 2017-05-11.
  */
+@Deprecated
 public abstract class GenericType<T> {
 
 

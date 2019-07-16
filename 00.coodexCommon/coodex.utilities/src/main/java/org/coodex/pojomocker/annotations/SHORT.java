@@ -29,6 +29,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD,ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Mock
+@Deprecated
 public @interface SHORT {
     short min() default Short.MIN_VALUE;
 

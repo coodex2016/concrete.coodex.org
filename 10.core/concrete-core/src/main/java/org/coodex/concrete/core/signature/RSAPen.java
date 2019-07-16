@@ -17,11 +17,11 @@
 package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.util.Common;
 import org.coodex.util.RSACommon;
 import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 
 
 /**
@@ -29,12 +29,7 @@ import org.coodex.util.ServiceLoader;
  */
 public class RSAPen extends AbstractIronPen {
 
-    private static final ServiceLoader<RSAKeyStore> RSA_KEY_STORE_PROVIDERS = new ConcreteServiceLoader<RSAKeyStore>() {
-        private RSAKeyStore defaultKeyStore = new RSAKeyStoreDefaultImpl();
-        @Override
-        public RSAKeyStore getConcreteDefaultProvider() {
-            return defaultKeyStore;
-        }
+    private static final ServiceLoader<RSAKeyStore> RSA_KEY_STORE_PROVIDERS = new ServiceLoaderImpl<RSAKeyStore>(new RSAKeyStoreDefaultImpl()) {
     };
 
     RSAPen(String paperName) {

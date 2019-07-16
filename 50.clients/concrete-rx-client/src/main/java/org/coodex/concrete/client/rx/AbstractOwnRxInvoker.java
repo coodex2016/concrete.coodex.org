@@ -33,8 +33,7 @@ import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;
 import org.coodex.concurrent.TimeLimitedMap;
 import org.coodex.util.Common;
-import org.coodex.util.GenericType;
-import org.coodex.util.TypeHelper;
+import org.coodex.util.GenericTypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +46,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractOwnRxInvoker.class);
     protected static JSONSerializer serializer = JSONSerializerFactory.getInstance();
-    private static TimeLimitedMap<String, CallBack> callbackMap = new TimeLimitedMap<String, CallBack>();
+    private static TimeLimitedMap<String, CallBack> callbackMap = new TimeLimitedMap<>();
 
     public AbstractOwnRxInvoker(Destination destination) {
         super(destination);
@@ -56,8 +55,8 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
     private static ResponsePackage<Object> parse(String reponseMessage) {
         try {
             return serializer.parse(reponseMessage,
-                    new GenericType<ResponsePackage<Object>>() {
-                    }.genericType());
+                    new GenericTypeHelper.GenericType<ResponsePackage<Object>>() {
+                    }.getType());
         } catch (Throwable throwable) {
             log.warn("cannot parse ResponsePackage: {}", reponseMessage, throwable);
             return null;
@@ -95,11 +94,13 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
                 } else {
                     Object result =
                             serializer.parse(responsePackage.getContent(),
-                                    TypeHelper.toTypeReference(
+                                    GenericTypeHelper.toReference(
                                             callBack.getContext().getDeclaringMethod().getGenericReturnType(),
                                             callBack.getContext().getDeclaringClass()));
-                    if (result != null)
+                    if (result != null) {
+                        //noinspection unchecked
                         callBack.getEmitter().onNext(result);
+                    }
                     completed = true;
                 }
             } catch (Throwable th) {
@@ -107,7 +108,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
             }
         } else {
             try {
-                throwable = new ClientException(serializer.<ErrorInfo>parse(
+                throwable = new ClientException(serializer.parse(
                         responsePackage.getContent(),
                         ErrorInfo.class
                 ));
@@ -134,34 +135,27 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
     @Override
     protected Observable invoke(final DefinitionContext context, final Object... args) {
         final OwnServiceUnit unit = findUnit(context);
-        return Observable.create(new ObservableOnSubscribe() {
-            @Override
-            public void subscribe(final ObservableEmitter observableEmitter) throws Exception {
-                // build request
-                String msgId = Common.getUUIDStr();
-                final RequestPackage requestPackage = buildRequest(msgId, unit, args);
+        //noinspection unchecked
+        return Observable.create((ObservableOnSubscribe) observableEmitter -> {
+            // build request
+            String msgId = Common.getUUIDStr();
+            final RequestPackage requestPackage = buildRequest(msgId, unit, args);
 
-                CallBack callBack = new CallBack(observableEmitter,
-                        context, getLogger(), getDestination(), getContext());
+            CallBack callBack = new CallBack(observableEmitter,
+                    context, getLogger(), getDestination(), getContext());
 
-                callbackMap.put(msgId, callBack, getDestination().getTimeout(),
-                        new TimeLimitedMap.TimeoutCallback() {
-                            @Override
-                            public void timeout() {
-                                observableEmitter.onError(new TimeoutException());
-                            }
-                        });
+            callbackMap.put(msgId, callBack, getDestination().getTimeout(),
+                    () -> observableEmitter.onError(new TimeoutException()));
 
-                try {
-                    requestPackage.setConcreteTokenId(
-                            ClientTokenManagement.getTokenId(getDestination(),
-                                    getContext().getTokenId())
-                    );
-                    send(requestPackage);
-                } catch (Throwable th) {
-                    callbackMap.getAndRemove(msgId);
-                    observableEmitter.onError(th);
-                }
+            try {
+                requestPackage.setConcreteTokenId(
+                        ClientTokenManagement.getTokenId(getDestination(),
+                                getContext().getTokenId())
+                );
+                send(requestPackage);
+            } catch (Throwable th) {
+                callbackMap.getAndRemove(msgId);
+                observableEmitter.onError(th);
             }
         });
     }
@@ -185,7 +179,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
             this.clientSideContext = clientSideContext;
         }
 
-        public ObservableEmitter getEmitter() {
+        ObservableEmitter getEmitter() {
             return emitter;
         }
 

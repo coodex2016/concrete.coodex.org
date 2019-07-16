@@ -21,7 +21,7 @@ import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.common.modules.AbstractParam;
 import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.util.Common;
-import org.coodex.util.TypeHelper;
+import org.coodex.util.GenericTypeHelper;
 
 import java.io.IOException;
 import java.lang.reflect.*;
@@ -209,7 +209,7 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
             return getClassType(((GenericArrayType) type).getGenericComponentType(), clz, contextClass) + "[]";
         } else if (type instanceof TypeVariable) {
             if (contextClass != null) {
-                return getClassType(TypeHelper.solve((TypeVariable) type, contextClass), clz, null);
+                return getClassType(GenericTypeHelper.solve((TypeVariable) type, contextClass), clz, null);
             } else
                 return ((TypeVariable) type).getName();
         } else {

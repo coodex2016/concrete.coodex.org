@@ -28,7 +28,7 @@ import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.dubbo.ProxyFor;
 import org.coodex.util.Common;
-import org.coodex.util.GenericType;
+import org.coodex.util.GenericTypeHelper;
 import org.coodex.util.ReflectHelper;
 import org.coodex.util.SingletonMap;
 import org.springframework.cglib.proxy.InvocationHandler;
@@ -47,7 +47,7 @@ public class DubboApplication implements Application {
 
     private static final InvokerBuilder invokerBuilder = new InvokerBuilder();
     private static SingletonMap<Integer, ProtocolConfig> protocals =
-            new SingletonMap<Integer, ProtocolConfig>(
+            new SingletonMap<>(
                     new SingletonMap.Builder<Integer, ProtocolConfig>() {
                         @Override
                         public ProtocolConfig build(Integer key) {
@@ -63,7 +63,7 @@ public class DubboApplication implements Application {
     private final String name;
     private final List<RegistryConfig> registryConfig;
     private final int[] ports;
-    private Set<Class<?>> registered = new ConcurrentHashSet<Class<?>>();
+    private Set<Class<?>> registered = new ConcurrentHashSet<>();
 
     public DubboApplication(String name, List<RegistryConfig> registryConfig, int... ports) {
         this.name = name;
@@ -114,12 +114,14 @@ public class DubboApplication implements Application {
             ServiceConfig serviceConfig = new ServiceConfig();
             serviceConfig.setApplication(applications.getInstance(name));
             serviceConfig.setRegistries(registryConfig);
-            List<ProtocolConfig> protocolConfigs = new ArrayList<ProtocolConfig>();
+            List<ProtocolConfig> protocolConfigs = new ArrayList<>();
             for (int port : ports) {
                 protocolConfigs.add(protocals.getInstance(port));
             }
             serviceConfig.setProtocols(protocolConfigs);
+            //noinspection unchecked
             serviceConfig.setInterface(concreteClass);
+            //noinspection unchecked
             serviceConfig.setRef(invokerBuilder.build(concreteClass));
             serviceConfig.export();
             registered.add(concreteClass);
@@ -128,12 +130,12 @@ public class DubboApplication implements Application {
     }
 
     private static class DubboCaller implements Caller {
-        public static final String UNKNOWN = "unknown";
+        static final String UNKNOWN = "unknown";
 
         private final String address;
         private final String agent;
 
-        public DubboCaller(String address, String agent) {
+        DubboCaller(String address, String agent) {
             this.address = Common.isBlank(address) ? UNKNOWN : address;
             this.agent = Common.isBlank(agent) ? UNKNOWN : agent;
         }
@@ -181,8 +183,8 @@ public class DubboApplication implements Application {
                             String clientIP = RpcContext.getContext().getRemoteHost();
                             Map<String, String> map = JSONSerializerFactory.getInstance().parse(
                                     RpcContext.getContext().getAttachment(SUBJOIN),
-                                    new GenericType<Map<String, String>>() {
-                                    }.genericType());
+                                    new GenericTypeHelper.GenericType<Map<String, String>>() {
+                                    }.getType());
                             Subjoin subjoin = new DubboSubjoin(map).wrap();
                             String locate = RpcContext.getContext().getAttachment(LOCATE);
                             String tokenId = RpcContext.getContext().getAttachment(Token.CONCRETE_TOKEN_ID_KEY);
@@ -204,11 +206,11 @@ public class DubboApplication implements Application {
                                         new CallableClosure() {
                                             @Override
                                             public Object call() throws Throwable {
-                                                return m.invoke(BeanProviderFacade.getBeanProvider()
+                                                return m.invoke(BeanServiceLoaderProvider.getBeanProvider()
                                                         .getBean(concreteClass), objects);
                                             }
                                         }, concreteClass, m, objects);
-                                Map<String, String> toClient = new ConcurrentHashMap<String, String>();
+                                Map<String, String> toClient = new ConcurrentHashMap<>();
                                 Map<String, String> subjoinMap = updatedMap(subjoin);
                                 if (subjoinMap.size() > 0)
                                     toClient.put(SUBJOIN, objectToStr(subjoinMap));
@@ -219,6 +221,7 @@ public class DubboApplication implements Application {
                                         toClient.put(Token.CONCRETE_TOKEN_ID_KEY, newTokenId);
                                     }
                                 } catch (Throwable th) {
+                                    // do nothing
                                 }
                                 if (result != null)
                                     toClient.put(RESULT, objectToStr(result));

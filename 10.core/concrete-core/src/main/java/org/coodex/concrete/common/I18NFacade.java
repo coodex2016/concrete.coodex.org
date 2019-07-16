@@ -17,18 +17,13 @@
 package org.coodex.concrete.common;
 
 import org.coodex.concrete.core.ResourceBundlesTranslateService;
+import org.coodex.util.ServiceLoaderImpl;
 import org.coodex.util.Singleton;
 
 public class I18NFacade {
 
-    private static TranslateService DEFAULT_TRANSLATE_SERVICE = new ResourceBundlesTranslateService();
-
     private static Singleton<TranslateService> TRANSLATE_SERVICE_SINGLETON = new Singleton<>(
-            () -> new ConcreteServiceLoader<TranslateService>() {
-                @Override
-                protected TranslateService getConcreteDefaultProvider() {
-                    return DEFAULT_TRANSLATE_SERVICE;
-                }
+            () -> new ServiceLoaderImpl<TranslateService>(new ResourceBundlesTranslateService()) {
             }.getInstance()
     );
 

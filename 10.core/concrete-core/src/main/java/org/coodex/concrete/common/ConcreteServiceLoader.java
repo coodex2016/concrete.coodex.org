@@ -17,8 +17,10 @@
 package org.coodex.concrete.common;
 
 import org.coodex.config.Config;
-import org.coodex.util.ServiceLoaderFacade;
+import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 
+import java.util.Collection;
 import java.util.Map;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
@@ -33,8 +35,11 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
  * <p>
  * Created by davidoff shen on 2016-09-08.
  */
-public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
+@Deprecated
+public abstract class ConcreteServiceLoader<T> extends ServiceLoaderImpl<T> {
 
+    private ServiceLoader<T> serviceLoaderFacade = new ServiceLoaderImpl<T>() {
+    };
 
     private boolean init = false;
 
@@ -42,29 +47,29 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
         super();
     }
 
-    @Override
-    protected void loadInstances() {
-        synchronized (this) {
-            super.loadInstances();
-            if (!init) {
-                try {
-                    Map<String, T> instances = $getInstances();
-                    Map<String, T> beans = BeanProviderFacade.getBeanProvider().getBeansOfType(getInterfaceClass());
-                    if (beans != null && beans.size() > 0) {
-                        for (String key : beans.keySet()) {
-                            T t = beans.get(key);
-                            if (t != null && !instances.values().contains(t)) {
-                                instances.put(key, t);
-                            }
-                        }
-                    }
-                } catch (Throwable th) {
-                    // ？？？
-                }
-                init = true;
-            }
-        }
-    }
+//    @Override
+//    protected void loadInstances() {
+//        synchronized (this) {
+//            super.loadInstances();
+//            if (!init) {
+//                try {
+//                    Map<String, T> instances = super.getInstances();
+//                    Map<String, T> beans = BeanServiceLoaderProvider.getBeanProvider().getBeansOfType(getInterfaceClass());
+//                    if (beans != null && beans.size() > 0) {
+//                        for (String key : beans.keySet()) {
+//                            T t = beans.get(key);
+//                            if (t != null && !instances.values().contains(t)) {
+//                                instances.put(key, t);
+//                            }
+//                        }
+//                    }
+//                } catch (Throwable th) {
+//                    // ？？？
+//                }
+//                init = true;
+//            }
+//        }
+//    }
 
     @Override
     protected T conflict(Class<? extends T> providerClass, Map<String, T> map) {
@@ -75,14 +80,14 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
     @Override
     protected T conflict() {
         String key = Config.get(getInterfaceClass().getCanonicalName() + ".provider", getAppSet());
-        Map<String, T> instances = $getInstances();
+        Map<String, T> instances = serviceLoaderFacade.getInstances();
         return instances.containsKey(key) ? instances.get(key) : super.conflict();
     }
 
-    protected final T getDefaultProviderFromConfiguration() {
+    private T getDefaultProviderFromConfiguration() {
         String key = Config.get(getInterfaceClass().getCanonicalName() + ".default", getAppSet());
-        Map<String, T> instances = $getInstances();
-        return instances.containsKey(key) ? instances.get(key) : null;
+        Map<String, T> instances = serviceLoaderFacade.getInstances();
+        return instances.getOrDefault(key, null);
     }
 
     protected T getConcreteDefaultProvider() {
@@ -93,6 +98,32 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderFacade<T> {
     public final T getDefaultProvider() {
         T instance = getDefaultProviderFromConfiguration();
         return instance == null ? getConcreteDefaultProvider() : instance;
+    }
+
+
+    @Override
+    public Collection<T> getAllInstances() {
+        return serviceLoaderFacade.getAllInstances();
+    }
+
+    @Override
+    public Map<String, T> getInstances() {
+        return serviceLoaderFacade.getInstances();
+    }
+
+    @Override
+    public T getInstance(Class<? extends T> providerClass) {
+        return serviceLoaderFacade.getInstance(providerClass);
+    }
+
+    @Override
+    public T getInstance(String name) {
+        return serviceLoaderFacade.getInstance(name);
+    }
+
+    @Override
+    public T getInstance() {
+        return serviceLoaderFacade.getInstance();
     }
 }
 

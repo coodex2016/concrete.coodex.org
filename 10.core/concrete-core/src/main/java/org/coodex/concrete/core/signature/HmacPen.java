@@ -17,12 +17,12 @@
 package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.IF;
 import org.coodex.util.Common;
 import org.coodex.util.DigestHelper;
 import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 
 import java.util.Arrays;
 
@@ -33,45 +33,40 @@ import static org.coodex.concrete.core.signature.SignUtil.getString;
  */
 public class HmacPen extends AbstractIronPen {
 
-    private static final ServiceLoader<HmacKeyStore> HMAC_KEY_STORE_PROVIDERS = new ConcreteServiceLoader<HmacKeyStore>() {
-        private HmacKeyStore defaultKeyStore = new HmacKeyStore() {
-            /**
-             * 优先级
-             * hmacKey.paperName.keyId
-             * hmacKey.paperName
-             * hmacKey.keyId
-             * hmacKey
-             *
-             * @param paperName
-             * @param keyId
-             * @return
-             */
-            @Override
-            public byte[] getHmacKey(String paperName, String keyId) {
-                String s = getHmacKeyStr(paperName, keyId);
-                return s == null ? null : s.getBytes();
-            }
-
-            private String getHmacKeyStr(String paperName, String keyId) {
-                if (Common.isBlank(keyId))
-                    return getString("hmacKey", paperName, null);
-                String key = null;
-                if(!Common.isBlank(paperName)) {
-                    key = getString("hmacKey." + paperName + "." + keyId, null, null);
-                    if (key == null)
-                        key = getString("hmacKey." + paperName, null, null);
-                }
-                if (key == null)
-                    key = getString("hmacKey", keyId, null);
-
-                return key == null ? getString("hmacKey", null, null) : key;
-            }
-        };
-
+    private static final HmacKeyStore DEFAULT_KEY_STORE = new HmacKeyStore() {
+        /**
+         * 优先级
+         * hmacKey.paperName.keyId
+         * hmacKey.paperName
+         * hmacKey.keyId
+         * hmacKey
+         *
+         * @param paperName
+         * @param keyId
+         * @return
+         */
         @Override
-        public HmacKeyStore getConcreteDefaultProvider() {
-            return defaultKeyStore;
+        public byte[] getHmacKey(String paperName, String keyId) {
+            String s = getHmacKeyStr(paperName, keyId);
+            return s == null ? null : s.getBytes();
         }
+
+        private String getHmacKeyStr(String paperName, String keyId) {
+            if (Common.isBlank(keyId))
+                return getString("hmacKey", paperName, null);
+            String key = null;
+            if (!Common.isBlank(paperName)) {
+                key = getString("hmacKey." + paperName + "." + keyId, null, null);
+                if (key == null)
+                    key = getString("hmacKey." + paperName, null, null);
+            }
+            if (key == null)
+                key = getString("hmacKey", keyId, null);
+
+            return key == null ? getString("hmacKey", null, null) : key;
+        }
+    };
+    private static final ServiceLoader<HmacKeyStore> HMAC_KEY_STORE_PROVIDERS = new ServiceLoaderImpl<HmacKeyStore>(DEFAULT_KEY_STORE) {
     };
 
 

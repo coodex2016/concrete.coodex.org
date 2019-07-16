@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface Mock {
 
     String POLICY_KEY = Mock.class.getName() + ".policy";

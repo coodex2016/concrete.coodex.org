@@ -96,7 +96,7 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
     @SuppressWarnings("unchecked")
     public <ID extends AccountID> Account<ID> currentAccount() {
         return tokenData.currentAccountId == null ? null :
-                BeanProviderFacade.getBeanProvider().getBean(AccountFactory.class).getAccountByID((ID) tokenData.currentAccountId);
+                BeanServiceLoaderProvider.getBeanProvider().getBean(AccountFactory.class).getAccountByID((ID) tokenData.currentAccountId);
     }
 
     private boolean sameAccount(Account account) {

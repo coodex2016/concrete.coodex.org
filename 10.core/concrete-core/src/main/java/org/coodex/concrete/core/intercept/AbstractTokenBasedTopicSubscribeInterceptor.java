@@ -22,6 +22,7 @@ import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.concrete.message.*;
 import org.coodex.util.Common;
+import org.coodex.util.GenericTypeHelper;
 import org.coodex.util.Singleton;
 
 import javax.inject.Inject;

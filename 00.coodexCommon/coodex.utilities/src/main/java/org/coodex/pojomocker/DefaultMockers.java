@@ -26,6 +26,7 @@ import static org.coodex.pojomocker.MockerFacade.MOCKER_LOADER;
  * Created by davidoff shen on 2017-05-14.
  */
 @DefaultMockers.DefaultAnnotations
+@Deprecated
 public class DefaultMockers implements Mocker<Annotation> {
 
     private static final DefaultAnnotations DEFAULT_ANNOTATIONS = DefaultMockers.class.getAnnotation(DefaultAnnotations.class);

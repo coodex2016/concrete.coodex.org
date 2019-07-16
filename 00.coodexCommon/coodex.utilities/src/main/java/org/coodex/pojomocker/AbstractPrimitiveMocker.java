@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 /**
  * Created by davidoff shen on 2017-05-15.
  */
+@Deprecated
 public abstract class AbstractPrimitiveMocker<C, A extends Annotation> extends AbstractMocker<A> {
 
     @Override

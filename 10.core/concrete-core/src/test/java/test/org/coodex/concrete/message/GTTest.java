@@ -16,7 +16,7 @@
 
 package test.org.coodex.concrete.message;
 
-import org.coodex.concrete.message.GenericTypeHelper;
+import org.coodex.util.GenericTypeHelper;
 import org.coodex.concrete.message.TokenBasedTopic;
 import org.coodex.concrete.message.Topic;
 import org.slf4j.Logger;

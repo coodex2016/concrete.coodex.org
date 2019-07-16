@@ -20,10 +20,7 @@ import org.coodex.concrete.api.Signable;
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.common.*;
 import org.coodex.config.Config;
-import org.coodex.util.AcceptableServiceLoader;
-import org.coodex.util.Common;
-import org.coodex.util.Profile;
-import org.coodex.util.ServiceLoader;
+import org.coodex.util.*;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
@@ -38,16 +35,12 @@ public class SignUtil {
 
     //    public static final Profile PROFILE = getProfile(TAG_SIGNATRUE);
     private static final AcceptableServiceLoader<String, IronPenFactory> IRON_PEN_FACTORY_CONCRETE_SPI_FACADE
-            = new AcceptableServiceLoader<String, IronPenFactory>(new ConcreteServiceLoader<IronPenFactory>() {
-    });
+            = new AcceptableServiceLoader<>();
     private static final SignatureSerializer DEFAULT_SERIALIZER = new DefaultSignatureSerializer();
     private static final ServiceLoader<SignatureSerializer> SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE
-            = new ConcreteServiceLoader<SignatureSerializer>() {
-        @Override
-        public SignatureSerializer getConcreteDefaultProvider() {
-            return DEFAULT_SERIALIZER;
-        }
+            = new ServiceLoaderImpl<SignatureSerializer>(DEFAULT_SERIALIZER) {
     };
+
     private static final NoiseValidator defaultValidator = new NoiseValidator() {
         @Override
         public void checkNoise(String keyId, String noise) {
@@ -60,14 +53,8 @@ public class SignUtil {
         }
     };
 
-    private static final AcceptableServiceLoader<String, NoiseValidator> validatorLoader = new AcceptableServiceLoader<String, NoiseValidator>(
-            new ConcreteServiceLoader<NoiseValidator>() {
-                @Override
-                protected NoiseValidator getConcreteDefaultProvider() {
-                    return defaultValidator;
-                }
-            }
-    );
+    private static final AcceptableServiceLoader<String, NoiseValidator> validatorLoader =
+            new AcceptableServiceLoader<>(defaultValidator);
 
     private static final NoiseGenerator defaultGenerator = new NoiseGenerator() {
         @Override
@@ -80,14 +67,8 @@ public class SignUtil {
             return true;
         }
     };
-    private static final AcceptableServiceLoader<String, NoiseGenerator> generatorLoader = new AcceptableServiceLoader<String, NoiseGenerator>(
-            new ConcreteServiceLoader<NoiseGenerator>() {
-                @Override
-                protected NoiseGenerator getConcreteDefaultProvider() {
-                    return defaultGenerator;
-                }
-            }
-    );
+    private static final AcceptableServiceLoader<String, NoiseGenerator> generatorLoader =
+            new AcceptableServiceLoader<>(defaultGenerator);
 
 
     private static String getString(Profile profile, String key, String paperName) {
@@ -116,7 +97,7 @@ public class SignUtil {
 
     public static String getString(String key, String paperName, String defaultValue) {
         ServiceContext serviceContext = ConcreteContext.getServiceContext();
-        String value = null;
+        String value;
         String module = null;
         if (serviceContext instanceof ClientSideContext) {
             module = ((ClientSideContext) serviceContext).getDestination().getIdentify();

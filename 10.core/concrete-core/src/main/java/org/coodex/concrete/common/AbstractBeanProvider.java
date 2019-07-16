@@ -36,13 +36,12 @@ public abstract class AbstractBeanProvider implements BeanProvider {
     private static final ConflictSolution DEFAULT_CONFLICT_SOLUTION = new ThrowException();
 
     private static final AcceptableServiceLoader<Class, ConflictSolution> SOLUTION_CONCRETE_SPI_FACADE =
-            new AcceptableServiceLoader<Class, ConflictSolution>(new ConcreteServiceLoader<ConflictSolution>() {
-            });
+            new AcceptableServiceLoader<>();
 
     private static final ConflictSolution getSolution(Class<?> clz) {
 //        // 1 从BeanProvider里找
 //        try {
-//            Map<String, ConflictSolution> map = BeanProviderFacade.getBeanProvider().getBeansOfType(ConflictSolution.class);
+//            Map<String, ConflictSolution> map = BeanServiceLoaderProvider.getBeanProvider().getBeansOfType(ConflictSolution.class);
 //            if (map != null) {
 //                for (ConflictSolution solution : map.values()) {
 //                    if (solution != null && solution.accepted(clz))

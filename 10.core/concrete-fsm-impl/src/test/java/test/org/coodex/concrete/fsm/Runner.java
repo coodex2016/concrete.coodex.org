@@ -16,12 +16,12 @@
 
 package test.org.coodex.concrete.fsm;
 
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.fsm.FiniteStateMachineProvider;
+import org.coodex.util.ServiceLoaderImpl;
 
 public class Runner {
 
-    private static final FiniteStateMachineProvider provider = new ConcreteServiceLoader<FiniteStateMachineProvider>() {
+    private static final FiniteStateMachineProvider provider = new ServiceLoaderImpl<FiniteStateMachineProvider>() {
     }.getInstance();
 
 

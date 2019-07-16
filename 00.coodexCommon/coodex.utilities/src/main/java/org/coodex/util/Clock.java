@@ -50,7 +50,7 @@ public final class Clock {
             if (getMagnification() == 1.0f) {
                 return new SystemClockAgent();
             } else {
-                return new ServiceLoaderFacade<ClockAgent>() {
+                return new ServiceLoaderImpl<ClockAgent>() {
                     @Override
                     public ClockAgent getDefaultProvider() {
                         return new DefaultClockAgent();

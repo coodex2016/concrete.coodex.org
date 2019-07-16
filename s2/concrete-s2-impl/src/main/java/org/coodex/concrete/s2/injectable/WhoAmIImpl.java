@@ -16,7 +16,10 @@
 
 package org.coodex.concrete.s2.injectable;
 
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.Account;
+import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.IF;
+import org.coodex.concrete.common.Token;
 import org.coodex.concrete.s2.adaptor.AccountCopier;
 import org.coodex.concrete.s2.adaptor.NamedAccountCopier;
 import org.coodex.concrete.s2.api.AccountInfo;
@@ -36,14 +39,7 @@ public class WhoAmIImpl implements WhoAmI {
     @Inject
     private Token token;
     private static Singleton<AcceptableServiceLoader<Account, AccountCopier>> ACCOUNT_COPIER_LOADER =
-            new Singleton<AcceptableServiceLoader<Account, AccountCopier>>(() -> new AcceptableServiceLoader<Account, AccountCopier>(
-                    new ConcreteServiceLoader<AccountCopier>() {
-                        @Override
-                        protected AccountCopier getConcreteDefaultProvider() {
-                            return DEFAULT_ACCOUNT_COPIER;
-                        }
-                    }
-            ));
+            new Singleton<>(() -> new AcceptableServiceLoader<>(DEFAULT_ACCOUNT_COPIER));
 
     @Override
     public AccountInfo get() {

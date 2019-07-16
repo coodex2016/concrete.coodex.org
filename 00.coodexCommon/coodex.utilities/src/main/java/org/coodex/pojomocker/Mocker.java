@@ -23,6 +23,7 @@ import java.lang.annotation.Annotation;
 /**
  * Created by davidoff shen on 2017-05-11.
  */
+@Deprecated
 public interface Mocker<A extends Annotation> extends AcceptableService<A> {
 
     Object mock(A mockAnnotation, Class clazz);

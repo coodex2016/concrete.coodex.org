@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
 /**
  * 定义一组序列生成器
  */
+@Deprecated
 public @interface Sequences {
 
     Sequence[] value();

@@ -31,7 +31,7 @@ public class LocalInvoker extends AbstractSyncInvoker {
 
     @Override
     protected Object execute(Class clz, Method method, Object[] args) throws Throwable {
-        return method.invoke(BeanProviderFacade.getBeanProvider().getBean(clz), args);
+        return method.invoke(BeanServiceLoaderProvider.getBeanProvider().getBean(clz), args);
     }
 
 

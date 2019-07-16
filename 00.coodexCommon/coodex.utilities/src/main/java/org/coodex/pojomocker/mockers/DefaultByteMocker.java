@@ -23,6 +23,7 @@ import org.coodex.util.Common;
 /**
  * Created by davidoff shen on 2017-05-15.
  */
+@Deprecated
 public class DefaultByteMocker extends AbstractPrimitiveMocker<Byte, BYTE> {
     @Override
     protected Object toPrimitive(Byte aByte) {

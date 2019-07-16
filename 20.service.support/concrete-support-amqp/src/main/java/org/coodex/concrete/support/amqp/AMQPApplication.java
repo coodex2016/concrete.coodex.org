@@ -21,13 +21,11 @@ import org.coodex.concrete.amqp.AMQPConnectionConfig;
 import org.coodex.concrete.amqp.AMQPConnectionFacade;
 import org.coodex.concrete.amqp.AMQPModule;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.message.ServerSideMessage;
-import org.coodex.concrete.own.OwnServiceModule;
 import org.coodex.concrete.own.OwnServiceProvider;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;
 import org.coodex.util.Common;
-import org.coodex.util.GenericType;
+import org.coodex.util.GenericTypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,12 +43,7 @@ public class AMQPApplication extends OwnServiceProvider {
     private final static Logger log = LoggerFactory.getLogger(AMQPApplication.class);
 
 
-    private static OwnModuleBuilder AMQP_MODULE_BUILDER = new OwnModuleBuilder() {
-        @Override
-        public OwnServiceModule build(Class clz) {
-            return new AMQPModule(clz);
-        }
-    };
+    private static OwnModuleBuilder AMQP_MODULE_BUILDER = clz -> new AMQPModule(clz);
     private final String exchangeName;
     private Channel channel;
 
@@ -130,13 +123,13 @@ public class AMQPApplication extends OwnServiceProvider {
 
 
                 @Override
-                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
                     final String clientId = envelope.getRoutingKey().substring(ROUTE_KEY_REQUEST.length());
                     String bodyStr = new String(body, StandardCharsets.UTF_8);
                     log.debug("message received: {}", bodyStr);
                     final RequestPackage<Object> requestPackage = serializer.parse(bodyStr,
-                            new GenericType<RequestPackage<Object>>() {
-                            }.genericType());
+                            new GenericTypeHelper.GenericType<RequestPackage<Object>>() {
+                            }.getType());
 
                     invokeService(requestPackage, new AMQPCaller(getSubjoin(requestPackage)),
                             new DefaultResponseVisitor() {
@@ -148,24 +141,18 @@ public class AMQPApplication extends OwnServiceProvider {
                                         throw new RuntimeException(e);
                                     }
                                 }
-                            }, new ErrorVisitor() {
-                                @Override
-                                public void visit(String msgId, Throwable th) {
-                                    ResponsePackage<ErrorInfo> responsePackage = new ResponsePackage<ErrorInfo>();
-                                    responsePackage.setOk(false);
-                                    responsePackage.setMsgId(msgId);
-                                    responsePackage.setContent(ThrowableMapperFacade.toErrorInfo(th));
-                                    try {
-                                        send(serializer.toJson(responsePackage), clientId);
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
+                            }, (msgId, th) -> {
+                                ResponsePackage<ErrorInfo> responsePackage = new ResponsePackage<ErrorInfo>();
+                                responsePackage.setOk(false);
+                                responsePackage.setMsgId(msgId);
+                                responsePackage.setContent(ThrowableMapperFacade.toErrorInfo(th));
+                                try {
+                                    send(serializer.toJson(responsePackage), clientId);
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
                                 }
-                            }, new ServerSideMessageVisitor() {
-                                @Override
-                                public void visit(ServerSideMessage serverSideMessage, String tokenId) {
-                                    // TODO
-                                }
+                            }, (serverSideMessage, tokenId) -> {
+                                // TODO
                             }, null);
                 }
             });

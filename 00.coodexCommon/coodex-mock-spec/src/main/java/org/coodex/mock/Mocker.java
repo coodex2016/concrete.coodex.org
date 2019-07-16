@@ -18,27 +18,55 @@ package org.coodex.mock;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
-/**
- * 单值模拟器原型
- */
-public interface Mocker {
 
-    /**
-     * 模拟器是否适用目标类型和指定的用Mock修饰过的Annotation
-     *
-     * @param mockAnnotation
-     * @param targetType
-     * @return
-     */
-    boolean accept(Annotation mockAnnotation, Type targetType);
+public final class Mocker {
 
-    /**
-     * 根据mockAnnotation和目标类型
-     *
-     * @param mockAnnotation
-     * @param targetType
-     * @return
-     */
-    Object mock(Annotation mockAnnotation, Mock.Nullable nullable, Type targetType);
+    private static final String DEFAULT_PROVIDER_CLASS = Mocker.class.getPackage().getName() + ".CoodexMockerProvider";
+    private static boolean instanceLoaded = false;
+    private static MockerProvider mockerProviderInstance = null;
+    private static Throwable th = null;
+
+    private Mocker() {
+    }
+
+    private static MockerProvider getMockerProvider() {
+        if (!instanceLoaded) {
+            synchronized (Mocker.class) {
+                if (!instanceLoaded) {
+                    try {
+                        Iterator<MockerProvider> serviceLoader = ServiceLoader.load(MockerProvider.class).iterator();
+                        if (serviceLoader.hasNext()) {
+                            mockerProviderInstance = serviceLoader.next();
+                        } else {
+                            mockerProviderInstance = (MockerProvider) Class.forName(DEFAULT_PROVIDER_CLASS).newInstance();
+                        }
+                    } catch (Throwable throwable) {
+                        th = throwable;
+                    } finally {
+                        instanceLoaded = true;
+                    }
+                }
+            }
+        }
+
+        if (mockerProviderInstance == null) {
+            if (th == null)
+                throw new MockException("none provider found.");
+            else
+                throw new MockException("none provider found. ", th);
+        }
+        return mockerProviderInstance;
+    }
+
+    public static <T> T mock(Class<T> type, Annotation... annotations) {
+        return getMockerProvider().mock(type, annotations);
+    }
+
+    public static Object mock(Type type, Annotation... annotations) {
+        return getMockerProvider().mock(type, annotations);
+    }
+
 }

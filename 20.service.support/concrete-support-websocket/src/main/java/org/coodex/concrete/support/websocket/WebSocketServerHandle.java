@@ -132,7 +132,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 //        String sessionId =
         peers.remove(peer);
 //        if (sessionId != null) {
-//            BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(sessionId, true).invalidate();
+//            BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class).getToken(sessionId, true).invalidate();
 //            log.debug("token [{}] invalidate.", sessionId);
 //        }
         log.debug("session closed: {}, total sessions: {}", peer, peers.size());
@@ -220,7 +220,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 
 //    @Override
 //    public Token getToken(Session session) {
-//        return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session), true);
+//        return BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session), true);
 //    }
 
     @OnMessage
@@ -241,7 +241,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 
 //    private synchronized Token getToken(Session session, RequestPackage requestPackage) {
 //
-//        Token token = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session));
+//        Token token = BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session));
 //        peers.put(session, token == null ? null : token.getTokenId());
 //        return token;
 //    }

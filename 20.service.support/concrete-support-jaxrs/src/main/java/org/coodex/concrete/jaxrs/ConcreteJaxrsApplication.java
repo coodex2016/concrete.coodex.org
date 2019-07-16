@@ -35,15 +35,15 @@ import static org.coodex.concrete.common.ConcreteHelper.foreachClassInPackages;
 
 public abstract class ConcreteJaxrsApplication extends Application implements org.coodex.concrete.api.Application {
 
-    protected static final JaxRSModuleMaker moduleMaker = new JaxRSModuleMaker();
+    private static final JaxRSModuleMaker moduleMaker = new JaxRSModuleMaker();
     private final static Logger log = LoggerFactory.getLogger(ConcreteJaxrsApplication.class);
     private Set<Class<?>> servicesClasses = new HashSet<>();
-    private Set<Class<?>> jaxrsClasses = new HashSet<Class<?>>();
-    private Set<Object> singletonInstances = new HashSet<Object>();
-    private Set<Class<?>> othersClasses = new HashSet<Class<?>>();
+    private Set<Class<?>> jaxrsClasses = new HashSet<>();
+    private Set<Object> singletonInstances = new HashSet<>();
+    private Set<Class<?>> othersClasses = new HashSet<>();
 
     private Application application = null;
-    private boolean exceptionMapperRegisted = false;
+    private boolean exceptionMapperRegistered = false;
 
     public ConcreteJaxrsApplication() {
         super();
@@ -55,7 +55,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
         registerDefault();
     }
 
-    @SuppressWarnings({"unsafe", "unchecked"})
+    @SuppressWarnings({"unsafe"})
     public Set<Class<?>> getServicesClasses() {
         return servicesClasses;
     }
@@ -78,7 +78,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
 
     protected abstract ClassGenerator getClassGenerator();
 
-    protected void registerDefault() {
+    private void registerDefault() {
         register(Polling.class);
         registerPackage(ErrorCodes.class.getPackage().getName());
     }
@@ -87,7 +87,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     public void registerPackage(String... packages) {
 
         foreachClassInPackages(
-                (Class<?> serviceClass) -> registerClass(serviceClass),
+                this::registerClass,
                 packages);
     }
 
@@ -109,7 +109,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     }
 
 
-    protected void registerConcreteService(Class<?> concreteServiceClass) {
+    private void registerConcreteService(Class<?> concreteServiceClass) {
         if (!servicesClasses.contains(concreteServiceClass)) {
             servicesClasses.add(concreteServiceClass);
             Class<?> jaxrs = generateJaxrsClass(concreteServiceClass);
@@ -139,7 +139,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
         }
     }
 
-    protected Class<?> generateJaxrsClass(Class<?> concreteServiceClass) {
+    private Class<?> generateJaxrsClass(Class<?> concreteServiceClass) {
         try {
             return getClassGenerator().generatesImplClass(moduleMaker.make(concreteServiceClass));
         } catch (RuntimeException t) {
@@ -149,14 +149,15 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
         }
     }
 
-    public void registerClass(Class<?> clz) {
+    private void registerClass(Class<?> clz) {
         if (ConcreteHelper.isConcreteService(clz)) {
             registerConcreteService(clz);
         } else if (AbstractErrorCodes.class.isAssignableFrom(clz)) {
+            //noinspection unchecked
             ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) clz);
         } else {
             if (ConcreteExceptionMapper.class.isAssignableFrom(clz)) {
-                exceptionMapperRegisted = true;
+                exceptionMapperRegistered = true;
             }
             if (!othersClasses.contains(clz)) {
                 othersClasses.add(clz);
@@ -169,10 +170,10 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
 
     @Override
     public Set<Class<?>> getClasses() {
-        if (!exceptionMapperRegisted) {
+        if (!exceptionMapperRegistered) {
             register(ConcreteExceptionMapper.class);
         }
-        Set<Class<?>> set = new HashSet<Class<?>>();
+        Set<Class<?>> set = new HashSet<>();
         if (application != null) {
             set.addAll(application.getClasses());
         }
@@ -183,10 +184,10 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
 
     @Override
     public Set<Object> getSingletons() {
-        if (!exceptionMapperRegisted) {
+        if (!exceptionMapperRegistered) {
             register(ConcreteExceptionMapper.class);
         }
-        Set<Object> set = new HashSet<Object>();
+        Set<Object> set = new HashSet<>();
         if (application != null) {
             set.addAll(application.getSingletons());
         }
@@ -195,7 +196,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     }
 
     private class UnableNewInstanceException extends RuntimeException {
-        public UnableNewInstanceException(Throwable th) {
+        UnableNewInstanceException(Throwable th) {
             super(th);
         }
     }

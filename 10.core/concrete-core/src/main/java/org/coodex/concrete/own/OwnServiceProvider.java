@@ -143,7 +143,7 @@ public abstract class OwnServiceProvider {
                                                 null :
                                                 MockerFacade.mock(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
                                     } else {
-                                        Object instance = BeanProviderFacade.getBeanProvider().getBean(unit.getDeclaringModule().getInterfaceClass());
+                                        Object instance = BeanServiceLoaderProvider.getBeanProvider().getBean(unit.getDeclaringModule().getInterfaceClass());
                                         if (objects == null)
                                             return method.invoke(instance);
                                         else

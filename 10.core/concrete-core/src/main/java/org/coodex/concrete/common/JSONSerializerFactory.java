@@ -16,16 +16,13 @@
 
 package org.coodex.concrete.common;
 
+import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
+
 public class JSONSerializerFactory {
 
-    private static JSONSerializer defaultSerializer = new FastJsonSerializer();
-
-    private static ConcreteServiceLoader<JSONSerializer> jsonSerializerConcreteServiceLoader
-            = new ConcreteServiceLoader<JSONSerializer>() {
-        @Override
-        protected JSONSerializer getConcreteDefaultProvider() {
-            return defaultSerializer;
-        }
+    private static ServiceLoader<JSONSerializer> jsonSerializerConcreteServiceLoader
+            = new ServiceLoaderImpl<JSONSerializer>(new FastJsonSerializer()) {
     };
 
     public static JSONSerializer getInstance() {

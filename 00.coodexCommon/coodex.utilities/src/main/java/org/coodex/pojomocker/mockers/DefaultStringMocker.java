@@ -34,6 +34,7 @@ import static org.coodex.pojomocker.mockers.DefaultCharMocker.getDefaultRange;
 /**
  * Created by davidoff shen on 2017-05-15.
  */
+@Deprecated
 public class DefaultStringMocker implements Mocker<STRING> {
 
 

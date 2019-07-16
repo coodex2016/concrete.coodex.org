@@ -20,6 +20,7 @@ import org.coodex.util.Common;
 
 import java.util.Calendar;
 
+@Deprecated
 public class StrDateTimeSequence extends DateTimeSequence<String> {
 
     private String targetFormat(){

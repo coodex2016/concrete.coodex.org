@@ -22,7 +22,7 @@ import org.coodex.concrete.api.mockers.MockValue;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
-import org.coodex.concrete.message.GenericTypeHelper;
+import org.coodex.util.GenericTypeHelper;
 import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
 

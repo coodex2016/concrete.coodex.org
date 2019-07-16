@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.text.ParseException;
 import java.util.Calendar;
 
+@Deprecated
 public abstract class DateTimeSequence<T> extends AbstractConfigurableSequenceGenerator<T> {
 
     private final static Logger log = LoggerFactory.getLogger(DateTimeSequence.class);

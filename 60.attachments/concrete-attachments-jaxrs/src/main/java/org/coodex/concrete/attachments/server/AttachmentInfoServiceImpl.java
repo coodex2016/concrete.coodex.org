@@ -20,7 +20,7 @@ import org.coodex.concrete.attachments.AttachmentEntityInfo;
 import org.coodex.concrete.attachments.AttachmentServiceHelper;
 import org.coodex.concrete.attachments.Repository;
 import org.coodex.concrete.common.AttachmentInfoErrorCodes;
-import org.coodex.concrete.common.BeanProviderFacade;
+import org.coodex.concrete.common.BeanServiceLoaderProvider;
 import org.coodex.concrete.common.IF;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class AttachmentInfoServiceImpl implements AttachmentInfoService {
 
-    private Repository attachmentRepository = BeanProviderFacade.getBeanProvider().getBean(Repository.class);
+    private Repository attachmentRepository = BeanServiceLoaderProvider.getBeanProvider().getBean(Repository.class);
 
 
     @Override

@@ -30,6 +30,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 import static org.coodex.concrete.apitools.APIHelper.loadModules;
+import static org.coodex.util.GenericTypeHelper.toReference;
 
 public class ReactiveStreamsRender extends AbstractRender {
 
@@ -93,7 +94,7 @@ public class ReactiveStreamsRender extends AbstractRender {
     }
 
     private String typeToStr(Type t, Type context, Set<String> imports, boolean autoBox) {
-        t = TypeHelper.toTypeReference(t, context);
+        t = toReference(t, context);
         if (t instanceof Class) {
             return classToStr((Class) t, imports, autoBox);
         } else if (t instanceof ParameterizedType) {

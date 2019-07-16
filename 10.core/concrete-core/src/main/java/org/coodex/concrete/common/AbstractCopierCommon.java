@@ -20,8 +20,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.TypeVariable;
 import java.util.*;
 
-import static org.coodex.util.TypeHelper.solve;
-import static org.coodex.util.TypeHelper.typeToClass;
+import static org.coodex.util.GenericTypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.typeToClass;
+
+//import static org.coodex.util.TypeHelper.solve;
+//import static org.coodex.util.TypeHelper.typeToClass;
 
 /**
  * Created by davidoff shen on 2017-05-11.

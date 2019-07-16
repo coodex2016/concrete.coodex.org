@@ -22,7 +22,6 @@ import javassist.CtConstructor;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.SignatureAttribute;
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Common;
@@ -35,15 +34,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.coodex.concrete.message.GenericTypeHelper.solve;
 import static org.coodex.concrete.message.Topics.TAG_QUEUE;
+import static org.coodex.util.GenericTypeHelper.solve;
 
 
 /**
  * 不同的队列、不同主题构建唯一的搬运工类
  * 类型定义：
  *
- * @Queue("queueName") public class ClassNameWithIndex
+ * {@literal @}Queue("queueName") public class ClassNameWithIndex
  * extends Prototype<MessageType>
  * implements Courier<MessageType>{}
  */
@@ -54,17 +53,15 @@ class CourierBuilder
     private final static Logger log = LoggerFactory.getLogger(CourierBuilder.class);
 
     private static SingletonMap<TopicKey, Courier> couriers =
-            new SingletonMap<TopicKey, Courier>(
+            new SingletonMap<>(
                     new CourierBuilder()
             );
     private static AcceptableServiceLoader<String, CourierPrototypeProvider> providers =
-            new AcceptableServiceLoader<String, CourierPrototypeProvider>(
-                    new ConcreteServiceLoader<CourierPrototypeProvider>() {
-                    }
-            );
+            new AcceptableServiceLoader<>();
     private AtomicLong index = new AtomicLong(0);
 
     static <M extends Serializable> Courier<M> buildCourier(TopicKey topicKey) {
+        //noinspection unchecked
         return couriers.getInstance(topicKey);
     }
 

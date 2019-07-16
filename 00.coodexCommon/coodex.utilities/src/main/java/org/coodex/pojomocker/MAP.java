@@ -27,6 +27,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RUNTIME)
+@Deprecated
 public @interface MAP {
 
     @Target(ElementType.ANNOTATION_TYPE)

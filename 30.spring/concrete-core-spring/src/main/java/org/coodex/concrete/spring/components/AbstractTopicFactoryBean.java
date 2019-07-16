@@ -20,7 +20,7 @@ import org.coodex.concrete.message.Topics;
 
 import java.lang.reflect.Type;
 
-import static org.coodex.concrete.message.GenericTypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.solve;
 
 public abstract class AbstractTopicFactoryBean<T> /*implements FactoryBean<T>*/ {
 

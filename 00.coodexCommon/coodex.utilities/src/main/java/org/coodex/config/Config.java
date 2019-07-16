@@ -18,7 +18,7 @@ package org.coodex.config;
 
 import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderFacade;
+import org.coodex.util.ServiceLoaderImpl;
 import org.coodex.util.Singleton;
 
 public class Config {
@@ -31,7 +31,7 @@ public class Config {
                 }
             }
     );
-    private static ServiceLoader<Configuration> configurationServiceLoader = new ServiceLoaderFacade<Configuration>() {
+    private static ServiceLoader<Configuration> configurationServiceLoader = new ServiceLoaderImpl<Configuration>() {
         @Override
         public Configuration getDefaultProvider() {
             return defaultConfiguration.getInstance();

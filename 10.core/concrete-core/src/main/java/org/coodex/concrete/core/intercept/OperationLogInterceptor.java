@@ -26,6 +26,7 @@ import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,17 +59,14 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
 //
 //    }
 
-    private static final OperationLogger DEFAULT_LOGGER = (String accountId, String accountName, String category, String subClass, String message) ->
-            log.info("accountId: {}; accountName: {}; category: {}; subClass: {}; message: {}",
-                    accountId, accountName, category, subClass, message);
 
-    private final static ServiceLoader<OperationLogger> LOGGER_SERVICE_LOADER = new ConcreteServiceLoader<OperationLogger>() {
-        @Override
-        public OperationLogger getConcreteDefaultProvider() {
-            return DEFAULT_LOGGER;
-        }
+    private final static ServiceLoader<OperationLogger> LOGGER_SERVICE_LOADER = new ServiceLoaderImpl<OperationLogger>(
+            (String accountId, String accountName, String category, String subClass, String message) ->
+                    log.info("accountId: {}; accountName: {}; category: {}; subClass: {}; message: {}",
+                            accountId, accountName, category, subClass, message)
+    ) {
     };
-    static ThreadLocal<Account<? extends AccountID>> OPERATOR = new ThreadLocal<Account<? extends AccountID>>();
+    static ThreadLocal<Account<? extends AccountID>> OPERATOR = new ThreadLocal<>();
 
     private static String buildLog(String category, String subClass, String messageTemplate,
                                    Class<? extends LogFormatter> formatterClass) {

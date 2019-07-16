@@ -17,12 +17,12 @@
 package org.coodex.concrete.fsm.impl;
 
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.fsm.IdentifiedState;
 import org.coodex.concrete.fsm.IdentifiedStateContainer;
 import org.coodex.concrete.fsm.IdentifiedStateIsLockingException;
 import org.coodex.concrete.fsm.IdentifiedStateLoader;
-import org.coodex.util.TypeHelper;
+import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -33,12 +33,14 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static org.coodex.util.GenericTypeHelper.toReference;
+
 public class SingletonIdentifiedStateContainer implements IdentifiedStateContainer {
 
-    private final static Map<Serializable, Lock> STATUS_MAP = new ConcurrentHashMap<Serializable, Lock>();
+    private final static Map<Serializable, Lock> STATUS_MAP = new ConcurrentHashMap<>();
 
 //    private static ScheduledExecutorService LOCK_FORCE_RELEASE = null;
-    private final static ConcreteServiceLoader<IdentifiedStateLoader> LOADERS = new ConcreteServiceLoader<IdentifiedStateLoader>() {
+    private final static ServiceLoader<IdentifiedStateLoader> LOADERS = new ServiceLoaderImpl<IdentifiedStateLoader>() {
     };
     private final static long DEFAULT_TIME_OUT = 1000;
 //    private static Singleton<ScheduledExecutorService> LOCK_FORCE_RELEASE =
@@ -49,7 +51,7 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
 ////                    return ExecutorsHelper.newSingleThreadScheduledExecutor();
 //                }
 //            });
-    private static Map<Class, IdentifiedStateLoader> loaderMap = new HashMap<Class, IdentifiedStateLoader>();
+    private static final Map<Class, IdentifiedStateLoader> loaderMap = new HashMap<>();
 
     private static ScheduledExecutorService getReleaseExecutor() {
 //        if (LOCK_FORCE_RELEASE == null)
@@ -72,14 +74,14 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
                 Type t = IdentifiedStateLoader.class.getTypeParameters()[0];
                 boolean found = false;
                 for (IdentifiedStateLoader loader : LOADERS.getAllInstances()) {
-                    if (stateClass.equals(TypeHelper.toTypeReference(t, loader.getClass()))) {
+                    if (stateClass.equals(toReference(t, loader.getClass()))) {
                         loaderMap.put(stateClass, loader);
                         found = true;
                         break;
                     }
                 }
                 if (!found) {
-                    throw new RuntimeException("No IdentifiedStateLoader found for " + stateClass.getClass().getName());
+                    throw new RuntimeException("No IdentifiedStateLoader found for " + stateClass.getName());
                 }
             }
             return (L) loaderMap.get(stateClass);
@@ -102,12 +104,7 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
     private <S extends IdentifiedState<ID>, ID extends Serializable> S lock(final S state, long timeout) {
         if (timeout <= 0) timeout = DEFAULT_TIME_OUT;
         STATUS_MAP.put(state.getId(), new Lock(state, getReleaseExecutor().schedule(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        $release(state.getId(), false);
-                    }
-                }, timeout, TimeUnit.MILLISECONDS
+                () -> $release(state.getId(), false), timeout, TimeUnit.MILLISECONDS
         )));
         return state;
     }
@@ -146,7 +143,7 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
         private IdentifiedState identifiedState;
         private Future future;
 
-        public Lock(IdentifiedState identifiedState, Future future) {
+        Lock(IdentifiedState identifiedState, Future future) {
             this.identifiedState = identifiedState;
             this.future = future;
         }
@@ -155,7 +152,7 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
             return identifiedState;
         }
 
-        public Future getFuture() {
+        Future getFuture() {
             return future;
         }
     }

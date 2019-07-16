@@ -24,6 +24,7 @@ import java.util.List;
  * 关联策略
  * Created by davidoff shen on 2017-05-11.
  */
+@Deprecated
 public interface RelationPolicy extends AcceptableService<String> {
 
     String[] getPolicyNames();

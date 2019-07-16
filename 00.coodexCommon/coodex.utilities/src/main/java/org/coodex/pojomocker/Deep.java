@@ -35,9 +35,11 @@ import java.lang.annotation.Target;
  * // 最多mock出pojo.a.a.a.a.a
  * </code>
  * Created by davidoff shen on 2017-05-11.
+ * @deprecated (使用mockspec替代 031移除)
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface Deep {
 
     int min() default 2;

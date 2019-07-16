@@ -30,6 +30,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.StringTokenizer;
 
+import static org.coodex.util.GenericTypeHelper.solve;
+
 
 /**
  * Created by davidoff shen on 2016-12-04.
@@ -96,7 +98,7 @@ public abstract class DocToolkit {
             return builder.toString();
         } else if (t instanceof TypeVariable) {
             if (contextClass != null) {
-                return formatTypeStr(TypeHelper.solve((TypeVariable) t, contextClass));
+                return formatTypeStr(solve((TypeVariable) t, contextClass));
             } else {
                 TypeVariable typeVariable = (TypeVariable) t;
                 StringBuilder builder = new StringBuilder();

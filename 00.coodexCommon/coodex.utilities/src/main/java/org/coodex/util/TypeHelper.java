@@ -54,7 +54,7 @@ public class TypeHelper {
             void.class,
     };
 
-
+    @Deprecated
     public static Class typeToClass(Type type) {
         if (type instanceof Class) {
             return (Class) type;
@@ -64,7 +64,7 @@ public class TypeHelper {
             return null;
         }
     }
-
+    @Deprecated
     public static Type toTypeReference(Type type, Type... contextClass) {
         if (type instanceof ParameterizedType) {
             return buildParameterizedType((ParameterizedType) type, contextClass);
@@ -75,7 +75,7 @@ public class TypeHelper {
         } else
             return type;
     }
-
+    @Deprecated
     public static Type solve(TypeVariable variable, Type... types) {
         if (types == null || types.length == 0) return null;
         if (variable.getGenericDeclaration() instanceof Class) {
@@ -217,7 +217,7 @@ public class TypeHelper {
             return c.getPackage().getName().startsWith("java.lang");
         }
     }
-
+    @Deprecated
     private static class $$GenericArrayType implements GenericArrayType {
         private final Type genericComponentType;
 
@@ -235,6 +235,7 @@ public class TypeHelper {
         }
     }
 
+    @Deprecated
     private static class $$ParameterizedType implements ParameterizedType {
         private final ParameterizedType type;
         private List<Type> types = new ArrayList<Type>();

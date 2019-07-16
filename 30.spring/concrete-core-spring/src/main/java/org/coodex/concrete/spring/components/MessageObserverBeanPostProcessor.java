@@ -17,6 +17,7 @@
 package org.coodex.concrete.spring.components;
 
 import org.coodex.concrete.message.*;
+import org.coodex.util.GenericTypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;

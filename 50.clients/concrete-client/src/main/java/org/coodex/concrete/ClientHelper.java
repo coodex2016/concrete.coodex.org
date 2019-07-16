@@ -21,15 +21,17 @@ import org.coodex.concrete.client.DestinationFactory;
 import org.coodex.concrete.client.InstanceBuilder;
 import org.coodex.concrete.client.InvokerFactory;
 import org.coodex.concrete.client.impl.JavaProxyInstanceBuilder;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.JSONSerializer;
+import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.core.intercept.AsyncInterceptorChain;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.InterceptorChain;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
 import org.coodex.ssl.SSLContextFactory;
 import org.coodex.util.AcceptableServiceLoader;
-import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 import org.coodex.util.Singleton;
 
 import javax.net.ssl.SSLContext;
@@ -42,71 +44,37 @@ public class ClientHelper {
     private ClientHelper(){}
 
 
-    private static Singleton<InstanceBuilder> instanceBuilder = new Singleton<InstanceBuilder>(new Singleton.Builder<InstanceBuilder>() {
-        @Override
-        public InstanceBuilder build() {
-            return new ConcreteServiceLoader<InstanceBuilder>() {
-                @Override
-                protected InstanceBuilder getConcreteDefaultProvider() {
-                    return new JavaProxyInstanceBuilder();
-                }
-            }.getInstance();
-        }
-    });
+    private static Singleton<InstanceBuilder> instanceBuilder =
+            new Singleton<>(() -> new ServiceLoaderImpl<InstanceBuilder>(new JavaProxyInstanceBuilder()) {
+            }.getInstance());
 
     private static Singleton<AcceptableServiceLoader<Destination, InvokerFactory>> invokerFactoryProviders =
-            new Singleton<AcceptableServiceLoader<Destination, InvokerFactory>>(new Singleton.Builder<AcceptableServiceLoader<Destination, InvokerFactory>>() {
-                @Override
-                public AcceptableServiceLoader<Destination, InvokerFactory> build() {
-                    return new AcceptableServiceLoader<Destination, InvokerFactory>(
-                            new ConcreteServiceLoader<InvokerFactory>() {
-                            });
-                }
-            });
+            new Singleton<>(AcceptableServiceLoader::new);
 
     private static Singleton<AcceptableServiceLoader<String, SSLContextFactory>>
             sslContextFactoryAcceptableServiceLoader
-            = new Singleton<AcceptableServiceLoader<String, SSLContextFactory>>(
-            new Singleton.Builder<AcceptableServiceLoader<String, SSLContextFactory>>() {
-                @Override
-                public AcceptableServiceLoader<String, SSLContextFactory> build() {
-                    return new AcceptableServiceLoader<String, SSLContextFactory>(
-                            new ConcreteServiceLoader<SSLContextFactory>() {
-                            }
-                    );
-                }
+            = new Singleton<>(
+            AcceptableServiceLoader::new
+    );
+
+    private static Singleton<ServiceLoader<ConcreteInterceptor>> interceptorServiceLoader = new Singleton<>(
+            () -> new ServiceLoaderImpl<ConcreteInterceptor>() {
             }
     );
 
-    private static Singleton<ServiceLoader<ConcreteInterceptor>> interceptorServiceLoader = new Singleton<ServiceLoader<ConcreteInterceptor>>(
-            new Singleton.Builder<ServiceLoader<ConcreteInterceptor>>() {
-                @Override
-                public ServiceLoader<ConcreteInterceptor> build() {
-                    return new ConcreteServiceLoader<ConcreteInterceptor>() {
-                    };
-                }
-            }
-    );
-
-    private static Singleton<SyncInterceptorChain> syncInterceptorChain = new Singleton<SyncInterceptorChain>(
-            new Singleton.Builder<SyncInterceptorChain>() {
-                @Override
-                public SyncInterceptorChain build() {
-                    SyncInterceptorChain instance = new SyncInterceptorChain();
-                    buildChain(instance);
-                    return instance;
-                }
+    private static Singleton<SyncInterceptorChain> syncInterceptorChain = new Singleton<>(
+            () -> {
+                SyncInterceptorChain instance = new SyncInterceptorChain();
+                buildChain(instance);
+                return instance;
             }
     );
 
     private static Singleton<AsyncInterceptorChain> asyncInterceptorChain =
-            new Singleton<AsyncInterceptorChain>(new Singleton.Builder<AsyncInterceptorChain>() {
-                @Override
-                public AsyncInterceptorChain build() {
-                    AsyncInterceptorChain instance = new AsyncInterceptorChain();
-                    buildChain(instance);
-                    return instance;
-                }
+            new Singleton<>(() -> {
+                AsyncInterceptorChain instance = new AsyncInterceptorChain();
+                buildChain(instance);
+                return instance;
             });
 
     public static JSONSerializer getJSONSerializer() {
@@ -151,8 +119,7 @@ public class ClientHelper {
     }
 
     private static AcceptableServiceLoader<String, DestinationFactory<Destination,String>> destinationFactoryAcceptableServiceLoader
-            = new AcceptableServiceLoader<String, DestinationFactory<Destination, String>>(new ConcreteServiceLoader<DestinationFactory<Destination, String>>() {
-    });
+            = new AcceptableServiceLoader<>();
 
     private static AcceptableServiceLoader<String, SSLContextFactory> getSSLContextFactoryAcceptableServiceLoader() {
         return sslContextFactoryAcceptableServiceLoader.getInstance();

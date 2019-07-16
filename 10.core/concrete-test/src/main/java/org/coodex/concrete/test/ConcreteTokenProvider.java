@@ -34,7 +34,7 @@ public class ConcreteTokenProvider {
 
 //    private static TokenManager getInstance() {
 //        try {
-//            return BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
+//            return BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class);
 //        } catch (ConcreteException ex) {
 //            log.warn("error occurred: {}. Using LocalTokenManager", ex.getLocalizedMessage());
 //            return new LocalTokenManager();

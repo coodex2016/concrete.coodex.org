@@ -26,6 +26,7 @@ import java.util.List;
  * <p>
  * Created by davidoff shen on 2017-05-17.
  */
+@Deprecated
 public abstract class AbstractRelationPolicy /*extends StringAcceptableService*/ implements RelationPolicy {
 
 //    @Override

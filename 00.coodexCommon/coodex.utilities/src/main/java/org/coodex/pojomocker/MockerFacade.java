@@ -34,6 +34,7 @@ import static org.coodex.util.TypeHelper.toTypeReference;
  * Created by davidoff shen on 2017-05-13.
  */
 @SuppressWarnings("unchecked")
+@Deprecated
 public class MockerFacade {
 
     private final static Logger log = LoggerFactory.getLogger(MockerFacade.class);
@@ -41,7 +42,7 @@ public class MockerFacade {
 
     private static final PojoBuilder DEFAULT_BUILDER = new PojoBuilderImpl();
 
-    private static final PojoBuilder POJO_BUILDER = new ServiceLoaderFacade<PojoBuilder>() {
+    private static final PojoBuilder POJO_BUILDER = new ServiceLoaderImpl<PojoBuilder>() {
         @Override
         public PojoBuilder getDefaultProvider() {
             return DEFAULT_BUILDER;
@@ -52,7 +53,7 @@ public class MockerFacade {
 
     static final AcceptableServiceLoader<Annotation, Mocker<Annotation>> MOCKER_LOADER =
             new AcceptableServiceLoader<Annotation, Mocker<Annotation>>(
-                    new ServiceLoaderFacade<Mocker<Annotation>>() {
+                    new ServiceLoaderImpl<Mocker<Annotation>>() {
                         @Override
                         public Mocker<Annotation> getDefaultProvider() {
                             return DEFAULT_MOCKER;
@@ -61,7 +62,7 @@ public class MockerFacade {
             );
 
     private static final AcceptableServiceLoader<String, RelationPolicy> RELATION_POLICY_LOADER =
-            new AcceptableServiceLoader<String, RelationPolicy>(new ServiceLoaderFacade<RelationPolicy>() {
+            new AcceptableServiceLoader<String, RelationPolicy>(new ServiceLoaderImpl<RelationPolicy>() {
             });
 //    private static final Map<String, PojoInfo> POJO_INFO_MAP = new HashMap<String, PojoInfo>();
 

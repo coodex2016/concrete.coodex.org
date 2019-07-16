@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
 /**
  * 用定义模拟用的序列数据
  */
+@Deprecated
 public @interface Sequence {
 
     /**

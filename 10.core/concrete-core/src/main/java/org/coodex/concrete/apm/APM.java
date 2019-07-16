@@ -16,21 +16,21 @@
 
 package org.coodex.concrete.apm;
 
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concurrent.Parallel;
+import org.coodex.util.ServiceLoaderImpl;
 import org.coodex.util.Singleton;
 
 import java.util.concurrent.ExecutorService;
 
 public class APM {
 
-    private static Singleton<ConcreteServiceLoader<TraceFactory>> traceFactoryServiceSingleton =
-            new Singleton<ConcreteServiceLoader<TraceFactory>>(
-                    new Singleton.Builder<ConcreteServiceLoader<TraceFactory>>() {
+    private static Singleton<ServiceLoaderImpl<TraceFactory>> traceFactoryServiceSingleton =
+            new Singleton<>(
+                    new Singleton.Builder<ServiceLoaderImpl<TraceFactory>>() {
                         @Override
-                        public ConcreteServiceLoader<TraceFactory> build() {
-                            return new ConcreteServiceLoader<TraceFactory>() {
+                        public ServiceLoaderImpl<TraceFactory> build() {
+                            return new ServiceLoaderImpl<TraceFactory>() {
 
                                 private Trace doNothing = new Trace() {
                                     @Override
@@ -86,10 +86,6 @@ public class APM {
                                     }
                                 };
 
-                                @Override
-                                protected TraceFactory getConcreteDefaultProvider() {
-                                    return defaultFactory;
-                                }
                             };
                         }
                     }

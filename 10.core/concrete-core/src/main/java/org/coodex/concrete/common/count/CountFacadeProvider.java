@@ -18,10 +18,10 @@ package org.coodex.concrete.common.count;
 
 import javassist.*;
 import javassist.bytecode.SignatureAttribute;
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.count.*;
 import org.coodex.util.Clock;
 import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.common.ConcreteHelper.getScheduler;
-import static org.coodex.util.TypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.solve;
 
 /**
  * Created by davidoff shen on 2017-04-18.
@@ -48,14 +48,14 @@ public class CountFacadeProvider implements CountFacade {
 
     private final static Logger log = LoggerFactory.getLogger(CountFacadeProvider.class);
     private final static AtomicInteger atomicInteger = new AtomicInteger(0);
-    private final static ServiceLoader<Counter> counterProvider = new ConcreteServiceLoader<Counter>() {
+    private final static ServiceLoader<Counter> counterProvider = new ServiceLoaderImpl<Counter>() {
     };
     private Map<Class, CounterChain> chainMap;
 
     @SuppressWarnings("unchecked")
     private void buildMap() {
         TypeVariable t = Counter.class.getTypeParameters()[0];
-        chainMap = new HashMap<Class, CounterChain>();
+        chainMap = new HashMap<>();
 
         for (Counter counter : counterProvider.getAllInstances()) {
 
@@ -80,16 +80,13 @@ public class CountFacadeProvider implements CountFacade {
         if (segmentation != null) {
             long next = segmentation.next();
             if (next > Clock.currentTimeMillis()) {
-                getScheduler("count").schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            synchronized (counter) {
-                                counter.slice();
-                            }
-                        } finally {
-                            schedule(counter);
+                getScheduler("count").schedule(() -> {
+                    try {
+                        synchronized (counter) {
+                            counter.slice();
                         }
+                    } finally {
+                        schedule(counter);
                     }
                 }, next - Clock.currentTimeMillis(), TimeUnit.MILLISECONDS);
             }

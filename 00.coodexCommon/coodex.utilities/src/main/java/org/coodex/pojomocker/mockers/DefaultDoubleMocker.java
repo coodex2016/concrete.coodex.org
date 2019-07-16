@@ -23,6 +23,7 @@ import org.coodex.util.Common;
 /**
  * Created by davidoff shen on 2017-05-15.
  */
+@Deprecated
 public class DefaultDoubleMocker extends AbstractPrimitiveMocker<Double, DOUBLE> {
     @Override
     protected Object toPrimitive(Double aDouble) {

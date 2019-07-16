@@ -39,7 +39,7 @@ public class ClientServiceImpl implements ClientService {
 
 
 //    private TokenManager tokenManager;
-    //= BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
+    //= BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class);
 
     public static final String ATTACHMENT_AUTHORIZATION_KEY = ClientServiceImpl.class.getName() + ".AUTHORIZATIONS";
     public static final String ATTACHMENT_WRITABLE_KEY = ClientServiceImpl.class.getName() + ".WRITABLE";
@@ -132,7 +132,7 @@ public class ClientServiceImpl implements ClientService {
 
 //    public TokenManager getTokenManager() {
 //        if(tokenManager == null)
-//            tokenManager = BeanProviderFacade.getBeanProvider().getBean(TokenManager.class);
+//            tokenManager = BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class);
 //        return tokenManager;
 //    }
 }

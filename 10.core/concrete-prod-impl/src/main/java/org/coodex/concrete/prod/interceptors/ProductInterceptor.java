@@ -23,6 +23,7 @@ import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.prod.Modules;
 import org.coodex.concrete.prod.ProductFactory;
 import org.coodex.concrete.prod.impl.DefaultProductFactory;
+import org.coodex.util.ServiceLoaderImpl;
 import org.coodex.util.Singleton;
 
 import java.util.Set;
@@ -36,18 +37,12 @@ import static org.coodex.concrete.prod.interceptors.ProductErrorCodes.NONE_KEY;
 public class ProductInterceptor extends AbstractSyncInterceptor {
 
     private Singleton<ProductFactory> productFactorySingleton = new Singleton<>(
-            () -> new ConcreteServiceLoader<ProductFactory>() {
-                private Singleton<DefaultProductFactory> defaultProductFactorySingleton =
-                        new Singleton<>(() -> new DefaultProductFactory());
-
-                @Override
-                protected ProductFactory getConcreteDefaultProvider() {
-                    return defaultProductFactorySingleton.getInstance();
-                }
+            () -> new ServiceLoaderImpl<ProductFactory>(new DefaultProductFactory()) {
             }.getInstance()
     );
 
     public ProductInterceptor() {
+        //noinspection unchecked
         ErrorMessageFacade.register(ProductErrorCodes.class);
     }
 
@@ -71,7 +66,7 @@ public class ProductInterceptor extends AbstractSyncInterceptor {
                 .check(modules.values());
 
         if (warnings != null && warnings.size() > 0) {
-            warnings.stream().forEach((warning) -> subjoin.putWarning(warning));
+            warnings.forEach(subjoin::putWarning);
         }
     }
 

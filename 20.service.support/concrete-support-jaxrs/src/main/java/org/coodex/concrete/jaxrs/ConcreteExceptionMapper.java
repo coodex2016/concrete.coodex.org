@@ -16,9 +16,10 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.common.ThrowableMapperFacade;
+import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +38,7 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
 
 
     private final static Logger log = LoggerFactory.getLogger(ConcreteExceptionMapper.class);
-    private final static ConcreteServiceLoader<ErrorCodeMapper> CODE_MAPPER_SERVICE_LOADER = new ConcreteServiceLoader<ErrorCodeMapper>() {
-        private ErrorCodeMapper errorCodeMapper = new DefaultErrorCodeMapper();
-
-        @Override
-        protected ErrorCodeMapper getConcreteDefaultProvider() {
-            return errorCodeMapper;
-        }
+    private final static ServiceLoader<ErrorCodeMapper> CODE_MAPPER_SERVICE_LOADER = new ServiceLoaderImpl<ErrorCodeMapper>(new DefaultErrorCodeMapper()) {
     };
 
 

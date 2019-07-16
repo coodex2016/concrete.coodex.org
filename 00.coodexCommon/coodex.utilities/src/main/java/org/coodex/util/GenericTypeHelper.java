@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.message;
-
-import org.coodex.util.Singleton;
-import org.coodex.util.SingletonMap;
+package org.coodex.util;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
@@ -45,6 +42,16 @@ public class GenericTypeHelper {
         return t instanceof TypeVariable ?
                 solve((TypeVariable) t, context) :
                 build(t, context);
+    }
+
+    public static Class typeToClass(Type type) {
+        if (type instanceof Class) {
+            return (Class) type;
+        } else if (type instanceof ParameterizedType) {
+            return (Class) ((ParameterizedType) type).getRawType();
+        } else {
+            return null;
+        }
     }
 
     public static Type buildParameterizedType(Class c, Type... parameters) {
@@ -128,8 +135,8 @@ public class GenericTypeHelper {
             if (o == null || getClass() != o.getClass()) return false;
 
             GenericArrayTypeImpl that = (GenericArrayTypeImpl) o;
-//            return genericComponentType != null ? genericComponentType.equals(that.genericComponentType) : that.genericComponentType == null;
-            return Objects.equals(genericComponentType, that.genericComponentType);
+            return genericComponentType != null ? genericComponentType.equals(that.genericComponentType) : that.genericComponentType == null;
+//            return Objects.equals(genericComponentType, that.genericComponentType);
         }
 
         @Override
@@ -291,9 +298,6 @@ public class GenericTypeHelper {
 
             }
         }
-
-
     }
-
 
 }

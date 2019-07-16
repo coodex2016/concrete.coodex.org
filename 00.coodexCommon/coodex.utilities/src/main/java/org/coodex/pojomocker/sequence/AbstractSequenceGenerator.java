@@ -18,6 +18,7 @@ package org.coodex.pojomocker.sequence;
 
 import org.coodex.pojomocker.SequenceGenerator;
 
+@Deprecated
 public abstract class AbstractSequenceGenerator<T> implements SequenceGenerator<T> {
     private String key;
 

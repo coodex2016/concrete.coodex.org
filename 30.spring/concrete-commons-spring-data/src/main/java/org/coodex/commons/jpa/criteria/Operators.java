@@ -16,11 +16,11 @@
 
 package org.coodex.commons.jpa.criteria;
 
-import org.coodex.util.TypeHelper;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+
+import static org.coodex.util.GenericTypeHelper.solve;
 
 /**
  * 根据 sujiwu@126.com 思路重设计、编码
@@ -160,7 +160,7 @@ public class Operators {
         protected abstract <ATTR> Predicate buildPredicate(Path<ATTR> attrPath, CriteriaBuilder cb, ATTR[] attributes);
 
         protected <ATTR> Class<ATTR> getAttributeType(Path<ATTR> attrPath) {
-            return (Class<ATTR>) TypeHelper.solve(Path.class.getTypeParameters()[0], attrPath.getClass());
+            return (Class<ATTR>) solve(Path.class.getTypeParameters()[0], attrPath.getClass());
         }
 
         protected <ATTR> Predicate unsupported(Path<ATTR> attrPath) {

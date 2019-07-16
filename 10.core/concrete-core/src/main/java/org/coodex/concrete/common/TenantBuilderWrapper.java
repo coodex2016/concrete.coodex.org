@@ -16,24 +16,18 @@
 
 package org.coodex.concrete.common;
 
+import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
+
 /**
  * Created by davidoff shen on 2017-05-25.
  */
 public class TenantBuilderWrapper implements TenantBuilder {
 
-    private static final TenantBuilder defaultTenantBuilder = new TenantBuilder() {
-        @Override
-        public String getTenant() {
-            return null;
-        }
-    };
+    private static final TenantBuilder defaultTenantBuilder = () -> null;
 
-    private static final ConcreteServiceLoader<TenantBuilder> tenantBuilderConcreteServiceLoader
-            = new ConcreteServiceLoader<TenantBuilder>() {
-        @Override
-        protected TenantBuilder getConcreteDefaultProvider() {
-            return defaultTenantBuilder;
-        }
+    private static final ServiceLoader<TenantBuilder> tenantBuilderConcreteServiceLoader
+            = new ServiceLoaderImpl<TenantBuilder>(defaultTenantBuilder) {
     };
 
     private static final TenantBuilder tenantBuilder = new TenantBuilderWrapper();

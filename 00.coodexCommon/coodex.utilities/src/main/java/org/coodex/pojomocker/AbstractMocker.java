@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 /**
  * Created by davidoff shen on 2017-05-15.
  */
+@Deprecated
 public abstract class AbstractMocker<A extends Annotation> implements Mocker<A> {
     @Override
     public boolean accept(A param) {

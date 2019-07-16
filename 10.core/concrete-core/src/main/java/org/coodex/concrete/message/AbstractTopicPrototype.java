@@ -33,38 +33,36 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
 
     private final static Logger log = LoggerFactory.getLogger(AbstractTopicPrototype.class);
 
-    private static Singleton<Executor> pool = new Singleton<Executor>(
-            new Singleton.Builder<Executor>() {
-                @Override
-                public Executor build() {
-                    // todo 根据配置获取
-                    return ExecutorsHelper.newFixedThreadPool(10, "topic");
-                }
+    private static Singleton<Executor> pool = new Singleton<>(
+            () -> {
+                // todo 根据配置获取
+                return ExecutorsHelper.newFixedThreadPool(10, "topic");
             }
     );
     private final Courier courier;
-    private Map<Observer<M>, SubscriptionImpl> subscriptions = new ConcurrentHashMap<Observer<M>, SubscriptionImpl>();
+    private final Map<Observer<M>, SubscriptionImpl> subscriptions = new ConcurrentHashMap<>();
 
+    @SuppressWarnings("WeakerAccess")
     public AbstractTopicPrototype(Courier<M> courier) {
         this.courier = courier;
         IF.isNull(courier, "courier MUST NOT null.")
                 .associate(this);
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected Set<Observer<M>> getObservers() {
         return Collections.unmodifiableSet(subscriptions.keySet());
     }
 
     private void remove(Observer<M> observer) {
-        if (subscriptions.containsKey(observer)) {
-            synchronized (subscriptions) {
-                if (subscriptions.containsKey(observer)) {
-                    subscriptions.remove(observer);
-                }
+        if (!subscriptions.containsKey(observer)) {
+            return;
+        }
+        synchronized (subscriptions) {
+            subscriptions.remove(observer);
 
-                if (subscriptions.size() == 0) {
-                    this.courier.setConsumer(false);
-                }
+            if (subscriptions.size() == 0) {
+                this.courier.setConsumer(false);
             }
         }
     }
@@ -78,6 +76,7 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
         return courier;
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected Executor getExecutor() {
         return pool.getInstance();
     }
@@ -102,17 +101,15 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
         Set<Observer<M>> observers = getObservers();
         for (final Observer<M> observer : observers) {
 
+            //noinspection unchecked
             final MessageFilter<M> finalFilter = (observer instanceof MessageFilter) ? (MessageFilter<M>) observer : null;
-            getExecutor().execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        if (finalFilter == null || finalFilter.handle(message)) {
-                            observer.update(message);
-                        }
-                    } catch (Throwable throwable) {
-                        log.warn("message update failed.", throwable);
+            getExecutor().execute(() -> {
+                try {
+                    if (finalFilter == null || finalFilter.handle(message)) {
+                        observer.update(message);
                     }
+                } catch (Throwable throwable) {
+                    log.warn("message update failed.", throwable);
                 }
             });
 

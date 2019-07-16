@@ -27,7 +27,6 @@ import org.coodex.concrete.common.*;
 import org.coodex.concrete.dubbo.DubboHelper;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
-import org.coodex.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.coodex.concrete.common.ConcreteHelper.VERSION;
 import static org.coodex.concrete.dubbo.DubboHelper.*;
+import static org.coodex.util.GenericTypeHelper.toReference;
 
 public class DubboClientInvoker extends AbstractSyncInvoker {
 
@@ -119,6 +119,7 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
                     mapToStr(map));
         }
 
+        @SuppressWarnings("unchecked")
         Map<String, String> result = (Map<String, String>) findMethod(clz, method).invoke(
                 dubboClientInstances.getInstance(new DubboCacheKey((DubboDestination) getDestination(), clz)),
                 args);
@@ -134,7 +135,7 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
         String content = result.get(RESULT);
 
         return content == null ? null : JSONSerializerFactory.getInstance()
-                .parse(content, TypeHelper.toTypeReference(
+                .parse(content, toReference(
                         method.getGenericReturnType(), clz
                 ));
     }

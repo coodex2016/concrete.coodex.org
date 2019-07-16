@@ -56,7 +56,7 @@ public class Common {
                 @Override
                 public AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue> build() {
                     return new AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue>(
-                            new ServiceLoaderFacade<StringConvertWithDefaultValue>() {
+                            new ServiceLoaderImpl<StringConvertWithDefaultValue>() {
                             }
                     );
                 }

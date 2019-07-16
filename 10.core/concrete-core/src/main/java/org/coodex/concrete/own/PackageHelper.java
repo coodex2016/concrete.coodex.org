@@ -20,8 +20,7 @@ import org.coodex.concrete.common.JSONSerializer;
 import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.common.modules.AbstractParam;
 import org.coodex.concrete.common.modules.AbstractUnit;
-import org.coodex.util.GenericType;
-import org.coodex.util.TypeHelper;
+import org.coodex.util.GenericTypeHelper;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -29,12 +28,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.coodex.util.GenericTypeHelper.toReference;
+import static org.coodex.util.TypeHelper.isPrimitive;
+
+//import org.coodex.util.GenericType;
+//import org.coodex.util.TypeHelper;
+
 public class PackageHelper {
 
-    private static ThreadLocal<Class> context = new ThreadLocal<Class>();
+    private static ThreadLocal<Class> context = new ThreadLocal<>();
     private static Type paramType(AbstractParam param) {
-        return TypeHelper.isPrimitive(param.getType()) ? param.getType() :
-                TypeHelper.toTypeReference(param.getGenericType(), context.get());
+        return isPrimitive(param.getType()) ? param.getType() :
+                toReference(param.getGenericType(), context.get());
     }
 
     @SuppressWarnings("unchecked")
@@ -51,7 +56,7 @@ public class PackageHelper {
                 requestPackage.setContent(args[0]);
                 break;
             default:
-                Map<String, Object> toSend = new HashMap<String, Object>();
+                Map<String, Object> toSend = new HashMap<>();
                 for (int i = 0; i < parameters.length; i++) {
                     toSend.put(parameters[i].getName(), args[i]);
                 }
@@ -62,7 +67,7 @@ public class PackageHelper {
     }
 
 
-    public static Object[] analysisParameters(String json, AbstractUnit unit) {
+    static Object[] analysisParameters(String json, AbstractUnit unit) {
 //        if (content == null) return null;
         AbstractParam[] abstractParams = unit.getParameters();
         if (abstractParams.length == 0) return null;
@@ -72,15 +77,15 @@ public class PackageHelper {
         try {
             JSONSerializer serializer = JSONSerializerFactory.getInstance();
 
-            List<Object> objects = new ArrayList<Object>();
+            List<Object> objects = new ArrayList<>();
             if (abstractParams.length == 1) {
                 objects.add(json == null ? null :
                         serializer.parse(json, paramType(abstractParams[0])));
             } else {
                 Map<String, String> map = serializer.parse(
                         json,
-                        new GenericType<Map<String, String>>() {
-                        }.genericType());
+                        new GenericTypeHelper.GenericType<Map<String, String>>() {
+                        }.getType());
 
                 for (AbstractParam param : abstractParams) {
                     String value = map.get(param.getName());

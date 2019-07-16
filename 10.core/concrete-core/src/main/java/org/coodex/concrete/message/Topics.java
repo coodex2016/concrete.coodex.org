@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.message;
 
-import org.coodex.concrete.common.ConcreteServiceLoader;
 import org.coodex.concrete.message.serializers.DefaultSerializer;
 import org.coodex.util.AcceptableServiceLoader;
 
@@ -33,15 +32,10 @@ public class Topics {
     public static final String SERIALIZER_TYPE = "serializer";
     private static final Serializer DEFAULT_SERIALIZER = new DefaultSerializer();
     private static AcceptableServiceLoader<String, Serializer> serializerAcceptableServiceLoader =
-            new AcceptableServiceLoader<String, Serializer>(
-                    new ConcreteServiceLoader<Serializer>() {
-                    }
-            );
+            new AcceptableServiceLoader<>();
+
     private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> topicProviders =
-            new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(
-                    new ConcreteServiceLoader<TopicPrototypeProvider>() {
-                    }
-            );
+            new AcceptableServiceLoader<>();
 
     public static Serializer getSerializer(String serializerType) {
         Serializer serializer = serializerAcceptableServiceLoader.getServiceInstance(serializerType);
@@ -57,7 +51,7 @@ public class Topics {
 //    }
 
     public static <M extends Serializable, T extends AbstractTopic<M>> T get(Type type) {
-        return Topics.<M, T>get(type, null);
+        return Topics.get(type, null);
     }
 
 //    public static <M, T extends AbstractTopic<M>> T get(GenericType<T> genericType, String queue) {
@@ -69,6 +63,7 @@ public class Topics {
 //    }
 
     public static <M extends Serializable, T extends AbstractTopic<M>> T get(Type type, String queue) {
+        //noinspection unchecked
         return (T) buildTopic(new TopicKey(queue, type));
     }
 

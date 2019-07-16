@@ -16,6 +16,8 @@
 
 package org.coodex.concrete.message;
 
+import org.coodex.util.GenericTypeHelper;
+
 import java.io.Serializable;
 import java.lang.reflect.Type;
 

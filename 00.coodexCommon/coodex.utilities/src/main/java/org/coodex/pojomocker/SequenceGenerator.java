@@ -16,6 +16,7 @@
 
 package org.coodex.pojomocker;
 
+@Deprecated
 public interface SequenceGenerator<T> {
 
     String getKey();
