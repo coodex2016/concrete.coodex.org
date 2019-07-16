@@ -10,7 +10,7 @@ export class RuntimeContext {
 
     public localTokenId: string = null;
     public globalTokenKey: string = null;
-    public root = 'http://localhost:8080/jaxrs';
+    public root = '/jaxrs';
     public pollingTimeout = 10;
     // 统一异常处理，返回值为true，说明已被处理
     public errorHandle = (errorInfo: ErrorInfo) => {
@@ -99,7 +99,10 @@ export abstract class AbstractConcreteService {
     }
 
     protected static handleError(res: Response | any) {
-        const errorInfo = typeof res.error === 'object' ? res.error : (JSON.parse(res.error) || {});
+		const errorInfo = typeof res.body === 'object' ? res.body : {
+            code: res.status,
+            msg: res.body
+        };
         const error = AbstractConcreteService.onError(errorInfo.code || res.status,
             errorInfo.msg || res.statusText);
 
