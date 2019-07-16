@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-16
+
+- concrete-api-tools: 修复AngularV2代码生成器的缺陷
+
 ## 2019-07-12
 
 - concrete-api: 增加TimeCost注解，模拟运行时长
