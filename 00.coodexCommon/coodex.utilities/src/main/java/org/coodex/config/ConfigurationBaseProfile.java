@@ -23,17 +23,16 @@ import java.util.List;
 public class ConfigurationBaseProfile extends AbstractConfiguration {
 
     private static String PROFILES_ROOT = System.getProperty("config.profile.root", "");
-    private static String DEFAULT_PROFILE = System.getProperty("config.profile.default", "concrete");
+    private static String DEFAULT_PROFILE = System.getProperty("config.profile.default", "coodex");
 
-    public static void main(String[] args) {
-        ConfigurationBaseProfile profile = new ConfigurationBaseProfile();
-        profile.get("key", "a", "b", "c", "d", "e");
-    }
+//    public static void main(String[] args) {
+//        ConfigurationBaseProfile profile = new ConfigurationBaseProfile();
+//        profile.get("key", "a", "b", "c", "d", "e");
+//    }
 
     protected String getDefaultProfile() {
         return DEFAULT_PROFILE;
     }
-
 
     @Override
     protected String search(String namespace, List<String> keys) {

@@ -29,6 +29,9 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 /**
  * <S>待coodex utilities放弃1.5时移入org.coodex.util</S>
  * 2016-12-10从concrete中移入
+ *
+ *
+ * 2019-07-16 重构ServiceLoader机制
  * <p>
  * Created by davidoff shen on 2016-11-30.
  */

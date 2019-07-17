@@ -34,6 +34,7 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
  * </pre>
  * <p>
  * Created by davidoff shen on 2016-09-08.
+ * @deprecated 重构ServiceLoader机制，0.3.2移除，直接使用{@link ServiceLoaderImpl}
  */
 @Deprecated
 public abstract class ConcreteServiceLoader<T> extends ServiceLoaderImpl<T> {

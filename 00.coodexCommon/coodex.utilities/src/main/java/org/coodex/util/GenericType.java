@@ -23,6 +23,7 @@ import static org.coodex.util.TypeHelper.solve;
 
 /**
  * Created by davidoff shen on 2017-05-11.
+ * @deprecated 20190716, 使用 {@link GenericTypeHelper}的内部类替代，0.3.2移除
  */
 @Deprecated
 public abstract class GenericType<T> {

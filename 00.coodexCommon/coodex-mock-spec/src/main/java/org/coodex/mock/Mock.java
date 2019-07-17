@@ -72,7 +72,7 @@ public @interface Mock {
      * 定义一个序列模拟器
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
     @interface Sequence {
         /**
          * @return 上下文中的名字
@@ -89,7 +89,7 @@ public @interface Mock {
      * 定义一组序列模拟器
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
     @interface Sequences {
         /**
          * @return 所有可能被下文中用到的序列模拟器
@@ -106,7 +106,7 @@ public @interface Mock {
      * </pre>
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
     @interface Inject {
 
         /**
@@ -124,7 +124,7 @@ public @interface Mock {
      * 用来定义多维（含一维）集合、数组的维度模拟信息，确定各维度的数组大小
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.METHOD})
+    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
     @interface Dimension {
 
         /**
@@ -144,7 +144,7 @@ public @interface Mock {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.METHOD})
+    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
     @interface Dimensions {
 
         /**
@@ -192,7 +192,7 @@ public @interface Mock {
      * 使用指定`yaml`或`json`文件模拟数据，优先级最高
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.METHOD})
+    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
     @interface Designated {
         /**
          * @return 指定`yaml`或`json`文件
@@ -227,7 +227,7 @@ public @interface Mock {
      * </pre>
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
     @interface Nullable {
         /**
          * @return null几率，默认5%
@@ -245,7 +245,7 @@ public @interface Mock {
      * </pre>
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
     @Mock
     @interface Boolean {
         /**
@@ -271,7 +271,7 @@ public @interface Mock {
      * 数据单值模拟器，支持类型：byte, short, int, long, float, double及其包装类
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
     @Mock
     @interface Number {
         int MAX_WEIGHT = 1000;
@@ -323,7 +323,7 @@ public @interface Mock {
      * </pre>
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
     @Mock
     @interface Char {
         /**
@@ -351,7 +351,7 @@ public @interface Mock {
      * </pre>
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
     @Mock
     @interface String {
 
