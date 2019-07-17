@@ -99,9 +99,9 @@ export abstract class AbstractConcreteService {
     }
 
     protected static handleError(res: Response | any) {
-		const errorInfo = typeof res.body === 'object' ? res.body : {
+        const errorInfo = res.headers.get("concrete-error-occurred") ? JSON.parse(res.error) : {
             code: res.status,
-            msg: res.body
+            msg: res.error
         };
         const error = AbstractConcreteService.onError(errorInfo.code || res.status,
             errorInfo.msg || res.statusText);
