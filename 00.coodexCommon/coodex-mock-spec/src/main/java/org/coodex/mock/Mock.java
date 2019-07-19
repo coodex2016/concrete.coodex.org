@@ -51,6 +51,7 @@ public @interface Mock {
         ERROR
     }
 
+
     /**
      * <pre>
      * 用来修饰模拟器声明配置信息，声明模拟器的方式有两种，优先级如下：
@@ -61,6 +62,7 @@ public @interface Mock {
      *
      *   属性上有`@Mock`修饰的注解时，则以此属性名为`key`，以此属性上的注解声明上下文模拟器，
      *   适用于共用类中，属性类型不明确的，由开发者在外层根据具体情况指定将用到的模拟器
+     *
      * </pre>
      */
     @Retention(RetentionPolicy.RUNTIME)
@@ -77,12 +79,16 @@ public @interface Mock {
         /**
          * @return 上下文中的名字
          */
-        String name();
+        java.lang.String name();
 
         /**
-         * @return 模拟器的类型，需要有无参的构造方法
+         * @return 模拟器的类型。
+         *
+         * 为了降低模拟定义对实现的依赖，应该定义接口。
+         *
+         * 如果是类，MockerProvider应予以警告
          */
-        Class<? extends SequenceMocker> mocker();
+        Class<? extends SequenceMockerFactory> factory();
     }
 
     /**
@@ -112,7 +118,7 @@ public @interface Mock {
         /**
          * @return 注入哪个模拟器
          */
-        String value();
+        java.lang.String value();
 
         /**
          * @return 需要注入的模拟器不存在时如何处理，默认提示警告信息，使用此类型的默认模拟器
@@ -126,26 +132,44 @@ public @interface Mock {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
     @interface Dimension {
-
+        int MAX_DEFAULT = 5;
+        int MIN_DEFAULT = 1;
+        int SIZE_DEFAULT = 0;
+        boolean ORDERED_DEFAULT = true;
         /**
-         * @return >0 表示固定值，-1表示允许为空，否则按照random(min, max)，默认0
+         * @return >0 表示固定值，否则按照random(min, max)，默认0
          */
-        int size() default 0;
+        int size() default SIZE_DEFAULT;
 
         /**
          * @return size <=0 时，模拟此维度大小的下界
          */
-        int min() default 1;
+        int min() default MIN_DEFAULT;
 
         /**
          * @return size <=0 时，模拟此维度大小的上界
          */
-        int max() default 5;
+        int max() default MAX_DEFAULT;
+
+        /**
+         * @return 为空的几率，默认不为空
+         */
+        double nullProbability() default -1d;
+
+        /**
+         * @return 仅对Collection Set Map有效，用以说明是否需要保证稳定性，默认为真
+         */
+        boolean ordered() default ORDERED_DEFAULT;
     }
 
+    /**
+     * 定义多维集合、数组各个维度的模拟配置
+     */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
     @interface Dimensions {
+
+        boolean SAME_DEFAULT = true;
 
         /**
          * @return 当前属性上，多维度集合、数组的大小设置，按value的数组下标+1确定对应维度
@@ -156,7 +180,8 @@ public @interface Mock {
          * 相同维度的集合数组是否大小一致，默认一致。
          * <p>
          * 例如：
-         * <pre>{@literal @}{@link Dimensions}(
+         * <pre>
+         * {@literal @}{@link Dimensions}(
          *      value = { {@literal @}{@link Dimension}(size=2),{@literal @}{@link Dimension}(min=3,max=10)) },
          *      same = true
          * )
@@ -169,42 +194,63 @@ public @interface Mock {
          *
          * @return 相同维度的集合数组是否大小一致，默认一致
          */
-        boolean same() default true;
+        boolean same() default SAME_DEFAULT;
     }
 
     /**
-     * 用于修饰类似于Map.Entry<K,V>类型的数据的键模拟器的注解
+     * 用于修饰Map的键模拟器的注解
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.ANNOTATION_TYPE})
+    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
     @interface Key {
+
+        java.lang.String value() default "";
+
+        NotFound notFound() default NotFound.WARN;
     }
 
     /**
-     * 用于修饰类似于Map.Entry<K,V>类型的数据的值模拟器的注解
+     * 用于修饰Map的值模拟器的注解
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.ANNOTATION_TYPE})
+    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
     @interface Value {
+
+        java.lang.String value() default "";
+
+        NotFound notFound() default NotFound.WARN;
     }
 
     /**
-     * 使用指定`yaml`或`json`文件模拟数据，优先级最高
+     * 使用指定`json`文件模拟数据，优先级最高
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
     @interface Designated {
         /**
-         * @return 指定`yaml`或`json`文件
+         * @return 指定`json`文件
          */
-        String resource();
+        java.lang.String resource();
     }
 
     /**
      * 用来指定pojo的关联模拟策略，也就是被修饰的属性可以根据所依赖的属性值进行运算，最大可能保障模拟数据的真实性
      */
     @interface Relation {
+        java.lang.String[] dependencies();
 
+        java.lang.String strategy();
+    }
+
+    /**
+     * 用来指定第三方pojo的模拟器设置。
+     * <p>
+     * 修饰的配置类须放到mock.assign包下
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+    @interface Assignation {
+        Class value();
     }
 
     /**
@@ -215,8 +261,15 @@ public @interface Mock {
      *     }
      * </pre>
      */
-    @interface Depth{
-        int value() default 2;
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+    @interface Depth {
+        int DEFAULT_DEPTH = 3;
+
+        /**
+         * @return 相同类型的深度，最小为1
+         */
+        int value() default DEFAULT_DEPTH;
     }
 
 
@@ -228,6 +281,7 @@ public @interface Mock {
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
+    @Mock
     @interface Nullable {
         /**
          * @return null几率，默认5%
@@ -309,6 +363,7 @@ public @interface Mock {
          * @return 模拟范围
          */
         java.lang.String value() default "";
+
     }
 
     /**
@@ -326,6 +381,7 @@ public @interface Mock {
     @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
     @Mock
     @interface Char {
+        java.lang.String DEFAULT_CHAR_RANGE = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         /**
          * @return 字符编码集范围
          * @see CharCodeSet
@@ -354,16 +410,18 @@ public @interface Mock {
     @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
     @Mock
     @interface String {
+        int DEFAULT_MIN_LENGTH = 5;
+        int DEFAULT_MAX_LENGTH = 10;
 
         /**
          * @return 最小长度
          */
-        int minLength() default 5;
+        int minLength() default DEFAULT_MIN_LENGTH;
 
         /**
          * @return 最大长度
          */
-        int maxLength() default 10;
+        int maxLength() default DEFAULT_MAX_LENGTH;
 
         /**
          * @return 模拟的charCode范围

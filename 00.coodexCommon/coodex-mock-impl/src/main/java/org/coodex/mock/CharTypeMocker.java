@@ -24,10 +24,22 @@ import java.util.List;
 import java.util.Random;
 
 public class CharTypeMocker extends AbstractTypeMocker<Mock.Char> {
-    private static Class[] SUPPORTED_CLASSES = new Class[]{
+    static Class[] SUPPORTED_CLASSES = new Class[]{
             char.class, Character.class,
             String.class
     };
+
+    private static CharTypeMocker instance;
+
+    public CharTypeMocker() {
+        instance = this;
+    }
+
+    static Object mock(Class c) {
+        if (instance == null)
+            instance = new CharTypeMocker();
+        return instance.mock(null, c);
+    }
 
     static int[] getRange(String strRange, boolean bmp) {
         int[] buf = new int[strRange.length()];
@@ -45,7 +57,7 @@ public class CharTypeMocker extends AbstractTypeMocker<Mock.Char> {
         }
 
         int[] result = new int[charCount];
-        System.arraycopy(result, 0, buf, 0, charCount);
+        System.arraycopy(buf, 0, result, 0, charCount);
         return result;
     }
 

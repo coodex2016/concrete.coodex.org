@@ -29,7 +29,7 @@ import java.util.Random;
  */
 public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
-    private static Class[] SUPPORTED = new Class[]{
+    static Class[] SUPPORTED = new Class[]{
             byte.class, Byte.class,
             short.class, Short.class,
             int.class, Integer.class,
@@ -43,6 +43,18 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
     private static char[] DELIMITER = ",".toCharArray();
     private static char[] LEFT_BRACKETS_INCLUDE = "[".toCharArray();
     private static char[] RIGHT_BRACKETS_INCLUDE = "]".toCharArray();
+
+    private static NumberTypeMocker instance;
+
+    public NumberTypeMocker() {
+        instance = this;
+    }
+
+    static Object mock(Class c) {
+        if (instance == null)
+            instance = new NumberTypeMocker();
+        return instance.mock(null, null, c);
+    }
 
     private static boolean inArray(char ch, char[] chars) {
         for (char chInArray : chars) {
@@ -262,8 +274,9 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
                 DEFAULT_RANGE : mockAnnotation.value();
         Class c = getClassFromType(targetType);
         int index = Common.findInArray(c, SUPPORTED);
-        return getAlternative(range, SUPPORTED[index]);
+        return getAlternative(range, SUPPORTED[index]).mock();
     }
+
 
     private interface Alternative<T extends Number> {
         int weight();

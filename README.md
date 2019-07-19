@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-20
+
+- 增加`coodex-mock-spec`和`coodex-mock-impl`，[点我](00.coodexCommon/coodex-mock-spec/README.md) 
+
 ## 2019-07-16
 
 - concrete-api-tools: 修复AngularV2代码生成器的缺陷

@@ -16,6 +16,8 @@
 
 package org.coodex.closure;
 
+import org.coodex.util.Common;
+
 import java.util.Stack;
 
 /**
@@ -78,6 +80,15 @@ public class StackClosureContext<VariantType> extends AbstractClosureContext<Sta
             } finally {
                 stack.pop();
             }
+        }
+    }
+
+    @Override
+    public Object useRTE(VariantType var, CallableClosure callableClosure) {
+        try {
+            return call(var, callableClosure);
+        } catch (Throwable throwable) {
+            throw Common.runtimeException(throwable);
         }
     }
 }

@@ -19,5 +19,8 @@ package org.coodex.mock;
 /**
  * 序列模拟器原型接口
  */
-public interface SequenceMocker {
+public interface SequenceMocker<T> {
+
+    T next();
+    
 }

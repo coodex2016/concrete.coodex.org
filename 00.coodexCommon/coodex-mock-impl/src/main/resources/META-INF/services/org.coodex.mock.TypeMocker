@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-org.coodex.mock.BooleanTypeMocker
-org.coodex.mock.NumberTypeMocker
-org.coodex.mock.CharTypeMocker
 org.coodex.mock.StringTypeMocker
+org.coodex.mock.CharTypeMocker
+org.coodex.mock.NumberTypeMocker
+org.coodex.mock.BooleanTypeMocker

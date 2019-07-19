@@ -20,7 +20,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.coodex.util.TypeHelper.toTypeReference;
 
@@ -32,19 +34,28 @@ public class PojoInfo {
     private final Class rowType;
     private final Map<String, PojoProperty> properties = new HashMap<String, PojoProperty>();
 
+    @Deprecated
     public PojoInfo(Type type, Type... context) {
         this.type = toTypeReference(type, context);
         rowType = TypeHelper.typeToClass(this.type);
         if (rowType == null) throw new RuntimeException(type + " is NOT POJO.");
 
-        Set<Type> contextSet = new HashSet<Type>();
-        if (context != null && context.length > 0) {
-            contextSet.addAll(Arrays.asList(context));
-        }
-        contextSet.add(type);
-        context = contextSet.toArray(new Type[0]);
-        buildMethodProperties(context);
-        buildFieldProperties(context);
+//        Set<Type> contextSet = new HashSet<Type>();
+//        if (context != null && context.length > 0) {
+//            contextSet.addAll(Arrays.asList(context));
+//        }
+//        contextSet.add(type);
+//        context = contextSet.toArray(new Type[0]);
+        buildMethodProperties();
+        buildFieldProperties();
+    }
+
+    public PojoInfo(Type type) {
+        this.type = type;
+        this.rowType = GenericTypeHelper.typeToClass(this.type);
+        if (rowType == null) throw new RuntimeException(type + " is NOT POJO.");
+        buildMethodProperties();
+        buildFieldProperties();
     }
 
     public Type getType() {
@@ -55,17 +66,20 @@ public class PojoInfo {
         return rowType;
     }
 
-    private void buildFieldProperties(Type... context) {
+    private void buildFieldProperties() {
         for (Field field : rowType.getFields()) {
             int mod = field.getModifiers();
             if (Modifier.isPublic(mod) && !Modifier.isStatic(mod) && !properties.containsKey(field.getName())) {
                 properties.put(field.getName(),
-                        new PojoProperty(field, toTypeReference(field.getGenericType(), context)));
+                        buildProperty(null,field,
+                                Modifier.isFinal(field.getModifiers()),
+                                GenericTypeHelper.toReference(field.getGenericType(), this.type),
+                                field.getName()));
             }
         }
     }
 
-    private void buildMethodProperties(Type... context) {
+    private void buildMethodProperties() {
         for (Method method : rowType.getMethods()) {
 
             if (void.class.equals(method.getReturnType()) ||
@@ -75,7 +89,7 @@ public class PojoInfo {
                     Object.class.equals(method.getDeclaringClass()))
                 continue;
 
-            PojoProperty property = testProperty(method, testBoolProperty(method), context);
+            PojoProperty property = testProperty(method, testBoolProperty(method));
 
             if (property != null) {
                 properties.put(property.getName(), property);
@@ -83,19 +97,23 @@ public class PojoInfo {
         }
     }
 
-    private PojoProperty testProperty(Method method, PojoProperty property, Type... context) {
+    private PojoProperty testProperty(Method method, PojoProperty property) {
         if (property == null) {
             String methodName = method.getName();
             if (methodName.length() > 3
                     && methodName.startsWith("get")) {
 
                 String beanName = lowerFirstChar(methodName.substring(3));
-                return new PojoProperty(
+                return buildProperty(
                         method, testField(beanName), isReadOnly(method),
-                        toTypeReference(method.getGenericReturnType(), context), beanName);
+                        GenericTypeHelper.toReference(method.getGenericReturnType(), this.type), beanName);
             }
         }
         return property;
+    }
+
+    protected PojoProperty buildProperty(Method method, Field field, boolean readonly, Type type, String name) {
+        return new PojoProperty(method, field, readonly, type, name);
     }
 
     private PojoProperty testBoolProperty(Method method) {
@@ -103,7 +121,7 @@ public class PojoInfo {
         if (boolean.class.equals(method.getReturnType()) || Boolean.class.equals(method.getReturnType())) {
             if (methodName.length() > 2 && methodName.startsWith("is")) {
                 String beanName = lowerFirstChar(methodName.substring(2));
-                return new PojoProperty(
+                return buildProperty(
                         method, testField(beanName), isReadOnly(method), method.getReturnType(), beanName);
             }
         }

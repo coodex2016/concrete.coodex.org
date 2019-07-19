@@ -103,7 +103,7 @@ public class MockerFacade {
             throw new RuntimeException(typeVariableInfo(type, context));
         } else {
             try {
-                return $mock(type, new PojoProperty(null, type) {
+                return $mock(type, new PojoProperty((PojoProperty)null, type) {
                     @Override
                     public Annotation[] getAnnotations() {
                         return method.getAnnotations();

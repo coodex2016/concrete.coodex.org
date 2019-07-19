@@ -21,3 +21,5 @@ amqp:
   queueName: davidoff
   ttl: 600000
 timeout: 10000
+class:
+  org.coodex.mock.Impl: org.coodex.mock.MockerImpl

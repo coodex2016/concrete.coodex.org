@@ -16,20 +16,25 @@
 
 package org.coodex.mock;
 
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 import org.coodex.closure.CallableClosure;
-import org.coodex.util.GenericTypeHelper;
-import org.coodex.util.ServiceLoaderImpl;
-import org.coodex.util.Singleton;
+import org.coodex.closure.MapClosureContext;
+import org.coodex.closure.StackClosureContext;
+import org.coodex.util.ServiceLoader;
+import org.coodex.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.*;
+import java.util.*;
+
+import static org.coodex.mock.Mock.Depth.DEFAULT_DEPTH;
+import static org.coodex.mock.Mock.Dimension.*;
+import static org.coodex.mock.Mock.Dimensions.SAME_DEFAULT;
+import static org.coodex.util.GenericTypeHelper.*;
 
 /**
  * Coodex默认的MockerProvider实现
@@ -38,10 +43,59 @@ import java.util.Map;
  */
 public class CoodexMockerProvider implements MockerProvider {
 
+
+    private final static Logger log = LoggerFactory.getLogger(CoodexMockerProvider.class);
     /**
      * 用来存放模拟检索泛型变量的上下文
      */
-    private static ThreadLocal<Type> TYPE_CONTEXT = new ThreadLocal<Type>();
+    private static StackClosureContext<Type> TYPE_CONTEXT = new StackClosureContext<Type>();
+    /**
+     * 单值模拟定义的上下文
+     */
+    private static MapClosureContext<String, List<Annotation>> MOCKER_DEFINITION_CONTEXT = new MapClosureContext<String, List<Annotation>>() {
+        @Override
+        public Object call(Map<String, List<Annotation>> map, CallableClosure callableClosure) throws Throwable {
+            Map<String, List<Annotation>> contextMap = super.get();
+            Map<String, List<Annotation>> copy = new HashMap<String, List<Annotation>>(map);
+            if (contextMap != null) {
+                for (Map.Entry<String, List<Annotation>> entry : map.entrySet()) {
+                    if (contextMap.containsKey(entry.getKey())) {
+                        entry.getValue().addAll(contextMap.get(entry.getKey()));
+                    }
+                }
+            }
+            return super.call(copy, callableClosure);
+        }
+    };
+    /**
+     * 序列模拟器定义上下文
+     */
+    private static MapClosureContext<String, SequenceMockerFactory> SEQUENCE_MOCKER_CONTEXT = new MapClosureContext<String, SequenceMockerFactory>();
+    /**
+     * 集合运行环境上下文
+     */
+    private static StackClosureContext<Map<String, SequenceMocker>> COLLECTION_CONTEXT = new StackClosureContext<Map<String, SequenceMocker>>();
+    /**
+     * 集合模拟的维度信息上下文
+     */
+    private static StackClosureContext<CollectionDimensions> DIMENSIONS_CONTEXT = new StackClosureContext<CollectionDimensions>();
+    /**
+     * 第三方类配置信息上下文
+     */
+    private static MapClosureContext<Class, TypeAssignation> POJO_ASSIGNATION_CONTEXT = new MapClosureContext<Class, TypeAssignation>();
+    /**
+     * pojo深度信息上下文
+     */
+    private static PojoDeepStackContext POJO_DEEP_CONTEXT = new PojoDeepStackContext();
+    /**
+     *
+     */
+    private static ServiceLoader<SequenceMockerFactory> SEQUENCE_MOCKER_FACTORIES = new ServiceLoaderImpl<SequenceMockerFactory>() {
+    };
+
+    private static Object INJECT_UNENFORCED = new Object();
+    private static Object STRATEGY_UNENFORCED = new Object();
+    private static Object STRATEGY_RETRY = new Object();
 
     /**
      * 所有的TypeMocker实例，使用单例缓存
@@ -55,16 +109,39 @@ public class CoodexMockerProvider implements MockerProvider {
                 }
             }
     );
+    private static Object NOT_COLLECTION = new Object();
+    private static Map<Class, TypeAssignation> GLOBAL_ASSIGNATION = null;
+    private static ServiceLoader<RelationStrategy> RELATION_STRATEGIES = new ServiceLoaderImpl<RelationStrategy>() {
+    };
 
-    /**
-     * 获取所有被{@link Mock}修饰过的注解
-     * @param annotations 备选注解
-     * @return 列表最后会有个null
-     */
-    private static List<Annotation> getMockers(Annotation... annotations) {
-        List<Annotation> list = getAllDecoratedBy(Mock.class, annotations);
-        list.add(null);// 当没有任何Mock修饰过的，按默认规则产生
-        return list;
+    public CoodexMockerProvider() {
+        if (GLOBAL_ASSIGNATION == null) {
+            synchronized (CoodexMockerProvider.class) {
+                if (GLOBAL_ASSIGNATION == null) {
+                    GLOBAL_ASSIGNATION = new HashMap<Class, TypeAssignation>();
+                    ReflectHelper.foreachClass(new ReflectHelper.Processor() {
+                        @Override
+                        public void process(Class<?> serviceClass) {
+                            GLOBAL_ASSIGNATION.put(
+                                    serviceClass.getAnnotation(Mock.Assignation.class).value(),
+                                    new TypeAssignation(new PojoInfo(serviceClass))
+                            );
+                        }
+                    }, new ClassNameFilter() {
+                        @Override
+                        public boolean accept(String className) {
+                            try {
+                                Class c = Class.forName(className);
+                                return c.getAnnotation(Mock.Assignation.class) != null;
+                            } catch (Throwable throwable) {
+                                log.debug("class {} load failed. {}", className, throwable.getLocalizedMessage());
+                            }
+                            return false;
+                        }
+                    }, ASSIGNATIONS_PACKAGE);
+                }
+            }
+        }
     }
 
     /**
@@ -86,129 +163,29 @@ public class CoodexMockerProvider implements MockerProvider {
         return list;
     }
 
-
     /**
-     * 在备选内容中找到指定类型的注解
+     * 获取所有被{@link Mock}修饰过的注解
      *
-     * @param annotationClass 需要找到的注解
-     * @param annotations     备选范围
-     * @param <A>             Annotation
-     * @return 指定类型的注解的实例，如不存在则返回 {@code null}
+     * @param annotations 备选注解
+     * @return 列表最后会有个null
      */
-    private static <A extends Annotation> A getAnnotation(Class<A> annotationClass, Annotation... annotations) {
-        for (Annotation annotation : annotations) {
-            if (annotation.annotationType().equals(annotationClass))
-                return (A) annotation;
-        }
-        return null;
+    private static List<Annotation> getMockers(Annotation... annotations) {
+        //        list.add(null);// 当没有任何Mock修饰过的，按默认规则产生
+        return getAllDecoratedBy(Mock.class, annotations);
     }
 
+//    private static String[] getNameSpaces() {
+//        String string = NAMESPACE.get();
+//        if (Common.isBlank(string) || DEFAULT_NAMESPACE.equalsIgnoreCase(string)) {
+//            return new String[]{DEFAULT_NAMESPACE};
+//        } else {
+//            return new String[]{DEFAULT_NAMESPACE, string};
+//        }
+//    }
 
-    /**
-     * 根据所有模拟注解及其类型找到合适的TypeMocker实例
-     * @param type 需要模拟的类型
-     * @param annotations 所有被Mock修饰过的注解及{@code null}
-     * @return TypeMocker实例，如果没有合适的则返回{@code null}
-     */
-    private static MockFacade getTypeMocker(Type type, List<Annotation> annotations) {
-        for (Annotation annotation : annotations) {
-            for (TypeMocker provider : TYPE_MOCKERS.getInstance()) {
-                if (annotation == null || annotation.annotationType().equals(
-                        GenericTypeHelper.solve(
-                                TypeMocker.class.getTypeParameters()[0],
-                                provider.getClass()
-                        ))) {
-                    if (provider.accept(annotation, type))
-                        return new MockFacade(type, provider, annotation, getAnnotation(Mock.Nullable.class));
-                }
-            }
-        }
-        return null;
-    }
-
-    private Object mockClass(Class c, Annotation... annotations) {
-
-        if (c.isArray()) {
-            return mockArray(c.getComponentType(), 0, annotations);
-        } else if (Collection.class.isAssignableFrom(c)) {
-
-        } else if (Map.class.isAssignableFrom(c)) {
-
-        }
-
-
-        MockFacade param = getTypeMocker(c, getMockers(annotations));
-        if (param != null) {
-            return param.mock();
-        }
-        // todo
-        return null;
-    }
-
-
-    @Override
-    public <T> T mock(Class<T> type, Annotation... annotations) {
-        TYPE_CONTEXT.set(type);
+    private static Object runCallable(CallableClosure callableClosure) {
         try {
-            //noinspection unchecked
-            return (T) innerMock(type, annotations);
-        } finally {
-            TYPE_CONTEXT.remove();
-        }
-    }
-
-    @Override
-    public Object mock(Type type, Annotation... annotations) {
-        TYPE_CONTEXT.set(type);
-        try {
-            return innerMock(type, annotations);
-        } finally {
-            TYPE_CONTEXT.remove();
-        }
-    }
-
-    /**
-     * @param componentType 数组元素类型
-     * @param d             数组维度
-     * @param annotations   注解
-     * @return
-     */
-    private Object mockArray(Type componentType, int d, Annotation... annotations) {
-        int arraySize = 0;
-
-        return null;
-    }
-
-    private Object innerMock(final Type type, final Annotation... annotations) {
-
-        CallableClosure closure = new CallableClosure() {
-            @Override
-            public Object call() {
-                if (type == null) {
-                    return null;
-                } else if (type instanceof TypeVariable) {
-                    throw new MockException("TypeVariable " + type + " not supported.");
-                } else if (type instanceof Class) {
-                    Class c = (Class) type;
-                    if (void.class.equals(c) || Void.class.equals(c)) {
-                        return null;
-                    } else {
-                        return mockClass(c, annotations);
-                    }
-                } else if (type instanceof ParameterizedType) {
-                    // todo
-                    return null;
-                } else if (type instanceof GenericArrayType) {
-                    return mockArray(((GenericArrayType) type).getGenericComponentType(), 0, annotations);
-                } else {
-                    throw new MockException("unsupported type : " + type);
-                }
-            }
-        };
-
-
-        try {
-            return closure.call();
+            return callableClosure.call();
         } catch (Throwable throwable) {
             if (throwable instanceof MockException) {
                 throw (MockException) throwable;
@@ -218,9 +195,757 @@ public class CoodexMockerProvider implements MockerProvider {
         }
     }
 
+    /**
+     * 在备选内容中找到指定类型的注解
+     *
+     * @param annotationClass 需要找到的注解
+     * @param annotations     备选范围
+     * @param <A>             Annotation
+     * @return 指定类型的注解的实例，如不存在则返回 {@code null}
+     */
+    private static <A extends Annotation> A getAnnotation(Class<A> annotationClass, Annotation[] annotations) {
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType().equals(annotationClass)) {
+                //noinspection unchecked
+                return (A) annotation;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 根据所有模拟注解及其类型找到合适的TypeMocker实例
+     * @param type 需要模拟的类型
+     * @param annotations 所有被Mock修饰过的注解及{@code null}
+     * @return TypeMocker实例，如果没有合适的则返回{@code null}
+     */
+    private static MockFacade getTypeMocker(Type type, List<Annotation> annotations) {
+        for (Annotation annotation : annotations) {
+            if (annotation != null && annotation.annotationType().getAnnotation(Mock.class) == null) continue;
+            for (TypeMocker provider : TYPE_MOCKERS.getInstance()) {
+                if (annotation == null || annotation.annotationType().equals(
+                        solve(TypeMocker.class.getTypeParameters()[0],
+                                provider.getClass()
+                        ))) {
+                    //noinspection unchecked
+                    if (provider.accept(annotation, type))
+                        return new MockFacade(type, provider, annotation,
+                                getAnnotation(Mock.Nullable.class, annotations.toArray(new Annotation[0])));
+                }
+            }
+        }
+        return null;
+    }
+
+    private static Map<Class, TypeAssignation> getTypeAssignationsFromAnnotations(Annotation[] annotations) throws InvocationTargetException, IllegalAccessException {
+        Map<Class, TypeAssignation> map = new HashMap<Class, TypeAssignation>();
+        for (Annotation annotation : getAllDecoratedBy(Mock.Assignation.class, annotations)) {
+            map.put(
+                    annotation.annotationType().getAnnotation(Mock.Assignation.class).value(),
+                    new TypeAssignation(annotation)
+            );
+        }
+        return map;
+    }
+
+    /**
+     * 针对有参数类型进行模拟
+     *
+     * @param type        ParameterizedType
+     * @param annotations 配置信息
+     * @return 模拟值
+     */
+    private Object mockParameterizedType(ParameterizedType type, Annotation... annotations) throws InvocationTargetException, IllegalAccessException {
+        Class c = (Class) type.getRawType();
+        Object result = mockIfCollectionAndMap(c, type, annotations);
+        if (result != NOT_COLLECTION) {
+            return result;
+        } else {
+            return mockPojo(type, annotations);
+        }
+    }
+
+    /**
+     * 模拟一个明确的类型
+     *
+     * @param c           明确的类型
+     * @param annotations 模拟定义
+     * @return 模拟值
+     */
+    private Object mockClass(Class c, Annotation... annotations) throws InvocationTargetException, IllegalAccessException {
+
+        Object result = c.isArray() ?
+                mockArray(c.getComponentType(), 0, annotations) :
+                mockIfCollectionAndMap(c, c, annotations);
+
+        if (result != NOT_COLLECTION) {
+            return result;
+        }
+        // Inject
+        result = mockIfInject(c, InjectConfig.build(getAnnotation(Mock.Inject.class, annotations)), annotations);
+
+        if (result != INJECT_UNENFORCED) {
+            return result;
+        }
+
+        MockFacade param = getTypeMocker(c, getMockers(annotations));
+        if (param != null) {
+            return param.mock();
+        } else {
+            if (String.class.equals(c)) {
+                return StringTypeMocker.mock();
+            } else if (Common.inArray(c, NumberTypeMocker.SUPPORTED)) {
+                return NumberTypeMocker.mock(c);
+            } else if (Common.inArray(c, CharTypeMocker.SUPPORTED_CLASSES)) {
+                return CharTypeMocker.mock(c);
+            } else if (Common.inArray(c, BooleanTypeMocker.SUPPORTED)) {
+                return BooleanTypeMocker.mock(c);
+            }
+        }
+
+
+        return mockPojo(c, annotations);
+    }
+
+    private Object mockIfCollectionAndMap(Class c, Type collectionsContext, Annotation[] annotations) {
+        Object result;
+        if (Collection.class.isAssignableFrom(c)) {
+            Type t = solve(Collection.class.getTypeParameters()[0], collectionsContext);
+            if (t instanceof TypeVariable) {
+                throw new MockException("Cannot mock collection: " + collectionsContext);
+            }
+            result = mockCollection(c, t, 0, annotations);
+        } else if (Map.class.isAssignableFrom(c)) {
+            Type key = solve(Map.class.getTypeParameters()[0], collectionsContext);
+            Type value = solve(Map.class.getTypeParameters()[1], collectionsContext);
+            if (key instanceof TypeVariable || value instanceof TypeVariable) {
+                throw new MockException("Cannot mock map: " + collectionsContext);
+            }
+            //noinspection unchecked
+            result = mockMap(c, 0, key, value, annotations);
+        } else {
+            result = NOT_COLLECTION;
+        }
+        return result;
+    }
+
+    /**
+     * @param type        只有两种可能，{@link Class}和{@link ParameterizedType}
+     * @param annotations 模拟定义
+     * @return 模拟值
+     */
+    private Object mockPojo(final Type type, final Annotation... annotations) throws InvocationTargetException, IllegalAccessException {
+        CallableClosure closure = new CallableClosure() {
+            @Override
+            public Object call() {
+                return POJO_DEEP_CONTEXT.useRTE(type, new CallableClosure() {
+                    @Override
+                    public Object call() throws Throwable {
+                        PojoInfo pojoInfo = new PojoInfo(type);
+                        TypeAssignation current = new TypeAssignation(pojoInfo);
+                        TypeAssignation typeAssignation = POJO_ASSIGNATION_CONTEXT.get(typeToClass(type));
+                        typeAssignation = typeAssignation == null ? current : typeAssignation.mere(current);
+
+                        if (depthCheck(current, typeAssignation)) return null;
+
+                        final Map<String, Object> mocked = new HashMap<String, Object>();
+                        List<PojoProperty> properties = getPojoPropertiesAndSort(pojoInfo);
+
+                        while (properties.size() > 0) {
+                            List<PojoProperty> temp = new ArrayList<PojoProperty>();
+                            for (PojoProperty property : properties) {
+                                Annotation[] mockAnnotations = typeAssignation.get(property.getName());
+                                Mock.Relation relation = getAnnotation(Mock.Relation.class, mockAnnotations);
+
+                                if (relation == null || isAllMocked(relation, mocked, typeAssignation)) {
+                                    mocked.put(property.getName(), mock(toReference(property.getType(), type), type,
+                                            typeAssignation.get(property.getName())));
+                                    temp.add(property);
+                                } else {
+                                    RelationStrategy toUse = null;
+                                    for (RelationStrategy strategy : RELATION_STRATEGIES.getAllInstances()) {
+                                        if (strategy.accept(relation.strategy())) {
+                                            toUse = strategy;
+                                            break;
+                                        }
+                                    }
+
+                                    if (toUse == null) {
+                                        throw new MockException("none RelationStrategy accept [" + relation.strategy() + "]. " + relation.toString());
+                                    }
+
+                                    Object result = relationCall(mocked, relation, toUse);
+                                    if (relation == STRATEGY_UNENFORCED)
+                                        throw new MockException("strategy unenforced. " + toUse);
+                                    if (relation == STRATEGY_RETRY)
+                                        continue;
+
+                                    mocked.put(property.getName(), result);
+                                    temp.add(property);
+                                }
+                            }
+
+                            if (temp.size() == 0) {
+                                StringBuilder builder = new StringBuilder();
+                                builder.append("invalid dependency. ");
+                                for (PojoProperty property : properties) {
+                                    builder.append("\n\t").append(property.getAnnotation(Mock.Relation.class));
+                                }
+                                throw new MockException(builder.toString());
+                            }
+                            properties.removeAll(temp);
+                        }
+
+                        Enhancer enhancer = new Enhancer();
+                        if (pojoInfo.getRowType().isInterface()) {
+                            enhancer.setInterfaces(new Class[]{pojoInfo.getRowType()});
+                        } else {
+                            enhancer.setSuperclass(pojoInfo.getRowType());
+                        }
+                        enhancer.setCallback(new MethodInterceptor() {
+                            private String getPropertyName(Method method) {
+                                String name = method.getName();
+                                if (method.getDeclaringClass().equals(Object.class)) return null;
+                                if (method.getReturnType().equals(void.class) || method.getReturnType().equals(Void.class))
+                                    return null;
+                                if (method.getParameterTypes().length > 0) return null;
+                                if (name.length() > 3 && name.startsWith("get")) {
+                                    return Common.lowerFirstChar(name.substring(3));
+                                }
+                                if (name.length() > 2 && name.startsWith("is") && method.getReturnType().equals(boolean.class)) {
+                                    return Common.lowerFirstChar(name.substring(2));
+                                }
+                                return null;
+                            }
+
+                            @Override
+                            public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+                                if (method.getDeclaringClass().equals(Object.class)) {
+                                    return proxy.invokeSuper(obj, args);
+                                }
+                                String propertyName = getPropertyName(method);
+                                if (propertyName == null)
+                                    throw new MockException("not property getter method." + method.toGenericString());
+                                return mocked.get(propertyName);
+                            }
+                        });
+
+                        Object instance = enhancer.create();
+
+                        for (Field field : instance.getClass().getFields()) {
+                            if (mocked.containsKey(field.getName())) {
+                                field.setAccessible(true);
+                                field.set(instance, mocked.get(field.getName()));
+                            }
+                        }
+
+                        // TODO 是否需要转成原类型？
+                        return instance;
+                    }
+
+                    private Object relationCall(Map<String, Object> mocked, Mock.Relation relation, RelationStrategy toUse) throws IllegalAccessException, InvocationTargetException {
+                        Object result = STRATEGY_UNENFORCED;
+                        for (Method method : toUse.getClass().getDeclaredMethods()) {
+                            RelationStrategy.Strategy strategy = method.getAnnotation(RelationStrategy.Strategy.class);
+                            if (strategy != null && strategy.value().equals(relation.strategy())) {
+                                Object[] args = new Object[relation.dependencies().length];
+                                int i = 0;
+                                for (Annotation[] parameter : method.getParameterAnnotations()) {
+                                    RelationStrategy.Property p = getAnnotation(RelationStrategy.Property.class, parameter);
+                                    if (p == null)
+                                        throw new MockException("invalid strategy method, @Property missed. " + method.toGenericString());
+                                    if (!Common.inArray(p.value(), relation.dependencies()))
+                                        throw new MockException("relation " + relation + " not included " + p.value() + ". " + method.toGenericString());
+                                    if (!mocked.containsKey(p.value())) {
+                                        result = STRATEGY_RETRY;
+                                        break;
+                                    }
+                                    args[i++] = mocked.get(p.value());
+                                }
+                                if (result != STRATEGY_RETRY) {
+                                    result = method.invoke(toUse, args);
+                                }
+                                break;
+                            }
+                        }
+                        return result;
+                    }
+
+                    private boolean isAllMocked(Mock.Relation relation, Map<String, Object> mocked, TypeAssignation assignation) {
+                        for (String dependency : relation.dependencies()) {
+                            if (assignation.properties.containsKey(dependency) && !mocked.containsKey(dependency))
+                                return false;
+                        }
+                        return true;
+                    }
+
+                    private List<PojoProperty> getPojoPropertiesAndSort(PojoInfo pojoInfo) {
+                        List<PojoProperty> properties = new ArrayList<PojoProperty>(pojoInfo.getProperties());
+                        // 排序，有引用的在后
+                        Collections.sort(properties, new Comparator<PojoProperty>() {
+                            int[] range = {0, -1, 1, 0};
+
+                            @Override
+                            public int compare(PojoProperty o1, PojoProperty o2) {
+                                int b1 = o1.getAnnotation(Mock.Relation.class) == null ? 0 : 2;
+                                int b2 = o2.getAnnotation(Mock.Relation.class) == null ? 0 : 1;
+
+                                return range[b1 | b2];
+                            }
+                        });
+                        return properties;
+                    }
+
+
+                    private boolean depthCheck(TypeAssignation current, TypeAssignation typeAssignation) {
+                        int maxDepth = DEFAULT_DEPTH;
+                        Mock.Depth depth = getAnnotation(Mock.Depth.class, annotations);
+                        if (depth == null) {
+                            depth = current.depth;
+                        }
+                        if (depth == null) {
+                            depth = typeAssignation.depth;
+                        }
+                        if (depth != null) {
+                            maxDepth = Math.max(depth.value(), 1);
+                        }
+                        return maxDepth < POJO_DEEP_CONTEXT.depth(type);
+                    }
+                });
+            }
+        };
+
+        Map<Class, TypeAssignation> assignations = (POJO_ASSIGNATION_CONTEXT.get() == null) ?
+                GLOBAL_ASSIGNATION : new HashMap<Class, TypeAssignation>();
+
+        assignations.putAll(getTypeAssignationsFromAnnotations(annotations));
+
+        if (assignations.size() > 0)
+            return POJO_ASSIGNATION_CONTEXT.useRTE(assignations, closure);
+        else
+            return runCallable(closure);
+    }
+
+    private Object mockIfInject(Type type, InjectConfig inject, Annotation[] annotations) {
+        if (inject != null) {
+            if (COLLECTION_CONTEXT.get() != null) {
+                // 集合上下文中
+                SequenceMockerFactory sequenceMockerFactory = SEQUENCE_MOCKER_CONTEXT.get(inject.getKey());
+                if (sequenceMockerFactory != null) {
+                    // 使用序列模拟器
+                    SequenceMocker sequenceMocker = COLLECTION_CONTEXT.get().get(inject.getKey());
+                    if (sequenceMocker == null) {
+                        sequenceMocker = sequenceMockerFactory.newSequenceMocker(annotations);
+                        COLLECTION_CONTEXT.get().put(inject.getKey(), sequenceMocker);
+                    }
+                    return sequenceMocker.next();
+                }
+            }
+
+            List<Annotation> mockerDefinitions = MOCKER_DEFINITION_CONTEXT.get(inject.getKey());
+            if (mockerDefinitions != null) {
+                MockFacade facade = getTypeMocker(type, mockerDefinitions);
+                if (facade != null) {
+                    return facade.mock();
+                }
+            }
+
+            MockException mockException = new MockException("Mocker not found. key:" + inject.getKey() + "; context: " + TYPE_CONTEXT.get());
+            switch (inject.getNotFound()) {
+                case WARN:
+                    log.warn(mockException.getLocalizedMessage());
+                case ERROR:
+                    throw mockException;
+                case IGNORE:
+            }
+        }
+
+        return INJECT_UNENFORCED;
+    }
+
+
+    @Override
+    public <T> T mock(final Class<T> type, final Annotation... annotations) {
+        //noinspection unchecked
+        return (T) mock(type, type, annotations);
+    }
+
+
+    @Override
+    public Object mock(final Type type, Type context, Annotation... annotations) {
+        if (annotations == null) {
+            annotations = new Annotation[0];
+        }
+        final Annotation[] finalAnnotations = annotations;
+        return TYPE_CONTEXT.useRTE(context, new CallableClosure() {
+            @Override
+            public Object call() {
+                return innerMock(type, finalAnnotations);
+            }
+        });
+    }
+
+    /**
+     * @param componentType 数组元素类型
+     * @param d             数组维度
+     * @param annotations   注解
+     * @return 模拟的数组
+     */
+    private Object mockArray(Type componentType, int d, Annotation... annotations) {
+        // 使用List 转 数组方案
+        List list = mockCollection(List.class, componentType, d, annotations);
+        if (list != null) {
+            Object arrayInstance = Array.newInstance(typeToClass(componentType), list.size());
+            int i = 0;
+            for (Object o : list) {
+                Array.set(arrayInstance, i++, o);
+            }
+            return arrayInstance;
+        }
+        return null;
+    }
+
+    private Map buildMapInstance(Class mapClass, int d, Annotation... annotations) {
+        if (Map.class.equals(mapClass)) {
+            return DIMENSIONS_CONTEXT.get().ordered(d) ? new LinkedHashMap() : new HashMap();
+        }
+
+        // todo 根据定义指定实例
+
+        try {
+            if (mapClass.isInterface()) {
+                return (Map) getProxyObject(
+                        DIMENSIONS_CONTEXT.get().ordered(d) ? new LinkedHashMap() : new HashMap(),
+                        mapClass);
+            } else {
+                //noinspection unchecked
+                Constructor constructor = mapClass.getConstructor();
+                constructor.setAccessible(true);
+                return (Map) constructor.newInstance();
+            }
+        } catch (Throwable throwable) {
+            throw new MockException("map class " + mapClass.getName() + " not support yet.", throwable);
+        }
+
+    }
+
+    private Collection buildCollectionInstance(Class collectionClass, int d, Annotation... annotations) {
+        Collection x = getJavaUtilCollection(collectionClass, d);
+        if (x != null) return x;
+
+        // todo 根据定义指定实例
+
+        try {
+            if (collectionClass.isInterface()) {
+                return (Collection) getProxyObject(getJavaUtilCollection(Collection.class, d), collectionClass);
+            } else {
+                //noinspection unchecked
+                Constructor constructor = collectionClass.getConstructor();
+                constructor.setAccessible(true);
+                return (Collection) constructor.newInstance();
+            }
+        } catch (Throwable throwable) {
+            throw new MockException("collection class " + collectionClass.getName() + " not support yet. ", throwable);
+        }
+
+    }
+
+    private Collection getJavaUtilCollection(Class collectionClass, int d) {
+        if (List.class.equals(collectionClass)) {
+            return new ArrayList();
+        } else if (Set.class.equals(collectionClass)) {
+            return DIMENSIONS_CONTEXT.get().ordered(d) ? new LinkedHashSet() : new HashSet();
+        } else if (Collection.class.equals(collectionClass)) {
+            return DIMENSIONS_CONTEXT.get().ordered(d) ? new ArrayList() : new HashSet();
+        }
+        return null;
+    }
+
+    private Object getProxyObject(final Object instance, Class interfaceClass) {
+        return Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{interfaceClass}, new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+                Method targetMethod = instance.getClass().getMethod(method.getName(), method.getParameterTypes());
+                targetMethod.setAccessible(true);
+                return targetMethod.invoke(instance, args);
+            }
+        });
+    }
+
+    private <C extends Collection> C mockCollection(
+            final Class<C> collectionClass, final Type componentType,
+            final int d, final Annotation... annotations) {
+
+        CallableClosure closure = new CallableClosure() {
+            private Object mockElementOfCollection() {
+                if (componentType instanceof GenericArrayType) {
+                    return mockArray(((GenericArrayType) componentType).getGenericComponentType(), d + 1, annotations);
+                }
+                if (componentType instanceof Class) {
+                    Class c = (Class) componentType;
+                    if (c.isArray()) {
+                        return mockArray(c.getComponentType(), d + 1, annotations);
+                    }
+                }
+                if (componentType instanceof ParameterizedType) {
+                    ParameterizedType parameterizedType = (ParameterizedType) componentType;
+                    Class c = typeToClass((parameterizedType).getRawType());
+                    if (Collection.class.isAssignableFrom(c)) {
+                        return mockCollection(c,
+                                solve(Collection.class.getTypeParameters()[0], parameterizedType),
+                                d + 1, annotations);
+                    } else if (Map.class.isAssignableFrom(c)) {
+                        return mockMap(c, d + 1,
+                                solve(Map.class.getTypeParameters()[0], componentType),
+                                solve(Map.class.getTypeParameters()[1], componentType),
+                                annotations);
+                    }
+                }
+                return innerMock(componentType, annotations);
+            }
+
+            @Override
+            public Object call() {
+                if (DIMENSIONS_CONTEXT.get().nullable(d))
+                    return null;
+                Collection collection = buildCollectionInstance(collectionClass, d, annotations);
+                CollectionDimensions dimensions = DIMENSIONS_CONTEXT.get();
+                for (int i = 0, size = dimensions.getSize(d); i < size; i++) {
+                    //noinspection unchecked
+                    collection.add(mockElementOfCollection());
+                }
+                return collection;
+            }
+        };
+
+
+        //noinspection unchecked
+        return (C) runCallable(
+                getDimensionsClosure(d,
+                        getCollectionSequenceClosure(closure),
+                        annotations));
+    }
+
+    private CallableClosure getCollectionSequenceClosure(final CallableClosure callableClosure) {
+        return new CallableClosure() {
+            @Override
+            public Object call() throws Throwable {
+                return COLLECTION_CONTEXT.call(
+                        new HashMap<String, SequenceMocker>(),
+                        callableClosure);
+            }
+        };
+    }
+
+    private CallableClosure getDimensionsClosure(int d, CallableClosure closure, Annotation[] annotations) {
+        if (d == 0) {
+            final CallableClosure callableClosure = closure;
+            final CollectionDimensions collectionDimensions;
+            Mock.Dimensions dimensionsAnnotation = getAnnotation(Mock.Dimensions.class, annotations);
+
+
+            if (dimensionsAnnotation != null) {
+                collectionDimensions = new CollectionDimensions(dimensionsAnnotation.value(), dimensionsAnnotation.same());
+            } else {
+                Mock.Dimension dimension = getAnnotation(Mock.Dimension.class, annotations);
+                collectionDimensions = new CollectionDimensions(
+                        dimension == null ? new Mock.Dimension[0] : new Mock.Dimension[]{dimension},
+                        SAME_DEFAULT
+                );
+            }
+            closure = new CallableClosure() {
+                @Override
+                public Object call() throws Throwable {
+                    return DIMENSIONS_CONTEXT.call(collectionDimensions, callableClosure);
+                }
+            };
+        }
+        return closure;
+    }
+
+    private Object mockMap(final Class<? extends Map> mapClass, final int d, final Type keyType, final Type valueType, final Annotation... annotations) {
+
+
+        CallableClosure closure = new CallableClosure() {
+
+            private Object mockValue() {
+                Object value = mockIfInject(valueType,
+                        InjectConfig.build(getAnnotation(Mock.Value.class, annotations)),
+                        annotations);
+                return (value == INJECT_UNENFORCED) ?
+                        innerMock(valueType, annotations) :
+                        value;
+            }
+
+            private Object mockKey() {
+                Object keyMock = mockIfInject(keyType,
+                        InjectConfig.build(getAnnotation(Mock.Key.class, annotations)),
+                        annotations);
+                return (keyMock == INJECT_UNENFORCED) ?
+                        innerMock(keyType, annotations) :
+                        keyMock;
+            }
+
+            @Override
+            public Object call() throws Throwable {
+                if (DIMENSIONS_CONTEXT.get().nullable(d)) return null;
+                Map instance = buildMapInstance(mapClass, d, annotations);
+                int size = DIMENSIONS_CONTEXT.get().getSize(d);
+                int retry = size * 3;
+                while (instance.size() < size && retry-- > 0) {
+                    //noinspection unchecked
+                    instance.put(mockKey(), mockValue());
+                }
+                return instance;
+            }
+        };
+
+        return runCallable(
+                getDimensionsClosure(d,
+                        getCollectionSequenceClosure(closure),
+                        annotations));
+
+    }
+
+    private Object innerMock(final Type type, final Annotation... annotations) {
+        if (type == null || void.class.equals(type) || Void.class.equals(type)) {
+            return null;
+        }
+
+        Mock.Designated designated = getAnnotation(Mock.Designated.class, annotations);
+        if (designated != null) {
+            // todo 使用资源文件模拟
+        }
+
+        CallableClosure closure = new CallableClosure() {
+            @Override
+            public Object call() throws InvocationTargetException, IllegalAccessException {
+                Type toMock = type;
+                if (toMock instanceof TypeVariable) {
+                    toMock = solve((TypeVariable) toMock, TYPE_CONTEXT.get());
+                }
+
+                if (toMock instanceof TypeVariable) {
+                    throw new MockException("TypeVariable " + toMock + " not supported.");
+                } else if (toMock instanceof Class) {
+                    return mockClass((Class) toMock, annotations);
+                } else if (toMock instanceof ParameterizedType) {
+                    return mockParameterizedType((ParameterizedType) toMock, annotations);
+                } else if (toMock instanceof GenericArrayType) {
+                    return mockArray(((GenericArrayType) toMock).getGenericComponentType(), 0, annotations);
+                } else {
+                    throw new MockException("unsupported type : " + toMock);
+                }
+            }
+        };
+        closure = getDefinitionClosure(closure, annotations);
+        closure = getSequenceClosure(closure, annotations);
+        return runCallable(closure);
+
+    }
+
+    /**
+     * 根据注解设置序列模拟器配置上下文
+     *
+     * @param closure     闭包执行体
+     * @param annotations 可能包含@Mock.Sequence或@Mock.Sequences的注解
+     * @return 带有序列模拟器信息的闭包执行体
+     */
+    private CallableClosure getSequenceClosure(CallableClosure closure, Annotation[] annotations) {
+        final Map<String, SequenceMockerFactory> sequenceMockerMap = new HashMap<String, SequenceMockerFactory>();
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType().equals(Mock.Sequence.class)) {
+                Mock.Sequence sequence = (Mock.Sequence) annotation;
+                Class<? extends SequenceMockerFactory> factoryClass = sequence.factory();
+                if (!factoryClass.isInterface()) {
+                    log.warn("{} not interface.", sequence);
+                }
+                sequenceMockerMap.put(sequence.name(), getSequenceMockerFactory(factoryClass));
+            }
+        }
+        if (sequenceMockerMap.size() > 0) {
+            final CallableClosure callableClosure = closure;
+            closure = new CallableClosure() {
+                @Override
+                public Object call() throws Throwable {
+                    return SEQUENCE_MOCKER_CONTEXT.call(sequenceMockerMap, callableClosure);
+                }
+            };
+        }
+        return closure;
+    }
+
+    private SequenceMockerFactory getSequenceMockerFactory(Class<? extends SequenceMockerFactory> factoryClass) {
+        SequenceMockerFactory factory = SEQUENCE_MOCKER_FACTORIES.getInstance(factoryClass);
+        if (factory == null && !factoryClass.isInterface()) {
+            try {
+                factory = factoryClass.newInstance();
+            } catch (InstantiationException e) {
+                throw new MockException(e.getLocalizedMessage(), e);
+            } catch (IllegalAccessException e) {
+                throw new MockException(e.getLocalizedMessage(), e);
+            }
+        }
+        return factory;
+    }
+
+    /**
+     * 根据注解设置模拟配置上下文
+     *
+     * @param closure     闭包执行体
+     * @param annotations 可能包含@Mock.Declaration修饰的注解
+     * @return 带有配置信息的闭包执行体
+     */
+    private CallableClosure getDefinitionClosure(CallableClosure closure, Annotation[] annotations) {
+        List<Annotation> defList = getAllDecoratedBy(Mock.Declaration.class, annotations);
+        final Map<String, List<Annotation>> declarationMap = new HashMap<String, List<Annotation>>();
+        for (Annotation annotation : defList) {
+            Class c = annotation.annotationType();
+            // 例外掉所有java和javax得注解
+            if (c.getName().startsWith("java.") || c.getName().startsWith("javax.")) continue;
+
+            for (Method method : c.getMethods()) {
+                String key = method.getName();
+                List<Annotation> mock = new ArrayList<Annotation>(
+                        Arrays.asList(method.getDeclaredAnnotations())
+                );//getAllDecoratedBy(Mock.class, method.getDeclaredAnnotations());
+
+                if (Annotation.class.isAssignableFrom(method.getReturnType())
+                    /* && method.getReturnType().getAnnotation(Mock.class) != null */) {
+                    method.setAccessible(true);
+                    try {
+                        mock.add((Annotation) method.invoke(annotation));
+                    } catch (IllegalAccessException e) {
+                        throw new MockException("Load @Mock.Declaration failed. " + method.getDeclaringClass() + "." + method.getName(), e);
+                    } catch (InvocationTargetException e) {
+                        throw new MockException("Load @Mock.Declaration failed. " + method.getDeclaringClass() + "." + method.getName(), e);
+                    }
+                }
+                if (mock.size() > 0) {
+                    List<Annotation> annotationList = declarationMap.get(key);
+                    if (annotationList != null) {
+                        annotationList.addAll(mock);
+                    } else {
+                        annotationList = mock;
+                    }
+                    declarationMap.put(key, annotationList);
+                }
+            }
+        }
+
+        if (declarationMap.size() > 0) {
+            final CallableClosure callableClosure = closure;
+            closure = new CallableClosure() {
+                @Override
+                public Object call() throws Throwable {
+                    return MOCKER_DEFINITION_CONTEXT.call(declarationMap, callableClosure);
+                }
+            };
+        }
+        return closure;
+    }
+
     private static class MockFacade {
-
-
         private final Type targetType;
         private final TypeMocker mocker;
         private final Annotation annotation;
@@ -234,7 +959,159 @@ public class CoodexMockerProvider implements MockerProvider {
         }
 
         Object mock() {
+            //noinspection unchecked
             return mocker.mock(annotation, nullable, targetType);
         }
     }
+
+    private static class CollectionDimensions {
+        private Mock.Dimension[] dimensions;
+        private int[] corrected;
+        private boolean same;
+
+        CollectionDimensions(Mock.Dimension[] dimensions, boolean same) {
+            this.dimensions = dimensions;
+            this.same = same;
+            corrected = new int[16];
+            Arrays.fill(corrected, Integer.MIN_VALUE);
+
+        }
+
+        private int calc(int dimension) {
+            int max = MAX_DEFAULT;
+            int min = MIN_DEFAULT;
+            int size = SIZE_DEFAULT;
+            if (dimension < dimensions.length) {
+                Mock.Dimension d = dimensions[dimension];
+                max = Math.max(1, Math.max(d.max(), d.min()));
+                min = Math.max(1, Math.min(d.min(), d.max()));
+                size = d.size();
+            }
+            return size > 0 ? size : (new Random().nextInt(max - min + 1) + min);
+        }
+
+        int getSize(int dimension) {
+            if (dimension >= 16)
+                throw new MockException("too many dimensions.");
+            if (same) {
+                if (corrected[dimension] == Integer.MIN_VALUE) {
+                    corrected[dimension] = calc(dimension);
+                }
+                return corrected[dimension];
+            } else {
+                return calc(dimension);
+            }
+        }
+
+        boolean nullable(int dimension) {
+            if (dimension >= 16)
+                throw new MockException("too many dimensions.");
+            if (dimension < dimensions.length) {
+                return Math.random() < dimensions[dimension].nullProbability();
+            } else {
+                return false;
+            }
+        }
+
+        boolean ordered(int dimension) {
+            if (dimension >= 16)
+                throw new MockException("too many dimensions.");
+            if (dimension >= dimensions.length)
+                return ORDERED_DEFAULT;
+            else
+                return dimensions[dimension].ordered();
+        }
+    }
+
+    private static class InjectConfig {
+
+        private String key;
+        private Mock.NotFound notFound;
+
+        InjectConfig(String key, Mock.NotFound notFound) {
+            this.key = key;
+            this.notFound = notFound;
+        }
+
+        static InjectConfig build(Mock.Inject inject) {
+            if (inject == null) return null;
+            return new InjectConfig(inject.value(), inject.notFound());
+        }
+
+        static InjectConfig build(Mock.Key inject) {
+            if (inject == null) return null;
+            return new InjectConfig(inject.value(), inject.notFound());
+        }
+
+        static InjectConfig build(Mock.Value inject) {
+            if (inject == null) return null;
+            return new InjectConfig(inject.value(), inject.notFound());
+        }
+
+        String getKey() {
+            return key;
+        }
+
+        Mock.NotFound getNotFound() {
+            return notFound;
+        }
+    }
+
+    private static class PojoDeepStackContext extends StackClosureContext<Type> {
+
+        int depth(Type type) {
+            Stack<Type> pojoStack = super.$getVariant();
+            int count = 0;
+            for (Type t : pojoStack) {
+                if (t.equals(type)) count++;
+            }
+            return count;
+        }
+    }
+
+    private static class TypeAssignation {
+        private Map<String, Annotation[]> properties = new HashMap<String, Annotation[]>();
+        private Mock.Depth depth;
+
+        TypeAssignation(PojoInfo pojoInfo) {
+            depth = (Mock.Depth) pojoInfo.getRowType().getAnnotation(Mock.Depth.class);
+            for (PojoProperty pojoProperty : pojoInfo.getProperties()) {
+                properties.put(pojoProperty.getName(), pojoProperty.getAnnotations());
+            }
+        }
+
+        TypeAssignation(Annotation annotation) throws InvocationTargetException, IllegalAccessException {
+            depth = annotation.annotationType().getAnnotation(Mock.Depth.class);
+            List<Annotation> annotationList = new ArrayList<Annotation>();
+            for (Method method : annotation.annotationType().getMethods()) {
+                method.setAccessible(true);
+                if (method.getReturnType().isAnnotation()) {
+                    annotationList.add((Annotation) method.invoke(annotation));
+                }
+                annotationList.addAll(Arrays.asList(method.getAnnotations()));
+                properties.put(method.getName(), annotationList.toArray(new Annotation[0]));
+            }
+        }
+
+        TypeAssignation mere(TypeAssignation typeAssignation) {
+            if (typeAssignation != null) {
+                for (Map.Entry<String, Annotation[]> entry : typeAssignation.properties.entrySet()) {
+                    if (!properties.containsKey(entry.getKey())) {
+                        properties.put(entry.getKey(), entry.getValue());
+                    }
+                }
+            }
+            return this;
+        }
+
+        int getDepth() {
+            return Math.max(1, depth == null ? DEFAULT_DEPTH : depth.value());
+        }
+
+        Annotation[] get(String propertyName) {
+            Annotation[] annotations = properties.get(propertyName);
+            return annotations == null ? new Annotation[0] : annotations;
+        }
+    }
+
 }

@@ -24,6 +24,8 @@ import org.coodex.pojomocker.annotations.INTEGER;
 import org.coodex.pojomocker.annotations.STRING;
 import org.coodex.pojomocker.sequence.NameSpace;
 import org.coodex.pojomocker.sequence.StrDateTimeSequence;
+import org.coodex.util.Profile;
+import org.coodex.util.ReflectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +47,15 @@ public class MockerTest {
     private Map<String, String> cars;
 
     public static void main(String[] args) {
-        log.debug(JSON.toJSONString(MockerFacade.mock(MockerTest.class)));
+        ReflectHelper.foreachClass(new ReflectHelper.Processor() {
+            @Override
+            public void process(Class<?> serviceClass) {
+                System.out.println(serviceClass.getName());
+            }
+        },null,"**.coodex.util");
+//        Profile profile = Profile.getProfile("client.amqp");
+//        System.out.println(profile.getString("class.org.coodex.mock.Impl"));
+//        log.debug(JSON.toJSONString(MockerFacade.mock(MockerTest.class)));
     }
 
     @Sequences({

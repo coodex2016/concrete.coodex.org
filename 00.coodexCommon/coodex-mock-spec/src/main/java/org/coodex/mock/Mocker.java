@@ -65,8 +65,8 @@ public final class Mocker {
         return getMockerProvider().mock(type, annotations);
     }
 
-    public static Object mock(Type type, Annotation... annotations) {
-        return getMockerProvider().mock(type, annotations);
+    public static Object mock(Type type, Type context, Annotation... annotations) {
+        return getMockerProvider().mock(type, context, annotations);
     }
 
 }

@@ -45,11 +45,11 @@ public class PojoProperty {
         this.name = property == null ? null : property.getName();
     }
 
-    PojoProperty(Field field, Type type) {
+    protected PojoProperty(Field field, Type type) {
         this(null, field, Modifier.isFinal(field.getModifiers()), type, field.getName());
     }
 
-    PojoProperty(Method method, Field field, boolean readonly, Type type, String name) {
+    protected PojoProperty(Method method, Field field, boolean readonly, Type type, String name) {
         this.method = method;
         this.field = field;
         this.readonly = readonly;

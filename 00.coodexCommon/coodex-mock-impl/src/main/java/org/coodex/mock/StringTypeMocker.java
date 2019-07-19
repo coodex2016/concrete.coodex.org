@@ -30,6 +30,9 @@ import java.util.List;
 import java.util.Random;
 
 import static org.coodex.mock.CharTypeMocker.getRange;
+import static org.coodex.mock.Mock.Char.DEFAULT_CHAR_RANGE;
+import static org.coodex.mock.Mock.String.DEFAULT_MAX_LENGTH;
+import static org.coodex.mock.Mock.String.DEFAULT_MIN_LENGTH;
 
 public class StringTypeMocker extends AbstractTypeMocker<Mock.String> {
 
@@ -39,6 +42,18 @@ public class StringTypeMocker extends AbstractTypeMocker<Mock.String> {
             String.class
     };
 
+    private static StringTypeMocker instance;
+
+    public StringTypeMocker() {
+        instance = this;
+    }
+
+    static String mock() {
+        if (instance == null) {
+            instance = new StringTypeMocker();
+        }
+        return (String) instance.mock(null, null, String.class);
+    }
     @Override
     protected Class[] getSupportedClasses() {
         return SUPPORTED_CLASSES;
@@ -73,8 +88,10 @@ public class StringTypeMocker extends AbstractTypeMocker<Mock.String> {
         }
 
         if (range == null) {
-            range = new CharRangeBasedStringRange(5, 10, new CharTypeMocker.ArrayCharRange(
-                    getRange("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", false)
+            range = new CharRangeBasedStringRange(
+                    DEFAULT_MIN_LENGTH,
+                    DEFAULT_MAX_LENGTH, new CharTypeMocker.ArrayCharRange(
+                    getRange(DEFAULT_CHAR_RANGE, false)
             ));
         }
 
@@ -128,7 +145,7 @@ public class StringTypeMocker extends AbstractTypeMocker<Mock.String> {
         @Override
         public String random() {
             StringBuilder builder = new StringBuilder();
-            int len = new Random().nextInt(max - min + 1);
+            int len = new Random().nextInt(max - min + 1) + min;
             for (int i = 0; i <= len; i++) {
                 builder.append(Character.toChars(charRange.random()));
             }

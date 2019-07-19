@@ -21,6 +21,8 @@ import java.lang.reflect.Type;
 
 public interface MockerProvider {
 
+//    String DEFAULT_NAMESPACE = "mock";
+    String ASSIGNATIONS_PACKAGE = "mock.assign";
 
     /**
      * @param type        模拟的数据类型
@@ -32,9 +34,10 @@ public interface MockerProvider {
 
     /**
      * @param type        要模拟类型的type，需要是具体的，不能有{@link java.lang.reflect.TypeVariable}
+     * @param context     TypeVariable检索上下文
      * @param annotations 模拟配置
      * @return 模拟值
      */
-    Object mock(Type type, Annotation... annotations);
+    Object mock(Type type, Type context, Annotation... annotations);
 
 }

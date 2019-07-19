@@ -41,7 +41,7 @@ import static org.coodex.util.ReflectHelper.foreachClass;
  */
 public class ConcreteHelper {
 
-    public static final String VERSION = "0.3.0-SNAPSHOT";
+    public static final String VERSION = "0.3.0-MOCK-TRIAL-SNAPSHOT";
 
     public static final String TAG_CLIENT = "client";
     public static final String KEY_LOCATION = "location";

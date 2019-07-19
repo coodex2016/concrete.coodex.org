@@ -5,7 +5,7 @@ import org.coodex.util.Common;
 import java.lang.reflect.Type;
 
 public class BooleanTypeMocker extends AbstractTypeMocker<Mock.Boolean> {
-    private static Class[] SUPPORTED = new Class[]{
+    static Class[] SUPPORTED = new Class[]{
             boolean.class, Boolean.class,//0,1
             byte.class, Byte.class,//2,3
             short.class, Short.class,//4,5
@@ -14,6 +14,19 @@ public class BooleanTypeMocker extends AbstractTypeMocker<Mock.Boolean> {
             char.class, Character.class,//10,11
             String.class//12
     };
+
+    private static BooleanTypeMocker instance;
+
+    public BooleanTypeMocker() {
+        instance = this;
+    }
+
+    static Object mock(Class c){
+        if(instance == null){
+            instance = new BooleanTypeMocker();
+        }
+        return instance.mock(null,null, c);
+    }
 
     @Override
     protected boolean accept(Mock.Boolean annotation) {

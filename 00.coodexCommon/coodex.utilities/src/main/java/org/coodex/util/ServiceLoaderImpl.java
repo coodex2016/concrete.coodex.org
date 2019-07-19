@@ -35,6 +35,7 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
  * <p>
  * Created by davidoff shen on 2016-11-30.
  */
+// TODO 排序
 public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 
     private final static Logger log = LoggerFactory.getLogger(ServiceLoaderImpl.class);
@@ -118,9 +119,14 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
                 copy.put(entry.getKey(), entry.getValue());
             }
         }
+
         switch (copy.size()) {
             case 0:
-                throw new RuntimeException();
+                if(defaultProvider != null && providerClass.isAssignableFrom(defaultProvider.getClass())){
+                    return defaultProvider;
+                } else {
+                    return null;
+                }
             case 1:
                 return copy.values().iterator().next();
         }

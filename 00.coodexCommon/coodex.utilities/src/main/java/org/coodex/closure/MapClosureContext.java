@@ -16,6 +16,8 @@
 
 package org.coodex.closure;
 
+import org.coodex.util.Common;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +48,14 @@ public class MapClosureContext<K, V> extends StackClosureContext<Map<K, V>> {
         return super.call(map, callableClosure);
     }
 
+    public Object useRTE(K key, V v, CallableClosure callableClosure) {
+        try {
+            return call(key, v, callableClosure);
+        } catch (Throwable th) {
+            throw Common.runtimeException(th);
+        }
+    }
+
     @Override
     public Object call(Map<K, V> map, CallableClosure callableClosure) throws Throwable {
         Map<K, V> current = get();
@@ -59,24 +69,4 @@ public class MapClosureContext<K, V> extends StackClosureContext<Map<K, V>> {
         return super.call(context, callableClosure);
     }
 
-
-//    @Deprecated
-//    public Object runWith(K key, V v, Closure runnable) {
-//        if (runnable == null) return null;
-//
-//        Map<K, V> map = $getVariant();
-//        if (map == null) {
-//            map = initValue();
-//            map.put(key, v);
-//            try {
-//                return closureRun(map, runnable);
-//            } finally {
-//                map.clear();
-//            }
-//        } else {
-//            map.put(key, v);
-//            return runnable.run();
-//        }
-//
-//    }
 }
