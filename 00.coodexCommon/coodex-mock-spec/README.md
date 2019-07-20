@@ -572,18 +572,21 @@ pojo的属性之间，通常会有一定的联系，为了更贴近真事效果�
 
 ```java
 import org.coodex.mock.AbstractRelationStrategy;
+import org.coodex.util.Parameter;
 
 public class RelationExample extends AbstractRelationStrategy {
 
     @Strategy("add")
     public int add(
-            @Property("x1") int x1,
-            @Property("x2") int x2) {
+            @Parameter("x1") int x1,
+            @Parameter("x2") int x2) {
         return x1 + x2;
     }
 }
 
 ```
+
+如果你使用`java 8`的`-parameters`编译，那么`@Parameter`也不用加
 
 定义一个公用方法，声明它是`add`依赖策略的算法，参数上，定义好是哪个属性。
 
@@ -607,7 +610,108 @@ public @interface FullName {
 }
 ```
 
-实现就不贴了，[点我]查看
+实现就不贴了，[点我](https://github.com/coodex2016/concrete.coodex.org/blob/030-mock-refactoring/00.coodexCommon/coodex-mock-impl/src/main/java/org/coodex/mock/ext/FullNameTypeMocker.java)查看
 
+`codoex-mock`除了定义规范以外，还根据历史经验，`org.coodex.mock.ext`下提供了一些模拟器
+
+- `@DateTime`， 时间戳模拟配置，支持`java.util.Date`/ `java.util.Calendar`/ `String`
+- `@EMail`, 电子邮件模拟配置，支持`String`
+- `@FullName`，中文姓名模拟，支持`String`
+- `@IdCard`，身份证模拟，支持`String`
+- `@IpAddress`, IP地址模拟，支持`String`/ `int[]`/ `Integer[]`/ `byte[]`/ `Byte[]`
+- `@VehicleNum`, 车牌号模拟，支持`String`
+- `@Coordinates`，经纬度模拟，支持`float[]`/ `Float[]`/ `double[]`/ `Double[]`
+- `@MobilePhoneNum`，手机号模拟，支持`String`
+
+## 应用场景
+
+所有支持`AOP` 拦截器的传输POJO的场景
+
+- [`concrete`](https://concrete.coodex.org/)
+
+    mock重构后的版本新增了`concrete-core-mock`模块，推荐的实践方案是，在原来发布服务的模块里，将其依赖进来，注意，使用`test`作用域，然后在`test`作用域的代码里随便建个`class`，`main`方法里写上`SpringApplication.run(YourStarter.class, args)`即可，巨省事
+
+- `Spring MVC`
+
+## 配置无配置的pojo
+
+我们的系统通常会用到一些第三方的pojo数据结构，它们可不知道`coodex-mock`，怎么配置这些数据的mock呢？
+
+我们假设Pojo3rd就是一个第三方的数据，并且需要在我们的服务中用到
+
+```java
+    interface Pojo3rd{
+
+        String getVehicleNum();
+
+    }
+```
+
+我们看看怎么不改它代码的情况下进行配置
+
+### 方案一
+
+在`mock.assign`包下定义一个同结构的pojo，并在其属性上进行配置，例如：
+
+```java
+package mock.assign.example;
+
+import org.coodex.mock.Mock;
+import org.coodex.mock.ext.VehicleNum;
+import test.org.coodex.mock.impl.MockerTest;
+
+@Mock.Assignation(MockerTest.Pojo3rd.class)//指定给谁配置
+public class Pojo3rdCase1 {
+
+    @VehicleNum
+    public String vehicleNum;
+}
+```
+
+`codoex-mock`规范定义了`MockerProvider`的实现必须检查`mock.assign`包下所有带有`@Mock.Assignation`的类，将这些配置信息带入到模拟上下文中
+
+```json
+{
+	"vehicleNum":"川Q52447"
+}
+```
+
+### 方案二
+
+使用注解定义，并放到上下文里
+
+```java
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.FIELD, ElementType.TYPE})
+    @Mock.Assignation(Pojo3rd.class)//指定给谁配置
+    @interface Pojo3rdCase2{
+        // 方法名对应pojo属性名
+        // 和@Mock.Declaration一样，两种模式，自行选择
+        MobilePhoneNum vehicleNum() default @MobilePhoneNum;
+    }
+```
+
+如果直接模拟Pojo3rd的话，我们需要改改入口，把这个注解放进去
+
+先在之前的`Pojo`类上定义`Pojo3rdCase2`，然后
+
+```java
+        System.out.println(
+                JSON.toJSONString(
+                        Mocker.mock(Pojo3rd.class,Pojo.class.getAnnotations()), // <--放到上下文
+                        SerializerFeature.PrettyFormat
+                )
+        );
+```
+
+```json
+{
+	"vehicleNum":"18192536319"
+}
+```
+
+使用`@Mock.Assignation`的时候，和直接在`Pojo`上配置是一样一样的，也可以定义序列、依赖注入。
+
+`coodex-mock`得益于`coodex-utitlities`对泛型的支持，so，请大家放心食用。
 
 ## enjoy it :)

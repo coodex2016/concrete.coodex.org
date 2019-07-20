@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.api.mockers;
+package org.coodex.mock.ext;
 
-import org.coodex.pojomocker.Mock;
+import org.coodex.mock.Mock;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Mock
-@Target({ElementType.FIELD, ElementType.METHOD,ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Deprecated
-public @interface MAC {
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
+@Mock
+public @interface MobilePhoneNum {
+
+    boolean appleStyle() default false;
 }

@@ -18,7 +18,7 @@ package org.coodex.concrete.accounts.tenant.pojo;
 
 import org.coodex.concrete.accounts.AbstractPojo;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.mockers.DateTime;
+import org.coodex.mock.Mock;
 
 /**
  * Created by davidoff shen on 2017-05-25.
@@ -35,7 +35,8 @@ public class Tenant extends AbstractPojo {
 
     @Description(name = "[R]是否使用中")
     private boolean using;
-    @DateTime
+
+    @Mock.Inject("tenant_validation")
     @Description(name = "[R]有效期至")
     private String validation;
 

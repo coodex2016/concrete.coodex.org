@@ -246,6 +246,12 @@
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-core-mock</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-fsm-impl</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>

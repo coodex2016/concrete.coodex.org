@@ -45,7 +45,7 @@ public class TimeCostInterceptor extends AbstractSyncInterceptor {
     protected boolean accept_(DefinitionContext context) {
         if (accept == null) {
             try {
-                accept = loader.getInstance(MockInterceptor.class) != null;
+                accept = loader.getInstance(MockV2Interceptor.class) != null;
             } catch (Throwable th) {
                 log.warn(th.getLocalizedMessage(), th);
                 accept = false;

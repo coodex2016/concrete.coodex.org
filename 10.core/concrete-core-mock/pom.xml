@@ -26,53 +26,21 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>coodex-mock-impl</artifactId>
-    <version>${coodex.utilities.version}</version>
+    <artifactId>concrete-core-mock</artifactId>
 
     <dependencies>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
-            <artifactId>coodex-mock-spec</artifactId>
+            <artifactId>concrete-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
-            <artifactId>coodex-utilities</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
+            <artifactId>coodex-mock-impl</artifactId>
+            <version>${coodex.utilities.version}</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 
 </project>

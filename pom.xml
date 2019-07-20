@@ -118,6 +118,7 @@
         <module>10.core/concrete-prod-impl</module>
         <module>00.coodexCommon/coodex-mock-spec</module>
         <module>00.coodexCommon/coodex-mock-impl</module>
+        <module>10.core/concrete-core-mock</module>
 
     </modules>
 

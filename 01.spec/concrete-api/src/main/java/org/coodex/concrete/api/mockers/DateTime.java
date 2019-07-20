@@ -30,6 +30,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD,ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Mock
+@Deprecated
 public @interface DateTime {
 
     String min() default "1970-01-01 00:00:00";

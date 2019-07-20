@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.api.mockers;
+package mock.assign.example;
 
-import org.coodex.pojomocker.Mock;
+import org.coodex.mock.Mock;
+import org.coodex.mock.ext.VehicleNum;
+import test.org.coodex.mock.impl.MockerTest;
 
-import java.lang.annotation.*;
+@Mock.Assignation(MockerTest.Pojo3rd.class)
+public class Pojo3rdCase1 {
 
-@Mock
-@Target({ElementType.FIELD, ElementType.METHOD,ElementType.ANNOTATION_TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Deprecated
-public @interface MAC {
+    @VehicleNum
+    public String vehicleNum;
 }

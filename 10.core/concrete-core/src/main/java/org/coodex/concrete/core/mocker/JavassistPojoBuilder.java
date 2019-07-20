@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Created by davidoff shen on 2017-05-15.
  */
+@Deprecated
 public class JavassistPojoBuilder implements PojoBuilder {
 
     private static final AtomicLong ATOMIC_LONG = new AtomicLong(0);

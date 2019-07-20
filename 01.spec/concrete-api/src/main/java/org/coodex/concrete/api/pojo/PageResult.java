@@ -27,9 +27,11 @@ import java.util.List;
  */
 public class PageResult<T> extends AbstractPage {
     @Description(name = "总共多少页")
+    @SuppressWarnings("deprecation")
     @MockerRef(name = "total")
     private Long total;
     @Description(name = "总共多少条数据")
+    @SuppressWarnings("deprecation")
     @MockerRef(name = "count")
     private Long count;
     private List<T> list = new ArrayList<T>();

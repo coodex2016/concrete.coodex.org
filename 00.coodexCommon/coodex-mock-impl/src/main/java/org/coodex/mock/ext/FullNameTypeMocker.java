@@ -20,6 +20,7 @@ import org.coodex.mock.AbstractTypeMocker;
 import org.coodex.util.Common;
 
 import java.lang.reflect.Type;
+import java.util.Random;
 
 public class FullNameTypeMocker extends AbstractTypeMocker<FullName> {
     /**
@@ -102,8 +103,11 @@ public class FullNameTypeMocker extends AbstractTypeMocker<FullName> {
 
     @Override
     public Object mock(FullName mockAnnotation, Type targetType) {
-        StringBuilder builder = new StringBuilder(SURNAME[Common.random(SURNAME.length - 1)]);
-        builder.append(Common.randomGB2312Char());
-        return Math.random() < 0.5 ? builder.toString() : builder.append(Common.randomGB2312Char()).toString();
+        StringBuilder builder = new StringBuilder(SURNAME[new Random().nextInt(SURNAME.length)]);
+        char ch = Common.randomGB2312Char();
+        builder.append(ch);
+        // 50%几率双字名，双字里12.5%几率叠字
+        return (Math.random() < 0.5 ? builder :
+                builder.append(Math.random() < 0.125 ? ch : Common.randomGB2312Char())).toString();
     }
 }

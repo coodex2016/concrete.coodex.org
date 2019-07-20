@@ -274,15 +274,9 @@ public class CoodexMockerProvider implements MockerProvider {
      */
     private Object mockClass(Class c, Annotation... annotations) throws InvocationTargetException, IllegalAccessException {
 
-        Object result = c.isArray() ?
-                mockArray(c.getComponentType(), 0, annotations) :
-                mockIfCollectionAndMap(c, c, annotations);
 
-        if (result != NOT_COLLECTION) {
-            return result;
-        }
         // Inject
-        result = mockIfInject(c, InjectConfig.build(getAnnotation(Mock.Inject.class, annotations)), annotations);
+        Object result = mockIfInject(c, InjectConfig.build(getAnnotation(Mock.Inject.class, annotations)), annotations);
 
         if (result != INJECT_UNENFORCED) {
             return result;
@@ -301,6 +295,14 @@ public class CoodexMockerProvider implements MockerProvider {
             } else if (Common.inArray(c, BooleanTypeMocker.SUPPORTED)) {
                 return BooleanTypeMocker.mock(c);
             }
+        }
+
+        result = c.isArray() ?
+                mockArray(c.getComponentType(), 0, annotations) :
+                mockIfCollectionAndMap(c, c, annotations);
+
+        if (result != NOT_COLLECTION) {
+            return result;
         }
 
 
@@ -357,7 +359,7 @@ public class CoodexMockerProvider implements MockerProvider {
                                 Annotation[] mockAnnotations = typeAssignation.get(property.getName());
                                 Mock.Relation relation = getAnnotation(Mock.Relation.class, mockAnnotations);
 
-                                if (relation == null || isAllMocked(relation, mocked, typeAssignation)) {
+                                if (relation == null) {
                                     mocked.put(property.getName(), mock(toReference(property.getType(), type), type,
                                             typeAssignation.get(property.getName())));
                                     temp.add(property);
@@ -396,71 +398,48 @@ public class CoodexMockerProvider implements MockerProvider {
                             properties.removeAll(temp);
                         }
 
-                        Enhancer enhancer = new Enhancer();
-                        if (pojoInfo.getRowType().isInterface()) {
-                            enhancer.setInterfaces(new Class[]{pojoInfo.getRowType()});
+                        MockInvocationHandler mockInvocationHandler = new MockInvocationHandler(mocked);
+
+                        Object instance;
+                        if(pojoInfo.getRowType().isInterface()){
+                            instance = Proxy.newProxyInstance(this.getClass().getClassLoader(),
+                                    new Class[]{pojoInfo.getRowType()},
+                                    mockInvocationHandler);
                         } else {
+                            Enhancer enhancer = new Enhancer();
                             enhancer.setSuperclass(pojoInfo.getRowType());
-                        }
-                        enhancer.setCallback(new MethodInterceptor() {
-                            private String getPropertyName(Method method) {
-                                String name = method.getName();
-                                if (method.getDeclaringClass().equals(Object.class)) return null;
-                                if (method.getReturnType().equals(void.class) || method.getReturnType().equals(Void.class))
-                                    return null;
-                                if (method.getParameterTypes().length > 0) return null;
-                                if (name.length() > 3 && name.startsWith("get")) {
-                                    return Common.lowerFirstChar(name.substring(3));
+                            enhancer.setCallback(mockInvocationHandler);
+                            instance = enhancer.create();
+                            for (Field field : instance.getClass().getFields()) {
+                                if (mocked.containsKey(field.getName())) {
+                                    field.setAccessible(true);
+                                    field.set(instance, mocked.get(field.getName()));
                                 }
-                                if (name.length() > 2 && name.startsWith("is") && method.getReturnType().equals(boolean.class)) {
-                                    return Common.lowerFirstChar(name.substring(2));
-                                }
-                                return null;
-                            }
-
-                            @Override
-                            public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-                                if (method.getDeclaringClass().equals(Object.class)) {
-                                    return proxy.invokeSuper(obj, args);
-                                }
-                                String propertyName = getPropertyName(method);
-                                if (propertyName == null)
-                                    throw new MockException("not property getter method." + method.toGenericString());
-                                return mocked.get(propertyName);
-                            }
-                        });
-
-                        Object instance = enhancer.create();
-
-                        for (Field field : instance.getClass().getFields()) {
-                            if (mocked.containsKey(field.getName())) {
-                                field.setAccessible(true);
-                                field.set(instance, mocked.get(field.getName()));
                             }
                         }
+
 
                         // TODO 是否需要转成原类型？
                         return instance;
                     }
 
-                    private Object relationCall(Map<String, Object> mocked, Mock.Relation relation, RelationStrategy toUse) throws IllegalAccessException, InvocationTargetException {
+                    private Object relationCall(Map<String, Object> mocked, Mock.Relation relation, RelationStrategy toUse)
+                            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+
                         Object result = STRATEGY_UNENFORCED;
                         for (Method method : toUse.getClass().getDeclaredMethods()) {
                             RelationStrategy.Strategy strategy = method.getAnnotation(RelationStrategy.Strategy.class);
                             if (strategy != null && strategy.value().equals(relation.strategy())) {
                                 Object[] args = new Object[relation.dependencies().length];
-                                int i = 0;
-                                for (Annotation[] parameter : method.getParameterAnnotations()) {
-                                    RelationStrategy.Property p = getAnnotation(RelationStrategy.Property.class, parameter);
-                                    if (p == null)
-                                        throw new MockException("invalid strategy method, @Property missed. " + method.toGenericString());
-                                    if (!Common.inArray(p.value(), relation.dependencies()))
-                                        throw new MockException("relation " + relation + " not included " + p.value() + ". " + method.toGenericString());
-                                    if (!mocked.containsKey(p.value())) {
+                                for (int i = 0, len = method.getParameterTypes().length; i < len;) {
+                                    String methodName = ReflectHelper.getParameterName(method, i);
+                                    if (!Common.inArray(methodName, relation.dependencies()))
+                                        throw new MockException("relation " + relation + " not included " + methodName + ". " + method.toGenericString());
+                                    if (!mocked.containsKey(methodName)) {
                                         result = STRATEGY_RETRY;
                                         break;
                                     }
-                                    args[i++] = mocked.get(p.value());
+                                    args[i++] = mocked.get(methodName);
                                 }
                                 if (result != STRATEGY_RETRY) {
                                     result = method.invoke(toUse, args);
@@ -554,6 +533,7 @@ public class CoodexMockerProvider implements MockerProvider {
             switch (inject.getNotFound()) {
                 case WARN:
                     log.warn(mockException.getLocalizedMessage());
+                    break;
                 case ERROR:
                     throw mockException;
                 case IGNORE:
@@ -566,6 +546,7 @@ public class CoodexMockerProvider implements MockerProvider {
     private boolean acceptType(SequenceMockerFactory sequenceMockerFactory, Type type) {
         Class c1 = typeToClass(solve(SequenceMockerFactory.class.getTypeParameters()[0], sequenceMockerFactory.getClass()));
         Class c2 = typeToClass(type);
+        //noinspection unchecked
         return c1.isAssignableFrom(c2);
     }
 
@@ -578,7 +559,7 @@ public class CoodexMockerProvider implements MockerProvider {
 
 
     @Override
-    public Object mock(final Type type, Type context, Annotation... annotations) {
+    public Object mock(final Type type, final Type context, Annotation... annotations) {
         if (annotations == null) {
             annotations = new Annotation[0];
         }
@@ -586,7 +567,7 @@ public class CoodexMockerProvider implements MockerProvider {
         return TYPE_CONTEXT.useRTE(context, new CallableClosure() {
             @Override
             public Object call() {
-                return innerMock(type, finalAnnotations);
+                return innerMock(toReference(type, context), finalAnnotations);
             }
         });
     }
@@ -684,6 +665,15 @@ public class CoodexMockerProvider implements MockerProvider {
 
         CallableClosure closure = new CallableClosure() {
             private Object mockElementOfCollection() {
+
+                Object result = mockIfInject(componentType, InjectConfig.build(getAnnotation(Mock.Inject.class, annotations)), annotations);
+
+                if (result != INJECT_UNENFORCED) {
+                    return result;
+                }
+                MockFacade param = getTypeMocker(componentType, getMockers(annotations));
+                if (param != null) return param.mock();
+
                 if (componentType instanceof GenericArrayType) {
                     return mockArray(((GenericArrayType) componentType).getGenericComponentType(), d + 1, annotations);
                 }
@@ -1129,6 +1119,42 @@ public class CoodexMockerProvider implements MockerProvider {
         Annotation[] get(String propertyName) {
             Annotation[] annotations = properties.get(propertyName);
             return annotations == null ? new Annotation[0] : annotations;
+        }
+    }
+
+    class MockInvocationHandler implements net.sf.cglib.proxy.InvocationHandler, InvocationHandler {
+
+        private final Map<String, Object> values;
+
+        MockInvocationHandler(Map<String, Object> values) {
+            this.values = values;
+        }
+
+        private String getPropertyName(Method method) {
+            String name = method.getName();
+            if (method.getDeclaringClass().equals(Object.class)) return null;
+            if (method.getReturnType().equals(void.class) || method.getReturnType().equals(Void.class))
+                return null;
+            if (method.getParameterTypes().length > 0) return null;
+            if (name.length() > 3 && name.startsWith("get")) {
+                return Common.lowerFirstChar(name.substring(3));
+            }
+            if (name.length() > 2 && name.startsWith("is") && method.getReturnType().equals(boolean.class)) {
+                return Common.lowerFirstChar(name.substring(2));
+            }
+            return null;
+        }
+
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            if (method.getDeclaringClass().equals(Object.class)) {
+                return method.invoke(this, args);
+            }
+            String propertyName = getPropertyName(method);
+            if (propertyName == null)
+                throw new MockException("not property getter method." + method.toGenericString());
+            return values.get(propertyName);
         }
     }
 

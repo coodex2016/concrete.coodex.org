@@ -24,5 +24,6 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD, ElementType.METHOD,ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Deprecated
 public @interface IP {
 }

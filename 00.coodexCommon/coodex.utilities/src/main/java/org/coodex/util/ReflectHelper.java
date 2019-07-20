@@ -66,7 +66,7 @@ public class ReflectHelper {
         return Common.isBlank(str) ? (prefix + index): str;
     }
 
-    private static String getParameterName(Method method, int index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+    public static String getParameterName(Method method, int index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
         String s = getParameterNameByAnnotation(method.getParameterAnnotations(), index);
         return s == null ? getParameterNameByJava8(method, index) : s;
     }

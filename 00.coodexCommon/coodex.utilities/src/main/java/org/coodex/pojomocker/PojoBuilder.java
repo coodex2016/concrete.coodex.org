@@ -22,6 +22,7 @@ import org.coodex.util.PojoProperty;
 /**
  * Created by davidoff shen on 2017-05-13.
  */
+@Deprecated
 public interface PojoBuilder {
 
     Object newInstance(PojoInfo pojoInfo) throws Throwable;

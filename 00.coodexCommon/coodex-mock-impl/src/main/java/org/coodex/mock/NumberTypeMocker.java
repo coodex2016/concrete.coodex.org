@@ -20,8 +20,6 @@ import org.coodex.util.Common;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -278,13 +276,18 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
         String range = (mockAnnotation == null || Common.isBlank(mockAnnotation.value().trim())) ?
                 DEFAULT_RANGE : mockAnnotation.value();
         int digits = mockAnnotation == null ? DEFAULT_DIGITS : mockAnnotation.digits();
+
+        return mock(targetType, range, digits);
+    }
+
+    public static Object mock(Type targetType, String range, int digits) {
         Class c = getClassFromType(targetType);
         int index = Common.findInArray(c, SUPPORTED);
 
         return round(index, getAlternative(range, SUPPORTED[index]).mock(), digits);
     }
 
-    private Object round(int i, Object value, int digits) {
+    private static Object round(int i, Object value, int digits) {
         if(digits == -1) return value;
 
         switch (i) {

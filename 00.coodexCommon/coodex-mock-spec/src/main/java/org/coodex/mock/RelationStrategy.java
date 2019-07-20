@@ -28,11 +28,6 @@ public interface RelationStrategy {
     @interface Strategy{
         String value();
     }
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.PARAMETER)
-    @interface Property{
-        String value();
-    }
 
     boolean accept(String strategyName);
 

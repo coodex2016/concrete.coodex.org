@@ -36,6 +36,7 @@ import java.util.Set;
 import static org.coodex.concrete.core.intercept.InterceptOrders.OTHER;
 
 
+@Deprecated
 @ServerSide
 public class MockInterceptor extends AbstractSyncInterceptor {
 

@@ -23,9 +23,11 @@ import org.coodex.pojomocker.MockerRef;
  * Created by davidoff shen on 2017-03-21.
  */
 public abstract class AbstractPage {
+    @SuppressWarnings("deprecation")
     @Description(name = "第几页", description = "从1开始")
     @MockerRef(name = "pageNum")
     private Long num;
+    @SuppressWarnings("deprecation")
     @Description(name = "每页多少条数据")
     @MockerRef(name = "pageSize")
     private Integer pageSize;

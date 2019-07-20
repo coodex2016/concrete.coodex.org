@@ -14,16 +14,5 @@
 # limitations under the License.
 #
 
-org.coodex.mock.StringTypeMocker
-org.coodex.mock.CharTypeMocker
-org.coodex.mock.NumberTypeMocker
-org.coodex.mock.BooleanTypeMocker
-
-org.coodex.mock.ext.FullNameTypeMocker
-org.coodex.mock.ext.EMailTypeMocker
-org.coodex.mock.ext.DateTimeTypeMocker
-org.coodex.mock.ext.IdCardTypeMocker
-org.coodex.mock.ext.VehicleNumTypeMocker
-org.coodex.mock.ext.IpAddressTypeMocker
-org.coodex.mock.ext.CoordinatesTypeMocker
-org.coodex.mock.ext.MobilePhoneNumTypeMocker
+org.coodex.concrete.core.intercept.MockV2Interceptor
+org.coodex.concrete.core.intercept.TimeCostInterceptor

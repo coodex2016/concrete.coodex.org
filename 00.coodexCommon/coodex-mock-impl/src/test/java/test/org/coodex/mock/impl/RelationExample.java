@@ -17,13 +17,14 @@
 package test.org.coodex.mock.impl;
 
 import org.coodex.mock.AbstractRelationStrategy;
+import org.coodex.util.Parameter;
 
 public class RelationExample extends AbstractRelationStrategy {
 
     @Strategy("add")
     public int add(
-            @Property("x1") int x1,
-            @Property("x2") int x2) {
+            @Parameter("x1") int x1,
+            @Parameter("x2") int x2) {
         return x1 + x2;
     }
 }

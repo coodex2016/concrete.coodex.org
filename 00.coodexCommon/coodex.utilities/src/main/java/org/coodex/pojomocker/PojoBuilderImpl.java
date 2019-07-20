@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by davidoff shen on 2017-05-13.
  */
+@Deprecated
 class PojoBuilderImpl implements PojoBuilder {
 
     private final static Logger log = LoggerFactory.getLogger(PojoBuilderImpl.class);

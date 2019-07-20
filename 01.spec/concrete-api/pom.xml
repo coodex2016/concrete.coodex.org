@@ -36,6 +36,13 @@
             <artifactId>coodex-utilities</artifactId>
             <version>${coodex.utilities.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>coodex-mock-spec</artifactId>
+            <version>${coodex.utilities.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
