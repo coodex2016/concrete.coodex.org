@@ -20,6 +20,7 @@ import org.coodex.concrete.api.mockers.MAC;
 import org.coodex.pojomocker.AbstractMocker;
 import org.coodex.util.Common;
 
+@Deprecated
 public class MACMocker extends AbstractMocker<MAC> {
     @Override
     public Object mock(MAC mockAnnotation, Class clazz) {

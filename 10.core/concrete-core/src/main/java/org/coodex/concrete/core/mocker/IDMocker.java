@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Created by davidoff shen on 2017-05-15.
  */
+@Deprecated
 public class IDMocker extends AbstractMocker<ID> {
 
     private AtomicLong atomicLong = new AtomicLong(1);

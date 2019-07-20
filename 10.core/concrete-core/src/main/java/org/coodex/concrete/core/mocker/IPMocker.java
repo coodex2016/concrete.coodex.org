@@ -20,6 +20,7 @@ import org.coodex.concrete.api.mockers.IP;
 import org.coodex.pojomocker.AbstractMocker;
 import org.coodex.util.Common;
 
+@Deprecated
 public class IPMocker extends AbstractMocker<IP> {
     @Override
     public Object mock(IP mockAnnotation, Class clazz) {

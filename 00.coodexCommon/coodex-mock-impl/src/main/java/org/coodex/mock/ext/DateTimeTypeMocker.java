@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,38 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.core.mocker;
+package org.coodex.mock.ext;
 
-import org.coodex.concrete.api.mockers.DateTime;
-import org.coodex.pojomocker.AbstractMocker;
+import org.coodex.mock.AbstractTypeMocker;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
+import org.coodex.util.GenericTypeHelper;
 
+import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Created by davidoff shen on 2017-05-16.
+ * 日期时间的单值模拟
  */
-@Deprecated
-public class DateTimeMocker extends AbstractMocker<DateTime> {
+public class DateTimeTypeMocker extends AbstractTypeMocker<DateTime> {
+
     @Override
-    public Object mock(DateTime mockAnnotation, Class clazz) {
+    protected Class[] getSupportedClasses() {
+        return new Class[]{
+                Calendar.class, Date.class, String.class
+        };
+    }
+
+    @Override
+    protected boolean accept(DateTime annotation) {
+        return annotation != null;
+    }
+
+    @Override
+    public Object mock(DateTime mockAnnotation, Type targetType) {
+        Class clazz = GenericTypeHelper.typeToClass(targetType);
         try {
             DateFormat format = Common.getSafetyDateFormat(mockAnnotation.format());//new SimpleDateFormat(mockAnnotation.format());
 

@@ -25,6 +25,7 @@ import static org.coodex.util.Common.randomStr;
 /**
  * Created by davidoff shen on 2017-05-16.
  */
+@Deprecated
 public class EMailMocker extends AbstractMocker<EMail> {
     private final String[] top = {".com", ".net", ".org", ".gov", ".cn"};
     private final String chars = "abcdefghijklmnopqrstuvwxyz0123456789";

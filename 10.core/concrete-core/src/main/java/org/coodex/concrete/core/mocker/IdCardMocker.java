@@ -36,6 +36,7 @@ import java.util.List;
 /**
  * Created by davidoff shen on 2017-05-16.
  */
+@Deprecated
 public class IdCardMocker extends AbstractMocker<IdCard> {
     private final static Logger log = LoggerFactory.getLogger(IdCardMocker.class);
 

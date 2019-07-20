@@ -48,7 +48,15 @@ public abstract class AbstractTypeMocker<A extends Annotation> implements TypeMo
 
     @Override
     public boolean accept(A mockAnnotation, Type targetType) {
-        return accept(mockAnnotation) && Common.inArray(getClassFromType(targetType, false), getSupportedClasses());
+        return accept(mockAnnotation) && Common.inArray(getClassFromType(targetType, false), getSupported());
+    }
+
+    private Class[] SUPPORTED = null;
+    private Class[] getSupported(){
+        if(SUPPORTED == null){
+            SUPPORTED = getSupportedClasses();
+        }
+        return SUPPORTED;
     }
 
     @Override
