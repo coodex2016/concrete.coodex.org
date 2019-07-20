@@ -4,10 +4,10 @@
 
 先不多说，由浅入深，一步步走着看。
 
-## 最简单的示例 
+## 最简单的示例
 
 ```xml
-            <!-- mock 规范 --> 
+            <!-- mock 规范 -->
             <dependency>
                 <groupId>org.coodex</groupId>
                 <artifactId>coodex-mock-spec</artifactId>
@@ -81,7 +81,7 @@ Mocker.mock(String.class);
 ```json
 {
 	"booleanValue":false,
-	"floatValue":-0.094385386,
+	"floatValue":0.84,
 	"integerValue":3,
 	"stringValue":"sRC0HpXql"
 }
@@ -90,42 +90,46 @@ Mocker.mock(String.class);
 这样，这两个值被限定在我们的预期范围里了
 
 - `@Mock.Number`修饰说明
-    
+
+  - value（）
+
     指定模拟范围，不指定则为该类型数据得全域模拟
 
     范围包括两种：连续范围，单值范围
 
     连续范围规则如下
-    
     - '['  - 表示一个连续范围开始，且包含此值，float double及其包装类无效
     - '('  - 表示一个连续范围开始，不包含此值
     - ']'  - 表示一个连续范围结束，且包含此值，float double及其包装类无效
     - ')'  - 表示一个连续范围结束，不包含此值
-    
+
     连续范围的起止值使用 ',' 分隔
-    
+
     例如 (-100.0f, 200.5f]
-    
+
     单值范围直接用数值描述
-    
+
     多个单值范围或连续范围使用 ',' 分割
-    
+
     特别的，MIN代表该类型的最小值，MAX代表该类型的最大值，不区分大小写，例如[min,0),MAX,15
-    
+
     各个范围不需要有序，各自模拟的权重，单值为1，连续范围依据：
-    
+
     1. 整数类型的，此连续范围内整数的个数来确定
-    1. 浮点类型的，根据跨越的整数单位来确定
-    
+    2. 浮点类型的，根据跨越的整数单位来确定
+
     最大不超过1000，最小为1
-    
+
     例如：
-    
+
     10,[-1,5],8,(20,30),35
-    
+
     byte,short,int,long及其包装类，以0x开头则表示以16进制解析
- 
-         
+
+  - digits():
+
+    小数点后面的位数，对不需要用科学计数法的double/float及其包装类有效，负数表示不用处理，默认为2
+
 ### String模拟的定义
 
 我们对stringValue的预期是以下内容中的一个：
@@ -142,7 +146,7 @@ Mocker.mock(String.class);
 ```json
 {
 	"booleanValue":true,
-	"floatValue":-1.444582,
+	"floatValue":-1.44,
 	"integerValue":0,
 	"stringValue":"真棒!"
 }
@@ -151,11 +155,11 @@ Mocker.mock(String.class);
 - `@Mock.String`用法
 
     模拟配置优先级：
-    
-    - txtResource() 存在且有内容时，在资源文件行中模拟
-    - range() 非0长字符串，在range范围内模拟
-    - charCodeSet() 非0元素宿数组时，结合minLength(),maxLength()模拟
-    - 默认，'0'-'9','A'-'Z','a'-'z'范围内，结合minLength(),maxLength()模拟
+
+  - txtResource() 存在且有内容时，在资源文件行中模拟
+  - range() 非0长字符串，在range范围内模拟
+  - charCodeSet() 非0元素宿数组时，结合minLength(),maxLength()模拟
+  - 默认，'0'-'9','A'-'Z','a'-'z'范围内，结合minLength(),maxLength()模拟
 
 ### `@Mock.Nullable`
 
@@ -177,23 +181,23 @@ Mocker.mock(String.class);
     支持的类型, char及其包装类，String
 
     模拟优先级:
-    
-    - value() 为非0元素集合，则在集合范围内模拟
-    - range() 为有长度的字符串时，在字符串的字符中模拟
-    - 默认：'0'-'9','A'-'Z','a'-'z' 中模拟
+
+  - value() 为非0元素集合，则在集合范围内模拟
+  - range() 为有长度的字符串时，在字符串的字符中模拟
+  - 默认：'0'-'9','A'-'Z','a'-'z' 中模拟
 
 - `@Mock.Boolean`
 
     布尔单值模拟器,支持类型:
-    
-    - boolean, Boolean: 布尔值 true, false
-    - byte, int, short, long及其包装类: 默认true - 1; false - 0，可通过intTrue和intFalse更改
-    - char及其包装类: 默认 true - T; false - F，可通过charTrue和charFalse更改
-    - String: 默认true - "true"; false - "false"，可通过strTrue, strFalse更改
+
+  - boolean, Boolean: 布尔值 true, false
+  - byte, int, short, long及其包装类: 默认true - 1; false - 0，可通过intTrue和intFalse更改
+  - char及其包装类: 默认 true - T; false - F，可通过charTrue和charFalse更改
+  - String: 默认true - "true"; false - "false"，可通过strTrue, strFalse更改
 
 ### 属性类型循环
 
-在需要模拟的数据中，可能会出现到自身循环关系的情况，例如，部门有个属性是上级部门，对象是一样一样的，我们可以通过设置循环层数来限定对象深度
+在需要模拟的数据中，可能会出现到自身循环关系的情况，例如，部门有个属性是上级部门，类型是一样一样的，如果不限制，那就是子子孙孙无穷尽，愚公移山了，我们可以通过设置循环层数来限定对象深度
 
 ```java
     @Mock.Depth(2)
@@ -217,11 +221,11 @@ Mocker.mock(String.class);
 ```json
 {
 	"booleanValue":false,
-	"floatValue":-0.678496,
+	"floatValue":-0.67,
 	"integerValue":1,
 	"pojo":{
 		"booleanValue":false,
-		"floatValue":-1.8079671,
+		"floatValue":-1.81,
 		"integerValue":1,
 		"stringValue":"coodex"
 	}
@@ -231,8 +235,7 @@ Mocker.mock(String.class);
 我们可以看到pojo被模拟了两层
 
 - `@Mock.Depth`
-    - value(): 相同类型的深度，最小为1
-
+  - value(): 相同类型的深度，最小为1
 
 ### 集合或数组
 
@@ -249,7 +252,7 @@ Mocker.mock(String.class);
 ```json
 {
 	"booleanValue":false,
-	"floatValue":1.8952734,
+	"floatValue":1.89,
 	"intArray":[1,9,4,4,2],
 	"integerValue":1,
 	"stringValue":"coodex"
@@ -259,22 +262,23 @@ Mocker.mock(String.class);
 - `@Mock.Dimension`
 
     用来定义多维（含一维）集合、数组的维度模拟信息，确定各维度的数组大小
-    
-    - size(): >0 表示固定值，负数表示允许为空，几率为size%，否则按照random(min, max)，默认0
-    - nullProbability(): 为空的几率，默认不为空
-    - min(): size <=0 时，模拟此维度大小的下界，默认 1
-    - max(): size <=0 时，模拟此维度大小的上界，默认 5
-    - ordered(): 仅对Collection Set Map有效，用以说明是否需要保证稳定性，默认为真
+
+  - size(): >0 表示固定值，负数表示允许为空，几率为size%，否则按照random(min, max)，默认0
+  - nullProbability(): 为空的几率，默认不为空
+  - min(): size <=0 时，模拟此维度大小的下界，默认 1
+  - max(): size <=0 时，模拟此维度大小的上界，默认 5
+  - ordered(): 仅对Collection Set Map有效，用以说明是否需要保证稳定性，默认为真
 
 `ordered()`属性主要应用于后续序列模拟，到时候再说
 
 - `@Mock.Dimensions`
 
     定义多维集合、数组各个维度的模拟配置
-    - value(): 维度定义数组，当前属性上，多维度集合、数组的大小设置，按value的数组下标+1确定对应维度
-    - same(): 相同维度的集合数组是否大小一致，默认一致
-        
+  - value(): 维度定义数组，当前属性上，多维度集合、数组的大小设置，按value的数组下标+1确定对应维度
+  - same(): 相同维度的集合数组是否大小一致，默认一致
+
     例如：
+
     ```java
             @Mock.Dimensions(
                 value = {  @Mock.Dimension(size=2), @Mock.Dimension(min=3,max=10)) },
@@ -282,7 +286,8 @@ Mocker.mock(String.class);
             )
             String[][][] string3d;
     ```
-    模拟结果，String[0].length == String[1].length
+
+    模拟结果，string3d[0].length == string3d[1].length，same 为 false 时，则有可能不等
 
 ### 序列模拟器
 
@@ -291,6 +296,7 @@ Mocker.mock(String.class);
 下面我们做一个以一个固定频率的时刻序列来演示mock的序列模拟器
 
 先定义一个序列模拟器工厂接口
+
 ```java
 public interface TimestampSequenceFactory extends SequenceMockerFactory<String> {
 
@@ -358,6 +364,7 @@ public class TimestampSequenceFactoryImpl implements TimestampSequenceFactory {
 好了，序列模拟器实现好了，开始配置
 
 在之前的pojo上增加一个属性用来存放序列模拟器产生的值
+
 ```java
         @Mock.Dimension(size = 20, ordered = true)
         @Mock.Sequence(name = "timestamp", factory = TimestampSequenceFactory.class)
@@ -365,7 +372,9 @@ public class TimestampSequenceFactoryImpl implements TimestampSequenceFactory {
         @TimestampSequenceFactory.Interval(interval = 1, timeUnit = Calendar.HOUR)
         public Set<String> timestamp;
 ```
+
 模拟结果大致为
+
 ```json
 {
 	"booleanValue":false,
@@ -386,35 +395,38 @@ public class TimestampSequenceFactoryImpl implements TimestampSequenceFactory {
 ```
 
 我们对`timestamp`属性上的注解简单说明一下
+
 - `@Mock.Dimension`,用来说明这个集合的维度信息，此案例中固定20长，`ordered`特别说明一下，对`Map`/`Set`/`Collection`有效，用以保证序列发生器产生的单值顺序不乱，你可以把ordered改为false对比一下
 - `@Mock.Sequence`
 
     定义一个序列发生器
-    - name(): 上下文中的名字。
-    
-        这一版的`coodex-mock`设计上，引入了依赖注入理念，对于具体需要模拟的地方，指定好名称即可，由外部设置具体实现
-        
-    - factory(): 指定序列模拟器工厂类型，当需要用到是，由它负责生成一个SequenceMocker实例。
-    
-        在本例中，我们看到，定义一个序列发生器看似很繁琐，要定义一个Factory的接口，然后写一个实现，这是推荐的实践方案，这种做法的好处在于，mock的实现与最终业务系统的实现是无关的，可以最大限度剥离业务系统与mock的环境隔离
+
+  - name(): 上下文中的名字。
+
+    这一版的`coodex-mock`设计上，引入了依赖注入理念，对于具体需要模拟的地方，指定好名称即可，由外部设置具体实现
+
+  - factory(): 指定序列模拟器工厂类型，当需要用到是，由它负责生成一个SequenceMocker实例。
+
+    在本例中，我们看到，定义一个序列发生器看似很繁琐，要定义一个Factory的接口，然后写一个实现，这是推荐的实践方案，这种做法的好处在于，mock的实现与最终业务系统的实现是无关的，可以最大限度剥离业务系统与mock的环境隔离
 
 - `@TimestampSequenceFactory.Interval(interval = 1, timeUnit = Calendar.HOUR)`
 
     这是我们自定义的注解，用来传递参数，本例中，我们把间隔设为1小时
-        
+
 - `@Mock.Inject`
 
     依赖注入的理念，用来指定当前单值模拟的时候使用哪个模拟器。
-    
+
     本案例中，@Mock.Sequence 和 @Mock.Inject 都放在了要模拟的属性上，这不是必须的，定义类的（后面还有几种）注解，只需要在被Inject之前定义好就行，而且重名的，会根据上下文就近原则进行注入
-        
+
 ### 模拟一个Map
 
 虽然coodex.org不推荐使用Map作为pojo传递数据，但是mock还是支持模拟Map的。
 
-来吧，看看Map怎么定制模拟。说到这，忘了，约定大于配置，所有注解都是非必须的，也就是说，没有不加注解一样可以模拟数据，加了以后我们可以把mock做到更贴近实际系统数据，嘿嘿嘿，看出来作用了吗，一会再说？
+来吧，看看Map怎么定制模拟。说到这，忘了，约定大于配置，所有注解都是非必须的，也就是说，不加注解一样可以模拟数据，加了以后我们可以把mock做到更贴近实际系统数据，嘿嘿嘿，看出来作用了吗，一会再说。
 
 增加一个Map属性
+
 ```java
         @Mock.String(range = {"男","女"})
         @Mock.Number("[60,80]")
@@ -424,7 +436,7 @@ public class TimestampSequenceFactoryImpl implements TimestampSequenceFactory {
 ```json
 {
 	"booleanValue":true,
-	"floatValue":0.60435677,
+	"floatValue":0.62,
 	"integerValue":0,
 	"scores":{
 		"男":65,
@@ -436,10 +448,166 @@ public class TimestampSequenceFactoryImpl implements TimestampSequenceFactory {
 
 效果有了，不过，这种方式只适用于`key`/`value`类型不同的情况，`coodex-mock`在模拟Map的时候，会有一个优先级和容错程度，最大可能的保障可用性。
 
-正确的使用方式是，使用`@Mock.Key` 和 `@Mock.Value` 进行注入
+正确的使用方式是，使用`@Mock.Key` 和 `@Mock.Value` 进行注入。在注入之前，我们需要定义一个模拟设置
 
-to be continued...
+```java
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    @Mock.Declaration //声明一个模拟配置
+    @interface Setting1{
+        //方式1
+        @Mock.String(range = {"男","女"})
+        String testKey() default "";
+
+        //方式2
+        Mock.Number testValue() default @Mock.Number;
+    }
+```
+
+然后把Map属性的注解改为
+
+```java
+        @Setting1(testValue = @Mock.Number("[60,80]"))
+        @Mock.Key("testKey")
+        @Mock.Value("testValue")
+        public Map<String, Integer> scores;
+```
+
+结果大致如下
+
+```json
+{
+	"floatValue":-1.76,
+	"integerValue":3,
+	"scores":{
+		"女":64,
+		"男":70
+	}
+}
+```
+
+在本例中，我们看到，声明一个模拟配置需要做的是，使用`@Mock.Declaration`装饰一个注解，然后把这个注解用到你的模拟上下文中即可。
+
+定义配置有两种方式，一种是用明确的模拟器配置，方法名就是配置名，由`@Mock.Inject`/`@Mock.Key`/`@Mock.Value`使用
+
+```java
+        //方式1
+        @Mock.String(range = {"男","女"})
+        String testKey() default "";
+```
+
+这种方式下，模拟器配置是明确的，是固定的，好处在于可以定义多个模拟配置，对于带泛型的通用pojo有帮助，声明一个可以服务多种场景。
+
+```java
+        //方式2
+        Mock.Number testValue() default @Mock.Number;
+```
+
+这种方式下，可以在放入上下文的时候指定具体模拟配置，一个定义可以重复使用
+
+以上两种方式是可以混用的，例如：
+
+```java
+        @Mock.String(range = {"男","女"})
+        Mock.Number map() default @Mock.Number;
+```
+
+```java
+        @Setting1(map = @Mock.Number("[60,80]"))
+        @Mock.Key("map")
+        @Mock.Value("map")
+        public Map<String, Integer> scores;
+```
+
+`coodex-mock`会根据多个模拟器配置选择合适的模拟器，优先级上，方式2 高于 方式1，方式1中（直接在属性上声明的也一样），则根据先后顺序
+
+同样的，`@Mock.Key`/`@Mock.Value`也支持序列模拟器，在上下文中有同名的定义配置时，优先就近的序列模拟、然后是单值模拟
+
+例如
+
+```java
+        @Mock.Dimension(size = 5)
+        @Mock.Sequence(name = "map", factory = TimestampSequenceFactory.class)
+        @TimestampSequenceFactory.Interval(interval = 1, timeUnit = Calendar.HOUR)
+        @Setting1(map = @Mock.Number("[60,80]"))
+        @Mock.Key("map")
+        @Mock.Value("map")
+        public Map<String, Integer> scores;
+```
+
+```json
+{
+	"floatValue":1.45,
+	"integerValue":1,
+	"scores":{
+		"2019-07-12 10:37:19":77,
+		"2019-07-12 11:37:19":60,
+		"2019-07-12 12:37:19":68,
+		"2019-07-12 13:37:19":62,
+		"2019-07-12 14:37:19":79
+	},
+	"stringValue":"concrete"
+}
+```
+
+### 属性关联
+
+pojo的属性之间，通常会有一定的联系，为了更贴近真事效果，`coodex-mock`支持属性关联，我们来走一个例子。
+
+定义一个pojo，x1,x2是加数，sum是和，我们要达到的模拟效果是，sum = x1 + x2
+
+```java
+    static class PojoAdd{
+        @Mock.Number("[0, 100)")
+        public int x1;
+        @Mock.Number("[0, 100)")
+        public int x2;
+
+        @Mock.Relation(dependencies = {"x1", "x2"}, strategy = "add")
+        public int sum;
+    }
+```
+
+注意`sum`属性的上指定了关联关系，依赖`x1`和`x2`，使用名称为`add`的策略。那这个策略在哪呢？我们往下看，实现这个策略并放到SPI中
+
+```java
+import org.coodex.mock.AbstractRelationStrategy;
+
+public class RelationExample extends AbstractRelationStrategy {
+
+    @Strategy("add")
+    public int add(
+            @Property("x1") int x1,
+            @Property("x2") int x2) {
+        return x1 + x2;
+    }
+}
+
+```
+
+定义一个公用方法，声明它是`add`依赖策略的算法，参数上，定义好是哪个属性。
+
+```json
+{
+	"sum":75,
+	"x1":32,
+	"x2":43
+}
+```
+
+## 扩展
+
+以上，单值、集合、序列的基本使用都涉及到了。那么问题来了，这些基本的能达到一定的效果，但是还有很多做不到的，怎么办？我们来自定义一个模拟中文姓名的
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
+@Mock
+public @interface FullName {
+}
+```
+
+实现就不贴了，[点我]查看
+
 
 ## enjoy it :)
-
-

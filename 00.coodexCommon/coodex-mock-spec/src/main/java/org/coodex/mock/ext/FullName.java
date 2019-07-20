@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-package org.coodex.mock;
+package org.coodex.mock.ext;
+
+import org.coodex.mock.Mock;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-public interface RelationStrategy {
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    @interface Strategy{
-        String value();
-    }
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.PARAMETER)
-    @interface Property{
-        String value();
-    }
-
-    boolean accept(String strategyName);
-
+/**
+ * 模拟中文姓名
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
+@Mock
+public @interface FullName {
 }

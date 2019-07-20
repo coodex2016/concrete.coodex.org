@@ -187,7 +187,7 @@ public @interface Mock {
          * )
          * String[][][] string3d;
          *
-         * 模拟结果，String[0].length == String[1].length
+         * 模拟结果，string3d[0].length == string3d[1].length
          * <p>
          * same 为 false 时，有可能不等
          * </pre>
@@ -236,6 +236,8 @@ public @interface Mock {
     /**
      * 用来指定pojo的关联模拟策略，也就是被修饰的属性可以根据所依赖的属性值进行运算，最大可能保障模拟数据的真实性
      */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
     @interface Relation {
         java.lang.String[] dependencies();
 
@@ -329,6 +331,8 @@ public @interface Mock {
     @Mock
     @interface Number {
         int MAX_WEIGHT = 1000;
+        java.lang.String DEFAULT_RANGE = "[min, max]";
+        int DEFAULT_DIGITS = 2;
         /**
          * <pre>
          * 指定模拟范围，不指定则为该类型数据得全域模拟
@@ -364,6 +368,10 @@ public @interface Mock {
          */
         java.lang.String value() default "";
 
+        /**
+         * @return 小数点后面的位数，对不需要用科学计数法的double/float及其包装类有效，负数表示不用处理，默认为2
+         */
+        int digits() default DEFAULT_DIGITS;
     }
 
     /**

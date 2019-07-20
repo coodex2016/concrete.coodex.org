@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-package org.coodex.mock;
+package test.org.coodex.mock.impl;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.coodex.mock.AbstractRelationStrategy;
 
-public interface RelationStrategy {
+public class RelationExample extends AbstractRelationStrategy {
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    @interface Strategy{
-        String value();
+    @Strategy("add")
+    public int add(
+            @Property("x1") int x1,
+            @Property("x2") int x2) {
+        return x1 + x2;
     }
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.PARAMETER)
-    @interface Property{
-        String value();
-    }
-
-    boolean accept(String strategyName);
-
 }

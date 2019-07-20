@@ -344,7 +344,7 @@ public class CoodexMockerProvider implements MockerProvider {
                         PojoInfo pojoInfo = new PojoInfo(type);
                         TypeAssignation current = new TypeAssignation(pojoInfo);
                         TypeAssignation typeAssignation = POJO_ASSIGNATION_CONTEXT.get(typeToClass(type));
-                        typeAssignation = typeAssignation == null ? current : typeAssignation.mere(current);
+                        typeAssignation = typeAssignation == null ? current : typeAssignation.merge(current);
 
                         if (depthCheck(current, typeAssignation)) return null;
 
@@ -531,7 +531,7 @@ public class CoodexMockerProvider implements MockerProvider {
             if (COLLECTION_CONTEXT.get() != null) {
                 // 集合上下文中
                 SequenceMockerFactory sequenceMockerFactory = SEQUENCE_MOCKER_CONTEXT.get(inject.getKey());
-                if (sequenceMockerFactory != null) {
+                if (sequenceMockerFactory != null && acceptType(sequenceMockerFactory, type)) {
                     // 使用序列模拟器
                     SequenceMocker sequenceMocker = COLLECTION_CONTEXT.get().get(inject.getKey());
                     if (sequenceMocker == null) {
@@ -561,6 +561,12 @@ public class CoodexMockerProvider implements MockerProvider {
         }
 
         return INJECT_UNENFORCED;
+    }
+
+    private boolean acceptType(SequenceMockerFactory sequenceMockerFactory, Type type) {
+        Class c1 = typeToClass(solve(SequenceMockerFactory.class.getTypeParameters()[0], sequenceMockerFactory.getClass()));
+        Class c2 = typeToClass(type);
+        return c1.isAssignableFrom(c2);
     }
 
 
@@ -1093,15 +1099,27 @@ public class CoodexMockerProvider implements MockerProvider {
             }
         }
 
-        TypeAssignation mere(TypeAssignation typeAssignation) {
+        TypeAssignation merge(TypeAssignation typeAssignation) {
             if (typeAssignation != null) {
                 for (Map.Entry<String, Annotation[]> entry : typeAssignation.properties.entrySet()) {
                     if (!properties.containsKey(entry.getKey())) {
                         properties.put(entry.getKey(), entry.getValue());
+                    } else {
+                        properties.put(entry.getKey(), merge(properties.get(entry.getKey()), entry.getValue()));
                     }
                 }
             }
             return this;
+        }
+
+        private Annotation[] merge(Annotation[] array1, Annotation[] array2) {
+            List<Annotation> result = new ArrayList<Annotation>(Arrays.asList(array1));
+            for (Annotation annotation : array2) {
+                if (!result.contains(annotation)) {
+                    result.add(annotation);
+                }
+            }
+            return result.toArray(new Annotation[result.size()]);
         }
 
         int getDepth() {

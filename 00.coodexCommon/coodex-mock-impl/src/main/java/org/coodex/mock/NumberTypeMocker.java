@@ -19,9 +19,15 @@ package org.coodex.mock;
 import org.coodex.util.Common;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static org.coodex.mock.Mock.Number.DEFAULT_DIGITS;
+import static org.coodex.mock.Mock.Number.DEFAULT_RANGE;
 
 /**
  * 按照{@link Mock.Number}约定的一个模拟器实现
@@ -245,17 +251,17 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
         }
     }
 
-    public static <T> T mock(String rangeStr, Class<T> tClass) {
-        String DEFAULT_RANGE = "[min, max]";
-        String range = (rangeStr == null || Common.isBlank(rangeStr.trim())) ? DEFAULT_RANGE : rangeStr;
-        Class c = getClassFromType(tClass);
-        int index = Common.findInArray(c, SUPPORTED);
-        if (index < 0) {
-            throw new MockException(tClass + " not supported.");
-        }
-        //noinspection unchecked
-        return (T) getAlternative(range, SUPPORTED[index]);
-    }
+//    public static <T> T mock(String rangeStr, Class<T> tClass) {
+//        String DEFAULT_RANGE = "[min, max]";
+//        String range = (rangeStr == null || Common.isBlank(rangeStr.trim())) ? DEFAULT_RANGE : rangeStr;
+//        Class c = getClassFromType(tClass);
+//        int index = Common.findInArray(c, SUPPORTED);
+//        if (index < 0) {
+//            throw new MockException(tClass + " not supported.");
+//        }
+//        //noinspection unchecked
+//        return (T) getAlternative(range, SUPPORTED[index]);
+//    }
 
     @Override
     protected Class[] getSupportedClasses() {
@@ -269,12 +275,29 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
     @Override
     public Object mock(Mock.Number mockAnnotation, Type targetType) {
-        String DEFAULT_RANGE = "[min, max]";
         String range = (mockAnnotation == null || Common.isBlank(mockAnnotation.value().trim())) ?
                 DEFAULT_RANGE : mockAnnotation.value();
+        int digits = mockAnnotation == null ? DEFAULT_DIGITS : mockAnnotation.digits();
         Class c = getClassFromType(targetType);
         int index = Common.findInArray(c, SUPPORTED);
-        return getAlternative(range, SUPPORTED[index]).mock();
+
+        return round(index, getAlternative(range, SUPPORTED[index]).mock(), digits);
+    }
+
+    private Object round(int i, Object value, int digits) {
+        if(digits == -1) return value;
+
+        switch (i) {
+            case 8:// float
+            case 9:
+                return new BigDecimal(value.toString()).setScale(digits,BigDecimal.ROUND_HALF_UP).floatValue();
+            case 10:// double
+            case 11:
+                return new BigDecimal(value.toString()).setScale(digits,BigDecimal.ROUND_HALF_UP).doubleValue();
+            default:
+                return value;
+        }
+
     }
 
 

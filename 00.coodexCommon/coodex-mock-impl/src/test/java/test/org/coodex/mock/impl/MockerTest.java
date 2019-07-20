@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.coodex.mock.Mock;
 import org.coodex.mock.Mocker;
+import org.coodex.mock.ext.FullName;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,7 +28,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Calendar;
 import java.util.Map;
-import java.util.Set;
 
 public class MockerTest {
 
@@ -40,6 +40,20 @@ public class MockerTest {
         );
     }
 
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    @Mock.Declaration
+    @interface Setting1 {
+        //方式1
+        @FullName
+        String testKey() default "";
+
+        //方式2
+        Mock.Number testValue() default @Mock.Number;
+
+        @Mock.String(range = {"男", "女"})
+        Mock.Number map() default @Mock.Number;
+    }
 
 
     @Mock.Depth(1)
@@ -56,11 +70,26 @@ public class MockerTest {
         public Integer integerValue;
         @Mock.Number("[-2.0f, 2.0f]")
         public Float floatValue;
-        public Boolean booleanValue;
         public Pojo pojo;
 
-        @Mock.String(range = {"男","女"})
-        @Mock.Number("[60,80]")
+        @Mock.Dimension(size = 5)
+        @Mock.Sequence(name = "map", factory = TimestampSequenceFactory.class)
+        @TimestampSequenceFactory.Interval(interval = 1, timeUnit = Calendar.HOUR)
+        @Setting1(map = @Mock.Number("[60,80]"))
+        @Mock.Key("testKey")
+        @Mock.Value("map")
         public Map<String, Integer> scores;
     }
+
+
+    static class PojoAdd{
+        @Mock.Number("[0, 100)")
+        public int x1;
+        @Mock.Number("[0, 100)")
+        public int x2;
+
+        @Mock.Relation(dependencies = {"x1", "x2"}, strategy = "add")
+        public int sum;
+    }
+
 }
