@@ -552,7 +552,7 @@ public class TimestampSequenceFactoryImpl implements TimestampSequenceFactory {
 
 ### 属性关联
 
-pojo的属性之间，通常会有一定的联系，为了更贴近真事效果，`coodex-mock`支持属性关联，我们来走一个例子。
+pojo的属性之间，通常会有一定的联系，为了更贴近真实数据，`coodex-mock`支持属性关联，我们来走一个例子。
 
 定义一个pojo，x1,x2是加数，sum是和，我们要达到的模拟效果是，sum = x1 + x2
 
@@ -625,13 +625,15 @@ public @interface FullName {
 
 ## 应用场景
 
-所有支持`AOP` 拦截器的传输POJO的场景
+1. 所有支持`AOP` 拦截器的传输POJO的场景下，前后端分离并行开发
 
-- [`concrete`](https://concrete.coodex.org/)
+    - [`concrete`](https://concrete.coodex.org/)
 
-    mock重构后的版本新增了`concrete-core-mock`模块，推荐的实践方案是，在原来发布服务的模块里，将其依赖进来，注意，使用`test`作用域，然后在`test`作用域的代码里随便建个`class`，`main`方法里写上`SpringApplication.run(YourStarter.class, args)`即可，巨省事
+        mock重构后的版本新增了`concrete-core-mock`模块，推荐的实践方案是，在原来发布服务的模块里，将其依赖进来，注意，使用`test`作用域，然后在`test`作用域的代码里随便建个`class`，`main`方法里写上`SpringApplication.run(YourStarter.class, args)`即可，巨省事
 
-- `Spring MVC`
+    - `Spring MVC`
+
+1. 文档化
 
 ## 配置无配置的pojo
 
@@ -712,6 +714,6 @@ public class Pojo3rdCase1 {
 
 使用`@Mock.Assignation`的时候，和直接在`Pojo`上配置是一样一样的，也可以定义序列、依赖注入。
 
-`coodex-mock`得益于`coodex-utitlities`对泛型的支持，so，请大家放心食用。
+`coodex-mock`得益于`coodex-utilities`对泛型的支持，so，请大家放心食用。
 
 ## enjoy it :)

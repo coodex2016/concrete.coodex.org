@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-org.coodex.concrete.common.ConcreteServiceLoaderProvider
+org.coodex.concrete.accounts.mocker.relationpolicies.IdCardRelation

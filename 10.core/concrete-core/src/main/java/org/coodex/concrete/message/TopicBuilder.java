@@ -45,7 +45,7 @@ class TopicBuilder
     private static final TopicPrototypeProvider defaultTopicPrototypeProvider
             = new DefaultTopicPrototypeProvider();
     private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> providers =
-            new AcceptableServiceLoader<>(defaultTopicPrototypeProvider);
+            new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider){};
     private static SingletonMap<TopicKey, AbstractTopic> topics =
             new SingletonMap<>(new TopicBuilder());
     private AtomicLong index = new AtomicLong(0);

@@ -26,7 +26,7 @@ import org.coodex.util.AcceptableServiceLoader;
 public class ReverserFactory {
 
     private static final AcceptableServiceLoader<String, Reverser> REVERSER_FACTORY =
-            new AcceptableServiceLoader<>();
+            new AcceptableServiceLoader<String, Reverser>(){};
 
 
     public static final Reverser getReverser(String propertyName) {

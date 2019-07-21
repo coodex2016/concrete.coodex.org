@@ -18,6 +18,8 @@ package org.coodex.testcase.start;
 
 
 import org.coodex.concrete.amqp.AMQPConnectionConfig;
+import org.coodex.concrete.common.BeanProvider;
+import org.coodex.concrete.common.BeanServiceLoaderProvider;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.RBACInterceptor;
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
@@ -28,6 +30,8 @@ import org.coodex.concrete.support.websocket.ConcreteWebSocketApplication;
 import org.coodex.testcase.api.TestCase;
 import org.coodex.testcase.api.TestCase2;
 import org.coodex.util.Profile;
+import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -149,6 +153,9 @@ public class SpringBootStarter {
     }
 
     public static void main(String[] args) {
+//        ServiceLoader<BeanProvider> beanProviderServiceLoader = new ServiceLoaderImpl<BeanProvider>() {
+//        };
+//        System.out.println(beanProviderServiceLoader.getAllInstances());
         SpringApplication.run(SpringBootStarter.class, args);
     }
 

@@ -36,7 +36,7 @@ public abstract class AbstractBeanProvider implements BeanProvider {
     private static final ConflictSolution DEFAULT_CONFLICT_SOLUTION = new ThrowException();
 
     private static final AcceptableServiceLoader<Class, ConflictSolution> SOLUTION_CONCRETE_SPI_FACADE =
-            new AcceptableServiceLoader<>();
+            new AcceptableServiceLoader<Class, ConflictSolution>(){};
 
     private static final ConflictSolution getSolution(Class<?> clz) {
 //        // 1 从BeanProvider里找

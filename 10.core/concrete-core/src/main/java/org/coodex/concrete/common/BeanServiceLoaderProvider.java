@@ -17,24 +17,42 @@
 package org.coodex.concrete.common;
 
 import org.coodex.util.ReflectHelper;
-import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
+import org.coodex.util.Singleton;
+
+import java.util.ServiceLoader;
 
 /**
  * Created by davidoff shen on 2016-11-01.
  */
-public class BeanServiceLoaderProvider extends ServiceLoaderImpl<BeanProvider> {
+public class BeanServiceLoaderProvider /*extends ServiceLoaderImpl<BeanProvider>*/ {
 
-    private static final BeanProvider DEFAULT_PROVIDER = ReflectHelper.throwExceptionObject(
-            BeanProvider.class, new ConcreteException(ErrorCodes.NO_BEAN_PROVIDER_FOUND));
-    private static final ServiceLoader<BeanProvider> SPI_INSTANCE = new BeanServiceLoaderProvider();
+////    private static final BeanProvider DEFAULT_PROVIDER =
+//
+    private static final Singleton<BeanProvider> DEFAULT_PROVIDER_SINGLETON = new Singleton<>(
+            () -> ReflectHelper.throwExceptionObject(
+                    BeanProvider.class, new ConcreteException(ErrorCodes.NO_BEAN_PROVIDER_FOUND))
+    );
+//
+//    private static final ServiceLoader<BeanProvider> SPI_INSTANCE = new ServiceLoaderImpl<BeanProvider>() {
+//    };//new BeanServiceLoaderProvider();
+
+    private static Singleton<BeanProvider> beanProviderSingleton = new Singleton<>(
+            () -> {
+                ServiceLoader<BeanProvider> serviceLoader = ServiceLoader.load(BeanProvider.class);
+                for(BeanProvider beanProvider: serviceLoader){
+                    return beanProvider;
+                }
+                return DEFAULT_PROVIDER_SINGLETON.getInstance();
+            }
+    ) ;
 
     public static BeanProvider getBeanProvider() {
-        return SPI_INSTANCE.getInstance();
+//        return SPI_INSTANCE.getInstance();
+        return beanProviderSingleton.getInstance();
     }
 
-    @Override
-    public BeanProvider getDefaultProvider() {
-        return DEFAULT_PROVIDER;
-    }
+//    @Override
+//    public BeanProvider getDefaultProvider() {
+//        return DEFAULT_PROVIDER_SINGLETON.getInstance();
+//    }
 }

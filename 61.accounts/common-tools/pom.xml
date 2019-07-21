@@ -28,6 +28,13 @@
 
     <artifactId>concrete-accounts-common-tools</artifactId>
     <dependencies>
+
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>coodex-mock-impl</artifactId>
+            <version>${coodex.utilities.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>concrete-core</artifactId>

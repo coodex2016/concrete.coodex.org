@@ -22,7 +22,10 @@ import org.coodex.util.Singleton;
 public class ThrowableMapperFacade {
 
     private static Singleton<AcceptableServiceLoader<Throwable, ThrowableMapper>> mapperLoader
-            = new Singleton<>(AcceptableServiceLoader::new);
+            = new Singleton<>(
+            () -> new AcceptableServiceLoader<Throwable, ThrowableMapper>() {
+            }
+    );
 
 
     public static ErrorInfo toErrorInfo(Throwable exception) {

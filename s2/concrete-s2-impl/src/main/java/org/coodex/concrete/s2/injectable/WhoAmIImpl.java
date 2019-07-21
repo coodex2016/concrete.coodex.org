@@ -39,7 +39,9 @@ public class WhoAmIImpl implements WhoAmI {
     @Inject
     private Token token;
     private static Singleton<AcceptableServiceLoader<Account, AccountCopier>> ACCOUNT_COPIER_LOADER =
-            new Singleton<>(() -> new AcceptableServiceLoader<>(DEFAULT_ACCOUNT_COPIER));
+            new Singleton<>(() ->
+                    new AcceptableServiceLoader<Account, AccountCopier>(DEFAULT_ACCOUNT_COPIER) {
+                    });
 
     @Override
     public AccountInfo get() {

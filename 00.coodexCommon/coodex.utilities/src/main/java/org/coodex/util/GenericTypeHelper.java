@@ -276,11 +276,12 @@ public class GenericTypeHelper {
             processed.add(x);
 
             if (x instanceof Class) {
-                if (((Class) x).isArray()) {
-                    process(((Class) x).getComponentType());
+                Class c = (Class) x;
+                if (c.isArray()) {
+                    process(c.getComponentType());
                 } else {
-                    if (!((Class) x).isInterface())
-                        process(((Class) x).getGenericSuperclass());
+                    if (!c.isInterface())
+                        process(c.getGenericSuperclass());
                     for (Type intf : ((Class) x).getGenericInterfaces()) {
                         process(intf);
                     }
@@ -288,8 +289,9 @@ public class GenericTypeHelper {
 
             } else if (x instanceof ParameterizedType) {
                 Class c = (Class) ((ParameterizedType) x).getRawType();
+                ParameterizedType pt = (ParameterizedType) x;
                 for (int i = 0; i < c.getTypeParameters().length; i++) {
-                    map.put(c.getTypeParameters()[i], ((ParameterizedType) x).getActualTypeArguments()[i]);
+                    map.put(c.getTypeParameters()[i], pt.getActualTypeArguments()[i]);
                 }
                 process(c);
             } else if (x instanceof GenericArrayType) {

@@ -20,7 +20,6 @@ import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
-import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +50,7 @@ public abstract class AbstractJAXRSResource<T> {
 //    public static final String TOKEN_ID_IN_COOKIE = CONCRETE_TOKEN_ID_KEY;
 
     private final Class<T> clz = getInterfaceClass();
-    private final Map<String, Method> methodMap = new HashMap<String, Method>();
+    private final Map<String, Method> methodMap = new HashMap<>();
     @Context
     protected UriInfo uriInfo;
     @Context
@@ -66,12 +65,11 @@ public abstract class AbstractJAXRSResource<T> {
 
 //    private static
 
-    private static String getMethodNameInStack(int deep) {
+    private static String getMethodNameInStack(@SuppressWarnings("SameParameterValue") int deep) {
         // getStackTrace +1, getMethodInStack +2
         return Thread.currentThread().getStackTrace()[deep + 2].getMethodName();
     }
 
-    @SuppressWarnings("unchecked")
     private <R> R convert(R result) {
         return result;
     }
@@ -115,7 +113,7 @@ public abstract class AbstractJAXRSResource<T> {
     }
 
     private int getParameterCount(Method method) {
-        return method.getParameterTypes() == null ? 0 : method.getParameterTypes().length;
+        return method.getParameterTypes().length;
     }
 
     private Method findActualMethod(String methodName, Class<?> clz, CreatedByConcrete concrete) {
@@ -228,23 +226,12 @@ public abstract class AbstractJAXRSResource<T> {
         final int paramCount = params == null ? 0 : params.length;
 
         return buildResponse(tokenId, method, params,
-                new CallableClosure() {
-
-                    @Override
-                    public Object call() throws Throwable {
-                        if (!Polling.class.equals(method.getDeclaringClass()) && isDevModel()) {
-                            return void.class.equals(method.getGenericReturnType()) ? null :
-                                    MockerFacade.mock(method, getInterfaceClass());
-                        } else {
-                            Object instance = BeanServiceLoaderProvider.getBeanProvider().getBean(getInterfaceClass());
-                            if (paramCount == 0)
-                                return method.invoke(instance);
-                            else {
-                                return method.invoke(instance, params);
-                            }
-                        }
-
-                    }
+                () -> {
+                    Object instance = BeanServiceLoaderProvider.getBeanProvider().getBean(getInterfaceClass());
+                    if (paramCount == 0)
+                        return method.invoke(instance);
+                    else
+                        return method.invoke(instance, params);
                 });
 
     }

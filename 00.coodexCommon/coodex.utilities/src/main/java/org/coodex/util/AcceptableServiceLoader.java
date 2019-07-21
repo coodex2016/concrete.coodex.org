@@ -33,28 +33,57 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 /**
  * Created by davidoff shen on 2017-03-09.
  */
-public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Param_Type>> implements ServiceLoader<T> {
+public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Param_Type>> implements ServiceLoader<T> {
 
     private final static Logger log = LoggerFactory.getLogger(AcceptableServiceLoader.class);
 
-    private final ServiceLoader<T> serviceLoaderFacade;
+    private ServiceLoader<T> serviceLoaderFacade;
+    private T defaultService = null;
 
     public AcceptableServiceLoader() {
-        this((ServiceLoader<T>) null);
+        this((T) null);
     }
 
     public AcceptableServiceLoader(final T defaultService) {
-        this(new ServiceLoaderImpl<T>(defaultService) {
-        });
+        this.defaultService = defaultService;
+//        this(new ServiceLoaderImpl<T>(defaultService) {
+//        });
     }
 
+    @Deprecated
     public AcceptableServiceLoader(ServiceLoader<T> serviceLoaderFacade) {
+        this.serviceLoaderFacade = serviceLoaderFacade;
+//        if (serviceLoaderFacade == null) {
+//            this.serviceLoaderFacade = new ServiceLoaderImpl<T>() {
+//            };
+//        } else {
+//            this.serviceLoaderFacade = serviceLoaderFacade;
+//        }
+    }
+
+    private ServiceLoader<T> getServiceLoaderFacade() {
         if (serviceLoaderFacade == null) {
-            this.serviceLoaderFacade = new ServiceLoaderImpl<T>() {
-            };
-        } else {
-            this.serviceLoaderFacade = serviceLoaderFacade;
+            synchronized (this) {
+                if (serviceLoaderFacade == null) {
+                    this.serviceLoaderFacade = new ServiceLoaderImpl<T>() {
+                        @Override
+                        public T getDefaultProvider() {
+                            return defaultService == null ? super.getDefaultProvider() : defaultService;
+                        }
+
+                        @Override
+                        protected Class<T> getInterfaceClass() {
+                            //noinspection unchecked
+                            return typeToClass(solve(
+                                    AcceptableServiceLoader.class.getTypeParameters()[1],
+                                    AcceptableServiceLoader.this.getClass()
+                            ));
+                        }
+                    };
+                }
+            }
         }
+        return serviceLoaderFacade;
     }
 
 
@@ -85,7 +114,7 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
                 list.add(instance);
         }
         try {
-            T instance = serviceLoaderFacade.getDefaultProvider();
+            T instance = getServiceLoaderFacade().getDefaultProvider();
             if (accept(instance, param))
                 list.add(instance);
         } catch (Throwable th) {
@@ -99,7 +128,7 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
                 return instance;
         }
         try {
-            T instance = serviceLoaderFacade.getDefaultProvider();
+            T instance = getServiceLoaderFacade().getDefaultProvider();
             if (accept(instance, param))
                 return instance;
             if(instance.accept(param))
@@ -113,31 +142,31 @@ public class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Par
 
     @Override
     public Collection<T> getAllInstances() {
-        return serviceLoaderFacade.getAllInstances();
+        return getServiceLoaderFacade().getAllInstances();
     }
 
     @Override
     public T getInstance(Class<? extends T> providerClass) {
-        return serviceLoaderFacade.getInstance(providerClass);
+        return getServiceLoaderFacade().getInstance(providerClass);
     }
 
     @Override
     public T getInstance(String name) {
-        return serviceLoaderFacade.getInstance(name);
+        return getServiceLoaderFacade().getInstance(name);
     }
 
     @Override
     public T getInstance() {
-        return serviceLoaderFacade.getInstance();
+        return getServiceLoaderFacade().getInstance();
     }
 
     @Override
     public T getDefaultProvider() {
-        return serviceLoaderFacade.getDefaultProvider();
+        return getServiceLoaderFacade().getDefaultProvider();
     }
 
     @Override
     public Map<String, T> getInstances() {
-        return serviceLoaderFacade.getInstances();
+        return getServiceLoaderFacade().getInstances();
     }
 }

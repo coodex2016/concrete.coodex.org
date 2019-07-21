@@ -21,7 +21,7 @@ import org.coodex.concrete.apitools.AbstractRender;
 import org.coodex.concrete.apitools.jaxrs.service.ServiceDocToolkit;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
-import org.coodex.pojomocker.MockerFacade;
+import org.coodex.mock.Mocker;
 import org.coodex.util.Common;
 
 /**
@@ -46,8 +46,10 @@ public class JQueryDocToolkit extends ServiceDocToolkit {
             try {
                 builder.append(
                         JSON.toJSONString(
-                                MockerFacade.mock(
-                                        unit.getParameters()[i].getGenericType(), module.getInterfaceClass()
+                                Mocker.mock(
+                                        unit.getParameters()[i].getGenericType(),
+                                        module.getInterfaceClass(),
+                                        unit.getMethod().getParameterAnnotations()[i]
                                 ), true));
             } catch (Throwable e) {
                 builder.append("{}");

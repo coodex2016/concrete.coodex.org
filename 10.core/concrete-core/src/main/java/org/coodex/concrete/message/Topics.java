@@ -32,10 +32,10 @@ public class Topics {
     public static final String SERIALIZER_TYPE = "serializer";
     private static final Serializer DEFAULT_SERIALIZER = new DefaultSerializer();
     private static AcceptableServiceLoader<String, Serializer> serializerAcceptableServiceLoader =
-            new AcceptableServiceLoader<>();
+            new AcceptableServiceLoader<String, Serializer>(){};
 
     private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> topicProviders =
-            new AcceptableServiceLoader<>();
+            new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(){};
 
     public static Serializer getSerializer(String serializerType) {
         Serializer serializer = serializerAcceptableServiceLoader.getServiceInstance(serializerType);

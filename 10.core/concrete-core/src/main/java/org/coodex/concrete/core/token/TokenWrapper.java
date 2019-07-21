@@ -36,19 +36,16 @@ public class TokenWrapper implements Token {
 
     private static final Token singletonInstance = new TokenWrapper();
     private static Singleton<TokenManager> tokenManager =
-            new Singleton<TokenManager>(new Singleton.Builder<TokenManager>() {
-                @Override
-                public TokenManager build() {
-                    try {
-                        return BeanServiceLoaderProvider
-                                .getBeanProvider()
-                                .getBean(TokenManager.class);
-                    } catch (ConcreteException ce) {
-                        if (ce.getCode() == ErrorCodes.NO_SERVICE_INSTANCE_FOUND) {
-                            return new LocalTokenManager();
-                        } else
-                            throw ce;
-                    }
+            new Singleton<>(() -> {
+                try {
+                    return BeanServiceLoaderProvider
+                            .getBeanProvider()
+                            .getBean(TokenManager.class);
+                } catch (ConcreteException ce) {
+                    if (ce.getCode() == ErrorCodes.NO_SERVICE_INSTANCE_FOUND) {
+                        return new LocalTokenManager();
+                    } else
+                        throw ce;
                 }
             });
 

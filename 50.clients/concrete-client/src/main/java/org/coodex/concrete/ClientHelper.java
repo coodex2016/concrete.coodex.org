@@ -49,13 +49,13 @@ public class ClientHelper {
             }.getInstance());
 
     private static Singleton<AcceptableServiceLoader<Destination, InvokerFactory>> invokerFactoryProviders =
-            new Singleton<>(AcceptableServiceLoader::new);
+            new Singleton<>(()->new AcceptableServiceLoader<Destination, InvokerFactory>() {
+            });
 
     private static Singleton<AcceptableServiceLoader<String, SSLContextFactory>>
             sslContextFactoryAcceptableServiceLoader
-            = new Singleton<>(
-            AcceptableServiceLoader::new
-    );
+            = new Singleton<>(() -> new AcceptableServiceLoader<String, SSLContextFactory>() {
+    });
 
     private static Singleton<ServiceLoader<ConcreteInterceptor>> interceptorServiceLoader = new Singleton<>(
             () -> new ServiceLoaderImpl<ConcreteInterceptor>() {
@@ -119,7 +119,7 @@ public class ClientHelper {
     }
 
     private static AcceptableServiceLoader<String, DestinationFactory<Destination,String>> destinationFactoryAcceptableServiceLoader
-            = new AcceptableServiceLoader<>();
+            = new AcceptableServiceLoader<String, DestinationFactory<Destination, String>>(){};
 
     private static AcceptableServiceLoader<String, SSLContextFactory> getSSLContextFactoryAcceptableServiceLoader() {
         return sslContextFactoryAcceptableServiceLoader.getInstance();

@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.client.impl;
 
-import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.apm.Trace;
@@ -25,7 +24,7 @@ import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ServiceContext;
-import org.coodex.pojomocker.MockerFacade;
+import org.coodex.mock.Mocker;
 import org.coodex.util.Common;
 
 import java.lang.reflect.Method;
@@ -48,21 +47,16 @@ public abstract class AbstractSyncInvoker extends AbstractInvoker {
                 .start(String.format("client invoke: %s", getDestination().getLocation()));
         trace.hack(serviceContext.getSubjoin());
         try {
-            return ConcreteContext.runWithContext(serviceContext, new CallableClosure() {
+            return ConcreteContext.runWithContext(serviceContext, () -> ClientHelper.getSyncInterceptorChain().invoke(new ClientMethodInvocation(instance, clz, method, args) {
                 @Override
-                public Object call() throws Throwable {
-                    return ClientHelper.getSyncInterceptorChain().invoke(new ClientMethodInvocation(instance, clz, method, args) {
-                        @Override
-                        public Object proceed() throws Throwable {
-                            if (isMock()) {
-                                return MockerFacade.mock(method, clz);
-                            } else {
-                                return execute(clz, method, args);
-                            }
-                        }
-                    });
+                public Object proceed() throws Throwable {
+                    if (isMock()) {
+                        return Mocker.mock(method.getGenericReturnType(), clz, method.getAnnotations());
+                    } else {
+                        return execute(clz, method, args);
+                    }
                 }
-            });
+            }));
         } catch (Throwable throwable) {
             trace.error(throwable);
             throw Common.runtimeException(throwable);

@@ -30,7 +30,7 @@ import java.util.List;
 public abstract class AbstractToken implements Token {
 
     private static final AcceptableServiceLoader<Token.Event, TokenEventListener> LISTENER_LOADER
-            = new AcceptableServiceLoader<>();
+            = new AcceptableServiceLoader<Event, TokenEventListener>(){};
 
     private final static Logger log = LoggerFactory.getLogger(AbstractToken.class);
 

@@ -31,9 +31,8 @@ import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.concrete.rx.ReactiveExtensionFor;
-import org.coodex.pojomocker.MockerFacade;
+import org.coodex.mock.Mocker;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -50,7 +49,7 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
     }
 
 
-    protected static Method findTargetMethod(Class targetClass, Method method) {
+    private static Method findTargetMethod(Class targetClass, Method method) {
         Method targetMethod = null;
         for (Method m : targetClass.getMethods()) {
             if (m.getName().equals(method.getName()) && Arrays.equals(m.getParameterTypes(), method.getParameterTypes())) {
@@ -65,26 +64,23 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
         return targetMethod;
     }
 
-    public static DefinitionContext getDefinitionContext(Class rxClass, Method method) {
+    private static DefinitionContext getDefinitionContext(Class rxClass, Method method) {
         final Class targetClass = ((ReactiveExtensionFor) rxClass.getAnnotation(ReactiveExtensionFor.class)).value();
         final Method targetMethod = findTargetMethod(targetClass, method);
         return ConcreteHelper.getDefinitionContext(targetClass, targetMethod);
     }
 
-    protected static Object buildSyncInstance(Class targetClass) throws IllegalAccessException, InvocationTargetException {
-        return Proxy.newProxyInstance(targetClass.getClassLoader(), new Class<?>[]{targetClass}, new InvocationHandler() {
-            @Override
-            public Object invoke(Object proxy1, Method method, Object[] args) throws Throwable {
-                if (method.getDeclaringClass().equals(Object.class))
-                    return method.invoke(proxy1, args);
-                else
-                    throw new RuntimeException("method " + method.getName() + " not implement.");
-            }
+    static Object buildSyncInstance(Class targetClass) {
+        return Proxy.newProxyInstance(targetClass.getClassLoader(), new Class<?>[]{targetClass}, (proxy1, method, args) -> {
+            if (method.getDeclaringClass().equals(Object.class))
+                return method.invoke(proxy1, args);
+            else
+                throw new RuntimeException("method " + method.getName() + " not implement.");
         });
     }
 
 
-    protected static ExecutorService getExecutorService() {
+    static ExecutorService getExecutorService() {
 //        if (executorService == null) {
 //            synchronized (AbstractRxInvoker.class) {
 //                if (executorService == null) {
@@ -102,21 +98,16 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
 
     /**
      * 执行逻辑，不需要考虑切片
-     *
-     * @param context
-     * @param args
-     * @return
      */
     protected abstract Observable invoke(DefinitionContext context, Object... args);
 
     private Observable invokeP(final DefinitionContext context, Object... args) {
         if (isMock()) {
-            return Observable.create(new ObservableOnSubscribe() {
-                @Override
-                public void subscribe(ObservableEmitter e) throws Exception {
-                    e.onNext(MockerFacade.mock(context.getDeclaringMethod(), context.getDeclaringClass()));
-                }
-            });
+            //noinspection unchecked
+            return Observable.create((ObservableOnSubscribe) e -> e.onNext(Mocker.mock(
+                    context.getDeclaringMethod().getGenericReturnType(),
+                    context.getDeclaringClass(),
+                    context.getDeclaringMethod().getAnnotations())));
         } else {
             return invoke(context, args);
         }
@@ -133,12 +124,9 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
         final ServiceContext serviceContext = buildContext(runtimeContext);
         final MethodInvocation invocation = new RXMethodInvocation(runtimeContext, args);
         // 调用前切片
-        ConcreteContext.runWithContext(serviceContext, new CallableClosure() {
-            @Override
-            public Object call() throws Throwable {
-                ClientHelper.getAsyncInterceptorChain().before(runtimeContext, invocation);
-                return null;
-            }
+        ConcreteContext.runWithContext(serviceContext, () -> {
+            ClientHelper.getAsyncInterceptorChain().before(runtimeContext, invocation);
+            return null;
         });
 
 //        ConcreteContext.runWithContext(serviceContext, new ConcreteClosure() {
@@ -150,56 +138,50 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
 //        });
 
 
-        return Observable.create(new ObservableOnSubscribe() {
-            @Override
-            public void subscribe(final ObservableEmitter emitter) throws Exception {
-                // 请求
-                ConcreteContext.runWithContext(serviceContext, new CallableClosure() {
+        return Observable.create((ObservableOnSubscribe) emitter -> {
+            // 请求
+            ConcreteContext.runWithContext(serviceContext, () -> {
+                invokeP(runtimeContext, args).subscribe(new Observer() {
+                    private boolean notNull = false;
                     @Override
+                    public void onSubscribe(Disposable d) {
+                    }
 
-                    public Object call() throws Throwable {
-                        invokeP(runtimeContext, args).subscribe(new Observer() {
-                            private boolean notNull = false;
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                            }
-
-                            @Override
-                            public void onNext(final Object o) {
-                                //响应后切片
-                                notNull = true;
-                                ConcreteContext.runWithContext(serviceContext,
-                                        () -> {
-                                        ClientHelper.getAsyncInterceptorChain().after(runtimeContext, invocation, o);
-                                        emitter.onNext(o);
-                                        return null;
-                                });
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                ConcreteContext.runWithContext(serviceContext,
-                                        () -> {
-                                            ClientHelper.getAsyncInterceptorChain().onError(runtimeContext, invocation, e);
-                                            emitter.onError(e);
-                                            return null;
-                                        });
-                            }
-
-                            @Override
-                            public void onComplete() {
-                                ConcreteContext.runWithContext(serviceContext,
-                                        () -> {
-                                            if (!notNull)
-                                                ClientHelper.getAsyncInterceptorChain().after(runtimeContext, invocation, null);
-                                            emitter.onComplete();
-                                            return null;
-                                        });
-                            }
+                    @Override
+                    public void onNext(final Object o) {
+                        //响应后切片
+                        notNull = true;
+                        ConcreteContext.runWithContext(serviceContext,
+                                () -> {
+                                ClientHelper.getAsyncInterceptorChain().after(runtimeContext, invocation, o);
+                                emitter.onNext(o);
+                                return null;
                         });
-                        return null;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        ConcreteContext.runWithContext(serviceContext,
+                                () -> {
+                                    ClientHelper.getAsyncInterceptorChain().onError(runtimeContext, invocation, e);
+                                    emitter.onError(e);
+                                    return null;
+                                });
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        ConcreteContext.runWithContext(serviceContext,
+                                () -> {
+                                    if (!notNull)
+                                        ClientHelper.getAsyncInterceptorChain().after(runtimeContext, invocation, null);
+                                    emitter.onComplete();
+                                    return null;
+                                });
                     }
                 });
+                return null;
+            });
 //                ConcreteContext.runWithContext(serviceContext, new ConcreteClosure() {
 //                    @Override
 //                    public Object concreteRun() throws Throwable {
@@ -234,7 +216,6 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
 //                        return null;
 //                    }
 //                });
-            }
         });
     }
 }

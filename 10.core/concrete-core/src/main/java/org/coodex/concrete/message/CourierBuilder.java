@@ -57,7 +57,7 @@ class CourierBuilder
                     new CourierBuilder()
             );
     private static AcceptableServiceLoader<String, CourierPrototypeProvider> providers =
-            new AcceptableServiceLoader<>();
+            new AcceptableServiceLoader<String, CourierPrototypeProvider>(){};
     private AtomicLong index = new AtomicLong(0);
 
     static <M extends Serializable> Courier<M> buildCourier(TopicKey topicKey) {

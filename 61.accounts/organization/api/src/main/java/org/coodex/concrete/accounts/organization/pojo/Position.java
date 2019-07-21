@@ -18,7 +18,7 @@ package org.coodex.concrete.accounts.organization.pojo;
 
 import org.coodex.concrete.accounts.AbstractPojo;
 import org.coodex.concrete.api.Description;
-import org.coodex.pojomocker.annotations.STRING;
+import org.coodex.mock.Mock;
 
 /**
  * Created by davidoff shen on 2017-04-28.
@@ -29,7 +29,7 @@ public class Position extends AbstractPojo {
     @Description(
             name = "职位名称"
     )
-    @STRING(txt = "职位.txt")
+    @Mock.String(txtResource = "职位.txt")
     public String getName() {
         return super.getName();
     }

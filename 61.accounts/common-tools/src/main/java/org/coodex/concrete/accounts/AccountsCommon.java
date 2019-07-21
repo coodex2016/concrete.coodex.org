@@ -67,7 +67,8 @@ public class AccountsCommon {
 
 
     private static final AcceptableServiceLoader<String, PasswordGenerator> PASSWORD_GENERATORS =
-            new AcceptableServiceLoader<>(DEFAULT_PASSWORD_GENERATOR);
+            new AcceptableServiceLoader<
+                    String, PasswordGenerator>(DEFAULT_PASSWORD_GENERATOR){};
 
     public static final String getDefaultPassword() {
         return getEncodedPassword(null);

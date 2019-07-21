@@ -17,7 +17,7 @@
 package org.coodex.concrete.accounts;
 
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.mockers.DateTime;
+import org.coodex.mock.ext.DateTime;
 
 import java.io.Serializable;
 

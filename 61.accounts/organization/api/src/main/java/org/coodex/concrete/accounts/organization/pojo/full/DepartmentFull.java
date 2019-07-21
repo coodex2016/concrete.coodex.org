@@ -20,8 +20,8 @@ import org.coodex.concrete.accounts.organization.pojo.Department;
 import org.coodex.concrete.accounts.organization.pojo.Person;
 import org.coodex.concrete.accounts.organization.pojo.Position;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.mockers.ID;
 import org.coodex.concrete.api.pojo.StrID;
+import org.coodex.mock.Mock;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class DepartmentFull<D extends Department,
 
 
     @Description(name = "id")
-    @ID
+    @Mock.String
     public String getId() {
         return id;
     }

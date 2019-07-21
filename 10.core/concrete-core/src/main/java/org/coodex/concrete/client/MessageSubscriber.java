@@ -17,12 +17,13 @@
 package org.coodex.concrete.client;
 
 import org.coodex.concrete.common.JSONSerializerFactory;
-import org.coodex.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.coodex.util.GenericTypeHelper.toReference;
 
 public class MessageSubscriber {
 
@@ -54,7 +55,7 @@ public class MessageSubscriber {
 
             try {
                 listener.onMessage(
-                        JSONSerializerFactory.getInstance().parse(jsonMessage, TypeHelper.toTypeReference(
+                        JSONSerializerFactory.getInstance().parse(jsonMessage, toReference(
                                 MessageListener.class.getTypeParameters()[0],
                                 listener.getClass()
                         ))

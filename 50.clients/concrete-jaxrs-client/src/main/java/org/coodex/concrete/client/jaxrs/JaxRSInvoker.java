@@ -23,14 +23,12 @@ import org.coodex.concrete.common.*;
 import org.coodex.concrete.jaxrs.JaxRSSubjoin;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
-import org.coodex.pojomocker.MockerFacade;
+import org.coodex.mock.Mocker;
 import org.coodex.util.Common;
 import org.coodex.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -39,7 +37,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
@@ -77,12 +74,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         // TODO logging
         ClientBuilder clientBuilder = ClientBuilder.newBuilder();
         client = destination.isSsl() ?
-                clientBuilder.hostnameVerifier(new HostnameVerifier() {
-                    @Override
-                    public boolean verify(String s, SSLSession sslSession) {
-                        return true;
-                    }
-                }).sslContext(getSSLContext(destination.getSsl())).build() :
+                clientBuilder.hostnameVerifier((s, sslSession) -> true).sslContext(getSSLContext(destination.getSsl())).build() :
                 clientBuilder.build();
     }
 
@@ -91,7 +83,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 //        return DEFAULT_LOGGING_FEATURE_CLASS;
 //    }
 
-    public static Invocation.Builder buildHeaders(Invocation.Builder builder, StringBuilder str, Subjoin subjoin, String tokenId) {
+    private static Invocation.Builder buildHeaders(Invocation.Builder builder, StringBuilder str, Subjoin subjoin, String tokenId) {
         if (subjoin != null || !Common.isBlank(tokenId)) {
             str.append("\nheaders:");
             if (subjoin != null) {
@@ -117,7 +109,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         }
     }
 
-    public static Object processResult(int code, String body, JaxrsUnit unit, boolean errorOccurred, String url) {
+    private static Object processResult(int code, String body, JaxrsUnit unit, boolean errorOccurred, String url) {
 
 
         if (code >= 200 && code < 300) {
@@ -131,7 +123,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         }
     }
 
-    public static Object getSubmitObject(JaxrsUnit unit, Object[] args) {
+    private static Object getSubmitObject(JaxrsUnit unit, Object[] args) {
         Object toSubmit = null;
         JaxrsParam[] pojoParams = unit.getPojo();
         if (args != null) {
@@ -142,7 +134,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                     toSubmit = args[pojoParams[0].getIndex()];
                     break;
                 default:
-                    Map<String, Object> body = new HashMap<String, Object>();
+                    Map<String, Object> body = new HashMap<>();
                     for (JaxrsParam param : pojoParams) {
                         body.put(param.getName(), args[param.getIndex()]);
                     }
@@ -152,7 +144,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         return toSubmit;
     }
 
-    protected String getEncodingCharset() {
+    private String getEncodingCharset() {
         String charset = ((JaxRSDestination) getDestination()).getCharset();
         if (charset == null) charset = "utf-8";
         try {
@@ -163,21 +155,19 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         }
     }
 
-    protected String encode(String s, String charset) throws UnsupportedEncodingException {
+    private String encode(String s, String charset) throws UnsupportedEncodingException {
         StringBuilder builder = new StringBuilder();
         for (char c : s.toCharArray()) {
-            switch (c) {
-                case ' ':
-                    builder.append("%20");
-                    break;
-                default:
-                    builder.append(URLEncoder.encode(String.valueOf(c), charset));
+            if (c == ' ') {
+                builder.append("%20");
+            } else {
+                builder.append(URLEncoder.encode(String.valueOf(c), charset));
             }
         }
         return builder.toString();
     }
 
-    protected String toStr(Object o) {
+    private String toStr(Object o) {
         if (o == null) return null;
         if (TypeHelper.isPrimitive(o.getClass())) return o.toString();
         return getJSONSerializer().toJson(o);
@@ -187,8 +177,10 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
     protected Object execute(Class clz, Method method, Object[] args) throws Throwable {
         JaxrsUnit unit = getUnitFromContext(ConcreteHelper.getContext(method, clz));
         if (isDevModel("jaxrs.client")) {
-            // TODO 切换到新mock
-            return MockerFacade.mock(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
+            return Mocker.mock(
+                    unit.getMethod().getGenericReturnType(),
+                    unit.getDeclaringModule().getInterfaceClass(),
+                    unit.getMethod().getAnnotations());
         } else {
 
             String path = getDestination().getLocation();
@@ -264,7 +256,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         }
     }
 
-    private Response request(String url, String method, Object body) throws URISyntaxException {
+    private Response request(String url, String method, Object body) {
 //        URI uri = new URI(url);
         Invocation.Builder builder = client.target(url).request();
         StringBuilder str = new StringBuilder();

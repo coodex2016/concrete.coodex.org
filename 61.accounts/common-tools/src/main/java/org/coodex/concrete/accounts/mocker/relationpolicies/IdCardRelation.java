@@ -16,8 +16,8 @@
 
 package org.coodex.concrete.accounts.mocker.relationpolicies;
 
-import org.coodex.pojomocker.AbstractRelationPolicy;
-import org.coodex.pojomocker.RelationMethod;
+import org.coodex.mock.AbstractRelationStrategy;
+import org.coodex.util.Parameter;
 
 import static org.coodex.concrete.common.RelationPolicies.ID_CARD_TO_BIRTHAY;
 import static org.coodex.concrete.common.RelationPolicies.ID_CARD_TO_SEX;
@@ -25,14 +25,11 @@ import static org.coodex.concrete.common.RelationPolicies.ID_CARD_TO_SEX;
 /**
  * Created by davidoff shen on 2017-05-17.
  */
-public class IdCardRelation extends AbstractRelationPolicy {
-    @Override
-    public String[] getPolicyNames() {
-        return new String[]{ID_CARD_TO_SEX, ID_CARD_TO_BIRTHAY};
-    }
+public class IdCardRelation extends AbstractRelationStrategy {
 
-    @RelationMethod(ID_CARD_TO_SEX)
-    public Integer toSex(String idCardNo) {
+
+    @Strategy(ID_CARD_TO_SEX)
+    public Integer toSex(@Parameter("idCardNo") String idCardNo) {
         if (idCardNo != null) {
             switch (idCardNo.length()) {
                 case 15:
@@ -44,8 +41,8 @@ public class IdCardRelation extends AbstractRelationPolicy {
         return null;
     }
 
-    @RelationMethod(ID_CARD_TO_BIRTHAY)
-    public String toBirthday(String idCardNo) {
+    @Strategy(ID_CARD_TO_BIRTHAY)
+    public String toBirthday(@Parameter("idCardNo") String idCardNo) {
         if (idCardNo != null) {
             switch (idCardNo.length()) {
                 case 15:

@@ -142,7 +142,7 @@ public class AMQPApplication extends OwnServiceProvider {
                                     }
                                 }
                             }, (msgId, th) -> {
-                                ResponsePackage<ErrorInfo> responsePackage = new ResponsePackage<ErrorInfo>();
+                                ResponsePackage<ErrorInfo> responsePackage = new ResponsePackage<>();
                                 responsePackage.setOk(false);
                                 responsePackage.setMsgId(msgId);
                                 responsePackage.setContent(ThrowableMapperFacade.toErrorInfo(th));
@@ -157,7 +157,7 @@ public class AMQPApplication extends OwnServiceProvider {
                 }
             });
         } catch (Throwable th) {
-            throw ConcreteHelper.findException(th);
+            throw ConcreteHelper.getException(th);
         }
     }
 

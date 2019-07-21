@@ -55,10 +55,8 @@ public class Common {
             new Singleton.Builder<AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue>>() {
                 @Override
                 public AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue> build() {
-                    return new AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue>(
-                            new ServiceLoaderImpl<StringConvertWithDefaultValue>() {
-                            }
-                    );
+                    return new AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue>() {
+                    };
                 }
             }
     );

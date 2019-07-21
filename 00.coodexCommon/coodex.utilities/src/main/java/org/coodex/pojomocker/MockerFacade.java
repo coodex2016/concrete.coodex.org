@@ -59,11 +59,11 @@ public class MockerFacade {
                             return DEFAULT_MOCKER;
                         }
                     }
-            );
+            ){};
 
     private static final AcceptableServiceLoader<String, RelationPolicy> RELATION_POLICY_LOADER =
             new AcceptableServiceLoader<String, RelationPolicy>(new ServiceLoaderImpl<RelationPolicy>() {
-            });
+            }){};
 //    private static final Map<String, PojoInfo> POJO_INFO_MAP = new HashMap<String, PojoInfo>();
 
     private static final SequenceContext SEQUENCE_CONTEXT = new SequenceContext();

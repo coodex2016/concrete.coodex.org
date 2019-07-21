@@ -27,7 +27,8 @@ import static org.coodex.concrete.common.ConcreteHelper.isConcreteService;
 
 public class APIHelper {
 
-    private final static AcceptableServiceLoader<String, ModuleMaker<?>> MODULE_MAKERS = new AcceptableServiceLoader<>();
+    private final static AcceptableServiceLoader<String, ModuleMaker<?>> MODULE_MAKERS =
+            new AcceptableServiceLoader<String, ModuleMaker<?>>(){};
 
     private static ModuleMaker getInstance(String desc) {
 //        if (MODULE_MAKERS.getAllInstances().size() == 0)

@@ -18,10 +18,9 @@ package org.coodex.concrete.accounts.organization.pojo;
 
 import org.coodex.concrete.accounts.AbstractPojo;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.mockers.*;
 import org.coodex.concrete.common.RelationPolicies;
-import org.coodex.pojomocker.Relation;
-import org.coodex.pojomocker.annotations.INTEGER;
+import org.coodex.mock.Mock;
+import org.coodex.mock.ext.*;
 
 /**
  * Created by davidoff shen on 2017-04-28.
@@ -29,16 +28,16 @@ import org.coodex.pojomocker.annotations.INTEGER;
 public class Person extends AbstractPojo {
     @Description(name = "人员生日",
             description = "格式：yyyy-MM-dd; 如果身份证号已设置则已身份证号的信息为准")
-    @DateTime
-    @Relation(properties = "idCardNo", policy = RelationPolicies.ID_CARD_TO_BIRTHAY)
+    @DateTime(format = "yyyy-MM-dd")
+    @Mock.Relation(dependencies = "idCardNo", strategy = RelationPolicies.ID_CARD_TO_BIRTHAY)
     private String birthDay;
 
-    @INTEGER(range = {1, 2})
+    @Mock.Number("[0,2],5,6,9")
     @Description(name = "性别",
             description = "参见GB2261：0 - 未知的性别; 1 - 男性; 2 - 女性; " +
                     "5 - 女性改（变）为男性; 6 - 男性改（变）为女性; 9 - 未说明的性别。" +
                     "如果身份证号已设置则以身份证号为准")
-    @Relation(properties = "idCardNo", policy = RelationPolicies.ID_CARD_TO_SEX)
+    @Mock.Relation(dependencies = "idCardNo", strategy = RelationPolicies.ID_CARD_TO_SEX)
     private Integer sex;
 
     // 可用作登录
@@ -59,7 +58,7 @@ public class Person extends AbstractPojo {
 
     @Description(name = "人员姓名")
     @Override
-    @Name
+    @FullName
     public String getName() {
         return super.getName();
     }

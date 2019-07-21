@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.own;
 
-import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
@@ -24,7 +23,6 @@ import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.concrete.message.ServerSideMessage;
 import org.coodex.concrete.message.TBMContainer;
 import org.coodex.concurrent.components.PriorityRunnable;
-import org.coodex.pojomocker.MockerFacade;
 import org.coodex.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,22 +32,25 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.coodex.concrete.common.ConcreteContext.runServiceWithContext;
-import static org.coodex.concrete.common.ConcreteHelper.*;
+import static org.coodex.concrete.common.ConcreteHelper.foreachClassInPackages;
+import static org.coodex.concrete.common.ConcreteHelper.updatedMap;
 import static org.coodex.concrete.common.ErrorCodes.SERVICE_ID_NOT_EXISTS;
 import static org.coodex.concrete.own.PackageHelper.analysisParameters;
 
 public abstract class OwnServiceProvider {
 
     private final static Logger log = LoggerFactory.getLogger(OwnServiceProvider.class);
-    private final Map<String, AbstractUnit> unitMap = new HashMap<String, AbstractUnit>();
+    private final Map<String, AbstractUnit> unitMap = new HashMap<>();
 
     public OwnServiceProvider() {
         registerPackage(AbstractErrorCodes.class.getPackage().getName());
     }
 
     protected Subjoin getSubjoin(RequestPackage requestPackage) {
+        //noinspection unchecked
         return getSubjoin(requestPackage.getSubjoin());
     }
 
@@ -57,14 +58,14 @@ public abstract class OwnServiceProvider {
         if (subjoin != null && !Common.isBlank(subjoin.get("locale"))) {
             try {
                 return LanguageTag.valueOf(subjoin.get("locale")).getAsLocale();
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException ignored) {
 
             }
         }
         return Locale.getDefault();
     }
 
-    protected void appendUnits(OwnServiceModule module) {
+    private void appendUnits(OwnServiceModule module) {
         for (AbstractUnit unit : module.getUnits()) {
             unitMap.put(((OwnServiceUnit) unit).getKey(), unit);
         }
@@ -135,22 +136,14 @@ public abstract class OwnServiceProvider {
 
                     Object result = runServiceWithContext(
                             context,
-                            new CallableClosure() {
-
-                                public Object call() throws Throwable {
-                                    if (isDevModel(getModuleName())) {
-                                        return void.class.equals(unit.getGenericReturnType()) ?
-                                                null :
-                                                MockerFacade.mock(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
-                                    } else {
-                                        Object instance = BeanServiceLoaderProvider.getBeanProvider().getBean(unit.getDeclaringModule().getInterfaceClass());
-                                        if (objects == null)
-                                            return method.invoke(instance);
-                                        else
-                                            return method.invoke(instance, objects);
-                                    }
-
-                                }
+                            () -> {
+                                //noinspection unchecked
+                                Object instance = BeanServiceLoaderProvider.getBeanProvider()
+                                        .getBean(unit.getDeclaringModule().getInterfaceClass());
+                                if (objects == null)
+                                    return method.invoke(instance);
+                                else
+                                    return method.invoke(instance, objects);
                             },
                             unit.getDeclaringModule().getInterfaceClass(),
                             unit.getMethod(),
@@ -186,6 +179,7 @@ public abstract class OwnServiceProvider {
                     responsePackage.setSubjoin(updatedMap(context.getSubjoin()));
                     responsePackage.setMsgId(requestPackage.getMsgId());
                     responsePackage.setOk(true);
+                    //noinspection unchecked
                     responsePackage.setContent(result);
                     responseVisitor.visit(responsePackage);
                 } catch (final Throwable th) {
@@ -242,7 +236,7 @@ public abstract class OwnServiceProvider {
         String primaryTag;
         String subTags;
 
-        protected LanguageTag() {
+        LanguageTag() {
         }
 
         public LanguageTag(final String primaryTag, final String subTags) {
@@ -282,7 +276,7 @@ public abstract class OwnServiceProvider {
             }
         }
 
-        public final Locale getAsLocale() {
+        final Locale getAsLocale() {
             return (subTags == null)
                     ? new Locale(primaryTag)
                     : new Locale(primaryTag, subTags);
@@ -299,7 +293,7 @@ public abstract class OwnServiceProvider {
                 subTags = null;
             } else {
                 primaryTag = languageTag.substring(0, index);
-                subTags = languageTag.substring(index + 1, languageTag.length());
+                subTags = languageTag.substring(index + 1);
             }
         }
 
@@ -355,13 +349,13 @@ public abstract class OwnServiceProvider {
 
             final LanguageTag that = (LanguageTag) o;
 
-            if (primaryTag != null ? !primaryTag.equals(that.primaryTag) : that.primaryTag != null) {
+            if (!Objects.equals(primaryTag, that.primaryTag)) {
                 return false;
             }
-            if (subTags != null ? !subTags.equals(that.subTags) : that.subTags != null) {
+            if (!Objects.equals(subTags, that.subTags)) {
                 return false;
             }
-            return !(tag != null ? !tag.equals(that.tag) : that.tag != null);
+            return Objects.equals(tag, that.tag);
 
         }
 

@@ -37,7 +37,7 @@ class JMSFacade {
 
     private final static AcceptableServiceLoader<String, ConnectionFactoryProvider>
             connectionFactoryProviderAcceptableServiceLoader =
-            new AcceptableServiceLoader<>();
+            new AcceptableServiceLoader<String, ConnectionFactoryProvider>(){};
     private final static SingletonMap<String, ConnectionFactory> connectionFactorySingletonMap
             = new SingletonMap<>(key -> {
         ConnectionFactoryProvider cfp = connectionFactoryProviderAcceptableServiceLoader.getServiceInstance(key);

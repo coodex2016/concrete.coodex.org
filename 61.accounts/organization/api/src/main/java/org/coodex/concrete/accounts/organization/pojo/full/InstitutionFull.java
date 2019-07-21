@@ -21,8 +21,8 @@ import org.coodex.concrete.accounts.organization.pojo.Institution;
 import org.coodex.concrete.accounts.organization.pojo.Person;
 import org.coodex.concrete.accounts.organization.pojo.Position;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.mockers.ID;
 import org.coodex.concrete.api.pojo.StrID;
+import org.coodex.mock.Mock;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public class InstitutionFull<
     private List<StrID<P>> persons;
 
     @Description(name = "单位id")
-    @ID
+    @Mock.String
     public String getId() {
         return id;
     }

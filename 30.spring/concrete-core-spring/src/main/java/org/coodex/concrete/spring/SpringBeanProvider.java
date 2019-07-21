@@ -49,7 +49,7 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
 
     @Override
     public <T> Map<String, T> getBeansOfType(Class<T> type) {
-        return (context == null) ? new HashMap<String, T>() : context.getBeansOfType(type);
+        return (context == null) ? new HashMap<>() : context.getBeansOfType(type);
     }
 
 }

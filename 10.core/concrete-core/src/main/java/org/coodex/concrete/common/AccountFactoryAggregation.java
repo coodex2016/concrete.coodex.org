@@ -24,7 +24,7 @@ import org.coodex.util.AcceptableServiceLoader;
 public class AccountFactoryAggregation implements AccountFactory {
 
     private final static AcceptableServiceLoader<AccountID, AcceptableAccountFactory<AccountID>>
-            ACCOUNT_FACTORY_LOADER = new AcceptableServiceLoader<>();
+            ACCOUNT_FACTORY_LOADER = new AcceptableServiceLoader<AccountID, AcceptableAccountFactory<AccountID>>(){};
 
 
     @Override

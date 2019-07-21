@@ -35,7 +35,7 @@ public class SignUtil {
 
     //    public static final Profile PROFILE = getProfile(TAG_SIGNATRUE);
     private static final AcceptableServiceLoader<String, IronPenFactory> IRON_PEN_FACTORY_CONCRETE_SPI_FACADE
-            = new AcceptableServiceLoader<>();
+            = new AcceptableServiceLoader<String, IronPenFactory>(){};
     private static final SignatureSerializer DEFAULT_SERIALIZER = new DefaultSignatureSerializer();
     private static final ServiceLoader<SignatureSerializer> SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE
             = new ServiceLoaderImpl<SignatureSerializer>(DEFAULT_SERIALIZER) {
@@ -54,7 +54,7 @@ public class SignUtil {
     };
 
     private static final AcceptableServiceLoader<String, NoiseValidator> validatorLoader =
-            new AcceptableServiceLoader<>(defaultValidator);
+            new AcceptableServiceLoader<String, NoiseValidator>(defaultValidator){};
 
     private static final NoiseGenerator defaultGenerator = new NoiseGenerator() {
         @Override
@@ -68,7 +68,7 @@ public class SignUtil {
         }
     };
     private static final AcceptableServiceLoader<String, NoiseGenerator> generatorLoader =
-            new AcceptableServiceLoader<>(defaultGenerator);
+            new AcceptableServiceLoader<String, NoiseGenerator>(defaultGenerator){};
 
 
     private static String getString(Profile profile, String key, String paperName) {

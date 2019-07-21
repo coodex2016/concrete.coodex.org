@@ -43,14 +43,9 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 
     private final static Logger log = LoggerFactory.getLogger(WebSocketServerHandle.class);
 
-    private final static Map<Session, String> peers = Collections.synchronizedMap(new HashMap<Session, String>());
+    private final static Map<Session, String> peers = Collections.synchronizedMap(new HashMap<>());
 
-    private final static OwnServiceProvider.OwnModuleBuilder OWN_MODULE_BUILDER = new OwnServiceProvider.OwnModuleBuilder() {
-        @Override
-        public OwnServiceModule build(Class clz) {
-            return new WebSocketModule(clz);
-        }
-    };
+    private final static OwnServiceProvider.OwnModuleBuilder OWN_MODULE_BUILDER = WebSocketModule::new;
 
 //    @Override
 //    protected Subjoin getSubjoin(RequestPackage requestPackage) {
@@ -67,7 +62,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 //        registerPackage(ErrorCodes.class.getPackage().getName());
 //    }
 
-    public WebSocketServerHandle() {
+    WebSocketServerHandle() {
         registerPackage(ErrorCodes.class.getPackage().getName());
     }
 
@@ -83,18 +78,15 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 //            }
         } catch (IllegalStateException | IOException e) {
             log.warn("send text failed. session: {}", session.getId(), e);
-            getScheduler("websocket.retry").schedule(new Runnable() {
-                @Override
-                public void run() {
-                    toRetry.incrementAndGet();
-                    $sendText(text, session, toRetry);
-                }
+            getScheduler("websocket.retry").schedule(() -> {
+                toRetry.incrementAndGet();
+                $sendText(text, session, toRetry);
             }, 20, TimeUnit.MILLISECONDS);
         }
 
     }
 
-    static <T> void sendMessage(ServerSideMessage<T> message, String tokenId) {
+    private static <T> void sendMessage(ServerSideMessage<T> message, String tokenId) {
         for (Session session : peers.keySet()) {
             if (tokenId.equals(peers.get(session))) {
                 $sendText(JSONSerializerFactory.getInstance().toJson(buildPackage(message)),
@@ -187,7 +179,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
     }
 
     private void sendError(String msgId, Throwable exception, Session session) {
-        ResponsePackage<ErrorInfo> responsePackage = new ResponsePackage<ErrorInfo>();
+        ResponsePackage<ErrorInfo> responsePackage = new ResponsePackage<>();
         responsePackage.setOk(false);
         responsePackage.setMsgId(msgId);
         responsePackage.setContent(ThrowableMapperFacade.toErrorInfo(exception));
@@ -202,7 +194,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
         subjoin.put(HOST_ID, getHostId());
         subjoin.put(SUBJECT, subject);
         ResponsePackage responsePackage = new ResponsePackage();
-        responsePackage.setSubjoin(new HashMap<String, String>(subjoin));
+        responsePackage.setSubjoin(new HashMap<>(subjoin));
         if (content != null) {
             responsePackage.setContent(content);
         }
@@ -224,7 +216,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 //    }
 
     @OnMessage
-    public void onMessage(String message, Session session) throws IOException {
+    public void onMessage(String message, Session session) {
 
         log.debug("message from {}:\n {}", session.getId(), message);
         // 1、解析
@@ -248,11 +240,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 
     /**
      * serviceId定义：className#method.paramCount
-     *
-     * @param requestPackage
-     * @param session
      */
-    @SuppressWarnings("unchecked")
     private void invokeService(final RequestPackage<Object> requestPackage, final Session session) {
 
         final Caller caller = (Caller) session.getUserProperties().get(WEB_SOCKET_CALLER_INFO);
@@ -263,25 +251,12 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
             }
         };
 
-        final OwnServiceProvider.ErrorVisitor errorVisitor = new OwnServiceProvider.ErrorVisitor() {
-            @Override
-            public void visit(String msgId, Throwable th) {
-                sendError(msgId, th, session);
-            }
-        };
+        final OwnServiceProvider.ErrorVisitor errorVisitor = (msgId, th) -> sendError(msgId, th, session);
 
-        final OwnServiceProvider.ServerSideMessageVisitor serverSideMessageVisitor = new OwnServiceProvider.ServerSideMessageVisitor() {
-            @Override
-            public void visit(ServerSideMessage serverSideMessage, String tokenId) {
-                sendMessage(serverSideMessage, tokenId);
-            }
-        };
+        final OwnServiceProvider.ServerSideMessageVisitor serverSideMessageVisitor = WebSocketServerHandle::sendMessage;
 
-        final OwnServiceProvider.TBMNewTokenVisitor newTokenVisitor = new OwnServiceProvider.TBMNewTokenVisitor() {
-            @Override
-            public void visit(String tokenId) {
-                peers.put(session, tokenId);//???
-            }
+        final OwnServiceProvider.TBMNewTokenVisitor newTokenVisitor = tokenId -> {
+            peers.put(session, tokenId);//???
         };
 
         invokeService(requestPackage, caller, responseVisitor, errorVisitor, serverSideMessageVisitor, newTokenVisitor);
@@ -311,8 +286,8 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
     private RequestPackage<Object> analysisRequest(String message, Session session) {
         try {
             return JSONSerializerFactory.getInstance()
-                    .parse(message, new GenericType<RequestPackage<Object>>() {
-                    }.genericType());
+                    .parse(message, new GenericTypeHelper.GenericType<RequestPackage<Object>>() {
+                    }.getType());
 
         } catch (Throwable throwable) {
             broadcastText(JSONSerializerFactory.getInstance().toJson(
@@ -324,7 +299,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
         }
     }
 
-    String getHostId() {
+    private String getHostId() {
         // TODO
         return Config.getValue("websocket.hostId", Common.getUUIDStr(), getAppSet());
     }

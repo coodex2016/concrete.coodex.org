@@ -68,14 +68,7 @@ public class AbstractDownloadResource {
 
         final int speedLimit = Config.getValue("download.speedLimited", 1024, TAG_ATTACHMENT_SERVICE, getAppSet()) * 1024;
 
-        StreamingOutput output = new StreamingOutput() {
-
-            @Override
-            public void write(OutputStream output) throws IOException, WebApplicationException {
-
-                repository.writeTo(attachmentId, output, speedLimit > 0 ? speedLimit : Integer.MAX_VALUE);
-            }
-        };
+        StreamingOutput output = output1 -> repository.writeTo(attachmentId, output1, speedLimit > 0 ? speedLimit : Integer.MAX_VALUE);
         return builder.entity(output).build();
     }
 

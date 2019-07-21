@@ -54,13 +54,13 @@ public class ConcreteException extends RuntimeException {
     }
 
 
-    public int getCode() {
-        return code;
-    }
-
     @Override
     public String getMessage() {
         return message;
+    }
+
+    public int getCode() {
+        return code;
     }
 
 }

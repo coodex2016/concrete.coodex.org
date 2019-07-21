@@ -69,6 +69,7 @@ public class APM {
 
                                     }
                                 };
+
                                 private TraceFactory defaultFactory = new TraceFactory() {
                                     @Override
                                     public Trace create() {
@@ -86,6 +87,10 @@ public class APM {
                                     }
                                 };
 
+                                @Override
+                                public TraceFactory getDefaultProvider() {
+                                    return defaultFactory;
+                                }
                             };
                         }
                     }
