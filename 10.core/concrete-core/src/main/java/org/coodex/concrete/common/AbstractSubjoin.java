@@ -23,10 +23,10 @@ import java.util.*;
 
 public abstract class AbstractSubjoin implements Subjoin {
 
-    private Map<String, List<String>> stringMap = new HashMap<String, List<String>>();
+    private Map<String, List<String>> stringMap = new HashMap<>();
     private Set<Warning> warnings = new HashSet<>();
 
-    public AbstractSubjoin() {
+    protected AbstractSubjoin() {
         this(null);
     }
 
@@ -39,7 +39,7 @@ public abstract class AbstractSubjoin implements Subjoin {
                 continue;
             String v = map.get(key);
             if (v == null) continue;
-            set(key, Common.toArray(v, "; ", new ArrayList<String>()));
+            set(key, Common.toArray(v, "; ", new ArrayList<>()));
         }
     }
 
@@ -79,11 +79,12 @@ public abstract class AbstractSubjoin implements Subjoin {
 
     @Override
     public void add(String name, String value) {
-        List<String> list = stringMap.get(name);
-        if (list == null) {
-            list = new ArrayList<String>();
-            stringMap.put(name, list);
-        }
+        List<String> list = stringMap.computeIfAbsent(name, k -> new ArrayList<>());
+        //        List<String> list = stringMap.get(name);
+//        if (list == null) {
+//            list = new ArrayList<>();
+//            stringMap.put(name, list);
+//        }
         list.add(value);
     }
 
@@ -121,7 +122,7 @@ public abstract class AbstractSubjoin implements Subjoin {
         if (this.warnings == null || this.warnings.size() == 0) {
             set(KEY_WARNINGS, null);
         } else {
-            set(KEY_WARNINGS, Arrays.asList(
+            set(KEY_WARNINGS, Collections.singletonList(
                     JSONSerializerFactory.getInstance().toJson(this.warnings)
             ));
         }

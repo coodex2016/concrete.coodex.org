@@ -26,7 +26,7 @@ import javax.inject.Named;
 import java.util.Arrays;
 import java.util.Map;
 
-//@Named
+@Named
 public class TestCaseImpl implements TestCase2 {
 
     @Inject

@@ -44,6 +44,12 @@
 
         <dependency>
             <groupId>org.coodex</groupId>
+            <artifactId>concrete-core-mock</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.coodex</groupId>
             <artifactId>concrete-core-spring</artifactId>
         </dependency>
 

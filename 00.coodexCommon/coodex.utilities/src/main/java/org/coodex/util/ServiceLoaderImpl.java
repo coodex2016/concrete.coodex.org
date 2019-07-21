@@ -50,10 +50,6 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
         this.defaultProvider = defaultProvider;
     }
 
-    protected void setDefaultProvider(T defaultProvider){
-        this.defaultProvider = defaultProvider;
-    }
-
     private void load() {
         if (instances == null) {
             synchronized (this) {
