@@ -23,5 +23,11 @@ public class TestStarter {
 
     public static void main(String[] args) {
         SpringApplication.run(SpringBootStarter.class, args);
+//        System.out.println(SwaggerHelper.toOpenAPI("jaxrs",
+//                Arrays.asList(
+//                        TestCase.class,
+//                        TestCase3.class,
+//                        TestCase2.class
+//                )));
     }
 }

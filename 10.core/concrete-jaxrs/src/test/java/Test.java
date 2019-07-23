@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import io.swagger.v3.core.util.Yaml;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.coodex.concrete.jaxrs.swagger.SwaggerHelper;
 import org.coodex.util.Profile;
 import test.org.coodex.concrete.jaxrs.swagger.TestService;
@@ -23,9 +25,9 @@ import java.util.Arrays;
 
 public class Test {
     public static void main(String[] args) throws IOException {
-//        OpenAPI openAPI = SwaggerHelper.toOpenAPI(Arrays.asList(TestService.class));
+        OpenAPI openAPI = SwaggerHelper.toOpenAPI("jaxrs", Arrays.asList(TestService.class));
 //        System.out.println(JSONSerializerFactory.getInstance().toJson(openAPI));
-//        System.out.println(Yaml.pretty(openAPI));
+        System.out.println(Yaml.pretty(openAPI));
 //        Writer writer = new FileWriter(Profile.getProfile("env").getString("location"),false);
 //        writer.write(SwaggerHelper.toJson(Arrays.asList(TestService.class)));
 //        writer.close();

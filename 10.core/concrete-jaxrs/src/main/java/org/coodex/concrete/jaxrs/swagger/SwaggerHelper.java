@@ -18,10 +18,7 @@ package org.coodex.concrete.jaxrs.swagger;
 
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.Yaml;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.PathItem;
-import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.examples.Example;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.*;
@@ -51,9 +48,11 @@ import static org.coodex.util.GenericTypeHelper.toReference;
 public class SwaggerHelper {
 
     private static Profile profile = Profile.getProfile("concrete-swagger");
-
+    private static ThreadLocal<Map<String, Schema>> definitions = new ThreadLocal<>();
+    private static ThreadLocal<Set<String>> readyForSchema = new ThreadLocal<>();
 
     public static OpenAPI toOpenAPI(String url, List<Class> classes) {
+        readyForSchema.remove();
         OpenAPI openAPI = new OpenAPI()
                 .info(new Info()
                         .title(profile.getString("title", "concrete"))
@@ -63,17 +62,28 @@ public class SwaggerHelper {
                         .url(url))
                 .paths(new Paths());
         Set<Tag> tags = new LinkedHashSet<>();
-
-        for (Class clz : classes) {
-            JaxrsModule module = new JaxrsModule(clz);
-            tags.add(new Tag().name(module.getLabel()).description(module.getDescription()));
-            for (JaxrsUnit unit : module.getUnits()) {
-                String name = unit.getDeclaringModule().getName() + unit.getName();
-                openAPI.path(name,
-                        toPathItem(unit, openAPI.getPaths().get(name)));
+        definitions.set(new LinkedHashMap<>());
+        try {
+            for (Class clz : classes) {
+                JaxrsModule module = new JaxrsModule(clz);
+                tags.add(new Tag().name(module.getLabel()).description(module.getDescription()));
+                for (JaxrsUnit unit : module.getUnits()) {
+                    String name = unit.getDeclaringModule().getName() + unit.getName();
+                    openAPI.path(name,
+                            toPathItem(unit, openAPI.getPaths().get(name)));
+                }
             }
+            openAPI.tags(new ArrayList<>(tags));
+            Components components = new Components();
+            Map<String, Schema> defined = definitions.get();
+            for (Map.Entry<String, Schema> entry : defined.entrySet()) {
+                components.addSchemas(entry.getKey(), entry.getValue());
+            }
+            openAPI.components(components);
+
+        } finally {
+            definitions.remove();
         }
-        openAPI.tags(new ArrayList<>(tags));
         return openAPI;
     }
 
@@ -86,6 +96,16 @@ public class SwaggerHelper {
         operation.setSummary(unit.getLabel());
         operation.setDescription(unit.getDescription());
         operation.addTagsItem(unit.getDeclaringModule().getLabel());
+        if(unit.getAccessAllow() != null){
+            Parameter parameter = new Parameter()
+                    .name("concrete-token-id")
+                    .in("header")
+                    .required(true)
+                    .allowEmptyValue(false)
+                    .description("Concrete Token")
+                    .schema(schema(String.class));
+            operation.addParametersItem(parameter);
+        }
 
         for (JaxrsParam param : unit.getParameters()) {
             if (param.isPathParam()) {
@@ -140,7 +160,9 @@ public class SwaggerHelper {
         operation.responses(new ApiResponses().addApiResponse("200",
                 new ApiResponse().content(
                         new Content().addMediaType("application/json",
-                                new MediaType().schema(schema(unit.getGenericReturnType()).example(
+                                new MediaType().schema(
+                                        schema(unit.getGenericReturnType())
+                                                .example(
                                         Mocker.mockMethod(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass())
                                 ))))).addApiResponse("204", new ApiResponse())
                 .addApiResponse("default", new ApiResponse())
@@ -197,7 +219,7 @@ public class SwaggerHelper {
         } else if (c.isArray()) {
             return new ArraySchema().items(classSchema(c.getComponentType()));
         } else if (void.class.equals(c) || Void.class.equals(c)) {
-            return null;
+            return new ObjectSchema();
         } else if (Byte.class.equals(c) || int.class.equals(c) || Integer.class.equals(c)
                 || short.class.equals(c) || Short.class.equals(c)) {
             return new IntegerSchema();
@@ -217,17 +239,39 @@ public class SwaggerHelper {
     }
 
     private static Schema pojoSchema(Type t) {
-        Schema objectSchema = new Schema();
-        PojoInfo pojoInfo = new PojoInfo(t);
-        for (PojoProperty property : pojoInfo.getProperties()) {
-            Schema schema = schema(property.getType());
-            Description description = property.getAnnotation(Description.class);
-            if (description != null) {
-                schema.title(description.name()).description(description.description());
+        Map<String, Schema> defined = definitions.get();
+        String name = t.toString().replace(' ', '_');
+        if (!defined.containsKey(name)) {
+            Set<String> set = readyForSchema.get();
+            boolean remove = set == null;
+            if (set == null) {
+                set = new LinkedHashSet<>();
+                readyForSchema.set(set);
             }
-            objectSchema.addProperties(property.getName(), schema);
+            try {
+                if (!set.contains(name)) {
+                    set.add(name);
+                    Schema objectSchema = new Schema();
+                    PojoInfo pojoInfo = new PojoInfo(t);
+                    for (PojoProperty property : pojoInfo.getProperties()) {
+                        Schema schema = schema(property.getType());
+                        Description description = property.getAnnotation(Description.class);
+                        if (description != null) {
+                            schema.title(description.name()).description(description.description());
+                        }
+                        objectSchema.addProperties(property.getName(), schema);
+                    }
+                    defined.put(name, objectSchema);
+                } else {
+                    return new Schema().title("cycle ref").description(name);
+                }
+            } finally {
+                if (remove)
+                    set.remove(name);
+            }
+
         }
-        return objectSchema;
+        return new Schema().$ref("#/components/schemas/" + name);
     }
 
 

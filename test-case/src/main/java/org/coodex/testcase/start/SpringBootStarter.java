@@ -29,6 +29,8 @@ import org.coodex.concrete.support.websocket.CallerHackConfigurator;
 import org.coodex.concrete.support.websocket.ConcreteWebSocketApplication;
 import org.coodex.testcase.api.TestCase;
 import org.coodex.testcase.api.TestCase2;
+import org.coodex.testcase.api.TestCase3;
+import org.coodex.testcase.api.TestCase4;
 import org.coodex.util.Profile;
 import org.coodex.util.ServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
@@ -56,22 +58,22 @@ import javax.websocket.server.ServerEndpoint;
 @Import(ConcreteSpringConfiguration.class)
 public class SpringBootStarter {
 
-    @Bean
-    public AMQPApplication getAMQPApplication() {
-        AMQPConnectionConfig config = new AMQPConnectionConfig();
-        Profile profile = Profile.getProfile("client.amqp");
-        config.setUri(profile.getString("location"));
-        config.setUsername(profile.getString("amqp.username"));
-        config.setPassword(profile.getString("amqp.password"));
-        AMQPApplication amqpApplication = new AMQPApplication(
-                config,
-                profile.getString("amqp.exchangeName"),
-                profile.getString("amqp.queueName"),
-                profile.getLong("amqp.ttl")
-        );
-        amqpApplication.registerClasses(TestCase.class,TestCase2.class);
-        return amqpApplication;
-    }
+//    @Bean
+//    public AMQPApplication getAMQPApplication() {
+//        AMQPConnectionConfig config = new AMQPConnectionConfig();
+//        Profile profile = Profile.getProfile("client.amqp");
+//        config.setUri(profile.getString("location"));
+//        config.setUsername(profile.getString("amqp.username"));
+//        config.setPassword(profile.getString("amqp.password"));
+//        AMQPApplication amqpApplication = new AMQPApplication(
+//                config,
+//                profile.getString("amqp.exchangeName"),
+//                profile.getString("amqp.queueName"),
+//                profile.getLong("amqp.ttl")
+//        );
+//        amqpApplication.registerClasses(TestCase.class,TestCase2.class);
+//        return amqpApplication;
+//    }
 
     @Bean
     public ServletRegistrationBean jaxrsServlet() {
@@ -140,6 +142,8 @@ public class SpringBootStarter {
             register(JacksonFeature.class,
                     LoggingFeature.class,
                     TestCase.class,
+                    TestCase3.class,
+                    TestCase4.class,
                     TestCase2.class);
         }
     }

@@ -18,21 +18,7 @@ package org.coodex.testcase.api;
 
 import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.api.pojo.PageRequest;
-import org.coodex.concrete.api.pojo.PageResult;
 
 @ConcreteService
-public interface TestCase3 {
-
-    class PojoTest2{
-        public String name;
-    }
-    class PojoTest{
-        public int a;
-        public String b;
-        public PojoTest pojoTest2;
-    }
-
-    void ok();
-
-    PageResult<PojoTest2> pojoTest(PageRequest<PojoTest> testPageRequest);
+public interface TestCase4 extends AbstractTestCase<PageRequest<TestCase3.PojoTest2>> {
 }
