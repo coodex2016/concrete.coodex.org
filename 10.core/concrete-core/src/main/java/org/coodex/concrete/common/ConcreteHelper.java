@@ -312,7 +312,7 @@ public class ConcreteHelper {
 
     private static String toPackage(String parttern) {
         int i = parttern.indexOf('*');
-        return i > 0 ? parttern.substring(0, i) : parttern;
+        return Common.trim(i > 0 ? parttern.substring(0, i) : parttern, '.');
     }
 
     private static boolean isMatch(Class<?> clazz, String... packagePartterns) {
