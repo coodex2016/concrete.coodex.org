@@ -21,6 +21,8 @@ import org.coodex.util.GenericTypeHelper;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 
+import static org.coodex.util.GenericTypeHelper.solveFromType;
+
 public abstract class CourierPrototype<M extends Serializable> implements Courier<M> {
     private final String destination;
     private final String queue;
@@ -32,7 +34,7 @@ public abstract class CourierPrototype<M extends Serializable> implements Courie
         this.destination = destination;
         this.queue = queue;
         this.topicType = topicType;
-        this.messageType = GenericTypeHelper.solve(
+        this.messageType = solveFromType(
                 AbstractTopic.class.getTypeParameters()[0],
                 topicType);
     }

@@ -19,12 +19,13 @@ package org.coodex.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.coodex.util.GenericTypeHelper.solve;
-import static org.coodex.util.GenericTypeHelper.typeToClass;
+import static org.coodex.util.GenericTypeHelper.*;
 
 /**
  * <S>待coodex utilities放弃1.5时移入org.coodex.util</S>
@@ -60,10 +61,27 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
 
+//    private Type solve(TypeVariable t, Object instance){
+////        Type x = t;
+////        while(x instanceof TypeVariable){
+////
+////        }
+//    }
+    @SuppressWarnings("unchecked")
     protected Class<T> getInterfaceClass() {
-        return typeToClass(solve(ServiceLoaderImpl.class.getTypeParameters()[0], getClass()));
+//        Type t = ServiceLoaderImpl.class.getTypeParameters()[0];
+//        Object instance = this;
+//        while(t instanceof TypeVariable){
+//            Type x = solve((TypeVariable) t, instance.getClass());
+//            if(x instanceof TypeVariable){
+//
+//            }
+//        }
+//        return typeToClass(solve(ServiceLoaderImpl.class.getTypeParameters()[0], getClass()));
+        return typeToClass(
+                solveFromInstance(ServiceLoaderImpl.class.getTypeParameters()[0], this)
+        );
     }
 
     @Override

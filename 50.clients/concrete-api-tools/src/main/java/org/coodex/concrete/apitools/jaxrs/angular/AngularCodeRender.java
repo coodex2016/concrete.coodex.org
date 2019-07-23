@@ -52,7 +52,7 @@ public class AngularCodeRender extends AbstractAngularRender<JaxrsUnit> {
         String contextPath = Common.isBlank(moduleName) ? "@concrete/" : (getModuleName(moduleName) + "/");
 
         // 按包归类
-        CLASSES.set(new HashMap<String, Map<Class, TSClass>>());
+        CLASSES.set(new HashMap<>());
         try {
             for (JaxrsModule module : jaxrsModules) {
                 process(moduleName, module);

@@ -177,10 +177,9 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
     protected Object execute(Class clz, Method method, Object[] args) throws Throwable {
         JaxrsUnit unit = getUnitFromContext(ConcreteHelper.getContext(method, clz));
         if (isDevModel("jaxrs.client")) {
-            return Mocker.mock(
-                    unit.getMethod().getGenericReturnType(),
-                    unit.getDeclaringModule().getInterfaceClass(),
-                    unit.getMethod().getAnnotations());
+            return Mocker.mockMethod(
+                    unit.getMethod(),
+                    unit.getDeclaringModule().getInterfaceClass());
         } else {
 
             String path = getDestination().getLocation();

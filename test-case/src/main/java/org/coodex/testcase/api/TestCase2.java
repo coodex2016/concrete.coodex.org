@@ -18,10 +18,13 @@ package org.coodex.testcase.api;
 
 import org.coodex.concrete.api.AccessAllow;
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.Description;
 
 @ConcreteService
 @AccessAllow
+@Description(name = "测试2")
 public interface TestCase2 extends TestCase {
 
+    @Description(name = "Hello world")
     String helloWorld();
 }

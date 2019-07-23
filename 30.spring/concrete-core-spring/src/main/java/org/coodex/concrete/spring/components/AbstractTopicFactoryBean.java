@@ -20,7 +20,7 @@ import org.coodex.concrete.message.Topics;
 
 import java.lang.reflect.Type;
 
-import static org.coodex.util.GenericTypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 
 public abstract class AbstractTopicFactoryBean<T> /*implements FactoryBean<T>*/ {
 
@@ -30,46 +30,31 @@ public abstract class AbstractTopicFactoryBean<T> /*implements FactoryBean<T>*/ 
 
     protected Type getType() {
         if (topicType == null) {
-            topicType = solve(AbstractTopicFactoryBean.class.getTypeParameters()[0], getClass());
+            topicType = solveFromInstance(AbstractTopicFactoryBean.class.getTypeParameters()[0], this);
         }
         return topicType;
     }
 
-    public T getActurlTopic(String queueName) {
+    public T getActualTopic(String queueName) {
+        //noinspection unchecked
         return Topics.get(getType(), queueName);
     }
 
-private String getQueueName() {
-    if (!queueLoaded) {
-        org.coodex.concrete.message.Queue queue =
-                getClass().getAnnotation(org.coodex.concrete.message.Queue.class);
-        queueName = queue == null ? null : queue.value();
-        queueLoaded = true;
+    private String getQueueName() {
+        if (!queueLoaded) {
+            org.coodex.concrete.message.Queue queue =
+                    getClass().getAnnotation(org.coodex.concrete.message.Queue.class);
+            queueName = queue == null ? null : queue.value();
+            queueLoaded = true;
+        }
+        return queueName;
     }
-    return queueName;
-}
 
-private java.lang.reflect.Type getTopicType(){
-    if(topicType == null){
-       topicType = getClass().getGenericInterfaces()[0];
+    private java.lang.reflect.Type getTopicType() {
+        if (topicType == null) {
+            topicType = getClass().getGenericInterfaces()[0];
+        }
+        return topicType;
     }
-    return topicType;
-}
 
-
-//    @Override
-//    public Class<?> getObjectType() {
-//        ParameterizedType pt = (ParameterizedType) getType();
-//        return (Class<?>) pt.getRawType();
-//    }
-
-//    @Override
-//    public boolean isSingleton() {
-//        return true;
-//    }
-
-//    @Override
-//    public T getObject() throws Exception {
-//        return Topics.get(getType(), getQueueName());
-//    }
 }

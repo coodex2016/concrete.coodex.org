@@ -604,7 +604,7 @@ public class Common {
     public static String lowerFirstChar(String string) {
         if (string == null) return string;
         char[] charSeq = string.toCharArray();
-        if (charSeq.length > 1 && charSeq[0] >= 'A' && charSeq[0] <= 'Z') {
+        if (charSeq.length > 0 && charSeq[0] >= 'A' && charSeq[0] <= 'Z') {
             charSeq[0] = (char) (charSeq[0] + TO_LOWER);
             return new String(charSeq);
         }
@@ -614,7 +614,7 @@ public class Common {
     public static String upperFirstChar(String string) {
         if (string == null) return string;
         char[] charSeq = string.toCharArray();
-        if (charSeq.length > 1 && charSeq[0] >= 'a' && charSeq[0] <= 'z') {
+        if (charSeq.length > 0 && charSeq[0] >= 'a' && charSeq[0] <= 'z') {
             charSeq[0] = (char) (charSeq[0] - TO_LOWER);
             return new String(charSeq);
         }

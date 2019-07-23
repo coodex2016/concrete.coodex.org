@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.coodex.util.GenericTypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 import static org.coodex.util.GenericTypeHelper.typeToClass;
 
 //import static org.coodex.util.TypeHelper.solve;
@@ -70,15 +70,6 @@ public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableSe
                         public T getDefaultProvider() {
                             return defaultService == null ? super.getDefaultProvider() : defaultService;
                         }
-
-                        @Override
-                        protected Class<T> getInterfaceClass() {
-                            //noinspection unchecked
-                            return typeToClass(solve(
-                                    AcceptableServiceLoader.class.getTypeParameters()[1],
-                                    AcceptableServiceLoader.this.getClass()
-                            ));
-                        }
                     };
                 }
             }
@@ -89,15 +80,15 @@ public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableSe
 
     @SuppressWarnings("unchecked")
     private boolean accept(T instance, Param_Type param) {
-        Class tClass = instance.getClass();
+//        Class tClass = instance.getClass();
         Class paramClass = param == null ? null : param.getClass();
 //        Type t = ;
         if (paramClass == null)
             return instance.accept(null);
 
         // todo 需要考虑泛型数组的问题
-        Class required = typeToClass(solve(
-                AcceptableService.class.getTypeParameters()[0], tClass));
+        Class required = typeToClass(solveFromInstance(
+                AcceptableService.class.getTypeParameters()[0], instance));
         //(t instanceof ParameterizedType) ? (Class) ((ParameterizedType) t).getRawType() : (Class) t;
 
         if (required != null && required.isAssignableFrom(paramClass)) {
@@ -117,7 +108,7 @@ public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableSe
             T instance = getServiceLoaderFacade().getDefaultProvider();
             if (accept(instance, param))
                 list.add(instance);
-        } catch (Throwable th) {
+        } catch (Throwable ignored) {
         }
         return list;
     }
@@ -133,7 +124,7 @@ public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableSe
                 return instance;
             if(instance.accept(param))
                 return instance;
-        } catch (Throwable th) {
+        } catch (Throwable ignored) {
         }
         log.info("no service instance accept this: {}", param);
 

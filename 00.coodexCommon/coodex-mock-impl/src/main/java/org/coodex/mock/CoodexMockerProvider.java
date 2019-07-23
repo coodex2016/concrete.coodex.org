@@ -17,8 +17,6 @@
 package org.coodex.mock;
 
 import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
 import org.coodex.closure.CallableClosure;
 import org.coodex.closure.MapClosureContext;
 import org.coodex.closure.StackClosureContext;
@@ -224,7 +222,7 @@ public class CoodexMockerProvider implements MockerProvider {
             if (annotation != null && annotation.annotationType().getAnnotation(Mock.class) == null) continue;
             for (TypeMocker provider : TYPE_MOCKERS.getInstance()) {
                 if (annotation == null || annotation.annotationType().equals(
-                        solve(TypeMocker.class.getTypeParameters()[0],
+                        solveFromType(TypeMocker.class.getTypeParameters()[0],
                                 provider.getClass()
                         ))) {
                     //noinspection unchecked
@@ -312,14 +310,14 @@ public class CoodexMockerProvider implements MockerProvider {
     private Object mockIfCollectionAndMap(Class c, Type collectionsContext, Annotation[] annotations) {
         Object result;
         if (Collection.class.isAssignableFrom(c)) {
-            Type t = solve(Collection.class.getTypeParameters()[0], collectionsContext);
+            Type t = solveFromType(Collection.class.getTypeParameters()[0], collectionsContext);
             if (t instanceof TypeVariable) {
                 throw new MockException("Cannot mock collection: " + collectionsContext);
             }
             result = mockCollection(c, t, 0, annotations);
         } else if (Map.class.isAssignableFrom(c)) {
-            Type key = solve(Map.class.getTypeParameters()[0], collectionsContext);
-            Type value = solve(Map.class.getTypeParameters()[1], collectionsContext);
+            Type key = solveFromType(Map.class.getTypeParameters()[0], collectionsContext);
+            Type value = solveFromType(Map.class.getTypeParameters()[1], collectionsContext);
             if (key instanceof TypeVariable || value instanceof TypeVariable) {
                 throw new MockException("Cannot mock map: " + collectionsContext);
             }
@@ -544,7 +542,7 @@ public class CoodexMockerProvider implements MockerProvider {
     }
 
     private boolean acceptType(SequenceMockerFactory sequenceMockerFactory, Type type) {
-        Class c1 = typeToClass(solve(SequenceMockerFactory.class.getTypeParameters()[0], sequenceMockerFactory.getClass()));
+        Class c1 = typeToClass(solveFromInstance(SequenceMockerFactory.class.getTypeParameters()[0], sequenceMockerFactory));
         Class c2 = typeToClass(type);
         //noinspection unchecked
         return c1.isAssignableFrom(c2);
@@ -688,12 +686,13 @@ public class CoodexMockerProvider implements MockerProvider {
                     Class c = typeToClass((parameterizedType).getRawType());
                     if (Collection.class.isAssignableFrom(c)) {
                         return mockCollection(c,
-                                solve(Collection.class.getTypeParameters()[0], parameterizedType),
+                                solveFromType(Collection.class.getTypeParameters()[0], parameterizedType),
                                 d + 1, annotations);
                     } else if (Map.class.isAssignableFrom(c)) {
+                        //noinspection unchecked
                         return mockMap(c, d + 1,
-                                solve(Map.class.getTypeParameters()[0], componentType),
-                                solve(Map.class.getTypeParameters()[1], componentType),
+                                solveFromType(Map.class.getTypeParameters()[0], componentType),
+                                solveFromType(Map.class.getTypeParameters()[1], componentType),
                                 annotations);
                     }
                 }
@@ -783,7 +782,7 @@ public class CoodexMockerProvider implements MockerProvider {
             }
 
             @Override
-            public Object call() throws Throwable {
+            public Object call() {
                 if (DIMENSIONS_CONTEXT.get().nullable(d)) return null;
                 Map instance = buildMapInstance(mapClass, d, annotations);
                 int size = DIMENSIONS_CONTEXT.get().getSize(d);
@@ -818,7 +817,7 @@ public class CoodexMockerProvider implements MockerProvider {
             public Object call() throws InvocationTargetException, IllegalAccessException {
                 Type toMock = type;
                 if (toMock instanceof TypeVariable) {
-                    toMock = solve((TypeVariable) toMock, TYPE_CONTEXT.get());
+                    toMock = solveFromType((TypeVariable) toMock, TYPE_CONTEXT.get());
                 }
 
                 if (toMock instanceof TypeVariable) {
@@ -1109,7 +1108,7 @@ public class CoodexMockerProvider implements MockerProvider {
                     result.add(annotation);
                 }
             }
-            return result.toArray(new Annotation[result.size()]);
+            return result.toArray(new Annotation[0]);
         }
 
         int getDepth() {

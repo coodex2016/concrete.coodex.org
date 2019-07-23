@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.TypeVariable;
 import java.util.*;
 
-import static org.coodex.util.GenericTypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 import static org.coodex.util.GenericTypeHelper.typeToClass;
 
 //import static org.coodex.util.TypeHelper.solve;
@@ -38,7 +38,7 @@ public abstract class AbstractCopierCommon<A, B> {
             if (classes[index.getIndex()] == null) {
                 TypeVariable t = AbstractCopierCommon.class.getTypeParameters()[index.getIndex()];
                 classes[index.getIndex()] = IF.isNull(
-                        typeToClass(solve(t, getClass())), ErrorCodes.UNKNOWN_CLASS, t);
+                        typeToClass(solveFromInstance(t, this)), ErrorCodes.UNKNOWN_CLASS, t);
             }
         }
         return classes[index.getIndex()];

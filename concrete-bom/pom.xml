@@ -294,6 +294,12 @@
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-support-jaxrs-swagger</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-support-websocket</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>

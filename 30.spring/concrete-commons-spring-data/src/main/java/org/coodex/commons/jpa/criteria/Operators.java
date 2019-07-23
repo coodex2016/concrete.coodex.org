@@ -20,7 +20,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
-import static org.coodex.util.GenericTypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 
 /**
  * 根据 sujiwu@126.com 思路重设计、编码
@@ -159,11 +159,12 @@ public class Operators {
 
         protected abstract <ATTR> Predicate buildPredicate(Path<ATTR> attrPath, CriteriaBuilder cb, ATTR[] attributes);
 
-        protected <ATTR> Class<ATTR> getAttributeType(Path<ATTR> attrPath) {
-            return (Class<ATTR>) solve(Path.class.getTypeParameters()[0], attrPath.getClass());
+        <ATTR> Class<ATTR> getAttributeType(Path<ATTR> attrPath) {
+            //noinspection ConstantConditions
+            return (Class<ATTR>) solveFromInstance(Path.class.getTypeParameters()[0], attrPath);
         }
 
-        protected <ATTR> Predicate unsupported(Path<ATTR> attrPath) {
+        <ATTR> Predicate unsupported(Path<ATTR> attrPath) {
             throw new IllegalArgumentException("logical " + getLogical()
                     + " unsupported attribute type: " + getAttributeType(attrPath));
         }

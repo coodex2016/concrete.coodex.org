@@ -21,7 +21,6 @@ import org.coodex.concrete.api.Signable;
 import org.coodex.concrete.apitools.AbstractRender;
 import org.coodex.concrete.core.signature.SignUtil;
 import org.coodex.util.Common;
-import org.coodex.util.TypeHelper;
 
 import java.io.IOException;
 import java.lang.reflect.GenericArrayType;
@@ -30,7 +29,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.StringTokenizer;
 
-import static org.coodex.util.GenericTypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.solveFromType;
 
 
 /**
@@ -98,7 +97,7 @@ public abstract class DocToolkit {
             return builder.toString();
         } else if (t instanceof TypeVariable) {
             if (contextClass != null) {
-                return formatTypeStr(solve((TypeVariable) t, contextClass));
+                return formatTypeStr(solveFromType((TypeVariable) t, contextClass));
             } else {
                 TypeVariable typeVariable = (TypeVariable) t;
                 StringBuilder builder = new StringBuilder();

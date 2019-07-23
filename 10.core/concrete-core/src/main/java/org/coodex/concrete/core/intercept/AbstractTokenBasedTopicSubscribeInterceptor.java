@@ -17,7 +17,10 @@
 package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.DefinitionContext;
+import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.concrete.message.*;
@@ -31,6 +34,7 @@ import java.lang.reflect.Type;
 
 import static org.coodex.concrete.core.intercept.InterceptOrders.OTHER;
 import static org.coodex.concrete.core.intercept.TBTSManager.*;
+import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 
 @ServerSide
 @TestContext
@@ -39,13 +43,8 @@ public abstract class AbstractTokenBasedTopicSubscribeInterceptor<M extends Seri
 
     @Inject
     private Token token;
-    private Singleton<TokenBasedTopic<M>> tokenBasedTopicSingleton = new Singleton<TokenBasedTopic<M>>(
-            new Singleton.Builder<TokenBasedTopic<M>>() {
-                @Override
-                public TokenBasedTopic<M> build() {
-                    return buildTopic();
-                }
-            }
+    private Singleton<TokenBasedTopic<M>> tokenBasedTopicSingleton = new Singleton<>(
+            this::buildTopic
     );
 
     private TokenBasedTopic<M> buildTopic() {
@@ -59,18 +58,18 @@ public abstract class AbstractTokenBasedTopicSubscribeInterceptor<M extends Seri
             }
         }
         if (clz.getTypeParameters().length == 1) {
-            return Topics.<M, TokenBasedTopic<M>>get(GenericTypeHelper.buildParameterizedType(clz,
+            return Topics.get(GenericTypeHelper.buildParameterizedType(clz,
                     getMessageType()), queue);
         } else if (clz.getTypeParameters().length == 0) {
-            return Topics.<M, TokenBasedTopic<M>>get(clz, queue);
+            return Topics.get(clz, queue);
         } else {
             throw new ConcreteException(ErrorCodes.UNKNOWN_CLASS, clz);
         }
     }
 
     private Type getMessageType() {
-        return GenericTypeHelper.solve(AbstractTokenBasedTopicSubscribeInterceptor.class.getTypeParameters()[0],
-                this.getClass());
+        return solveFromInstance(AbstractTokenBasedTopicSubscribeInterceptor.class.getTypeParameters()[0],
+                this);
     }
 
     @Override
@@ -80,7 +79,7 @@ public abstract class AbstractTokenBasedTopicSubscribeInterceptor<M extends Seri
 
     protected abstract MessageFilter<M> subscribe();
 
-    protected boolean checkAccountCredible() {
+    private boolean checkAccountCredible() {
         return true;
     }
 

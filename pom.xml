@@ -119,6 +119,7 @@
         <module>00.coodexCommon/coodex-mock-spec</module>
         <module>00.coodexCommon/coodex-mock-impl</module>
         <module>10.core/concrete-core-mock</module>
+        <module>20.service.support/concrete-support-jaxrs-swagger</module>
 
     </modules>
 
@@ -527,6 +528,12 @@
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
                 <version>${cglib.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-core</artifactId>
+                <version>2.0.8</version>
             </dependency>
 
 

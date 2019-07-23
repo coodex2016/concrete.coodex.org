@@ -44,7 +44,7 @@ public class MessageObserverBeanPostProcessor extends InstantiationAwareBeanPost
         MessageConsumer messageConsumer = observer.getClass().getAnnotation(MessageConsumer.class);
         Type topicType = null;
         String queue = null;
-        final Type messageType = GenericTypeHelper.solve(Observer.class.getTypeParameters()[0], observer.getClass());
+        final Type messageType = GenericTypeHelper.solveFromInstance(Observer.class.getTypeParameters()[0], observer);
 
         Class<? extends AbstractTopic> topicClass = messageConsumer == null ? Topic.class :
                 messageConsumer.topicType();

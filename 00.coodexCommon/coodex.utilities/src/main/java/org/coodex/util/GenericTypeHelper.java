@@ -16,10 +16,7 @@
 
 package org.coodex.util;
 
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,13 +31,45 @@ public class GenericTypeHelper {
             }
     );
 
-    public static Type solve(TypeVariable t, Type context) {
+    public static Type solveFromInstance(TypeVariable t, Object instance){
+        if(instance == null) return t;
+        if(instance instanceof Type) return solveFromType(t, (Type) instance);
+        Type result = solveFromType(t, instance.getClass());
+        if(result instanceof TypeVariable){
+            // 内部类处理
+            for(Field field: instance.getClass().getDeclaredFields()){
+                if(field.getName().startsWith("this$")){
+                    field.setAccessible(true);
+                    try {
+                        Type x = solveFromInstance((TypeVariable) result, field.get(instance));
+                        if(!(x instanceof TypeVariable)){
+                            return x;
+                        }
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e.getLocalizedMessage(), e);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public static Type solveFromType(TypeVariable t, Type context){
         return typeInfos.getInstance(context).find(t);
+    }
+
+    @Deprecated
+    public static Type solve(TypeVariable t, Object context) {
+        if(context instanceof Type){
+            return solveFromType(t, (Type) context);
+        } else {
+            return solveFromInstance(t, context);
+        }
     }
 
     public static Type toReference(Type t, Type context) {
         return t instanceof TypeVariable ?
-                solve((TypeVariable) t, context) :
+                solveFromType((TypeVariable) t, context) :
                 build(t, context);
     }
 
@@ -107,6 +136,7 @@ public class GenericTypeHelper {
         GenericArrayTypeImpl(GenericTypeInfo genericTypeInfo, GenericArrayType genericArrayType) {
             Type gct = genericArrayType.getGenericComponentType();
             if (gct instanceof TypeVariable) {
+                //noinspection unchecked
                 genericComponentType = genericTypeInfo.find((TypeVariable<Class>) gct);
             } else if (gct instanceof ParameterizedType) {
                 genericComponentType = new ParameterizedTypeImpl(genericTypeInfo, (ParameterizedType) gct);

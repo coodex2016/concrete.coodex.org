@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.common.ConcreteHelper.getScheduler;
-import static org.coodex.util.GenericTypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 
 /**
  * Created by davidoff shen on 2017-04-18.
@@ -59,7 +59,7 @@ public class CountFacadeProvider implements CountFacade {
 
         for (Counter counter : counterProvider.getAllInstances()) {
 
-            Type type = solve(t, counter.getClass());
+            Type type = solveFromInstance(t, counter);
             if (type instanceof Class) {
                 try {
                     getCounterChain((Class) type).addCounter(counter);

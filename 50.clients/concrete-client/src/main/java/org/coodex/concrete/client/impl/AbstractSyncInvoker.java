@@ -51,7 +51,7 @@ public abstract class AbstractSyncInvoker extends AbstractInvoker {
                 @Override
                 public Object proceed() throws Throwable {
                     if (isMock()) {
-                        return Mocker.mock(method.getGenericReturnType(), clz, method.getAnnotations());
+                        return Mocker.mockMethod(method, clz);
                     } else {
                         return execute(clz, method, args);
                     }

@@ -21,13 +21,13 @@ import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.common.modules.AbstractParam;
 import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.util.Common;
-import org.coodex.util.GenericTypeHelper;
 
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.*;
 
 import static org.coodex.concrete.common.ConcreteHelper.isConcreteService;
+import static org.coodex.util.GenericTypeHelper.solveFromType;
 
 public abstract class AbstractAngularRender<U extends AbstractUnit> extends AbstractRender {
 
@@ -37,6 +37,7 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
     };
 
     /// TODO: 处理方式不妥。如果Service method定义变换顺序后，会导致基于原版本的code全部出问题
+    @SuppressWarnings("WeakerAccess")
     protected String getMethodName(String name, Set<String> methods) {
         String methodName = name;
         int prefix = 0;
@@ -66,29 +67,29 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
     }
 
     protected void packages(String contextPath) throws IOException {
-        Map<String, Set<String>> services = new HashMap<String, Set<String>>();
-        Set<String> providers = new HashSet<String>();
-        Set<String> packages = new HashSet<String>();
+        Map<String, Set<String>> services = new HashMap<>();
+        Set<String> providers = new HashSet<>();
+        Set<String> packages = new HashSet<>();
 
         for (String key : getClasses().keySet()) {
             packages.add(key);
             Map<Class, TSClass> map = getClasses().get(key);
-            Map<String, Object> toWrite = new HashMap<String, Object>();
+            Map<String, Object> toWrite = new HashMap<>();
             toWrite.put("contextPath", getContextPath(key));
-            Set<Class> classSet = new HashSet<Class>();
+            Set<Class> classSet = new HashSet<>();
             for (Class clz : map.keySet()) {
                 //ConcreteService.class.isAssignableFrom(clz)
                 if (isConcreteService(clz)) {
                     toWrite.put("includeServices", Boolean.TRUE);
                     providers.add(map.get(clz).getClassName());
-                    Set<String> set = services.containsKey(key) ? services.get(key) : new HashSet<String>();
+                    Set<String> set = services.containsKey(key) ? services.get(key) : new HashSet<>();
                     set.add(map.get(clz).getClassName());
                     services.put(key, set);
                 }
                 classSet.addAll(map.get(clz).getImports());
             }
 
-            Map<String, TSImport> imports = new HashMap<String, TSImport>();
+            Map<String, TSImport> imports = new HashMap<>();
             for (Class clz : classSet) {
                 String packageName = getPackageKey(clz);
                 if (key.equals(packageName)) continue;
@@ -107,7 +108,7 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
                     "tspackage.ftl",
                     toWrite);
         }
-        Map<String, Object> toWrite = new HashMap<String, Object>();
+        Map<String, Object> toWrite = new HashMap<>();
         toWrite.put("services", services);
         toWrite.put("providers", providers);
         toWrite.put("packages", packages);
@@ -120,8 +121,8 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
     }
 
     private Collection<TSClass> sort(Map<Class, TSClass> classes) {
-        List<TSClass> ordered = new ArrayList<TSClass>();
-        Map<Class, TSClass> cache = new HashMap<Class, TSClass>(classes);
+        List<TSClass> ordered = new ArrayList<>();
+        Map<Class, TSClass> cache = new HashMap<>(classes);
         while (cache.keySet().size() > 0) {
             Class[] keys = cache.keySet().toArray(new Class[0]);
             for (Class key : keys) {
@@ -152,7 +153,7 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
         TSModule tsModule = new TSModule(clz);
         tsModule.setBelong(moduleName);
 
-        Set<String> methods = new HashSet<String>();
+        Set<String> methods = new HashSet<>();
         for (U unit : module.getUnits()) {
 
             TSMethod method = new TSMethod();
@@ -174,7 +175,7 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
     protected abstract String getMethodPath(AbstractModule<U> module, U unit);
 
     private List<TSParam> getParams(U unit, TSClass clz) {
-        List<TSParam> fieldList = new ArrayList<TSParam>();
+        List<TSParam> fieldList = new ArrayList<>();
         for (int i = 0; i < unit.getParameters().length; i++) {
             AbstractParam param = unit.getParameters()[i];
             TSParam field = new TSParam();
@@ -188,12 +189,13 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
     private Map<Class, TSClass> getTSClassMap(Class<?> clz) {
         Map<String, Map<Class, TSClass>> classes = getClasses();
         String packageName = clz.getPackage().getName().replace('.', '/');
-        Map<Class, TSClass> moduleMap = classes.get(packageName);
-        if (moduleMap == null) {
-            moduleMap = new HashMap<Class, TSClass>();
-            classes.put(packageName, moduleMap);
-        }
-        return moduleMap;
+//        Map<Class, TSClass> moduleMap = classes.get(packageName);
+//        if (moduleMap == null) {
+//            moduleMap = new HashMap<>();
+//            classes.put(packageName, moduleMap);
+//        }
+//        return moduleMap;
+        return classes.computeIfAbsent(packageName, k -> new HashMap<>());
     }
 
     private String getClassType(Type type, TSClass clz, Class contextClass) {
@@ -209,7 +211,7 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
             return getClassType(((GenericArrayType) type).getGenericComponentType(), clz, contextClass) + "[]";
         } else if (type instanceof TypeVariable) {
             if (contextClass != null) {
-                return getClassType(GenericTypeHelper.solve((TypeVariable) type, contextClass), clz, null);
+                return getClassType(solveFromType((TypeVariable) type, contextClass), clz, null);
             } else
                 return ((TypeVariable) type).getName();
         } else {

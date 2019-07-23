@@ -35,7 +35,7 @@ import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.coodex.concrete.message.Topics.TAG_QUEUE;
-import static org.coodex.util.GenericTypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.solveFromType;
 
 
 /**
@@ -75,7 +75,7 @@ class CourierBuilder
 
 
     static Type getMessageType(Type topicType) {
-        return solve(AbstractTopic.class.getTypeParameters()[0], topicType);
+        return solveFromType(AbstractTopic.class.getTypeParameters()[0], topicType);
     }
 
     private Class<? extends CourierPrototype> getLocalCourierPrototype(String queue, String destination) {

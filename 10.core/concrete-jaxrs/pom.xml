@@ -29,11 +29,8 @@
     <artifactId>concrete-jaxrs</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-core</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
+
+
 
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -41,6 +38,27 @@
             <version>2.1-m05</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>coodex-mock-impl</artifactId>
+            <version>${coodex.utilities.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>concrete-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+
     </dependencies>
 
 

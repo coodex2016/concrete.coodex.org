@@ -26,6 +26,11 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-23
+
+- `coodex-mock-impl`增加一个[在spring-webmvc中使用`mock`的例子](00.coodexCommon/coodex-mock-impl/src/main/java/org/coodex/mock/spring/webmvc/SpringWebMockAspect.java)
+- 增加`concrete-support-jaxrs-swagger`模块，轻度整合`swagger-ui`，初步达到文档、调试、模拟一体化，后续需要持续完善
+
 ## 2019-07-20
 
 - 增加`coodex-mock-spec`和`coodex-mock-impl`，[点我](00.coodexCommon/coodex-mock-spec/README.md) 

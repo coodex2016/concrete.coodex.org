@@ -29,6 +29,7 @@ import javax.ws.rs.HttpMethod;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.coodex.concrete.jaxrs.JaxRSHelper.slash;
@@ -56,7 +57,7 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
 
     private synchronized List<JaxrsParam> _getPojo() {
         if (pojo == null) {
-            pojo = new ArrayList<JaxrsParam>();
+            pojo = new ArrayList<>();
         }
         return pojo;
     }
@@ -89,11 +90,10 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
 //        }
 
         if (pojoCount > pojoLimited) {
-            StringBuilder builder = new StringBuilder();
-            builder.append("Object parameter count limited ").append(pojoLimited).append(" in HttpMethod.")
-                    .append(httpMethod).append(", ").append(pojoCount).append(" used in ")
-                    .append(getMethod().toGenericString());
-            throw new RuntimeException(builder.toString());
+            String builder = "Object parameter count limited " + pojoLimited + " in HttpMethod." +
+                    httpMethod + ", " + pojoCount + " used in " +
+                    getMethod().toGenericString();
+            throw new RuntimeException(builder);
         }
 
 //        if(pojoCount >= 2)
@@ -159,7 +159,7 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
                 if (pathParamValue != null) {
                     String restfulNode = "{" + pathParamValue + "}";
 
-                    if (toTest == null || toTest.indexOf(restfulNode) < 0) {
+                    if (!toTest.contains(restfulNode)) {
                         unitName.append(slash(restfulNode));
                     }
                 }
@@ -174,9 +174,9 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
         List<Class> inheritedChain = ConcreteHelper.inheritedChain(
                 getMethod().getDeclaringClass(), getDeclaringModule().getInterfaceClass());
         if (inheritedChain == null)
-            inheritedChain = Arrays.asList();
+            inheritedChain = Collections.emptyList();
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (Class c : inheritedChain) {
             String serviceName = ConcreteHelper.getServiceName(c);
             if (!Common.isBlank(serviceName))
@@ -190,7 +190,7 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
     }
 
 
-    protected String getPathParam(JaxrsParam parameter) {
+    private String getPathParam(JaxrsParam parameter) {
 //        PathParam pathParam = parameter.getDeclaredAnnotation(PathParam.class);
 //        if (pathParam != null) return pathParam.value();
 //        PathParam pathParam1 = parameter.getDeclaredAnnotation(PathParam.class);
@@ -235,6 +235,7 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
         if (used024Behavior()) {
             return param.getDeclaredAnnotation(Body.class) != null;
         } else {
+            //noinspection IndexOfReplaceableByContains
             return getDeclaredName().indexOf(String.format("{%s}", param.getName())) < 0;
         }
     }

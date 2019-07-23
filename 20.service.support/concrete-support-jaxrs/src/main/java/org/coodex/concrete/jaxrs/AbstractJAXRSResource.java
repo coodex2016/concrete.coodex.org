@@ -36,7 +36,7 @@ import java.util.Map;
 import static org.coodex.concrete.common.ConcreteContext.KEY_TOKEN;
 import static org.coodex.concrete.common.ConcreteContext.runServiceWithContext;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.KEY_CLIENT_PROVIDER;
-import static org.coodex.util.GenericTypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 import static org.coodex.util.GenericTypeHelper.typeToClass;
 
 /**
@@ -57,6 +57,7 @@ public abstract class AbstractJAXRSResource<T> {
     protected HttpHeaders httpHeaders;
     @Context
     protected HttpServletRequest httpRequest;
+
 
     private static boolean isDevModel() {
         return ConcreteHelper.isDevModel("jaxrs");
@@ -89,7 +90,7 @@ public abstract class AbstractJAXRSResource<T> {
 
     @SuppressWarnings("unchecked")
     protected Class<T> getInterfaceClass() {
-        return (Class<T>) typeToClass(solve(AbstractJAXRSResource.class.getTypeParameters()[0], getClass()));
+        return (Class<T>) typeToClass(solveFromInstance(AbstractJAXRSResource.class.getTypeParameters()[0], this));
     }
 
     protected Method findMethod(String methodName, Class<?> c) {

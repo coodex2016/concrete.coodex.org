@@ -26,5 +26,6 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.PARAMETER,ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface Body {
 }

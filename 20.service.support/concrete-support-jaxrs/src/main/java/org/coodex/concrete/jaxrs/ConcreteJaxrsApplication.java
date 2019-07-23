@@ -20,6 +20,8 @@ import org.coodex.concrete.common.AbstractErrorCodes;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.ErrorMessageFacade;
+import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,17 +44,43 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     private Set<Object> singletonInstances = new HashSet<>();
     private Set<Class<?>> othersClasses = new HashSet<>();
 
+    private String name;
+
     private Application application = null;
     private boolean exceptionMapperRegistered = false;
+
+    private ServiceLoader<ServiceRegisteredListener> registerNotifyServiceServiceLoader = new ServiceLoaderImpl<ServiceRegisteredListener>() {
+        @Override
+        public ServiceRegisteredListener getDefaultProvider() {
+            return (instance, concreteService) -> {
+            };
+        }
+    };
+
+    private ServiceLoader<DefaultJaxrsClassGetter> getterServiceLoader = new ServiceLoaderImpl<DefaultJaxrsClassGetter>() {
+    };
 
     public ConcreteJaxrsApplication() {
         super();
         registerDefault();
     }
 
+    public ConcreteJaxrsApplication(String name) {
+        this();
+        this.name = name;
+    }
+
     public ConcreteJaxrsApplication(Application application) {
         this.application = application;
         registerDefault();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @SuppressWarnings({"unsafe"})
@@ -81,6 +109,9 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     private void registerDefault() {
         register(Polling.class);
         registerPackage(ErrorCodes.class.getPackage().getName());
+        for (DefaultJaxrsClassGetter getter : getterServiceLoader.getAllInstances()) {
+            register(getter.getClasses());
+        }
     }
 
     @Override
@@ -108,9 +139,19 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
         }
     }
 
+    private void notifyToAll(Class<?> concreteServiceClass) {
+        for (ServiceRegisteredListener notifyService : registerNotifyServiceServiceLoader.getAllInstances()) {
+            try {
+                notifyService.register(this, concreteServiceClass);
+            } catch (Throwable th) {
+                log.warn("{} notify {} failed.", concreteServiceClass.getName(), notifyService, th);
+            }
+        }
+    }
 
     private void registerConcreteService(Class<?> concreteServiceClass) {
         if (!servicesClasses.contains(concreteServiceClass)) {
+            notifyToAll(concreteServiceClass);
             servicesClasses.add(concreteServiceClass);
             Class<?> jaxrs = generateJaxrsClass(concreteServiceClass);
 

@@ -95,10 +95,9 @@ public class MockV2Interceptor extends AbstractSyncInterceptor {
             return null;
         }
 
-        return Mocker.mock(
-                context.getDeclaringMethod().getReturnType(),
-                context.getDeclaringClass(),
-                context.getDeclaringMethod().getAnnotations());
+        return Mocker.mockMethod(
+                context.getDeclaringMethod(),
+                context.getDeclaringClass());
 
     }
 

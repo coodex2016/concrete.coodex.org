@@ -16,8 +16,6 @@
 
 package org.coodex.concrete.apitools.jaxrs;
 
-import org.coodex.util.TypeHelper;
-
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -25,7 +23,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.coodex.util.GenericTypeHelper.solve;
+import static org.coodex.util.GenericTypeHelper.solveFromType;
 
 /**
  * Created by davidoff shen on 2016-12-04.
@@ -75,7 +73,7 @@ public class POJOTypeInfo {
             }
             return (Class<?>) genericType;
         } else if (genericType instanceof TypeVariable) {
-            return $loadClass(solve((TypeVariable) genericType, contextType));
+            return $loadClass(solveFromType((TypeVariable) genericType, contextType));
         }
         throw new RuntimeException("unknown Type: " + genericType + ". genericType: " + this.genericType
                 + ": instanceClass:" + contextType);

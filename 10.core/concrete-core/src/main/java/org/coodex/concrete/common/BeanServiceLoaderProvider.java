@@ -19,6 +19,8 @@ package org.coodex.concrete.common;
 import org.coodex.util.ReflectHelper;
 import org.coodex.util.Singleton;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 /**
@@ -42,7 +44,17 @@ public class BeanServiceLoaderProvider /*extends ServiceLoaderImpl<BeanProvider>
                 for(BeanProvider beanProvider: serviceLoader){
                     return beanProvider;
                 }
-                return DEFAULT_PROVIDER_SINGLETON.getInstance();
+                return new BeanProvider() {
+                    @Override
+                    public <T> T getBean(Class<T> type) {
+                        return null;
+                    }
+
+                    @Override
+                    public <T> Map<String, T> getBeansOfType(Class<T> type) {
+                        return new HashMap<>();
+                    }
+                };
             }
     ) ;
 

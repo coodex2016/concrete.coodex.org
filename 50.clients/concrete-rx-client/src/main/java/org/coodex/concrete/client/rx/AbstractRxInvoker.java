@@ -17,12 +17,10 @@
 package org.coodex.concrete.client.rx;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import org.aopalliance.intercept.MethodInvocation;
-import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.AbstractInvoker;
@@ -104,10 +102,9 @@ public abstract class AbstractRxInvoker extends AbstractInvoker {
     private Observable invokeP(final DefinitionContext context, Object... args) {
         if (isMock()) {
             //noinspection unchecked
-            return Observable.create((ObservableOnSubscribe) e -> e.onNext(Mocker.mock(
-                    context.getDeclaringMethod().getGenericReturnType(),
-                    context.getDeclaringClass(),
-                    context.getDeclaringMethod().getAnnotations())));
+            return Observable.create((ObservableOnSubscribe) e -> e.onNext(Mocker.mockMethod(
+                    context.getDeclaringMethod(),
+                    context.getDeclaringClass())));
         } else {
             return invoke(context, args);
         }

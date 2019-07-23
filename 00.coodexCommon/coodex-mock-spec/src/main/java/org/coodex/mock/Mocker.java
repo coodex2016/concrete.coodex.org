@@ -17,9 +17,10 @@
 package org.coodex.mock;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.ServiceLoader;
+import java.util.*;
 
 
 public final class Mocker {
@@ -67,6 +68,55 @@ public final class Mocker {
 
     public static Object mock(Type type, Type context, Annotation... annotations) {
         return getMockerProvider().mock(type, context, annotations);
+    }
+
+    public static Object mockMethod(Method method) {
+        return mockMethod(method, method.getDeclaringClass());
+    }
+
+    public static Object mockMethod(Method method, Type instanceType) {
+        return mock(
+                method.getGenericReturnType(),
+                instanceType,
+                merge(method.getAnnotations(),
+                        getTypeAnnotations(instanceType)));
+    }
+
+    public static Annotation[] getTypeAnnotations(Type instanceType) {
+        Class contextClass = null;
+        if (instanceType instanceof Class) {
+            contextClass = (Class) instanceType;
+        } else if (instanceType instanceof ParameterizedType) {
+            contextClass = (Class) ((ParameterizedType) instanceType).getRawType();
+        }
+        return contextClass == null ? null : contextClass.getAnnotations();
+    }
+
+    private static Annotation[] merge(Annotation[]... annotations) {
+        List<Annotation> list = new ArrayList<Annotation>();
+        if (annotations != null) {
+            for (Annotation[] array : annotations) {
+                if (array != null && array.length > 0) {
+                    list.addAll(Arrays.asList(array));
+                }
+            }
+        }
+        return list.toArray(new Annotation[0]);
+    }
+
+    public static Object mockParameter(Method method, int index) {
+        return mockParameter(method, index, method.getDeclaringClass());
+    }
+
+    public static Object mockParameter(Method method, int index, Type instanceType) {
+        return mock(
+                method.getGenericParameterTypes()[index],
+                instanceType,
+                merge(
+                        method.getParameterAnnotations()[index],
+                        method.getAnnotations(),
+                        getTypeAnnotations(instanceType))
+        );
     }
 
 }
