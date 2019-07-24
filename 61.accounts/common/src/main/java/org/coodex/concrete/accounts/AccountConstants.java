@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,11 @@
 
 package org.coodex.concrete.accounts;
 
-import org.coodex.concrete.common.ClassifiableAccountID;
-import org.coodex.concrete.common.NamedAccount;
-import org.coodex.concrete.common.SaaSAccount;
+public class AccountConstants {
 
-/**
- * Created by davidoff shen on 2017-05-19.
- */
-public interface Administrator extends NamedAccount<ClassifiableAccountID>, SaaSAccount<ClassifiableAccountID> {
+    public static final int TYPE_ADMINISTRATOR = 0;
+    public static final int TYPE_ORGANIZATION = 1;
+    public static final int TYPE_TENANT_ADMINISTRATOR = 2;
 
-    boolean verify(String password, String authCode);
+    public static final int TYPE_SIMPLE = 99999;
 }

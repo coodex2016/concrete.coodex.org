@@ -35,12 +35,11 @@ public class AccountFactoryAggregationFilter extends AbstractConflictSolution {
 
     @Override
     protected <T> Map<String, T> doFilter(Map<String, T> beans, Class<T> clz) {
-        Map<String, T> map = new HashMap<String, T>();
-        for (String key : beans.keySet()) {
-            T accountFactory = beans.get(key);
-            if (accountFactory != null &&
-                    AccountFactoryAggregation.class.isAssignableFrom(accountFactory.getClass())) {
-                map.put(key, accountFactory);
+        Map<String, T> map = new HashMap<>();
+        for (Map.Entry<String, T> entry : beans.entrySet()) {
+            if (entry.getValue() != null &&
+                    AccountFactoryAggregation.class.isAssignableFrom(entry.getValue().getClass())) {
+                map.put(entry.getKey(), entry.getValue());
             }
         }
         if (map.size() == 0) {

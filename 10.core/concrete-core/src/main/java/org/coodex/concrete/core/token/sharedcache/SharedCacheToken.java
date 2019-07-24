@@ -94,9 +94,9 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <ID extends AccountID> Account<ID> currentAccount() {
+    public Account currentAccount() {
         return tokenData.currentAccountId == null ? null :
-                BeanServiceLoaderProvider.getBeanProvider().getBean(AccountFactory.class).getAccountByID((ID) tokenData.currentAccountId);
+                BeanServiceLoaderProvider.getBeanProvider().getBean(AccountFactory.class).getAccountByID(tokenData.currentAccountId);
     }
 
     private boolean sameAccount(Account account) {
@@ -116,7 +116,7 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
 
     @Override
     public boolean isAccountCredible() {
-        return tokenData.currentAccountId == null ? false : tokenData.accountCredible;
+        return tokenData.currentAccountId != null && tokenData.accountCredible;
     }
 
     @Override
@@ -156,7 +156,7 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
 
     @Override
     public Enumeration<String> attributeNames() {
-        return new Vector<String>(tokenData.map.keySet()).elements();
+        return new Vector<>(tokenData.map.keySet()).elements();
     }
 
     @Override

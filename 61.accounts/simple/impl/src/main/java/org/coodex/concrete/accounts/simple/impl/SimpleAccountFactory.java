@@ -16,28 +16,31 @@
 
 package org.coodex.concrete.accounts.simple.impl;
 
-import org.coodex.concrete.accounts.AccountIDImpl;
-import org.coodex.concrete.common.AcceptableAccountFactory;
 import org.coodex.concrete.common.Account;
-import org.coodex.concrete.common.AccountID;
-import org.coodex.util.Common;
+import org.coodex.concrete.common.ClassifiableAccountFactory;
+import org.coodex.concrete.common.ClassifiableAccountID;
 
-import static org.coodex.concrete.accounts.AccountIDImpl.TYPE_SIMPLE;
+import static org.coodex.concrete.accounts.AccountConstants.TYPE_SIMPLE;
 
 /**
  * Created by davidoff shen on 2017-07-05.
  */
-public class SimpleAccountFactory implements AcceptableAccountFactory<AccountIDImpl> {
+public class SimpleAccountFactory extends ClassifiableAccountFactory {
     @Override
     @SuppressWarnings("unchecked")
-    public <ID extends AccountID> Account<ID> getAccountByID(ID id) {
-        return (Account<ID>) new SimpleAccount((AccountIDImpl) id);
+    public Account<ClassifiableAccountID> getAccountByID(ClassifiableAccountID id) {
+        return new SimpleAccount(id);
     }
 
     @Override
-    public boolean accept(AccountIDImpl param) {
-        boolean isSimple = param != null && param.getType() == TYPE_SIMPLE;
-
-        return isSimple && Common.getResource("accounts/" + param.getId() + ".properties") != null;
+    protected Integer[] getSupportTypes() {
+        return new Integer[]{TYPE_SIMPLE};
     }
+
+//    @Override
+//    public boolean accept(ClassifiableAccountID param) {
+//        boolean isSimple = param != null && param.getCategory() == TYPE_SIMPLE;
+//
+//        return isSimple && Common.getResource("accounts/" + param.getId() + ".properties") != null;
+//    }
 }

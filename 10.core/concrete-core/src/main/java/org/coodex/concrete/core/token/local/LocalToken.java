@@ -18,7 +18,6 @@ package org.coodex.concrete.core.token.local;
 
 import org.coodex.concrete.common.Account;
 import org.coodex.concrete.common.AccountFactory;
-import org.coodex.concrete.common.AccountID;
 import org.coodex.concrete.common.BeanServiceLoaderProvider;
 import org.coodex.concrete.core.token.AbstractToken;
 import org.coodex.util.Clock;
@@ -87,10 +86,10 @@ class LocalToken /*implements Token*/ extends AbstractToken {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <ID extends AccountID> Account<ID> currentAccount() {
+    public Account currentAccount() {
 
         return currentAccountId == null ? null :
-                BeanServiceLoaderProvider.getBeanProvider().getBean(AccountFactory.class).getAccountByID((ID) currentAccountId);
+                BeanServiceLoaderProvider.getBeanProvider().getBean(AccountFactory.class).getAccountByID(currentAccountId);
 //        return currentAccount;
     }
 
@@ -102,7 +101,7 @@ class LocalToken /*implements Token*/ extends AbstractToken {
 
     @Override
     public boolean isAccountCredible() {
-        return currentAccountId == null ? false : accountCredible;
+        return currentAccountId != null && accountCredible;
     }
 
     @Override
@@ -128,6 +127,7 @@ class LocalToken /*implements Token*/ extends AbstractToken {
 
     @Override
     public <T> T getAttribute(String key, Class<T> tClass) {
+        //noinspection unchecked
         return (T) attributes.get(key);
     }
 
@@ -143,7 +143,7 @@ class LocalToken /*implements Token*/ extends AbstractToken {
 
     @Override
     public Enumeration<String> attributeNames() {
-        return new Vector<String>(attributes.keySet()).elements();
+        return new Vector<>(attributes.keySet()).elements();
     }
 
     @Override

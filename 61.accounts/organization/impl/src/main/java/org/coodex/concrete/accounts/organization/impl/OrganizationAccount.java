@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.accounts.organization.impl;
 
-import org.coodex.concrete.accounts.AccountIDImpl;
+import org.coodex.concrete.common.ClassifiableAccountID;
 import org.coodex.concrete.common.NamedAccount;
 import org.coodex.concrete.common.SaaSAccount;
 
@@ -25,11 +25,11 @@ import java.util.Set;
 /**
  * Created by davidoff shen on 2017-05-09.
  */
-public class OrganizationAccount implements NamedAccount<AccountIDImpl>, SaaSAccount<AccountIDImpl> {
+public class OrganizationAccount implements NamedAccount<ClassifiableAccountID>, SaaSAccount<ClassifiableAccountID> {
 
     private String name;
     private String tenant;
-    private AccountIDImpl id;
+    private ClassifiableAccountID id;
     private Set<String> roles;
 
 
@@ -43,11 +43,11 @@ public class OrganizationAccount implements NamedAccount<AccountIDImpl>, SaaSAcc
     }
 
     @Override
-    public AccountIDImpl getId() {
+    public ClassifiableAccountID getId() {
         return id;
     }
 
-    public void setId(AccountIDImpl id) {
+    public void setId(ClassifiableAccountID id) {
         this.id = id;
     }
 

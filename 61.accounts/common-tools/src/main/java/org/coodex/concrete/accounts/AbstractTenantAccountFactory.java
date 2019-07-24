@@ -16,19 +16,20 @@
 
 package org.coodex.concrete.accounts;
 
-import org.coodex.concrete.common.AcceptableAccountFactory;
 import org.coodex.concrete.common.Account;
-import org.coodex.concrete.common.AccountID;
+import org.coodex.concrete.common.ClassifiableAccountFactory;
+import org.coodex.concrete.common.ClassifiableAccountID;
 import org.coodex.concrete.common.IF;
 import org.coodex.config.Config;
 import org.coodex.util.SingletonMap;
 
+import static org.coodex.concrete.accounts.AccountConstants.TYPE_TENANT_ADMINISTRATOR;
 import static org.coodex.concrete.common.AccountsErrorCodes.NONE_THIS_ACCOUNT;
 
 /**
  * Created by davidoff shen on 2017-05-26.
  */
-public abstract class AbstractTenantAccountFactory implements AcceptableAccountFactory<AccountIDImpl> {
+public abstract class AbstractTenantAccountFactory extends ClassifiableAccountFactory {
 
 //    private ConcreteCache<String, TenantAccount> accountCache = new ConcreteCache<String, TenantAccount>() {
 //        @Override
@@ -43,12 +44,7 @@ public abstract class AbstractTenantAccountFactory implements AcceptableAccountF
 //    };
 
     private SingletonMap<String, TenantAccount> accountSingletonMap = new SingletonMap<>(
-            new SingletonMap.Builder<String, TenantAccount>() {
-                @Override
-                public TenantAccount build(String key) {
-                    return newAccount(key);
-                }
-            },
+            key -> newAccount(key),
             Config.getValue("cache.object.life", 10,
                     AbstractTenantAccountFactory.class.getPackage().getName()
             ) * 60 * 1000
@@ -58,12 +54,17 @@ public abstract class AbstractTenantAccountFactory implements AcceptableAccountF
 
     @Override
     @SuppressWarnings({"unchecked", "unsafe"})
-    public <ID extends AccountID> Account<ID> getAccountByID(ID id) {
-        return (Account<ID>) IF.isNull(accountSingletonMap.getInstance(((AccountIDImpl) id).getId()), NONE_THIS_ACCOUNT);
+    public Account<ClassifiableAccountID> getAccountByID(ClassifiableAccountID id) {
+        return IF.isNull(accountSingletonMap.getInstance(id.getId()), NONE_THIS_ACCOUNT);
     }
 
     @Override
-    public boolean accept(AccountIDImpl param) {
-        return param != null && param.getType() == AccountIDImpl.TYPE_TENANT_ADMINISTRATOR;
+    protected Integer[] getSupportTypes() {
+        return new Integer[]{TYPE_TENANT_ADMINISTRATOR};
     }
+
+    //    @Override
+//    public boolean accept(ClassifiableAccountID param) {
+//        return param != null && param.getCategory() == AccountConstants.TYPE_TENANT_ADMINISTRATOR;
+//    }
 }

@@ -106,7 +106,7 @@ public class TokenWrapper implements Token {
 
 
     @Override
-    public <ID extends AccountID> Account<ID> currentAccount() {
+    public Account currentAccount() {
         return getToken().currentAccount();
     }
 

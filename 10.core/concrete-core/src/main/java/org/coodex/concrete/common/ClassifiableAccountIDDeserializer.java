@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.accounts;
+package org.coodex.concrete.common;
 
-import org.coodex.concrete.common.ClassifiableAccountID;
-import org.coodex.concrete.common.NamedAccount;
-import org.coodex.concrete.common.SaaSAccount;
+public class ClassifiableAccountIDDeserializer implements AccountIDDeserializer {
+    @Override
+    public AccountID deserialize(String accountIDStr) {
+        return ClassifiableAccountID.valueOf(accountIDStr);
+    }
 
-/**
- * Created by davidoff shen on 2017-05-19.
- */
-public interface Administrator extends NamedAccount<ClassifiableAccountID>, SaaSAccount<ClassifiableAccountID> {
-
-    boolean verify(String password, String authCode);
+    @Override
+    public boolean accept(String param) {
+        return ClassifiableAccountID.accept(param);
+    }
 }

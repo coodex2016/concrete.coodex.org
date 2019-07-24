@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.accounts.organization.impl;
 
-import org.coodex.concrete.accounts.AccountIDImpl;
 import org.coodex.concrete.accounts.organization.entities.AbstractPersonAccountEntity;
 import org.coodex.concrete.accounts.organization.entities.AbstractPositionEntity;
 import org.coodex.concrete.accounts.organization.entities.OrganizationEntity;
@@ -30,7 +29,7 @@ import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.coodex.concrete.accounts.AccountIDImpl.TYPE_ORGANIZATION;
+import static org.coodex.concrete.accounts.AccountConstants.TYPE_ORGANIZATION;
 import static org.coodex.concrete.common.AccountsErrorCodes.NONE_THIS_ACCOUNT;
 
 /**
@@ -39,7 +38,7 @@ import static org.coodex.concrete.common.AccountsErrorCodes.NONE_THIS_ACCOUNT;
 public abstract class AbstractOrganizationAccountFactory
         <J extends AbstractPositionEntity,
                 P extends AbstractPersonAccountEntity<J>>
-        implements AcceptableAccountFactory<AccountIDImpl> {
+        extends ClassifiableAccountFactory {
 
     @Inject
     protected AbstractPersonAccountRepo<P> accountRepo;
@@ -47,7 +46,7 @@ public abstract class AbstractOrganizationAccountFactory
         @Override
         public OrganizationAccount copy(P p, OrganizationAccount organizationAccount) {
 
-            organizationAccount.setId(new AccountIDImpl(TYPE_ORGANIZATION, p.getId()));
+            organizationAccount.setId(new ClassifiableAccountID(TYPE_ORGANIZATION, p.getId()));
             organizationAccount.setName(p.getName());
             organizationAccount.setRoles(getAllRoles(p));
             organizationAccount.setTenant(p.getTenant());
@@ -116,13 +115,19 @@ public abstract class AbstractOrganizationAccountFactory
         return domain.toString();
     }
 
+//    @Override
+//    public boolean accept(ClassifiableAccountID accountID) {
+//        return accountID != null && accountID.getCategory() == TYPE_ORGANIZATION;
+//    }
+
+
     @Override
-    public boolean accept(AccountIDImpl accountID) {
-        return accountID != null && accountID.getType() == TYPE_ORGANIZATION;
+    protected Integer[] getSupportTypes() {
+        return new Integer[]{TYPE_ORGANIZATION};
     }
 
     @Override
-    public <ID extends AccountID> Account<ID> getAccountByID(ID id) {
-        return (Account<ID>) IF.isNull(accountSingletonMap.getInstance(((AccountIDImpl) id).getId()), NONE_THIS_ACCOUNT);
+    public Account<ClassifiableAccountID> getAccountByID(ClassifiableAccountID id) {
+        return IF.isNull(accountSingletonMap.getInstance(id.getId()), NONE_THIS_ACCOUNT);
     }
 }

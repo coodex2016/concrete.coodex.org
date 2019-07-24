@@ -18,10 +18,8 @@ package org.coodex.concrete.common;
 
 import org.coodex.util.AcceptableService;
 
-import java.io.Serializable;
-
 /**
  * Created by davidoff shen on 2017-04-27.
  */
-public interface AcceptableAccountFactory<ID extends Serializable> extends AccountFactory, AcceptableService<ID> {
+public interface AcceptableAccountFactory<ID extends AccountID> extends AccountFactory<ID>, AcceptableService<ID> {
 }

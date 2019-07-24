@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.accounts.organization.impl;
 
-import org.coodex.concrete.accounts.AccountIDImpl;
 import org.coodex.concrete.accounts.TenantAccount;
 import org.coodex.concrete.accounts.organization.entities.AbstractPersonAccountEntity;
 import org.coodex.concrete.accounts.organization.entities.AbstractPositionEntity;
@@ -67,7 +66,7 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
      */
     protected void checkManagementPermission(String orgId) {
         ConcreteException exception = new ConcreteException(ErrorCodes.NO_AUTHORIZATION);
-        Account<AccountIDImpl> account = token.currentAccount();
+        Account<ClassifiableAccountID> account = token.currentAccount();
         Set<String> roles = account.getRoles();
         if (roles.contains(AccessAllow.PREROGATIVE)) return;
         if (roles.contains(SYSTEM_MANAGER)) return;

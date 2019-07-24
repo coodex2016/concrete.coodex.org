@@ -19,27 +19,32 @@ package org.coodex.concrete.accounts;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenWrapper;
 
-import static org.coodex.concrete.accounts.AccountIDImpl.TYPE_ADMINISTRATOR;
+import static org.coodex.concrete.accounts.AccountConstants.TYPE_ADMINISTRATOR;
 import static org.coodex.concrete.common.AccountsErrorCodes.LOGIN_FAILED;
 
 /**
  * Created by davidoff shen on 2017-05-19.
  */
-public abstract class AbstractAdministratorFactory implements AcceptableAccountFactory<AccountIDImpl> {
+public abstract class AbstractAdministratorFactory extends ClassifiableAccountFactory {
 
     private Token token = TokenWrapper.getInstance();
 
     @Override
     @SuppressWarnings("unchecked")
-    public <ID extends AccountID> Account<ID> getAccountByID(ID id) {
-        if (id == null || !(id instanceof AccountIDImpl)) return null;
-        return (Account<ID>) getAdministrator(((AccountIDImpl) id).getId());
+    public Account<ClassifiableAccountID> getAccountByID(ClassifiableAccountID id) {
+        if (id == null) return null;
+        return getAdministrator(id.getId());
     }
 
     @Override
-    public boolean accept(AccountIDImpl param) {
-        return param != null && param.getType() == TYPE_ADMINISTRATOR;
+    protected Integer[] getSupportTypes() {
+        return new Integer[]{TYPE_ADMINISTRATOR};
     }
+
+    //    @Override
+//    public boolean accept(ClassifiableAccountID param) {
+//        return param != null && param.getCategory() == TYPE_ADMINISTRATOR;
+//    }
 
 
 //    public void login(String id, String password, String authCode) {

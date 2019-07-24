@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.accounts.simple.impl;
 
-import org.coodex.concrete.accounts.AccountIDImpl;
+import org.coodex.concrete.common.ClassifiableAccountID;
 import org.coodex.concrete.common.NamedAccount;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
@@ -27,24 +27,24 @@ import java.util.Set;
 /**
  * Created by davidoff shen on 2017-07-05.
  */
-public class SimpleAccount implements NamedAccount<AccountIDImpl> {
+public class SimpleAccount implements NamedAccount<ClassifiableAccountID> {
 
     private final Profile profile;
-    private final AccountIDImpl id;
+    private final ClassifiableAccountID id;
 
-    public SimpleAccount(AccountIDImpl id) {
+    public SimpleAccount(ClassifiableAccountID id) {
         this.profile = Profile.getProfile("/accounts/" + id.getId() + ".properties");
         this.id = id;
     }
 
     @Override
-    public AccountIDImpl getId() {
+    public ClassifiableAccountID getId() {
         return id;
     }
 
     @Override
     public Set<String> getRoles() {
-        return new HashSet<String>(Common.arrayToSet(profile.getStrList("roles")));
+        return new HashSet<>(Common.arrayToSet(profile.getStrList("roles")));
     }
 
     @Override

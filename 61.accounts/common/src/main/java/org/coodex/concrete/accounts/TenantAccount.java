@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.accounts;
 
+import org.coodex.concrete.common.ClassifiableAccountID;
 import org.coodex.concrete.common.NamedAccount;
 import org.coodex.concrete.common.SaaSAccount;
 
@@ -24,12 +25,12 @@ import java.util.Set;
 /**
  * Created by davidoff shen on 2017-05-26.
  */
-public class TenantAccount implements SaaSAccount<AccountIDImpl>, NamedAccount<AccountIDImpl> {
+public class TenantAccount implements SaaSAccount<ClassifiableAccountID>, NamedAccount<ClassifiableAccountID> {
 
     private String name;
     private String tenant;
     private String appSet;
-    private AccountIDImpl id;
+    private ClassifiableAccountID id;
     private boolean valid = true;
     private Set<String> roles;
 
@@ -55,11 +56,11 @@ public class TenantAccount implements SaaSAccount<AccountIDImpl>, NamedAccount<A
     }
 
     @Override
-    public AccountIDImpl getId() {
+    public ClassifiableAccountID getId() {
         return id;
     }
 
-    public void setId(AccountIDImpl id) {
+    public void setId(ClassifiableAccountID id) {
         this.id = id;
     }
 

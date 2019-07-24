@@ -69,8 +69,8 @@ public class TokenProxy implements Token {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <ID extends AccountID> Account<ID> currentAccount() {
-        return this.proxy == null ? null : this.proxy.<ID>currentAccount();
+    public Account currentAccount() {
+        return this.proxy == null ? null : this.proxy.currentAccount();
     }
 
     private Token forSet() {

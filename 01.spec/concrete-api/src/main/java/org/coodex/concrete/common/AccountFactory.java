@@ -16,10 +16,12 @@
 
 package org.coodex.concrete.common;
 
+import java.io.Serializable;
+
 /**
  * Created by davidoff shen on 2016-11-22.
  */
-public interface AccountFactory {
+public interface AccountFactory<ID extends Serializable> {
 
-    <ID extends AccountID> Account<ID> getAccountByID(ID id);
+     Account<ID> getAccountByID(ID id);
 }

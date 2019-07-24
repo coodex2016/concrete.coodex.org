@@ -21,7 +21,9 @@ import org.coodex.concrete.common.AccountIDDeserializer;
 
 /**
  * Created by davidoff shen on 2017-07-17.
+ * @deprecated
  */
+@Deprecated
 public class AccountIDImplDeserializer implements AccountIDDeserializer {
 
     private static final String START_WITH = "CONCRETE-ACCOUNTS:";

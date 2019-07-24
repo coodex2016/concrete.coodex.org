@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.accounts;
 
+import org.coodex.concrete.common.ClassifiableAccountID;
 import org.coodex.config.Config;
 
 import java.util.Arrays;
@@ -116,13 +117,13 @@ public class AdministratorFromProfileFactory extends AbstractAdministratorFactor
         }
 
         @Override
-        public AccountIDImpl getId() {
-            return new AccountIDImpl(AccountIDImpl.TYPE_ADMINISTRATOR, uuid);
+        public ClassifiableAccountID getId() {
+            return new ClassifiableAccountID(AccountConstants.TYPE_ADMINISTRATOR, uuid);
         }
 
         @Override
         public Set<String> getRoles() {
-            return new HashSet<String>(Arrays.asList(
+            return new HashSet<>(Arrays.asList(
                     Config.getArray("roles", ",",
                             new String[]{AccountManagementRoles.SYSTEM_MANAGER},
                             TAG_ADMIN, getAppSet())

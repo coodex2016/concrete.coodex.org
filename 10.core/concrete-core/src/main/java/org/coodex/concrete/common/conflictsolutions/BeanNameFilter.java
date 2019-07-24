@@ -54,18 +54,18 @@ public class BeanNameFilter extends AbstractConflictSolution /*implements Confli
         return map;
     }
 
-    private Set<String> filter(Set<String> set) {
-        String prefix = Config.get(BeanNameFilter.class.getCanonicalName() + ".prefix", getAppSet());
-
-        if (Common.isBlank(prefix)) return set;
-
-        Set<String> stringSet = new HashSet<String>();
-        for (String str : set) {
-            if (str != null && str.startsWith(prefix))
-                stringSet.add(str);
-        }
-        return stringSet;
-    }
+//    private Set<String> filter(Set<String> set) {
+//        String prefix = Config.get(BeanNameFilter.class.getCanonicalName() + ".prefix", getAppSet());
+//
+//        if (Common.isBlank(prefix)) return set;
+//
+//        Set<String> stringSet = new HashSet<String>();
+//        for (String str : set) {
+//            if (str != null && str.startsWith(prefix))
+//                stringSet.add(str);
+//        }
+//        return stringSet;
+//    }
 
 //    @Override
 //    public <T> T conflict(Map<String, T> beans, Class<T> clz) {

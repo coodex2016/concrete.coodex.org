@@ -20,14 +20,17 @@ import org.coodex.concrete.common.AccountID;
 
 
 /**
+ * 使用{@link org.coodex.concrete.common.ClassifiableAccountID}替代
  * Created by davidoff shen on 2017-05-09.
+ * @deprecated 使用{@link org.coodex.concrete.common.ClassifiableAccountID}替代
  */
+@Deprecated
 public class AccountIDImpl implements AccountID {
-    public static final int TYPE_ADMINISTRATOR = 0;
-    public static final int TYPE_ORGANIZATION = 1;
-    public static final int TYPE_TENANT_ADMINISTRATOR = 2;
+    public static final int TYPE_ADMINISTRATOR = AccountConstants.TYPE_ADMINISTRATOR;
+    public static final int TYPE_ORGANIZATION = AccountConstants.TYPE_ORGANIZATION;
+    public static final int TYPE_TENANT_ADMINISTRATOR = AccountConstants.TYPE_TENANT_ADMINISTRATOR;
 
-    public static final int TYPE_SIMPLE = 99999;
+    public static final int TYPE_SIMPLE = AccountConstants.TYPE_SIMPLE;
 
     private int type;
 

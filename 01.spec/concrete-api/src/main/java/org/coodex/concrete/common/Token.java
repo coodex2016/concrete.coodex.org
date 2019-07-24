@@ -51,7 +51,7 @@ public interface Token extends Serializable {
      *
      * @return
      */
-    <ID extends AccountID> Account<ID> currentAccount();
+    Account currentAccount();
 
 //    /**
 //     * 失效事件，此时应清空全部缓存的数据

@@ -21,14 +21,15 @@ import org.coodex.util.AcceptableServiceLoader;
 /**
  * Created by davidoff shen on 2017-04-27.
  */
-public class AccountFactoryAggregation implements AccountFactory {
+public class AccountFactoryAggregation<ID extends AccountID> implements AccountFactory<ID> {
 
     private final static AcceptableServiceLoader<AccountID, AcceptableAccountFactory<AccountID>>
             ACCOUNT_FACTORY_LOADER = new AcceptableServiceLoader<AccountID, AcceptableAccountFactory<AccountID>>(){};
 
 
     @Override
-    public <ID extends AccountID> Account<ID> getAccountByID(ID id) {
-        return ACCOUNT_FACTORY_LOADER.getServiceInstance(id).getAccountByID(id);
+    public Account<ID> getAccountByID(ID id) {
+        //noinspection unchecked
+        return (Account<ID>) ACCOUNT_FACTORY_LOADER.getServiceInstance(id).getAccountByID(id);
     }
 }

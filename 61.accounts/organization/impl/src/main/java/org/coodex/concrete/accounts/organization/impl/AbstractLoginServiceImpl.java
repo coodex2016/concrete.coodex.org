@@ -17,7 +17,6 @@
 package org.coodex.concrete.accounts.organization.impl;
 
 import org.coodex.concrete.accounts.AbstractAdministratorFactory;
-import org.coodex.concrete.accounts.AccountIDImpl;
 import org.coodex.concrete.accounts.AccountsCommon;
 import org.coodex.concrete.accounts.TenantRPCServiceClient;
 import org.coodex.concrete.accounts.organization.api.AbstractLoginService;
@@ -26,10 +25,7 @@ import org.coodex.concrete.accounts.organization.entities.AbstractPositionEntity
 import org.coodex.concrete.accounts.organization.entities.LoginCacheEntryEntity;
 import org.coodex.concrete.accounts.organization.repositories.AbstractPersonAccountRepo;
 import org.coodex.concrete.accounts.organization.repositories.LoginCacheEntryRepo;
-import org.coodex.concrete.common.AccountsErrorCodes;
-import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.IF;
-import org.coodex.concrete.common.Token;
+import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
@@ -37,7 +33,7 @@ import org.coodex.util.Common;
 import javax.inject.Inject;
 import java.util.Calendar;
 
-import static org.coodex.concrete.accounts.AccountIDImpl.TYPE_ORGANIZATION;
+import static org.coodex.concrete.accounts.AccountConstants.TYPE_ORGANIZATION;
 import static org.coodex.concrete.accounts.AccountsCommon.checkPassword;
 import static org.coodex.concrete.accounts.AccountsCommon.isCredible;
 import static org.coodex.concrete.common.AccountsErrorCodes.*;
@@ -81,7 +77,7 @@ public abstract class AbstractLoginServiceImpl
             token.setAccountCredible(isCredible(authCode, personEntity));
             token.setAccount(
                     abstractOrganizationAccountFactory.getAccountByID(
-                            new AccountIDImpl(TYPE_ORGANIZATION, personEntity.getId())));
+                            new ClassifiableAccountID(TYPE_ORGANIZATION, personEntity.getId())));
 
             putLoggingData("loginUser", personEntity);
             return updateLoginCacheEntry(personEntity);
@@ -228,7 +224,7 @@ public abstract class AbstractLoginServiceImpl
         tenantRPCServiceClient.checkTenant(personEntity.getTenant());
         token.setAccount(
                 abstractOrganizationAccountFactory.getAccountByID(
-                        new AccountIDImpl(TYPE_ORGANIZATION, personEntity.getId())));
+                        new ClassifiableAccountID(TYPE_ORGANIZATION, personEntity.getId())));
         token.setAccountCredible(false);
         putLoggingData("loginUser", personEntity);
     }
@@ -237,7 +233,7 @@ public abstract class AbstractLoginServiceImpl
     public String identification(String authCode) {
         // TODO: 丑陋
         PE personEntity = IF.isNull(
-                personAccountRepo.findById(((AccountIDImpl) (token.currentAccount().getId())).getId()).orElse(null),
+                personAccountRepo.findById(((ClassifiableAccountID) (token.currentAccount().getId())).getId()).orElse(null),
                 NONE_THIS_ACCOUNT);
         String credential = null;
         if (isCredible(authCode, personEntity)) {
