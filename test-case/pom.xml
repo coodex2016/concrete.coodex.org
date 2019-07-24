@@ -56,6 +56,13 @@
 
         <dependency>
             <groupId>org.coodex</groupId>
+            <artifactId>concrete-accounts-organization-impl-reference</artifactId>
+            <version>0.3.0-MOCK-TRIAL-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.coodex</groupId>
             <artifactId>concrete-core-spring</artifactId>
         </dependency>
 

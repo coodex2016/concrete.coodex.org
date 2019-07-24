@@ -232,8 +232,8 @@ public class ConcreteHelper {
 
         //clz.getAnnotation(Abstract.class) != null
         return Common.isBlank(concreteService.value()) ?
-                (concreteService.abstractive() ? clz.getSimpleName() : clz.getCanonicalName()) :
-                concreteService.value();
+                (concreteService.abstractive() ? "" : clz.getCanonicalName()) :
+                Common.trim(concreteService.value(),"/\\.");
     }
 
 //    public static String getMethodName(Method method) {

@@ -140,11 +140,8 @@ public class SpringBootStarter {
     public static class JaxRSApplication extends ConcreteJSR339Application {
         public JaxRSApplication() {
             register(JacksonFeature.class,
-                    LoggingFeature.class,
-                    TestCase.class,
-                    TestCase3.class,
-                    TestCase4.class,
-                    TestCase2.class);
+                    LoggingFeature.class);
+            registerPackage("org.coodex.**.api");
         }
     }
 
