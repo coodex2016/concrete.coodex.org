@@ -142,7 +142,7 @@ public class SwaggerHelper {
 
                 for (JaxrsParam param : unit.getPojo()) {
                     objectSchema.addProperties(param.getName(),
-                            schema(param.getGenericType())
+                            schema(toReference(param.getGenericType(), unit.getDeclaringModule().getInterfaceClass()))
                                     .title(param.getLabel()).description(param.getDescription())
                     );
                     mocked.put(param.getName(), Mocker.mockParameter(unit.getMethod(), param.getIndex(), unit.getDeclaringModule().getInterfaceClass()));
@@ -161,7 +161,7 @@ public class SwaggerHelper {
                 new ApiResponse().content(
                         new Content().addMediaType("application/json",
                                 new MediaType().schema(
-                                        schema(unit.getGenericReturnType())
+                                        schema(toReference(unit.getGenericReturnType(),unit.getDeclaringModule().getInterfaceClass()))
                                                 .example(
                                         Mocker.mockMethod(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass())
                                 ))))).addApiResponse("204", new ApiResponse())
