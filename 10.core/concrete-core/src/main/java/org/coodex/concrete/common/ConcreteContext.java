@@ -51,7 +51,7 @@ public final class ConcreteContext {
                 SyncInterceptorChain syncInterceptorChain = new SyncInterceptorChain();
                 ServiceLoader<ConcreteInterceptor> serviceLoader = new ServiceLoaderImpl<ConcreteInterceptor>() {
                 };
-                for (ConcreteInterceptor interceptor : serviceLoader.getAllInstances()) {
+                for (ConcreteInterceptor interceptor : serviceLoader.getAll().values()) {
                     if (interceptor instanceof InterceptorChain) continue;
                     syncInterceptorChain.add(interceptor);
                 }
@@ -207,7 +207,7 @@ public final class ConcreteContext {
                             return BeanServiceLoaderProvider.getBeanProvider().getBean(interfaceClass);
                         }
                     };
-                    return interceptorChainSingleton.getInstance().invoke(invocation);
+                    return interceptorChainSingleton.get().invoke(invocation);
 //                    interceptorChainSingleton.getInstance().before(runtimeContext, invocation);
 //                    try {
 //                        return interceptorChainSingleton.getInstance()

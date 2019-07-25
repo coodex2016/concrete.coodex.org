@@ -81,50 +81,53 @@ public abstract class ConcreteServiceLoader<T> extends ServiceLoaderImpl<T> {
     @Override
     protected T conflict() {
         String key = Config.get(getInterfaceClass().getCanonicalName() + ".provider", getAppSet());
-        Map<String, T> instances = serviceLoaderFacade.getInstances();
+        Map<String, T> instances = serviceLoaderFacade.getAll();
         return instances.containsKey(key) ? instances.get(key) : super.conflict();
     }
 
     private T getDefaultProviderFromConfiguration() {
         String key = Config.get(getInterfaceClass().getCanonicalName() + ".default", getAppSet());
-        Map<String, T> instances = serviceLoaderFacade.getInstances();
+        Map<String, T> instances = serviceLoaderFacade.getAll();
         return instances.getOrDefault(key, null);
     }
 
     protected T getConcreteDefaultProvider() {
-        return super.getDefaultProvider();
+        return super.getDefault();
     }
 
     @Override
-    public final T getDefaultProvider() {
+    public final T getDefault() {
         T instance = getDefaultProviderFromConfiguration();
         return instance == null ? getConcreteDefaultProvider() : instance;
     }
 
 
     @Override
+    @Deprecated
     public Collection<T> getAllInstances() {
-        return serviceLoaderFacade.getAllInstances();
+        return serviceLoaderFacade.getAll().values();
     }
 
     @Override
-    public Map<String, T> getInstances() {
-        return serviceLoaderFacade.getInstances();
+    public Map<String, T> getAll() {
+        return serviceLoaderFacade.getAll();
     }
 
     @Override
-    public T getInstance(Class<? extends T> providerClass) {
-        return serviceLoaderFacade.getInstance(providerClass);
+    public T get(Class<? extends T> providerClass) {
+        return serviceLoaderFacade.get(providerClass);
     }
 
     @Override
-    public T getInstance(String name) {
-        return serviceLoaderFacade.getInstance(name);
+    public T get(String name) {
+        return serviceLoaderFacade.get(name);
     }
 
     @Override
-    public T getInstance() {
-        return serviceLoaderFacade.getInstance();
+    public T get() {
+        return serviceLoaderFacade.get();
     }
+
+
 }
 

@@ -143,11 +143,11 @@ public class DubboHelper {
     }
 
     public static Class getDubboInterface(Class concreteService) {
-        return dubboClasses.getInstance(concreteService);
+        return dubboClasses.get(concreteService);
     }
 
     private static RegistryConfig buildRegistryConfig(String spec) {
-        return registryConfigs.getInstance(spec);
+        return registryConfigs.get(spec);
     }
 
     public static List<RegistryConfig> buildRegistryConfigs(String[] specs) {

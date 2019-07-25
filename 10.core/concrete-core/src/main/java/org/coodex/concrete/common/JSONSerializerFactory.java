@@ -26,6 +26,6 @@ public class JSONSerializerFactory {
     };
 
     public static JSONSerializer getInstance() {
-        return jsonSerializerConcreteServiceLoader.getInstance();
+        return jsonSerializerConcreteServiceLoader.get();
     }
 }

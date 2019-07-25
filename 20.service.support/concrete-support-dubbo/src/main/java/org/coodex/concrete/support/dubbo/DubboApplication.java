@@ -112,11 +112,11 @@ public class DubboApplication implements Application {
         if (!registered.contains(concreteClass)) {
 
             ServiceConfig serviceConfig = new ServiceConfig();
-            serviceConfig.setApplication(applications.getInstance(name));
+            serviceConfig.setApplication(applications.get(name));
             serviceConfig.setRegistries(registryConfig);
             List<ProtocolConfig> protocolConfigs = new ArrayList<>();
             for (int port : ports) {
-                protocolConfigs.add(protocals.getInstance(port));
+                protocolConfigs.add(protocals.get(port));
             }
             serviceConfig.setProtocols(protocolConfigs);
             //noinspection unchecked

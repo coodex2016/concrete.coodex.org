@@ -74,7 +74,7 @@ class JMSFacade {
                 objectListener.receive(deserialize((ObjectMessage) message));
             }
         };
-        this.connectionFactory = connectionFactorySingletonMap.getInstance(driver);
+        this.connectionFactory = connectionFactorySingletonMap.get(driver);
         this.userName = ConcreteHelper.getString(TAG_QUEUE, name, QUEUE_USERNAME);
         this.password = ConcreteHelper.getString(TAG_QUEUE, name, QUEUE_PA55W0RD);
         this.serializer = Topics.getSerializer(

@@ -77,7 +77,7 @@ public class WSInvoker extends AbstractRxInvoker {
 
                 // send with callback
                 try {
-                    handle.getInstance()
+                    handle.get()
                             .send((WebsocketDestination) getDestination(), requestPackage, new WSClientHandle.WSCallback() {
 
                         private boolean completed = false;

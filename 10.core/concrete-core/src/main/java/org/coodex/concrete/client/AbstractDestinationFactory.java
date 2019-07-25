@@ -36,7 +36,7 @@ public abstract class AbstractDestinationFactory<T extends Destination> implemen
     );
 
     protected String getLocation(String module) {
-        return moduleLocationMap.getInstance(module);
+        return moduleLocationMap.get(module);
     }
 
     protected T init(T destination, String module/*, boolean defaultAsync*/) {

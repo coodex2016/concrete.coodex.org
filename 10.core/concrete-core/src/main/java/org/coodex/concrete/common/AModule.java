@@ -47,7 +47,7 @@ public class AModule extends AbstractModule<AUnit> {
 //            }
 //        }
 //        return modules.get(clz);
-        return modules.getInstance(clz);
+        return modules.get(clz);
     }
 
     public static AUnit getUnit(Class clz, Method method) {

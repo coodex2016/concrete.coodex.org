@@ -37,7 +37,7 @@ public class SharedCacheClientManager {
             });
 
     private static void load() {
-        factoryProviders.getInstance();
+        factoryProviders.get();
 //        if (factoryProviders == null) {
 //            synchronized (SharedCacheClientManager.class) {
 //                if (factoryProviders == null)
@@ -51,7 +51,7 @@ public class SharedCacheClientManager {
 
         load();
 
-        Iterator<SharedCacheClientFactory> factories = factoryProviders.getInstance().iterator();
+        Iterator<SharedCacheClientFactory> factories = factoryProviders.get().iterator();
         while (factories.hasNext()) {
             SharedCacheClientFactory factory = factories.next();
             if (factory.isAccepted(driverName)) {

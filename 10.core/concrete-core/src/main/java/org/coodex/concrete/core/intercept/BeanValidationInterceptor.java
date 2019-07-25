@@ -87,7 +87,7 @@ public class BeanValidationInterceptor extends AbstractInterceptor {
     public void checkViolations(Set<ConstraintViolation<Object>> constraintViolations) {
         if (constraintViolations.size() > 0) {
             throw new ConcreteException(ErrorCodes.DATA_VIOLATION,
-                    VIOLATIONS_FORMATTER_SPI.getInstance().format(constraintViolations));
+                    VIOLATIONS_FORMATTER_SPI.get().format(constraintViolations));
         }
     }
 

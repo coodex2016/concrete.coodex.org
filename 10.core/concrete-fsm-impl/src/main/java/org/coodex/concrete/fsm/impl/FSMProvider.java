@@ -41,7 +41,7 @@ public class FSMProvider implements FiniteStateMachineProvider {
         return (FSM) Proxy.newProxyInstance(
                 machineClass.getClassLoader(),
                 new Class[]{machineClass},
-                new FSMInvocationHandle(state, MACHINES.getInstance(machineClass)));
+                new FSMInvocationHandle(state, MACHINES.get(machineClass)));
     }
 }
 
@@ -86,7 +86,7 @@ class FSMInvocationHandle implements InvocationHandler {
                                 boolean isSignaledState = current instanceof SignaledState;
                                 SignaledGuard signaledGuard = method.getAnnotation(SignaledGuard.class);
                                 if (condition != null && !StateCondition.class.equals(condition)) {
-                                    StateCondition sc = CONDITIONS.getInstance(condition);
+                                    StateCondition sc = CONDITIONS.get(condition);
                                     if (sc != null && !sc.allow(current)) {
                                         RuntimeException e = original.errorHandle(new WrongStateException(current));
                                         if (e != null) throw e;
@@ -128,7 +128,7 @@ class FSMInvocationHandle implements InvocationHandler {
                                 try {
                                     if (context == null && state instanceof IdentifiedState) {
                                         IdentifiedState identifiedState = (IdentifiedState) state;
-                                        CONTAINER_SERVICE_LOADER.getInstance().release(identifiedState.getId());
+                                        CONTAINER_SERVICE_LOADER.get().release(identifiedState.getId());
                                     }
                                 } catch (Throwable th) {
                                     log.warn(th.getLocalizedMessage(), th);

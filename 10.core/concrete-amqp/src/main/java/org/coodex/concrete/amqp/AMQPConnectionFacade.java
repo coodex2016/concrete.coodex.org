@@ -93,7 +93,7 @@ public class AMQPConnectionFacade {
     }
 
     public static Connection getConnection(AMQPConnectionConfig connectionConfig) throws NoSuchAlgorithmException, KeyManagementException, URISyntaxException {
-        return connectionSingletonMap.getInstance(clean(connectionConfig));
+        return connectionSingletonMap.get(clean(connectionConfig));
     }
 
 }

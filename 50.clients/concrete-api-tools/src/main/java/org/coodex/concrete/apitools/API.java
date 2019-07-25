@@ -60,9 +60,9 @@ public class API {
         if (packages == null) {
             packages = ConcreteHelper.getApiPackages();
         }
-        if (RENDERS.getAllInstances().size() == 0)
+        if (RENDERS.getAll().size() == 0)
             throw new RuntimeException("NONE render found.");
-        for (ConcreteAPIRender render : RENDERS.getAllInstances()) {
+        for (ConcreteAPIRender render : RENDERS.getAll().values()) {
             synchronized (render) {
                 if (render.isAccept(desc)) {
                     render.setRoot(path);

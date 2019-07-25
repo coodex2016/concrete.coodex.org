@@ -78,7 +78,7 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
 
     @SuppressWarnings("WeakerAccess")
     protected Executor getExecutor() {
-        return pool.getInstance();
+        return pool.get();
     }
 
     @Override

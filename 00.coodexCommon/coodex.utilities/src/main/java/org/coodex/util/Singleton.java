@@ -26,7 +26,17 @@ public class Singleton<T> {
         this.builder = builder;
     }
 
+    /**
+     *
+     * @return
+     * @see Singleton#get()
+     */
+    @Deprecated
     public T getInstance() {
+        return get();
+    }
+
+    public T get() {
         if (instance == null) {
             synchronized (this) {
                 if (instance == null) {

@@ -50,7 +50,7 @@ public class TestServiceContext extends AbstractContainerContext implements org.
     }
 
     private static Token getTestToken(String tokenId) {
-        return tokens.getInstance(Common.isBlank(tokenId) ?
+        return tokens.get(Common.isBlank(tokenId) ?
                 Common.getUUIDStr() :
                 tokenId);
     }

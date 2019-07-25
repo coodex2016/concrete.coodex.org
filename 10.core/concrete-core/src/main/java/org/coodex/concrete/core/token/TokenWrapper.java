@@ -54,11 +54,11 @@ public class TokenWrapper implements Token {
     }
 
     public static Token getToken(String id) {
-        return tokenManager.getInstance().getToken(id);
+        return tokenManager.get().getToken(id);
     }
 
     public static Token newToken() {
-        return tokenManager.getInstance().newToken();
+        return tokenManager.get().newToken();
     }
 
     private Token getToken() {

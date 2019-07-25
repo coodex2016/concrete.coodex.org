@@ -38,7 +38,7 @@ public class WebSocketHelper {
 
     @SuppressWarnings("unchecked")
     public static WebSocketUnit findUnit(DefinitionContext context) {
-        WebSocketModule module = IF.isNull(modules.getInstance(context.getDeclaringClass()),
+        WebSocketModule module = IF.isNull(modules.get(context.getDeclaringClass()),
                 context.getDeclaringClass() + "is not a concrete service.");
         Method method = context.getDeclaringMethod();
         for (WebSocketUnit unit : module.getUnits()) {

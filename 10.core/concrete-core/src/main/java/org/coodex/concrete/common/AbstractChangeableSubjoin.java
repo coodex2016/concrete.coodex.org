@@ -44,7 +44,7 @@ public abstract class AbstractChangeableSubjoin extends AbstractSubjoin {
      * @return 包装后的Subjoin，会记录下自wrap之后所有的set信息，方便数据回传
      */
     public Subjoin wrap() {
-        return subjoinSingleton.getInstance();
+        return subjoinSingleton.get();
     }
 
     private static class WrappedSubjoin extends AbstractSubjoin {

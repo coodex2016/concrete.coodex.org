@@ -33,6 +33,6 @@ public class CounterFacade {
      * @param <T>
      */
     public static <T extends Countable> void count(T value) {
-        COUNTER_FACTORY.getInstance().count(value);
+        COUNTER_FACTORY.get().count(value);
     }
 }

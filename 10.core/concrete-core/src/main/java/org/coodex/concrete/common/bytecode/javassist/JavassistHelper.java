@@ -64,7 +64,7 @@ public class JavassistHelper {
             });
 
     public final static ClassPool getClassPool(Class clz) {
-        return clz == null ? ClassPool.getDefault() : classPools.getInstance(clz.getClassLoader());
+        return clz == null ? ClassPool.getDefault() : classPools.get(clz.getClassLoader());
     }
 
     public static SignatureAttribute.ClassType classType(String className, String... arguments) {

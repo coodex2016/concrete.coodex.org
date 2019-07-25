@@ -47,7 +47,7 @@ public abstract class AbstractCoalition<T> implements Coalition<T> {
     }
 
     public AbstractCoalition(Coalition.Callback<T> c, int interval) {
-        this(c, interval, sesSingleton.getInstance());
+        this(c, interval, sesSingleton.get());
     }
 
 

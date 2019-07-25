@@ -38,7 +38,7 @@ public class ProductInterceptor extends AbstractSyncInterceptor {
 
     private Singleton<ProductFactory> productFactorySingleton = new Singleton<>(
             () -> new ServiceLoaderImpl<ProductFactory>(new DefaultProductFactory()) {
-            }.getInstance()
+            }.get()
     );
 
     public ProductInterceptor() {
@@ -60,7 +60,7 @@ public class ProductInterceptor extends AbstractSyncInterceptor {
         Subjoin subjoin = SubjoinWrapper.getInstance();
         String key = subjoin.get(PRODUCTION_KEY);
         Set<Warning> warnings = IF.isNull(
-                productFactorySingleton.getInstance().getProductInstance(
+                productFactorySingleton.get().getProductInstance(
                         IF.isNull(key, NONE_KEY)
                 ), INVALID_KEY, key)
                 .check(modules.values());

@@ -18,6 +18,7 @@ package org.coodex.concrete.apm;
 
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concurrent.Parallel;
+import org.coodex.util.ServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
 import org.coodex.util.Singleton;
 
@@ -25,11 +26,11 @@ import java.util.concurrent.ExecutorService;
 
 public class APM {
 
-    private static Singleton<ServiceLoaderImpl<TraceFactory>> traceFactoryServiceSingleton =
+    private static Singleton<ServiceLoader<TraceFactory>> traceFactoryServiceSingleton =
             new Singleton<>(
-                    new Singleton.Builder<ServiceLoaderImpl<TraceFactory>>() {
+                    new Singleton.Builder<ServiceLoader<TraceFactory>>() {
                         @Override
-                        public ServiceLoaderImpl<TraceFactory> build() {
+                        public ServiceLoader<TraceFactory> build() {
                             return new ServiceLoaderImpl<TraceFactory>() {
 
                                 private Trace doNothing = new Trace() {
@@ -88,7 +89,7 @@ public class APM {
                                 };
 
                                 @Override
-                                public TraceFactory getDefaultProvider() {
+                                public TraceFactory getDefault() {
                                     return defaultFactory;
                                 }
                             };
@@ -97,18 +98,18 @@ public class APM {
             );
 
     public static Trace build() {
-        return traceFactoryServiceSingleton.getInstance().getInstance().create();
+        return traceFactoryServiceSingleton.get().get().create();
     }
 
     public static Trace build(Subjoin subjoin) {
-        return traceFactoryServiceSingleton.getInstance().getInstance().loadFrom(subjoin);
+        return traceFactoryServiceSingleton.get().get().loadFrom(subjoin);
     }
 
     public static Parallel.Batch parallel(ExecutorService executorService, Runnable... runnables) {
 
         return new Parallel(executorService,
-                traceFactoryServiceSingleton.getInstance()
-                        .getInstance()
+                traceFactoryServiceSingleton.get()
+                        .get()
                         .createWrapper()
         ).run(runnables);
     }

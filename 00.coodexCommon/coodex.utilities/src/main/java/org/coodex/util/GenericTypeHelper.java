@@ -55,7 +55,7 @@ public class GenericTypeHelper {
     }
 
     public static Type solveFromType(TypeVariable t, Type context){
-        return typeInfos.getInstance(context).find(t);
+        return typeInfos.get(context).find(t);
     }
 
     @Deprecated
@@ -89,7 +89,7 @@ public class GenericTypeHelper {
 
 
     private static Type build(Type t, Type context) {
-        GenericTypeInfo contextInfo = typeInfos.getInstance(context);
+        GenericTypeInfo contextInfo = typeInfos.get(context);
         if (t instanceof Class) {
             return t;
         } else if (t instanceof ParameterizedType) {
@@ -108,7 +108,7 @@ public class GenericTypeHelper {
         private final Type type;
 
         protected GenericType() {
-            this.type = typeInfos.getInstance(getClass())
+            this.type = typeInfos.get(getClass())
                     .find(GenericType.class.getTypeParameters()[0]);
         }
 
@@ -117,7 +117,7 @@ public class GenericTypeHelper {
         }
 
         private Type build(Type context) {
-            Type t = typeInfos.getInstance(getClass())
+            Type t = typeInfos.get(getClass())
                     .find(GenericType.class.getTypeParameters()[0]);
             return GenericTypeHelper.build(t, context);
 
@@ -272,7 +272,7 @@ public class GenericTypeHelper {
 
         @Override
         public String toString() {
-            return stringSingleton.getInstance();
+            return stringSingleton.get();
         }
     }
 

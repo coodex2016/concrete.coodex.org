@@ -89,7 +89,7 @@ public abstract class Profile {
                     } else if (key.toLowerCase().endsWith(".yaml")) {
                         return new ProfileBaseYaml(key);
                     } else {
-                        return PROFILES.getInstance(findPath(Common.trim(key, ":/\\.")));
+                        return PROFILES.get(findPath(Common.trim(key, ":/\\.")));
                     }
                 }
             },
@@ -101,7 +101,7 @@ public abstract class Profile {
         if (path == null) {
             throw new IllegalArgumentException("path is null");
         }
-        return PROFILES.getInstance(path);
+        return PROFILES.get(path);
 //        Profile p = profiles.get(path);
 //        if (p == null) {
 //            p = new Profile(path);

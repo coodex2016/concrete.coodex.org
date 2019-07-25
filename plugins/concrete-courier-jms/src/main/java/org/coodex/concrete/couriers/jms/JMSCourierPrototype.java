@@ -57,7 +57,7 @@ public class JMSCourierPrototype<M extends Serializable> extends CourierPrototyp
 
     @Override
     protected void afterTopicAssociation() {
-        jmsFacadeSingleton.getInstance();
+        jmsFacadeSingleton.get();
     }
 
     private String getDriverFromDestination(String destination) {
@@ -67,7 +67,7 @@ public class JMSCourierPrototype<M extends Serializable> extends CourierPrototyp
 
     @Override
     public void deliver(M message) {
-        jmsFacadeSingleton.getInstance().publish(message);
+        jmsFacadeSingleton.get().publish(message);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class JMSCourierPrototype<M extends Serializable> extends CourierPrototyp
     public synchronized void setConsumer(boolean consumer) {
         if (consumer != this.consumer) {
             try {
-                jmsFacadeSingleton.getInstance().setConsumer(consumer);
+                jmsFacadeSingleton.get().setConsumer(consumer);
                 this.consumer = consumer;
             } catch (JMSException e) {
                 log.error(e.getLocalizedMessage(), e);

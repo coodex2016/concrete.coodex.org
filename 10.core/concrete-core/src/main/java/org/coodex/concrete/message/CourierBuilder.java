@@ -62,7 +62,7 @@ class CourierBuilder
 
     static <M extends Serializable> Courier<M> buildCourier(TopicKey topicKey) {
         //noinspection unchecked
-        return couriers.getInstance(topicKey);
+        return couriers.get(topicKey);
     }
 
     private static String getDestination(String queue) {

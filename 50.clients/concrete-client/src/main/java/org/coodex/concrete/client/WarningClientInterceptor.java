@@ -46,8 +46,8 @@ public class WarningClientInterceptor extends AbstractSyncInterceptor {
 //            }.getAllInstances();
 //        }
 //    });
-    private static Singleton<Collection<WarningHandle>> WARNING_HANDLES = new Singleton<>(() -> new ConcreteServiceLoader<WarningHandle>() {
-    }.getAllInstances());
+private static Singleton<Collection<WarningHandle>> WARNING_HANDLES = new Singleton<>(() -> new ServiceLoaderImpl<WarningHandle>() {
+}.getAll().values());
 
     @Override
     protected boolean accept_(DefinitionContext context) {
@@ -79,7 +79,7 @@ public class WarningClientInterceptor extends AbstractSyncInterceptor {
                         .parse(warnings, type);
                 if (warningList.size() > 0) {
                     for (Warning warning : warningList) {
-                        for (WarningHandle handle : WARNING_HANDLES.getInstance()) {
+                        for (WarningHandle handle : WARNING_HANDLES.get()) {
                             try {
                                 handle.onWarning(clientSideContext.getDestination(), warning);
                             } catch (Throwable th) {

@@ -63,7 +63,7 @@ public class WSClientHandle {
 
         Session session = sessionMap.get(destination);
         if (session == null || !session.isOpen()) {
-            Object lock = locks.getInstance(destination);
+            Object lock = locks.get(destination);
             synchronized (lock) {
                 session = sessionMap.get(destination);
                 if (session == null || !session.isOpen()) {

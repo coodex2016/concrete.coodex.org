@@ -67,8 +67,8 @@ public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableSe
                 if (serviceLoaderFacade == null) {
                     this.serviceLoaderFacade = new ServiceLoaderImpl<T>() {
                         @Override
-                        public T getDefaultProvider() {
-                            return defaultService == null ? super.getDefaultProvider() : defaultService;
+                        public T getDefault() {
+                            return defaultService == null ? super.getDefault() : defaultService;
                         }
                     };
                 }
@@ -100,12 +100,12 @@ public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableSe
 
     public List<T> getServiceInstances(Param_Type param) {
         List<T> list = new ArrayList<T>();
-        for (T instance : getAllInstances()) {
+        for (T instance : getAll().values()) {
             if (accept(instance, param))
                 list.add(instance);
         }
         try {
-            T instance = getServiceLoaderFacade().getDefaultProvider();
+            T instance = getServiceLoaderFacade().getDefault();
             if (accept(instance, param))
                 list.add(instance);
         } catch (Throwable ignored) {
@@ -114,12 +114,12 @@ public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableSe
     }
 
     public T getServiceInstance(Param_Type param) {
-        for (T instance : getAllInstances()) {
+        for (T instance : getAll().values()) {
             if (accept(instance, param))
                 return instance;
         }
         try {
-            T instance = getServiceLoaderFacade().getDefaultProvider();
+            T instance = getServiceLoaderFacade().getDefault();
             if (accept(instance, param))
                 return instance;
             if(instance.accept(param))
@@ -132,32 +132,63 @@ public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableSe
     }
 
     @Override
+    @Deprecated
     public Collection<T> getAllInstances() {
-        return getServiceLoaderFacade().getAllInstances();
+        return getServiceLoaderFacade().getAll().values();
     }
 
     @Override
-    public T getInstance(Class<? extends T> providerClass) {
-        return getServiceLoaderFacade().getInstance(providerClass);
+    public T get(Class<? extends T> providerClass) {
+        return getServiceLoaderFacade().get(providerClass);
     }
 
     @Override
-    public T getInstance(String name) {
-        return getServiceLoaderFacade().getInstance(name);
+    public T get(String name) {
+        return getServiceLoaderFacade().get(name);
     }
 
     @Override
-    public T getInstance() {
-        return getServiceLoaderFacade().getInstance();
+    public T get() {
+        return getServiceLoaderFacade().get();
     }
 
     @Override
-    public T getDefaultProvider() {
-        return getServiceLoaderFacade().getDefaultProvider();
+    public T getDefault() {
+        return getServiceLoaderFacade().getDefault();
     }
 
     @Override
+    public Map<String, T> getAll() {
+        return getServiceLoaderFacade().getAll();
+    }
+
+    @Override
+    @Deprecated
     public Map<String, T> getInstances() {
-        return getServiceLoaderFacade().getInstances();
+        return getAll();
+    }
+
+    @Override
+    @Deprecated
+    public T getInstance(Class<? extends T> providerClass) {
+        return get(providerClass);
+    }
+
+    @Override
+    @Deprecated
+    public T getInstance(String name) {
+        return get(name);
+    }
+
+    @Override
+    @Deprecated
+    public T getInstance() {
+        return get();
+    }
+
+    @Override
+    @Deprecated
+    public final T getDefaultProvider() {
+        return getDefault();
     }
 }

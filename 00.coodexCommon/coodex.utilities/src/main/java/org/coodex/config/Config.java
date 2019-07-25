@@ -33,13 +33,13 @@ public class Config {
     );
     private static ServiceLoader<Configuration> configurationServiceLoader = new ServiceLoaderImpl<Configuration>() {
         @Override
-        public Configuration getDefaultProvider() {
-            return defaultConfiguration.getInstance();
+        public Configuration getDefault() {
+            return defaultConfiguration.get();
         }
     };
 
     public static Configuration getConfig() {
-        return configurationServiceLoader.getInstance();
+        return configurationServiceLoader.get();
     }
 
     public static String get(String key, String... namespaces) {

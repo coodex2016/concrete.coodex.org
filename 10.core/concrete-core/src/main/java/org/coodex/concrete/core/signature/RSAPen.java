@@ -44,7 +44,7 @@ public class RSAPen extends AbstractIronPen {
     public byte[] sign(byte[] content, String algorithm, String keyId) {
         try {
             return RSACommon.sign(
-                    RSA_KEY_STORE_PROVIDERS.getInstance().getPrivateKey(paperName),
+                    RSA_KEY_STORE_PROVIDERS.get().getPrivateKey(paperName),
                     content, nullToDefault(algorithm));
         } catch (Throwable th) {
             throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
@@ -54,7 +54,7 @@ public class RSAPen extends AbstractIronPen {
     @Override
     public boolean verify(byte[] content, byte[] signature, String algorithm, String keyId) {
         try {
-            return RSACommon.verify(RSA_KEY_STORE_PROVIDERS.getInstance().getPublicKey(paperName, keyId),
+            return RSACommon.verify(RSA_KEY_STORE_PROVIDERS.get().getPublicKey(paperName, keyId),
                     content, signature, nullToDefault(algorithm));
         } catch (Throwable th) {
             throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);

@@ -441,7 +441,7 @@ public class Common {
             //noinspection unchecked
             return (T) toArray(str, ",", (String[]) value);
         }
-        StringConvertWithDefaultValue defaultValue = converterServiceLoader.getInstance().getServiceInstance(cls);
+        StringConvertWithDefaultValue defaultValue = converterServiceLoader.get().getServiceInstance(cls);
         if (defaultValue == null) {
             throw new RuntimeException("String to " + cls + " is not supported.");
         }
@@ -725,7 +725,7 @@ public class Common {
                     }
             ));
         }
-        return threadLocal.get().getInstance(format);
+        return threadLocal.get().get(format);
     }
 
     public static Date strToDate(String str, String format) throws ParseException {

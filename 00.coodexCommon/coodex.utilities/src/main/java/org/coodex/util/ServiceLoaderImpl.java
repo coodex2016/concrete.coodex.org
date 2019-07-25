@@ -19,13 +19,13 @@ package org.coodex.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.coodex.util.GenericTypeHelper.*;
+import static org.coodex.util.GenericTypeHelper.solveFromInstance;
+import static org.coodex.util.GenericTypeHelper.typeToClass;
 
 /**
  * <S>待coodex utilities放弃1.5时移入org.coodex.util</S>
@@ -41,7 +41,8 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 
     private final static Logger log = LoggerFactory.getLogger(ServiceLoaderImpl.class);
     private Map<String, T> instances = null;
-    private T defaultProvider = null;
+    private Map<String, T> unmodifiedMap = null;
+    private T defaultProvider;
 
     public ServiceLoaderImpl() {
         this(null);
@@ -56,6 +57,7 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
             synchronized (this) {
                 if (instances == null) {
                     loadInstances();
+                    unmodifiedMap = Collections.unmodifiableMap(instances);
                 }
             }
         }
@@ -85,7 +87,7 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
     }
 
     @Override
-    public T getDefaultProvider() {
+    public T getDefault() {
         if (defaultProvider == null) {
             throw new RuntimeException("no provider found for: " + getInterfaceClass().getName());
         } else {
@@ -110,6 +112,7 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
     }
 
     @Override
+    @Deprecated
     public Collection<T> getAllInstances() {
         load();
         return instances.values();
@@ -121,13 +124,13 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 //    }
 
     @Override
-    public Map<String, T> getInstances() {
+    public Map<String, T> getAll() {
         load();
-        return new HashMap<String, T>(instances);
+        return unmodifiedMap;
     }
 
     @Override
-    public T getInstance(Class<? extends T> providerClass) {
+    public T get(Class<? extends T> providerClass) {
         load();
 //        return (P) getInstance(providerClass.getCanonicalName());
         Map<String, T> copy = new HashMap<String, T>();
@@ -153,7 +156,7 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
     }
 
     protected T conflict(Class<? extends T> providerClass, Map<String, T> map) {
-        T t = getInstance(providerClass.getName());
+        T t = get(providerClass.getName());
         if (t != null) return t;
 
         StringBuilder buffer = new StringBuilder(getInterfaceClass().getName());
@@ -167,10 +170,10 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
     }
 
     @Override
-    public T getInstance(String name) {
+    public T get(String name) {
         load();
         T instance = instances.get(name);
-        return instance == null ? getDefaultProvider() : instance;
+        return instance == null ? getDefault() : instance;
     }
 
     protected T conflict() {
@@ -185,13 +188,44 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public T getInstance() {
+    public T get() {
         load();
         if (instances.size() == 0)
-            return getDefaultProvider();
+            return getDefault();
         else if (instances.size() == 1)
             return (T) instances.values().toArray()[0];
         else
             return conflict();
+    }
+
+
+    @Override
+    @Deprecated
+    public Map<String, T> getInstances() {
+        return getAll();
+    }
+
+    @Override
+    @Deprecated
+    public T getInstance(Class<? extends T> providerClass) {
+        return get(providerClass);
+    }
+
+    @Override
+    @Deprecated
+    public T getInstance(String name) {
+        return get(name);
+    }
+
+    @Override
+    @Deprecated
+    public T getInstance() {
+        return get();
+    }
+
+    @Override
+    @Deprecated
+    public final T getDefaultProvider() {
+        return getDefault();
     }
 }

@@ -112,7 +112,7 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
         requestPackage.getSubjoin().put(SUBJOIN_KEY_CLIENT_PROVIDER,
                 "concrete-amqp-client-" + ConcreteHelper.VERSION);
         // 2 send
-        facadeSingletonMap.getInstance((AMQPDestination) getDestination())
+        facadeSingletonMap.get((AMQPDestination) getDestination())
                 .send(serializer.toJson(requestPackage));
     }
 

@@ -49,7 +49,7 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
     );
 
     private static SingletonMap<String, String> swaggerJson = new SingletonMap<>(
-            (key) -> SwaggerHelper.toJson(key, new ArrayList<>(classes.getInstance()))
+            (key) -> SwaggerHelper.toJson(key, new ArrayList<>(classes.get()))
     );
 
     private static String[] swagger_files = {
@@ -105,7 +105,7 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
     public void register(Object instance, Class concreteService) {
         if (Polling.class.equals(concreteService)) return;
         // TODO 如何区分不同的应用
-        classes.getInstance().add(concreteService);
+        classes.get().add(concreteService);
     }
 
     @Path("config/swagger.json")
@@ -114,7 +114,7 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
         return Response
                 .ok()
                 .type(MediaType.APPLICATION_JSON_TYPE.withCharset("utf-8"))
-                .entity(swaggerJson.getInstance(getContextPath())).build();
+                .entity(swaggerJson.get(getContextPath())).build();
     }
 
     private String getContextPath() {
@@ -125,7 +125,7 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
     @Path("{file}")
     @GET
     public Response getStaticFile(@PathParam("file") String file) {
-        StaticFileContent fileContent = staticFileContents.getInstance(file);
+        StaticFileContent fileContent = staticFileContents.get(file);
         if (fileContent == null)
             return Response.status(Response.Status.NOT_FOUND).build();
         return Response

@@ -86,7 +86,7 @@ public abstract class AbstractTokenBasedTopicSubscribeInterceptor<M extends Seri
     protected abstract boolean check();
 
     private TokenBasedTopic<M> getTopic() {
-        return tokenBasedTopicSingleton.getInstance();
+        return tokenBasedTopicSingleton.get();
     }
 
     private boolean check_() {

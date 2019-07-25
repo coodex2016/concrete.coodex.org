@@ -38,6 +38,6 @@ public class TenantBuilderWrapper implements TenantBuilder {
 
     @Override
     public String getTenant() {
-        return tenantBuilderConcreteServiceLoader.getInstance().getTenant();
+        return tenantBuilderConcreteServiceLoader.get().getTenant();
     }
 }

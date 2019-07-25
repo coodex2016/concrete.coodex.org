@@ -76,7 +76,7 @@ public class HmacPen extends AbstractIronPen {
 
 
     private byte[] getHmacKey(String keyId) {
-        return HMAC_KEY_STORE_PROVIDERS.getInstance().getHmacKey(paperName, keyId);
+        return HMAC_KEY_STORE_PROVIDERS.get().getHmacKey(paperName, keyId);
     }
 
     @Override

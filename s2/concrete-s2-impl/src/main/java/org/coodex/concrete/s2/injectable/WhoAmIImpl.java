@@ -47,7 +47,7 @@ public class WhoAmIImpl implements WhoAmI {
     public AccountInfo get() {
         Account account = token.currentAccount();
         return IF.isNull(
-                ACCOUNT_COPIER_LOADER.getInstance()
+                ACCOUNT_COPIER_LOADER.get()
                         .getServiceInstance(account),
                 ErrorCodes.NO_BEAN_PROVIDER_FOUND
         ).copy(account);

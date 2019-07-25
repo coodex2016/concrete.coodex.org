@@ -32,6 +32,6 @@ public class SingtonMapTest {
                     }
                 }, 5000
         );
-        map.getInstance("123");
+        map.get("123");
     }
 }

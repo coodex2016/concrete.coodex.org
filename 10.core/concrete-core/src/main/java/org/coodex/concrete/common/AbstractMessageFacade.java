@@ -49,8 +49,8 @@ public class AbstractMessageFacade {
     public static MessageFormatter getFormatter(Class<? extends MessageFormatter> formatterClass) {
 
         MessageFormatter formatter = formatterClass == null || formatterClass == MessageFormatter.class ?
-                MESSAGE_FORMATTER_SERVICE_LOADER.getInstance() :
-                MESSAGE_FORMATTER_SERVICE_LOADER.getInstance(formatterClass);
+                MESSAGE_FORMATTER_SERVICE_LOADER.get() :
+                MESSAGE_FORMATTER_SERVICE_LOADER.get(formatterClass);
 
         return formatter == null ? DEFAULT_MESSAGE_FORMATTER : formatter;
     }
@@ -66,7 +66,7 @@ public class AbstractMessageFacade {
 
     public static LogFormatter getLogFormatter(Class<? extends LogFormatter> formatterClass) {
         return formatterClass == null || formatterClass == LogFormatter.class ?
-                LOG_FORMATTER_SERVICE_LOADER.getInstance() :
-                LOG_FORMATTER_SERVICE_LOADER.getInstance(formatterClass);
+                LOG_FORMATTER_SERVICE_LOADER.get() :
+                LOG_FORMATTER_SERVICE_LOADER.get(formatterClass);
     }
 }

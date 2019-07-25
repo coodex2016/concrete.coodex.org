@@ -51,7 +51,7 @@ class TopicBuilder
     private AtomicLong index = new AtomicLong(0);
 
     static AbstractTopic buildTopic(TopicKey key) {
-        return topics.getInstance(key);
+        return topics.get(key);
     }
 
     private Class<? extends AbstractTopic> getClass(Type topicType) {

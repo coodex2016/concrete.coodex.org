@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractResourceLockProvider implements ResourceLockProvider {
     public final static long RESOURCE_CACHE_MAX_LIFE = 10000L; // 10 seconds
@@ -107,7 +106,7 @@ public abstract class AbstractResourceLockProvider implements ResourceLockProvid
     }
 
     protected void poll() {
-        scheduledExecutorServiceSingleton.getInstance().schedule(
+        scheduledExecutorServiceSingleton.get().schedule(
                 cleanRunner, POLLING_CYCLE, TimeUnit.MILLISECONDS
         );
     }

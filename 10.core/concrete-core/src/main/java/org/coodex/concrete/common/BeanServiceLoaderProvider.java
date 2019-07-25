@@ -60,7 +60,7 @@ public class BeanServiceLoaderProvider /*extends ServiceLoaderImpl<BeanProvider>
 
     public static BeanProvider getBeanProvider() {
 //        return SPI_INSTANCE.getInstance();
-        return beanProviderSingleton.getInstance();
+        return beanProviderSingleton.get();
     }
 
 //    @Override

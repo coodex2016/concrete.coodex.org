@@ -55,7 +55,7 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
 //                    String registries = getString(destination.getIdentify(), "registry");
 //                    String application = getString(destination.getIdentify(), "name");
                     DubboDestination destination = key.getDestination();
-                    ApplicationConfig applicationConfig = DubboHelper.applications.getInstance(
+                    ApplicationConfig applicationConfig = DubboHelper.applications.get(
                             destination.getName() == null ? "concrete-dubbo-application" : destination.getName());
                     List<RegistryConfig> registryConfigs = buildRegistryConfigs(destination.getRegistries());
                     ReferenceConfig reference = new ReferenceConfig(); // 此实例很重，封装了与注册中心的连接以及与提供者的连接，请自行缓存，否则可能造成内存和连接泄漏
@@ -121,7 +121,7 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
 
         @SuppressWarnings("unchecked")
         Map<String, String> result = (Map<String, String>) findMethod(clz, method).invoke(
-                dubboClientInstances.getInstance(new DubboCacheKey((DubboDestination) getDestination(), clz)),
+                dubboClientInstances.get(new DubboCacheKey((DubboDestination) getDestination(), clz)),
                 args);
 
         if (log.isDebugEnabled()) {

@@ -58,7 +58,7 @@ public class SingletonMap<K, V> {
         return map.containsKey(key);
     }
 
-    public V getInstance(final K key) {
+    public V get(final K key) {
         if (!map.containsKey(key)) {
             synchronized (map) {
                 if (!map.containsKey(key)) {
@@ -77,6 +77,16 @@ public class SingletonMap<K, V> {
             }
         }
         return map.get(key);
+    }
+
+    /**
+     * @param key
+     * @return
+     * @see SingletonMap#get(Object)
+     */
+    @Deprecated
+    public V getInstance(final K key) {
+        return get(key);
     }
 
     public V remove(K key) {

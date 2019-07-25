@@ -45,15 +45,15 @@ class TBTSManager {
     static void putSubscription(Subscription subscription) {
         if (subscription == null) return;
         Token token = TokenWrapper.getInstance();
-        subscriptionsMap.getInstance(token.getTokenId()).add(subscription);
+        subscriptionsMap.get(token.getTokenId()).add(subscription);
     }
 
     static Object tokenLock(Token token) {
-        return subscriptionsMap.getInstance(token.getTokenId());
+        return subscriptionsMap.get(token.getTokenId());
     }
 
     static void cancel(Token token) {
-        Set<Subscription> set = subscriptionsMap.getInstance(token.getTokenId());
+        Set<Subscription> set = subscriptionsMap.get(token.getTokenId());
         if (set.size() != 0) {
             synchronized (subscriptionsMap) {
                 for (Subscription subscription : set) {

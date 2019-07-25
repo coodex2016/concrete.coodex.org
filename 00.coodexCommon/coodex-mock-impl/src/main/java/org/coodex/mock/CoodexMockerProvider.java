@@ -103,7 +103,7 @@ public class CoodexMockerProvider implements MockerProvider {
                 @Override
                 public Collection<TypeMocker> build() {
                     return new ServiceLoaderImpl<TypeMocker>() {
-                    }.getAllInstances();
+                    }.getAll().values();
                 }
             }
     );
@@ -220,7 +220,7 @@ public class CoodexMockerProvider implements MockerProvider {
     private static MockFacade getTypeMocker(Type type, List<Annotation> annotations) {
         for (Annotation annotation : annotations) {
             if (annotation != null && annotation.annotationType().getAnnotation(Mock.class) == null) continue;
-            for (TypeMocker provider : TYPE_MOCKERS.getInstance()) {
+            for (TypeMocker provider : TYPE_MOCKERS.get()) {
                 if (annotation == null || annotation.annotationType().equals(
                         solveFromType(TypeMocker.class.getTypeParameters()[0],
                                 provider.getClass()
@@ -363,7 +363,7 @@ public class CoodexMockerProvider implements MockerProvider {
                                     temp.add(property);
                                 } else {
                                     RelationStrategy toUse = null;
-                                    for (RelationStrategy strategy : RELATION_STRATEGIES.getAllInstances()) {
+                                    for (RelationStrategy strategy : RELATION_STRATEGIES.getAll().values()) {
                                         if (strategy.accept(relation.strategy())) {
                                             toUse = strategy;
                                             break;
@@ -871,7 +871,7 @@ public class CoodexMockerProvider implements MockerProvider {
     }
 
     private SequenceMockerFactory getSequenceMockerFactory(Class<? extends SequenceMockerFactory> factoryClass) {
-        SequenceMockerFactory factory = SEQUENCE_MOCKER_FACTORIES.getInstance(factoryClass);
+        SequenceMockerFactory factory = SEQUENCE_MOCKER_FACTORIES.get(factoryClass);
         if (factory == null && !factoryClass.isInterface()) {
             try {
                 factory = factoryClass.newInstance();

@@ -41,7 +41,7 @@ public class AMQPHelper {
 
     @SuppressWarnings("unchecked")
     public static AMQPUnit findUnit(DefinitionContext context) {
-        AMQPModule module = IF.isNull(modules.getInstance(context.getDeclaringClass()),
+        AMQPModule module = IF.isNull(modules.get(context.getDeclaringClass()),
                 context.getDeclaringClass() + "is not a concrete service.");
         Method method = context.getDeclaringMethod();
         for (AMQPUnit unit : module.getUnits()) {

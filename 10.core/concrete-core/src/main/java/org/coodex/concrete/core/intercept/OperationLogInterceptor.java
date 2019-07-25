@@ -106,8 +106,8 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
 
     private static OperationLogger getLogger(Class<? extends OperationLogger> loggerClass) {
         return loggerClass == null || loggerClass == OperationLogger.class ?
-                LOGGER_SERVICE_LOADER.getInstance() :
-                LOGGER_SERVICE_LOADER.getInstance(loggerClass);
+                LOGGER_SERVICE_LOADER.get() :
+                LOGGER_SERVICE_LOADER.get(loggerClass);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
         return context.getAnnotation(OperationLog.class) != null || context.getAnnotation(LogAtomic.class) != null;
     }
 
-    private Account<? extends AccountID> getOperator() {
+    private Account getOperator() {
         try {
             return TokenWrapper.getInstance().currentAccount();
         } catch (Throwable th) {

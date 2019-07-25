@@ -89,7 +89,7 @@ public class ZipkinTrace extends AbstractTrace {
 
 
     private Tracer getTracer() {
-        return tracingSingleton.getInstance().tracer();
+        return tracingSingleton.get().tracer();
     }
 
     @Override

@@ -51,7 +51,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
 
     private ServiceLoader<ServiceRegisteredListener> registerNotifyServiceServiceLoader = new ServiceLoaderImpl<ServiceRegisteredListener>() {
         @Override
-        public ServiceRegisteredListener getDefaultProvider() {
+        public ServiceRegisteredListener getDefault() {
             return (instance, concreteService) -> {
             };
         }
@@ -109,7 +109,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     private void registerDefault() {
         register(Polling.class);
         registerPackage(ErrorCodes.class.getPackage().getName());
-        for (DefaultJaxrsClassGetter getter : getterServiceLoader.getAllInstances()) {
+        for (DefaultJaxrsClassGetter getter : getterServiceLoader.getAll().values()) {
             register(getter.getClasses());
         }
     }
@@ -140,7 +140,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     }
 
     private void notifyToAll(Class<?> concreteServiceClass) {
-        for (ServiceRegisteredListener notifyService : registerNotifyServiceServiceLoader.getAllInstances()) {
+        for (ServiceRegisteredListener notifyService : registerNotifyServiceServiceLoader.getAll().values()) {
             try {
                 notifyService.register(this, concreteServiceClass);
             } catch (Throwable th) {

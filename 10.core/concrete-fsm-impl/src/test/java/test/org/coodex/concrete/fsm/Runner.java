@@ -22,7 +22,7 @@ import org.coodex.util.ServiceLoaderImpl;
 public class Runner {
 
     private static final FiniteStateMachineProvider provider = new ServiceLoaderImpl<FiniteStateMachineProvider>() {
-    }.getInstance();
+    }.get();
 
 
     public static void main(String[] args) {

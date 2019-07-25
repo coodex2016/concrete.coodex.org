@@ -36,7 +36,7 @@ public class AbstractTenantCopier<T extends Tenant, E extends AbstractTenantEnti
 
     protected String calendarToStr(Calendar calendar) {
         return calendar == null ? null :
-                DATE_FORMATTER_SERVICE_LOADER.getInstance().getDateFormat().format(calendar.getTime());
+                DATE_FORMATTER_SERVICE_LOADER.get().getDateFormat().format(calendar.getTime());
     }
 
     @Override

@@ -26,10 +26,10 @@ import test.org.coodex.concrete.fsm.DemoWrongStateException;
 public class Runner3 {
 
     private static final FiniteStateMachineProvider provider = new ServiceLoaderImpl<FiniteStateMachineProvider>() {
-    }.getInstance();
+    }.get();
 
     private static final IdentifiedStateContainer container = new ServiceLoaderImpl<IdentifiedStateContainer>() {
-    }.getInstance();
+    }.get();
 
 
     public static void main(String[] args) {

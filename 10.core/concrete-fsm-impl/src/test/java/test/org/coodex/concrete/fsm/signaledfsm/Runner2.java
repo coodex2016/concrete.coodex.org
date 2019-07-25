@@ -27,7 +27,7 @@ public class Runner2 {
         final DemoSignaledState state = new DemoSignaledState();
         state.setValue(0);
         final FiniteStateMachineProvider provider = new ServiceLoaderImpl<FiniteStateMachineProvider>() {
-        }.getInstance();
+        }.get();
 
         for (int i = 0; i < 300; i++) {
             final int x = i % 4;

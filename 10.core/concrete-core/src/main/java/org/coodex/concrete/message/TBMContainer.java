@@ -68,7 +68,7 @@ public class TBMContainer {
 
     private static void remove(String tokenId, TBMMessage message) {
         if (Common.isBlank(tokenId)) return;
-        queues.getInstance(tokenId).remove(message);
+        queues.get(tokenId).remove(message);
         if (log.isDebugEnabled()) {
             log.debug("removed from token {}\n{}", tokenId,
                     JSONSerializerFactory.getInstance().toJson(message.message));
@@ -77,11 +77,11 @@ public class TBMContainer {
 
     void push(TokenBasedTopicPrototype.TokenConfirm tokenConfirm, Topic<TokenBasedTopicPrototype.ConsumedNotify> consumedNotifyTopic) {
         if (Common.isBlank(tokenConfirm.getTokenId())) return;
-        queues.getInstance(tokenConfirm.getTokenId()).put(new TBMMessage(tokenConfirm, consumedNotifyTopic));
+        queues.get(tokenConfirm.getTokenId()).put(new TBMMessage(tokenConfirm, consumedNotifyTopic));
     }
 
     void remove(TokenBasedTopicPrototype.ConsumedNotify consumedNotify) {
-        queues.getInstance(consumedNotify.getTokenId()).remove(consumedNotify.getId());
+        queues.get(consumedNotify.getTokenId()).remove(consumedNotify.getId());
     }
 
     public List<ServerSideMessage> getMessages(String tokenId, long timeOut) {
@@ -100,7 +100,7 @@ public class TBMContainer {
             }
             return new ArrayList<ServerSideMessage>();
         } else {
-            List<TBMMessage> messageList = queues.getInstance(tokenId).peekAll(timeOut);
+            List<TBMMessage> messageList = queues.get(tokenId).peekAll(timeOut);
 
             List<ServerSideMessage> messages = new ArrayList<ServerSideMessage>();
             for (TBMMessage message : messageList) {
@@ -119,7 +119,7 @@ public class TBMContainer {
     }
 
     public void listen(String tokenId, TBMListener tbmListener) {
-        TBMQueue queue = queues.getInstance(tokenId);
+        TBMQueue queue = queues.get(tokenId);
         queue.tbmListener = tbmListener;
     }
 

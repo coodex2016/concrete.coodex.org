@@ -124,7 +124,7 @@ public class SignUtil {
                 IRON_PEN_FACTORY_CONCRETE_SPI_FACADE.getServiceInstance(algorithm),
                 signable.serializer().equals(SignatureSerializer.class) ?
                         DEFAULT_SERIALIZER :
-                        SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE.getInstance(signable.serializer()),
+                        SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE.get(signable.serializer()),
                 signable.paperName(),
                 algorithm
         );

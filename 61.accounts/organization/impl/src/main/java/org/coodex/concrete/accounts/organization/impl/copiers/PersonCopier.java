@@ -34,7 +34,7 @@ public abstract class PersonCopier<T extends Person, E extends AbstractPersonAcc
 
     private void setBirthday(E e, String s) {
         try {
-            e.setBirthDay(DATE_FORMATTER_SERVICE_LOADER.getInstance().getDateFormat()
+            e.setBirthDay(DATE_FORMATTER_SERVICE_LOADER.get().getDateFormat()
                     .format(strToDate(s, "yyyyMMdd")));
         } catch (Throwable th) {
         }

@@ -44,10 +44,10 @@ public class MockerFacade {
 
     private static final PojoBuilder POJO_BUILDER = new ServiceLoaderImpl<PojoBuilder>() {
         @Override
-        public PojoBuilder getDefaultProvider() {
+        public PojoBuilder getDefault() {
             return DEFAULT_BUILDER;
         }
-    }.getInstance();
+    }.get();
 
     private static final DefaultMockers DEFAULT_MOCKER = new DefaultMockers();
 
@@ -55,7 +55,7 @@ public class MockerFacade {
             new AcceptableServiceLoader<Annotation, Mocker<Annotation>>(
                     new ServiceLoaderImpl<Mocker<Annotation>>() {
                         @Override
-                        public Mocker<Annotation> getDefaultProvider() {
+                        public Mocker<Annotation> getDefault() {
                             return DEFAULT_MOCKER;
                         }
                     }

@@ -128,6 +128,6 @@ public abstract class AbstractOrganizationAccountFactory
 
     @Override
     public Account<ClassifiableAccountID> getAccountByID(ClassifiableAccountID id) {
-        return IF.isNull(accountSingletonMap.getInstance(id.getId()), NONE_THIS_ACCOUNT);
+        return IF.isNull(accountSingletonMap.get(id.getId()), NONE_THIS_ACCOUNT);
     }
 }

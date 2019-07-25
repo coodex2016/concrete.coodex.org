@@ -60,7 +60,7 @@ public abstract class AbstractConfigurableSequenceGenerator<T> extends AbstractS
 //        return profileSingleton.getInstance();
 //    }
     protected Configuration getConfig() {
-        return configSingleton.getInstance();
+        return configSingleton.get();
     }
 
 

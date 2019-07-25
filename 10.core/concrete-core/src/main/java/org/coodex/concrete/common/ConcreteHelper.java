@@ -26,7 +26,6 @@ import org.coodex.util.Common;
 import org.coodex.util.ReflectHelper;
 import org.coodex.util.SingletonMap;
 
-import javax.annotation.CheckForNull;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -86,7 +85,7 @@ public class ConcreteHelper {
                                 key + ".scheduler"
                         );
                     } else {
-                        return scheduledExecutorMap.getInstance(aliasTo);
+                        return scheduledExecutorMap.get(aliasTo);
                     }
                 }
             }
@@ -106,7 +105,7 @@ public class ConcreteHelper {
                                 key + ".executor"
                         );
                     } else {
-                        return executorServiceMap.getInstance(aliasTo);
+                        return executorServiceMap.get(aliasTo);
                     }
 //                    return ExecutorsHelper.newP;
                 }
@@ -195,11 +194,11 @@ public class ConcreteHelper {
     }
 
     public static ScheduledExecutorService getScheduler(String name) {
-        return scheduledExecutorMap.getInstance(name);
+        return scheduledExecutorMap.get(name);
     }
 
     public static ExecutorService getExecutor(String executorName) {
-        return executorServiceMap.getInstance(executorName);
+        return executorServiceMap.get(executorName);
     }
 
 //    public static Method[] getAllMethod(Class<?> serviceClass) {

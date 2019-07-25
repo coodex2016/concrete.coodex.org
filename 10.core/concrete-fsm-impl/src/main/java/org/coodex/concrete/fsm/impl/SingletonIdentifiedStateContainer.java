@@ -73,7 +73,7 @@ public class SingletonIdentifiedStateContainer implements IdentifiedStateContain
             if (!loaderMap.containsKey(stateClass)) {
                 Type t = IdentifiedStateLoader.class.getTypeParameters()[0];
                 boolean found = false;
-                for (IdentifiedStateLoader loader : LOADERS.getAllInstances()) {
+                for (IdentifiedStateLoader loader : LOADERS.getAll().values()) {
                     if (stateClass.equals(toReference(t, loader.getClass()))) {
                         loaderMap.put(stateClass, loader);
                         found = true;

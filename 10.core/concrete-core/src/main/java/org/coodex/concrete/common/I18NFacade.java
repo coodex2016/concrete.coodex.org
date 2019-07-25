@@ -24,11 +24,11 @@ public class I18NFacade {
 
     private static Singleton<TranslateService> TRANSLATE_SERVICE_SINGLETON = new Singleton<>(
             () -> new ServiceLoaderImpl<TranslateService>(new ResourceBundlesTranslateService()) {
-            }.getInstance()
+            }.get()
     );
 
     public static TranslateService getTranslateService() {
-        return TRANSLATE_SERVICE_SINGLETON.getInstance();
+        return TRANSLATE_SERVICE_SINGLETON.get();
     }
 
     public static String translate(String key) {

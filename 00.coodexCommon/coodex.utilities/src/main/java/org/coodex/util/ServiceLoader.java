@@ -23,16 +23,55 @@ import java.util.Map;
  * Created by davidoff shen on 2017-04-26.
  */
 public interface ServiceLoader<T> {
+
+    @Deprecated
     Collection<T> getAllInstances();
 
+    /**
+     * @return
+     * @see ServiceLoader#getAll()
+     */
+    @Deprecated
     Map<String, T> getInstances();
 
+    Map<String, T> getAll();
+
+    /**
+     * @param providerClass
+     * @return
+     * @see ServiceLoader#get(Class)
+     */
+    @Deprecated
     T getInstance(Class<? extends T> providerClass);
 
+    T get(Class<? extends T> serviceClass);
+
+    /**
+     * @param name
+     * @return
+     * @see ServiceLoader#get(String)
+     */
+    @Deprecated
     T getInstance(String name);
 
-    @SuppressWarnings("unchecked")
+    T get(String name);
+
+    @Deprecated
     T getInstance();
 
+    /**
+     *
+     * @return
+     * @see ServiceLoader#get()
+     */
+    T get();
+
+    T getDefault();
+
+    /**
+     * @return
+     * @see ServiceLoader#getDefault()
+     */
+    @Deprecated
     T getDefaultProvider();
 }

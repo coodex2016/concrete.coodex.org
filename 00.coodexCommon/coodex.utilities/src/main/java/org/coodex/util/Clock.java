@@ -52,10 +52,10 @@ public final class Clock {
             } else {
                 return new ServiceLoaderImpl<ClockAgent>() {
                     @Override
-                    public ClockAgent getDefaultProvider() {
+                    public ClockAgent getDefault() {
                         return new DefaultClockAgent();
                     }
-                }.getInstance();
+                }.get();
             }
         }
     });
@@ -65,7 +65,7 @@ public final class Clock {
      * @see ClockAgent#currentTimeMillis()
      */
     public static long currentTimeMillis() {
-        return agentSingleton.getInstance().currentTimeMillis();
+        return agentSingleton.get().currentTimeMillis();
     }
 
     /**
@@ -73,7 +73,7 @@ public final class Clock {
      * @see ClockAgent#sleep(long)
      */
     public static Calendar getCalendar() {
-        return agentSingleton.getInstance().getCalendar();
+        return agentSingleton.get().getCalendar();
     }
 
     /**
@@ -82,7 +82,7 @@ public final class Clock {
      * @see ClockAgent#sleep(long)
      */
     public static void sleep(long millis) throws InterruptedException {
-        agentSingleton.getInstance().sleep(millis);
+        agentSingleton.get().sleep(millis);
     }
 
     /**
@@ -92,10 +92,10 @@ public final class Clock {
      * @see ClockAgent#objWait(Object, long)
      */
     public static void objWait(Object obj, long millis) throws InterruptedException {
-        agentSingleton.getInstance().objWait(obj, millis);
+        agentSingleton.get().objWait(obj, millis);
     }
 
     public static long toMillis(long duration, TimeUnit timeUnit) {
-        return agentSingleton.getInstance().toMillis(duration, timeUnit);
+        return agentSingleton.get().toMillis(duration, timeUnit);
     }
 }

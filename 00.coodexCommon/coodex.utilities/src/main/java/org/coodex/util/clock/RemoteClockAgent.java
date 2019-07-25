@@ -86,8 +86,8 @@ public class RemoteClockAgent extends AbstractClockAgent {
     );
 
     public RemoteClockAgent() {
-        super(configurationSingleton.getInstance().magnification,
-                configurationSingleton.getInstance().baseLine,
-                configurationSingleton.getInstance().start);
+        super(configurationSingleton.get().magnification,
+                configurationSingleton.get().baseLine,
+                configurationSingleton.get().start);
     }
 }

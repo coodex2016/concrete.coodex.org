@@ -96,6 +96,6 @@ public class JedisClientFactory implements SharedCacheClientFactory {
 
     @Override
     public SharedCacheClient getClientInstance() {
-        return client.getInstance();
+        return client.get();
     }
 }

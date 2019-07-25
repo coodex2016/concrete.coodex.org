@@ -29,6 +29,10 @@ public interface SomeService {
 ## 2019-07-25
 
 - 修复WarningData为汉字时无法正确显示的问题
+- 作废ServiceLoader的getInstances和getInstance接口，使用getAll/get替代
+- 作废Singleton的getInstance接口，使用get替代
+- 作废SingletonMap的getInstance接口，使用get替代
+
 
 ## 2019-07-23
 

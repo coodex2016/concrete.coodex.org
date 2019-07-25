@@ -42,7 +42,7 @@ public abstract class PojoCopier<T extends AbstractPojo, E extends AbstractEntit
     @Override
     public T copyB2A(E e, T t) {
         t.setName(e.getName());
-        t.setCreated(DATE_FORMATTER_SERVICE_LOADER.getInstance().getDateFormat().format(e.getCreated().getTime()));
+        t.setCreated(DATE_FORMATTER_SERVICE_LOADER.get().getDateFormat().format(e.getCreated().getTime()));
         return t;
     }
 }

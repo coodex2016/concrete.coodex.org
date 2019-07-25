@@ -49,7 +49,7 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
      * @return
      */
     protected Response.Status getStatus(int errorCode) {
-        return CODE_MAPPER_SERVICE_LOADER.getInstance().toStatus(errorCode);
+        return CODE_MAPPER_SERVICE_LOADER.get().toStatus(errorCode);
     }
 
 

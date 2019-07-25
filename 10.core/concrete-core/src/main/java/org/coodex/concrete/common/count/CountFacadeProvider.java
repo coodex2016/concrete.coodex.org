@@ -57,7 +57,7 @@ public class CountFacadeProvider implements CountFacade {
         TypeVariable t = Counter.class.getTypeParameters()[0];
         chainMap = new HashMap<>();
 
-        for (Counter counter : counterProvider.getAllInstances()) {
+        for (Counter counter : counterProvider.getAll().values()) {
 
             Type type = solveFromInstance(t, counter);
             if (type instanceof Class) {

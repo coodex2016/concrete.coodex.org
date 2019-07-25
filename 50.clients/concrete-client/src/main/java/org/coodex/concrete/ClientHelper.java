@@ -46,7 +46,7 @@ public class ClientHelper {
 
     private static Singleton<InstanceBuilder> instanceBuilder =
             new Singleton<>(() -> new ServiceLoaderImpl<InstanceBuilder>(new JavaProxyInstanceBuilder()) {
-            }.getInstance());
+            }.get());
 
     private static Singleton<AcceptableServiceLoader<Destination, InvokerFactory>> invokerFactoryProviders =
             new Singleton<>(()->new AcceptableServiceLoader<Destination, InvokerFactory>() {
@@ -82,11 +82,11 @@ public class ClientHelper {
     }
 
     public static InstanceBuilder getInstanceBuilder() {
-        return instanceBuilder.getInstance();
+        return instanceBuilder.get();
     }
 
     public static AcceptableServiceLoader<Destination, InvokerFactory> getInvokerFactoryProviders() {
-        return invokerFactoryProviders.getInstance();
+        return invokerFactoryProviders.get();
     }
 
     @SuppressWarnings("unchecked")
@@ -122,7 +122,7 @@ public class ClientHelper {
             = new AcceptableServiceLoader<String, DestinationFactory<Destination, String>>(){};
 
     private static AcceptableServiceLoader<String, SSLContextFactory> getSSLContextFactoryAcceptableServiceLoader() {
-        return sslContextFactoryAcceptableServiceLoader.getInstance();
+        return sslContextFactoryAcceptableServiceLoader.get();
     }
 
     public static SSLContext getSSLContext(String ssl) {
@@ -146,22 +146,22 @@ public class ClientHelper {
     }
 
     private static ServiceLoader<ConcreteInterceptor> getInterceptorServiceLoader() {
-        return interceptorServiceLoader.getInstance();
+        return interceptorServiceLoader.get();
     }
 
     private static void buildChain(Set<ConcreteInterceptor> chain) {
-        for (ConcreteInterceptor interceptor : getInterceptorServiceLoader().getAllInstances()) {
+        for (ConcreteInterceptor interceptor : getInterceptorServiceLoader().getAll().values()) {
             if (!(interceptor instanceof InterceptorChain))
                 chain.add(interceptor);
         }
     }
 
     public static SyncInterceptorChain getSyncInterceptorChain() {
-        return syncInterceptorChain.getInstance();
+        return syncInterceptorChain.get();
     }
 
     public static AsyncInterceptorChain getAsyncInterceptorChain() {
-        return asyncInterceptorChain.getInstance();
+        return asyncInterceptorChain.get();
     }
 
 }
