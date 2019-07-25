@@ -70,7 +70,7 @@ export abstract class AbstractConcreteService {
             runtimeContext.setTokenId(res.headers.get('concrete-token-id'));
             let warnings = res.headers.get('concrete-warnings');
             if(warnings && runtimeContext.warningHandle){
-                let warningsArray = JSON.parse(warnings);
+                let warningsArray = JSON.parse(decodeURIComponent(warnings));
                 if (warningsArray instanceof Array){
                     for(let i =0;i < warningsArray.length; i ++){
                         try{

@@ -29,6 +29,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -211,7 +212,7 @@ public abstract class AbstractJAXRSResource<T> {
             Map<String, String> map = ConcreteHelper.updatedMap(serviceContext.getSubjoin());
             if (map != null && map.size() > 0) {
                 for (String key : map.keySet()) {
-                    builder = builder.header(key, map.get(key));
+                    builder = builder.header(key, URLEncoder.encode(map.get(key), "UTF-8"));
                 }
             }
             return builder.build();
@@ -228,23 +229,19 @@ public abstract class AbstractJAXRSResource<T> {
         final int paramCount = params == null ? 0 : params.length;
 
         return buildResponse(tokenId, method, params,
-                new CallableClosure() {
-
-                    @Override
-                    public Object call() throws Throwable {
-                        if (!Polling.class.equals(method.getDeclaringClass()) && isDevModel()) {
-                            return void.class.equals(method.getGenericReturnType()) ? null :
-                                    MockerFacade.mock(method, getInterfaceClass());
-                        } else {
-                            Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
-                            if (paramCount == 0)
-                                return method.invoke(instance);
-                            else {
-                                return method.invoke(instance, params);
-                            }
+                () -> {
+                    if (!Polling.class.equals(method.getDeclaringClass()) && isDevModel()) {
+                        return void.class.equals(method.getGenericReturnType()) ? null :
+                                MockerFacade.mock(method, getInterfaceClass());
+                    } else {
+                        Object instance = BeanProviderFacade.getBeanProvider().getBean(getInterfaceClass());
+                        if (paramCount == 0)
+                            return method.invoke(instance);
+                        else {
+                            return method.invoke(instance, params);
                         }
-
                     }
+
                 });
 
     }

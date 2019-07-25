@@ -18,7 +18,6 @@ package org.coodex.concrete.client;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.core.intercept.AbstractInterceptor;
 import org.coodex.concrete.core.intercept.AbstractSyncInterceptor;
 import org.coodex.concrete.core.intercept.annotations.ClientSide;
 import org.coodex.concrete.message.GenericTypeHelper;
@@ -39,19 +38,14 @@ public class WarningClientInterceptor extends AbstractSyncInterceptor {
     private final static Logger log = LoggerFactory.getLogger(WarningClientInterceptor.class);
     private static Type type = new GenericTypeHelper.GenericType<List<WarningData>>() {
     }.getType();
-    private static Singleton<Collection<WarningHandle>> WARNGING_HANDLES = new Singleton<>(new Singleton.Builder<Collection<WarningHandle>>() {
-        @Override
-        public Collection<WarningHandle> build() {
-            return new ConcreteServiceLoader<WarningHandle>() {
-            }.getAllInstances();
-        }
-    });
+    private static Singleton<Collection<WarningHandle>> WARNING_HANDLES = new Singleton<>(() -> new ConcreteServiceLoader<WarningHandle>() {
+    }.getAllInstances());
 
     @Override
     protected boolean accept_(DefinitionContext context) {
         return true;
     }
-//    private static Singleton<ConcreteServiceLoader<WarningHandle>> WARNGING_HANDLES = new Singleton<>(
+//    private static Singleton<ConcreteServiceLoader<WarningHandle>> WARNING_HANDLES = new Singleton<>(
 //            new Singleton.Builder<ConcreteServiceLoader<WarningHandle>>() {
 //                @Override
 //                public ConcreteServiceLoader<WarningHandle> build() {
@@ -77,7 +71,7 @@ public class WarningClientInterceptor extends AbstractSyncInterceptor {
                         .parse(warnings, type);
                 if (warningList.size() > 0) {
                     for (Warning warning : warningList) {
-                        for (WarningHandle handle : WARNGING_HANDLES.getInstance()) {
+                        for (WarningHandle handle : WARNING_HANDLES.getInstance()) {
                             try {
                                 handle.onWarning(clientSideContext.getDestination(), warning);
                             } catch (Throwable th) {

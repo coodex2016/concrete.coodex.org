@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-25
+
+- 修复WarningData为汉字时无法正确显示的问题
+
 ## 2019-07-16
 
 - concrete-api-tools: 修复AngularV2代码生成器的缺陷
