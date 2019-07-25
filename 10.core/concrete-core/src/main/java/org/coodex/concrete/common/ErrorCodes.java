@@ -69,4 +69,6 @@ public final class ErrorCodes extends AbstractErrorCodes {
 
     public static final int SERVICE_ID_NOT_EXISTS = CONCRETE_CORE + 201;
 
+    public static final int WARNING_DEPRECATED = CONCRETE_CORE + 300;
+
 }

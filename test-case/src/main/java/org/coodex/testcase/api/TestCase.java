@@ -28,6 +28,7 @@ public interface TestCase {
 
     @Description(name = "求和")
     @Mock.Number("[1,20]")
+    @Deprecated
     int add(
 
             @Parameter("x1") Integer x1,

@@ -29,6 +29,7 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 import org.coodex.concrete.api.Description;
+import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
@@ -79,6 +80,8 @@ public class SwaggerHelper {
             for (Map.Entry<String, Schema> entry : defined.entrySet()) {
                 components.addSchemas(entry.getKey(), entry.getValue());
             }
+
+//            components.addSchemas("ErrorInfo", classSchema(ErrorInfo.class));
             openAPI.components(components);
 
         } finally {
@@ -165,7 +168,9 @@ public class SwaggerHelper {
                                                 .example(
                                         Mocker.mockMethod(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass())
                                 ))))).addApiResponse("204", new ApiResponse())
-                .addApiResponse("default", new ApiResponse())
+                .addApiResponse("default", new ApiResponse()
+                        .content(new Content().addMediaType("application/json", new MediaType()
+                                .schema(schema(ErrorInfo.class)))))
         );
         switch (unit.getInvokeType().toLowerCase()) {
             case "get":

@@ -27,6 +27,8 @@ public class InterceptOrders {
      */
     public static final int SYSTEM_AUDIT = 100;
 
+    public static final int DEPRECATED_CHECK = 101;
+
     /**
      * 系统服务时间
      */
@@ -56,5 +58,7 @@ public class InterceptOrders {
     public static final int RBAC = 9000;
 
 
-    public static final int OTHER = 9001;
+    public static final int MOCK = 9002;
+
+    public static final int OTHER = 10000;
 }

@@ -31,7 +31,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.coodex.concrete.core.intercept.InterceptOrders.OTHER;
+import static org.coodex.concrete.core.intercept.InterceptOrders.MOCK;
 
 @ServerSide
 public class MockV2Interceptor extends AbstractSyncInterceptor {
@@ -103,6 +103,6 @@ public class MockV2Interceptor extends AbstractSyncInterceptor {
 
     @Override
     public int getOrder() {
-        return OTHER;
+        return MOCK;
     }
 }
