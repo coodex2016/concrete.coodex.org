@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-25
+
+- 修复WarningData为汉字时无法正确显示的问题
+
 ## 2019-07-23
 
 - `coodex-mock-impl`增加一个[在spring-webmvc中使用`mock`的例子](00.coodexCommon/coodex-mock-impl/src/main/java/org/coodex/mock/spring/webmvc/SpringWebMockAspect.java)
@@ -34,6 +38,7 @@ public interface SomeService {
 ## 2019-07-20
 
 - 增加`coodex-mock-spec`和`coodex-mock-impl`，[点我](00.coodexCommon/coodex-mock-spec/README.md) 
+
 
 ## 2019-07-16
 

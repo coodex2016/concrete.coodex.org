@@ -37,9 +37,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -47,6 +49,7 @@ import java.util.StringTokenizer;
 import static org.coodex.concrete.ClientHelper.getJSONSerializer;
 import static org.coodex.concrete.ClientHelper.getSSLContext;
 import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
+import static org.coodex.concrete.common.Subjoin.KEY_WARNINGS;
 import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.getUnitFromContext;
@@ -232,7 +235,12 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                     builder.append("result:\n").append(body);
                     log.debug(builder.toString());
                 }
-                getContext().responseSubjoin(new JaxRSSubjoin(response.getHeaders()));
+                JaxRSSubjoin subjoin = new JaxRSSubjoin(response.getHeaders());
+                String warnings = subjoin.get(KEY_WARNINGS);
+                if (!Common.isBlank(warnings)) {
+                    subjoin.set(KEY_WARNINGS, Arrays.asList(URLDecoder.decode(warnings, "UTF-8")));
+                }
+                getContext().responseSubjoin(subjoin);
                 return processResult(response.getStatus(), body, unit,
                         response.getHeaders().keySet().contains(HEADER_ERROR_OCCURRED), path);
             } catch (ClientException clientEx) {

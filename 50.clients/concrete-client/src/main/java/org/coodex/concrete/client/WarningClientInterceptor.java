@@ -39,13 +39,15 @@ public class WarningClientInterceptor extends AbstractSyncInterceptor {
     private final static Logger log = LoggerFactory.getLogger(WarningClientInterceptor.class);
     private static Type type = new GenericTypeHelper.GenericType<List<WarningData>>() {
     }.getType();
-    private static Singleton<Collection<WarningHandle>> WARNING_HANDLES = new Singleton<>(new Singleton.Builder<Collection<WarningHandle>>() {
-        @Override
-        public Collection<WarningHandle> build() {
-            return new ServiceLoaderImpl<WarningHandle>() {
-            }.getAllInstances();
-        }
-    });
+//    private static Singleton<Collection<WarningHandle>> WARNING_HANDLES = new Singleton<>(new Singleton.Builder<Collection<WarningHandle>>() {
+//        @Override
+//        public Collection<WarningHandle> build() {
+//            return new ServiceLoaderImpl<WarningHandle>() {
+//            }.getAllInstances();
+//        }
+//    });
+    private static Singleton<Collection<WarningHandle>> WARNING_HANDLES = new Singleton<>(() -> new ConcreteServiceLoader<WarningHandle>() {
+    }.getAllInstances());
 
     @Override
     protected boolean accept_(DefinitionContext context) {

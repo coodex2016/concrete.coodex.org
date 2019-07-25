@@ -28,6 +28,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -210,7 +211,7 @@ public abstract class AbstractJAXRSResource<T> {
             Map<String, String> map = ConcreteHelper.updatedMap(serviceContext.getSubjoin());
             if (map != null && map.size() > 0) {
                 for (String key : map.keySet()) {
-                    builder = builder.header(key, map.get(key));
+                    builder = builder.header(key, URLEncoder.encode(map.get(key), "UTF-8"));
                 }
             }
             return builder.build();
