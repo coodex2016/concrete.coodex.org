@@ -59,8 +59,8 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
     private DefaultListableBeanFactory defaultListableBeanFactory;
 
 
-    private Set<String> registered = new HashSet<String>();
-    private Map<String, Integer> moduleMap = new HashMap<String, Integer>();
+    private Set<String> registered = new HashSet<>();
+    private Map<String, Integer> moduleMap = new HashMap<>();
     private AtomicInteger atomicInteger = new AtomicInteger(1);
 
     private void scan(java.lang.annotation.Annotation[][] annotations, Class[] parameters) {
@@ -123,7 +123,7 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
     }
 
     private CtClass[] getParameterTypes(Method method, ClassPool classPool) {
-        List<CtClass> list = new ArrayList<CtClass>();
+        List<CtClass> list = new ArrayList<>();
         for (Class c : method.getParameterTypes()) {
             list.add(classPool.getOrNull(c.getName()));
         }
