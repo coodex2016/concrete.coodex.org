@@ -22,25 +22,19 @@ package org.coodex.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author davidoff
  */
 public class ReflectHelper {
 
+
     public static final ClassDecision NOT_NULL = new NotNullDecision();
-//    public static final ClassDecision ALL_OBJECT = new AllObjectDecision();
-//    public static final ClassDecision ALL_OBJECT_EXCEPT_JDK = new AllObjectExceptJavaSDK();
     private static Logger log = LoggerFactory.getLogger(ReflectHelper.class);
 
     private ReflectHelper() {
@@ -151,17 +145,6 @@ public class ReflectHelper {
         return fields.values().toArray(new Field[0]);
     }
 
-//    public static boolean belong(Method method, Class<?> clz) {
-//        try {
-//            Method m = clz.getMethod(method.getName(), method.getParameterTypes());
-//            return m != null;
-//        } catch (SecurityException e) {
-//            return false;
-//        } catch (NoSuchMethodException e) {
-//            return false;
-//        }
-//    }
-
     public static Object invoke(Object obj, Method method, Object[] args)
             throws IllegalAccessException, IllegalArgumentException,
             InvocationTargetException, NoSuchMethodException, SecurityException {
@@ -177,149 +160,151 @@ public class ReflectHelper {
         }
     }
 
-//    public static Collection<Class<?>> getClasses(String packageName) {
-//        return getClasses(packageName, null);
-//    }
-
-    private static Collection<Class<?>> getClasses(String packageName,
-                                                  ClassNameFilter filter) {
-        ClassLoader classLoader = ReflectHelper.class.getClassLoader();
-
-        List<Class<?>> list = new ArrayList<Class<?>>();
-//        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        // 枚举所有的符合的package
-        String path = packageName.replace('.', '/');
-        try {
-            Enumeration<URL> resources = classLoader.getResources(path);
-            while (resources.hasMoreElements()) {
-                URL url = resources.nextElement();
-
-                String resource = URLDecoder.decode(
-                        url.getFile().replace("+", "%2B")/* 缺陷？ */,
-                        System.getProperty("file.encoding"));
-
-                // 针对每一个匹配的包进行检索
-                int indexOfZipMarker = resource.indexOf('!');
-                if (indexOfZipMarker > 0) { // .zip, .jar
-
-                    list.addAll(loadFromZipFile(packageName, filter, new File(
-                            resource.substring(5 /* 去掉file协议头 */, indexOfZipMarker))));
-
-                } else {// 文件夹
-
-                    File dir;
-
-                    dir = new File(url.toURI());
-                    list.addAll(loadFromDirectory(packageName, filter, dir));
-
-                }
-            }
-        } catch (IOException e) {
-            log.warn("{}", e.getLocalizedMessage(), e);
-        } catch (URISyntaxException e) {
-            log.warn("{}", e.getLocalizedMessage(), e);
-        }
-        return list;
-    }
-
-    private static Collection<Class<?>> loadFromDirectory(
-            String packageName, ClassNameFilter filter, File dir) {
-
-        log.debug("Scan package[{}] in dir[{}]", packageName,
-                dir.getAbsolutePath());
-
-        List<Class<?>> result = new ArrayList<Class<?>>();
-        for (File f : dir.listFiles()) {
-            String fileName = f.getName();
-            if (f.isDirectory()) {
-                result.addAll(loadFromDirectory(packageName + "." + fileName,
-                        filter, f));
-            } else {
-
-                if (fileName.endsWith(".class")) {
-                    String className = packageName + "."
-                            + fileName.substring(0, fileName.length() - 6);
-                    try {
-                        if (filter == null || filter.accept(className))
-                            result.add(Class.forName(className));
-
-                    } catch (Throwable e) {
-                        log.debug("load Class {} fail. {}", className,
-                                e.getLocalizedMessage(), e);
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    private static Collection<Class<?>> loadFromZipFile(
-            String packageName, ClassNameFilter filter, File zipFile) throws IOException {
-
-        List<Class<?>> list = new ArrayList<Class<?>>();
-        ZipFile zip = new ZipFile(zipFile);
-
-        log.debug("Scan package[{}] in [{}]", packageName,
-                zipFile.getAbsolutePath());
-
-        try {
-            Enumeration<? extends ZipEntry> entries = zip.entries();
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                String entryName = entry.getName().replace('/', '.');
-
-                // 此包中的class
-                if (entryName.startsWith(packageName)
-                        && entryName.endsWith(".class")) {
-                    String className = entryName
-                            .substring(0, entryName.length() - 6);
-                    try {
-                        if (filter == null || filter.accept(className))
-                            list.add(Class.forName(className));
-
-                    } catch (ClassNotFoundException e) {
-                        log.debug("load Class {} fail. {}", className,
-                                e.getLocalizedMessage(), e);
-                    }
-                }
-            }
-            return list;
-        } finally {
-            zip.close();
-        }
-    }
-
-    public static void foreachClass(Processor processor, ClassNameFilter filter, String... packages) {
-        if (processor == null) return;
-        Set<Class> submittedClasses = new HashSet<Class>();
-        try {
-            for (String pkg : packages) {
-                for (Class clazz : getClasses(pkg, filter)) {
-                    if (!submittedClasses.contains(clazz)) {
-                        processor.process(clazz);
-                        submittedClasses.add(clazz);
-                    }
-                }
-            }
-        } finally {
-            submittedClasses.clear();
-        }
-    }
-
-//    public static void foreachClass(Processor processor, Class<?>... classes) {
-//        if (processor == null) return;
-//        Set<Class> submittedClasses = new HashSet<Class>();
+//    private static Collection<Class<?>> getClasses(String packageName,
+//                                                  ClassNameFilter filter) {
+//        ClassLoader classLoader = ReflectHelper.class.getClassLoader();
+//
+//        List<Class<?>> list = new ArrayList<Class<?>>();
+////        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//        // 枚举所有的符合的package
+//        String path = packageName.replace('.', '/');
 //        try {
-//            for (Class clazz : classes) {
-//                if (!submittedClasses.contains(clazz)) {
-//                    processor.process(clazz);
-//                    submittedClasses.add(clazz);
+//            Enumeration<URL> resources = classLoader.getResources(path);
+//            while (resources.hasMoreElements()) {
+//                URL url = resources.nextElement();
+//
+//                String resource = URLDecoder.decode(
+//                        url.getFile().replace("+", "%2B")/* 缺陷？ */,
+//                        System.getProperty("file.encoding"));
+//
+//                // 针对每一个匹配的包进行检索
+//                int indexOfZipMarker = resource.indexOf('!');
+//                if (indexOfZipMarker > 0) { // .zip, .jar
+//
+//                    list.addAll(loadFromZipFile(packageName, filter, new File(
+//                            resource.substring(5 /* 去掉file协议头 */, indexOfZipMarker))));
+//
+//                } else {// 文件夹
+//
+//                    File dir;
+//
+//                    dir = new File(url.toURI());
+//                    list.addAll(loadFromDirectory(packageName, filter, dir));
+//
 //                }
 //            }
+//        } catch (IOException e) {
+//            log.warn("{}", e.getLocalizedMessage(), e);
+//        } catch (URISyntaxException e) {
+//            log.warn("{}", e.getLocalizedMessage(), e);
+//        }
+//        return list;
+//    }
+
+//    private static Collection<Class<?>> loadFromDirectory(
+//            String packageName, ClassNameFilter filter, File dir) {
+//
+//        log.debug("Scan package[{}] in dir[{}]", packageName,
+//                dir.getAbsolutePath());
+//
+//        List<Class<?>> result = new ArrayList<Class<?>>();
+//        for (File f : dir.listFiles()) {
+//            String fileName = f.getName();
+//            if (f.isDirectory()) {
+//                result.addAll(loadFromDirectory(packageName + "." + fileName,
+//                        filter, f));
+//            } else {
+//
+//                if (fileName.endsWith(".class")) {
+//                    String className = packageName + "."
+//                            + fileName.substring(0, fileName.length() - 6);
+//                    try {
+//                        if (filter == null || filter.accept(className))
+//                            result.add(Class.forName(className));
+//
+//                    } catch (Throwable e) {
+//                        log.debug("load Class {} fail. {}", className,
+//                                e.getLocalizedMessage(), e);
+//                    }
+//                }
+//            }
+//        }
+//        return result;
+//    }
+//
+//    private static Collection<Class<?>> loadFromZipFile(
+//            String packageName, ClassNameFilter filter, File zipFile) throws IOException {
+//
+//        List<Class<?>> list = new ArrayList<Class<?>>();
+//        ZipFile zip = new ZipFile(zipFile);
+//
+//        log.debug("Scan package[{}] in [{}]", packageName,
+//                zipFile.getAbsolutePath());
+//
+//        try {
+//            Enumeration<? extends ZipEntry> entries = zip.entries();
+//            while (entries.hasMoreElements()) {
+//                ZipEntry entry = entries.nextElement();
+//                String entryName = entry.getName().replace('/', '.');
+//
+//                // 此包中的class
+//                if (entryName.startsWith(packageName)
+//                        && entryName.endsWith(".class")) {
+//                    String className = entryName
+//                            .substring(0, entryName.length() - 6);
+//                    try {
+//                        if (filter == null || filter.accept(className))
+//                            list.add(Class.forName(className));
+//
+//                    } catch (ClassNotFoundException e) {
+//                        log.debug("load Class {} fail. {}", className,
+//                                e.getLocalizedMessage(), e);
+//                    }
+//                }
+//            }
+//            return list;
 //        } finally {
-//            submittedClasses.clear();
+//            zip.close();
 //        }
 //    }
+
+    private static String resourceToClassName(String resourceName) {
+        if (resourceName.endsWith(".class")) {
+            return resourceName.substring(0, resourceName.length() - 6).replace('/', '.');
+        }
+        return null;
+    }
+
+    private static String[] packageToPath(String[] packages) {
+        if (packages == null || packages.length == 0) return new String[0];
+        String[] paths = new String[packages.length];
+        int i = 0;
+        for (String p : packages) {
+            paths[i++] = p == null ? "" : p.replace('.', '/');
+        }
+        return paths;
+    }
+
+    public static void foreachClass(final Processor processor, final ClassNameFilter filter, String... packages) {
+        if (processor == null) return;
+        Common.forEach(new Common.Processor() {
+            @Override
+            public void process(URL resource, String resourceName) {
+                String className = resourceToClassName(resourceName);
+                try {
+                    processor.process(Class.forName(className));
+                } catch (ClassNotFoundException e) {
+                    log.warn("load class fail. {}, {}", className, e.getLocalizedMessage());
+                }
+            }
+        }, new Common.ResourceFilter() {
+            @Override
+            public boolean accept(String root, String resourceName) {
+                String className = resourceToClassName(resourceName);
+                return className != null && filter.accept(className);
+            }
+        }, packageToPath(packages));
+    }
 
     @SuppressWarnings("unchecked")
     public static <T> T throwExceptionObject(Class<T> interfaceClass, final Throwable th) {

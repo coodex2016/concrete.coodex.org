@@ -257,32 +257,32 @@ public class ConcreteHelper {
         if (packageParrterns == null) {
             packageParrterns = new String[0];
         }
-        final String[] finalParrterns = packageParrterns;
-
-        packages = toPackages(packageParrterns);
-        // 排序
-        for (int i = 0, l = packages.length; i < l; i++) {
-            for (int j = i + 1; j < l; j++) {
-                String p1 = packages[i];
-                String p2 = packages[j];
-                if (p1.length() > p2.length()) {
-                    packages[i] = p2;
-                    packages[j] = p1;
-                }
-            }
-        }
-        // 合并
-        List<String> forSearch = new ArrayList<String>();
-
-        packageCycle:
-        for (String pkg : packages) {
-            for (String searchPath : forSearch) {
-                if (Common.isBlank(searchPath) || pkg.equals(searchPath) || pkg.startsWith(searchPath + ".")) {
-                    continue packageCycle;
-                }
-            }
-            forSearch.add(pkg);
-        }
+//        final String[] finalParrterns = packageParrterns;
+//
+//        packages = toPackages(packageParrterns);
+//        // 排序
+//        for (int i = 0, l = packages.length; i < l; i++) {
+//            for (int j = i + 1; j < l; j++) {
+//                String p1 = packages[i];
+//                String p2 = packages[j];
+//                if (p1.length() > p2.length()) {
+//                    packages[i] = p2;
+//                    packages[j] = p1;
+//                }
+//            }
+//        }
+//        // 合并
+//        List<String> forSearch = new ArrayList<>();
+//
+//        packageCycle:
+//        for (String pkg : packages) {
+//            for (String searchPath : forSearch) {
+//                if (Common.isBlank(searchPath) || pkg.equals(searchPath) || pkg.startsWith(searchPath + ".")) {
+//                    continue packageCycle;
+//                }
+//            }
+//            forSearch.add(pkg);
+//        }
         // 注册
         foreachClass((clazz) -> {
             if (AbstractErrorCodes.class.isAssignableFrom(clazz)) {
@@ -294,11 +294,11 @@ public class ConcreteHelper {
         }, new ConcreteClassFilter() {
             @Override
             protected boolean accept(Class<?> clazz) {
-                return isMatch(clazz, finalParrterns) &&
+                return //isMatch(clazz, finalParrterns) &&
                         (ConcreteHelper.isConcreteService(clazz) ||
                                 AbstractErrorCodes.class.isAssignableFrom(clazz));
             }
-        }, forSearch.toArray(new String[0]));
+        }, packageParrterns);
     }
 
     private static String[] toPackages(String[] patterns) {

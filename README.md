@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-26
+
+- coodex-utilities: 增加`Common.forEach`进行资源搜索，`RefectHelper.foreachClass`改为使用`Common.forEach`
+
 ## 2019-07-25
 
 - 修复WarningData为汉字时无法正确显示的问题

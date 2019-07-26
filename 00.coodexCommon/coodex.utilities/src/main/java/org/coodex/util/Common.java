@@ -21,17 +21,175 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * @author davidoff
  */
 public class Common {
+
+    private static String pathRoot(String pattern) {
+        StringBuilder builder = new StringBuilder();
+        StringBuilder node = new StringBuilder();
+        for (char ch : pattern.toCharArray()) {
+            if (ch == '*') break;
+            if (ch == '/') {
+                builder.append(node).append(ch);
+                node = new StringBuilder();
+            } else
+                node.append(ch);
+
+        }
+        if (node.length() > 0)
+            builder.append(node);
+        return trim(builder.toString());
+    }
+
+//    private static String[] toPackages(String[] patterns) {
+//        Set<String> result = new LinkedHashSet<String>();
+//        for (int i = 0, l = patterns.length; i < l; i++) {
+//            result.add(pathRoot(patterns[i]));
+//        }
+//        return result.toArray(new String[0]);
+//    }
+
+    private static Set<PathPattern> toPathPatterns(String[] paths) {
+        Set<PathPattern> pathPatterns = new LinkedHashSet<PathPattern>();
+        if (paths != null && paths.length > 0) {
+            for (String path : paths)
+                pathPatterns.add(new PathPattern(path));
+        }
+        return pathPatterns;
+    }
+
+    private static Collection<String> merge(Collection<PathPattern> pathPatterns) {
+        List<String> list = new ArrayList<String>();
+        for (PathPattern pathPattern : pathPatterns) {
+            list.add(pathPattern.path);
+        }
+        String[] toMerge = list.toArray(new String[0]);
+        list.clear();
+        Arrays.sort(toMerge, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.length() - o2.length();
+            }
+        });
+        for (String s : toMerge) {
+            boolean exits = false;
+            for (String x : list) {
+                if (s.startsWith(x)) {
+                    exits = true;
+                    break;
+                }
+            }
+            if (!exits) {
+                list.add(s);
+            }
+        }
+        return list;
+    }
+
+    public static void forEach(Processor processor, final ResourceFilter filter, String... paths) {
+        try {
+            final Set<PathPattern> pathPatterns = toPathPatterns(paths);
+            ResourceFilter resourceFilter = new ResourceFilter() {
+                @Override
+                public boolean accept(String root, String resourceName) {
+                    boolean pathOk = false;
+                    for (PathPattern pathPattern : pathPatterns) {
+                        if (pathPattern.pattern.matcher(resourceName).matches()) {
+                            pathOk = true;
+                            break;
+                        }
+                    }
+                    return pathOk && filter.accept(root, resourceName);
+                }
+            };
+            for (String path : merge(pathPatterns)) {
+                path = trim(path, '/');
+                Enumeration<URL> resourceRoots = Common.class.getClassLoader().getResources(path);
+                while (resourceRoots.hasMoreElements()) {
+                    URL url = resourceRoots.nextElement();
+                    String urlStr = url.toString();
+                    int indexOfZipMarker = urlStr.indexOf('!');
+                    String resourceRoot = urlStr.substring(0, urlStr.length() - path.length() - 1);
+
+                    // 针对每一个匹配的包进行检索
+                    if (indexOfZipMarker > 0) {
+                        // .zip, .jar
+                        File f = new File(new URI(url.getFile()));
+                        String fileName = f.getAbsolutePath();
+
+                        forEachInZip(resourceRoot, path, processor, resourceFilter, new File(
+                                fileName.substring(0, fileName.length() - 2 - path.length())
+                        ));
+                    } else {
+                        // 文件夹
+                        forEachInDir(resourceRoot, path.replace('\\', '/'), processor, resourceFilter, new File(url.toURI()), true);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            log.warn("resource search failed. {}.", e.getLocalizedMessage(), e);
+        } catch (URISyntaxException e) {
+            log.warn("resource search failed. {}.", e.getLocalizedMessage(), e);
+        }
+    }
+
+    //
+    private static void forEachInZip(String root, String path, Processor processor, ResourceFilter filter, File zipFile) throws IOException {
+        ZipFile zip = new ZipFile(zipFile);
+
+        log.debug("Scan items in [{}]:{{}}", zipFile.getAbsolutePath(), path);
+        try {
+            Enumeration<? extends ZipEntry> entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if (entry.isDirectory()) continue;
+                String entryName = entry.getName();
+                // 此包中的检索
+                if (entryName.startsWith(path) && filter.accept(root, entryName)) {
+                    processor.process(new URL(root + "/" + entryName), entryName);
+                }
+            }
+        } finally {
+            zip.close();
+        }
+    }
+
+    private static void forEachInDir(String root, String path,
+                                     Processor processor, ResourceFilter filter,
+                                     File dir, boolean header) throws MalformedURLException {
+        if (header)
+            log.debug("Scan items in dir[{}]:[{}]", dir.getAbsolutePath(), path);
+
+        //noinspection ConstantConditions
+        for (File f : dir.listFiles()) {
+            String resourceName = path + '/' + f.getName();
+            if (f.isDirectory()) {
+                forEachInDir(root, resourceName, processor, filter, f, false);
+            } else {
+                if (filter.accept(root, resourceName)) {
+                    processor.process(new URL(root + '/' + resourceName), resourceName);
+                }
+            }
+        }
+    }
+
+    public interface ResourceFilter {
+        boolean accept(String root, String resourceName);
+    }
 
     private Common(){}
 
@@ -772,13 +930,6 @@ public class Common {
         return th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th.getLocalizedMessage(), th);
     }
 
-//    public static void main(String[] args) {
-////        System.out.println(Profile.getProfile("a.properties").getStrList("aaa"));
-//        for (int i = 0; i < 1000; i++) {
-//            System.out.println(random(1));
-//        }
-//    }
-
     public static class StringToFloat implements StringConvertWithDefaultValue {
 
         @Override
@@ -843,25 +994,41 @@ public class Common {
     private static boolean isMatch(Pattern p, String str){
         return p.matcher(str).find();
     }
-    public static void main(String[] args) {
-        String patternStr = "org.coodex.*.api.**.impl";
-        Pattern pattern = Pattern.compile("^"+
-                patternStr.replaceAll("\\.","\\\\.")
-                .replaceAll("\\*\\*",".+")
-                .replaceAll("\\*","[\\\\w]+")
-        );
-        System.out.println(pattern.toString());
-        String[] matchStrings = {
-                "org.coodex.api.impl",// false
-                "org.concrete.api.s.impl.b", //false
-                "org.coodex.concrete.api.a.impl.b",//true
-                "org.coodex.concrete.api.a.b.impl.b",//true
-                "C.org.coodex.concrete.api.a.b.impl.b",//false
-                "org.coodex.concrete.x.api.a.impl",//false
-                ""
-        };
-        for(String s : matchStrings){
-            System.out.println(isMatch(pattern, s));
+
+    public interface Processor {
+        void process(URL resource, String resourceName);
+    }
+
+
+    private static class PathPattern {
+        private Pattern pattern;
+        private String path;
+        private String originalPath;
+
+        public PathPattern(String path) {
+            this.originalPath = path;
+            this.pattern = Pattern.compile(
+                    "^" + Common.trim(path).replaceAll("\\.", "\\\\.")
+                            .replaceAll("\\*{2,}", ".+")// 两个以上*匹配任意字符
+                            .replaceAll("\\*", "[^/]+")
+                            + ".+"
+            );
+            this.path = pathRoot(path);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof PathPattern)) return false;
+
+            PathPattern that = (PathPattern) o;
+
+            return originalPath.equals(that.originalPath);
+        }
+
+        @Override
+        public int hashCode() {
+            return originalPath.hashCode();
         }
     }
 
