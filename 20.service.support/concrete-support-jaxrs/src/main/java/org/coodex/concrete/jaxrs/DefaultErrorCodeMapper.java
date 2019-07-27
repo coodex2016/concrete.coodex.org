@@ -40,7 +40,11 @@ public class DefaultErrorCodeMapper implements ErrorCodeMapper {
             case ErrorCodes.OVERRUN:
                 return Response.Status.SERVICE_UNAVAILABLE;
             default:
-                return Response.Status.BAD_REQUEST;
+                Response.Status status = (errorCode < 600) ?
+                        Response.Status.fromStatusCode(errorCode) :
+                        Response.Status.BAD_REQUEST;
+                return status == null ? Response.Status.BAD_REQUEST : status;
+
         }
     }
 }

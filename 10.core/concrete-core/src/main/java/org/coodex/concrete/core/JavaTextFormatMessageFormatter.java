@@ -34,10 +34,14 @@ public class JavaTextFormatMessageFormatter implements MessageFormatter {
         try {
             return MessageFormat.format(pattern, objects);
         } catch (IllegalArgumentException e) {
-            log.warn("illegal argument :{}", pattern, e);
+            log.warn("illegal argument :{}. {}", pattern, e.getLocalizedMessage());
             return pattern;
         }
     }
 
+    @Override
+    public String getNamespace() {
+        return null;
+    }
 
 }

@@ -18,6 +18,7 @@ package org.coodex.concrete.common;
 
 import org.coodex.concrete.api.ErrorMsg;
 import org.coodex.util.Common;
+import org.coodex.util.I18N;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,8 +115,9 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
             formatterValue = errorMsg == null ? f.getDeclaringClass().getAnnotation(ErrorMsg.class) : errorMsg;
         }
         MessageFormatter formatter = getFormatter(formatterValue == null ? null : formatterValue.formatterClass());
+
         String msgTemp = (errorMsg == null || Common.isBlank(errorMsg.value().trim())) ?
-                "{message." + code + "}" : errorMsg.value();
+                "{" + (formatter.getNamespace() == null ? "" : (formatter.getNamespace() + ".")) + "message." + code + "}" : errorMsg.value();
 
 //        String pattern = msgTemp;
 //        if (msgTemp.startsWith("{") && msgTemp.endsWith("}")) {
@@ -123,7 +125,7 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
 //            pattern = getPatternLoader(errorMsg == null ? null : errorMsg.patternLoaderClass())
 //                    .getMessageTemplate(key);
 //        }
-        String pattern = I18NFacade.translate(msgTemp);
+        String pattern = I18N.translate(msgTemp);
 
         return (pattern != null) ? (format ? formatter.format(pattern, objects) : pattern) : null;
     }
@@ -132,7 +134,7 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
     public static List<ErrorDefinition> getAllErrorInfo() {
         final List<ErrorDefinition> errorDefinitions = new ArrayList<ErrorDefinition>();
         for (Integer i : allRegisteredErrorCodes()) {
-            errorDefinitions.add(new ErrorDefinition(i.intValue()));
+            errorDefinitions.add(new ErrorDefinition(i));
         }
         Collections.sort(errorDefinitions);
         return errorDefinitions;

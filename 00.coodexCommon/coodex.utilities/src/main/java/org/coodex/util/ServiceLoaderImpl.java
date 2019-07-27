@@ -57,7 +57,6 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
             synchronized (this) {
                 if (instances == null) {
                     loadInstances();
-                    unmodifiedMap = Collections.unmodifiableMap(instances);
                 }
             }
         }
@@ -98,7 +97,6 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
     private void loadInstances() {
         if (instances == null) {
             instances = new HashMap<String, T>();
-
             java.util.ServiceLoader<ServiceLoaderProvider> serviceLoaderProviders =
                     java.util.ServiceLoader.load(ServiceLoaderProvider.class);
 
@@ -108,6 +106,7 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
             if (instances.size() == 0) {
                 log.debug("no ServiceProvider found for [{}], using default provider.", getInterfaceClass().getCanonicalName());
             }
+            unmodifiedMap = Collections.unmodifiableMap(instances);
         }
     }
 
@@ -126,6 +125,11 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
     @Override
     public Map<String, T> getAll() {
         load();
+        if (unmodifiedMap == null) {
+            // ?? 为啥会出现？
+            log.debug("how it happened ?????", new Exception());
+            return Collections.unmodifiableMap(instances);
+        }
         return unmodifiedMap;
     }
 

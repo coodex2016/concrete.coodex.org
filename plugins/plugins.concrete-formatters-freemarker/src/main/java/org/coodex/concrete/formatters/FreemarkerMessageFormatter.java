@@ -18,6 +18,8 @@ package org.coodex.concrete.formatters;
 
 import org.coodex.concrete.common.LogFormatter;
 import org.coodex.concrete.common.MessageFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +31,8 @@ import java.util.Map;
  * Created by davidoff shen on 2016-12-02.
  */
 public class FreemarkerMessageFormatter extends AbstractFreemarkerFormatter implements MessageFormatter, LogFormatter {
+    private final static Logger log = LoggerFactory.getLogger(FreemarkerMessageFormatter.class);
+
     /**
      * @param pattern free marker引擎模版，o+index就是objects里的索引, 从1开始
      * @param objects
@@ -42,12 +46,22 @@ public class FreemarkerMessageFormatter extends AbstractFreemarkerFormatter impl
         for (int i = 1; i <= objects.length; i++) {
             values.put("o" + i, objects[i - 1]);
         }
-        return format(pattern, values);
+        try {
+            return format(pattern, values);
+        } catch (Throwable th) {
+            log.warn("illegal argument :{}. {}", pattern, th.getLocalizedMessage());
+            return pattern;
+        }
 //        try {
 //            return super.formatMsg(pattern, values);
 //        } catch (Throwable th) {
 //            throw new RuntimeException(th.getLocalizedMessage(), th);
 //        }
+    }
+
+    @Override
+    public String getNamespace() {
+        return "ftl";
     }
 
     @Override

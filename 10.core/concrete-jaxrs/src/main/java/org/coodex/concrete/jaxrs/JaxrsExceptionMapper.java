@@ -27,7 +27,9 @@ public class JaxrsExceptionMapper implements ThrowableMapper {
     @Override
     public ErrorInfo toErrorInfo(Throwable throwable) {
         WebApplicationException webApplicationException = (WebApplicationException) throwable;
-        return new ErrorInfo(webApplicationException.getResponse().getStatus(), webApplicationException.getLocalizedMessage());
+        return new ErrorInfo(
+                webApplicationException.getResponse().getStatus(),
+                webApplicationException.getLocalizedMessage());
     }
 
     @Override

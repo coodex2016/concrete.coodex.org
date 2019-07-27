@@ -16,12 +16,8 @@
 
 package org.coodex.concrete.core;
 
-import org.coodex.concrete.common.I18NFacade;
+import org.coodex.util.I18N;
 import org.coodex.concrete.common.MessagePatternLoader;
-import org.coodex.concrete.common.TranslateService;
-import org.coodex.config.Config;
-
-import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 /**
  * 基于 ResourceBundle 的实现
@@ -32,7 +28,7 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 public class ResourceBundlesMessagePatternLoader implements MessagePatternLoader {
 
     public ResourceBundlesMessagePatternLoader() {
-//        TranslateService translateService = I18NFacade.getTranslateService();
+//        TranslateService translateService = I18N.getTranslateService();
 //        if(translateService instanceof ResourceBundlesTranslateService){
 //            //noinspection deprecation
 //            ((ResourceBundlesTranslateService) translateService).add(
@@ -59,7 +55,7 @@ public class ResourceBundlesMessagePatternLoader implements MessagePatternLoader
 //            } catch (Throwable t) {
 //            }
 //        }
-        return I18NFacade.translate(key);
+        return I18N.translate(key);
     }
 
 

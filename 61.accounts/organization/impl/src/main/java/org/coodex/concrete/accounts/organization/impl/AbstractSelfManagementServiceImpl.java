@@ -154,7 +154,7 @@ public abstract class AbstractSelfManagementServiceImpl<
 
 //    protected PE getPersonEntityWithAuthCheck(String authCode) {
 //        PE personEntity = getCurrentAccountEntity();
-//        IF.isNull(personEntity.getAuthCodeKeyActiveTime(), OrganizationErrorCodes.ACCOUNT_NOT_ACTIVED);
+//        IF.isNull(personEntity.getAuthCodeKeyActiveTime(), OrganizationErrorCodes.ACCOUNT_INACTIVATED);
 //        IF.not(TOTPAuthenticator.authenticate(authCode, personEntity.getAuthCodeKey()), OrganizationErrorCodes.AUTHORIZE_FAILED);
 //        return personEntity;
 //    }

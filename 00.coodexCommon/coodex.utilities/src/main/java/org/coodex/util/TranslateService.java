@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common;
+package org.coodex.util;
+
+import java.util.Locale;
 
 public interface TranslateService {
 
     String translate(String key);
+
+    String translate(String key, Locale locale);
 }

@@ -28,7 +28,7 @@ public class ThrowableMapperFacade {
     );
 
 
-    public static ErrorInfo toErrorInfo(Throwable exception) {
+    public synchronized static ErrorInfo toErrorInfo(Throwable exception) {
 
         ConcreteException concreteException = ConcreteHelper.findException(exception);
 

@@ -116,7 +116,7 @@ public class AccountsCommon {
      * @return
      */
     public static <E extends CanLoginEntity> E checkAuthCode(String authCode, E entity) {
-        IF.isNull(entity.getAuthCodeKeyActiveTime(), ACCOUNT_NOT_ACTIVED);
+        IF.isNull(entity.getAuthCodeKeyActiveTime(), ACCOUNT_INACTIVATED);
         IF.not(TOTPAuthenticator.authenticate(authCode, entity.getAuthCodeKey()), AUTHORIZE_FAILED);
         return entity;
     }

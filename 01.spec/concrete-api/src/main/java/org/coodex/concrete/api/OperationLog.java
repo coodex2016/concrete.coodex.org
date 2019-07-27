@@ -17,7 +17,6 @@
 package org.coodex.concrete.api;
 
 import org.coodex.concrete.common.LogFormatter;
-import org.coodex.concrete.common.MessagePatternLoader;
 import org.coodex.concrete.common.OperationLogger;
 
 import java.lang.annotation.*;

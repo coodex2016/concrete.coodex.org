@@ -15,6 +15,12 @@
  */
 package org.coodex.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import static org.coodex.util.Common.*;
 
 /**
@@ -45,63 +51,103 @@ import static org.coodex.util.Common.*;
  */
 public abstract class Profile {
 
-    //    private static final Logger log = LoggerFactory.getLogger(Profile.class);
-//    //    private static final Map<String, Profile> profiles = new HashMap<String, Profile>();
+    private final static Logger log = LoggerFactory.getLogger(Profile.class);
+
+
     private static final String DEFAULT_KEY = Common.getUUIDStr();
+    private static final URL DEFAULT_URL;
+    private static final String YAML_CLASS = "org.yaml.snakeyaml.Yaml";
+    private static Boolean yamlFirst = null;
+
     private static final String RELOAD_INTERVAL = System.getProperty("Profile.reloadInterval");
-
-    private static final SingletonMap<String, Profile> PROFILES = new SingletonMap<String, Profile>(
-            new SingletonMap.Builder<String, Profile>() {
-                private Boolean yamlFirst = null;
-
-                private boolean isYamlFirst() {
-                    if (yamlFirst == null) {
-                        try {
-                            Class.forName("org.yaml.snakeyaml.Yaml");
-                            yamlFirst = true;
-                        } catch (ClassNotFoundException e) {
-                            yamlFirst = false;
-                        }
-                    }
-                    return yamlFirst;
-                }
-
-                private String findPath(String path) {
-                    String[] ex = isYamlFirst() ? new String[]{".yaml", ".properties"} : new String[]{".properties"};
-                    for (String s : ex) {
-                        if (Common.getResource(path + s) != null) {
-                            return path + s;
-                        }
-                    }
-//                    String defaultResult = path + ".yaml";
-//                    if (Common.getResource(defaultResult) != null) return defaultResult;
-//                    return Common.getResource(path + ".properties") == null ?
-//                            defaultResult : DEFAULT_KEY;
-                    return DEFAULT_KEY;
-
-                }
+    //    @Deprecated
+//    private static final SingletonMap<String, Profile> PROFILES = new SingletonMap<String, Profile>(
+//            new SingletonMap.Builder<String, Profile>() {
+//
+//
+//                @Override
+//                public Profile build(String key) {
+//                    if (DEFAULT_KEY.equals(key)) return new NullProfile();
+//
+//                    if (key.toLowerCase().endsWith(".properties")) {
+//                        return new ProfileBaseProperties(key);
+//                    } else if (key.toLowerCase().endsWith(".yaml")) {
+//                        return new ProfileBaseYaml(key);
+//                    } else {
+//                        return PROFILES.get(findPath(Common.trim(key, ":/\\.")));
+//                    }
+//                }
+//            },
+//            toLong(RELOAD_INTERVAL, 0L) * 1000L
+//    );
+    private static SingletonMap<URL, Profile> URL_PROFILES_MAP = new SingletonMap<URL, Profile>(
+            new SingletonMap.Builder<URL, Profile>() {
                 @Override
-                public Profile build(String key) {
-                    if (DEFAULT_KEY.equals(key)) return new NullProfile();
-
-                    if (key.toLowerCase().endsWith(".properties")) {
+                public Profile build(URL key) {
+                    if (key == null)
+                        throw new NullPointerException("profile url could not be null.");
+                    String resourceName = key.toString();
+                    if (resourceName.endsWith(".properties")) {
                         return new ProfileBaseProperties(key);
-                    } else if (key.toLowerCase().endsWith(".yaml")) {
-                        return new ProfileBaseYaml(key);
+                    } else if (resourceName.endsWith(".yaml")) {
+                        if (!isYamlFirst()) {
+                            log.warn("YAML not support. class {} not found. {}", YAML_CLASS, key.toString());
+                            return new NullProfile();
+                        } else
+                            return new ProfileBaseYaml(key);
                     } else {
-                        return PROFILES.get(findPath(Common.trim(key, ":/\\.")));
+                        return new NullProfile();
                     }
                 }
-            },
-            toLong(RELOAD_INTERVAL, 0L) * 1000L
+            }, toLong(RELOAD_INTERVAL, 0L) * 1000L
     );
 
+    static {
+        try {
+            DEFAULT_URL = new URL("file:/");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    private static URL findPath(String path) {
+        String[] ex = isYamlFirst() ? new String[]{".yaml", ".properties"} : new String[]{".properties"};
+        for (String s : ex) {
+            URL x = Common.getResource(path + s);
+            if (x != null) return x;
+        }
+        return DEFAULT_URL;
+
+    }
+
+    private static boolean isYamlFirst() {
+        if (yamlFirst == null) {
+            try {
+                Class.forName(YAML_CLASS);
+                yamlFirst = true;
+            } catch (ClassNotFoundException e) {
+                yamlFirst = false;
+            }
+        }
+        return yamlFirst;
+    }
+
+    /**
+     * 根据url获取资源
+     *
+     * @param url 资源url
+     * @return profile
+     */
+    public static Profile getProfile(URL url) {
+        return URL_PROFILES_MAP.get(url);
+    }
 
     public static Profile getProfile(String path) {
         if (path == null) {
             throw new IllegalArgumentException("path is null");
         }
-        return PROFILES.get(path);
+
+        return getProfile(findPath(path));
 //        Profile p = profiles.get(path);
 //        if (p == null) {
 //            p = new Profile(path);

@@ -523,6 +523,8 @@ public class Common {
     }
 
     public static URL getResource(String resource, ClassLoader... classLoaders) {
+        resource = Common.trim(resource, '/');
+
         ClassLoader classLoader;
         URL url;
 

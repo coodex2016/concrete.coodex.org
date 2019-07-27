@@ -18,7 +18,6 @@ package org.coodex.concrete.api;
 
 
 import org.coodex.concrete.common.MessageFormatter;
-import org.coodex.concrete.common.MessagePatternLoader;
 
 import java.lang.annotation.*;
 

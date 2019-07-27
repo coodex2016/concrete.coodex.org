@@ -25,6 +25,7 @@ import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.util.Common;
+import org.coodex.util.I18N;
 import org.coodex.util.ServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
 import org.slf4j.Logger;
@@ -81,14 +82,14 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
 //        if (template == null) {
 //            if (key == null) key = getMessageKey(category, subClass);
 ////            template = getPatternLoader(patternLoaderClass).getMessageTemplate(key);
-//            template = I18NFacade.translate(key);
+//            template = I18N.translate(key);
 //        }
 
 
         return getLogFormatter(formatterClass)
                 .format(Common.isBlank(messageTemplate) ?
-                                I18NFacade.translate("{" + getMessageKey(category, subClass) + "}") :
-                                I18NFacade.translate(messageTemplate),
+                                I18N.translate(getMessageKey(category, subClass)) :
+                                I18N.translate(messageTemplate),
                         getLoggingData());
     }
 

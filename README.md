@@ -26,6 +26,35 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-27
+
+- 版本、分支更改为`0.4.x`，`0.3.x`只进行缺陷修复，不再进行结构优化和新功能增加
+- i18n相关内容调整到`coodex-utilities`
+- `TranslateService`的默认实现改为`ProfileBasedTranslateService`，需要兼容`0.3.x`的，可在SPI中使用`org.coodex.concrete.core.ResourceBundlesTranslateService`替代
+- `ProfileBasedTranslateService`使用：
+    - [约定]i18n资源文件放在resources/i18n下，`ProfileBasedTranslateService`会自动检索，减少配置工作量
+    - 资源文件支持yaml(依赖`snakeyaml`)和properties
+    - 资源文件命名规范为`namespace`(_language)(_COUNTRY).yaml|properties
+        - `namespace`可以是多级，例如`a.b.c`，表明此命名空间下的i18n资源可在此文件中查找，资源内容中应该包含`a.b.c.*`
+        - `language`可选，参考`java.util.Locale.getISOLanguages()`，大小写不敏感，推荐小写
+        - `country`可选，参考`java.util.Locale.getISOCountries()`, 大小写不敏感，推荐大写
+    - 检索优先级
+        - 文件系统 高于jar包，方便资源修改
+        - 名称不同的，越长越优先（匹配度越高）
+        - 名称相同的，目录越深越优先
+        - 深度相同的，按包字典序
+        - 有language优先
+        - 有country优先
+        - yaml优先（依赖`snakeyaml`）
+- `I18NFacade`重命名为`I18N`
+- 增加`DefaultLocaleProvider`，当使用`I18N.translate`接口时，确定默认的`Locale`，`coodex-utilities`默认实现使用`Locale.getDefault()`，`concrete`默认实现为在服务上下文中获取调用方的`Locale`
+- `concrete`的异常信息处理进行相应调整
+    - `MessageFormater`增加`getNamespace`接口，用以区分不同`Formatter`的模板
+        - `JavaTextMessageFormatter`是默认实现，命名空间为空，规则同原来的,`message.*`
+        - `FreeMarkerMessageFormatter`，命名空间为`ftl`，`ftl.message.*`
+    - `concrete-core` 增加相应资源文件
+- 其他小调整
+
 ## 2019-07-26
 
 - coodex-utilities: 增加`Common.forEach`进行资源搜索，`RefectHelper.foreachClass`改为使用`Common.forEach`

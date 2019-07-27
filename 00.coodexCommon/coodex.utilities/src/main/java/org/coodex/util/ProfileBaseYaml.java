@@ -41,9 +41,16 @@ public class ProfileBaseYaml extends Profile {
         }
     }
 
-    private void init(String path) throws IOException {
+    ProfileBaseYaml(URL url) {
+        try {
+            init(url, null);
+        } catch (IOException e) {
+            log.warn("init [{}] yaml profile failed", url, e);
+        }
+    }
+
+    private void init(URL url, String path) throws IOException {
         Yaml yaml = new Yaml();
-        URL url = Common.getResource(path);
         if (url != null) {
             InputStream is = url.openStream();
             try {
@@ -55,6 +62,10 @@ public class ProfileBaseYaml extends Profile {
         } else {
             log.info("{} not found.", path);
         }
+    }
+
+    private void init(String path) throws IOException {
+        init(Common.getResource(path), path);
     }
 
     private void map(String prefix, Map<String, Object> map) {

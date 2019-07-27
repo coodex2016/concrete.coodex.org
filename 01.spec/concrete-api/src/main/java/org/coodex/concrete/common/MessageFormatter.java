@@ -23,6 +23,8 @@ public interface MessageFormatter {
 
     String format(String pattern, Object... objects);
 
+    String getNamespace();
+
 //    String formatByKey(String key, Object ... objects);
 
 //    String getMessageTemplate(String key);

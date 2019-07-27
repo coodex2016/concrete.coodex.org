@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common;
+package org.coodex.util;
 
-import org.coodex.concrete.core.ResourceBundlesTranslateService;
+import org.coodex.util.ProfileBasedTranslateService;
 import org.coodex.util.ServiceLoaderImpl;
 import org.coodex.util.Singleton;
+import org.coodex.util.TranslateService;
 
-public class I18NFacade {
+import java.util.Locale;
 
-    private static Singleton<TranslateService> TRANSLATE_SERVICE_SINGLETON = new Singleton<>(
-            () -> new ServiceLoaderImpl<TranslateService>(new ResourceBundlesTranslateService()) {
-            }.get()
+public class I18N {
+
+    private static Singleton<TranslateService> TRANSLATE_SERVICE_SINGLETON = new Singleton<TranslateService>(
+            new Singleton.Builder<TranslateService>() {
+                @Override
+                public TranslateService build() {
+                    return new ServiceLoaderImpl<TranslateService>(new ProfileBasedTranslateService()) {
+                    }.get();
+                }
+            }
     );
 
     public static TranslateService getTranslateService() {
@@ -33,5 +41,9 @@ public class I18NFacade {
 
     public static String translate(String key) {
         return getTranslateService().translate(key);
+    }
+
+    public static String translate(String key, Locale locale) {
+        return getTranslateService().translate(key, locale);
     }
 }

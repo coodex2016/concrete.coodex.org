@@ -16,16 +16,15 @@
 
 package org.coodex.concrete.core;
 
-import org.coodex.concrete.common.TranslateService;
 import org.coodex.config.Config;
+import org.coodex.util.AbstractTranslateService;
 import org.coodex.util.Common;
 
 import java.util.*;
 
-import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
-public class ResourceBundlesTranslateService implements TranslateService {
+public class ResourceBundlesTranslateService extends AbstractTranslateService {
 
     private Set<String> resources = new HashSet<>();
 
@@ -44,38 +43,19 @@ public class ResourceBundlesTranslateService implements TranslateService {
 
     }
 
-    /**
-     * @param resoruceBundles
-     * @deprecated (仅为适应ResourceBundlesMessagePatternLoader之前的定义)
-     */
-    @Deprecated
-    void add(String[] resoruceBundles) {
-        this.resources.addAll(Arrays.asList(resoruceBundles));
-    }
-
     @Override
-    public String translate(String key) {
-        if(key.startsWith("{") && key.endsWith("}")) {
-            String toSearch = Common.trim(key,"{ \r\n\t}");
-            for (String resource : resources) {
-                if (Common.isBlank(resource) || Common.isBlank(resource.trim())) continue;
-
-                Locale locale = getServiceContext() == null ? null : getServiceContext().getLocale();
-
-                if (locale == null) {
-                    locale = Locale.getDefault();
-                }
-
-                String result = null;
-                try {
-                    result = ResourceBundle.getBundle(resource, locale).getString(toSearch);
-                } catch (Throwable t) {
-                    // do nothing
-                }
-                if (result != null)
-                    return result;
+    protected String translateIfExits(String key, Locale locale) {
+        for (String resource : resources) {
+            if (Common.isBlank(resource) || Common.isBlank(resource.trim())) continue;
+            String result = null;
+            try {
+                result = ResourceBundle.getBundle(resource, locale).getString(key);
+            } catch (Throwable t) {
+                // do nothing
             }
+            if (result != null)
+                return result;
         }
-        return key;
+        return null;
     }
 }
