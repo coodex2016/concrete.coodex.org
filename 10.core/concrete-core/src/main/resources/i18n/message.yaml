@@ -20,4 +20,4 @@ message:
   1018: "MODULE DEFINITION NON UNIQUENESS: {0}"
   1300: "Deprecated: {0}"
   99998: "Client Error."
-  99999: "UNKNOWN ERROR\: {0}."
+  99999: "UNKNOWN ERROR: {0}."
