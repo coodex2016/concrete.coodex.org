@@ -11,14 +11,14 @@
             <dependency>
                 <groupId>org.coodex</groupId>
                 <artifactId>coodex-mock-spec</artifactId>
-                <version>0.3.0-MOCK-TRIAL-SNAPSHOT</version>
+                <version>0.4.0-SNAPSHOT</version>
             </dependency>
 
             <!-- mock 实现 -->
             <dependency>
                 <groupId>org.coodex</groupId>
                 <artifactId>coodex-mock-impl</artifactId>
-                <version>0.3.0-MOCK-TRIAL-SNAPSHOT</version>
+                <version>0.4.0-SNAPSHOT</version>
             </dependency>
 ```
 
