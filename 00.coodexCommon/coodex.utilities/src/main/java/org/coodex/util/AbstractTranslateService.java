@@ -42,7 +42,7 @@ public abstract class AbstractTranslateService implements TranslateService {
         if (key.startsWith("{") && key.endsWith("}")) {
             toSearch = Common.trim(key, "{ \r\n\t}");
         }
-        String result = translateIfExits(key, locale);
+        String result = translateIfExits(toSearch, locale);
         return result == null ? key : result;
     }
 

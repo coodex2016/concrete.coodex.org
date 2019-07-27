@@ -54,7 +54,7 @@ public class ProfileBaseYaml extends Profile {
         if (url != null) {
             InputStream is = url.openStream();
             try {
-                Map<String, Object> map = yaml.load(is);
+                Map<Object, Object> map = yaml.load(is);
                 map(null, map);
             } finally {
                 is.close();
@@ -68,16 +68,16 @@ public class ProfileBaseYaml extends Profile {
         init(Common.getResource(path), path);
     }
 
-    private void map(String prefix, Map<String, Object> map) {
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            String key = prefix == null ? entry.getKey() : (prefix + "." + entry.getKey());
+    private void map(String prefix, Map<Object, Object> map) {
+        for (Map.Entry<Object, Object> entry : map.entrySet()) {
+            String key = prefix == null ? entry.getKey().toString() : (prefix + "." + entry.getKey().toString());
             Object value = entry.getValue();
             if (value == null) {
                 valuesMap.put(key, null);
             }
             if (value instanceof Map) {
                 //noinspection unchecked
-                map(key, (Map<String, Object>) value);
+                map(key, (Map<Object, Object>) value);
             } else {
                 valuesMap.put(key, value);
             }
