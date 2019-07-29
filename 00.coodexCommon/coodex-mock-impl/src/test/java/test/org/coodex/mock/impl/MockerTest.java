@@ -117,11 +117,13 @@ public class MockerTest {
         @Mock.Dimension(size = 4)
         @IpAddress
         public int[][] ip;
-        @IpAddress(ipv6 = true)
+        @IpAddress(type = IpAddress.Type.MAC)
+        public String mac;
+        @IpAddress(type = IpAddress.Type.TPV6)
         public String ipV6;
         @IpAddress
         public String ipV4;
-        @IpAddress(ipv6 = true)
+        @IpAddress(type = IpAddress.Type.MAC)
         public Integer[] ipInteger;
         @IpAddress
         public byte[] ip_byte;

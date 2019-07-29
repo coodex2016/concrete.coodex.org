@@ -28,5 +28,39 @@ import java.lang.annotation.Target;
 @Mock
 public @interface IpAddress {
 
-    boolean ipv6() default false;
+    enum Type{
+        IPV4(4), MAC(6),TPV6(16);
+
+        private int size;
+        Type(int size){
+            this.size = size;
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+        public String ipToString(int [] ip){
+            if(ip == null)
+                throw new NullPointerException("IP null.");
+            if(ip.length != size){
+                throw new IllegalArgumentException("size mismatch.");
+            }
+
+            char s = ip.length >= 6 ? ':' : '.';
+            boolean v6 = ip.length == 16;
+            String format = ip.length >= 6 ? "%02X": "%d";
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < ip.length; i++) {
+                if (i > 0 && (!v6 || i % 2 == 0)) {
+                    builder.append(s);
+                }
+                builder.append(String.format(format, ip[i]));
+            }
+            return builder.toString();
+        }
+    }
+
+    Type type() default Type.IPV4;
+
 }

@@ -42,17 +42,18 @@ public class IpAddressTypeMocker extends AbstractTypeMocker<IpAddress> {
 
     private Object to(Class c, int[] ip) {
         switch (Common.findInArray(c, getSupportedClasses())) {
-            case 0: //String
-                char s = ip.length == 6 ? ':' : '.';
-                String format = ip.length == 6 ? "%02X": "%d";
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < ip.length; i++) {
-                    if (builder.length() > 0) {
-                        builder.append(s);
-                    }
-                    builder.append(String.format(format, ip[i]));
-                }
-                return builder.toString();
+//            case 0: //String
+//                char s = ip.length >= 6 ? ':' : '.';
+//                boolean v6 = ip.length == 16;
+//                String format = ip.length >= 6 ? "%02X" : "%d";
+//                StringBuilder builder = new StringBuilder();
+//                for (int i = 0; i < ip.length; i++) {
+//                    if (i > 0 && (!v6 || i % 2 == 0)) {
+//                        builder.append(s);
+//                    }
+//                    builder.append(String.format(format, ip[i]));
+//                }
+//                return builder.toString();
             case 1:
                 return ip;
             case 2:
@@ -82,12 +83,14 @@ public class IpAddressTypeMocker extends AbstractTypeMocker<IpAddress> {
     public Object mock(IpAddress mockAnnotation, Type targetType) {
         Class clazz = typeToClass(targetType);
         Random random = new Random();
-        int size = mockAnnotation.ipv6() ? 6 : 4;
+        int size = mockAnnotation.type().getSize();
         int[] ip = new int[size];
         for (int i = 0; i < size; i++) {
             ip[i] = random.nextInt(0x100);
         }
-
-        return to(clazz, ip);
+        if (String.class.equals(targetType))
+            return mockAnnotation.type().ipToString(ip);
+        else
+            return to(clazz, ip);
     }
 }

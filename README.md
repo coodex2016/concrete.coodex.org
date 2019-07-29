@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-07-29
+
+- `@IpAddress`调整，使用枚举指定类型：IPV4,MAC,IPV6
+
 ## 2019-07-27
 
 - 版本、分支更改为`0.4.x`，`0.3.x`只进行缺陷修复，不再进行结构优化和新功能增加
