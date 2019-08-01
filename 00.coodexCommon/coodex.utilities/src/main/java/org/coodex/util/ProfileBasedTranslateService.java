@@ -20,7 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 
 public class ProfileBasedTranslateService extends AbstractTranslateService {
 
@@ -48,7 +51,7 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
                 new Common.ResourceFilter() {
                     @Override
                     public boolean accept(String root, String resourceName) {
-                        return resourceName.endsWith(".yml")|| resourceName.endsWith(".properties");
+                        return resourceName.endsWith(".yml") || resourceName.endsWith(".yaml") || resourceName.endsWith(".properties");
                     }
                 },
                 "i18n");
@@ -103,6 +106,7 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
         private String path;
         private Boolean isFile;
         private Boolean isYaml;
+        private String ext;
         private int deep;
         private String language = null;
         private String country = null;
@@ -110,12 +114,13 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
 
         ResourcesMapper(String resourceName, URL resource) {
             this.resource = resource;
-            this.isYaml = resourceName.endsWith(".yml");
+            this.isYaml = resourceName.endsWith(".yml") || resourceName.endsWith(".yaml");
             this.isFile = resource.toString().startsWith("file:");
             this.deep = countOfSlash(resourceName);
             int indexEnd = resourceName.lastIndexOf('.');
             int indexStart = resourceName.lastIndexOf('/');
             name = resourceName.substring(indexStart + 1, indexEnd);
+            ext = resourceName.substring(indexEnd + 1);
             path = resourceName.substring(0, indexStart);
             if (name.length() > 3 && name.charAt(name.length() - 3) == '_') {
                 String test = name.substring(name.length() - 2).toUpperCase();
@@ -152,6 +157,7 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
          * 有language优先
          * 有country优先
          * yaml类型优先
+         * .yml > .yaml
          *
          * @param o
          * @return
@@ -171,6 +177,8 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
             if (country == null && o.country != null) return 1;
             if (country != null && o.country == null) return -1;
             x = isYaml.compareTo(o.isYaml);
+            if (x != 0) return -x;
+            x = ext.compareTo(o.ext);
             if (x != 0) return -x;
             return resource.toString().compareTo(o.resource.toString());
         }

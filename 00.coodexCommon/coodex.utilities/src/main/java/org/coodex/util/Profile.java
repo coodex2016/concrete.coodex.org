@@ -89,7 +89,7 @@ public abstract class Profile {
                     String resourceName = key.toString();
                     if (resourceName.endsWith(".properties")) {
                         return new ProfileBaseProperties(key);
-                    } else if (resourceName.endsWith(".yml")) {
+                    } else if (resourceName.endsWith(".yml") || resourceName.endsWith(".yaml")) {
                         if (!isYamlFirst()) {
                             log.warn("YAML not support. class {} not found. {}", YAML_CLASS, key.toString());
                             return new NullProfile();
@@ -111,7 +111,7 @@ public abstract class Profile {
     }
 
     private static URL findPath(String path) {
-        String[] ex = isYamlFirst() ? new String[]{".yml", ".properties"} : new String[]{".properties"};
+        String[] ex = isYamlFirst() ? new String[]{".yml", ".yaml", ".properties"} : new String[]{".properties"};
         for (String s : ex) {
             URL x = Common.getResource(path + s);
             if (x != null) return x;
