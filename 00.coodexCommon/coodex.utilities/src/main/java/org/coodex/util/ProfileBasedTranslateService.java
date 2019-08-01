@@ -48,7 +48,7 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
                 new Common.ResourceFilter() {
                     @Override
                     public boolean accept(String root, String resourceName) {
-                        return resourceName.endsWith(".yaml") || resourceName.endsWith(".properties");
+                        return resourceName.endsWith(".yml")|| resourceName.endsWith(".properties");
                     }
                 },
                 "i18n");
@@ -110,7 +110,7 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
 
         ResourcesMapper(String resourceName, URL resource) {
             this.resource = resource;
-            this.isYaml = resourceName.endsWith(".yaml");
+            this.isYaml = resourceName.endsWith(".yml");
             this.isFile = resource.toString().startsWith("file:");
             this.deep = countOfSlash(resourceName);
             int indexEnd = resourceName.lastIndexOf('.');
@@ -151,7 +151,7 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
          * 深度相同的，按包字典序
          * 有language优先
          * 有country优先
-         * yaml优先
+         * yaml类型优先
          *
          * @param o
          * @return

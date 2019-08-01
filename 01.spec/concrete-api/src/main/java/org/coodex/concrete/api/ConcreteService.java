@@ -19,6 +19,8 @@ package org.coodex.concrete.api;
 import java.lang.annotation.*;
 
 /**
+ * 用于声明一个接口是concrete服务接口
+ *
  * Created by davidoff shen on 2016-08-31.
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
@@ -28,7 +30,7 @@ public @interface ConcreteService {
 
     String value() default "";
 
-    boolean abstractive() default false;
+    boolean nonspecific() default false;
 
     boolean notService() default false;
 }

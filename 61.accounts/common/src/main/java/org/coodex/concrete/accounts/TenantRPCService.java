@@ -25,7 +25,7 @@ import org.coodex.concrete.api.Signable;
  * Created by davidoff shen on 2017-05-26.
  */
 @Signable(paperName = "tenantRPCService")
-@ConcreteService(abstractive = true)
+@ConcreteService(nonspecific = true)
 public interface TenantRPCService {
 
     /**

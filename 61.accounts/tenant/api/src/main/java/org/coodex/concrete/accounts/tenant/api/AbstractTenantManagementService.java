@@ -34,7 +34,7 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.SYSTEM_MANAGER
  * <p>
  * Created by davidoff shen on 2017-05-25.
  */
-@ConcreteService(value = "tenants", abstractive = true)
+@ConcreteService(value = "tenants", nonspecific = true)
 @AccessAllow(roles = {SYSTEM_MANAGER})
 @Safely
 public interface AbstractTenantManagementService<T extends Tenant> {

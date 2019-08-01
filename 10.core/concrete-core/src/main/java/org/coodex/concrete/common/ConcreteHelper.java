@@ -231,7 +231,7 @@ public class ConcreteHelper {
 
         //clz.getAnnotation(Abstract.class) != null
         return Common.isBlank(concreteService.value()) ?
-                (concreteService.abstractive() ? "" : clz.getCanonicalName()) :
+                (concreteService.nonspecific() ? "" : clz.getCanonicalName()) :
                 Common.trim(concreteService.value(),"/\\.");
     }
 
@@ -334,7 +334,7 @@ public class ConcreteHelper {
 
     public static boolean isAbstract(Class<?> clz){
         ConcreteService service = clz.getAnnotation(ConcreteService.class);
-        return service != null && service.abstractive();
+        return service != null && service.nonspecific();
     }
 
     public static boolean isConcreteService(Method method) {

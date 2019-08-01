@@ -38,7 +38,7 @@ public interface SomeService {
 - `ProfileBasedTranslateService`使用：
     - [约定]i18n资源文件放在resources/i18n下，`ProfileBasedTranslateService`会自动检索，减少配置工作量
     - 资源文件支持yaml(依赖`snakeyaml`)和properties
-    - 资源文件命名规范为`namespace`(_language)(_COUNTRY).yaml|properties
+    - 资源文件命名规范为`namespace`(_language)(_COUNTRY).yml|properties
         - `namespace`可以是多级，例如`a.b.c`，表明此命名空间下的i18n资源可在此文件中查找，资源内容中应该包含`a.b.c.*`
         - `language`可选，参考`java.util.Locale.getISOLanguages()`，大小写不敏感，推荐小写
         - `country`可选，参考`java.util.Locale.getISOCountries()`, 大小写不敏感，推荐大写
@@ -223,7 +223,7 @@ map和cars属性模拟的结果为
     - 加载了`snakeyaml`则自动支持
     - Profile.getInstance(String resourceKey)接口中
         - resourceKey 以 `.properties`结尾时，则使用properties文件，找不到则所有键值为空
-        - resourceKey 以 `.yaml`结尾时，则使用yaml文件，找不到则所有键值为空
+        - resourceKey 以 `.yml`结尾时，则使用yaml文件，找不到则所有键值为空
         - 上述以外，则按照优先级选择，支持了yaml的，则以yaml优先，否则找properties
 - concrete
     - 增加TranslateService，解构I18N与resourceBundle的依赖，默认使用ResourceBundle实现

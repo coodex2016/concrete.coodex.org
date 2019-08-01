@@ -21,6 +21,6 @@ import org.coodex.concrete.api.ConcreteService;
 /**
  * Created by davidoff shen on 2016-12-13.
  */
-@ConcreteService(value = "attachments",abstractive = true)
+@ConcreteService(value = "attachments", nonspecific = true)
 public interface AbstractAttachmentService {
 }

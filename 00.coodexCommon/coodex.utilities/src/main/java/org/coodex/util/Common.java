@@ -66,8 +66,9 @@ public class Common {
     private static Set<PathPattern> toPathPatterns(String[] paths) {
         Set<PathPattern> pathPatterns = new LinkedHashSet<PathPattern>();
         if (paths != null && paths.length > 0) {
-            for (String path : paths)
-                pathPatterns.add(new PathPattern(path));
+            for (String path : paths) {
+                pathPatterns.add(new PathPattern(Common.trim(path) + "/"));
+            }
         }
         return pathPatterns;
     }
@@ -1010,10 +1011,12 @@ public class Common {
         public PathPattern(String path) {
             this.originalPath = path;
             this.pattern = Pattern.compile(
-                    "^" + Common.trim(path).replaceAll("\\.", "\\\\.")
+                    "^" + Common.trim(path)
+                            .replaceAll("\\.", "\\\\.")
+                            .replaceAll("/\\*{2,}/","(/|/.+/)")
                             .replaceAll("\\*{2,}", ".+")// 两个以上*匹配任意字符
                             .replaceAll("\\*", "[^/]+")
-                            + ".+"
+                            + ".*"
             );
             this.path = pathRoot(path);
         }
@@ -1032,6 +1035,8 @@ public class Common {
         public int hashCode() {
             return originalPath.hashCode();
         }
+
     }
+
 
 }

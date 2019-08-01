@@ -26,7 +26,7 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 /**
  * Created by davidoff shen on 2017-04-28.
  */
-@ConcreteService(value = "departments", abstractive = true)
+@ConcreteService(value = "departments", nonspecific = true)
 @AccessAllow(roles = {SYSTEM_MANAGER, TENANT_MANAGER, ORGANIZATION_MANAGER})
 @Safely
 public interface AbstractDepartmentManagementService<D extends Department>  {

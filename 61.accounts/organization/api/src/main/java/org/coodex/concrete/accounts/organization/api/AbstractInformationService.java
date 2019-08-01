@@ -30,7 +30,7 @@ import java.util.List;
  * 信息浏览服务
  * Created by davidoff shen on 2017-05-02.
  */
-@ConcreteService(abstractive = true)
+@ConcreteService(nonspecific = true)
 public interface AbstractInformationService<
         I extends Institution,
         D extends Department,

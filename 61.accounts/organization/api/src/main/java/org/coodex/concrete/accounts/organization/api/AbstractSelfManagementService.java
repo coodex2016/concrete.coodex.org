@@ -33,7 +33,7 @@ import java.util.Set;
 /**
  * Created by davidoff shen on 2017-05-03.
  */
-@ConcreteService(value = "mine",abstractive = true)
+@ConcreteService(value = "mine", nonspecific = true)
 @AccessAllow
 public interface AbstractSelfManagementService<
         I extends Institution,

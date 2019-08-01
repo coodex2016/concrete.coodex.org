@@ -19,6 +19,7 @@ package org.coodex.concrete.jaxrs.swagger;
 import org.coodex.concrete.jaxrs.DefaultJaxrsClassGetter;
 import org.coodex.concrete.jaxrs.Polling;
 import org.coodex.concrete.jaxrs.ServiceRegisteredListener;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 import org.coodex.util.SingletonMap;
@@ -35,11 +36,13 @@ import javax.ws.rs.core.UriInfo;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@Path("swagger")
+@Path("")
 public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListener {
 
     private final static Logger log = LoggerFactory.getLogger(Swagger.class);
@@ -98,7 +101,7 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
 
     @Override
     public Class[] getClasses() {
-        return new Class[]{Swagger.class};
+        return Common.toBool(Config.get("swagger", "concrete"), true) ? new Class[]{Swagger.class} : new Class[0];
     }
 
     @Override
@@ -108,7 +111,15 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
         classes.get().add(concreteService);
     }
 
-    @Path("config/swagger.json")
+    @Context
+    private UriInfo uriInfo;
+
+    private String getContextPath() {
+        return uri.getBaseUri().getPath();
+    }
+//    private static SingletonMap<String, R>
+
+    @Path("swagger/config/swagger.json")
     @GET
     public Response swaggerJson() {
         return Response
@@ -117,14 +128,11 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
                 .entity(swaggerJson.get(getContextPath())).build();
     }
 
-    private String getContextPath() {
-        return uri.getBaseUri().getPath();
-    }
-//    private static SingletonMap<String, R>
-
-    @Path("{file}")
+    @Path("swagger/{file}")
     @GET
     public Response getStaticFile(@PathParam("file") String file) {
+        if (Common.isBlank(file))
+            file = "index.html";
         StaticFileContent fileContent = staticFileContents.get(file);
         if (fileContent == null)
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -136,8 +144,9 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
     }
 
     @GET
-    public Response index() {
-        return getStaticFile("index.html");
+    @Path("swagger")
+    public Response index() throws URISyntaxException {
+        return Response.seeOther(new URI(uriInfo.getBaseUri() + "swagger/index.html")).build();
     }
 
     static class StaticFileContent {

@@ -31,7 +31,7 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 /**
  * Created by davidoff shen on 2017-04-28.
  */
-@ConcreteService(value = "persons", abstractive = true)
+@ConcreteService(value = "persons", nonspecific = true)
 @AccessAllow(roles = {SYSTEM_MANAGER, TENANT_MANAGER, ORGANIZATION_MANAGER})
 @Safely
 public interface AbstractPersonManagementService<P extends Person> {

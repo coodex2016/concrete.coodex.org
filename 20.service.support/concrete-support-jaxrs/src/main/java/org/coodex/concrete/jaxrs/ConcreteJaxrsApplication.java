@@ -124,6 +124,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
 
     @Override
     public void register(Class<?>... classes) {
+        if (classes == null || classes.length == 0) return;
         for (Class<?> clz : classes) {
             registerClass(clz);
         }
