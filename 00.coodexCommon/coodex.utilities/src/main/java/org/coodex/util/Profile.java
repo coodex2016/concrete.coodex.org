@@ -113,6 +113,10 @@ public abstract class Profile {
     private static URL findPath(String path) {
         String[] ex = isYamlFirst() ? new String[]{".yml", ".yaml", ".properties"} : new String[]{".properties"};
         for (String s : ex) {
+            if (path.endsWith(s)) {
+                URL x = Common.getResource(path);
+                if (x != null) return x;
+            }
             URL x = Common.getResource(path + s);
             if (x != null) return x;
         }
