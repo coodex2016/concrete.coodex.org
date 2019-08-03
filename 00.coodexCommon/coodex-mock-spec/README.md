@@ -612,7 +612,7 @@ public @interface FullName {
 
 实现就不贴了，[点我](https://github.com/coodex2016/concrete.coodex.org/blob/030-mock-refactoring/00.coodexCommon/coodex-mock-impl/src/main/java/org/coodex/mock/ext/FullNameTypeMocker.java)查看
 
-`codoex-mock`除了定义规范以外，还根据历史经验，`org.coodex.mock.ext`下提供了一些模拟器
+`coodex-mock`除了定义规范以外，还根据历史经验，`org.coodex.mock.ext`下提供了一些模拟器
 
 - `@DateTime`， 时间戳模拟配置，支持`java.util.Date`/ `java.util.Calendar`/ `String`
 - `@EMail`, 电子邮件模拟配置，支持`String`

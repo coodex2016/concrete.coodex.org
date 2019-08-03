@@ -22,7 +22,7 @@ package org.coodex.util;
  */
 public class MIMEHelper {
 
-    private static final Profile mimeTypes = Profile.getProfile("mimeTypes.properties");
+    private static final Profile mimeTypes = Profile.get("mimeTypes.properties");
 
     private static final String DEFAULT_TYPE = "application/octet-stream";
 

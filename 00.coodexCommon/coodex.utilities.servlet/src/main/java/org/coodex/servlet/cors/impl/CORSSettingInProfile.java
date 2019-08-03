@@ -39,7 +39,7 @@ public class CORSSettingInProfile implements CORSSetting {
     }
 
     public CORSSettingInProfile(String profileName) {
-        profile = Profile.getProfile(profileName);
+        profile = Profile.get(profileName);
     }
 
     /*

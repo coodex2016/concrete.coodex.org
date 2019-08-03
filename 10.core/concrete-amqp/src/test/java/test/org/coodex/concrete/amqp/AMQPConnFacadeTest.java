@@ -27,7 +27,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class AMQPConnFacadeTest {
     public static void main(String[] args) throws NoSuchAlgorithmException, KeyManagementException, URISyntaxException {
-        Profile profile = Profile.getProfile("env.properties");
+        Profile profile = Profile.get("env.properties");
         AMQPConnectionConfig connectionConfig = new AMQPConnectionConfig();
         connectionConfig.setUri(profile.getString("amqp.location"));
         Connection connection = AMQPConnectionFacade.getConnection(connectionConfig);

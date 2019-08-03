@@ -34,7 +34,7 @@ import static org.coodex.concrete.accounts.AccountConstants.TYPE_SIMPLE;
  */
 public class SimpleAccountLoginImpl implements Login {
 
-    private Profile profile = Profile.getProfile("simpleAccounts.properties");
+    private Profile profile = Profile.get("simpleAccounts");
 
     @Inject
     private SimpleAccountFactory accountFactory;

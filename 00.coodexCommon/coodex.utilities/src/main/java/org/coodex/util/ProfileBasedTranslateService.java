@@ -86,7 +86,7 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
             ResourcesMapper[] mapperArray = list.toArray(new ResourcesMapper[0]);
             Arrays.sort(mapperArray);
             for (ResourcesMapper mapper : mapperArray) {
-                String value = Profile.getProfile(mapper.resource).getString(key);
+                String value = Profile.get(mapper.resource).getString(key);
                 if (value != null) {
                     log.debug("{}[{}]:{} load from {}", key, locale, value, mapper.resource.toString());
                     return value;

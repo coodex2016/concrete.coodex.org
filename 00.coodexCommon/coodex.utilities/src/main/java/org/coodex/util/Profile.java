@@ -138,16 +138,27 @@ public abstract class Profile {
      * @param url 资源url
      * @return profile
      */
-    public static Profile getProfile(URL url) {
+    public static Profile get(URL url) {
         return URL_PROFILES_MAP.get(url);
     }
 
-    public static Profile getProfile(String path) {
+    public static Profile get(String path) {
         if (path == null) {
             throw new IllegalArgumentException("path is null");
         }
 
-        return getProfile(findPath(path));
+        return get(findPath(path));
+    }
+
+
+    @Deprecated
+    public static Profile getProfile(URL url) {
+        return get(url);
+    }
+
+    @Deprecated
+    public static Profile getProfile(String path) {
+        return get(path);
 //        Profile p = profiles.get(path);
 //        if (p == null) {
 //            p = new Profile(path);
@@ -323,7 +334,7 @@ public abstract class Profile {
                 namespace = x.substring(0, index);
                 key = x.substring(index + 1);
             }
-            Profile profile = namespace == null ? this : Profile.getProfile(namespace);
+            Profile profile = namespace == null ? this : Profile.get(namespace);
 
             return profile.getString(key);
         }

@@ -48,7 +48,7 @@ import static org.coodex.util.GenericTypeHelper.toReference;
 
 public class SwaggerHelper {
 
-    private static Profile profile = Profile.getProfile("concrete-swagger");
+    private static Profile profile = Profile.get("concrete-swagger");
     private static ThreadLocal<Map<String, Schema>> definitions = new ThreadLocal<>();
     private static ThreadLocal<Set<String>> readyForSchema = new ThreadLocal<>();
 

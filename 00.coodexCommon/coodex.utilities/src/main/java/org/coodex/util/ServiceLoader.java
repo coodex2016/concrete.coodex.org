@@ -56,14 +56,15 @@ public interface ServiceLoader<T> {
 
     T get(String name);
 
-    @Deprecated
-    T getInstance();
-
     /**
      *
      * @return
      * @see ServiceLoader#get()
      */
+    @Deprecated
+    T getInstance();
+
+
     T get();
 
     T getDefault();

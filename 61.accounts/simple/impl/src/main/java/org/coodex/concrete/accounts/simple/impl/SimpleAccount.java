@@ -33,7 +33,7 @@ public class SimpleAccount implements NamedAccount<ClassifiableAccountID> {
     private final ClassifiableAccountID id;
 
     public SimpleAccount(ClassifiableAccountID id) {
-        this.profile = Profile.getProfile("/accounts/" + id.getId() + ".properties");
+        this.profile = Profile.get("/accounts/" + id.getId());
         this.id = id;
     }
 
