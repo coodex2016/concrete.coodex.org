@@ -16,10 +16,21 @@
 
 package org.coodex.concrete.common;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * Created by davidoff shen on 2016-09-04.
  */
 public abstract class AbstractErrorCodes {
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    public @interface Namespace {
+        String value() default "";
+    }
 
     public static final int OK = 0;
 

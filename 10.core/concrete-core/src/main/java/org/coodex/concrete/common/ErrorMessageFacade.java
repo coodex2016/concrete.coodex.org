@@ -116,8 +116,13 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
         }
         MessageFormatter formatter = getFormatter(formatterValue == null ? null : formatterValue.formatterClass());
 
+        AbstractErrorCodes.Namespace namespace = f.getDeclaringClass().getAnnotation(AbstractErrorCodes.Namespace.class);
+
+        String errorMessageNamespace = namespace == null ? "message" : namespace.value();
+        errorMessageNamespace = Common.isBlank(errorMessageNamespace) ? f.getDeclaringClass().getName() : errorMessageNamespace;
+
         String msgTemp = (errorMsg == null || Common.isBlank(errorMsg.value().trim())) ?
-                "{" + (formatter.getNamespace() == null ? "" : (formatter.getNamespace() + ".")) + "message." + code + "}" : errorMsg.value();
+                "{" + (formatter.getNamespace() == null ? "" : (formatter.getNamespace() + ".")) + errorMessageNamespace + "." + code + "}" : errorMsg.value();
 
 //        String pattern = msgTemp;
 //        if (msgTemp.startsWith("{") && msgTemp.endsWith("}")) {

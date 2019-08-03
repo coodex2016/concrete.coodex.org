@@ -26,6 +26,13 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-08-03
+
+- 强化errorCodes的协作能力
+    - 不加`@AbstractErrorCodes.Namespace`，使用默认命名空间`message`，这种方式也可以协作，但是需要各模块通过区分目录来协作，不友好
+    - 加`@AbstractErrorCodes.Namespace`，并且指定命名空间，则使用指定命名空间。这种方式协作方便，适合约定设计与执行比较好的团队
+    - 加`@AbstractErrorCodes.Namespace`，不指定value，则使用类名作为命名空间。这种方式协作方便，很难出现冲突
+
 ## 2019-07-29
 
 - `@IpAddress`调整，使用枚举指定类型：IPV4,MAC,IPV6
