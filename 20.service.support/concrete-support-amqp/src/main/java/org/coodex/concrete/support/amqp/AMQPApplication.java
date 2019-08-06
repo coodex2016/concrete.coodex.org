@@ -21,9 +21,11 @@ import org.coodex.concrete.amqp.AMQPConnectionConfig;
 import org.coodex.concrete.amqp.AMQPConnectionFacade;
 import org.coodex.concrete.amqp.AMQPModule;
 import org.coodex.concrete.common.*;
+import org.coodex.concrete.core.Level;
 import org.coodex.concrete.own.OwnServiceProvider;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
 import org.slf4j.Logger;
@@ -37,6 +39,7 @@ import java.util.Map;
 import static org.coodex.concrete.amqp.AMQPConstants.ROUTE_KEY_REQUEST;
 import static org.coodex.concrete.amqp.AMQPConstants.ROUTE_KEY_RESPONSE;
 import static org.coodex.concrete.amqp.AMQPHelper.getExchangeName;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 public class AMQPApplication extends OwnServiceProvider {
 
@@ -46,6 +49,7 @@ public class AMQPApplication extends OwnServiceProvider {
     private static OwnModuleBuilder AMQP_MODULE_BUILDER = clz -> new AMQPModule(clz);
     private final String exchangeName;
     private Channel channel;
+    private final Level level;
 
 
     public AMQPApplication(AMQPConnectionConfig config) {
@@ -62,6 +66,7 @@ public class AMQPApplication extends OwnServiceProvider {
     public AMQPApplication(AMQPConnectionConfig config, String exchangeName, String queueName, Long ttl) {
         this.exchangeName = getExchangeName(exchangeName);
         connect(config, queueName, ttl);
+        level = Level.parse(Config.getValue("server", "NONE", "amqp.logger.level", getAppSet()));
     }
 
     @Override
@@ -86,7 +91,7 @@ public class AMQPApplication extends OwnServiceProvider {
         return "amqp";
     }
 
-    private Map<String,Object> getQueueArgumenets(Long ttl){
+    private Map<String, Object> getQueueArguments(Long ttl) {
         if(ttl != null && ttl > 0){
             Map<String, Object> args = new HashMap<>();
             args.put("x-message-ttl", 60000);
@@ -108,13 +113,15 @@ public class AMQPApplication extends OwnServiceProvider {
             if( Common.isBlank(queue) ){
                 queue =channel.queueDeclare().getQueue();
             }  else {
-                channel.queueDeclare(queue,true,false,false,getQueueArgumenets(ttl));
+                channel.queueDeclare(queue, true, false, false, getQueueArguments(ttl));
             }
             // request data use routingKey: request.clientId
             channel.queueBind(queue, exchangeName, ROUTE_KEY_REQUEST + "*");
             channel.basicConsume(queue, true, new DefaultConsumer(channel) {
                 private void send(String json, String clientId) throws IOException {
-                    log.debug("send to {}: {}", clientId, json);
+                    if (level.isEnabled(log)) {
+                        level.log(log, "send to " + clientId + ": " + json);
+                    }
                     channel.basicPublish(exchangeName,
                             ROUTE_KEY_RESPONSE + clientId,
                             null,
@@ -126,7 +133,9 @@ public class AMQPApplication extends OwnServiceProvider {
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
                     final String clientId = envelope.getRoutingKey().substring(ROUTE_KEY_REQUEST.length());
                     String bodyStr = new String(body, StandardCharsets.UTF_8);
-                    log.debug("message received: {}", bodyStr);
+                    if (level.isEnabled(log)) {
+                        level.log(log, "message received: " + bodyStr);
+                    }
                     final RequestPackage<Object> requestPackage = serializer.parse(bodyStr,
                             new GenericTypeHelper.GenericType<RequestPackage<Object>>() {
                             }.getType());

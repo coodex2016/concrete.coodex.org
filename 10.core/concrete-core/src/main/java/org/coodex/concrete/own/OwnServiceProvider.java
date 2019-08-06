@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.own;
 
+import org.coodex.concrete.api.Application;
 import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
@@ -40,7 +41,7 @@ import static org.coodex.concrete.common.ConcreteHelper.updatedMap;
 import static org.coodex.concrete.common.ErrorCodes.SERVICE_ID_NOT_EXISTS;
 import static org.coodex.concrete.own.PackageHelper.analysisParameters;
 
-public abstract class OwnServiceProvider {
+public abstract class OwnServiceProvider implements Application {
 
     private final static Logger log = LoggerFactory.getLogger(OwnServiceProvider.class);
     private final Map<String, AbstractUnit> unitMap = new HashMap<>();
@@ -80,6 +81,11 @@ public abstract class OwnServiceProvider {
 //        for (WebSocketModule module : modules) {
 //            appendUnits(module);
 //        }
+    }
+
+    @Override
+    public void register(Class<?>... classes) {
+        registerClasses(classes);
     }
 
     @SuppressWarnings("unchecked")

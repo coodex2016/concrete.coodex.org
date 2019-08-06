@@ -27,6 +27,7 @@ import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.common.JSONSerializer;
 import org.coodex.concrete.common.JSONSerializerFactory;
+import org.coodex.concrete.core.Level;
 import org.coodex.concrete.own.MapSubjoin;
 import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.concrete.own.RequestPackage;
@@ -63,6 +64,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
         }
     }
 
+
     static void processMessage(final String message) {
 
         ResponsePackage<Object> responsePackage = parse(message);
@@ -73,9 +75,10 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
             log.debug("drop message: {}", message);
             return;
         }
-
-        if (callBack.getLogger().isDebugEnabled()) {
-            callBack.getLogger().debug("message received: {}", message);
+        Level level = callBack.getLoggingLevel();
+        Logger logger = callBack.getLogger();
+        if (level.isEnabled(logger)) {
+            level.log(logger, "message received: " + message);
         }
 
         Throwable throwable = null;
@@ -132,6 +135,8 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
     protected abstract OwnServiceUnit findUnit(DefinitionContext context);
 
+    protected abstract Level getLoggingLevel();
+
     @Override
     protected Observable invoke(final DefinitionContext context, final Object... args) {
         final OwnServiceUnit unit = findUnit(context);
@@ -142,7 +147,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
             final RequestPackage requestPackage = buildRequest(msgId, unit, args);
 
             CallBack callBack = new CallBack(observableEmitter,
-                    context, getLogger(), getDestination(), getContext());
+                    context, getLogger(), getLoggingLevel(), getDestination(), getContext());
 
             callbackMap.put(msgId, callBack, getDestination().getTimeout(),
                     () -> observableEmitter.onError(new TimeoutException()));
@@ -168,13 +173,15 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
         private final ObservableEmitter emitter;
         private final DefinitionContext context;
         private final Logger logger;
+        private final Level loggingLevel;
         private final Destination destination;
         private final ClientSideContext clientSideContext;
 
-        private CallBack(ObservableEmitter emitter, DefinitionContext context, Logger logger, Destination destination, ClientSideContext clientSideContext) {
+        private CallBack(ObservableEmitter emitter, DefinitionContext context, Logger logger, Level loggingLevel, Destination destination, ClientSideContext clientSideContext) {
             this.emitter = emitter;
             this.context = context;
             this.logger = logger;
+            this.loggingLevel = loggingLevel;
             this.destination = destination;
             this.clientSideContext = clientSideContext;
         }
@@ -193,6 +200,10 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
         public Destination getDestination() {
             return destination;
+        }
+
+        public Level getLoggingLevel() {
+            return loggingLevel;
         }
     }
 

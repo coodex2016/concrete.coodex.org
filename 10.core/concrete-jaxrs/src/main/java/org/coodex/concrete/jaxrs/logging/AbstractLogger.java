@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.jaxrs.logging;
 
+import org.coodex.concrete.core.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
@@ -38,8 +37,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * 参考jersey实现编写
  */
 public class AbstractLogger implements WriterInterceptor {
-
-
 
     /**
      * Prefix will be printed before requests
@@ -228,47 +225,7 @@ public class AbstractLogger implements WriterInterceptor {
         }
     }
 
-    enum Level {
-        NONE, TRACE, DEBUG, INFO, WARN, ERROR;
 
-        static Level parse(String levelName) {
-            try {
-                return Level.valueOf(Level.class, levelName.toUpperCase());
-            } catch (Throwable th) {
-                if (!levelName.equalsIgnoreCase("NONE"))
-                    logger.warn(th.getLocalizedMessage());
-                return NONE;
-            }
-        }
-
-        boolean isEnabled(Logger log) {
-            switch (this.name().toLowerCase()) {
-                case "none":
-                    return false;
-                case "trace":
-                    return log.isTraceEnabled();
-                case "debug":
-                    return log.isDebugEnabled();
-                case "info":
-                    return log.isInfoEnabled();
-                case "warn":
-                    return log.isWarnEnabled();
-                case "error":
-                    return log.isErrorEnabled();
-            }
-            return false;
-        }
-
-        void log(Logger log, String str) {
-            if (this == NONE) return;
-            try {
-                Method method = Logger.class.getMethod(this.name().toLowerCase(), String.class);
-                method.setAccessible(true);
-                method.invoke(log, str);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignore) {
-            }
-        }
-    }
 
     /**
      * Helper class used to log an entity to the output stream up to the specified maximum number of bytes.

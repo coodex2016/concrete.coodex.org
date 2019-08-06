@@ -33,7 +33,13 @@ public interface SomeService {
     - jaxrs.logger.level.server|client，取值范围:NONE,DEBUG,INFO,WARN,ERROR
     - server端默认为NONE
     - client端默认为DEBUG
+- amqp部分，定义LoggingLevel
+    - amqp.logger.level.server|client，取值范围:NONE,DEBUG,INFO,WARN,ERROR
+    - server端默认为NONE
+    - client端默认为DEBUG
 - bug fix: concrete默认Configuration命名空间未生效问题
+- bug fix: jaxrs client语言环境未传递的问题
+- bug fix: jaxrs client logger总是1的问题
 
 ## 2019-08-03
 

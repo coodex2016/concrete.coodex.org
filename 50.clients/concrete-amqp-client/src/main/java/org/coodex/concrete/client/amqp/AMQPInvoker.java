@@ -27,8 +27,10 @@ import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ServiceContext;
+import org.coodex.concrete.core.Level;
 import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.concrete.own.RequestPackage;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
@@ -42,6 +44,7 @@ import java.security.NoSuchAlgorithmException;
 
 import static org.coodex.concrete.amqp.AMQPConstants.*;
 import static org.coodex.concrete.amqp.AMQPHelper.getExchangeName;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 public class AMQPInvoker extends AbstractOwnRxInvoker {
 
@@ -49,6 +52,7 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
 //    private static Map<String, AMQPFacade> facadeMap = new HashMap<String, AMQPFacade>();
 
     private final static Logger log = LoggerFactory.getLogger(AMQPInvoker.class);
+    private final Level level;
     private static SingletonMap<AMQPDestination, Facade> facadeSingletonMap = new SingletonMap<AMQPDestination, Facade>(
             new SingletonMap.Builder<AMQPDestination, Facade>() {
                 @Override
@@ -66,6 +70,9 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
 
     public AMQPInvoker(AMQPDestination destination) {
         super(destination);
+        level = Level.parse(
+                Config.getValue("client", "DEBUG", "amqp.logger.level", getAppSet())
+        );
 //        exchangeName = IF.isNull(
 //                ConcreteHelper.getString(TAG_CLIENT,destination.getIdentify(),)
 //        );
@@ -98,6 +105,11 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
     @Override
     protected OwnServiceUnit findUnit(DefinitionContext context) {
         return AMQPHelper.findUnit(context);
+    }
+
+    @Override
+    protected Level getLoggingLevel() {
+        return level;
     }
 
     @Override

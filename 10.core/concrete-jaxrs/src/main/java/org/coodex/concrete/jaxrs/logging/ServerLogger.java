@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.jaxrs.logging;
 
+import org.coodex.concrete.core.Level;
 import org.coodex.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
