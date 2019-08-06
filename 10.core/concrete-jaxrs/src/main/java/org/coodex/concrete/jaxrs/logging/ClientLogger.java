@@ -39,7 +39,11 @@ public class ClientLogger extends AbstractLogger implements ClientRequestFilter,
     private final static Logger log = LoggerFactory.getLogger(ClientLogger.class);
 
     public ClientLogger() {
-        super(log, Level.parse(Config.getValue("client","DEBUG", "jaxrs.logger.level",getAppSet())));
+        this(log);
+    }
+
+    public ClientLogger(Logger log) {
+        super(log, Level.parse(Config.getValue("client", "DEBUG", "jaxrs.logger.level", getAppSet())));
     }
 
     @Override

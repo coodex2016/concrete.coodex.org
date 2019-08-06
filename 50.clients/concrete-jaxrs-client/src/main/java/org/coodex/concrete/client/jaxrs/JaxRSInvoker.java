@@ -42,7 +42,10 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import static org.coodex.concrete.ClientHelper.getJSONSerializer;
 import static org.coodex.concrete.ClientHelper.getSSLContext;
@@ -56,23 +59,11 @@ import static org.coodex.util.GenericTypeHelper.toReference;
 public class JaxRSInvoker extends AbstractSyncInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(JaxRSInvoker.class);
-//    private static final String DEFAULT_LOGGING_FEATURE_CLASS = "";
-
-//    static {
-//        // jersey logging feature
-//        try {
-//            Class<?> feature = Class.forName(getLoggingFeatureClassName());
-//            clientBuilder = clientBuilder.register(feature);
-//        } catch (Throwable th) {
-//            log.info("register LoggingFeature failed. {}", th.getLocalizedMessage());
-//        }
-//    }
 
     private final Client client;
 
     JaxRSInvoker(JaxRSDestination destination) {
         super(destination);
-        // TODO logging
         ClientBuilder clientBuilder = ClientBuilder.newBuilder().register(ClientLogger.class);
         client = destination.isSsl() ?
                 clientBuilder.hostnameVerifier((s, sslSession) -> true).sslContext(getSSLContext(destination.getSsl())).build() :
