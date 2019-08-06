@@ -116,7 +116,7 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
         }
         MessageFormatter formatter = getFormatter(formatterValue == null ? null : formatterValue.formatterClass());
 
-        AbstractErrorCodes.Namespace namespace = f.getDeclaringClass().getAnnotation(AbstractErrorCodes.Namespace.class);
+        AbstractErrorCodes.Namespace namespace = f == null ? null : f.getDeclaringClass().getAnnotation(AbstractErrorCodes.Namespace.class);
 
         String errorMessageNamespace = namespace == null ? "message" : namespace.value();
         errorMessageNamespace = Common.isBlank(errorMessageNamespace) ? f.getDeclaringClass().getName() : errorMessageNamespace;

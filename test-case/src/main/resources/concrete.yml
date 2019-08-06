@@ -1,0 +1,7 @@
+jaxrs:
+  logger:
+    level:
+      # 可选值为TRACE,DEBUG,INFO,WARN,ERROR,不建议使用WARN以及ERROR级别
+      # 可选值以外则表示不输出
+      server: debug #默认不开启
+      client: debug #默认DEBUG

@@ -23,9 +23,11 @@ import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.TypeHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.StringTokenizer;
 
 
 /**
@@ -35,6 +37,8 @@ public class JaxRSHelper {
 
     public static final String HEADER_ERROR_OCCURRED = "CONCRETE-ERROR-OCCURRED";
     public static final String KEY_CLIENT_PROVIDER = "X-CLIENT-PROVIDER";
+    private final static Logger log = LoggerFactory.getLogger(JaxRSHelper.class);
+
 
 //    private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<>();
 
@@ -202,5 +206,38 @@ public class JaxRSHelper {
         return str.startsWith("/") ? str : ("/" + str);
     }
 
-
+//    private static String LOGGING_FEATURE_CLASSNAME = "org.glassfish.jersey.logging.LoggingFeature";
+//
+//    public static Object getLoggingComponent(Logger logger) {
+//        try {
+//            Class loggingFeatureClass = Class.forName(LOGGING_FEATURE_CLASSNAME);
+//            Class verbosity = Class.forName(LOGGING_FEATURE_CLASSNAME + "$Verbosity");
+//            Object verbosity_payload_text = verbosity.getEnumConstants()[1];
+//            //noinspection unchecked
+//            Constructor constructor = loggingFeatureClass.getConstructor(
+//                    java.util.logging.Logger.class,
+//                    Level.class,
+//                    verbosity,
+//                    Integer.class);
+//            if (constructor != null) {
+//                return constructor.newInstance(
+//                        java.util.logging.Logger.getLogger(logger.getName()),
+//                        getLevel(logger),
+//                        verbosity_payload_text,
+//                        4096);
+//            }
+//        } catch (Throwable th) {
+//            log.warn("get logging component failed: {}", th.getLocalizedMessage());
+//        }
+//        return null;
+//    }
+//
+//    private static Level getLevel(Logger logger) {
+//        if (logger.isTraceEnabled()) return Level.FINEST;
+//        if (logger.isDebugEnabled()) return Level.FINE;
+//        if (logger.isInfoEnabled()) return Level.CONFIG;
+//        if (logger.isWarnEnabled()) return Level.WARNING;
+//        if (logger.isErrorEnabled()) return Level.SEVERE;
+//        return Level.OFF;
+//    }
 }

@@ -32,7 +32,7 @@ public class ProfileBaseYaml extends Profile {
     private final static Logger log = LoggerFactory.getLogger(ProfileBaseYaml.class);
     private Map<String, Object> valuesMap = new HashMap<String, Object>();
 
-
+    @Deprecated
     ProfileBaseYaml(String path) {
         try {
             init(path);

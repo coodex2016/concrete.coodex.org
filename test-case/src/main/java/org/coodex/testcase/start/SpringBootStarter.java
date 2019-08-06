@@ -22,6 +22,7 @@ import org.coodex.concrete.common.BeanProvider;
 import org.coodex.concrete.common.BeanServiceLoaderProvider;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.RBACInterceptor;
+import org.coodex.concrete.jaxrs.logging.ServerLogger;
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
 import org.coodex.concrete.support.amqp.AMQPApplication;
 import org.coodex.concrete.support.jsr339.ConcreteJSR339Application;
@@ -36,8 +37,11 @@ import org.coodex.util.ServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -52,6 +56,10 @@ import javax.servlet.ServletRegistration;
 import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpoint;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
+import java.io.IOException;
 
 @SpringBootApplication()
 @ImportResource("classpath:testcase.xml")
@@ -139,8 +147,8 @@ public class SpringBootStarter {
 
     public static class JaxRSApplication extends ConcreteJSR339Application {
         public JaxRSApplication() {
-            register(JacksonFeature.class,
-                    LoggingFeature.class);
+            super();
+            register(JacksonFeature.class);
             registerPackage("org.coodex.**.api");
         }
     }

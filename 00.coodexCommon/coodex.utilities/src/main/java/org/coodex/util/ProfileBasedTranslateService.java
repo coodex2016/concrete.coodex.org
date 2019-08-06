@@ -41,7 +41,7 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
             }
     );
 
-    public ProfileBasedTranslateService() {
+    ProfileBasedTranslateService() {
         Common.forEach(new Common.Processor() {
                            @Override
                            public void process(URL resource, String resourceName) {
@@ -51,7 +51,13 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
                 new Common.ResourceFilter() {
                     @Override
                     public boolean accept(String root, String resourceName) {
-                        return resourceName.endsWith(".yml") || resourceName.endsWith(".yaml") || resourceName.endsWith(".properties");
+                        String[] allSupported = Profile.allSupportedFileExt();
+                        for (String ext : allSupported) {
+                            if (resourceName.endsWith(ext)) {
+                                return true;
+                            }
+                        }
+                        return false;
                     }
                 },
                 "i18n");
@@ -105,7 +111,7 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
         private String name;
         private String path;
         private Boolean isFile;
-        private Boolean isYaml;
+        //        private Boolean isYaml;
         private String ext;
         private int deep;
         private String language = null;
@@ -114,13 +120,12 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
 
         ResourcesMapper(String resourceName, URL resource) {
             this.resource = resource;
-            this.isYaml = resourceName.endsWith(".yml") || resourceName.endsWith(".yaml");
             this.isFile = resource.toString().startsWith("file:");
             this.deep = countOfSlash(resourceName);
             int indexEnd = resourceName.lastIndexOf('.');
             int indexStart = resourceName.lastIndexOf('/');
             name = resourceName.substring(indexStart + 1, indexEnd);
-            ext = resourceName.substring(indexEnd + 1);
+            ext = resourceName.substring(indexEnd);
             path = resourceName.substring(0, indexStart);
             if (name.length() > 3 && name.charAt(name.length() - 3) == '_') {
                 String test = name.substring(name.length() - 2).toUpperCase();
@@ -156,11 +161,10 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
          * 深度相同的，按包字典序
          * 有language优先
          * 有country优先
-         * yaml类型优先
-         * .yml > .yaml
+         * 按profile支持的文件扩展名顺序
          *
-         * @param o
-         * @return
+         * @param o 被比较的对象
+         * @return 参见 {@link Comparable#compareTo(Object)}
          */
         @Override
         public int compareTo(ResourcesMapper o) {
@@ -176,8 +180,8 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
             if (language != null && o.language == null) return -1;
             if (country == null && o.country != null) return 1;
             if (country != null && o.country == null) return -1;
-            x = isYaml.compareTo(o.isYaml);
-            if (x != 0) return -x;
+            x = Common.indexOf(Profile.allSupportedFileExt(), ext) - Common.indexOf(Profile.allSupportedFileExt(), o.ext);
+            if (x != 0) return x;
             x = ext.compareTo(o.ext);
             if (x != 0) return -x;
             return resource.toString().compareTo(o.resource.toString());

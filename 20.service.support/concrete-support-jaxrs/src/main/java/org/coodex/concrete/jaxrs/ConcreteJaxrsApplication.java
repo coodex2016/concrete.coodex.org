@@ -20,12 +20,14 @@ import org.coodex.concrete.common.AbstractErrorCodes;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.ErrorMessageFacade;
+import org.coodex.concrete.jaxrs.logging.ServerLogger;
 import org.coodex.util.ServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Configurable;
 import javax.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -35,7 +37,10 @@ import java.util.Set;
 
 import static org.coodex.concrete.common.ConcreteHelper.foreachClassInPackages;
 
-public abstract class ConcreteJaxrsApplication extends Application implements org.coodex.concrete.api.Application {
+public abstract class ConcreteJaxrsApplication
+        extends Application
+        implements
+        org.coodex.concrete.api.Application {
 
     private static final JaxRSModuleMaker moduleMaker = new JaxRSModuleMaker();
     private final static Logger log = LoggerFactory.getLogger(ConcreteJaxrsApplication.class);
@@ -47,6 +52,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     private String name;
 
     private Application application = null;
+    private Configurable configurable = null;
     private boolean exceptionMapperRegistered = false;
 
     private ServiceLoader<ServiceRegisteredListener> registerNotifyServiceServiceLoader = new ServiceLoaderImpl<ServiceRegisteredListener>() {
@@ -107,6 +113,7 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
     protected abstract ClassGenerator getClassGenerator();
 
     private void registerDefault() {
+        register(ServerLogger.class);
         register(Polling.class);
         registerPackage(ErrorCodes.class.getPackage().getName());
         for (DefaultJaxrsClassGetter getter : getterServiceLoader.getAll().values()) {
@@ -242,5 +249,4 @@ public abstract class ConcreteJaxrsApplication extends Application implements or
             super(th);
         }
     }
-
 }

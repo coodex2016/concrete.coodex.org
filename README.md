@@ -26,6 +26,15 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-08-06
+
+- Profile增加扩展机制，允许开发者扩展自己的Profile
+- Jaxrs部分，参考Jersey的LoggingFeature编写了Server端和Client端的Logger
+    - jaxrs.logger.level.server|client，取值范围:NONE,DEBUG,INFO,WARN,ERROR
+    - server端默认为NONE
+    - client端默认为DEBUG
+- bug fix: concrete默认Configuration命名空间未生效问题
+
 ## 2019-08-03
 
 - 强化errorCodes的协作能力

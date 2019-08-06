@@ -19,23 +19,28 @@ package org.coodex.config;
 import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
-import org.coodex.util.Singleton;
 
 public class Config {
 
-    private static Singleton<Configuration> defaultConfiguration = new Singleton<Configuration>(
-            new Singleton.Builder<Configuration>() {
-                @Override
-                public Configuration build() {
-                    return new ConfigurationBaseProfile();
-                }
-            }
-    );
-    private static ServiceLoader<Configuration> configurationServiceLoader = new ServiceLoaderImpl<Configuration>() {
-        @Override
-        public Configuration getDefault() {
-            return defaultConfiguration.get();
-        }
+//    private static Singleton<Configuration> defaultConfiguration = new Singleton<Configuration>(
+//            new Singleton.Builder<Configuration>() {
+//                @Override
+//                public Configuration build() {
+//                    return new ConfigurationBaseProfile();
+//                }
+//            }
+//    );
+
+    private static ServiceLoader<Configuration> configurationServiceLoader =
+            new ServiceLoaderImpl<Configuration>(
+                    new ServiceLoaderImpl<DefaultConfigurationProvider>(new DefaultConfigurationProvider() {
+                        @Override
+                        public Configuration get() {
+                            return new ConfigurationBaseProfile();
+                        }
+                    }) {
+                    }.get()
+                            .get()) {
     };
 
     public static Configuration getConfig() {

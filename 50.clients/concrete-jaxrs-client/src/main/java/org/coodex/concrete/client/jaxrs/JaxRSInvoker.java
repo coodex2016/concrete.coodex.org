@@ -21,6 +21,7 @@ import org.coodex.concrete.client.ClientTokenManagement;
 import org.coodex.concrete.client.impl.AbstractSyncInvoker;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.jaxrs.JaxRSSubjoin;
+import org.coodex.concrete.jaxrs.logging.ClientLogger;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.mock.Mocker;
@@ -41,10 +42,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import static org.coodex.concrete.ClientHelper.getJSONSerializer;
 import static org.coodex.concrete.ClientHelper.getSSLContext;
@@ -75,7 +73,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
     JaxRSInvoker(JaxRSDestination destination) {
         super(destination);
         // TODO logging
-        ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+        ClientBuilder clientBuilder = ClientBuilder.newBuilder().register(ClientLogger.class);
         client = destination.isSsl() ?
                 clientBuilder.hostnameVerifier((s, sslSession) -> true).sslContext(getSSLContext(destination.getSsl())).build() :
                 clientBuilder.build();
@@ -86,18 +84,19 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 //        return DEFAULT_LOGGING_FEATURE_CLASS;
 //    }
 
-    private static Invocation.Builder buildHeaders(Invocation.Builder builder, StringBuilder str, Subjoin subjoin, String tokenId) {
+    private static Invocation.Builder buildHeaders(Invocation.Builder builder/*, StringBuilder str*/, Subjoin subjoin, String tokenId) {
+        builder = builder.acceptLanguage(Locale.getDefault());
         if (subjoin != null || !Common.isBlank(tokenId)) {
-            str.append("\nheaders:");
+//            str.append("\nheaders:");
             if (subjoin != null) {
                 for (String key : subjoin.keySet()) {
                     builder = builder.header(key, subjoin.get(key));
-                    str.append("\n\t").append(key).append(": ").append(subjoin.get(key));
+//                    str.append("\n\t").append(key).append(": ").append(subjoin.get(key));
                 }
             }
             if (!Common.isBlank(tokenId)) {
                 builder = builder.header(CONCRETE_TOKEN_ID_KEY, tokenId);
-                str.append("\n\t").append(CONCRETE_TOKEN_ID_KEY).append(": ").append(tokenId);
+//                str.append("\n\t").append(CONCRETE_TOKEN_ID_KEY).append(": ").append(tokenId);
             }
         }
         return builder;
@@ -226,23 +225,23 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 
                 String body = response.readEntity(String.class);
 
-                if (log.isDebugEnabled()) {
-                    builder = new StringBuilder();
-                    builder.append("response\nstatus: ").append(response.getStatus()).append(";\nheaders:\n");
-                    for (String key : response.getHeaders().keySet()) {
-                        builder.append("\t").append(key).append(": ").append(response.getHeaderString(key)).append("\n");
-                    }
-                    builder.append("result:\n").append(body);
-                    log.debug(builder.toString());
-                }
+//                if (log.isDebugEnabled()) {
+//                    builder = new StringBuilder();
+//                    builder.append("response\nstatus: ").append(response.getStatus()).append(";\nheaders:\n");
+//                    for (String key : response.getHeaders().keySet()) {
+//                        builder.append("\t").append(key).append(": ").append(response.getHeaderString(key)).append("\n");
+//                    }
+//                    builder.append("result:\n").append(body);
+//                    log.debug(builder.toString());
+//                }
                 JaxRSSubjoin subjoin = new JaxRSSubjoin(response.getHeaders());
                 String warnings = subjoin.get(KEY_WARNINGS);
                 if (!Common.isBlank(warnings)) {
-                    subjoin.set(KEY_WARNINGS, Arrays.asList(URLDecoder.decode(warnings, "UTF-8")));
+                    subjoin.set(KEY_WARNINGS, Collections.singletonList(URLDecoder.decode(warnings, "UTF-8")));
                 }
                 getContext().responseSubjoin(subjoin);
                 return processResult(response.getStatus(), body, unit,
-                        response.getHeaders().keySet().contains(HEADER_ERROR_OCCURRED), path);
+                        response.getHeaders().containsKey(HEADER_ERROR_OCCURRED), path);
             } catch (ClientException clientEx) {
                 throw clientEx;
             } catch (Throwable th) {
@@ -266,8 +265,8 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
     private Response request(String url, String method, Object body) {
 //        URI uri = new URI(url);
         Invocation.Builder builder = client.target(url).request();
-        StringBuilder str = new StringBuilder();
-        str.append("url: ").append(url).append("\n").append("method: ").append(method);
+//        StringBuilder str = new StringBuilder();
+//        str.append("url: ").append(url).append("\n").append("method: ").append(method);
 
         JaxRSClientContext context = getContext();
         Subjoin subjoin = context.getSubjoin();
@@ -276,13 +275,13 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 //                context.getTokenId() :
 //                ClientTokenManagement.getTokenId(getDestination());
 
-        builder = buildHeaders(builder, str, subjoin, tokenId);
+        builder = buildHeaders(builder, subjoin, tokenId);
 
-        if (body != null && log.isDebugEnabled()) {
-            str.append("\ncontent:\n").append(getJSONSerializer().toJson(body));
-        }
+//        if (body != null && log.isDebugEnabled()) {
+//            str.append("\ncontent:\n").append(getJSONSerializer().toJson(body));
+//        }
 
-        log.debug("requestInfo: \n{}", str.toString());
+//        log.debug("requestInfo: \n{}", str.toString());
         return body == null ?
                 builder.build(method).invoke() :
                 builder.build(method, Entity.entity(body,

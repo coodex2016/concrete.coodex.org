@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.*;
 
 import static org.coodex.util.Common.*;
 
@@ -53,11 +54,31 @@ public abstract class Profile {
 
     private final static Logger log = LoggerFactory.getLogger(Profile.class);
 
+    private static final AcceptableServiceLoader<URL, ProfileProvider> PROFILE_PROVIDER_LOADER =
+            new AcceptableServiceLoader<URL, ProfileProvider>() {
+            };
 
-    private static final String DEFAULT_KEY = Common.getUUIDStr();
+    private static final Singleton<String[]> ALL_SUPPORTED_FILE_EXT = new Singleton<String[]>(
+            new Singleton.Builder<String[]>() {
+                @Override
+                public String[] build() {
+                    ProfileProvider[] profileProviders = PROFILE_PROVIDER_LOADER.getAll().values().toArray(new ProfileProvider[0]);
+                    Arrays.sort(profileProviders);
+                    List<String> list = new ArrayList<String>();
+                    for (ProfileProvider profileProvider : profileProviders) {
+                        if (profileProvider.isAvailable()) {
+                            list.addAll(Arrays.asList(profileProvider.getSupported()));
+                        }
+                    }
+                    return list.toArray(new String[0]);
+                }
+            }
+    );
+    private static final Set<String> NOT_FOUNDS = new HashSet<String>();
+    //    private static final String DEFAULT_KEY = Common.getUUIDStr();
     private static final URL DEFAULT_URL;
-    private static final String YAML_CLASS = "org.yaml.snakeyaml.Yaml";
-    private static Boolean yamlFirst = null;
+//    private static final String YAML_CLASS = "org.yaml.snakeyaml.Yaml";
+//    private static Boolean yamlFirst = null;
 
     private static final String RELOAD_INTERVAL = System.getProperty("Profile.reloadInterval");
     //    @Deprecated
@@ -86,21 +107,31 @@ public abstract class Profile {
                 public Profile build(URL key) {
                     if (key == null)
                         throw new NullPointerException("profile url could not be null.");
-                    String resourceName = key.toString();
-                    if (resourceName.endsWith(".properties")) {
-                        return new ProfileBaseProperties(key);
-                    } else if (resourceName.endsWith(".yml") || resourceName.endsWith(".yaml")) {
-                        if (!isYamlFirst()) {
-                            log.warn("YAML not support. class {} not found. {}", YAML_CLASS, key.toString());
-                            return new NullProfile();
-                        } else
-                            return new ProfileBaseYaml(key);
-                    } else {
+                    ProfileProvider profileProvider = PROFILE_PROVIDER_LOADER.getServiceInstance(key);
+                    if (profileProvider == null) {
                         return new NullProfile();
+                    } else {
+                        return profileProvider.get(key);
                     }
+//                    String resourceName = key.toString();
+//                    if (resourceName.endsWith(".properties")) {
+//                        return new ProfileBaseProperties(key);
+//                    } else if (resourceName.endsWith(".yml") || resourceName.endsWith(".yaml")) {
+//                        if (!isYamlFirst()) {
+//                            log.warn("YAML not support. class {} not found. {}", YAML_CLASS, key.toString());
+//                            return new NullProfile();
+//                        } else
+//                            return new ProfileBaseYaml(key);
+//                    } else {
+//                        return new NullProfile();
+//                    }
                 }
             }, toLong(RELOAD_INTERVAL, 0L) * 1000L
     );
+
+    public static String[] allSupportedFileExt() {
+        return ALL_SUPPORTED_FILE_EXT.get();
+    }
 
     static {
         try {
@@ -111,7 +142,8 @@ public abstract class Profile {
     }
 
     private static URL findPath(String path) {
-        String[] ex = isYamlFirst() ? new String[]{".yml", ".yaml", ".properties"} : new String[]{".properties"};
+        String[] ex = allSupportedFileExt();
+        //isYamlFirst() ? new String[]{".yml", ".yaml", ".properties"} : new String[]{".properties"};
         for (String s : ex) {
             if (path.endsWith(s)) {
                 URL x = Common.getResource(path);
@@ -120,21 +152,39 @@ public abstract class Profile {
             URL x = Common.getResource(path + s);
             if (x != null) return x;
         }
-        return DEFAULT_URL;
-
-    }
-
-    private static boolean isYamlFirst() {
-        if (yamlFirst == null) {
-            try {
-                Class.forName(YAML_CLASS);
-                yamlFirst = true;
-            } catch (ClassNotFoundException e) {
-                yamlFirst = false;
+        if (!NOT_FOUNDS.contains(path)) {
+            synchronized (NOT_FOUNDS) {
+                if (!NOT_FOUNDS.contains(path)) {
+                    if (log.isInfoEnabled()) {
+                        StringBuilder builder = new StringBuilder("Profile ")
+                                .append(path).append(" not found.[");
+                        for (int i = 0; i < ex.length; i++) {
+                            if (i > 0) {
+                                builder.append(", ");
+                            }
+                            builder.append("'").append(ex[i]).append("'");
+                        }
+                        builder.append("]");
+                        log.info(builder.toString());
+                    }
+                    NOT_FOUNDS.add(path);
+                }
             }
         }
-        return yamlFirst;
+        return DEFAULT_URL;
     }
+
+//    private static boolean isYamlFirst() {
+//        if (yamlFirst == null) {
+//            try {
+//                Class.forName(YAML_CLASS);
+//                yamlFirst = true;
+//            } catch (ClassNotFoundException e) {
+//                yamlFirst = false;
+//            }
+//        }
+//        return yamlFirst;
+//    }
 
     /**
      * 根据url获取资源

@@ -64,6 +64,7 @@ public class ProfileBaseProperties extends Profile {
     private InputStream is;
 
 
+    @Deprecated
     ProfileBaseProperties(String path) {
         try {
             loadFromPath(path);
