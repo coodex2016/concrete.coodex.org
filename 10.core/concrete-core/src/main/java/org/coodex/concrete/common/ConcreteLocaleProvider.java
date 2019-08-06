@@ -23,11 +23,16 @@ import java.util.Locale;
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 
 public class ConcreteLocaleProvider implements DefaultLocaleProvider {
-    @Override
-    public Locale getDefault() {
+
+    public static Locale getLocalDefault() {
         Locale locale = getServiceContext() == null ?
                 null :
                 getServiceContext().getLocale();
         return locale == null ? Locale.getDefault() : locale;
+    }
+
+    @Override
+    public Locale getDefault() {
+        return getLocalDefault();
     }
 }

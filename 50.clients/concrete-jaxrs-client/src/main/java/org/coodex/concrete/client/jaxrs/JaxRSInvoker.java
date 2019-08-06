@@ -84,8 +84,9 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 //        return DEFAULT_LOGGING_FEATURE_CLASS;
 //    }
 
-    private static Invocation.Builder buildHeaders(Invocation.Builder builder/*, StringBuilder str*/, Subjoin subjoin, String tokenId) {
-        builder = builder.acceptLanguage(Locale.getDefault());
+    private Invocation.Builder buildHeaders(Invocation.Builder builder/*, StringBuilder str*/, Subjoin subjoin, String tokenId) {
+        JaxRSClientContext context = getContext();
+        builder = builder.acceptLanguage(context.getLocale());
         if (subjoin != null || !Common.isBlank(tokenId)) {
 //            str.append("\nheaders:");
             if (subjoin != null) {
