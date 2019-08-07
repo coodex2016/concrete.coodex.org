@@ -16,10 +16,12 @@
 
 package org.coodex.concrete.common;
 
+import java.io.Serializable;
+
 /**
  * Created by davidoff shen on 2017-05-08.
  */
-public interface NamedAccount<ID extends AccountID> extends Account<ID> {
+public interface NamedAccount<ID extends Serializable> extends Account<ID> {
 
     String getName();
 }

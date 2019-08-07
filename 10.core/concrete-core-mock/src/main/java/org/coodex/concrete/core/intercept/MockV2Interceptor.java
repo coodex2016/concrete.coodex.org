@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static org.coodex.concrete.core.intercept.InterceptOrders.MOCK;
 
@@ -37,16 +38,16 @@ import static org.coodex.concrete.core.intercept.InterceptOrders.MOCK;
 public class MockV2Interceptor extends AbstractSyncInterceptor {
     private final static Logger log = LoggerFactory.getLogger(MockV2Interceptor.class);
 
-    private Set<Class> exceptedClasses;
+    private Set<Class> exceptedClasses = new HashSet<>();
+    private Set<Pattern> patterns = new HashSet<>();
 
     public MockV2Interceptor() throws IOException {
         this(new HashSet<>());
-
-        loadExcepted();
     }
 
-    public MockV2Interceptor(Set<Class> exceptedClasses) {
-        this.exceptedClasses = exceptedClasses;
+    public MockV2Interceptor(Set<Class> exceptedClasses) throws IOException {
+        setExceptedClasses(exceptedClasses);
+        loadExcepted();
     }
 
     private void loadExcepted() throws IOException {
@@ -57,24 +58,29 @@ public class MockV2Interceptor extends AbstractSyncInterceptor {
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(excepted.openStream(), "UTF-8"))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                if (Common.isBlank(line)) continue;
                 line = line.trim();
+                if (Common.isBlank(line)) continue;
                 if (line.startsWith("#")) continue;
 
                 try {
                     this.exceptedClasses.add(Class.forName(line));
                 } catch (ClassNotFoundException e) {
-                    log.info("ClassNotFound: {}", line);
+                    this.patterns.add(Pattern.compile("^" + line + "$"));
+                    log.info("ClassNotFound: {}, use regex", line);
                 }
             }
-
         }
-
     }
 
     @Override
     protected boolean accept_(DefinitionContext context) {
-        return !exceptedClasses.contains(context.getDeclaringClass());
+        boolean notMock = exceptedClasses.contains(context.getDeclaringClass());
+        if (notMock) return false;
+        String className = context.getDeclaringClass().getName();
+        for (Pattern pattern : patterns) {
+            if (pattern.matcher(className).matches()) return false;
+        }
+        return true;
     }
 
     public Set<Class> getExceptedClasses() {
@@ -82,7 +88,8 @@ public class MockV2Interceptor extends AbstractSyncInterceptor {
     }
 
     public void setExceptedClasses(Set<Class> exceptedClasses) {
-        this.exceptedClasses = exceptedClasses;
+        if (exceptedClasses != null && exceptedClasses.size() > 0)
+            this.exceptedClasses = new HashSet<>(exceptedClasses);
     }
 
     @Override
