@@ -16,6 +16,7 @@
 
 package org.coodex.mock;
 
+import com.alibaba.fastjson.JSON;
 import net.sf.cglib.proxy.Enhancer;
 import org.coodex.closure.CallableClosure;
 import org.coodex.closure.MapClosureContext;
@@ -373,15 +374,16 @@ public class CoodexMockerProvider implements MockerProvider {
                                     if (toUse == null) {
                                         throw new MockException("none RelationStrategy accept [" + relation.strategy() + "]. " + relation.toString());
                                     }
+                                    if (isAllMocked(relation, mocked, typeAssignation)) {
+                                        Object result = relationCall(mocked, relation, toUse);
+                                        if (relation == STRATEGY_UNENFORCED)
+                                            throw new MockException("strategy unenforced. " + toUse);
+                                        if (relation == STRATEGY_RETRY)
+                                            continue;
 
-                                    Object result = relationCall(mocked, relation, toUse);
-                                    if (relation == STRATEGY_UNENFORCED)
-                                        throw new MockException("strategy unenforced. " + toUse);
-                                    if (relation == STRATEGY_RETRY)
-                                        continue;
-
-                                    mocked.put(property.getName(), result);
-                                    temp.add(property);
+                                        mocked.put(property.getName(), result);
+                                        temp.add(property);
+                                    }
                                 }
                             }
 
@@ -414,10 +416,15 @@ public class CoodexMockerProvider implements MockerProvider {
                                     field.set(instance, mocked.get(field.getName()));
                                 }
                             }
+                            try {
+                                instance = JSON.parseObject(JSON.toJSONString(instance), pojoInfo.getType());
+                            } catch (Throwable th) {
+                                log.warn("convert failed. {}, {}, {}",
+                                        th.getLocalizedMessage(),
+                                        pojoInfo.getType(),
+                                        JSON.toJSONString(instance));
+                            }
                         }
-
-
-                        // TODO 是否需要转成原类型？
                         return instance;
                     }
 

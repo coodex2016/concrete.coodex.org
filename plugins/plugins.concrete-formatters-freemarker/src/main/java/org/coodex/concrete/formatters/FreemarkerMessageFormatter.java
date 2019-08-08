@@ -30,7 +30,7 @@ import java.util.Map;
  * <p>
  * Created by davidoff shen on 2016-12-02.
  */
-public class FreemarkerMessageFormatter extends AbstractFreemarkerFormatter implements MessageFormatter, LogFormatter {
+public class FreemarkerMessageFormatter extends AbstractFreemarkerFormatter implements MessageFormatter/*, LogFormatter*/ {
     private final static Logger log = LoggerFactory.getLogger(FreemarkerMessageFormatter.class);
 
     /**
@@ -64,12 +64,12 @@ public class FreemarkerMessageFormatter extends AbstractFreemarkerFormatter impl
         return "ftl";
     }
 
-    @Override
-    public String format(String pattern, Map<String, Object> values) {
-        try {
-            return super.formatMsg(pattern, values);
-        } catch (Throwable th) {
-            throw new RuntimeException(th.getLocalizedMessage(), th);
-        }
-    }
+//    @Override
+//    public String format(String pattern, Map<String, Object> values) {
+//        try {
+//            return super.formatMsg(pattern, values);
+//        } catch (Throwable th) {
+//            throw new RuntimeException(th.getLocalizedMessage(), th);
+//        }
+//    }
 }

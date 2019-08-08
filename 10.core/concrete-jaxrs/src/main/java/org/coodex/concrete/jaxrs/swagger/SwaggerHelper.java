@@ -165,9 +165,9 @@ public class SwaggerHelper {
                         new Content().addMediaType("application/json",
                                 new MediaType().schema(
                                         schema(toReference(unit.getGenericReturnType(),unit.getDeclaringModule().getInterfaceClass()))
-                                                .example(
+                                ).example(
                                         Mocker.mockMethod(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass())
-                                ))))).addApiResponse("204", new ApiResponse())
+                                )))).addApiResponse("204", new ApiResponse())
                 .addApiResponse("default", new ApiResponse()
                         .content(new Content().addMediaType("application/json", new MediaType()
                                 .schema(schema(ErrorInfo.class)))))
