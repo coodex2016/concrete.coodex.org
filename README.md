@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-08-09
+
+- 限流部分重构，增加令牌桶机制
+
 ## 2019-08-06
 
 - Profile增加扩展机制，允许开发者扩展自己的Profile

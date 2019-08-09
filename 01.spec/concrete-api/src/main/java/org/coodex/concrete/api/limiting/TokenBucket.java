@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.api;
+package org.coodex.concrete.api.limiting;
 
-import java.lang.annotation.*;
+import org.coodex.concrete.api.Limiting;
 
-/**
- * 限流策略定义，可重载
- * Created by davidoff shen on 2017-04-06.
- */
-@Target(ElementType.ANNOTATION_TYPE)
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Overlay
-public @interface Limiting {
+@Limiting
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface TokenBucket {
 
+    String bucket() default "";
 
-
-    /**
-     * @return 策略名
-     */
-    @Deprecated
-    String strategy() default "";
+    int tokenUsed() default 1;
 }

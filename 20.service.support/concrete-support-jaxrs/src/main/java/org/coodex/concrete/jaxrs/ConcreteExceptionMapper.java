@@ -16,6 +16,8 @@
 
 package org.coodex.concrete.jaxrs;
 
+import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.common.ThrowableMapperFacade;
 import org.coodex.util.ServiceLoader;
@@ -68,7 +70,17 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
         Response.Status status = getStatus(errorInfo.getCode());
 
         if (status.getFamily() == Response.Status.Family.SERVER_ERROR) {
-            log.warn("exception occurred: {}", exception.getLocalizedMessage(), exception);
+            Throwable th = exception;
+            if (exception instanceof ConcreteException) {
+                if (((ConcreteException) exception).getCode() != ErrorCodes.UNKNOWN_ERROR) {
+                    th = null;
+                }
+            }
+            if (th != null) {
+                log.warn("exception occurred: {}", th.getLocalizedMessage(), th);
+            } else {
+                log.warn("exception occurred: {}", exception.getLocalizedMessage());
+            }
         }
 
 

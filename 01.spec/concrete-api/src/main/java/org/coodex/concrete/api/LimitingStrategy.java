@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,12 @@
 
 package org.coodex.concrete.api;
 
-import java.lang.annotation.*;
+import org.coodex.concrete.common.DefinitionContext;
+import org.coodex.util.AcceptableService;
 
-/**
- * 限流策略定义，可重载
- * Created by davidoff shen on 2017-04-06.
- */
-@Target(ElementType.ANNOTATION_TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Overlay
-public @interface Limiting {
+public interface LimitingStrategy extends AcceptableService<DefinitionContext> {
 
+    boolean apply(DefinitionContext definitionContext);
 
-
-    /**
-     * @return 策略名
-     */
-    @Deprecated
-    String strategy() default "";
+    void release(DefinitionContext definitionContext);
 }

@@ -40,8 +40,27 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 
     private final static Logger log = LoggerFactory.getLogger(ServiceLoaderImpl.class);
-    private Map<String, T> instances = null;
-    private Map<String, T> unmodifiedMap = null;
+    private Singleton<Instances> instances = new Singleton<Instances>(
+            new Singleton.Builder<Instances>() {
+                @Override
+                public Instances build() {
+                    Instances instances = new Instances();
+                    instances.instancesMap = new HashMap<String, T>();
+                    java.util.ServiceLoader<ServiceLoaderProvider> serviceLoaderProviders =
+                            java.util.ServiceLoader.load(ServiceLoaderProvider.class);
+
+                    for (ServiceLoaderProvider provider : serviceLoaderProviders) {
+                        instances.instancesMap.putAll(provider.load(getInterfaceClass()));
+                    }
+                    if (instances.instancesMap.size() == 0) {
+                        log.debug("no ServiceProvider found for [{}], using default provider.", getInterfaceClass().getCanonicalName());
+                    }
+                    instances.unmodifiedMap = Collections.unmodifiableMap(instances.instancesMap);
+                    return instances;
+                }
+            }
+    );
+
     private T defaultProvider;
 
     public ServiceLoaderImpl() {
@@ -52,15 +71,15 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
         this.defaultProvider = defaultProvider;
     }
 
-    private void load() {
-        if (instances == null) {
-            synchronized (this) {
-                if (instances == null) {
-                    loadInstances();
-                }
-            }
-        }
-    }
+//    private void load() {
+//        if (instances == null) {
+//            synchronized (this) {
+//                if (instances == null) {
+//                    loadInstances();
+//                }
+//            }
+//        }
+//    }
 
 
 //    private Type solve(TypeVariable t, Object instance){
@@ -94,27 +113,25 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
         }
     }
 
-    private void loadInstances() {
-        if (instances == null) {
-            instances = new HashMap<String, T>();
-            java.util.ServiceLoader<ServiceLoaderProvider> serviceLoaderProviders =
-                    java.util.ServiceLoader.load(ServiceLoaderProvider.class);
-
-            for (ServiceLoaderProvider provider : serviceLoaderProviders) {
-                instances.putAll(provider.load(getInterfaceClass()));
-            }
-            if (instances.size() == 0) {
-                log.debug("no ServiceProvider found for [{}], using default provider.", getInterfaceClass().getCanonicalName());
-            }
-            unmodifiedMap = Collections.unmodifiableMap(instances);
-        }
-    }
+//    private Instances loadInstances() {
+//        instances = new HashMap<String, T>();
+//        java.util.ServiceLoader<ServiceLoaderProvider> serviceLoaderProviders =
+//                java.util.ServiceLoader.load(ServiceLoaderProvider.class);
+//
+//        for (ServiceLoaderProvider provider : serviceLoaderProviders) {
+//            instances.putAll(provider.load(getInterfaceClass()));
+//        }
+//        if (instances.size() == 0) {
+//            log.debug("no ServiceProvider found for [{}], using default provider.", getInterfaceClass().getCanonicalName());
+//        }
+//        unmodifiedMap = Collections.unmodifiableMap(instances);
+//    }
 
     @Override
     @Deprecated
     public Collection<T> getAllInstances() {
-        load();
-        return instances.values();
+//        load();
+        return getAll().values();
     }
 
 //    protected Map<String, T> $getInstances() {
@@ -124,21 +141,22 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 
     @Override
     public Map<String, T> getAll() {
-        load();
-        if (unmodifiedMap == null) {
-            // ?? 为啥会出现？
-            log.debug("how it happened ?????", new Exception());
-            return Collections.unmodifiableMap(instances);
-        }
-        return unmodifiedMap;
+//        load();
+//        if (unmodifiedMap == null) {
+//            // ?? 为啥会出现？
+//            log.debug("how it happened ?????", new Exception());
+//            return Collections.unmodifiableMap(instances);
+//        }
+//        return unmodifiedMap;
+        return instances.get().unmodifiedMap;
     }
 
     @Override
     public T get(Class<? extends T> providerClass) {
-        load();
+//        load();
 //        return (P) getInstance(providerClass.getCanonicalName());
         Map<String, T> copy = new HashMap<String, T>();
-        for (Map.Entry<String, T> entry : instances.entrySet()) {
+        for (Map.Entry<String, T> entry : instances.get().instancesMap.entrySet()) {
 //            T t = instances.get(key);
             if (entry.getValue() != null && providerClass.isAssignableFrom(entry.getValue().getClass())) {
                 copy.put(entry.getKey(), entry.getValue());
@@ -175,15 +193,14 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 
     @Override
     public T get(String name) {
-        load();
-        T instance = instances.get(name);
+        T instance = instances.get().instancesMap.get(name);
         return instance == null ? getDefault() : instance;
     }
 
     protected T conflict() {
         StringBuilder buffer = new StringBuilder(getInterfaceClass().getName());
-        buffer.append(" has ").append(instances.size()).append(" services:[");
-        for (T service : instances.values()) {
+        buffer.append(" has ").append(instances.get().instancesMap.size()).append(" services:[");
+        for (T service : instances.get().instancesMap.values()) {
             buffer.append("\n\t").append(service.getClass().getName());
         }
         buffer.append("]");
@@ -193,11 +210,10 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
     @Override
     @SuppressWarnings("unchecked")
     public T get() {
-        load();
-        if (instances.size() == 0)
+        if (instances.get().instancesMap.size() == 0)
             return getDefault();
-        else if (instances.size() == 1)
-            return (T) instances.values().toArray()[0];
+        else if (instances.get().instancesMap.size() == 1)
+            return (T) instances.get().instancesMap.values().toArray()[0];
         else
             return conflict();
     }
@@ -231,5 +247,10 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
     @Deprecated
     public final T getDefaultProvider() {
         return getDefault();
+    }
+
+    private class Instances {
+        Map<String, T> instancesMap = null;
+        Map<String, T> unmodifiedMap = null;
     }
 }
