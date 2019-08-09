@@ -44,7 +44,7 @@ public final class ConcreteContext {
     public static final String KEY_LOCALE = "CONCRETE-LOCALE";
 
     private static final ClosureContext<ServiceContext> CONTEXT = new StackClosureContext<ServiceContext>();
-    private static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<Map<String, Object>>();
+    public static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<Map<String, Object>>();
 
     private static Singleton<SyncInterceptorChain> interceptorChainSingleton = new Singleton<>(
             () -> {

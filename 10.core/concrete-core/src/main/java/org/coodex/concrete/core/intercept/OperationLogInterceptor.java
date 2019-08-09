@@ -31,7 +31,10 @@ import org.coodex.util.ServiceLoaderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+
 import static org.coodex.concrete.common.AbstractMessageFacade.getLogFormatter;
+import static org.coodex.concrete.common.ConcreteContext.LOGGING;
 import static org.coodex.concrete.common.ConcreteContext.getLoggingData;
 
 //import static org.coodex.concrete.common.AbstractMessageFacade.getPatternLoader;
@@ -158,10 +161,22 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
 
 
     @Override
+    public Object invoke(MethodInvocation invocation) throws Throwable {
+        return LOGGING.call(new HashMap<>(), () -> super.invoke(invocation));
+    }
+
+//    @Override
+//    public Object around(DefinitionContext context, MethodInvocation joinPoint) throws Throwable {
+//
+//                _after(context, joinPoint, OperationLogInterceptor.super.around(context, joinPoint))
+//        );
+//    }
+
+    @Override
     public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
         try {
-            Account<? extends AccountID> account = getOperator();
-            String accountId = account == null ? null : account.getId().serialize();
+            Account account = getOperator();
+            String accountId = account == null ? null : account.getId() instanceof AccountID ? ((AccountID) account.getId()).serialize() : account.getId().toString();
             String accountName = account == null ? "Anonymous" : null;
             if (account != null) {
                 accountName = account instanceof NamedAccount ? ((NamedAccount) account).getName() : "Unknown";
@@ -202,6 +217,8 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
 
         } catch (Throwable th) {
             log.warn("{}", th.getLocalizedMessage(), th);
+        } finally {
+
         }
         return super.after(context, joinPoint, result);
     }
