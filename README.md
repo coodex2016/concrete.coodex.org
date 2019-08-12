@@ -24,7 +24,7 @@ public interface SomeService {
 
 ## 怎么搞？
 
-看[书](https://concrete.coodex.org)，多练
+看[书](https://concrete.coodex.org/040)，多练
 
 ## 2019-08-09
 

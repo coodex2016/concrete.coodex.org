@@ -45,21 +45,13 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
 
     public static final String NAMESPACE_SERVICE_TIMING = "serviceTiming";
     private final static Logger log = LoggerFactory.getLogger(ServiceTimingInterceptor.class);
-    private final static Map<String, String> DEFAULT_CHECKERS = new HashMap<String, String>();
-    private static final ServiceTimingChecker ALL_ALLOWED_CHECKER = new ServiceTimingChecker() {
-        @Override
-        public boolean isAllowed() {
-            return true;
-        }
-    };
-
-    static {
-        DEFAULT_CHECKERS.put("TIMERANGE", ByTimeRange.class.getCanonicalName());
-        DEFAULT_CHECKERS.put("WORKDAY", ByWorkDay.class.getCanonicalName());
-    }
+    private final static Map<String, String> DEFAULT_CHECKERS = new HashMap<String, String>(){{
+        put("TIMERANGE", ByTimeRange.class.getName());
+        put("WORKDAY", ByWorkDay.class.getName());
+    }};
+    private static final ServiceTimingChecker ALL_ALLOWED_CHECKER = () -> true;
 
     private static ServiceTimingChecker loadCheckerInstance(String label) {
-//        Profile_Deprecated profile = Profile_Deprecated.getProfile("serviceTiming.properties");
 
         // 确定规则类型
         String type = Config.get(label + ".type", NAMESPACE_SERVICE_TIMING);

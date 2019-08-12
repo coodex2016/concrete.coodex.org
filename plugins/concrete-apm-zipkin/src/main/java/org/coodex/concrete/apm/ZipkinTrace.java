@@ -31,7 +31,7 @@ import zipkin2.reporter.AsyncReporter;
 import zipkin2.reporter.Sender;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -42,44 +42,42 @@ public class ZipkinTrace extends AbstractTrace {
 
     private static final String TRACE_ID = "X-APM-TRACE-ID";
     private static final String SPAN_ID = "X-APM-SPAN-ID";
-    private static Singleton<Tracing> tracingSingleton = new Singleton<Tracing>(
-            new Singleton.Builder<Tracing>() {
-                @Override
-                public Tracing build() {
-                    Tracing.Builder builder = Tracing.newBuilder();
-                    String url = Config.get("zipkin.location",getAppSet());
-                    if (url != null) {
-                        Sender sender = OkHttpSender.create(url + "/api/v2/spans");
-                        builder = builder.spanReporter(AsyncReporter.builder(sender)
-                                .closeTimeout(500, TimeUnit.MILLISECONDS)
-                                .build(SpanBytesEncoder.JSON_V2));
-                    }
-
-
-                    return builder.localServiceName(
-                            Config.getValue("module.name", "concrete", getAppSet())
-                    ).build();
+    private static Singleton<Tracing> tracingSingleton = new Singleton<>(
+            () -> {
+                Tracing.Builder builder = Tracing.newBuilder();
+                String url = Config.get("zipkin.location", getAppSet());
+                if (url != null) {
+                    Sender sender = OkHttpSender.create(url + "/api/v2/spans");
+                    //noinspection ConstantConditions
+                    builder = builder.spanReporter(AsyncReporter.builder(sender)
+                            .closeTimeout(500, TimeUnit.MILLISECONDS)
+                            .build(SpanBytesEncoder.JSON_V2));
                 }
+
+
+                return builder.localServiceName(
+                        Config.getValue("module.name", "concrete", getAppSet())
+                ).build();
             }
     );
     private TraceContext traceContext;
     private String type;
-    private Map<String, String> map = new ConcurrentHashMap<String, String>();
+    private Map<String, String> map = new ConcurrentHashMap<>();
     private Span span = null;
     private CurrentTraceContext.Scope scope = null;
 
-    public ZipkinTrace() {
+    ZipkinTrace() {
         traceContext = CurrentTraceContext.Default.create().get();
     }
 
-    public ZipkinTrace(Subjoin subjoin) {
+    ZipkinTrace(Subjoin subjoin) {
         String strTraceId = subjoin.get(TRACE_ID);
         if (!Common.isBlank(strTraceId)) {
             TraceContext.Builder builder = TraceContext.newBuilder();
 
-            long traceId = Common.toLong(strTraceId, 0l);
-            long spanId = Common.toLong(subjoin.get(SPAN_ID), 0l);
-            if (traceId == 0l || spanId == 0l) {
+            long traceId = Common.toLong(strTraceId, 0L);
+            long spanId = Common.toLong(subjoin.get(SPAN_ID), 0L);
+            if (traceId == 0L || spanId == 0L) {
                 traceContext = CurrentTraceContext.Default.create().get();
             } else {
                 traceContext = builder.traceId(traceId).spanId(spanId).sampled(true).build();
@@ -158,11 +156,11 @@ public class ZipkinTrace extends AbstractTrace {
     @Override
     public void hack(Subjoin subjoin) {
         if (span != null) {
-            subjoin.set("X-APM-PROVIDER", Arrays.asList("zipkin"));
+            subjoin.set("X-APM-PROVIDER", Collections.singletonList("zipkin"));
             if (span != null) {
                 TraceContext traceContext = span.context();
-                subjoin.set(TRACE_ID, Arrays.asList(String.valueOf(traceContext.traceId())));
-                subjoin.set(SPAN_ID, Arrays.asList(String.valueOf(traceContext.spanId())));
+                subjoin.set(TRACE_ID, Collections.singletonList(String.valueOf(traceContext.traceId())));
+                subjoin.set(SPAN_ID, Collections.singletonList(String.valueOf(traceContext.spanId())));
             }
         }
     }
