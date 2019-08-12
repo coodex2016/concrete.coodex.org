@@ -74,7 +74,7 @@ public class ConcreteHelper {
 //        }
 //    });
 
-    private static SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap = new SingletonMap<String, ScheduledExecutorService>(
+    private static SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap = new SingletonMap<>(
             new SingletonMap.Builder<String, ScheduledExecutorService>() {
                 @Override
                 public ScheduledExecutorService build(String key) {
@@ -91,7 +91,7 @@ public class ConcreteHelper {
             }
     );
 
-    private static SingletonMap<String, ExecutorService> executorServiceMap = new SingletonMap<String, ExecutorService>(
+    private static SingletonMap<String, ExecutorService> executorServiceMap = new SingletonMap<>(
             new SingletonMap.Builder<String, ExecutorService>() {
 
                 @Override
@@ -140,7 +140,7 @@ public class ConcreteHelper {
 //    }
 
     public static Map<String, String> updatedMap(Subjoin subjoin) {
-        Map<String, String> map = new ConcurrentHashMap<String, String>();
+        Map<String, String> map = new ConcurrentHashMap<>();
         if (subjoin != null && subjoin.updatedKeySet().size() > 0) {
             for (String key : subjoin.updatedKeySet()) {
                 map.put(key, subjoin.get(key));
@@ -379,19 +379,16 @@ public class ConcreteHelper {
     }
 
     public static DefinitionContext getContext(Method method, Class<?> clz) throws ConcreteException{
-        return IF.isNull(getContext(method, clz, new Stack<Class<?>>()), ErrorCodes.MODULE_DEFINITION_NOT_FOUND);
+        return IF.isNull(getContext(method, clz, new Stack<>()), ErrorCodes.MODULE_DEFINITION_NOT_FOUND);
     }
 
     private static boolean isRoot(Class clz) {
         if (clz == null) return true;
 
         String className = clz.getName();
-        if (className.startsWith("java.") || className.startsWith("javax.")) return true;
-
-        return false;
+        return className.startsWith("java.") || className.startsWith("javax.");
     }
 
-    @SuppressWarnings("unchecked")
     private static DefinitionContext getContext(Method method, Class<?> clz, Stack<Class<?>> stack) {
 
 //        if (clz == null) return null;
@@ -437,7 +434,7 @@ public class ConcreteHelper {
     }
 
     private static Method findMethod(Method method, Class<?> clz) {
-        return findMethod(method, clz, new Stack<Class<?>>());
+        return findMethod(method, clz, new Stack<>());
     }
 
     private static Method findMethod(Method method, Class<?> clz, Collection<Class<?>> stack) {
@@ -458,7 +455,7 @@ public class ConcreteHelper {
         return null;
     }
 
-    public final static ConcreteException findException(Throwable th) {
+    public static ConcreteException findException(Throwable th) {
         if (th == null) return null;
 
         Throwable t = th;
@@ -472,7 +469,7 @@ public class ConcreteHelper {
 
 
     ///////////////////////////////////////////////////////
-    public final static ConcreteException getException(Throwable th) {
+    public static ConcreteException getException(Throwable th) {
         ConcreteException concreteException = findException(th);
         if (concreteException == null) {
             concreteException = new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
@@ -491,13 +488,13 @@ public class ConcreteHelper {
         if (root == null || root.getAnnotation(ConcreteService.class) == null) return null;
 //        Stack<Class<?>> inheritedChain = new Stack<Class<?>>();
         if (root.equals(sub)) {
-            return Arrays.asList();
+            return Collections.emptyList();
         }
         for (Class<?> c : sub.getInterfaces()) {
             if (root.isAssignableFrom(c)) {
                 List<Class> subChain = inheritedChain(root, c);
                 if (subChain != null) {
-                    List<Class> inheritedChain = new ArrayList<Class>();
+                    List<Class> inheritedChain = new ArrayList<>();
                     inheritedChain.add(c);
                     inheritedChain.addAll(subChain);
                     return inheritedChain;
@@ -514,6 +511,10 @@ public class ConcreteHelper {
         return definitionContext;
     }
 
+    public static String[] getApiPackages(String namespace) {
+        String[] packages = Config.getArray("api.packages", ",", new String[0], "concrete", namespace, getAppSet());
+        return (packages.length == 0) ? getApiPackages() : packages;
+    }
 
     public static String[] getApiPackages() {
         return Config.getArray("api.packages", ",", new String[0], "concrete", getAppSet());
@@ -531,10 +532,9 @@ public class ConcreteHelper {
 
 
     public static String devModelKey(String module) {
-        String key = "org.coodex.concrete" + (
+        return "org.coodex.concrete" + (
                 Common.isBlank(module) ? "" : ("." + module)
         ) + ".devMode";
-        return key;
     }
 
     public static boolean isDevModel(String module) {

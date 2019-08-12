@@ -95,6 +95,11 @@ public class DubboApplication implements Application {
         }
     }
 
+    @Override
+    public String getNamespace() {
+        return "dubbo";
+    }
+
     private void _register(Class<?> clazz) {
         if (isConcreteService(clazz)) {
             registerClass(clazz);

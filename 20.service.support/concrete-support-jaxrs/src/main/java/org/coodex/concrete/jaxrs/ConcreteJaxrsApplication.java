@@ -249,4 +249,9 @@ public abstract class ConcreteJaxrsApplication
             super(th);
         }
     }
+
+    @Override
+    public String getNamespace() {
+        return "jaxrs";
+    }
 }

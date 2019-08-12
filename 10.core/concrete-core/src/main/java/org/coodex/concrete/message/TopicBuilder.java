@@ -27,6 +27,7 @@ import javassist.bytecode.annotation.StringMemberValue;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.util.AcceptableServiceLoader;
+import org.coodex.util.Singleton;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +45,12 @@ class TopicBuilder
     private final static Logger log = LoggerFactory.getLogger(TopicBuilder.class);
     private static final TopicPrototypeProvider defaultTopicPrototypeProvider
             = new DefaultTopicPrototypeProvider();
-    private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> providers =
-            new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider){};
+    private static Singleton<AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>> singletonProviders =
+            new Singleton<>(
+                    () -> new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider){}
+            );
+//    private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> providers =
+//            new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider){};
     private static SingletonMap<TopicKey, AbstractTopic> topics =
             new SingletonMap<>(new TopicBuilder());
     private AtomicLong index = new AtomicLong(0);
@@ -77,7 +82,7 @@ class TopicBuilder
     public AbstractTopic build(TopicKey key) {
         try {
             Class<? extends AbstractTopic> topicClass = getClass(key.topicType);
-            TopicPrototypeProvider provider = providers.getServiceInstance(topicClass);
+            TopicPrototypeProvider provider = singletonProviders.get().getServiceInstance(topicClass);
             if (provider == null) {
                 if (defaultTopicPrototypeProvider.accept(topicClass)) {
                     provider = defaultTopicPrototypeProvider;

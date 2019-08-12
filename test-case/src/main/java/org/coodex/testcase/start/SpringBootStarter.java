@@ -17,36 +17,18 @@
 package org.coodex.testcase.start;
 
 
-import org.coodex.concrete.amqp.AMQPConnectionConfig;
-import org.coodex.concrete.common.BeanProvider;
-import org.coodex.concrete.common.BeanServiceLoaderProvider;
-import org.coodex.concrete.core.intercept.ConcreteInterceptor;
-import org.coodex.concrete.core.intercept.RBACInterceptor;
-import org.coodex.concrete.jaxrs.logging.ServerLogger;
-import org.coodex.concrete.spring.ConcreteSpringConfiguration;
-import org.coodex.concrete.support.amqp.AMQPApplication;
+import org.coodex.concrete.spring.boot.EnableConcreteJAXRS;
 import org.coodex.concrete.support.jsr339.ConcreteJSR339Application;
 import org.coodex.concrete.support.websocket.CallerHackConfigurator;
 import org.coodex.concrete.support.websocket.ConcreteWebSocketApplication;
 import org.coodex.testcase.api.TestCase;
 import org.coodex.testcase.api.TestCase2;
-import org.coodex.testcase.api.TestCase3;
-import org.coodex.testcase.api.TestCase4;
-import org.coodex.util.Profile;
-import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
 import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.logging.LoggingFeature;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
-import org.glassfish.jersey.servlet.ServletProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 
 import javax.servlet.ServletContext;
@@ -56,14 +38,10 @@ import javax.servlet.ServletRegistration;
 import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpoint;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import java.io.IOException;
 
 @SpringBootApplication()
 @ImportResource("classpath:testcase.xml")
-@Import(ConcreteSpringConfiguration.class)
+@EnableConcreteJAXRS
 public class SpringBootStarter {
 
 //    @Bean
@@ -83,18 +61,6 @@ public class SpringBootStarter {
 //        return amqpApplication;
 //    }
 
-    @Bean
-    public ServletRegistrationBean jaxrsServlet() {
-        ServletContainer container = new ServletContainer();
-        //noinspection unchecked
-        ServletRegistrationBean registrationBean = new ServletRegistrationBean(
-                container, "/jaxrs/*");
-        registrationBean.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
-                JaxRSApplication.class.getName());
-        registrationBean.setName("demo");
-        registrationBean.setAsyncSupported(true);
-        return registrationBean;
-    }
 
     @Bean
     public ServletRegistrationBean webSocketServlet() {
@@ -134,10 +100,6 @@ public class SpringBootStarter {
     }
 
 
-    @Bean
-    public ConcreteInterceptor rbac(){
-        return new RBACInterceptor();
-    }
 
 //    @Bean
 //    public ConcreteInterceptor mocker() {
@@ -149,7 +111,7 @@ public class SpringBootStarter {
         public JaxRSApplication() {
             super();
             register(JacksonFeature.class);
-            registerPackage("org.coodex.**.api");
+            registerPackage();
         }
     }
 

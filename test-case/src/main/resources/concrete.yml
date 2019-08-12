@@ -1,3 +1,9 @@
+api:
+  packages: org.coodex.**.api
+
+interceptors:
+  rbac: true
+
 jaxrs:
   logger:
     level:

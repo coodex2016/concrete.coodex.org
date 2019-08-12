@@ -305,4 +305,8 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
     }
 
 
+    @Override
+    public String getNamespace() {
+        return "websocket";
+    }
 }

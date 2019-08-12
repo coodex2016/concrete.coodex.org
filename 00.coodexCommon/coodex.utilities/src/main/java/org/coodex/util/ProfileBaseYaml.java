@@ -99,16 +99,16 @@ public class ProfileBaseYaml extends Profile {
             return builder.toString();
         } else if (Collection.class.isAssignableFrom(type)) {
             boolean appendSP = false;
+            StringBuilder builder = new StringBuilder();
             for (Object el : (Collection) o) {
-                StringBuilder builder = new StringBuilder();
                 if (appendSP) {
                     builder.append(", ");
                 } else {
                     appendSP = true;
                 }
                 builder.append(toString(el));
-                return builder.toString();
             }
+            return builder.toString();
         }
         return o.toString();
     }

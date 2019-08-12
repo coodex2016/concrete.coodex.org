@@ -177,4 +177,9 @@ public class AMQPApplication extends OwnServiceProvider {
             channel = null;
         }
     }
+
+    @Override
+    public String getNamespace() {
+        return "amqp";
+    }
 }

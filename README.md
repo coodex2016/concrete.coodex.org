@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org/040)，多练
 
+## 2019-08-12
+
+- 增加基于spring-boot的jaxrs发布模块，提高发布模块的编写效率
+
 ## 2019-08-09
 
 - 限流部分重构，增加令牌桶机制

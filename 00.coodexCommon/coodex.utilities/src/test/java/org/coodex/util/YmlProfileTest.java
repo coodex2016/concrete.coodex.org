@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.support.websocket;
+package org.coodex.util;
 
-import org.coodex.concrete.api.Application;
-
-public class ConcreteWebSocketApplication extends ConcreteWebSocketEndPoint implements Application {
-    @Override
-    public void register(Class<?>... classes) {
-        super.registerClasses(classes);
-    }
-
-    @Override
-    public String getNamespace() {
-        return "websocket";
+public class YmlProfileTest {
+    public static void main(String[] args) {
+        Profile profile = Profile.get("a");
+        System.out.println(profile.getStrList("a"));
     }
 }

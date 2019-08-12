@@ -19,6 +19,7 @@ package org.coodex.config;
 import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
+import org.coodex.util.Singleton;
 
 public class Config {
 
@@ -31,20 +32,28 @@ public class Config {
 //            }
 //    );
 
-    private static ServiceLoader<Configuration> configurationServiceLoader =
-            new ServiceLoaderImpl<Configuration>(
-                    new ServiceLoaderImpl<DefaultConfigurationProvider>(new DefaultConfigurationProvider() {
+    private static Singleton<ServiceLoader<Configuration>> configurationServiceLoader =
+            new Singleton<ServiceLoader<Configuration>>(
+                    new Singleton.Builder<ServiceLoader<Configuration>>() {
                         @Override
-                        public Configuration get() {
-                            return new ConfigurationBaseProfile();
+                        public ServiceLoader<Configuration> build() {
+                            return new ServiceLoaderImpl<Configuration>(
+                                    new ServiceLoaderImpl<DefaultConfigurationProvider>(new DefaultConfigurationProvider() {
+                                        @Override
+                                        public Configuration get() {
+                                            return new ConfigurationBaseProfile();
+                                        }
+                                    }) {
+                                    }.get()
+                                            .get()) {
+                            };
                         }
-                    }) {
-                    }.get()
-                            .get()) {
-    };
+                    }
+            );
+
 
     public static Configuration getConfig() {
-        return configurationServiceLoader.get();
+        return configurationServiceLoader.get().get();
     }
 
     public static String get(String key, String... namespaces) {

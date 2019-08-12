@@ -36,8 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.coodex.concrete.common.ConcreteContext.runServiceWithContext;
-import static org.coodex.concrete.common.ConcreteHelper.foreachClassInPackages;
-import static org.coodex.concrete.common.ConcreteHelper.updatedMap;
+import static org.coodex.concrete.common.ConcreteHelper.*;
 import static org.coodex.concrete.common.ErrorCodes.SERVICE_ID_NOT_EXISTS;
 import static org.coodex.concrete.own.PackageHelper.analysisParameters;
 
@@ -73,7 +72,11 @@ public abstract class OwnServiceProvider implements Application {
     }
 
     public final void registerPackage(String... packages) {
-        foreachClassInPackages(this::registerClasses, packages);
+        if (packages == null || packages.length == 0) {
+            foreachClassInPackages(this::registerClasses, getApiPackages(getNamespace()));
+        } else {
+            foreachClassInPackages(this::registerClasses, packages);
+        }
 //        if (packages == null || packages.length == 0) {
 //            packages = ConcreteHelper.getApiPackages();
 //        }

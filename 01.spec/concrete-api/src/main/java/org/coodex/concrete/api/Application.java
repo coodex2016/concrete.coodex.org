@@ -20,4 +20,6 @@ public interface Application {
     void registerPackage(String... packages);
 
     void register(Class<?>... classes);
+
+    String getNamespace();
 }

@@ -28,16 +28,13 @@ import java.util.*;
  */
 public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set<ConcreteInterceptor>, InterceptorChain {
 
-    private static Comparator<ConcreteInterceptor> comparator = new Comparator<ConcreteInterceptor>() {
-        @Override
-        public int compare(ConcreteInterceptor o1, ConcreteInterceptor o2) {
-            if (o1 == o2) return 0;
-            if (o1 == null) return -1;
-            if (o2 == null) return 1;
-            return o1.getOrder() - o2.getOrder();
-        }
+    private static Comparator<ConcreteInterceptor> comparator = (o1, o2) -> {
+        if (o1 == o2) return 0;
+        if (o1 == null) return -1;
+        if (o2 == null) return 1;
+        return o1.getOrder() - o2.getOrder();
     };
-    private Set<ConcreteInterceptor> interceptors = new HashSet<ConcreteInterceptor>();
+    private Set<ConcreteInterceptor> interceptors = new HashSet<>();
 
     public SyncInterceptorChain() {
     }
@@ -65,7 +62,7 @@ public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set
     }
 
     private Queue<ConcreteSyncInterceptor> createQueue() {
-        Queue<ConcreteSyncInterceptor> queue = new LinkedList<ConcreteSyncInterceptor>();
+        Queue<ConcreteSyncInterceptor> queue = new LinkedList<>();
         ConcreteInterceptor[] interceptors = this.interceptors.toArray(new ConcreteInterceptor[0]);
         Arrays.sort(interceptors, comparator);
 

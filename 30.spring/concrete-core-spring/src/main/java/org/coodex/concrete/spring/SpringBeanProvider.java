@@ -17,10 +17,15 @@
 package org.coodex.concrete.spring;
 
 import org.coodex.concrete.common.AbstractBeanProvider;
+import org.coodex.concrete.core.intercept.ConcreteInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +33,8 @@ import java.util.Map;
  * Created by davidoff shen on 2016-09-02.
  */
 public class SpringBeanProvider extends AbstractBeanProvider implements ApplicationContextAware {
+    private final static Logger log = LoggerFactory.getLogger(SpringBeanProvider.class);
+
 
     private static ApplicationContext context = null;
 
@@ -49,7 +56,65 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
 
     @Override
     public <T> Map<String, T> getBeansOfType(Class<T> type) {
-        return (context == null) ? new HashMap<>() : context.getBeansOfType(type);
+        if (context == null) {
+            log.info("spring bean provider not initialized, {} not load from spring bean provider.", type.getName());
+            return new HashMap<>();
+        } else {
+            Map<String, T> map = new HashMap<>(context.getBeansOfType(type));
+            for (Class c : collectionBeanTypes()) {
+                //noinspection unchecked
+                if (c.isAssignableFrom(type)) {
+                    // 数组
+                    Class arrayClass = Array.newInstance(type, 0).getClass();
+                    //noinspection unchecked
+                    Map<String, Object> x = context.getBeansOfType(arrayClass);
+                    if (x != null && x.size() > 0) {
+                        int index = 0;
+                        for (Map.Entry<String, Object> entry : x.entrySet()) {
+                            if (entry.getValue() == null) continue;
+                            for (int l = 0, len = Array.getLength(entry.getValue()); l < len; l++) {
+                                String key = entry.getKey() + "_array_" + index;
+                                //noinspection unchecked
+                                map.put(key, (T) Array.get(entry.getValue(), l));
+                                index++;
+                            }
+                        }
+
+                        if (index > 0) {
+                            log.info("load {} {} bean(s) in array beans.", index, c.getName());
+                        }
+                    }
+
+                    // 集合
+                    Map<String, Collection> collectionBeans = context.getBeansOfType(Collection.class);
+                    for (Map.Entry<String, Collection> entry : collectionBeans.entrySet()) {
+                        int index = 0;
+                        if (entry.getValue() == null || entry.getValue().size() == 0) continue;
+                        for (Object o : entry.getValue()) {
+                            if (o == null) continue;
+                            //noinspection unchecked
+                            if (c.isAssignableFrom(o.getClass())) {
+                                String key = entry.getKey() + "_collection_" + index;
+                                //noinspection unchecked
+                                map.put(key, (T) o);
+                                index++;
+                            }
+                        }
+
+                        if (index > 0) {
+                            log.info("load {} {} bean(s) in collection beans.", index, c.getName());
+                        }
+                    }
+                }
+            }
+            return map;
+        }
+    }
+
+    protected Class[] collectionBeanTypes() {
+        return new Class[]{
+                ConcreteInterceptor.class
+        };
     }
 
 }

@@ -17,11 +17,24 @@
 package org.coodex.concrete.spring;
 
 import org.coodex.concrete.common.*;
+import org.coodex.concrete.core.intercept.*;
 import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.config.Config;
+import org.coodex.util.ServiceLoader;
+import org.coodex.util.ServiceLoaderImpl;
+import org.coodex.util.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 @Configuration
 @ComponentScan({
@@ -30,6 +43,11 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 })
 public class ConcreteSpringConfiguration {
 
+    private final static Logger log = LoggerFactory.getLogger(ConcreteSpringConfiguration.class);
+
+    private static Singleton<ServiceLoader<InterceptorLoader>> INTERCEPTOR_LOADER =
+            new Singleton<>(() -> new ServiceLoaderImpl<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
+            });
 
     @Bean
     public BeanProvider springBeanProvider() {
@@ -51,4 +69,31 @@ public class ConcreteSpringConfiguration {
         return SubjoinWrapper.getInstance();
     }
 
+    private static Map<String, Class<? extends ConcreteInterceptor>> getInterceptorSupportedMap() {
+        return new HashMap<String, Class<? extends ConcreteInterceptor>>() {{
+            put("rbac", RBACInterceptor.class);
+            put("limiting", LimitingInterceptor.class);
+            put("signature", SignatureInterceptor.class);
+            put("log", OperationLogInterceptor.class);
+            put("timing", ServiceTimingInterceptor.class);
+            put("beanValidation", BeanValidationInterceptor.class);
+        }};
+    }
+
+    @Bean
+    public Set<ConcreteInterceptor> interceptors() {
+        Set<ConcreteInterceptor> set = new HashSet<>();
+        for (Map.Entry<String, Class<? extends ConcreteInterceptor>> entry :
+                INTERCEPTOR_LOADER.get().get().getInterceptorSupportedMap().entrySet()) {
+
+            if (Config.getValue("interceptors." + entry.getKey(), false, "concrete", getAppSet())) {
+                try {
+                    set.add(entry.getValue().newInstance());
+                } catch (InstantiationException | IllegalAccessException e) {
+                    log.warn("load interceptor {}[{}] failed.", entry.getKey(), entry.getValue().getName());
+                }
+            }
+        }
+        return set;
+    }
 }
