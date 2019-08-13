@@ -39,7 +39,7 @@ public interface SomeService {
 ```
 
 ```java
-// 启用concrete jaxrs
+// 启用concrete amqp
 @EnableConcreteAMQP
 ```
 
