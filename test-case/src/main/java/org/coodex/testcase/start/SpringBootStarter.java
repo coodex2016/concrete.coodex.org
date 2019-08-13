@@ -41,7 +41,9 @@ import javax.websocket.server.ServerEndpoint;
 
 @SpringBootApplication()
 @ImportResource("classpath:testcase.xml")
-@EnableConcreteJAXRS
+@EnableConcreteJAXRS(
+        servicePackages = "org.coodex.**.api"
+)
 public class SpringBootStarter {
 
 //    @Bean

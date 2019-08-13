@@ -639,7 +639,7 @@ public class Common {
     }
 
     public static List<String> toArray(String str, String delim, List<String> v) {
-        if (str == null)
+        if (Common.isBlank(str))
             return v;
         StringTokenizer st = new StringTokenizer(str, delim, false);
         List<String> list = new ArrayList<String>();

@@ -26,9 +26,60 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org/040)，多练
 
+## 2019-08-13
+
+- 增加基于spring-boot的amqp发布模块，提高发布模块的编写效率
+
+```xml
+        <!-- 使用 amqp broker 发布concrete服务 -->
+        <dependency>
+            <groupId>org.coodex</groupId>
+            <artifactId>concrete-spring-boot-amqp</artifactId>
+        </dependency>
+```
+
+```java
+// 启用concrete jaxrs
+@EnableConcreteAMQP
+```
+
+- @EnableConcreteAMQP
+    - servicePackages: String[], 扫描concreteServices的包，默认使用`Configuration`命名空间`concrete`/`amqp`/`当前appSet`下的`api.packages`，如果为空，则使用`Configuration`命名空间`concrete`/`当前appSet`下的`api.packages`
+    - classes: Class&lt;?>[], 额外需要注册的类，默认使用`Configuration`命名空间`concrete`/`amqp`/`当前appSet`下的`amqp.classes`
+    - location: String, amqp broker的uri，默认使用`Configuration`命名空间`concrete`/`amqp`/`当前appSet`下的`amqp.location`
+    - host: String, amqp broker的host，默认使用`Configuration`命名空间`concrete`/`amqp`/`当前appSet`下的`amqp.host`
+    - port: int, amqp broker的port，默认使用`Configuration`命名空间`concrete`/`amqp`/`当前appSet`下的`amqp.port`
+    - virtualHost: String, amqp broker的virtualHost，默认使用`Configuration`命名空间`concrete`/`amqp`/`当前appSet`下的`amqp.virtualHost`
+    - username: String, 登录amqp broker的username，默认使用`Configuration`命名空间`concrete`/`amqp`/`当前appSet`下的`amqp.username`
+    - password: String, 登录amqp broker的password，默认使用`Configuration`命名空间`concrete`/`amqp`/`当前appSet`下的`amqp.password`
+    - exchangeName: String, 发布到amqp broker的交换机名称，默认使用`Configuration`命名空间`concrete`/`amqp`/`当前appSet`下的`amqp.exchangeName`
+    - queueName: String, 发布到amqp broker使用的队列名，默认使用`Configuration`命名空间`concrete`/`amqp`/`当前appSet`下的`amqp.queueName`
+    - ttl: long, 消息的ttl，单位为毫秒，默认使用`Configuration`命名空间`concrete`/`amqp`/`当前appSet`下的`amqp.ttl`
+
+
 ## 2019-08-12
 
 - 增加基于spring-boot的jaxrs发布模块，提高发布模块的编写效率
+
+```xml
+        <!-- 使用jsr339/jaxrs 2.0 发布concrete服务 -->
+        <dependency>
+            <groupId>org.coodex</groupId>
+            <artifactId>concrete-spring-boot-jaxrs</artifactId>
+        </dependency>
+```
+
+```java
+// 启用concrete jaxrs
+@EnableConcreteJAXRS
+```
+
+- @EnableConcreteJAXRS
+    - servicePackages: String[], 扫描concreteServices的包，默认使用`Configuration`命名空间`concrete`/`jaxrs`/`当前appSet`下的`api.packages`，如果为空，则使用`Configuration`命名空间`concrete`/`当前appSet`下的`api.packages`
+    - classes: Class&lt;?>[], 额外需要注册的类，默认使用`Configuration`命名空间`concrete`/`jaxrs`/`当前appSet`下的`jaxrs.classes`
+    - application: Class&lt;? extends ConcreteJSR339Application>，用于发布jaxrs服务的Application类，默认`org.coodex.concrete.spring.boot.Jsr339Application`
+    - servletMappingUrls: String[], servlet的Mapping，默认`Configuration`命名空间`concrete`/`jaxrs`/`当前appSet`下的`jaxrs.servletMapping`，如果为空则为`/jaxrs/*`
+
 
 ## 2019-08-09
 

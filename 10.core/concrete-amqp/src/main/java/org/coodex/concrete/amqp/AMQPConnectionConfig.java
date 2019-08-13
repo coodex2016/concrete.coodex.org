@@ -16,6 +16,8 @@
 
 package org.coodex.concrete.amqp;
 
+import java.util.Objects;
+
 public class AMQPConnectionConfig {
     private String uri;
     private String username;
@@ -80,12 +82,12 @@ public class AMQPConnectionConfig {
 
         AMQPConnectionConfig that = (AMQPConnectionConfig) o;
 
-        if (uri != null ? !uri.equals(that.uri) : that.uri != null) return false;
-        if (username != null ? !username.equals(that.username) : that.username != null) return false;
-        if (password != null ? !password.equals(that.password) : that.password != null) return false;
-        if (port != null ? !port.equals(that.port) : that.port != null) return false;
-        if (host != null ? !host.equals(that.host) : that.host != null) return false;
-        return virtualHost != null ? virtualHost.equals(that.virtualHost) : that.virtualHost == null;
+        if (!Objects.equals(uri, that.uri)) return false;
+        if (!Objects.equals(username, that.username)) return false;
+        if (!Objects.equals(password, that.password)) return false;
+        if (!Objects.equals(port, that.port)) return false;
+        if (!Objects.equals(host, that.host)) return false;
+        return Objects.equals(virtualHost, that.virtualHost);
 
     }
 

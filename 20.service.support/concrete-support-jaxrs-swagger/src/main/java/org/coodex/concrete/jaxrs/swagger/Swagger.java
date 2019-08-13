@@ -16,10 +16,10 @@
 
 package org.coodex.concrete.jaxrs.swagger;
 
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.DefaultJaxrsClassGetter;
 import org.coodex.concrete.jaxrs.Polling;
 import org.coodex.concrete.jaxrs.ServiceRegisteredListener;
-import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 import org.coodex.util.SingletonMap;
@@ -101,7 +101,9 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
 
     @Override
     public Class[] getClasses() {
-        return Common.toBool(Config.get("swagger", "concrete"), true) ? new Class[]{Swagger.class} : new Class[0];
+        return Common.toBool(ConcreteHelper.getString("swagger", null, "swagger"), true) ?
+                new Class[]{Swagger.class} :
+                new Class[0];
     }
 
     @Override

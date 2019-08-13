@@ -17,7 +17,6 @@
 package org.coodex.concrete.spring.boot;
 
 import org.coodex.concrete.spring.ConcreteSpringConfigurationBeanDefinitionRegistrar;
-import org.coodex.concrete.support.jsr339.ConcreteJSR339Application;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -26,16 +25,16 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Import({
         ConcreteSpringConfigurationBeanDefinitionRegistrar.class,
-        ConcreteJAXRSBeanDefinitionRegistrar.class
+        ConcreteAMQPBeanDefinitionRegistrar.class
 })
 @Documented
-public @interface EnableConcreteJAXRS {
+public @interface EnableConcreteAMQP {
 
     /**
      * 扫描concreteServices的包
      * <p>
-     * 默认使用Configuration命名空间 concrete/jaxrs/当前appSet 下的 api.packages，
-     * 如果为空，则使用Configuration命名空间 concrete/当前appSet 下的api.packages
+     * 默认使用Configuration命名空间 concrete/amqp/当前appSet 下的 api.packages，
+     * 如果为空，则使用Configuration命名空间 concrete/当前appSet 下的 api.packages
      *
      * @return 扫描concreteServices的包
      */
@@ -44,22 +43,27 @@ public @interface EnableConcreteJAXRS {
     /**
      * 额外需要注册的类
      * <p>
-     * 默认使用Configuration命名空间 concrete/jaxrs/当前appSet 下的jaxrs.classes
+     * 默认使用Configuration命名空间 concrete/amqp/当前appSet 下的amqp.classes
      *
      * @return 额外需要注册的类
      */
     Class<?>[] classes() default {};
 
-    /**
-     * @return 用于发布jaxrs服务的Application类
-     */
-    Class<? extends ConcreteJSR339Application> application() default Jsr339Application.class;
+    String location() default "";
 
-    /**
-     * 默认使用Configuration命名空间 concrete/jaxrs/当前appSet 下的 jaxrs.servletMapping，
-     * 如果为空则为`/jaxrs/*`
-     *
-     * @return servletMappingUrls
-     */
-    String[] servletMappingUrls() default {};
+    String host() default "";
+
+    int port() default -1;
+
+    String virtualHost() default "";
+
+    String username() default "";
+
+    String password() default "";
+
+    String exchangeName() default "";
+
+    String queueName() default "";
+
+    long ttl() default -1L;
 }

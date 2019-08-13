@@ -29,13 +29,8 @@ import static org.coodex.concrete.amqp.AMQPConstants.DEFAULT_EXCHANGE_NAME;
 public class AMQPHelper {
 
     private static SingletonMap<Class, AMQPModule> modules =
-            new SingletonMap<Class, AMQPModule>(
-                    new SingletonMap.Builder<Class, AMQPModule>() {
-                        @Override
-                        public AMQPModule build(Class key) {
-                            return new AMQPModule(key);
-                        }
-                    }
+            new SingletonMap<>(
+                    AMQPModule::new
             );
 
 

@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.spring.boot;
+package test.org.coodex.util;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-@EnableConcreteJAXRS
-public class ConcreteJsr339Starter {
-
-    public static void main(String[] args) {
-        SpringApplication.run(ConcreteJsr339Starter.class, args);
-    }
+public class SpringTest {
 
 }

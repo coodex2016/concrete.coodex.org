@@ -17,16 +17,9 @@
 package org.coodex.concrete.spring.boot;
 
 import org.coodex.concrete.support.jsr339.ConcreteJSR339Application;
-import org.coodex.config.Config;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.coodex.concrete.common.ConcreteHelper.getApiPackages;
 
 public class Jsr339Application extends ConcreteJSR339Application {
 
@@ -34,24 +27,8 @@ public class Jsr339Application extends ConcreteJSR339Application {
 
     public Jsr339Application() {
         register(JacksonFeature.class);
-        register(toRegistered().toArray(new Class[0]));
-        registerPackage(toRegisteredPackages().toArray(new String[0]));
-    }
-
-    protected Set<Class> toRegistered() {
-        Set<Class> classes = new HashSet<>();
-        for (String str : Config.getArray("concrete.jaxrs.classes", ",", new String[0], "concrete", "jaxrs")) {
-            try {
-                classes.add(Class.forName(str));
-            } catch (ClassNotFoundException e) {
-                log.info("registered failed. class not found: {}", str);
-            }
-        }
-        return classes;
-    }
-
-    protected Set<String> toRegisteredPackages() {
-        return new HashSet<>(Arrays.asList(getApiPackages(getNamespace())));
+        register(ConcreteJAXRSBeanDefinitionRegistrar.getClasses());
+        registerPackage(ConcreteJAXRSBeanDefinitionRegistrar.getApiPackages());
     }
 
 }

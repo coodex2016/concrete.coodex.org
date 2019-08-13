@@ -53,22 +53,19 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(AMQPInvoker.class);
     private final Level level;
-    private static SingletonMap<AMQPDestination, Facade> facadeSingletonMap = new SingletonMap<AMQPDestination, Facade>(
-            new SingletonMap.Builder<AMQPDestination, Facade>() {
-                @Override
-                public Facade build(AMQPDestination key) {
-                    try {
-                        return new Facade(getConnection(key), key.getExchangeName());
-                    } catch (RuntimeException re) {
-                        throw re;
-                    } catch (Throwable th) {
-                        throw new RuntimeException(th.getLocalizedMessage(), th);
-                    }
+    private static SingletonMap<AMQPDestination, Facade> facadeSingletonMap = new SingletonMap<>(
+            key -> {
+                try {
+                    return new Facade(getConnection(key), key.getExchangeName());
+                } catch (RuntimeException re) {
+                    throw re;
+                } catch (Throwable th) {
+                    throw new RuntimeException(th.getLocalizedMessage(), th);
                 }
             }
     );
 
-    public AMQPInvoker(AMQPDestination destination) {
+    AMQPInvoker(AMQPDestination destination) {
         super(destination);
         level = Level.parse(
                 Config.getValue("client", "DEBUG", "amqp.logger.level", getAppSet())
@@ -125,7 +122,7 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
                 "concrete-amqp-client-" + ConcreteHelper.VERSION);
         // 2 send
         facadeSingletonMap.get((AMQPDestination) getDestination())
-                .send(serializer.toJson(requestPackage));
+                .send(getSerializer().toJson(requestPackage));
     }
 
     @Override
@@ -152,7 +149,7 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
             channel.queueBind(queueName, this.exchangeName, ROUTE_KEY_RESPONSE + clientId);
             channel.basicConsume(queueName, true, new DefaultConsumer(channel) {
                 @Override
-                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
                     log.info("consumerTag: {}, envelope: {}", consumerTag, envelope.getRoutingKey());
                     OwnRXMessageListener.getInstance().onMessage(new String(body, StandardCharsets.UTF_8));
                 }

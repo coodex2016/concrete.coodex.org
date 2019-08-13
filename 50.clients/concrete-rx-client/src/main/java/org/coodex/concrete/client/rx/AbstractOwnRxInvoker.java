@@ -46,8 +46,11 @@ import static org.coodex.concrete.own.PackageHelper.buildRequest;
 public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractOwnRxInvoker.class);
-    protected static JSONSerializer serializer = JSONSerializerFactory.getInstance();
+//    protected static JSONSerializer serializer = JSONSerializerFactory.getInstance();
     private static TimeLimitedMap<String, CallBack> callbackMap = new TimeLimitedMap<>();
+    protected static JSONSerializer getSerializer(){
+        return JSONSerializerFactory.getInstance();
+    }
 
     public AbstractOwnRxInvoker(Destination destination) {
         super(destination);
@@ -55,7 +58,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
     private static ResponsePackage<Object> parse(String reponseMessage) {
         try {
-            return serializer.parse(reponseMessage,
+            return getSerializer().parse(reponseMessage,
                     new GenericTypeHelper.GenericType<ResponsePackage<Object>>() {
                     }.getType());
         } catch (Throwable throwable) {
@@ -96,7 +99,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
                     completed = true;
                 } else {
                     Object result =
-                            serializer.parse(responsePackage.getContent(),
+                            getSerializer().parse(responsePackage.getContent(),
                                     GenericTypeHelper.toReference(
                                             callBack.getContext().getDeclaringMethod().getGenericReturnType(),
                                             callBack.getContext().getDeclaringClass()));
@@ -111,7 +114,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
             }
         } else {
             try {
-                throwable = new ClientException(serializer.parse(
+                throwable = new ClientException(getSerializer().parse(
                         responsePackage.getContent(),
                         ErrorInfo.class
                 ));
