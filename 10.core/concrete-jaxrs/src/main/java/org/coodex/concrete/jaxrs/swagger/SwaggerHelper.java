@@ -20,6 +20,7 @@ import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.examples.Example;
+import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.*;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -33,10 +34,10 @@ import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
+import org.coodex.config.Config;
 import org.coodex.mock.Mocker;
 import org.coodex.util.PojoInfo;
 import org.coodex.util.PojoProperty;
-import org.coodex.util.Profile;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
@@ -48,7 +49,6 @@ import static org.coodex.util.GenericTypeHelper.toReference;
 
 public class SwaggerHelper {
 
-    private static Profile profile = Profile.get("concrete-swagger");
     private static ThreadLocal<Map<String, Schema>> definitions = new ThreadLocal<>();
     private static ThreadLocal<Set<String>> readyForSchema = new ThreadLocal<>();
 
@@ -56,9 +56,18 @@ public class SwaggerHelper {
         readyForSchema.remove();
         OpenAPI openAPI = new OpenAPI()
                 .info(new Info()
-                        .title(profile.getString("title", "concrete"))
-                        .description(profile.getString("description"))
-                        .version(profile.getString("version", "1.0.0")))
+                        .title(Config.getValue("swagger.title",
+                                "concrete-swagger",
+                                "concrete", "swagger"))
+                        .description(Config.getValue("swagger.description",
+                                "Thanks for choosing concrete",
+                                "concrete", "swagger"))
+                        .version(Config.getValue("swagger.version", "1.0.0", "concrete", "swagger"))
+                        .contact(new Contact()
+                                .name(Config.getValue("swagger.contact.name", "concrete", "concrete", "swagger"))
+                                .url(Config.getValue("swagger.contact.url", "https://concrete.coodex.org", "concrete", "swagger"))
+                        )
+                )
                 .addServersItem(new Server()
                         .url(url))
                 .paths(new Paths());
