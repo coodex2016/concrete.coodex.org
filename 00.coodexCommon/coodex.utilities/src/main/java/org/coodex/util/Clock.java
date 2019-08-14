@@ -40,7 +40,8 @@ public final class Clock {
     public static final Float getMagnification() {
         return Config.getValue(
                 KEY_MAGNIFICATION,
-                Common.to(System.getProperty(KEY_MAGNIFICATION), 1.0f));
+                Common.to(System.getProperty(KEY_MAGNIFICATION), 1.0f),
+                "clock");
     }
 
 

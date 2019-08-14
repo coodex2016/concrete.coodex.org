@@ -70,12 +70,12 @@ public class RemoteClockAgent extends AbstractClockAgent {
                 }
 
                 private String getHost() {
-                    String host = Config.get(KEY_REMOTE_HOST);
+                    String host = Config.get(KEY_REMOTE_HOST,"clock");
                     return host == null ? System.getProperty(KEY_REMOTE_HOST) : host;
                 }
 
                 private int getPort() {
-                    String port = Config.get(KEY_REMOTE_PORT);
+                    String port = Config.get(KEY_REMOTE_PORT, "clock");
                     if (port != null)
                         return Common.toInt(port, PORT);
                     else

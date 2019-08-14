@@ -36,7 +36,7 @@ public class DefaultClockAgent extends AbstractClockAgent {
     }
 
     private static long getTheBaseLine() {
-        Long l = toBaseLine(Config.get(KEY_BASELINE));
+        Long l = toBaseLine(Config.get(KEY_BASELINE, "clock"));
         if (l == null) {
             l = toBaseLine(System.getProperty(KEY_BASELINE));
         }
