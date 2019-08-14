@@ -18,10 +18,13 @@ package org.coodex.concrete.common.count;
 
 import javassist.*;
 import javassist.bytecode.SignatureAttribute;
+import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.config.Config;
 import org.coodex.count.*;
 import org.coodex.util.Clock;
 import org.coodex.util.ServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
+import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +34,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,6 +49,13 @@ public class CountFacadeProvider implements CountFacade {
 //    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE
 //            = ExecutorsHelper.newScheduledThreadPool(ConcreteHelper.getProfile().getInt("counter.thread.pool.size", 10));
 
+    // 为啥怎么干???
+    public static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE = new Singleton<>(
+            () -> ExecutorsHelper.newScheduledThreadPool(
+                    Config.getValue("counter.thread.pool.size",10,"counter"),
+                    "counter"
+            )
+    );
 
     private final static Logger log = LoggerFactory.getLogger(CountFacadeProvider.class);
     private final static AtomicInteger atomicInteger = new AtomicInteger(0);
@@ -117,7 +128,7 @@ public class CountFacadeProvider implements CountFacade {
         spiConstructor.setBody("{super();}");
 
         CtMethod ctMethod = CtMethod.make(
-                String.format("protected %s getThreadPool(){ return %s.SCHEDULED_EXECUTOR_SERVICE;}",
+                String.format("protected %s getThreadPool(){ return %s.SCHEDULED_EXECUTOR_SERVICE.get();}",
                         Executor.class.getName(),
                         CountFacadeProvider.class.getName()),
                 newClass);

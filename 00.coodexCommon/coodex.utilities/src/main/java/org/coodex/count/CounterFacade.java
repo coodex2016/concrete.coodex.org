@@ -19,6 +19,9 @@ package org.coodex.count;
 import org.coodex.util.ServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * Created by davidoff shen on 2017-04-18.
  */
@@ -35,4 +38,30 @@ public class CounterFacade {
     public static <T extends Countable> void count(T value) {
         COUNTER_FACTORY.get().count(value);
     }
+
+    /**
+     * 扔一堆数进去计算
+     *
+     * @param value
+     * @param <T>
+     */
+    public static <T extends Countable> void count(T... value) {
+//        COUNTER_FACTORY.get().count(value);
+        count(Arrays.asList(value));
+    }
+
+    /**
+     * 扔一堆数进去计算
+     *
+     * @param value
+     * @param <T>
+     */
+    public static <T extends Countable> void count(Collection<T> value) {
+//        COUNTER_FACTORY.get().count(value);
+        for (T t : value) {
+            COUNTER_FACTORY.get().count(t);
+        }
+    }
+
+
 }
