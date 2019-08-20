@@ -26,7 +26,10 @@ public class ExecutorsTest {
 
     public static void main(String[] args) {
         final AtomicInteger integer = new AtomicInteger(0);
-        ExecutorService executorService = ExecutorsHelper.newFixedThreadPool(5,"abab");
+        ExecutorService executorService = ExecutorsHelper.newPriorityThreadPool(
+                0,20,980,"test"
+        );
+//        ExecutorService executorService = ExecutorsHelper.newFixedThreadPool(5,"abab");
 ////            @Override
 ////            public Thread newThread(Runnable r) {
 ////                SecurityManager s = System.getSecurityManager();
@@ -48,6 +51,11 @@ public class ExecutorsTest {
                 @Override
                 public void run() {
                     System.out.println(Thread.currentThread().getName());
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
 

@@ -26,6 +26,16 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-08-20
+
+- coodex-utilities: 修复ExecutorsHelper描述不符的缺陷
+- concrete-core: 线程池配置项作用调整，并新增一个配置项
+  - executors.corePoolSize: 核心线程数，既最低水位线
+  - executors.maximumPoolSize: 最大线程数
+  - executors.maxQueueSize: 等待队列的最大数量
+  - executors同一时刻的最大承载量为 maxQueueSize + maximumPoolSize
+
+
 ## 2019-08-13
 
 - 增加基于spring-boot的amqp发布模块，提高发布模块的编写效率

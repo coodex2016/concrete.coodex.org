@@ -100,8 +100,9 @@ public class ConcreteHelper {
                     if (Common.isBlank(aliasTo)) {
                         return ExecutorsHelper.newPriorityThreadPool(
                                 Config.getValue("executor.corePoolSize", 0, key, getAppSet()),
-                                Config.getValue("executor.maximumPoolSize", Integer.MAX_VALUE, key, getAppSet()),
-                                Config.getValue("executor.keepAliveTime", 60, key, getAppSet()),
+                                Config.getValue("executor.maximumPoolSize", 1024, key, getAppSet()),
+                                Config.getValue("executor.maxQueueSize", Integer.MAX_VALUE - 8, key, getAppSet()),
+                                Config.getValue("executor.keepAliveTime", 60L, key, getAppSet()),
                                 key + ".executor"
                         );
                     } else {
