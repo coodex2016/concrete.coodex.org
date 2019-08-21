@@ -409,7 +409,11 @@ public class CoodexMockerProvider implements MockerProvider {
                             Enhancer enhancer = new Enhancer();
                             enhancer.setSuperclass(pojoInfo.getRowType());
                             enhancer.setCallback(mockInvocationHandler);
-                            instance = enhancer.create();
+                            try {
+                                instance = enhancer.create();
+                            } catch (IllegalArgumentException e) {
+                                throw new MockException("mock " + pojoInfo.getRowType().getName() + " failed: " + e.getLocalizedMessage(), e);
+                            }
                             for (Field field : instance.getClass().getFields()) {
                                 if (mocked.containsKey(field.getName())) {
                                     field.setAccessible(true);
