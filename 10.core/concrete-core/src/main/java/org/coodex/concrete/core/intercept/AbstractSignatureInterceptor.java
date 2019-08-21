@@ -21,13 +21,13 @@ import org.apache.commons.codec.binary.Base64;
 import org.coodex.concrete.api.Signable;
 import org.coodex.concrete.api.pojo.Signature;
 import org.coodex.concrete.client.ClientSideContext;
-import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.modules.AbstractParam;
 import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.concrete.core.intercept.annotations.ClientSide;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
-import org.coodex.concrete.core.signature.ClientKeyIdGetter;
+import org.coodex.concrete.core.signature.Client4Elements;
+import org.coodex.concrete.core.signature.ClientKeyIdAndAlgGetter;
 import org.coodex.concrete.core.signature.SignUtil;
 import org.coodex.config.Config;
 import org.coodex.util.*;
@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
+import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.concrete.core.signature.SignUtil.*;
 
@@ -54,12 +55,39 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractSignatureInterceptor.class);
 
-    private static final ServiceLoader<ClientKeyIdGetter> CLIENT_KEY_ID_GETTER = new ServiceLoaderImpl<ClientKeyIdGetter>(
-            new ClientKeyIdGetter() {
-                @Override
-                public String getKeyId(String paperName, String propertyKeyId, Destination destination) {
-                    return null;
+    private static final ServiceLoader<ClientKeyIdAndAlgGetter> CLIENT_KEY_ID_GETTER = new ServiceLoaderImpl<ClientKeyIdAndAlgGetter>(
+            (paperName, propertyKeyId, destination) -> {
+                String s = Config.get("signature." + propertyKeyId, TAG_CLIENT, destination.getIdentify(), paperName, getAppSet());
+                if (s == null) {
+                    s = Config.get(propertyKeyId, TAG_CLIENT, destination.getIdentify(), getAppSet());
                 }
+                // 兼容之前的方式
+                if (s == null) {
+                    s = SignUtil.getString(propertyKeyId, paperName, null);
+                    if (s != null) {
+                        log.warn("get client key id from namespace[{},{}] is deprecated. set in [{}, {}]",
+                                TAG_SIGNATRUE, destination.getIdentify(),
+                                TAG_CLIENT, destination.getIdentify());
+                    }
+                }
+                return s;
+            }
+    ) {
+    };
+
+    private static final ServiceLoader<Client4Elements> CLIENT_4_ELEMENTS = new ServiceLoaderImpl<Client4Elements>(
+            (module, key) -> {
+                String s = Config.get(key, TAG_CLIENT, module);
+                if (s == null) {
+                    s = Config.get(key, TAG_SIGNATRUE, module);
+                    if (s != null) {
+                        log.warn("get client signature elements[{}] from [{}, {}] is deprecated. use [{}, {}] plz.",
+                                key,
+                                TAG_SIGNATRUE, module,
+                                TAG_CLIENT, module);
+                    }
+                }
+                return s;
             }
     ) {
     };
@@ -294,14 +322,18 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
 
     private void clientSide_Sign(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
+
         // 0 签名
         Map<String, Object> content = buildContent(
                 context, joinPoint.getArguments());
 
         // keyId
         String keyId = putKeyField(content, KEY_FIELD_KEY_ID,
-                // TODO ????? 怎么改？？
-                SignUtil.getString(KEY_FIELD_KEY_ID, howToSign.getPaperName(), null),
+                CLIENT_KEY_ID_GETTER.get().getValue(
+                        howToSign.getPaperName(),
+                        getPropertyName(KEY_FIELD_KEY_ID),
+                        ((ClientSideContext) getServiceContext()).getDestination()
+                ),
                 context, joinPoint);
 
         // noise
@@ -311,7 +343,11 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
         //algorithm
         String algorithm = putKeyField(content, KEY_FIELD_ALGORITHM,
-                SignUtil.getString(KEY_FIELD_ALGORITHM, howToSign.getPaperName(), null),
+                CLIENT_KEY_ID_GETTER.get().getValue(
+                        howToSign.getPaperName(),
+                        getPropertyName(KEY_FIELD_ALGORITHM),
+                        ((ClientSideContext) getServiceContext()).getDestination()
+                ),
                 context, joinPoint);
         if (algorithm == null)
             algorithm = howToSign.getAlgorithm();
@@ -444,13 +480,16 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
                 if (s == null) {
                     s = Config.getValue("property." + propertyName, propertyName, TAG_SIGNATRUE, getAppSet());
                     if (!propertyName.equals(s)) {
-                        log.warn("property.{} deprecated. use signature.property.{} plz.", propertyName, propertyName);
+                        log.warn("property.{} is deprecated. use signature.property.{} plz.", propertyName, propertyName);
                     }
                 }
-                return s;
+                return s == null ? propertyName : s;
             } else {
-                // TODO
-                return "";
+                String s = CLIENT_4_ELEMENTS.get().getElementsName(module, "signature.property." + propertyName);
+                if (s == null) {
+                    s = CLIENT_4_ELEMENTS.get().getElementsName(module, "property." + propertyName);
+                }
+                return s == null ? propertyName : s;
             }
         }
 

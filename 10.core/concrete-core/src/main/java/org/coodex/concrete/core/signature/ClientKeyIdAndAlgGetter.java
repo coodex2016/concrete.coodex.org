@@ -18,6 +18,6 @@ package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.client.Destination;
 
-public interface ClientKeyIdGetter {
-    String getKeyId(String paperName, String propertyKeyId, Destination destination);
+public interface ClientKeyIdAndAlgGetter {
+    String getValue(String paperName, String propertyKeyId, Destination destination);
 }

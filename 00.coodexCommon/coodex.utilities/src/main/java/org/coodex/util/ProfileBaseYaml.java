@@ -69,6 +69,7 @@ public class ProfileBaseYaml extends Profile {
     }
 
     private void map(String prefix, Map<Object, Object> map) {
+        if (map == null) return;
         for (Map.Entry<Object, Object> entry : map.entrySet()) {
             String key = prefix == null ? entry.getKey().toString() : (prefix + "." + entry.getKey().toString());
             Object value = entry.getValue();

@@ -26,6 +26,19 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-08-21
+
+- SingletonMap增加getNullKeyOnce接口，用以处理key为null是的key转化；增加StringKeySingletonMap，默认nullKey转为"nullKey_" + uuid
+- AcceptableServiceLoader.getServiceInstance和getServiceInstances更名为select和selectAll
+- signautre拦截器重构：
+  - 痛点：
+    - 乱
+  - 方案：
+    - [x] Server端使用Config来重载四个必要属性名，命名空间signature/appSet下的signature.property.keyId|noise|sign|algorithm，为兼容现行版本，也支持property.keyId|noise|sign|algorithm，但会有warn提示
+    - [x] 原KeyStore机制作废，使用ASPI机制重新设计，原机制依然兼容，提示警告
+    - [x] client端默认使用Config来重载四个必要属性名，默认通过命名空间client/module下的signature.property.*获取，次之property.*，同时兼容原signature/module下的property.*，提示警告。可通过实现Client4Elements进行扩展；
+    - [x] client端获取keyId、algorithm的方式改为SPI，默认client/module下的signature.*获取，兼容原signature/module下的*获取，提示警告，可通过实现ClientKeyIdAndAlgGetter进行扩展
+
 ## 2019-08-20
 
 - coodex-utilities: 修复ExecutorsHelper描述不符的缺陷

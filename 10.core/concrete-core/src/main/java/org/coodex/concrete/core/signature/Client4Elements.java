@@ -18,5 +18,5 @@ package org.coodex.concrete.core.signature;
 
 public interface Client4Elements {
 
-    String getElementsName(String key);
+    String getElementsName(String module, String key);
 }
