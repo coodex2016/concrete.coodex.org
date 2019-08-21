@@ -602,7 +602,7 @@ public class Common {
             //noinspection unchecked
             return (T) toArray(str, ",", (String[]) value);
         }
-        StringConvertWithDefaultValue defaultValue = converterServiceLoader.get().getServiceInstance(cls);
+        StringConvertWithDefaultValue defaultValue = converterServiceLoader.get().select(cls);
         if (defaultValue == null) {
             throw new RuntimeException("String to " + cls + " is not supported.");
         }

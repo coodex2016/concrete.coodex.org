@@ -16,59 +16,23 @@
 
 package org.coodex.concrete.core.signature;
 
-import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.ErrorCodes;
-import org.coodex.concrete.common.IF;
-import org.coodex.util.Common;
+import org.coodex.concrete.common.*;
+import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.DigestHelper;
-import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
 
 import java.util.Arrays;
-
-import static org.coodex.concrete.core.signature.SignUtil.getString;
 
 /**
  * Created by davidoff shen on 2017-04-24.
  */
 public class HmacPen extends AbstractIronPen {
 
-    private static final HmacKeyStore DEFAULT_KEY_STORE = new HmacKeyStore() {
-        /**
-         * 优先级
-         * hmacKey.paperName.keyId
-         * hmacKey.paperName
-         * hmacKey.keyId
-         * hmacKey
-         *
-         * @param paperName
-         * @param keyId
-         * @return
-         */
-        @Override
-        public byte[] getHmacKey(String paperName, String keyId) {
-            String s = getHmacKeyStr(paperName, keyId);
-            return s == null ? null : s.getBytes();
-        }
 
-        private String getHmacKeyStr(String paperName, String keyId) {
-            if (Common.isBlank(keyId))
-                return getString("hmacKey", paperName, null);
-            String key = null;
-            if (!Common.isBlank(paperName)) {
-                key = getString("hmacKey." + paperName + "." + keyId, null, null);
-                if (key == null)
-                    key = getString("hmacKey." + paperName, null, null);
-            }
-            if (key == null)
-                key = getString("hmacKey", keyId, null);
-
-            return key == null ? getString("hmacKey", null, null) : key;
-        }
-    };
-    private static final ServiceLoader<HmacKeyStore> HMAC_KEY_STORE_PROVIDERS = new ServiceLoaderImpl<HmacKeyStore>(DEFAULT_KEY_STORE) {
-    };
-
+    private static final AcceptableServiceLoader<ServiceContext, HMAC_KeyStore> HMAC_KEY_STORE_PROVIDERS =
+            new AcceptableServiceLoader<ServiceContext, HMAC_KeyStore>(
+                    new HMAC_KeyStoreDefaultImpl()
+            ) {
+            };
 
     HmacPen(String paperName) {
         super(paperName);
@@ -76,7 +40,9 @@ public class HmacPen extends AbstractIronPen {
 
 
     private byte[] getHmacKey(String keyId) {
-        return HMAC_KEY_STORE_PROVIDERS.get().getHmacKey(paperName, keyId);
+        return HMAC_KEY_STORE_PROVIDERS
+                .select(ConcreteContext.getServiceContext())
+                .getHmacKey(paperName, keyId);
     }
 
     @Override

@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.coodex.concrete.core.signature.RSA_KeyStoreDefaultImpl.*;
 import static org.coodex.concrete.core.signature.SignUtil.getString;
 
 /**
@@ -35,6 +36,7 @@ import static org.coodex.concrete.core.signature.SignUtil.getString;
  * <p>
  * Created by davidoff shen on 2017-04-24.
  */
+@Deprecated
 public class RSAKeyStoreDefaultImpl implements RSAKeyStore {
 
 
@@ -72,69 +74,11 @@ public class RSAKeyStoreDefaultImpl implements RSAKeyStore {
 
     }
 
-    private List<String> getResourceList(String paperName, String keyId, String type) {
-        List<String> list = new ArrayList<String>();
-        boolean paperNameIsBlank = Common.isBlank(paperName), keyIdIsBlank = Common.isBlank(keyId);
-        if (!keyIdIsBlank) {
-            if (!paperNameIsBlank) {
-                list.add(paperName + "." + keyId + "." + type);
-            }
-            list.add(keyId + "." + type);
-        }
-        if (!paperNameIsBlank) {
-            list.add(paperName + "." + type);
-        }
-        return list;
-    }
 
-    private List<String> getConfigKeys(String paperName, String keyId, String type) {
-        List<String> list = new ArrayList<String>();
-        boolean paperNameIsBlank = Common.isBlank(paperName), keyIdIsBlank = Common.isBlank(keyId);
-        if (!paperNameIsBlank) {
-            if (!keyIdIsBlank) {
-                list.add("rsa." + type + "." + paperName + "." + keyId);
-            }
-            list.add("rsa." + type + "." + paperName);
-        }
-        if (!keyIdIsBlank) {
-            list.add("rsa." + type + "." + keyId);
-        }
-        list.add("rsa." + type);
-        return list;
-    }
 
-    private byte[] loadKey(List<String> properties, List<String> resources) throws IOException {
-        String s = null;
-        for (String property : properties) {
-            s = getString(property, null, null);
-            if (s != null) break;
-        }
 
-        if (s == null) {
-            InputStream is = null;
-            for (String resource : resources) {
-                is = RSAKeyStoreDefaultImpl.class.getClassLoader().getResourceAsStream("rsaKeys/" + resource);
-                if (is != null) break;
-            }
 
-            s = loadFromInputStream(is);
-        }
 
-        if (s == null) return null;
-
-        return Base64.decodeBase64(s);
-    }
-
-    private String loadFromInputStream(InputStream is) throws IOException {
-        if (is == null) return null;
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        StringBuilder builder = new StringBuilder();
-        String s;
-        while ((s = reader.readLine()) != null) {
-            builder.append(s);
-        }
-        return builder.toString();
-    }
 
 
     /**

@@ -107,7 +107,7 @@ public abstract class Profile {
                 public Profile build(URL key) {
                     if (key == null)
                         throw new NullPointerException("profile url could not be null.");
-                    ProfileProvider profileProvider = PROFILE_PROVIDER_LOADER.getServiceInstance(key);
+                    ProfileProvider profileProvider = PROFILE_PROVIDER_LOADER.select(key);
                     if (profileProvider == null) {
                         return new NullProfile();
                     } else {

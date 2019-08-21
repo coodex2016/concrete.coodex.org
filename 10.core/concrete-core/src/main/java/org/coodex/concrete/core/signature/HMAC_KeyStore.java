@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 
 package org.coodex.concrete.core.signature;
 
-/**
- * Created by davidoff shen on 2017-04-24.
- */
-@Deprecated
-public interface HmacKeyStore {
+import org.coodex.concrete.common.ServiceContext;
+import org.coodex.util.AcceptableService;
 
+public interface HMAC_KeyStore extends AcceptableService<ServiceContext> {
     byte[] getHmacKey(String paperName, String keyId);
 }

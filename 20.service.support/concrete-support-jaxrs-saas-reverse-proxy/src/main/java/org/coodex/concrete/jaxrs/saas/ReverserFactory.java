@@ -30,7 +30,7 @@ public class ReverserFactory {
 
 
     public static final Reverser getReverser(String propertyName) {
-        return IF.isNull(REVERSER_FACTORY.getServiceInstance(propertyName),
+        return IF.isNull(REVERSER_FACTORY.select(propertyName),
                 ReverseProxyErrorCodes.REVERSER_NOT_FOUND, propertyName);
     }
 }

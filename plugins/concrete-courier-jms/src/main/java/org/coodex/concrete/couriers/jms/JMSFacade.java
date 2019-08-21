@@ -40,7 +40,7 @@ class JMSFacade {
             new AcceptableServiceLoader<String, ConnectionFactoryProvider>(){};
     private final static SingletonMap<String, ConnectionFactory> connectionFactorySingletonMap
             = new SingletonMap<>(key -> {
-        ConnectionFactoryProvider cfp = connectionFactoryProviderAcceptableServiceLoader.getServiceInstance(key);
+        ConnectionFactoryProvider cfp = connectionFactoryProviderAcceptableServiceLoader.select(key);
         if (cfp == null) {
             throw new RuntimeException("no ConnectionFactoryProvider found for :" + key);
         } else {

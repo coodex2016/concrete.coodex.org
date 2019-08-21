@@ -75,7 +75,7 @@ public class AccountsCommon {
     }
 
     public static final String getEncodedPassword(String pwd) {
-        return PASSWORD_GENERATORS.getServiceInstance(ORGANIZATION_PREFIX).encode(null);
+        return PASSWORD_GENERATORS.select(ORGANIZATION_PREFIX).encode(null);
     }
 
     public static final String getApplicationName() {
@@ -204,7 +204,7 @@ public class AccountsCommon {
      * @param <E>
      */
     public static <E extends CanLoginEntity> void resetPassword(E entity, CrudRepository<E, String> repo) {
-        entity.setPassword(AccountsCommon.PASSWORD_GENERATORS.getServiceInstance(Constants.ORGANIZATION_PREFIX).encode(null));
+        entity.setPassword(AccountsCommon.PASSWORD_GENERATORS.select(Constants.ORGANIZATION_PREFIX).encode(null));
         repo.save(entity);
         putLoggingData("pwd", "reset to default");
     }

@@ -460,10 +460,10 @@ public class MockerFacade {
             }
 
             if (TypeHelper.isPrimitive(clazz)) {
-                return (T) MOCKER_LOADER.getServiceInstance(annotation).mock(annotation, clazz);
+                return (T) MOCKER_LOADER.select(annotation).mock(annotation, clazz);
             } else {
                 if (annotation != null) {
-                    return (T) MOCKER_LOADER.getServiceInstance(annotation).mock(annotation, clazz);
+                    return (T) MOCKER_LOADER.select(annotation).mock(annotation, clazz);
                 } else
                     return mockPojo(new PojoInfo(clazz, context), property, stack, context);
             }
@@ -771,7 +771,7 @@ public class MockerFacade {
                 dependencies.add(POJO_BUILDER.get(instance, p));
             }
             POJO_BUILDER.set(instance, pojoProperty,
-                    RELATION_POLICY_LOADER.getServiceInstance(relation.policy()).relate(relation.policy(), dependencies));
+                    RELATION_POLICY_LOADER.select(relation.policy()).relate(relation.policy(), dependencies));
         } else {
             try {
                 POJO_BUILDER.set(instance, pojoProperty,

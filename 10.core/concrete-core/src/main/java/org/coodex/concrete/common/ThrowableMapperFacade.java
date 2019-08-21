@@ -35,7 +35,7 @@ public class ThrowableMapperFacade {
         if (concreteException != null) {
             return new ErrorInfo(concreteException.getCode(), concreteException.getMessage());
         } else {
-            ThrowableMapper mapper = mapperLoader.get().getServiceInstance(exception);
+            ThrowableMapper mapper = mapperLoader.get().select(exception);
             if (mapper != null) {
                 return mapper.toErrorInfo(exception);
             } else {

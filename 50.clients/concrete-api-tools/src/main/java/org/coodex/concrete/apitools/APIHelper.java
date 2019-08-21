@@ -39,7 +39,7 @@ public class APIHelper {
 //                return moduleMaker;
 //            }
 //        }
-        ModuleMaker moduleMaker = MODULE_MAKERS.getServiceInstance(desc);
+        ModuleMaker moduleMaker = MODULE_MAKERS.select(desc);
         if (moduleMaker == null)
             throw new RuntimeException("No module maker supported '" + desc + "' ");
         else

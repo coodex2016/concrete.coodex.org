@@ -115,7 +115,7 @@ public class ClientHelper {
     }
 
     public static Destination getDestination(String module) {
-        return destinationFactoryAcceptableServiceLoader.getServiceInstance(module).build(module);
+        return destinationFactoryAcceptableServiceLoader.select(module).build(module);
     }
 
     private static AcceptableServiceLoader<String, DestinationFactory<Destination,String>> destinationFactoryAcceptableServiceLoader
@@ -128,7 +128,7 @@ public class ClientHelper {
     public static SSLContext getSSLContext(String ssl) {
         try {
             return getSSLContextFactoryAcceptableServiceLoader()
-                    .getServiceInstance(ssl).getSSLContext(ssl);
+                    .select(ssl).getSSLContext(ssl);
         } catch (Throwable th) {
             throw ConcreteHelper.getException(th);
         }
@@ -139,7 +139,7 @@ public class ClientHelper {
         String ssl = getString(destination.getIdentify(), "ssl");
         try {
             return getSSLContextFactoryAcceptableServiceLoader()
-                    .getServiceInstance(ssl).getSSLContext(ssl);
+                    .select(ssl).getSSLContext(ssl);
         } catch (Throwable th) {
             throw ConcreteHelper.getException(th);
         }

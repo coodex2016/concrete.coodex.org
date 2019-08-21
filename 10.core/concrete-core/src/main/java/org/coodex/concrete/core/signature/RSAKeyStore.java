@@ -19,6 +19,7 @@ package org.coodex.concrete.core.signature;
 /**
  * Created by davidoff shen on 2017-04-24.
  */
+@Deprecated
 public interface RSAKeyStore {
 
     byte[] getPrivateKey(String paperName);

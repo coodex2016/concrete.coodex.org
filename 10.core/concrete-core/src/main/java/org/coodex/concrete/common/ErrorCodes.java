@@ -64,6 +64,8 @@ public final class ErrorCodes extends AbstractErrorCodes {
 
     public static final int MODULE_DEFINITION_NON_UNIQUENESS = CONCRETE_CORE + 18;
 
+    public static final int SIGNATURE_KEY_LOAD_FAILED = CONCRETE_CORE + 19;
+
     ///Own protocol
     public static final int OWN_PROVIDER_NO_RESPONSE_VISITOR = CONCRETE_CORE + 200;
 

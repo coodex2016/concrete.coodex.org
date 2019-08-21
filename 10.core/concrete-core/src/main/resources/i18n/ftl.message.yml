@@ -19,6 +19,7 @@ ftl:
     1016: "SIGNATURE VERIFICATION FAILED: ${o1}."
     1017: "Unknown class: ${o1}"
     1018: "MODULE DEFINITION NON UNIQUENESS: ${o1}"
+    1019: "key load failed: ${o1},${o2},${o3}"
     1300: "Deprecated: ${o1}"
     99998: "Client Error."
     99999: "UNKNOWN ERROR: ${o1}."

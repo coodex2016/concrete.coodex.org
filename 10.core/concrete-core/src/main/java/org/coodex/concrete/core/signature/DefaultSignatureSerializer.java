@@ -141,17 +141,14 @@ public class DefaultSignatureSerializer implements SignatureSerializer {
     }
 
     private String jointPojo(String key, Object o) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         // TODO : bug fix
         PojoInfo pojoInfo = new PojoInfo(o.getClass());
         for (PojoProperty pojoProperty : pojoInfo.getProperties()) {
             String propertyName = pojoProperty.getName();
             try {
                 map.put(propertyName, getValue(pojoProperty, o));
-            } catch (InvocationTargetException e) {
-                log.error("unable to get field value : {}", propertyName);
-                throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, e.getLocalizedMessage());
-            } catch (IllegalAccessException e) {
+            } catch (InvocationTargetException | IllegalAccessException e) {
                 log.error("unable to get field value : {}", propertyName);
                 throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, e.getLocalizedMessage());
             }

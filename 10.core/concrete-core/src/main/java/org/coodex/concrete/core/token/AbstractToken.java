@@ -35,7 +35,7 @@ public abstract class AbstractToken implements Token {
     private final static Logger log = LoggerFactory.getLogger(AbstractToken.class);
 
     protected final void runListeners(Event event, boolean before) {
-        List<TokenEventListener> listeners = LISTENER_LOADER.getServiceInstances(event);
+        List<TokenEventListener> listeners = LISTENER_LOADER.selectAll(event);
         if (listeners.size() > 0) {
             Token token = new ReadOnlyToken(this);
             for (TokenEventListener listener : listeners) {

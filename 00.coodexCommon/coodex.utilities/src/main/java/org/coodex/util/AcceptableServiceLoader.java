@@ -27,8 +27,6 @@ import java.util.Map;
 import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 import static org.coodex.util.GenericTypeHelper.typeToClass;
 
-//import static org.coodex.util.TypeHelper.solve;
-//import static org.coodex.util.TypeHelper.typeToClass;
 
 /**
  * Created by davidoff shen on 2017-03-09.
@@ -46,19 +44,11 @@ public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableSe
 
     public AcceptableServiceLoader(final T defaultService) {
         this.defaultService = defaultService;
-//        this(new ServiceLoaderImpl<T>(defaultService) {
-//        });
     }
 
     @Deprecated
     public AcceptableServiceLoader(ServiceLoader<T> serviceLoaderFacade) {
         this.serviceLoaderFacade = serviceLoaderFacade;
-//        if (serviceLoaderFacade == null) {
-//            this.serviceLoaderFacade = new ServiceLoaderImpl<T>() {
-//            };
-//        } else {
-//            this.serviceLoaderFacade = serviceLoaderFacade;
-//        }
     }
 
     private ServiceLoader<T> getServiceLoaderFacade() {
@@ -98,7 +88,16 @@ public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableSe
         }
     }
 
+    /**
+     * @param param param
+     * @return {@link AcceptableServiceLoader#selectAll(Object)}
+     */
+    @Deprecated
     public List<T> getServiceInstances(Param_Type param) {
+        return selectAll(param);
+    }
+
+    public List<T> selectAll(Param_Type param) {
         List<T> list = new ArrayList<T>();
         for (T instance : getAll().values()) {
             if (accept(instance, param))
@@ -113,7 +112,16 @@ public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableSe
         return list;
     }
 
+    /**
+     * @param param
+     * @return {@link AcceptableServiceLoader#select(Object)}
+     */
+    @Deprecated
     public T getServiceInstance(Param_Type param) {
+        return select(param);
+    }
+
+    public T select(Param_Type param) {
         for (T instance : getAll().values()) {
             if (accept(instance, param))
                 return instance;

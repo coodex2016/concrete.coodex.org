@@ -94,7 +94,7 @@ class CourierBuilder
             String destination = getDestination(key.queue);
             CourierPrototypeProvider provider = null;
             if(!Common.isBlank(destination))
-                provider = providers.getServiceInstance(destination);
+                provider = providers.select(destination);
             Class<? extends CourierPrototype> prototype =
                     provider == null ?
                             getLocalCourierPrototype(key.queue, destination) :

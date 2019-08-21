@@ -18,16 +18,20 @@ package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.common.IronPen;
 import org.coodex.concrete.common.IronPenFactory;
+import org.coodex.util.SingletonMap;
+import org.coodex.util.StringKeySingletonMap;
 
 /**
  * Created by davidoff shen on 2017-04-21.
  */
 public class HmacPenFactory implements IronPenFactory {
-
+    private static final SingletonMap<String, HmacPen> HMAC_PEN_SINGLETON_MAP = new StringKeySingletonMap<HmacPen>(
+            HmacPen::new
+    );
 
     @Override
     public IronPen getIronPen(String paperName) {
-        return new HmacPen(paperName);
+        return HMAC_PEN_SINGLETON_MAP.get(paperName);
     }
 //
 //    @Override

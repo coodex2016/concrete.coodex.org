@@ -67,7 +67,7 @@ public class SyncToRxInvoker extends AbstractRxInvoker {
                                 @Override
                                 public Object call() throws Throwable {
                                     return ClientHelper.getInvokerFactoryProviders()
-                                            .getServiceInstance(destination)
+                                            .select(destination)
                                             .getInvoker(destination)
                                             .invoke(
                                                     buildSyncInstance(runtimeContext.getDeclaringClass()),

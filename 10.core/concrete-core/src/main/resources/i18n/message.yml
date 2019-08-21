@@ -18,6 +18,7 @@ message:
   1016: "SIGNATURE VERIFICATION FAILED: {0}."
   1017: "Unknown class: {0}"
   1018: "MODULE DEFINITION NON UNIQUENESS: {0}"
+  1019: "key load failed: {0}, {1}, {2}"
   1300: "Deprecated: {0}"
   99998: "Client Error."
   99999: "UNKNOWN ERROR: {0}."

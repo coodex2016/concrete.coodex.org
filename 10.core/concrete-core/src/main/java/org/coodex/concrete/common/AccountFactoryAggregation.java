@@ -30,6 +30,6 @@ public class AccountFactoryAggregation<ID extends AccountID> implements AccountF
     @Override
     public Account<ID> getAccountByID(ID id) {
         //noinspection unchecked
-        return (Account<ID>) ACCOUNT_FACTORY_LOADER.getServiceInstance(id).getAccountByID(id);
+        return (Account<ID>) ACCOUNT_FACTORY_LOADER.select(id).getAccountByID(id);
     }
 }

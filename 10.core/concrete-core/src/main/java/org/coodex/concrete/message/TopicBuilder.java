@@ -82,7 +82,7 @@ class TopicBuilder
     public AbstractTopic build(TopicKey key) {
         try {
             Class<? extends AbstractTopic> topicClass = getClass(key.topicType);
-            TopicPrototypeProvider provider = singletonProviders.get().getServiceInstance(topicClass);
+            TopicPrototypeProvider provider = singletonProviders.get().select(topicClass);
             if (provider == null) {
                 if (defaultTopicPrototypeProvider.accept(topicClass)) {
                     provider = defaultTopicPrototypeProvider;

@@ -34,11 +34,14 @@ public class SingletonMap<K, V> {
     private final Builder<K, V> builder;
     private long maxAge = 0;
     private ScheduledExecutorService scheduledExecutorService;
-    private Map<K, V> map = new HashMap<K, V>();
+    private final Map<K, V> map = new HashMap<K, V>();
+
+    private final K nullKey;
 
     public SingletonMap(Builder<K, V> builder) {
         if (builder == null) throw new NullPointerException("builder MUST NOT be null.");
         this.builder = builder;
+        nullKey = getNullKeyOnce();
     }
 
     /**
@@ -53,30 +56,35 @@ public class SingletonMap<K, V> {
         }
     }
 
+    protected K getNullKeyOnce() {
+        return null;
+    }
+
 
     public boolean containsKey(Object key) {
-        return map.containsKey(key);
+        return map.containsKey(key == null ? nullKey : key);
     }
 
     public V get(final K key) {
-        if (!map.containsKey(key)) {
+        final K finalKey = key == null ? nullKey : key;
+        if (!map.containsKey(finalKey)) {
             synchronized (map) {
-                if (!map.containsKey(key)) {
+                if (!map.containsKey(finalKey)) {
                     V o = builder.build(key);
-                    map.put(key, o);
+                    map.put(finalKey, o);
                     if (maxAge > 0) {
                         scheduledExecutorService.schedule(new Runnable() {
                             @Override
                             public void run() {
                                 log.debug("{} die.", key);
-                                remove(key);
+                                remove(finalKey);
                             }
                         }, maxAge, TimeUnit.MILLISECONDS);
                     }
                 }
             }
         }
-        return map.get(key);
+        return map.get(finalKey);
     }
 
     /**
@@ -90,10 +98,11 @@ public class SingletonMap<K, V> {
     }
 
     public V remove(K key) {
-        if (map.containsKey(key)) {
+        final K finalKey = key == null ? nullKey : key;
+        if (map.containsKey(finalKey)) {
             synchronized (map) {
-                if (map.containsKey(key))
-                    return map.remove(key);
+                if (map.containsKey(finalKey))
+                    return map.remove(finalKey);
             }
         }
         return null;

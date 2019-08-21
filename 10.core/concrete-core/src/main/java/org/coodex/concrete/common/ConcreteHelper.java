@@ -151,6 +151,7 @@ public class ConcreteHelper {
     }
 
     public static String getString(String tag, String module, String key) {
+
 //        Profile_Deprecated profile = getProfile(tag, module);
 //        String value = profile.getString(key);
 //        if (value == null && !Common.isBlank(module)) {
@@ -170,6 +171,14 @@ public class ConcreteHelper {
 //            }
 //        }
 //        return value;
+//        String value = null;
+//        if (!Common.isBlank(module)) {
+//            value = Config.get(String.format("%s.%s.%s", tag, module, key), tag, module);
+//            if (value == null) {
+//                value = Config.get(String.format("%s.%s", tag, key), tag, module);
+//            }
+//        }
+
         return Config.get(key, tag, module);
     }
 

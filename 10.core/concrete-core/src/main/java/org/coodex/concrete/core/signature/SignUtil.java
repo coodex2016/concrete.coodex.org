@@ -19,8 +19,16 @@ package org.coodex.concrete.core.signature;
 import org.coodex.concrete.api.Signable;
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.modules.AbstractParam;
+import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.config.Config;
 import org.coodex.util.*;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
@@ -30,6 +38,68 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
  * Created by davidoff shen on 2017-04-21.
  */
 public class SignUtil {
+
+    public static final String KEY_FIELD_ALGORITHM = "algorithm";
+    public static final String KEY_FIELD_SIGN = "sign";
+    public static final String KEY_FIELD_KEY_ID = "keyId";
+    public static final String KEY_FIELD_NOISE = "noise";
+
+    public static String methodToProperty(Method method) {
+        if (method.getParameterTypes().length != 0) return null;
+
+        if (method.getReturnType().equals(void.class) || method.getReturnType().equals(Void.class)) {
+            return null;
+        }
+        String methodName = method.getName();
+        if (methodName.startsWith("get")) {
+            return Common.lowerFirstChar(methodName.substring(3));
+        } else if (methodName.startsWith("is") &&
+                (method.getReturnType().equals(boolean.class) || method.getReturnType().equals(Boolean.class))) {
+            return Common.lowerFirstChar(methodName.substring(2));
+        }
+        return null;
+    }
+
+    public static Map<String, Object> beanToMap(Object bean) throws InvocationTargetException, IllegalAccessException {
+        Class c = bean.getClass();
+        Map<String, Object> objectMap = new HashMap<String, Object>();
+        for (Method method : c.getMethods()) {
+            String property = methodToProperty(method);
+            if (property != null) {
+                method.setAccessible(true);
+                Object o = method.invoke(bean);
+                if (o != null) objectMap.put(property, o);
+            }
+
+        }
+        return objectMap;
+    }
+
+
+    public static Map<String, Object> buildContent(DefinitionContext context, Object[] args) {
+        AbstractUnit unit = AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());
+        AbstractParam[] params = unit.getParameters();
+        if (params == null) return new HashMap<>();
+        // 1个参数的情况
+        if (params.length == 1) {
+            Class c = params[0].getType();
+            // 非集合、数组、基础类型
+            if (!Collection.class.isAssignableFrom(c) && !c.isArray() && !TypeHelper.isPrimitive(c)) {
+                try {
+                    return beanToMap(args[0]);
+                } catch (Throwable th) {
+                    throw ConcreteHelper.getException(th);
+                }
+            }
+        }
+
+        Map<String, Object> result = new HashMap<>();
+
+        for (AbstractParam param : unit.getParameters()) {
+            result.put(param.getName(), args[param.getIndex()]);
+        }
+        return result;
+    }
 
     public static final String TAG_SIGNATRUE = "signature";
 
@@ -86,12 +156,12 @@ public class SignUtil {
     }
 
     public static NoiseValidator getNoiseValidator(String keyId) {
-        NoiseValidator noiseValidator = validatorLoader.getServiceInstance(keyId);
+        NoiseValidator noiseValidator = validatorLoader.select(keyId);
         return noiseValidator == null ? defaultValidator : noiseValidator;
     }
 
     public static NoiseGenerator getNoiseGenerator(String keyId) {
-        NoiseGenerator noiseGenerator = generatorLoader.getServiceInstance(keyId);
+        NoiseGenerator noiseGenerator = generatorLoader.select(keyId);
         return noiseGenerator == null ? defaultGenerator : noiseGenerator;
     }
 
@@ -101,27 +171,16 @@ public class SignUtil {
         String module = null;
         if (serviceContext instanceof ClientSideContext) {
             module = ((ClientSideContext) serviceContext).getDestination().getIdentify();
-//            if (!Common.isBlank(module)) {
-//                value = getString(getProfile(TAG_SIGNATRUE, module), key, paperName);
-//            }
         }
-//        if (value == null) {
-//            value = getString(getProfile(TAG_SIGNATRUE), key, paperName);
-
-//        }
         value = getStr(key, paperName, TAG_SIGNATRUE, module, getAppSet());
         return value == null ? defaultValue : value;
-//        if (Common.isBlank(paperName))
-//            return PROFILE.getString(key, defaultValue);
-//        String s = PROFILE.getString(key + "." + paperName, defaultValue);
-//        return s == null ? getString(key, null, defaultValue) : s;
     }
 
     public static HowToSign howToSign(Signable signable) {
 
         String algorithm = getString("algorithm", signable.paperName(), signable.algorithm());
         return new HowToSign(
-                IRON_PEN_FACTORY_CONCRETE_SPI_FACADE.getServiceInstance(algorithm),
+                IRON_PEN_FACTORY_CONCRETE_SPI_FACADE.select(algorithm),
                 signable.serializer().equals(SignatureSerializer.class) ?
                         DEFAULT_SERIALIZER :
                         SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE.get(signable.serializer()),
@@ -158,7 +217,7 @@ public class SignUtil {
 
         public IronPenFactory getIronPenFactory(String algorithm) {
             return algorithm == null ? ironPenFactory :
-                    IRON_PEN_FACTORY_CONCRETE_SPI_FACADE.getServiceInstance(algorithm);
+                    IRON_PEN_FACTORY_CONCRETE_SPI_FACADE.select(algorithm);
         }
 
         public SignatureSerializer getSerializer() {

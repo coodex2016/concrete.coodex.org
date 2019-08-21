@@ -21,25 +21,22 @@ import org.apache.commons.codec.binary.Base64;
 import org.coodex.concrete.api.Signable;
 import org.coodex.concrete.api.pojo.Signature;
 import org.coodex.concrete.client.ClientSideContext;
+import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.modules.AbstractParam;
 import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.concrete.core.intercept.annotations.ClientSide;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
+import org.coodex.concrete.core.signature.ClientKeyIdGetter;
 import org.coodex.concrete.core.signature.SignUtil;
 import org.coodex.config.Config;
-import org.coodex.util.Common;
-import org.coodex.util.ReflectHelper;
-import org.coodex.util.TypeHelper;
+import org.coodex.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,11 +54,15 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractSignatureInterceptor.class);
 
-
-    private final String KEY_FIELD_ALGORITHM = "algorithm";
-    private final String KEY_FIELD_SIGN = "sign";
-    private final String KEY_FIELD_KEY_ID = "keyId";
-    private final String KEY_FIELD_NOISE = "noise";
+    private static final ServiceLoader<ClientKeyIdGetter> CLIENT_KEY_ID_GETTER = new ServiceLoaderImpl<ClientKeyIdGetter>(
+            new ClientKeyIdGetter() {
+                @Override
+                public String getKeyId(String paperName, String propertyKeyId, Destination destination) {
+                    return null;
+                }
+            }
+    ) {
+    };
 
     @Override
     public int getOrder() {
@@ -131,58 +132,46 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
 //    protected abstract Map<String, Object> buildContent(RuntimeContext context, Object[] args);
 
-    private Map<String, Object> buildContent(DefinitionContext context, Object[] args) {
-        AbstractUnit unit = AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());
-        AbstractParam[] params = unit.getParameters();
-        if (params == null) return new HashMap<>();
-        // 1个参数的情况
-        if (params.length == 1) {
-            Class c = params[0].getType();
-            // 非集合、数组、基础类型
-            if (!Collection.class.isAssignableFrom(c) && !c.isArray() && !TypeHelper.isPrimitive(c)) {
-                try {
-                    return beanToMap(args[0]);
-                } catch (Throwable th) {
-                    throw ConcreteHelper.getException(th);
-                }
-            }
-        }
+    private static final SingletonMap<String, PropertyNameReload> PROPERTY_NAMES = new StringKeySingletonMap<>(
+            PropertyNameReload::new
+    );
 
-        Map<String, Object> result = new HashMap<>();
-
-        for (AbstractParam param : unit.getParameters()) {
-            result.put(param.getName(), args[param.getIndex()]);
-        }
-        return result;
-    }
-
-    private String getPropertyName(String propertyName) {
-//        return PROFILE.getString("property." + propertyName, propertyName);
-        return Config.getValue("property." + propertyName, propertyName, TAG_SIGNATRUE, getAppSet());
-    }
-
-    private void serverSide_Verify(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
+    private static void serverSide_Verify(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
         Map<String, Object> content = buildContent(
                 context, joinPoint.getArguments());
         String noise = IF.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
+                // TODO i18n
                 KEY_FIELD_NOISE + " MUST NOT null.");
 
         // 必须保留，存在向content中put数据的可能
         String algorithm = getKeyField(content, KEY_FIELD_ALGORITHM, howToSign.getAlgorithm());
         String keyId = getKeyField(content, KEY_FIELD_KEY_ID, null);
+
         // 检验noise有效性
-        getNoiseValidator(keyId).checkNoise(keyId,noise);
+        getNoiseValidator(keyId).checkNoise(keyId, noise);
         IronPen ironPen = howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName());
         SignatureSerializer serializer = howToSign.getSerializer();
         IF.not(ironPen.verify(serializer.serialize(content),
                 Base64.decodeBase64(getSignature(content)),
                 algorithm, keyId),
+                // TODO i18n
                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED, "server side verify failed.");
 
     }
 
-    private Object serverSide_Sign(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign, Object o) {
+    private static String getSignature(Map<String, Object> content) {
+        String propertySign = getPropertyName(KEY_FIELD_SIGN);
+        String signStr = (String) content.remove(propertySign);
+        if (signStr == null) {
+            signStr = IF.isNull(getServiceContext().getSubjoin().get(propertySign),
+                    ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
+                    "no signature found");
+        }
+        return signStr;
+    }
+
+    private static Object serverSide_Sign(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign, Object o) {
         try {
             if (o instanceof Signature) {
                 Map<String, Object> content = buildContent(
@@ -199,6 +188,51 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
             }
         } catch (Throwable th) {
             throw ConcreteHelper.getException(th);
+        }
+    }
+
+    private static String getKeyField(Map<String, Object> content, String keyName, String defaultValue) {
+        String propertyName = getPropertyName(keyName);
+        Object key = content.containsKey(propertyName) ?
+                content.get(propertyName) :
+                getServiceContext().getSubjoin().get(propertyName);
+        if (key != null) {
+            content.put(propertyName, key);
+        }
+        return key == null ? defaultValue : key.toString();
+    }
+
+    private static String putKeyField(Map<String, Object> content, String keyName,
+                                      Object value, DefinitionContext context, MethodInvocation joinPoint) {
+        String propertyName = getPropertyName(keyName);
+        if (content.containsKey(propertyName)) {
+            //参数中包含
+            setArgument(context, joinPoint, propertyName, value);
+        } else {
+            if (value != null)
+                getServiceContext().getSubjoin()
+                        .set(propertyName, Collections.singletonList(value.toString()));
+        }
+        content.put(propertyName, value);
+        return value == null ? null : value.toString();
+    }
+
+    private static void setArgument(DefinitionContext context, MethodInvocation joinPoint, String parameterName, Object value) {
+        AbstractUnit unit = AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());//getServiceContext().getCurrentUnit();
+        for (AbstractParam param : unit.getParameters()) {
+            if (param.getName().equals(parameterName)) {
+                joinPoint.getArguments()[param.getIndex()] = value;
+                break;
+            }
+        }
+    }
+
+    private static String getPropertyName(String propertyName) {
+        ServiceContext serviceContext = ConcreteContext.getServiceContext();
+        if (serviceContext instanceof ClientSideContext) {
+            return PROPERTY_NAMES.get(((ClientSideContext) serviceContext).getDestination().getIdentify()).getName(propertyName);
+        } else {
+            return PROPERTY_NAMES.get(null).getName(propertyName);
         }
     }
 
@@ -234,17 +268,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 //        }
 //    }
 
-    /**
-     * @param signature 签名对象
-     * @param algorithm  客户端传递的算法
-     * @param keyId      客户端keyId
-     * @param ironPen   ironPen
-     * @param serializer    serializer
-     * @return
-     * @throws IllegalAccessException
-     */
-    private Object serverSign(Signature signature, String algorithm, String keyId, IronPen ironPen, SignatureSerializer serializer) throws IllegalAccessException {
-//        signature.setNoise(Common.random(Integer.MAX_VALUE));
+    private static Object serverSign(Signature signature, String algorithm, String keyId, IronPen ironPen, SignatureSerializer serializer) throws IllegalAccessException {
         signature.setNoise(getNoiseGenerator(keyId).generateNoise());
         signature.setSign(
                 Base64.encodeBase64String(
@@ -253,9 +277,9 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     }
 
 
-    private Map<String, Object> signatureToMap(Signature signature) throws IllegalAccessException {
+    private static Map<String, Object> signatureToMap(Signature signature) throws IllegalAccessException {
         if (signature == null) return null;
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         for (Field field : ReflectHelper.getAllDeclaredFields(signature.getClass())) {
             if (!field.getDeclaringClass().equals(Signature.class) || KEY_FIELD_NOISE.equals(field.getName())) {
                 field.setAccessible(true);
@@ -265,43 +289,9 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         return result;
     }
 
-    private String getKeyField(Map<String, Object> content, String keyName, String defaultValue) {
-        String propertyName = getPropertyName(keyName);
-        Object key = content.containsKey(propertyName) ?
-                content.get(propertyName) :
-                getServiceContext().getSubjoin().get(propertyName);
-        if (key != null) {
-            content.put(propertyName, key);
-        }
-        return key == null ? defaultValue : key.toString();
-    }
-
-
-    private String getSignature(Map<String, Object> content) {
-        String propertySign = getPropertyName(KEY_FIELD_SIGN);
-        String signStr = (String) content.remove(propertySign);
-        if (signStr == null) {
-            signStr = IF.isNull(getServiceContext().getSubjoin().get(propertySign),
-                    ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
-                    "no signature found");
-        }
-        return signStr;
-    }
 
     ////////////
-    private String putKeyField(Map<String, Object> content, String keyName, Object value, DefinitionContext context, MethodInvocation joinPoint) {
-        String propertyName = getPropertyName(keyName);
-        if (content.containsKey(propertyName)) {
-            //参数中包含
-            if (content != null)
-                setArgument(context, joinPoint, propertyName, value);
-        } else {
-            if (value != null)
-                getServiceContext().getSubjoin().set(propertyName, Arrays.asList(value.toString()));
-        }
-        content.put(propertyName, value);
-        return value == null ? null : value.toString();
-    }
+
 
     private void clientSide_Sign(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
         // 0 签名
@@ -310,11 +300,11 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
         // keyId
         String keyId = putKeyField(content, KEY_FIELD_KEY_ID,
+                // TODO ????? 怎么改？？
                 SignUtil.getString(KEY_FIELD_KEY_ID, howToSign.getPaperName(), null),
                 context, joinPoint);
 
         // noise
-//        int noise = Common.random(0, Integer.MAX_VALUE);
         String noise = getNoiseGenerator(keyId).generateNoise();
 
         putKeyField(content, KEY_FIELD_NOISE, noise, context, joinPoint);
@@ -325,7 +315,6 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
                 context, joinPoint);
         if (algorithm == null)
             algorithm = howToSign.getAlgorithm();
-
 
 
         byte[] data = howToSign.getSerializer().serialize(content);
@@ -342,14 +331,13 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
                     getPropertyName(KEY_FIELD_KEY_ID), keyId,
                     getPropertyName(KEY_FIELD_SIGN), sign,
                     "body", dataToString(data)
-//                    "data",
             );
         }
     }
 
     private Object clientSide_Verify(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign, Object o) {
         try {
-            if (o != null && o instanceof Signature) {
+            if (o instanceof Signature) {
                 // 0 签名
                 Map<String, Object> content = buildContent(
                         context, joinPoint.getArguments());
@@ -434,48 +422,41 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 //    protected abstract void setArgument(RuntimeContext context, MethodInvocation joinPoint, String parameterName, Object value);
 
 
-    protected void setArgument(DefinitionContext context, MethodInvocation joinPoint, String parameterName, Object value) {
-        AbstractUnit unit = AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());//getServiceContext().getCurrentUnit();
-        for (AbstractParam param : unit.getParameters()) {
-            if (param.getName().equals(parameterName)) {
-                joinPoint.getArguments()[param.getIndex()] = value;
-                break;
-            }
-        }
-    }
-
     protected abstract String dataToString(byte[] data);
 
-//    protected abstract String serialize(Map<String, Object>)
 
-    protected String methodToProperty(Method method) {
-        if (method.getParameterTypes().length != 0) return null;
 
-        if (method.getReturnType().equals(void.class) || method.getReturnType().equals(Void.class)) {
-            return null;
+    private static class PropertyNameReload {
+        private final String module;
+        private final Map<String, String> mapping = new HashMap<>();
+
+        PropertyNameReload(String module) {
+            this.module = module;
+            mapping.put(KEY_FIELD_KEY_ID, initLoad(KEY_FIELD_KEY_ID));
+            mapping.put(KEY_FIELD_SIGN, initLoad(KEY_FIELD_SIGN));
+            mapping.put(KEY_FIELD_ALGORITHM, initLoad(KEY_FIELD_ALGORITHM));
+            mapping.put(KEY_FIELD_NOISE, initLoad(KEY_FIELD_NOISE));
         }
-        String methodName = method.getName();
-        if (methodName.startsWith("get")) {
-            return Common.lowerFirstChar(methodName.substring(3));
-        } else if (methodName.startsWith("is") &&
-                (method.getReturnType().equals(boolean.class) || method.getReturnType().equals(Boolean.class))) {
-            return Common.lowerFirstChar(methodName.substring(2));
-        }
-        return null;
-    }
 
-    protected Map<String, Object> beanToMap(Object bean) throws InvocationTargetException, IllegalAccessException {
-        Class c = bean.getClass();
-        Map<String, Object> objectMap = new HashMap<String, Object>();
-        for (Method method : c.getMethods()) {
-            String property = methodToProperty(method);
-            if (property != null) {
-                method.setAccessible(true);
-                Object o = method.invoke(bean);
-                if (o != null) objectMap.put(property, o);
+        private String initLoad(String propertyName) {
+            if (Common.isBlank(module)) { // Server端
+                String s = Config.get("signature.property." + propertyName, TAG_SIGNATRUE, getAppSet());
+                if (s == null) {
+                    s = Config.getValue("property." + propertyName, propertyName, TAG_SIGNATRUE, getAppSet());
+                    if (!propertyName.equals(s)) {
+                        log.warn("property.{} deprecated. use signature.property.{} plz.", propertyName, propertyName);
+                    }
+                }
+                return s;
+            } else {
+                // TODO
+                return "";
             }
-
         }
-        return objectMap;
+
+        String getName(String key) {
+            return mapping.get(key);
+        }
     }
+
 }

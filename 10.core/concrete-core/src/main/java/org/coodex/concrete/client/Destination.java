@@ -17,6 +17,7 @@
 package org.coodex.concrete.client;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public abstract class Destination implements Serializable {
     public static final Integer DEFAULT_REQUEST_TIMEOUT = 5000;
@@ -86,11 +87,11 @@ public abstract class Destination implements Serializable {
 
         if (tokenTransfer != that.tokenTransfer) return false;
         if (async != that.async) return false;
-        if (identify != null ? !identify.equals(that.identify) : that.identify != null) return false;
-        if (location != null ? !location.equals(that.location) : that.location != null) return false;
-        if (tokenManagerKey != null ? !tokenManagerKey.equals(that.tokenManagerKey) : that.tokenManagerKey != null)
+        if (!Objects.equals(identify, that.identify)) return false;
+        if (!Objects.equals(location, that.location)) return false;
+        if (!Objects.equals(tokenManagerKey, that.tokenManagerKey))
             return false;
-        return timeout != null ? timeout.equals(that.timeout) : that.timeout == null;
+        return Objects.equals(timeout, that.timeout);
     }
 
     @Override

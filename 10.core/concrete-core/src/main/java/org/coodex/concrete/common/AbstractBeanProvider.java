@@ -58,7 +58,7 @@ public abstract class AbstractBeanProvider implements BeanProvider {
 //            }
 //        } catch (Throwable th) {
 //        }
-        ConflictSolution conflictSolution = SOLUTION_CONCRETE_SPI_FACADE.getServiceInstance(clz);
+        ConflictSolution conflictSolution = SOLUTION_CONCRETE_SPI_FACADE.select(clz);
         if (conflictSolution != null) return conflictSolution;
 
         // 3 从配置文件中读取

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.client.jaxrs;
+package org.coodex.util;
 
-import org.slf4j.Logger;
+public class StringKeySingletonMap<V> extends SingletonMap<String, V> {
+    public StringKeySingletonMap(Builder<String, V> builder) {
+        super(builder);
+    }
 
-/**
- * TODO concrete的jaxrs client LoggingComponent
- */
-public class LoggingComponent /* implements WriterInterceptor, ClientRequestFilter, ClientResponseFilter */ {
+    public StringKeySingletonMap(Builder<String, V> builder, long maxAge) {
+        super(builder, maxAge);
+    }
 
-    private final Logger log;
-
-
-    public LoggingComponent(Logger log) {
-        this.log = log;
+    @Override
+    protected String getNullKeyOnce() {
+        return "nullKey_" + Common.getUUIDStr();
     }
 }

@@ -39,13 +39,13 @@ public class LimitingInterceptor extends AbstractSyncInterceptor {
 
     @Override
     protected boolean accept_(DefinitionContext context) {
-        return STRATEGY_ACCEPTABLE_SERVICE_LOADER.getServiceInstance(context) != null;
+        return STRATEGY_ACCEPTABLE_SERVICE_LOADER.select(context) != null;
     }
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         DefinitionContext context = getContext(invocation);
-        LimitingStrategy strategy = STRATEGY_ACCEPTABLE_SERVICE_LOADER.getServiceInstance(context);
+        LimitingStrategy strategy = STRATEGY_ACCEPTABLE_SERVICE_LOADER.select(context);
         if (strategy != null) {
             IF.not(strategy.apply(context), OVERRUN);
         }

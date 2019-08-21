@@ -38,7 +38,7 @@ public class Topics {
             new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(){};
 
     public static Serializer getSerializer(String serializerType) {
-        Serializer serializer = serializerAcceptableServiceLoader.getServiceInstance(serializerType);
+        Serializer serializer = serializerAcceptableServiceLoader.select(serializerType);
         return serializer == null ? DEFAULT_SERIALIZER : serializer;
     }
 
