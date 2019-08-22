@@ -19,6 +19,7 @@ package org.coodex.concrete.core.signature;
 import org.coodex.concrete.common.*;
 import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.DigestHelper;
+import org.coodex.util.I18N;
 
 import java.util.Arrays;
 
@@ -48,7 +49,7 @@ public class HmacPen extends AbstractIronPen {
     @Override
     public byte[] sign(byte[] content, String algorithm, String keyId) {
         return sign(content, IF.isNull(getHmacKey(keyId)
-                , ErrorCodes.SIGNING_FAILED, "invalid HMAC Key"), algorithm);
+                , ErrorCodes.SIGNING_FAILED, I18N.translate("sign.invalidHMACKey")), algorithm);
     }
 
     private byte[] sign(byte[] content, byte[] key, String algorithm) {
@@ -66,7 +67,7 @@ public class HmacPen extends AbstractIronPen {
                 sign(content,
                         IF.isNull(getHmacKey(keyId),
                                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
-                                "invalid HMAC Key"),
+                                I18N.translate("sign.invalidHMACKey")),
                         algorithm));
     }
 }

@@ -21,6 +21,7 @@ import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.common.modules.AbstractParam;
 import org.coodex.concrete.common.modules.AbstractUnit;
+import org.coodex.concrete.core.intercept.AbstractSignatureInterceptor;
 import org.coodex.config.Config;
 import org.coodex.util.*;
 
@@ -43,6 +44,22 @@ public class SignUtil {
     public static final String KEY_FIELD_SIGN = "sign";
     public static final String KEY_FIELD_KEY_ID = "keyId";
     public static final String KEY_FIELD_NOISE = "noise";
+
+    public static String getKeyId() {
+        return SubjoinWrapper.getInstance().get(AbstractSignatureInterceptor.getPropertyName(KEY_FIELD_KEY_ID));
+    }
+
+    public static String getAlgorithm() {
+        return SubjoinWrapper.getInstance().get(AbstractSignatureInterceptor.getPropertyName(KEY_FIELD_ALGORITHM));
+    }
+
+    public static String getSign() {
+        return SubjoinWrapper.getInstance().get(AbstractSignatureInterceptor.getPropertyName(KEY_FIELD_SIGN));
+    }
+
+    public static String getNoise() {
+        return SubjoinWrapper.getInstance().get(AbstractSignatureInterceptor.getPropertyName(KEY_FIELD_NOISE));
+    }
 
     public static String methodToProperty(Method method) {
         if (method.getParameterTypes().length != 0) return null;

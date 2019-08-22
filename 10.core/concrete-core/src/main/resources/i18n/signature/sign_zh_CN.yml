@@ -1,0 +1,5 @@
+sign:
+  mustNotNull: "%s 不能为空"
+  serverSideVerifyFailed: 服务端验签失败
+  noSignatureFound: 签名信息缺失
+  invalidHMACKey: 未获取到密钥

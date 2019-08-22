@@ -50,7 +50,7 @@ public class HMAC_KeyStoreDefaultImpl implements HMAC_KeyStore {
                  *
                  * @param paperName paperName
                  * @param keyId keyId
-                 * @return
+                 * @return hmacKey
                  */
                 @Override
                 public byte[] getHmacKey(String paperName, String keyId) {
@@ -115,6 +115,7 @@ public class HMAC_KeyStoreDefaultImpl implements HMAC_KeyStore {
         if (s != null) {
             return s.getBytes();
         }
+        //noinspection deprecation
         log.warn("{} deprecated. use {} plz.", HmacKeyStore.class.getName(), HMAC_KeyStore.class.getName());
         return COMPATIBILITY_LOADER.get().getHmacKey(paperName, keyId);
 

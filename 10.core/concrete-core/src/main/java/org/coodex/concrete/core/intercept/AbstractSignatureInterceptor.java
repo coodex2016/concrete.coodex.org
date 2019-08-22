@@ -169,8 +169,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
                 context, joinPoint.getArguments());
         String noise = IF.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
-                // TODO i18n
-                KEY_FIELD_NOISE + " MUST NOT null.");
+                String.format(I18N.translate("sign.mustNotNull"), getPropertyName(KEY_FIELD_NOISE)));
 
         // 必须保留，存在向content中put数据的可能
         String algorithm = getKeyField(content, KEY_FIELD_ALGORITHM, howToSign.getAlgorithm());
@@ -183,8 +182,8 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         IF.not(ironPen.verify(serializer.serialize(content),
                 Base64.decodeBase64(getSignature(content)),
                 algorithm, keyId),
-                // TODO i18n
-                ErrorCodes.SIGNATURE_VERIFICATION_FAILED, "server side verify failed.");
+                ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
+                I18N.translate("sign.serverSideVerifyFailed"));
 
     }
 
@@ -194,7 +193,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         if (signStr == null) {
             signStr = IF.isNull(getServiceContext().getSubjoin().get(propertySign),
                     ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
-                    "no signature found");
+                    I18N.translate("sign.noSignatureFound"));
         }
         return signStr;
     }
@@ -255,7 +254,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         }
     }
 
-    private static String getPropertyName(String propertyName) {
+    public static String getPropertyName(String propertyName) {
         ServiceContext serviceContext = ConcreteContext.getServiceContext();
         if (serviceContext instanceof ClientSideContext) {
             return PROPERTY_NAMES.get(((ClientSideContext) serviceContext).getDestination().getIdentify()).getName(propertyName);
