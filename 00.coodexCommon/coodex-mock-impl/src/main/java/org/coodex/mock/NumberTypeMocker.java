@@ -50,7 +50,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
     private static NumberTypeMocker instance;
 
-    public NumberTypeMocker() {
+    private NumberTypeMocker() {
         instance = this;
     }
 
@@ -290,13 +290,14 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
     private static Object round(int i, Object value, int digits) {
         if(digits == -1) return value;
 
+        final BigDecimal bigDecimal = new BigDecimal(value.toString()).setScale(digits, BigDecimal.ROUND_HALF_UP);
         switch (i) {
             case 8:// float
             case 9:
-                return new BigDecimal(value.toString()).setScale(digits,BigDecimal.ROUND_HALF_UP).floatValue();
+                return bigDecimal.floatValue();
             case 10:// double
             case 11:
-                return new BigDecimal(value.toString()).setScale(digits,BigDecimal.ROUND_HALF_UP).doubleValue();
+                return bigDecimal.doubleValue();
             default:
                 return value;
         }

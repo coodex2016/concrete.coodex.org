@@ -16,13 +16,22 @@
 
 package org.coodex.concrete.core.signature;
 
+import org.coodex.concrete.client.ClientSideContext;
+import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.ServiceContext;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
+import static org.coodex.concrete.core.signature.SignUtil.TAG_SIGNATRUE;
 import static org.coodex.concrete.core.signature.SignUtil.getString;
 
 public class HMAC_KeyStoreDefaultImpl implements HMAC_KeyStore {
@@ -66,15 +75,49 @@ public class HMAC_KeyStoreDefaultImpl implements HMAC_KeyStore {
         return key == null ? getString("hmacKey", null, null) : key;
     }
 
+
+    private static String getHmacKeyStr(String paperName, String keyId, String module) {
+        List<String> namespace = new ArrayList<>();
+        namespace.add(module == null ? TAG_SIGNATRUE : TAG_CLIENT);
+        if (module != null)
+            namespace.add(module);
+        namespace.add(getAppSet());
+        String[] namespaceArray = namespace.toArray(new String[0]);
+        boolean blankPaper = Common.isBlank(paperName);
+        String hmacKeyProperty = module == null ? "hmacKey" : "signature.hmacKey";
+        String key = null;
+        if (Common.isBlank(keyId)) {
+            if (!blankPaper) {
+                key = Config.get(String.format("%s.%s", hmacKeyProperty, paperName), namespaceArray);
+            }
+            if (key == null) {
+                key = Config.get(hmacKeyProperty, namespaceArray);
+            }
+        } else {
+            key = Config.get(String.format("%s.%s", hmacKeyProperty, (blankPaper ? "" : (paperName + ".")) + keyId), namespaceArray);
+            if (key == null) {
+                key = Config.get(hmacKeyProperty + (blankPaper ? "" : ("." + paperName)), namespaceArray);
+            }
+        }
+        return key;
+    }
+
+    private String getModule() {
+        ServiceContext context = ConcreteContext.getServiceContext();
+        return context instanceof ClientSideContext ?
+                ((ClientSideContext) context).getDestination().getIdentify() :
+                null;
+    }
+
     @Override
     public byte[] getHmacKey(String paperName, String keyId) {
-        byte[] bytes = COMPATIBILITY_LOADER.get().getHmacKey(paperName, keyId);
-        if (bytes != null) {
-            log.warn("{} deprecated. use {} plz.", HmacKeyStore.class.getName(), HMAC_KeyStore.class.getName());
-            return bytes;
+        String s = getHmacKeyStr(paperName, keyId, getModule());
+        if (s != null) {
+            return s.getBytes();
         }
-        String s = getHmacKeyStr(paperName, keyId);
-        return s == null ? null : s.getBytes();
+        log.warn("{} deprecated. use {} plz.", HmacKeyStore.class.getName(), HMAC_KeyStore.class.getName());
+        return COMPATIBILITY_LOADER.get().getHmacKey(paperName, keyId);
+
     }
 
     @Override
