@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.Supplier;
 
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 
@@ -133,6 +134,15 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
         String pattern = I18N.translate(msgTemp);
 
         return (pattern != null) ? (format ? formatter.format(pattern, objects) : pattern) : null;
+    }
+
+    private static Object[] actualObjects(Object[] objects) {
+        if (objects == null || objects.length == 0) return objects;
+        Object[] objectArray = new Object[objects.length];
+        for (int i = 0; i < objects.length; i++) {
+            objectArray[i] = objects[i] instanceof Supplier ? ((Supplier) objects[i]).get() : objects[i];
+        }
+        return objectArray;
     }
 
 

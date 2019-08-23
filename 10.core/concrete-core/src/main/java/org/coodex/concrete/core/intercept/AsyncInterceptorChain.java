@@ -26,7 +26,7 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
 
     private static Comparator<ConcreteInterceptor> comparatorAsc = new MyComparator(1);
     private static Comparator<ConcreteInterceptor> comparatorDesc = new MyComparator(-1);
-    private Set<ConcreteInterceptor> interceptors = new HashSet<ConcreteInterceptor>();
+    private Set<ConcreteInterceptor> interceptors = new HashSet<>();
 
     public AsyncInterceptorChain() {
     }

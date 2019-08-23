@@ -22,6 +22,7 @@ import org.coodex.util.DigestHelper;
 import org.coodex.util.I18N;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 /**
  * Created by davidoff shen on 2017-04-24.
@@ -34,6 +35,9 @@ public class HmacPen extends AbstractIronPen {
                     new HMAC_KeyStoreDefaultImpl()
             ) {
             };
+
+    private final static Supplier<String> INVALID_HMAC_KEY = () -> I18N.translate("sign.invalidHMACKey");
+
 
     HmacPen(String paperName) {
         super(paperName);
@@ -49,7 +53,7 @@ public class HmacPen extends AbstractIronPen {
     @Override
     public byte[] sign(byte[] content, String algorithm, String keyId) {
         return sign(content, IF.isNull(getHmacKey(keyId)
-                , ErrorCodes.SIGNING_FAILED, I18N.translate("sign.invalidHMACKey")), algorithm);
+                , ErrorCodes.SIGNING_FAILED, INVALID_HMAC_KEY), algorithm);
     }
 
     private byte[] sign(byte[] content, byte[] key, String algorithm) {
@@ -67,7 +71,7 @@ public class HmacPen extends AbstractIronPen {
                 sign(content,
                         IF.isNull(getHmacKey(keyId),
                                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
-                                I18N.translate("sign.invalidHMACKey")),
+                                INVALID_HMAC_KEY),
                         algorithm));
     }
 }

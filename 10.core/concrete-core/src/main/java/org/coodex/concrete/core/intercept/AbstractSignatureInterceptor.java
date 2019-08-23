@@ -39,6 +39,7 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
 import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
@@ -136,29 +137,10 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         return result;
     }
 
-
-    //    @Override
-//    public Object around(RuntimeContext context, MethodInvocation joinPoint) throws Throwable {
-//        SignUtil.HowToSign howToSign = SignUtil.howToSign(context);
-//
-//        int run = SIDE.get() == null ? SIDE_SERVER : SIDE.get().intValue();
-//
-//        switch (run) {
-//            case SIDE_SERVER:
-//                return serverModel(context, joinPoint, howToSign);
-//            case SIDE_CLIENT:
-//                // client: 签名、验签
-//                return clientModel(context, joinPoint, howToSign);
-//            default:// 本地和测试模式不管
-//                return joinPoint.proceed();
-//        }
-//    }
-
-//    protected abstract AbstractUnit getUnitFromContext(RuntimeContext context/*, Object[] args*/);
-
-//    protected AbstractUnit
-
-//    protected abstract Map<String, Object> buildContent(RuntimeContext context, Object[] args);
+    private static final Supplier<String> SERVER_SIDE_VERIFY_FAILED = () -> I18N.translate("sign.serverSideVerifyFailed");
+    private static final Supplier<String> NO_SIGNATURE_FOUND = () -> I18N.translate("sign.noSignatureFound");
+    private static final Supplier<String> NOISE_MUST_NOT_NULL =
+            () -> String.format(I18N.translate("sign.mustNotNull"), getPropertyName(KEY_FIELD_NOISE));
 
     private static final SingletonMap<String, PropertyNameReload> PROPERTY_NAMES = new StringKeySingletonMap<>(
             PropertyNameReload::new
@@ -169,7 +151,8 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
                 context, joinPoint.getArguments());
         String noise = IF.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
-                String.format(I18N.translate("sign.mustNotNull"), getPropertyName(KEY_FIELD_NOISE)));
+                NOISE_MUST_NOT_NULL
+        );
 
         // 必须保留，存在向content中put数据的可能
         String algorithm = getKeyField(content, KEY_FIELD_ALGORITHM, howToSign.getAlgorithm());
@@ -182,8 +165,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         IF.not(ironPen.verify(serializer.serialize(content),
                 Base64.decodeBase64(getSignature(content)),
                 algorithm, keyId),
-                ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
-                I18N.translate("sign.serverSideVerifyFailed"));
+                ErrorCodes.SIGNATURE_VERIFICATION_FAILED, SERVER_SIDE_VERIFY_FAILED);
 
     }
 
@@ -192,8 +174,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         String signStr = (String) content.remove(propertySign);
         if (signStr == null) {
             signStr = IF.isNull(getServiceContext().getSubjoin().get(propertySign),
-                    ErrorCodes.SIGNATURE_VERIFICATION_FAILED,
-                    I18N.translate("sign.noSignatureFound"));
+                    ErrorCodes.SIGNATURE_VERIFICATION_FAILED, NO_SIGNATURE_FOUND);
         }
         return signStr;
     }
@@ -397,55 +378,6 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         }
     }
 
-//    @Deprecated
-//    private Object clientModel(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
-//        try {
-//            // 0 签名
-//            Map<String, Object> content = buildContent(CURRENT_UNIT.get(), joinPoint.getArguments());
-//            // noise
-//            int noise = Common.random(0, Integer.MAX_VALUE);
-//            putKeyField(content, KEY_FIELD_NOISE, noise, context, joinPoint);
-//
-//            //algorithm
-//            String algorithm = putKeyField(content, KEY_FIELD_ALGORITHM,
-//                    SignUtil.getString(KEY_FIELD_ALGORITHM, howToSign.getPaperName(), null),
-//                    context, joinPoint);
-//            if (algorithm == null)
-//                algorithm = howToSign.getAlgorithm();
-//
-//            // keyId
-//            String keyId = putKeyField(content, KEY_FIELD_KEY_ID,
-//                    SignUtil.getString(KEY_FIELD_KEY_ID, howToSign.getPaperName(), null),
-//                    context, joinPoint);
-//
-//            byte[] data = howToSign.getSerializer().serialize(content);
-//
-//            String sign = Base64.encodeBase64String(howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName())
-//                    .sign(data, algorithm, keyId));
-//
-//            putKeyField(content, KEY_FIELD_SIGN, sign, context, joinPoint);
-//            log.debug("signature for[ {} ]: \n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}",
-//                    context.getActualMethod().getName(),
-//                    getPropertyName(KEY_FIELD_NOISE), noise,
-//                    getPropertyName(KEY_FIELD_ALGORITHM), algorithm,
-//                    getPropertyName(KEY_FIELD_KEY_ID), keyId,
-//                    getPropertyName(KEY_FIELD_SIGN), sign,
-//                    "toSign", dataToString(data)
-////                    "data",
-//            );
-//            Object o = joinPoint.proceed();
-//
-//            if (o != null && o instanceof Signature) {
-//                clientVerify(howToSign, (Signature) o, algorithm, keyId);
-//            }
-//            return o;
-//        } catch (ConcreteException ce) {
-//            throw ce;
-//        } catch (Throwable th) {
-//            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
-//        }
-//    }
-
     private void clientVerify(SignUtil.HowToSign howToSign, @NotNull Signature signature, String algorithm, String keyId) throws IllegalAccessException {
         IF.not(howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName())
                 .verify(howToSign.getSerializer().serialize(signatureToMap(signature)),
@@ -453,8 +385,6 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
                         algorithm, keyId), ErrorCodes.SIGNATURE_VERIFICATION_FAILED, "client side verify failed.");
     }
 
-
-//    protected abstract void setArgument(RuntimeContext context, MethodInvocation joinPoint, String parameterName, Object value);
 
 
     protected abstract String dataToString(byte[] data);

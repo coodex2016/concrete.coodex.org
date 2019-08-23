@@ -29,20 +29,6 @@ import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
  */
 public abstract class AbstractInterceptor implements ConcreteInterceptor {
 
-//    private final static Logger log = LoggerFactory.getLogger(AbstractInterceptor.class);
-
-
-//    private final static ThreadLocal<Object> atom = new ThreadLocal<>();
-
-
-//    private final static Logger log = LoggerFactory.getLogger(AbstractInterceptor.class);
-
-
-//    @Deprecated
-//    protected final static RuntimeContext getContext(MethodInvocation joinPoint) {
-//        return RuntimeContext.getRuntimeContext(joinPoint.getMethod(),
-//                joinPoint.getThis().getClass());
-//    }
 
     protected final static DefinitionContext getContext(MethodInvocation invocation) {
         if (invocation instanceof ConcreteMethodInvocation) {

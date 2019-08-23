@@ -26,11 +26,15 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-08-23
+
+- concrete-core: ErrorCodeFacade支持Supplier，构建信息时才会执行
+
 ## 2019-08-21
 
 - SingletonMap增加getNullKeyOnce接口，用以处理key为null是的key转化；增加StringKeySingletonMap，默认nullKey转为"nullKey_" + uuid
 - AcceptableServiceLoader.getServiceInstance和getServiceInstances更名为select和selectAll
-- signautre拦截器重构：
+- signature拦截器重构：
   - 痛点：
     - 乱
   - 方案：
