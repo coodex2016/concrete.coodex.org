@@ -30,11 +30,14 @@ import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.util.Common;
 import org.coodex.util.TypeHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.PathParam;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
 import static org.coodex.concrete.support.jaxrs.javassist.CGContext.CLASS_POOL;
 
 //import static org.coodex.concrete.jaxrs.ClassGenerator.FRONTEND_DEV_MODE;
@@ -48,6 +51,7 @@ import static org.coodex.concrete.support.jaxrs.javassist.CGContext.CLASS_POOL;
  */
 public abstract class AbstractMethodGenerator {
 
+    private final static Logger log = LoggerFactory.getLogger(AbstractMethodGenerator.class);
 
     private static final AtomicInteger REF = new AtomicInteger(0);
     private static final Class<?>[] PRIMITIVE_CLASSES = new Class[]{
@@ -125,7 +129,8 @@ public abstract class AbstractMethodGenerator {
         if (getUnit().getPojoCount() > 1)
             return createPojoClass(
                     getUnit().getPojo(),
-                    String.format("POJO$%s$%s$%08X",
+                    String.format("%s.POJO$%s$%s$%08X",
+                            getContext().getServiceClass().getPackage().getName(),
                             getContext().getServiceClass().getSimpleName(),
                             getUnit().getMethod().getName(),
                             REF.incrementAndGet())
@@ -160,9 +165,7 @@ public abstract class AbstractMethodGenerator {
             index++;
         }
         if (additionParamCount > 0) {
-            for (int i = 0; i < addingTypes.length; i++) {
-                parameters[i] = addingTypes[i];
-            }
+            System.arraycopy(addingTypes, 0, parameters, 0, addingTypes.length);
         }
         return parameters;
     }
@@ -184,8 +187,10 @@ public abstract class AbstractMethodGenerator {
             );
             ctClass.addField(field);
         }
-
-        return ctClass.toClass();
+//        log.debug("generate class: {} use neighbor {}", className, getContext().getServiceClass().getName());
+        return IS_JAVA_9_AND_LAST.get() ?
+                ctClass.toClass(getContext().getServiceClass()) :
+                ctClass.toClass();
     }
 
 //    protected final SignatureAttribute.Type getReturnSignatureTypeForDemo() {

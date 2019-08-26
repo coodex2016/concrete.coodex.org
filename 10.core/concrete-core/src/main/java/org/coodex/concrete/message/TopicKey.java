@@ -59,4 +59,13 @@ public class TopicKey {
         result = 31 * result + (topicTypeName != null ? topicTypeName.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "TopicKey{" +
+                "queue='" + queue + '\'' +
+                ", topicType=" + topicType +
+                ", topicTypeName='" + topicTypeName + '\'' +
+                '}';
+    }
 }

@@ -48,8 +48,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.*;
-import static org.coodex.util.GenericTypeHelper.toReference;
 import static org.coodex.util.Common.runtimeException;
+import static org.coodex.util.GenericTypeHelper.toReference;
 
 
 @Named
@@ -198,7 +198,8 @@ public class TopicBeanPostProcessor extends InstantiationAwareBeanPostProcessorA
 //    }
 
 
-    private Class<?> getBeanClass(Type topicType, String queueName, String className, ParameterizedType pt, Class<?> contextClass) throws CannotCompileException {
+    private Class<?> getBeanClass(Type topicType, String queueName, String className,
+                                  ParameterizedType pt, Class<?> contextClass) throws CannotCompileException {
 //        Class topicClass = (Class) pt.getRawType();
 
         ClassPool classPool = JavassistHelper.getClassPool(TopicBeanPostProcessor.class);
@@ -295,7 +296,8 @@ public class TopicBeanPostProcessor extends InstantiationAwareBeanPostProcessorA
             ctClass.addMethod(ctMethod);
         }
 
-        return (Class<?>) ctClass.toClass();
+//        return (Class<?>) ctClass.toClass();
+        return IS_JAVA_9_AND_LAST.get() ? ctClass.toClass(contextClass) : ctClass.toClass();
     }
 
 //    @Override

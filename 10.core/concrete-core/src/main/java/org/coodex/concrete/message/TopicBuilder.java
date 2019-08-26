@@ -37,6 +37,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
 import static org.coodex.concrete.message.CourierBuilder.getMessageType;
 import static org.coodex.util.Common.runtimeException;
 
@@ -131,9 +132,19 @@ class TopicBuilder
             ctClass.addConstructor(ctConstructor);
 
             //noinspection unchecked
-            Class<? extends AbstractTopic> newClass = (Class<? extends AbstractTopic>) ctClass.toClass();
+            Class<? extends AbstractTopic> newClass = (Class<? extends AbstractTopic>) (
+                    IS_JAVA_9_AND_LAST.get() ?
+                            ctClass.toClass(TopicBuilder.class) :
+                            ctClass.toClass()
+            );
             Constructor constructor = newClass.getConstructor(Courier.class);
-            return (AbstractTopic) constructor.newInstance(courier);
+
+            AbstractTopic abstractTopic = (AbstractTopic) constructor.newInstance(courier);
+            log.info("Topic build. {} for {}",
+                    abstractTopic.getClass().getName(),
+                    key.toString()
+            );
+            return abstractTopic;
         } catch (Throwable th) {
             throw runtimeException(th);
         }

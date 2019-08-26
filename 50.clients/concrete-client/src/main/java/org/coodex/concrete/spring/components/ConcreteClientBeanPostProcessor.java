@@ -47,6 +47,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.ClientHelper.isConcreteService;
 import static org.coodex.concrete.common.AbstractBeanProvider.CREATE_BY_CONCRETE;
+import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
 
 @Named
 public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter {
@@ -188,7 +189,9 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
                 ctClass.addMethod(ctMethod);
             }
 
-            Class generated = ctClass.toClass();
+            Class generated = IS_JAVA_9_AND_LAST.get() ?
+                    ctClass.toClass(concreteService) :
+                    ctClass.toClass();
 
             BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(generated);
             defaultListableBeanFactory.registerBeanDefinition(

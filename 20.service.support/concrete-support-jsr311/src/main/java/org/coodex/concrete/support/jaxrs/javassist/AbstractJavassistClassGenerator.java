@@ -23,14 +23,20 @@ import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concrete.jaxrs.ClassGenerator;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
 
 
 /**
  * Created by davidoff shen on 2016-11-24.
  */
 public abstract class AbstractJavassistClassGenerator implements ClassGenerator {
+
+    private final static Logger log = LoggerFactory.getLogger(AbstractJavassistClassGenerator.class);
 
     protected final static String BYTE_CODE_TOOLS_NAME = "javassist";
     protected final static AtomicInteger index = new AtomicInteger(0);
@@ -64,7 +70,12 @@ public abstract class AbstractJavassistClassGenerator implements ClassGenerator 
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        return context.getNewClass().toClass();
+
+        Class clz = IS_JAVA_9_AND_LAST.get() ?
+                context.getNewClass().toClass(module.getInterfaceClass()) :
+                context.getNewClass().toClass();
+        log.info("Jaxrs impl class created: {}, {}", clz.getName(), context.getServiceClass().getName());
+        return clz;
     }
 
     private CGContext initImplClass(JaxrsModule module) throws CannotCompileException {

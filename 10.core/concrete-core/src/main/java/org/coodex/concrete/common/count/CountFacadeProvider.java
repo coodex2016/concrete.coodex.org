@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.common.ConcreteHelper.getScheduler;
+import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
 import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 
 /**
@@ -115,7 +116,8 @@ public class CountFacadeProvider implements CountFacade {
 
     private CounterChain newCounterChain(Class clz) throws CannotCompileException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         ClassPool classPool = ClassPool.getDefault();
-        String className = String.format("CounterChain$%s$%08X", clz.getSimpleName(), atomicInteger.incrementAndGet());
+//        String className = String.format("CounterChain$%s$%08X", clz.getSimpleName(), atomicInteger.incrementAndGet());
+        String className = String.format("%s.CounterChain$%s$%08X", CounterChain.class.getPackage().getName(), clz.getSimpleName(), atomicInteger.incrementAndGet());
         CtClass newClass = classPool.makeClass(className,
                 classPool.getOrNull(CounterChain.class.getName()));
 
@@ -136,7 +138,14 @@ public class CountFacadeProvider implements CountFacade {
 
         newClass.addConstructor(spiConstructor);
 
-        return (CounterChain) newClass.toClass().getConstructor(new Class[0]).newInstance();
+//        return (CounterChain) newClass.toClass().getConstructor(new Class[0]).newInstance();
+        CounterChain counterChain = (CounterChain) (IS_JAVA_9_AND_LAST.get() ?
+                newClass.toClass(CounterChain.class) :
+                newClass.toClass())
+                .getConstructor(new Class[0])
+                .newInstance();
+        log.info("CounterChain created: {}, {}", counterChain.getClass().getName(), clz.getName());
+        return counterChain;
     }
 
     @Override

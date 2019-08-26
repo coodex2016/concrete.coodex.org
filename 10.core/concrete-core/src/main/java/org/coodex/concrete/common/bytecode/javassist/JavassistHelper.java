@@ -23,6 +23,7 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
+import org.coodex.util.Singleton;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,18 @@ public class JavassistHelper {
 
     private final static Logger log = LoggerFactory.getLogger(JavassistHelper.class);
 
+    public final static Singleton<Boolean> IS_JAVA_9_AND_LAST = new Singleton<>(
+            () -> {
+                try {
+                    //noinspection JavaReflectionMemberAccess
+                    Class.class.getMethod("getModule");
+                    return true;
+                } catch (NoSuchMethodException e) {
+                    return false;
+                }
+            }
+    );
+
 //    public static String getGenericSignature(ParameterizedType type){
 //        List<String> arguments = new ArrayList<String>();
 //        for(Type t : type.getActualTypeArguments()){
@@ -54,21 +67,18 @@ public class JavassistHelper {
 //    }
 
     private final static SingletonMap<ClassLoader, ClassPool> classPools =
-            new SingletonMap<ClassLoader, ClassPool>(new SingletonMap.Builder<ClassLoader, ClassPool>() {
-                @Override
-                public ClassPool build(ClassLoader key) {
-                    ClassPool classPool = new ClassPool(true);
-                    classPool.appendClassPath(new LoaderClassPath(key));
-                    return classPool;
-                }
+            new SingletonMap<>(key -> {
+                ClassPool classPool = new ClassPool(true);
+                classPool.appendClassPath(new LoaderClassPath(key));
+                return classPool;
             });
 
-    public final static ClassPool getClassPool(Class clz) {
+    public static ClassPool getClassPool(Class clz) {
         return clz == null ? ClassPool.getDefault() : classPools.get(clz.getClassLoader());
     }
 
     public static SignatureAttribute.ClassType classType(String className, String... arguments) {
-        Collection<SignatureAttribute.TypeArgument> args = new ArrayList<SignatureAttribute.TypeArgument>();
+        Collection<SignatureAttribute.TypeArgument> args = new ArrayList<>();
         for (String arg : arguments) {
             args.add(new SignatureAttribute.TypeArgument(new SignatureAttribute.ClassType(arg)));
         }
@@ -76,7 +86,7 @@ public class JavassistHelper {
     }
 
     public static SignatureAttribute.ClassType classType(String className, Type... arguments) {
-        Collection<SignatureAttribute.TypeArgument> args = new ArrayList<SignatureAttribute.TypeArgument>();
+        Collection<SignatureAttribute.TypeArgument> args = new ArrayList<>();
         for (Type arg : arguments) {
             args.add(
                     new SignatureAttribute.TypeArgument(
@@ -126,9 +136,9 @@ public class JavassistHelper {
         } else if (t instanceof ParameterizedType) {
             java.lang.reflect.Type[] types = ((ParameterizedType) t)
                     .getActualTypeArguments();
-            Collection<SignatureAttribute.TypeArgument> args = new ArrayList<SignatureAttribute.TypeArgument>();
-            for (int i = 0; i < types.length; i++) {
-                args.add(new SignatureAttribute.TypeArgument((SignatureAttribute.ObjectType) classType(types[i], contextClass)));
+            Collection<SignatureAttribute.TypeArgument> args = new ArrayList<>();
+            for (Type type : types) {
+                args.add(new SignatureAttribute.TypeArgument((SignatureAttribute.ObjectType) classType(type, contextClass)));
             }
             return new SignatureAttribute.ClassType(
                     ((Class<?>) ((ParameterizedType) t).getRawType()).getName(),
@@ -181,7 +191,7 @@ public class JavassistHelper {
         return -1;
     }
 
-    public static final AnnotationsAttribute aggregate(ConstPool cp, Annotation... anno) {
+    public static AnnotationsAttribute aggregate(ConstPool cp, Annotation... anno) {
         AnnotationsAttribute attr = new AnnotationsAttribute(cp,
                 AnnotationsAttribute.visibleTag);
         for (Annotation annotation : anno) {

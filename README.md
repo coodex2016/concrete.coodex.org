@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-08-26
+
+- coodex-core, concrete-client, concrete-support-jsr311, concrete-core-spring: 使用javassist生成字节码时，兼容java8及java9以后版本的toClass式
+
 ## 2019-08-23
 
 - concrete-core: ErrorCodeFacade支持Supplier，构建信息时才会执行

@@ -34,6 +34,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
 import static org.coodex.concrete.message.Topics.TAG_QUEUE;
 import static org.coodex.util.GenericTypeHelper.solveFromType;
 
@@ -126,9 +127,11 @@ class CourierBuilder
             ctConstructor.setBody("{super($$);}");
             ctClass.addConstructor(ctConstructor);
 
-            Class<Courier> courierClass = (Class<Courier>) ctClass.toClass();
+            Class<Courier> courierClass = (Class<Courier>) (IS_JAVA_9_AND_LAST.get() ? ctClass.toClass(CourierBuilder.class) : ctClass.toClass());
             Constructor courierConstructor = courierClass.getConstructor(String.class, String.class, Type.class);
-            return (Courier) courierConstructor.newInstance(key.queue, destination, key.topicType);
+            Courier courier = (Courier) courierConstructor.newInstance(key.queue, destination, key.topicType);
+            log.info("Courier build. {}, {}", courierClass.getName(), key.toString());
+            return courier;
         } catch (Throwable th) {
             throw Common.runtimeException(th);
         }
