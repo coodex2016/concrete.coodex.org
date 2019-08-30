@@ -66,6 +66,8 @@ public final class ErrorCodes extends AbstractErrorCodes {
 
     public static final int SIGNATURE_KEY_LOAD_FAILED = CONCRETE_CORE + 19;
 
+    public static final int NONE_IMPLEMENTS_FOUND_FOR = CONCRETE_CORE + 20;
+
     ///Own protocol
     public static final int OWN_PROVIDER_NO_RESPONSE_VISITOR = CONCRETE_CORE + 200;
 

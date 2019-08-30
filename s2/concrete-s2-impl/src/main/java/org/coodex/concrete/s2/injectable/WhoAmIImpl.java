@@ -48,8 +48,10 @@ public class WhoAmIImpl implements WhoAmI {
         Account account = token.currentAccount();
         return IF.isNull(
                 ACCOUNT_COPIER_LOADER.get()
-                        .select(account),
-                ErrorCodes.NO_BEAN_PROVIDER_FOUND
+                        .select(IF.isNull(account, ErrorCodes.NONE_ACCOUNT, token.getTokenId())),
+                ErrorCodes.NONE_IMPLEMENTS_FOUND_FOR,
+                AccountCopier.class.getName(),
+                account
         ).copy(account);
     }
 }
