@@ -1,5 +1,5 @@
 /* tslint:disable */
-import {HttpClient, HttpResponse, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent} from '@angular/common/http';
+import {HttpClient, HttpResponse, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 <#if rxjsVersion?default(6) lt 6>import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
@@ -59,6 +59,11 @@ export abstract class AbstractConcreteService {
         return {
             responseType: 'text',
             body,
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store',
+                'X-CLIENT-PROVIDER': 'CONCRETE-ANGULAR-V2-${version}'
+            }),
             observe: 'response',
             withCredentials: true
         };
@@ -117,9 +122,7 @@ export abstract class AbstractConcreteService {
 @Injectable()
 export class ConcreteHeadersInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        let concreteHeaders = req.headers.set('content-type', 'application/json')
-            .set('Cache-Control', 'no-cache, no-store')
-            .set('X-CLIENT-PROVIDER', 'CONCRETE-ANGULAR-V2-${version}');
+        let concreteHeaders = req.headers;
         const tokenId = runtimeContext.getTokenId();
         if (tokenId) {
             concreteHeaders = concreteHeaders.set('CONCRETE-TOKEN-ID', tokenId);
