@@ -20,6 +20,7 @@ import org.coodex.util.ReflectHelper;
 import org.coodex.util.Singleton;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -41,10 +42,8 @@ public class BeanServiceLoaderProvider /*extends ServiceLoaderImpl<BeanProvider>
     private static Singleton<BeanProvider> beanProviderSingleton = new Singleton<>(
             () -> {
                 ServiceLoader<BeanProvider> serviceLoader = ServiceLoader.load(BeanProvider.class);
-                for(BeanProvider beanProvider: serviceLoader){
-                    return beanProvider;
-                }
-                return new BeanProvider() {
+                Iterator<BeanProvider> iterable = serviceLoader.iterator();
+                return iterable.hasNext() ? iterable.next() : new BeanProvider() {
                     @Override
                     public <T> T getBean(Class<T> type) {
                         return null;
