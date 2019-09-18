@@ -204,11 +204,11 @@ public class Section<T extends Comparable<T>> {
     }
 
     public T getStart() {
-        return start;
+        return cloneObject(start);
     }
 
     public T getEnd() {
-        return end;
+        return cloneObject(end);
     }
 
     void setEnd(T end) {

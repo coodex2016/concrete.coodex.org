@@ -122,6 +122,7 @@
         <module>20.service.support/concrete-support-jaxrs-swagger</module>
         <module>30.spring/concrete-spring-boot-jaxrs</module>
         <module>30.spring/concrete-spring-boot-amqp</module>
+        <module>00.coodexCommon/coodex-billing</module>
 
     </modules>
 

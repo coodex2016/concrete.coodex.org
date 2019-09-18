@@ -16,8 +16,10 @@
 
 package org.coodex.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class SectionTest {
     public static Section.Builder<Integer, IntSection> BUILDER = new Section.Builder<Integer, IntSection>() {
@@ -34,7 +36,69 @@ public class SectionTest {
         }
     }
 
+    private static List<IntSection> randomSections() {
+        Random random = new Random();
+        List<IntSection> intSections = new ArrayList<IntSection>();
+        int count = random.nextInt(30) + 5;
+        for (int i = 0; i < count; i++) {
+            int start = random.nextInt();
+            int end = start + random.nextInt();
+            if (start > end) {
+                int x = start;
+                start = end;
+                end = x;
+            }
+            intSections.add(BUILDER.create(start, end));
+        }
+        return intSections;
+    }
+
+    private static void run(Runnable runnable, String label) {
+        long start = System.currentTimeMillis();
+        runnable.run();
+        System.out.println(
+                label + " used " + (System.currentTimeMillis() - start) + " ms"
+        );
+    }
+
     public static void main(String[] args) {
+        int count = 100000;
+        final List<List<IntSection>> lists = new ArrayList<List<IntSection>>();
+        for (int i = 0; i < count; i++) {
+            lists.add(randomSections());
+        }
+
+        run(new Runnable() {
+            @Override
+            public void run() {
+                for (List<IntSection> intSections : lists) {
+                    Section.merge(intSections, BUILDER);
+                }
+            }
+        }, "merge " + count + " times");
+
+        run(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < lists.size(); i++) {
+                    List<IntSection> subtracted = i == 0 ? lists.get(lists.size() - 1) : lists.get(i - 1);
+                    List<IntSection> subtraction = lists.get(i);
+                    Section.sub(subtracted, subtraction, BUILDER);
+                }
+            }
+        }, "sub " + count + " times");
+
+        run(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < lists.size(); i++) {
+                    List<IntSection> subtracted = i == 0 ? lists.get(lists.size() - 1) : lists.get(i - 1);
+                    List<IntSection> subtraction = lists.get(i);
+                    Section.intersect(subtracted, subtraction, BUILDER);
+                }
+            }
+        }, "intersect " + count + " times");
+
 
         List<IntSection> subtraction = Arrays.asList(
                 new IntSection(-1, 3),

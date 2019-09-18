@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-09-18
+
+- 增加[`coodex-billing`模块](00.coodexCommon/coodex-billing/README.md)
+
 ## 2019-08-26
 
 - coodex-core, concrete-client, concrete-support-jsr311, concrete-core-spring: 使用javassist生成字节码时，兼容java8及java9以后版本的toClass式
