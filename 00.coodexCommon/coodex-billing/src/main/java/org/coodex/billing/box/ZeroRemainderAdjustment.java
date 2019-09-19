@@ -20,10 +20,17 @@ import org.coodex.billing.Adjustment;
 import org.coodex.billing.Bill;
 import org.coodex.billing.Chargeable;
 
+/**
+ * 抹零
+ */
 public class ZeroRemainderAdjustment implements Adjustment<Chargeable> {
     private final String name;
     private final int subtraction;
 
+    /**
+     * @param name        你改成
+     * @param subtraction 模除的除数
+     */
     public ZeroRemainderAdjustment(String name, int subtraction) {
         this.name = name;
         this.subtraction = subtraction;

@@ -26,7 +26,12 @@ import org.coodex.billing.Chargeable;
  * @param <C>
  */
 public class PositiveOffAdjustment<C extends Chargeable> extends AbstractOffAdjustment<C> {
-    protected PositiveOffAdjustment(float offRate, String name) {
+
+    /**
+     * @param offRate off
+     * @param name    名称
+     */
+    public PositiveOffAdjustment(float offRate, String name) {
         super(offRate, name);
     }
 

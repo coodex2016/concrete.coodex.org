@@ -30,6 +30,11 @@ public class ConsumerGoods implements Adjustment<Chargeable> {
     private final float quantity;
     private final String name;
 
+    /**
+     * @param price    单价
+     * @param quantity 数量
+     * @param name     名称
+     */
     public ConsumerGoods(int price, float quantity, String name) {
         this.price = price;
         this.quantity = quantity;

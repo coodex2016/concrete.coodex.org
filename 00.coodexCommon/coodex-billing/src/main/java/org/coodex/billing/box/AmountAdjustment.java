@@ -20,10 +20,17 @@ import org.coodex.billing.Adjustment;
 import org.coodex.billing.Bill;
 import org.coodex.billing.Chargeable;
 
+/**
+ * 固定金额的调减
+ */
 public class AmountAdjustment implements Adjustment<Chargeable> {
     private final String name;
     private final long amount;
 
+    /**
+     * @param amount 需要调减的金额
+     * @param name   调减项名称
+     */
     public AmountAdjustment(long amount, String name) {
         this.name = name;
         this.amount = amount;

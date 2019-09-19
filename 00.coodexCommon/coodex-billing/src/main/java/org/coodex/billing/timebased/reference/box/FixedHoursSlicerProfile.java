@@ -22,6 +22,9 @@ public class FixedHoursSlicerProfile implements SlicerProfile {
 
     private final int fixedHours;
 
+    /**
+     * @param fixedHours 时间段小时数，不可小于1
+     */
     public FixedHoursSlicerProfile(int fixedHours) {
         if (fixedHours <= 0) {
             throw new RuntimeException("fixed hours must greater then zero");

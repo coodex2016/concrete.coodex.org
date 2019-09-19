@@ -22,6 +22,11 @@ import org.coodex.billing.timebased.TimeBasedBill;
 import org.coodex.billing.timebased.TimeBasedChargeable;
 import org.coodex.billing.timebased.TimeBasedDetail;
 
+/**
+ * 所有时序对象调整
+ *
+ * @param <C> {@link TimeBasedChargeable}
+ */
 public class TimeBasedOffAdjustment<C extends TimeBasedChargeable> extends AbstractOffAdjustment<C> {
 
 

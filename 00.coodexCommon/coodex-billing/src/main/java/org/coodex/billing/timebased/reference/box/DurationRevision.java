@@ -26,24 +26,47 @@ import java.util.concurrent.TimeUnit;
 
 import static org.coodex.billing.timebased.reference.box.Utils.timeUnitToCalendarConstant;
 
+/**
+ * 整体时长调减
+ */
 public class DurationRevision implements WholeTimeRevision {
     private final String name;
     private final TimeUnit unit;
     private final int duration;
     private final boolean fromStart;
 
+    /**
+     * @param name     名称
+     * @param duration 时长
+     */
     public DurationRevision(String name, int duration) {
         this(name, duration, true);
     }
 
+    /**
+     * @param name      名称
+     * @param duration  时长
+     * @param fromStart true:开始点开始调减，false: 结束点开始调减
+     */
     public DurationRevision(String name, int duration, boolean fromStart) {
         this(name, TimeUnit.MINUTES, duration, fromStart);
     }
 
+    /**
+     * @param name     名称
+     * @param unit     时长单位
+     * @param duration 时长
+     */
     public DurationRevision(String name, TimeUnit unit, int duration) {
         this(name, unit, duration, true);
     }
 
+    /**
+     * @param name      名称
+     * @param unit      时长单位
+     * @param duration  调减时长
+     * @param fromStart true:开始点开始调减，false: 结束点开始调减
+     */
     public DurationRevision(String name, TimeUnit unit, int duration, boolean fromStart) {
         this.name = name;
         this.unit = unit;

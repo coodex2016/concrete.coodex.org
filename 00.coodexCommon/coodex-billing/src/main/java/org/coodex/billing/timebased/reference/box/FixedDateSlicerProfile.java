@@ -18,6 +18,9 @@ package org.coodex.billing.timebased.reference.box;
 
 import org.coodex.billing.timebased.reference.SlicerProfile;
 
+/**
+ * 按自然日切片的参数
+ */
 public class FixedDateSlicerProfile implements SlicerProfile {
     private final String startTime;
 
@@ -25,6 +28,9 @@ public class FixedDateSlicerProfile implements SlicerProfile {
         this(null);
     }
 
+    /**
+     * @param startTime 从一天的哪个时刻开始，默认为0点
+     */
     public FixedDateSlicerProfile(String startTime) {
         this.startTime = startTime == null ? "00:00" : startTime;
     }

@@ -27,6 +27,11 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 按自然日切片
+ *
+ * @param <C> {@link TimeBasedChargeable}
+ */
 public class FixedDateSlicerFactory<C extends TimeBasedChargeable> implements SlicerFactory<C, FixedDateSlicerProfile> {
     @Override
     public FragmentSlicer<C> build(FixedDateSlicerProfile fixedDateSlicerProfile) {
