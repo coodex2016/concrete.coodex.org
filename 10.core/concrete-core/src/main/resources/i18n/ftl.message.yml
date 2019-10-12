@@ -21,6 +21,7 @@ ftl:
     1018: "MODULE DEFINITION NON UNIQUENESS: ${o1}"
     1019: "key load failed: ${o1},${o2},${o3}"
     1020: "none implements for: ${o1}, ${o2}"
+    1100: "${o1}"
     1300: "Deprecated: ${o1}"
     99998: "Client Error."
     99999: "UNKNOWN ERROR: ${o1}."

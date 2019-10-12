@@ -29,6 +29,8 @@ public class InterceptOrders {
 
     public static final int DEPRECATED_CHECK = 101;
 
+    public static final int LICENSE_CHECK = 102;
+
     /**
      * 系统服务时间
      */

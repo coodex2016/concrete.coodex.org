@@ -26,6 +26,11 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-10-12
+
+- concrete-core：增加License拦截器
+- coodex-mock-impl: NumberTypeMocker无法加载的问题
+
 ## 2019-09-18
 
 - 增加[`coodex-billing`模块](00.coodexCommon/coodex-billing/README.md)

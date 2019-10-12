@@ -20,6 +20,7 @@ message:
   1018: "MODULE DEFINITION NON UNIQUENESS: {0}"
   1019: "key load failed: {0}, {1}, {2}"
   1020: "none implements for: {0}, {1}"
+  1100: "{0}"
   1300: "Deprecated: {0}"
   99998: "Client Error."
   99999: "UNKNOWN ERROR: {0}."

@@ -68,6 +68,9 @@ public final class ErrorCodes extends AbstractErrorCodes {
 
     public static final int NONE_IMPLEMENTS_FOUND_FOR = CONCRETE_CORE + 20;
 
+    //
+    public static final int ABOUT_LICENSE = CONCRETE_CORE + 100;
+
     ///Own protocol
     public static final int OWN_PROVIDER_NO_RESPONSE_VISITOR = CONCRETE_CORE + 200;
 

@@ -50,7 +50,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
     private static NumberTypeMocker instance;
 
-    private NumberTypeMocker() {
+    public NumberTypeMocker() {
         instance = this;
     }
 
