@@ -14,16 +14,29 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.prod;
+package org.coodex.concrete.api;
 
 import java.lang.annotation.*;
 
+/**
+ * 声明功能性服务归属的模块
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
+@Inherited
 @Documented
 public @interface Modules {
     /**
      * @return 声明被装饰类型所属的模块
      */
     String[] values();
+
+    /**
+     * 声明此服务为非功能性服务
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    @Documented
+    @interface NonFunctional {
+    }
 }

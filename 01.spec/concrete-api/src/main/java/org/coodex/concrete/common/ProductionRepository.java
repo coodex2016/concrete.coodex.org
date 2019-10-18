@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.prod.impl;
+package org.coodex.concrete.common;
 
-import org.coodex.concrete.prod.Product;
-import org.coodex.concrete.prod.ProductFactory;
+import org.coodex.util.AcceptableService;
 
-public class DefaultProductFactory implements ProductFactory {
+import java.util.List;
 
+public interface ProductionRepository extends AcceptableService<Account> {
 
+    List<Production> getProductionsBy(Account account, String[] modules);
 
-    @Override
-    public Product getProductInstance(String key) {
-        return null;
-    }
 }

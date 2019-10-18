@@ -16,10 +16,12 @@
 
 package org.coodex.concrete.common;
 
+import java.io.Serializable;
+
 /**
  * Created by davidoff shen on 2017-05-25.
  */
-public interface SaaSAccount<ID extends AccountID> extends Account<ID> {
+public interface SaaSAccount<ID extends Serializable> extends Account<ID> {
 
     String getTenant();
 }

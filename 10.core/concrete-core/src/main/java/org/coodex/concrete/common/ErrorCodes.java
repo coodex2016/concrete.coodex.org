@@ -71,6 +71,12 @@ public final class ErrorCodes extends AbstractErrorCodes {
     //
     public static final int ABOUT_LICENSE = CONCRETE_CORE + 100;
 
+    public static final int PRODUCTION_OVERDUE = CONCRETE_CORE + 101;
+
+    public static final int PRODUCTION_OVERDUE_REMIND = CONCRETE_CORE + 102;
+
+    public static final int PRODUCTION_NONE_THIS_MODULE = CONCRETE_CORE + 103;
+
     ///Own protocol
     public static final int OWN_PROVIDER_NO_RESPONSE_VISITOR = CONCRETE_CORE + 200;
 

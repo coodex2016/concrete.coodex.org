@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.prod.interceptors;
+package org.coodex.concrete.common;
 
-import org.coodex.concrete.common.AbstractErrorCodes;
+import java.util.Calendar;
+import java.util.Set;
 
-public class ProductErrorCodes extends AbstractErrorCodes {
+public interface Production {
 
-    private static final int PROD_ERROR_BASE = CONCRETE_CORE + 4000;
-    public static final int NONE_KEY = PROD_ERROR_BASE + 1;
-    public static final int INVALID_KEY = PROD_ERROR_BASE + 1;
+    Calendar getCalendar();
+
+    Integer getRemindDays();
+
+    String getProductionName();
+
+    Set<String> getModules();
+
 }

@@ -114,8 +114,6 @@
 
         <module>s2/concrete-s2-api</module>
         <module>s2/concrete-s2-impl</module>
-        <module>01.spec/concrete-prod-spec</module>
-        <module>10.core/concrete-prod-impl</module>
         <module>00.coodexCommon/coodex-mock-spec</module>
         <module>00.coodexCommon/coodex-mock-impl</module>
         <module>10.core/concrete-core-mock</module>

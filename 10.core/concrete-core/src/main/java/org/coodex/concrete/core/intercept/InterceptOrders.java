@@ -31,7 +31,9 @@ public class InterceptOrders {
 
     public static final int LICENSE_CHECK = 102;
 
-    /**
+    public static final int PRODUCTION_CHECK = 103;
+
+  /**
      * 系统服务时间
      */
     public static final int SERVICE_TIMING = 200;
