@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-10-18
+
+- concrete-api/concrete-core: 增加SaaS模式的产品包有效期验证拦截器
+
 ## 2019-10-12
 
 - concrete-core：增加License拦截器
