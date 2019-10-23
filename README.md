@@ -26,6 +26,11 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-10-23
+
+- concrete-amqp: 增加amqp的sharedExecutor配置，可以指定名称，默认为`amqp.executor`，由concrete统一管理
+- concrete-amqp-client, concrete-spring-boot-amqp同步更新
+
 ## 2019-10-18
 
 - concrete-api/concrete-core: 增加SaaS模式的产品包有效期验证拦截器

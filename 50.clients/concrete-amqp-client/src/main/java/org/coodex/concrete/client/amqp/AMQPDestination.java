@@ -18,6 +18,8 @@ package org.coodex.concrete.client.amqp;
 
 import org.coodex.concrete.client.Destination;
 
+import java.util.Objects;
+
 public class AMQPDestination extends Destination {
 
     private String host;
@@ -26,6 +28,7 @@ public class AMQPDestination extends Destination {
     private String password;
     private String virtualHost;
     private String exchangeName;
+    private String sharedExecutorName;
 
     public String getHost() {
         return host;
@@ -75,6 +78,14 @@ public class AMQPDestination extends Destination {
         this.exchangeName = exchangeName;
     }
 
+    public String getSharedExecutorName() {
+        return sharedExecutorName;
+    }
+
+    public void setSharedExecutorName(String sharedExecutorName) {
+        this.sharedExecutorName = sharedExecutorName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -83,12 +94,12 @@ public class AMQPDestination extends Destination {
 
         AMQPDestination that = (AMQPDestination) o;
 
-        if (host != null ? !host.equals(that.host) : that.host != null) return false;
-        if (port != null ? !port.equals(that.port) : that.port != null) return false;
-        if (username != null ? !username.equals(that.username) : that.username != null) return false;
-        if (password != null ? !password.equals(that.password) : that.password != null) return false;
-        if (virtualHost != null ? !virtualHost.equals(that.virtualHost) : that.virtualHost != null) return false;
-        return exchangeName != null ? exchangeName.equals(that.exchangeName) : that.exchangeName == null;
+        if (!Objects.equals(host, that.host)) return false;
+        if (!Objects.equals(port, that.port)) return false;
+        if (!Objects.equals(username, that.username)) return false;
+        if (!Objects.equals(password, that.password)) return false;
+        if (!Objects.equals(virtualHost, that.virtualHost)) return false;
+        return Objects.equals(exchangeName, that.exchangeName);
     }
 
     @Override

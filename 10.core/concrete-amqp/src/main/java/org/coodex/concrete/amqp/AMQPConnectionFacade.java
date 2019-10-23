@@ -19,12 +19,14 @@ package org.coodex.concrete.amqp;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import org.coodex.concrete.common.AbstractCopier;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
 
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutorService;
 
 public class AMQPConnectionFacade {
 
@@ -42,22 +44,34 @@ public class AMQPConnectionFacade {
                 }
             };
 
-    private static SingletonMap<AMQPConnectionConfig, Connection> connectionSingletonMap =
-            new SingletonMap<AMQPConnectionConfig, Connection>(new SingletonMap.Builder<AMQPConnectionConfig, Connection>() {
+    private static final String DEFAULT_SHARED_EXECUTORS_NAME = "amqp.executor";
+
+    private static SingletonMap<String, ExecutorService> executorServiceSingletonMap =
+            new SingletonMap<String, ExecutorService>(key -> ConcreteHelper.getExecutor(Common.isBlank(key) ? DEFAULT_SHARED_EXECUTORS_NAME : key)) {
                 @Override
-                public Connection build(AMQPConnectionConfig key) {
-                    try {
-                        return toConnectionFactory(key).newConnection();
-                    } catch (RuntimeException re) {
-                        throw re;
-                    } catch (Throwable th) {
-                        throw new RuntimeException(th.getLocalizedMessage(), th);
-                    }
+                protected String getNullKeyOnce() {
+                    return DEFAULT_SHARED_EXECUTORS_NAME;
+                }
+            };
+
+    private static SingletonMap<AMQPConnectionConfig, Connection> connectionSingletonMap =
+            new SingletonMap<>(key -> {
+                try {
+
+                    return toConnectionFactory(key).newConnection(
+                            executorServiceSingletonMap.get(key.getSharedExecutorName())
+                    );
+                } catch (RuntimeException re) {
+                    throw re;
+                } catch (Throwable th) {
+                    throw new RuntimeException(th.getLocalizedMessage(), th);
                 }
             });
 
     private static AMQPConnectionConfig clean(AMQPConnectionConfig amqpConnectionConfig) throws NoSuchAlgorithmException, KeyManagementException, URISyntaxException {
-        return configCopier.copy(toConnectionFactory(amqpConnectionConfig));
+        AMQPConnectionConfig connectionConfig = configCopier.copy(toConnectionFactory(amqpConnectionConfig));
+        connectionConfig.setSharedExecutorName(amqpConnectionConfig.getSharedExecutorName());
+        return connectionConfig;
     }
 
     private static ConnectionFactory toConnectionFactory(String uri, String virtualHost, String host, Integer port,

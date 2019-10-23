@@ -25,6 +25,7 @@ public class AMQPConnectionConfig {
     private Integer port;
     private String host;
     private String virtualHost;
+    private String sharedExecutorName;
 
     public String getUri() {
         return uri;
@@ -74,11 +75,19 @@ public class AMQPConnectionConfig {
         this.host = host;
     }
 
+    public String getSharedExecutorName() {
+        return sharedExecutorName;
+    }
+
+    public void setSharedExecutorName(String sharedExecutorName) {
+        this.sharedExecutorName = sharedExecutorName;
+    }
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof AMQPConnectionConfig)) return false;
 
         AMQPConnectionConfig that = (AMQPConnectionConfig) o;
 
@@ -88,7 +97,6 @@ public class AMQPConnectionConfig {
         if (!Objects.equals(port, that.port)) return false;
         if (!Objects.equals(host, that.host)) return false;
         return Objects.equals(virtualHost, that.virtualHost);
-
     }
 
     @Override

@@ -86,7 +86,7 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
         config.setPassword(destination.getPassword());
         config.setUsername(destination.getUsername());
         config.setVirtualHost(destination.getVirtualHost());
-
+        config.setSharedExecutorName(destination.getSharedExecutorName());
         return AMQPConnectionFacade.getConnection(config);
     }
 

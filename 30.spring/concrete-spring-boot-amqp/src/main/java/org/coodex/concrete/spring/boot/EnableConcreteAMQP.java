@@ -65,5 +65,7 @@ public @interface EnableConcreteAMQP {
 
     String queueName() default "";
 
+    String executorName() default "";
+
     long ttl() default -1L;
 }

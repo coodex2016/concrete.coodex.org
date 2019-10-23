@@ -45,6 +45,7 @@ public class AMQPDestinationFactory extends AbstractDestinationFactory<AMQPDesti
         destination.setUsername(ClientHelper.getString(module, "amqp.username"));
         destination.setPassword(ClientHelper.getString(module, "amqp.password"));
         destination.setExchangeName(ClientHelper.getString(module, "amqp.exchange"));
+        destination.setSharedExecutorName(ClientHelper.getString(module,"amqp.executorName"));
         return destination;
     }
 

@@ -56,8 +56,11 @@ public class AMQPRuntime extends AbstractRuntimeParameter {
             config.setUsername(get("username", ""));
         if (Common.isBlank(config.getVirtualHost()))
             config.setVirtualHost(get("virtualHost", ""));
+        if (Common.isBlank(config.getSharedExecutorName()))
+            config.setSharedExecutorName(get("executorName", ""));
         if (config.getPort() != null && config.getPort() <= 0)
             config.setPort(get("port", null));
+
     }
 
 
@@ -96,6 +99,7 @@ public class AMQPRuntime extends AbstractRuntimeParameter {
         config.setUsername(annotationAttributes.getString("username"));
         config.setPassword(annotationAttributes.getString("password"));
         config.setHost(annotationAttributes.getString("host"));
+        config.setSharedExecutorName(annotationAttributes.getString("executorName"));
         this.exchangeName = annotationAttributes.getString("exchangeName");
         this.queueName = annotationAttributes.getString("queueName");
         this.ttl = annotationAttributes.getNumber("ttl");
