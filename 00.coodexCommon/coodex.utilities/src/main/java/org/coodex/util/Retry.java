@@ -82,6 +82,7 @@ public class Retry {
             @Override
             public void run() {
                 synchronized (Retry.this) {
+                    if (Status.FINISHED.equals(status)) return;
                     status = Status.RUNNING;
                     if (start == null) {
                         start = Clock.getCalendar();
