@@ -72,11 +72,10 @@ public class ExecutorsHelper {
         final PoolSize poolSize = new PoolSize(coreSize, maxSize).invoke();
 //        int finalCoreSize = poolSize.getFinalCoreSize();
 //        int finalMaxSize = poolSize.getFinalMaxSize();
-
-        return newThreadPool(keepAliveTime, namePrefix, poolSize, new ConcretePriorityBlockingQueue(maxWait));
+        return newThreadPool(keepAliveTime, namePrefix, poolSize, new CoodexPriorityBlockingQueue(maxWait));
     }
 
-    private static ExecutorService newThreadPool(long keepAliveTime, String namePrefix, PoolSize poolSize, BlockingQueue<Runnable> priorityBlockingQueue) {
+    private static ExecutorService newThreadPool(long keepAliveTime, String namePrefix, PoolSize poolSize, CoodexBlockingQueue priorityBlockingQueue) {
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
                 poolSize.getFinalCoreSize(),
                 poolSize.getFinalMaxSize(),
@@ -84,17 +83,19 @@ public class ExecutorsHelper {
                 priorityBlockingQueue,
                 new DefaultNamedThreadFactory(namePrefix)
         );
-//        priorityBlockingQueue.setThreadPoolExecutor(threadPool);
+        priorityBlockingQueue.setThreadPoolExecutor(threadPool);
         return ExecutorWrapper.wrap(threadPool);
     }
-
+    public static ExecutorService newLinkedThreadPool(final int coreSize, int maxSize, int maxWait, String namePrefix) {
+        return newLinkedThreadPool(coreSize, maxSize, maxWait, 60L, namePrefix);
+    }
 
     public static ExecutorService newLinkedThreadPool(final int coreSize, int maxSize, int maxWait, long keepAliveTime, String namePrefix) {
 //        int finalCoreSize = Math.max(coreSize, 1);
 //        int finalMaxSize = maxSize >= coreSize ? maxSize : Integer.MAX_VALUE;
 //        if (finalMaxSize == Integer.MAX_VALUE) finalMaxSize = Integer.MAX_VALUE;
         final PoolSize poolSize = new PoolSize(coreSize, maxSize).invoke();
-        return newThreadPool(keepAliveTime, namePrefix, poolSize, new ConcreteLinkedBlockingQueue(maxWait));
+        return newThreadPool(keepAliveTime, namePrefix, poolSize, new CoodexLinkedBlockingQueue(maxWait));
 //        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
 //                poolSize.getFinalCoreSize(),
 //                poolSize.getFinalMaxSize(),
@@ -151,56 +152,57 @@ public class ExecutorsHelper {
         return ExecutorWrapper.wrap(Executors.newScheduledThreadPool(corePoolSize, threadFactory));
     }
 
-    public static final void shutdownAll() {
+    public static void shutdownAll() {
         ExecutorWrapper.shutdown();
     }
 
-    public static final List<Runnable> shutdownAllNOW() {
+    public static List<Runnable> shutdownAllNOW() {
         return ExecutorWrapper.shutdownNow();
     }
 
-//    interface ConcreteBlockingQueue extends BlockingQueue<Runnable> {
-//        void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor);
-//    }
+    interface CoodexBlockingQueue extends BlockingQueue<Runnable> {
+        void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor);
+    }
 
-    static class ConcreteLinkedBlockingQueue extends LinkedBlockingQueue<Runnable>
-//            implements ConcreteBlockingQueue
+    static class CoodexLinkedBlockingQueue extends LinkedBlockingQueue<Runnable>
+            implements CoodexBlockingQueue
     {
-        //        private ThreadPoolExecutor threadPoolExecutor;
+        private ThreadPoolExecutor threadPoolExecutor;
         private final int maximumSize;
 
-        public ConcreteLinkedBlockingQueue(int maximumSize) {
+        public CoodexLinkedBlockingQueue(int maximumSize) {
             this.maximumSize = maximumSize;
         }
 
-        //        @Override
-//        public void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor) {
-////            this.threadPoolExecutor = threadPoolExecutor;
-//            this.maximumPoolSize = threadPoolExecutor.getMaximumPoolSize();
-//        }
+        @Override
+        public void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor) {
+            this.threadPoolExecutor = threadPoolExecutor;
+        }
 
         @Override
         public boolean offer(Runnable runnable) {
 //            if (threadPoolExecutor == null) return super.offer(runnable);
-            return size() < maximumSize && super.offer(runnable);
+            return threadPoolExecutor.getPoolSize() >= threadPoolExecutor.getMaximumPoolSize() &&
+                    size() < maximumSize &&
+                    super.offer(runnable);
         }
     }
 
-    static class ConcretePriorityBlockingQueue extends PriorityBlockingQueue<Runnable>
-//            implements ConcreteBlockingQueue
+    static class CoodexPriorityBlockingQueue extends PriorityBlockingQueue<Runnable>
+            implements CoodexBlockingQueue
     {
-        //        private ThreadPoolExecutor threadPoolExecutor;
+        private ThreadPoolExecutor threadPoolExecutor;
         private final int maximumSize;
 
-        ConcretePriorityBlockingQueue(int maximumSize) {
+
+        CoodexPriorityBlockingQueue(int maximumSize) {
             this.maximumSize = maximumSize;
         }
 
-//        @Override
-//        public void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor) {
-//            this.threadPoolExecutor = threadPoolExecutor;
-//            this.maximumPoolSize = threadPoolExecutor.getMaximumPoolSize();
-//        }
+        @Override
+        public void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor) {
+            this.threadPoolExecutor = threadPoolExecutor;
+        }
 
 
         @Override
@@ -209,7 +211,9 @@ public class ExecutorsHelper {
             runnable = getPriorityRunnable(runnable);
 //            return threadPoolExecutor.getPoolSize() < maximumPoolSize ?
 //                    false : super.offer(runnable);
-            return size() < maximumSize && super.offer(runnable);
+            return threadPoolExecutor.getPoolSize() >= threadPoolExecutor.getMaximumPoolSize() &&
+                    size() < maximumSize &&
+                    super.offer(runnable);
 
         }
     }
@@ -235,7 +239,7 @@ public class ExecutorsHelper {
 
         public PoolSize invoke() {
             finalCoreSize = Math.max(coreSize, 1);
-            finalMaxSize = maxSize >= coreSize ? maxSize : Integer.MAX_VALUE;
+            finalMaxSize = Math.max(maxSize, coreSize);
             return this;
         }
     }

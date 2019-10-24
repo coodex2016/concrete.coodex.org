@@ -29,6 +29,8 @@ public interface SomeService {
 ## 2019-10-24
 
 - coodex-utilities: 增加轻量级重试机制
+- coodex-utilities: 线程池部分缺陷修复
+- concrete-core: 优化，默认业务线程池coreSize为处理器数的两倍
 
 ## 2019-10-23
 

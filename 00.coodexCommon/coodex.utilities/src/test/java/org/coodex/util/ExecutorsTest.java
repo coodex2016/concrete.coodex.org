@@ -18,6 +18,8 @@ package org.coodex.util;
 
 import org.coodex.concurrent.ExecutorsHelper;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,9 +28,10 @@ public class ExecutorsTest {
 
     public static void main(String[] args) {
         final AtomicInteger integer = new AtomicInteger(0);
-        ExecutorService executorService = ExecutorsHelper.newPriorityThreadPool(
-                0,20,980,"test"
+        ExecutorService executorService = ExecutorsHelper.newLinkedThreadPool(
+                8,20,1000,60L,"test"
         );
+        final Set<String> set = new HashSet<String>();
 //        ExecutorService executorService = ExecutorsHelper.newFixedThreadPool(5,"abab");
 ////            @Override
 ////            public Thread newThread(Runnable r) {
@@ -46,11 +49,18 @@ public class ExecutorsTest {
 ////            }
 ////        });
 
-        for (int i = 0; i < 1000; i ++){
+        final int MAX = 1000;
+        for (int i = 1; i <= MAX; i ++){
+            final int finalI = i;
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println(Thread.currentThread().getName());
+                    set.add(Thread.currentThread().getName());
+//                    System.out.println(Thread.currentThread().getName());
+                    if(finalI == MAX){
+                        System.out.println(set.size());
+                    }
+//                    System.out.println(Thread.currentThread().getName());
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {

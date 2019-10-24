@@ -46,6 +46,7 @@ public class ConcreteHelper {
     public static final String KEY_LOCATION = "location";
 
     public static final Integer DEFAULT_MAX_QUEUE_SIZE = 0x19880904;
+    private static final Integer DEFAULT_CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2;
 
     private static final ClassNameFilter CONCRETE_SERVICE_INTERFACE_FILTER = new ConcreteClassFilter() {
         @Override
@@ -101,7 +102,7 @@ public class ConcreteHelper {
                     String aliasTo = Config.get("executor", key, getAppSet());
                     if (Common.isBlank(aliasTo)) {
                         return ExecutorsHelper.newPriorityThreadPool(
-                                Config.getValue("executor.corePoolSize", 0, key, getAppSet()),
+                                Config.getValue("executor.corePoolSize", DEFAULT_CORE_POOL_SIZE, key, getAppSet()),
                                 Config.getValue("executor.maximumPoolSize", 1024, key, getAppSet()),
                                 Config.getValue("executor.maxQueueSize", DEFAULT_MAX_QUEUE_SIZE, key, getAppSet()),
                                 Config.getValue("executor.keepAliveTime", 60L, key, getAppSet()),
