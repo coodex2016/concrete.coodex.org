@@ -82,7 +82,14 @@ public class ExecutorsHelper {
                 keepAliveTime, TimeUnit.SECONDS,
                 priorityBlockingQueue,
                 new DefaultNamedThreadFactory(namePrefix)
-        );
+        ) {
+            @Override
+            public void execute(Runnable command) {
+                synchronized (this) {
+                    super.execute(command);
+                }
+            }
+        };
         priorityBlockingQueue.setThreadPoolExecutor(threadPool);
         return ExecutorWrapper.wrap(threadPool);
     }

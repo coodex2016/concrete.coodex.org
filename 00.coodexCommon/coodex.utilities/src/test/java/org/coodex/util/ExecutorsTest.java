@@ -19,6 +19,7 @@ package org.coodex.util;
 import org.coodex.concurrent.ExecutorsHelper;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,8 +29,8 @@ public class ExecutorsTest {
 
     public static void main(String[] args) {
         final AtomicInteger integer = new AtomicInteger(0);
-        ExecutorService executorService = ExecutorsHelper.newLinkedThreadPool(
-                8,20,1000,60L,"test"
+        final ExecutorService executorService = ExecutorsHelper.newLinkedThreadPool(
+                8, 20, 30000, "test"
         );
         final Set<String> set = new HashSet<String>();
 //        ExecutorService executorService = ExecutorsHelper.newFixedThreadPool(5,"abab");
@@ -53,6 +54,7 @@ public class ExecutorsTest {
         for (int i = 1; i <= MAX; i ++){
             final int finalI = i;
             executorService.execute(new Runnable() {
+                private boolean con = true;
                 @Override
                 public void run() {
                     set.add(Thread.currentThread().getName());
@@ -62,7 +64,17 @@ public class ExecutorsTest {
                     }
 //                    System.out.println(Thread.currentThread().getName());
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(new Random().nextInt(100));
+                        if (con) {
+                            con = false;
+                            final Runnable x = this;
+                            executorService.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    x.run();
+                                }
+                            });
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -71,6 +83,6 @@ public class ExecutorsTest {
 
         }
 
-        ExecutorsHelper.shutdownAll();
+//        ExecutorsHelper.shutdownAll();
     }
 }
