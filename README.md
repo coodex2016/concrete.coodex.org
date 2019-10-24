@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-10-24
+
+- coodex-utilities: 增加轻量级重试机制
+
 ## 2019-10-23
 
 - concrete-amqp: 增加amqp的sharedExecutor配置，可以指定名称，默认为`amqp.executor`，由concrete统一管理
@@ -967,7 +971,7 @@ registry=protocal://user:pwd@ip:port, .....
         - certPath:证书路径，使用`;`分隔，X509CertsSSLContextFactory，信任提供的证书路径中的证书，证书路径须指向具体的证书文件。单个path中使用classpath:多个path时，使用`,`分割
     - 重构jaxrs客户端调用
     - 重构Websocket客户端调用，增加Websocket客户端的同步调用模式
-- next feature:
+- nextDelay feature:
     - 服务、客户端增加dubbo支持
     - 服务、客户端增加socket支持
     - 增加JWT支持
