@@ -59,7 +59,7 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
                 connectionFactory.setVirtualHost(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_VIRTUAL_HOST));
                 connectionFactory.setHost(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_HOST));
                 try {
-                    connectionFactory.setPort(Integer.valueOf(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_PORT)));
+                    connectionFactory.setPort(Integer.parseInt(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_PORT)));
                 } catch (Throwable th) {
                 }
                 if (Common.toBool(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_SSL), false)) {

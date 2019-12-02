@@ -26,6 +26,13 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-12-02
+
+- concrete-core: 发布订阅模式
+    - 发布者支持聚合队列发布，`destination=aggregated::queue1, queue2`
+    - 同一个消息，同一队列上只发布一次
+
+
 ## 2019-11-29
 
 - 重构concrete-client，InvokerFactory需要提供同步和异步的两个调用器

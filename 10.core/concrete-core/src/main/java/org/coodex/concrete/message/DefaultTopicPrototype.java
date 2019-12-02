@@ -30,11 +30,19 @@ public class DefaultTopicPrototype<M extends Serializable> extends AbstractTopic
         super(courier);
     }
 
+    private boolean sending = false;
 
     @Override
     public void publish(final M message) {
         IF.isNull(message, "message MUST NOT null.");
-        getCourier().deliver(message);
+        if (!sending) {
+            try {
+                sending = true;
+                getCourier().deliver(message);
+            } finally {
+                sending = false;
+            }
+        }
     }
 
 

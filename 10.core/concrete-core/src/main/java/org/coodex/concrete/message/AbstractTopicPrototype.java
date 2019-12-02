@@ -16,8 +16,8 @@
 
 package org.coodex.concrete.message;
 
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.IF;
-import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +33,12 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
 
     private final static Logger log = LoggerFactory.getLogger(AbstractTopicPrototype.class);
 
-    private static Singleton<Executor> pool = new Singleton<>(
-            () -> {
-                // todo 根据配置获取
-                return ExecutorsHelper.newFixedThreadPool(10, "topic");
-            }
+    private static final Singleton<Executor> POOL_SINGLETON = new Singleton<>(
+            () -> ConcreteHelper.getExecutor("topic")
     );
+    @SuppressWarnings("rawtypes")
     private final Courier courier;
+
     private final Map<Observer<M>, SubscriptionImpl> subscriptions = new ConcurrentHashMap<>();
 
     @SuppressWarnings("WeakerAccess")
@@ -68,21 +67,26 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
     }
 
     protected String getQueue() {
+        //noinspection rawtypes
         return courier instanceof CourierPrototype ?
                 ((CourierPrototype) courier).getQueue() : null;
     }
 
+    @SuppressWarnings("rawtypes")
     protected Courier getCourier() {
         return courier;
     }
 
     @SuppressWarnings("WeakerAccess")
     protected Executor getExecutor() {
-        return pool.get();
+        return POOL_SINGLETON.get();
     }
 
     @Override
     public Subscription subscribe(Observer<M> observer) {
+        if (getCourier() instanceof AggregatedCourier) {
+            throw new RuntimeException("AggregatedQueue could not subscribe message.");
+        }
         if (!subscriptions.containsKey(observer)) {
             synchronized (subscriptions) {
                 if (!subscriptions.containsKey(observer)) {

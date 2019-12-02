@@ -41,6 +41,7 @@ import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_J
 import static org.coodex.concrete.message.CourierBuilder.getMessageType;
 import static org.coodex.util.Common.runtimeException;
 
+@SuppressWarnings("rawtypes")
 class TopicBuilder
         implements SingletonMap.Builder<TopicKey, AbstractTopic> {
     private final static Logger log = LoggerFactory.getLogger(TopicBuilder.class);

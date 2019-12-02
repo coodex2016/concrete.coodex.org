@@ -20,6 +20,7 @@ import org.coodex.config.Config;
 import org.coodex.util.Common;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.util.ReflectHelper.typeToCodeStr;
@@ -49,8 +50,8 @@ public class TopicKey {
 
         TopicKey topicKey = (TopicKey) o;
 
-        if (queue != null ? !queue.equals(topicKey.queue) : topicKey.queue != null) return false;
-        return topicTypeName != null ? topicTypeName.equals(topicKey.topicTypeName) : topicKey.topicTypeName == null;
+        if (!Objects.equals(queue, topicKey.queue)) return false;
+        return Objects.equals(topicTypeName, topicKey.topicTypeName);
     }
 
     @Override
