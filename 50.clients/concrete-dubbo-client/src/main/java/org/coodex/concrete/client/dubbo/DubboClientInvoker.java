@@ -47,7 +47,7 @@ public class DubboClientInvoker extends AbstractSyncInvoker {
     private final static Logger log = LoggerFactory.getLogger(DubboClientInvoker.class);
     @SuppressWarnings({"unsafe", "unchecked"})
     private static SingletonMap<DubboCacheKey, Object> dubboClientInstances =
-            new SingletonMap<DubboCacheKey, Object>(new SingletonMap.Builder<DubboCacheKey, Object>() {
+            new SingletonMap<>(new SingletonMap.Builder<DubboCacheKey, Object>() {
                 @Override
 
                 public Object build(DubboCacheKey key) {

@@ -19,20 +19,26 @@ package org.coodex.concrete.client.impl;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.Invoker;
 import org.coodex.concrete.client.InvokerFactory;
+import org.coodex.concrete.client.RxInvoker;
 
 public class LocalInvokerFactory implements InvokerFactory {
 
     public static final String LOCAL = "local";
 
+    @Override
+    public Invoker getSyncInvoker(Destination destination) {
+        return new LocalInvoker(destination);
+    }
 
     @Override
-    public Invoker getInvoker(Destination destination) {
-        return new LocalInvoker(destination);
+    public RxInvoker getRxInvoker(Destination destination) {
+        return new SyncToRxInvoker(new LocalInvoker(destination));
     }
 
     @Override
     public boolean accept(Destination param) {
 //        return param.getLocation().equalsIgnoreCase(LOCAL) && !param.isAsync();
-        return param != null && !param.isAsync() && param instanceof LocalDestination;
+        /*&& !param.isAsync()*/
+        return param instanceof LocalDestination;
     }
 }

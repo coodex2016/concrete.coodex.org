@@ -19,21 +19,28 @@ package org.coodex.concrete.client.jaxrs;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.Invoker;
 import org.coodex.concrete.client.InvokerFactory;
+import org.coodex.concrete.client.RxInvoker;
+import org.coodex.concrete.client.impl.SyncToRxInvoker;
 import org.coodex.util.SingletonMap;
 
 public class JaxRSInvokerFactory implements InvokerFactory {
 
-    private static SingletonMap<Destination, Invoker> INVOKER_MAP = new SingletonMap<>(
+    private static SingletonMap<Destination, JaxRSInvoker> INVOKER_MAP = new SingletonMap<>(
             key -> new JaxRSInvoker((JaxRSDestination) key)
     );
 
     @Override
-    public Invoker getInvoker(Destination destination) {
+    public Invoker getSyncInvoker(Destination destination) {
         return INVOKER_MAP.get(destination);
     }
 
     @Override
+    public RxInvoker getRxInvoker(Destination destination) {
+        return new SyncToRxInvoker(INVOKER_MAP.get(destination));
+    }
+
+    @Override
     public boolean accept(Destination param) {
-        return param != null && !param.isAsync() && param instanceof JaxRSDestination;
+        return param instanceof JaxRSDestination;
     }
 }

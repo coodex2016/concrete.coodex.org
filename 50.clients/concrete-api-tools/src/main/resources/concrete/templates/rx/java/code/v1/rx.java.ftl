@@ -1,7 +1,7 @@
 <#macro paramList params><#list params as param>${param.type} ${param.name}<#if param_has_next>, </#if></#list></#macro>
 package ${package};
 
-import org.coodex.concrete.rx.ReactiveExtensionFor;
+import org.coodex.concrete.api.rx.ReactiveExtensionFor;
 
 import io.reactivex.Observable;
 

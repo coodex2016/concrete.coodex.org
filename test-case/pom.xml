@@ -63,6 +63,12 @@
 
         <dependency>
             <groupId>org.coodex</groupId>
+            <artifactId>concrete-rx-builder</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.coodex</groupId>
             <artifactId>concrete-spring-boot-jaxrs</artifactId>
         </dependency>
 
@@ -95,7 +101,7 @@
 
         <dependency>
             <groupId>org.coodex</groupId>
-            <artifactId>concrete-websocket-client-rx</artifactId>
+            <artifactId>concrete-websocket-client</artifactId>
         </dependency>
 
         <dependency>

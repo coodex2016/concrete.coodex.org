@@ -16,20 +16,47 @@
 
 package org.coodex.concrete.client.impl;
 
+import org.coodex.concrete.api.rx.ReactiveExtensionFor;
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.Invoker;
 import org.coodex.concrete.common.ConcreteContext;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 
 
 public abstract class AbstractInvoker implements Invoker {
+
+    private static Method findTargetMethod(Class targetClass, Method method) {
+        Method targetMethod = null;
+        for (Method m : targetClass.getMethods()) {
+            if (m.getName().equals(method.getName()) && Arrays.equals(m.getParameterTypes(), method.getParameterTypes())) {
+                targetMethod = m;
+                break;
+            }
+        }
+
+        if (targetMethod == null) {
+            throw new RuntimeException("Reactive method not found for " + targetClass.getName() + " " + method.getName());
+        }
+        return targetMethod;
+    }
+
+    // TODO 移到AbstractRxInvoker中
+    protected static DefinitionContext getDefinitionContext(Class rxClass, Method method) {
+        final Class targetClass = ((ReactiveExtensionFor) rxClass.getAnnotation(ReactiveExtensionFor.class)).value();
+        final Method targetMethod = findTargetMethod(targetClass, method);
+        return ConcreteHelper.getDefinitionContext(targetClass, targetMethod);
+    }
 
     //    private final static Profile_Deprecated devModeProfile = ConcreteHelper.getProfile("moduleMock");
     private final Destination destination;

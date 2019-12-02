@@ -18,18 +18,28 @@ package org.coodex.concrete.client.amqp;
 
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.Invoker;
-import org.coodex.concrete.client.rx.AbstractRXInvokerFactory;
+import org.coodex.concrete.client.InvokerFactory;
+import org.coodex.concrete.client.RxInvoker;
+import org.coodex.concrete.client.impl.RxToSyncInvoker;
 
-public class AMQPInvokerFactory extends AbstractRXInvokerFactory {
+public class AMQPInvokerFactory implements InvokerFactory {
 
+    private AMQPInvoker buildInvoker(AMQPDestination destination) {
+        return new AMQPInvoker(destination);
+    }
 
     @Override
-    public Invoker getInvoker(Destination destination) {
-        return new AMQPInvoker((AMQPDestination) destination);
+    public Invoker getSyncInvoker(Destination destination) {
+        return new RxToSyncInvoker(buildInvoker((AMQPDestination) destination));
+    }
+
+    @Override
+    public RxInvoker getRxInvoker(Destination destination) {
+        return buildInvoker((AMQPDestination) destination);
     }
 
     @Override
     public boolean accept(Destination param) {
-        return super.accept(param) || param instanceof AMQPDestination;
+        return param instanceof AMQPDestination;
     }
 }

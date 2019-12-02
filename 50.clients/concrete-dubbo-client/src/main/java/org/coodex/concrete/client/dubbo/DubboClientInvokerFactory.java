@@ -19,17 +19,24 @@ package org.coodex.concrete.client.dubbo;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.Invoker;
 import org.coodex.concrete.client.InvokerFactory;
+import org.coodex.concrete.client.RxInvoker;
+import org.coodex.concrete.client.impl.SyncToRxInvoker;
 
 public class DubboClientInvokerFactory implements InvokerFactory {
 
 
     @Override
-    public Invoker getInvoker(Destination destination) {
+    public Invoker getSyncInvoker(Destination destination) {
         return new DubboClientInvoker((DubboDestination) destination);
     }
 
     @Override
+    public RxInvoker getRxInvoker(Destination destination) {
+        return new SyncToRxInvoker(new DubboClientInvoker((DubboDestination) destination));
+    }
+
+    @Override
     public boolean accept(Destination param) {
-        return param != null && !param.isAsync() && param instanceof DubboDestination;
+        return param instanceof DubboDestination;
     }
 }

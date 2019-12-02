@@ -271,6 +271,18 @@
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-rx-builder</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-rx-observable</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-core-spring</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
@@ -287,11 +299,11 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-rx</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>${project.parent.groupId}</groupId>-->
+<!--                <artifactId>concrete-rx</artifactId>-->
+<!--                <version>${project.parent.version}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
@@ -361,19 +373,7 @@
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-rx-client</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-jaxrs-client</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-jaxrs-client-rx</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 
@@ -385,13 +385,7 @@
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-dubbo-client-rx</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-websocket-client-rx</artifactId>
+                <artifactId>concrete-websocket-client</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 

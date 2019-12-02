@@ -31,10 +31,10 @@ public class Client {
     }
 
     public static <T> T getInstance(Class<T> concreteServiceClass, Destination destination) {
-        boolean sync = ConcreteHelper.isConcreteService(concreteServiceClass);
-        IF.not(sync || isReactiveExtension(concreteServiceClass),
-                concreteServiceClass + "is NOT ConcreteService.");
-        destination.setAsync(!sync);
+//        boolean sync = ConcreteHelper.isConcreteService(concreteServiceClass);
+//        IF.not(sync || isReactiveExtension(concreteServiceClass),
+//                concreteServiceClass + "is NOT ConcreteService.");
+//        destination.setAsync(!sync);
         return getInstanceBuilder().build(destination, concreteServiceClass);
     }
 

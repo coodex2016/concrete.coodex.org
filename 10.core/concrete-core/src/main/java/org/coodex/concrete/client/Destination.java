@@ -28,7 +28,7 @@ public abstract class Destination implements Serializable {
     private boolean tokenTransfer;
 
 
-    private boolean async;
+//    private boolean async;
 
     public String getIdentify() {
         return identify;
@@ -62,13 +62,13 @@ public abstract class Destination implements Serializable {
         this.tokenTransfer = tokenTransfer;
     }
 
-    public boolean isAsync() {
-        return async;
-    }
-
-    public void setAsync(boolean async) {
-        this.async = async;
-    }
+//    public boolean isAsync() {
+//        return async;
+//    }
+//
+//    public void setAsync(boolean async) {
+//        this.async = async;
+//    }
 
     public Integer getTimeout() {
         return timeout == null || timeout <= 0 ? DEFAULT_REQUEST_TIMEOUT : timeout;
@@ -86,7 +86,7 @@ public abstract class Destination implements Serializable {
         Destination that = (Destination) o;
 
         if (tokenTransfer != that.tokenTransfer) return false;
-        if (async != that.async) return false;
+//        if (async != that.async) return false;
         if (!Objects.equals(identify, that.identify)) return false;
         if (!Objects.equals(location, that.location)) return false;
         if (!Objects.equals(tokenManagerKey, that.tokenManagerKey))
@@ -101,7 +101,7 @@ public abstract class Destination implements Serializable {
         result = 31 * result + (tokenManagerKey != null ? tokenManagerKey.hashCode() : 0);
         result = 31 * result + (timeout != null ? timeout.hashCode() : 0);
         result = 31 * result + (tokenTransfer ? 1 : 0);
-        result = 31 * result + (async ? 1 : 0);
+//        result = 31 * result + (async ? 1 : 0);
         return result;
     }
 

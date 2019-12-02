@@ -15,4 +15,3 @@
 #
 
 org.coodex.concrete.client.amqp.AMQPInvokerFactory
-org.coodex.concrete.client.amqp.AMQPSyncInvokerFactory

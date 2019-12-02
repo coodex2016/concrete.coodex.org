@@ -45,21 +45,22 @@ public class ConcreteHelper {
     public static final String TAG_CLIENT = "client";
     public static final String KEY_LOCATION = "location";
 
-    public static final Integer DEFAULT_MAX_QUEUE_SIZE = 0x19880904;
+    public static final Integer DEFAULT_MAX_QUEUE_SIZE = 0x1988 + 0x0904;
     private static final Integer DEFAULT_CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2;
+    private static final Integer DEFAULT_MAX_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 4;
 
-    private static final ClassNameFilter CONCRETE_SERVICE_INTERFACE_FILTER = new ConcreteClassFilter() {
-        @Override
-        protected boolean accept(Class<?> clazz) {
-//            return clazz != null
-//                    && clazz.isInterface() //是接口
-////                    && ConcreteService.class.isAssignableFrom(clazz) //是ConcreteService
-//                    && clazz.getAnnotation(ConcreteService.class) != null //定义了MicroService;
-//                    && clazz.getAnnotation(Abstract.class) == null //非抽象
-//                    ;
-            return isConcreteService(clazz);
-        }
-    };
+//    private static final ClassNameFilter CONCRETE_SERVICE_INTERFACE_FILTER = new ConcreteClassFilter() {
+//        @Override
+//        protected boolean accept(Class<?> clazz) {
+////            return clazz != null
+////                    && clazz.isInterface() //是接口
+//////                    && ConcreteService.class.isAssignableFrom(clazz) //是ConcreteService
+////                    && clazz.getAnnotation(ConcreteService.class) != null //定义了MicroService;
+////                    && clazz.getAnnotation(Abstract.class) == null //非抽象
+////                    ;
+//            return isConcreteService(clazz);
+//        }
+//    };
 
 
 //    private final static ServiceLoader<ModuleMaker> MODULE_MAKERS = new ConcreteServiceLoader<ModuleMaker>() {
@@ -103,7 +104,7 @@ public class ConcreteHelper {
                     if (Common.isBlank(aliasTo)) {
                         return ExecutorsHelper.newPriorityThreadPool(
                                 Config.getValue("executor.corePoolSize", DEFAULT_CORE_POOL_SIZE, key, getAppSet()),
-                                Config.getValue("executor.maximumPoolSize", 1024, key, getAppSet()),
+                                Config.getValue("executor.maximumPoolSize", DEFAULT_MAX_POOL_SIZE, key, getAppSet()),
                                 Config.getValue("executor.maxQueueSize", DEFAULT_MAX_QUEUE_SIZE, key, getAppSet()),
                                 Config.getValue("executor.keepAliveTime", 60L, key, getAppSet()),
                                 key + ".executor"

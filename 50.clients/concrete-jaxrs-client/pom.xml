@@ -29,16 +29,29 @@
     <artifactId>concrete-jaxrs-client</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-jaxrs</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>concrete-client</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -53,12 +66,12 @@
             <scope>provided</scope>
         </dependency>
 
-
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <scope>test</scope>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>concrete-jaxrs</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
+
     </dependencies>
 
 

@@ -25,6 +25,7 @@ public class ClientTest {
     private static void test(String module){
         try {
             TestCase testCase = Client.getInstance(TestCase.class, module);
+            //noinspection deprecation
             System.out.println(testCase.add(1, 2) == 3);
         }catch (Throwable th){
             th.printStackTrace();

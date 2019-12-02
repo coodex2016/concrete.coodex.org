@@ -70,25 +70,18 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                 clientBuilder.build();
     }
 
-//    private static String getLoggingFeatureClassName() {
-//        // TODO
-//        return DEFAULT_LOGGING_FEATURE_CLASS;
-//    }
 
     private Invocation.Builder buildHeaders(Invocation.Builder builder/*, StringBuilder str*/, Subjoin subjoin, String tokenId) {
         JaxRSClientContext context = getContext();
         builder = builder.acceptLanguage(context.getLocale());
         if (subjoin != null || !Common.isBlank(tokenId)) {
-//            str.append("\nheaders:");
             if (subjoin != null) {
                 for (String key : subjoin.keySet()) {
                     builder = builder.header(key, subjoin.get(key));
-//                    str.append("\n\t").append(key).append(": ").append(subjoin.get(key));
                 }
             }
             if (!Common.isBlank(tokenId)) {
                 builder = builder.header(CONCRETE_TOKEN_ID_KEY, tokenId);
-//                str.append("\n\t").append(CONCRETE_TOKEN_ID_KEY).append(": ").append(tokenId);
             }
         }
         return builder;
@@ -211,21 +204,10 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                 Response response = request(path, unit.getInvokeType(), toSubmit);
 
                 String tokenId = response.getHeaderString(Token.CONCRETE_TOKEN_ID_KEY);
-//                if (!Common.isBlank(tokenId) && !getDestination().isTokenTransfer()) {
                 ClientTokenManagement.setTokenId(getDestination(), tokenId);
-//                }
 
                 String body = response.readEntity(String.class);
 
-//                if (log.isDebugEnabled()) {
-//                    builder = new StringBuilder();
-//                    builder.append("response\nstatus: ").append(response.getStatus()).append(";\nheaders:\n");
-//                    for (String key : response.getHeaders().keySet()) {
-//                        builder.append("\t").append(key).append(": ").append(response.getHeaderString(key)).append("\n");
-//                    }
-//                    builder.append("result:\n").append(body);
-//                    log.debug(builder.toString());
-//                }
                 JaxRSSubjoin subjoin = new JaxRSSubjoin(response.getHeaders());
                 String warnings = subjoin.get(KEY_WARNINGS);
                 if (!Common.isBlank(warnings)) {
@@ -255,29 +237,22 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
     }
 
     private Response request(String url, String method, Object body) {
-//        URI uri = new URI(url);
-        Invocation.Builder builder = client.target(url).request();
-//        StringBuilder str = new StringBuilder();
-//        str.append("url: ").append(url).append("\n").append("method: ").append(method);
+        Invocation.Builder builder = getInvokerBuilder(url);
 
-        JaxRSClientContext context = getContext();
-        Subjoin subjoin = context.getSubjoin();
-        String tokenId = ClientTokenManagement.getTokenId(getDestination(), context.getTokenId());
-//                getDestination().isTokenTransfer() ?
-//                context.getTokenId() :
-//                ClientTokenManagement.getTokenId(getDestination());
-
-        builder = buildHeaders(builder, subjoin, tokenId);
-
-//        if (body != null && log.isDebugEnabled()) {
-//            str.append("\ncontent:\n").append(getJSONSerializer().toJson(body));
-//        }
-
-//        log.debug("requestInfo: \n{}", str.toString());
         return body == null ?
                 builder.build(method).invoke() :
                 builder.build(method, Entity.entity(body,
                         MediaType.APPLICATION_JSON_TYPE.withCharset(getEncodingCharset()))).invoke();
+    }
+
+    private Invocation.Builder getInvokerBuilder(String url) {
+        Invocation.Builder builder = client.target(url).request();
+
+        JaxRSClientContext context = getContext();
+        Subjoin subjoin = context.getSubjoin();
+        String tokenId = ClientTokenManagement.getTokenId(getDestination(), context.getTokenId());
+
+        return buildHeaders(builder, subjoin, tokenId);
     }
 
     @Override

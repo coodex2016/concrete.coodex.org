@@ -38,7 +38,6 @@ public abstract class AbstractSyncInvoker extends AbstractInvoker {
 
     protected abstract Object execute(Class clz, Method method, Object[] args) throws Throwable;
 
-
     @Override
     public Object invoke(final Object instance, final Class clz, final Method method, final Object... args) {
         ServiceContext serviceContext = buildContext(ConcreteHelper.getDefinitionContext(clz, method));

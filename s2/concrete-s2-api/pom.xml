@@ -29,6 +29,21 @@
     <artifactId>concrete-s2-api</artifactId>
 
     <dependencies>
+
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>concrete-rx-builder</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>concrete-rx-observable</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>concrete-api</artifactId>

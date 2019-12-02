@@ -16,12 +16,12 @@
 
 package org.coodex.concrete;
 
-import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.client.DestinationFactory;
-import org.coodex.concrete.client.InstanceBuilder;
-import org.coodex.concrete.client.InvokerFactory;
+import org.coodex.concrete.api.rx.CompletableFutureBridge;
+import org.coodex.concrete.api.rx.ReactiveExtensionFor;
+import org.coodex.concrete.client.*;
 import org.coodex.concrete.client.impl.JavaProxyInstanceBuilder;
 import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.JSONSerializer;
 import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.core.intercept.AsyncInterceptorChain;
@@ -36,6 +36,7 @@ import org.coodex.util.Singleton;
 
 import javax.net.ssl.SSLContext;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 
 import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
 
@@ -163,5 +164,34 @@ public class ClientHelper {
     public static AsyncInterceptorChain getAsyncInterceptorChain() {
         return asyncInterceptorChain.get();
     }
+
+    private static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE_SINGLETON = new Singleton<>(
+            () -> ConcreteHelper.getScheduler("rx-client")
+    );
+    private static final Singleton<AcceptableServiceLoader<Class, CompletableFutureBridge>> BRIDGE_LOADER =
+            new Singleton<>(() -> new AcceptableServiceLoader<Class, CompletableFutureBridge>() {
+            });
+
+    /**
+     * @param destination
+     * @param clazz
+     * @return 根据指定的类确定实际的Invoker
+     */
+    public static Invoker getInvoker(Destination destination, Class clazz) {
+        InvokerFactory invokerFactory = IF.isNull(getInvokerFactoryProviders().select(destination),
+                "Cannot found InvokerFactory for " + destination.toString());
+        return clazz.getAnnotation(ReactiveExtensionFor.class) == null ?
+                invokerFactory.getSyncInvoker(destination) :
+                invokerFactory.getRxInvoker(destination);
+    }
+
+    public static ScheduledExecutorService getRxClientScheduler() {
+        return SCHEDULED_EXECUTOR_SERVICE_SINGLETON.get();
+    }
+
+    public static CompletableFutureBridge getCompletableFutureBridge(Class type) {
+        return BRIDGE_LOADER.get().select(type);
+    }
+
 
 }

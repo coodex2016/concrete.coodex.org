@@ -20,5 +20,17 @@ import org.coodex.util.AcceptableService;
 
 public interface InvokerFactory extends AcceptableService<Destination> {
 
-    Invoker getInvoker(Destination destination);
+
+    /**
+     * @param destination
+     * @return 同步调用
+     */
+    Invoker getSyncInvoker(Destination destination);
+
+
+    /**
+     * @param destination
+     * @return 异步调用
+     */
+    RxInvoker getRxInvoker(Destination destination);
 }

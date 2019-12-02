@@ -61,7 +61,7 @@
 
         <module>01.spec/concrete-api</module>
         <module>01.spec/concrete-fsm</module>
-        <module>01.spec/concrete-rx</module>
+<!--        <module>01.spec/concrete-rx</module>-->
 
         <module>10.core/concrete-core</module>
         <module>10.core/concrete-websocket</module>
@@ -85,11 +85,11 @@
         <module>50.clients/concrete-api-tools</module>
         <module>50.clients/concrete-client</module>
         <module>50.clients/concrete-jaxrs-client</module>
-        <module>50.clients/concrete-jaxrs-client-rx</module>
-        <module>50.clients/concrete-rx-client</module>
-        <module>50.clients/concrete-websocket-client-rx</module>
+<!--        <module>50.clients/concrete-jaxrs-client-rx</module>-->
+<!--        <module>50.clients/concrete-rx-client</module>-->
+        <module>50.clients/concrete-websocket-client</module>
         <module>50.clients/concrete-dubbo-client</module>
-        <module>50.clients/concrete-dubbo-client-rx</module>
+<!--        <module>50.clients/concrete-dubbo-client-rx</module>-->
         <module>50.clients/concrete-amqp-client</module>
 
         <module>60.attachments/concrete-attachments</module>
@@ -121,6 +121,8 @@
         <module>30.spring/concrete-spring-boot-jaxrs</module>
         <module>30.spring/concrete-spring-boot-amqp</module>
         <module>00.coodexCommon/coodex-billing</module>
+        <module>50.clients/concrete-rx-builder</module>
+        <module>plugins/concrete-rx-observable</module>
 
     </modules>
 

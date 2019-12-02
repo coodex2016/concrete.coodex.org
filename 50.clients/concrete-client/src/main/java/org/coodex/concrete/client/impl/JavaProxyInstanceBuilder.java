@@ -16,21 +16,20 @@
 
 package org.coodex.concrete.client.impl;
 
-import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.InstanceBuilder;
-import org.coodex.concrete.common.IF;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import static org.coodex.concrete.ClientHelper.getInvoker;
+
 public class JavaProxyInstanceBuilder implements InstanceBuilder {
 
     @Override
     public <T> T build(final Destination destination, final Class<T> clazz) {
-
-
+        //noinspection unchecked
         return (T) Proxy.newProxyInstance(
                 this.getClass().getClassLoader(),
                 new Class[]{clazz},
@@ -42,9 +41,7 @@ public class JavaProxyInstanceBuilder implements InstanceBuilder {
                             return method.invoke(this, args);
 
 
-                        return IF.isNull(ClientHelper.getInvokerFactoryProviders().select(destination),
-                                "Cannot found InvokerFactory for " + destination.toString())
-                                .getInvoker(destination).invoke(proxy, clazz, method, args);
+                        return getInvoker(destination, clazz).invoke(proxy, clazz, method, args);
                     }
                 });
     }

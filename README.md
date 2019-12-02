@@ -26,6 +26,28 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-11-29
+
+- 重构concrete-client，InvokerFactory需要提供同步和异步的两个调用器
+- 利用[JSR 269: Pluggable Annotation Processing API](https://jcp.org/en/jsr/detail?id=269)，在编译期生成concrete service的异步调用API，可扩展，默认使用CompletableFuture，并提供了一个基于rxjava2的扩展
+
+```xml
+<!-- api所在包 -->
+<!-- 异步接口编译期生成器 -->
+<dependency>
+    <groupId>org.coodex</groupId>
+    <artifactId>concrete-rx-builder</artifactId>
+    <scope>provided</scope>
+</dependency>
+
+<!-- rxjava2 异步接口生成插件 -->
+<dependency>
+    <groupId>org.coodex</groupId>
+    <artifactId>concrete-rx-observable</artifactId>
+    <scope>provided</scope>
+</dependency>
+```
+
 ## 2019-10-24
 
 - coodex-utilities: 增加轻量级重试机制

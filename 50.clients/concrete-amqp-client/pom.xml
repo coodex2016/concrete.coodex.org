@@ -32,7 +32,7 @@
 
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-rx-client</artifactId>
+            <artifactId>concrete-client</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
