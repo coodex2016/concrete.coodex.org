@@ -17,17 +17,21 @@
 package org.coodex.concrete.couriers.rabbitmq;
 
 import com.rabbitmq.client.*;
+import org.coodex.concrete.amqp.AMQPConnectionConfig;
+import org.coodex.concrete.amqp.AMQPConnectionFacade;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.message.CourierPrototype;
 import org.coodex.concrete.message.Serializer;
 import org.coodex.concrete.message.Topics;
 import org.coodex.util.Common;
+import org.coodex.util.DigestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 import static org.coodex.concrete.message.Topics.*;
 
@@ -38,7 +42,10 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
     public static final String KEY_HOST = "host";
     public static final String KEY_PORT = "port";
     public static final String KEY_SSL = "ssl";
-    public static final String EXCHANGER_NAME = "org.coodex.concrete.topics";
+    public static final String KEY_EXCHANGER = "exchanger";
+    public static final String KEY_TTL = "ttl";
+    public static final String DEFAULT_EXCHANGER_NAME = "org.coodex.concrete.topics";
+
     private final static Logger log = LoggerFactory.getLogger(RabbitMQCourierPrototype.class);
     private final Serializer serializer;
     private boolean consumer = false;
@@ -47,43 +54,62 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
     private String queueName;
     private Channel channel;
     private String routingKey;
+    private String exchangerName;
 
     public RabbitMQCourierPrototype(String queue, String destination, Type topicType) {
         super(queue, destination, topicType);
-        routingKey = String.format("%s@%s", getTopicType().toString(), queue);
+        routingKey = DigestHelper.md5(
+                String.format("%s@%s", getTopicType().toString(), queue).getBytes(StandardCharsets.UTF_8)
+        );
 
         // build connection
         try {
-            ConnectionFactory connectionFactory = new ConnectionFactory();
-            if (destination.equalsIgnoreCase(PREFIX_RABBITMQ)) {
-                connectionFactory.setVirtualHost(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_VIRTUAL_HOST));
-                connectionFactory.setHost(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_HOST));
-                try {
-                    connectionFactory.setPort(Integer.parseInt(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_PORT)));
-                } catch (Throwable th) {
-                }
-                if (Common.toBool(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_SSL), false)) {
-                    // TODO
-                    connectionFactory.useSslProtocol();
-                }
-            } else {
-                connectionFactory.setUri(destination.substring(PREFIX_RABBITMQ.length() + 1));
-                if (Common.isBlank(connectionFactory.getVirtualHost())) {
-                    connectionFactory.setVirtualHost("/");
-                }
+            AMQPConnectionConfig connectionConfig = new AMQPConnectionConfig();
+            if (!destination.equalsIgnoreCase(PREFIX_RABBITMQ)) {
+                connectionConfig.setUri(destination.substring(PREFIX_RABBITMQ.length() + 1));
             }
-            // set username and password
-            String username = ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_USERNAME);
-            String password = ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_PA55W0RD);
+            connectionConfig.setHost(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_HOST));
+            try {
+                connectionConfig.setPort(Integer.parseInt(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_PORT)));
+            } catch (Throwable ignore) {
+            }
+            connectionConfig.setPassword(ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_PA55W0RD));
+            connectionConfig.setUsername(ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_USERNAME));
+            connectionConfig.setVirtualHost(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_VIRTUAL_HOST));
+
+//            ConnectionFactory connectionFactory = new ConnectionFactory();
+//            if (destination.equalsIgnoreCase(PREFIX_RABBITMQ)) {
+//                connectionFactory.setVirtualHost(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_VIRTUAL_HOST));
+//                connectionFactory.setHost(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_HOST));
+//                try {
+//                    connectionFactory.setPort(Integer.parseInt(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_PORT)));
+//                } catch (Throwable th) {
+//                }
+//                if (Common.toBool(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_SSL), false)) {
+//                    connectionFactory.useSslProtocol();
+//                }
+//            } else {
+//                connectionFactory.setUri(destination.substring(PREFIX_RABBITMQ.length() + 1));
+//                if (Common.isBlank(connectionFactory.getVirtualHost())) {
+//                    connectionFactory.setVirtualHost("/");
+//                }
+//            }
+//            // set username and password
+//            String username = ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_USERNAME);
+//            String password = ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_PA55W0RD);
+//            if (!Common.isBlank(username) || !Common.isBlank(password)) {
+//                connectionFactory.setUsername(username);
+//                connectionFactory.setPassword(password);
+//            }
             serializer = Topics.getSerializer(
                     ConcreteHelper.getString(TAG_QUEUE, queue, SERIALIZER_TYPE)
             );
-            if (!Common.isBlank(username) || !Common.isBlank(password)) {
-                connectionFactory.setUsername(username);
-                connectionFactory.setPassword(password);
+            exchangerName = ConcreteHelper.getString(TAG_QUEUE, queue, KEY_EXCHANGER);
+            if (Common.isBlank(exchangerName)) {
+                exchangerName = DEFAULT_EXCHANGER_NAME;
             }
 
-            connection = connectionFactory.newConnection();
+            connection = AMQPConnectionFacade.getConnection(connectionConfig);
         } catch (Throwable th) {
             throw Common.runtimeException(th);
         }
@@ -95,11 +121,9 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
             try {
                 channel = connection.createChannel();
 
-                channel.exchangeDeclare(EXCHANGER_NAME, BuiltinExchangeType.TOPIC);
+                channel.exchangeDeclare(exchangerName, BuiltinExchangeType.TOPIC);
                 queueName = channel.queueDeclare().getQueue();
-                channel.queueBind(queueName, EXCHANGER_NAME, routingKey);
-
-
+                channel.queueBind(queueName, exchangerName, routingKey);
             } catch (Throwable th) {
                 throw Common.runtimeException(th);
             }
@@ -110,7 +134,7 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
     public void deliver(M message) {
         if (channel != null) {
             try {
-                channel.basicPublish(EXCHANGER_NAME, routingKey, null,
+                channel.basicPublish(exchangerName, routingKey, null,
                         serializer.serialize(message));
             } catch (IOException e) {
                 throw Common.runtimeException(e);

@@ -29,6 +29,10 @@ public interface SomeService {
 ## 2019-12-04
 
 - concrete-core: 调整聚合队列的destination模式，`destination=aggregated(queue1, queue2)`
+- concrete-courier-rabbitmq
+    - 增加exchangeName配置项，同一个rabbitmq实例可以发布多个相同的队列，方便多套系统复用已有rabbitmq资源
+    - 复用已存在的链接
+    - 消息的routeKey更改为md5(TopicJavaType<MessageJavaType>@QueueName)，md5后字母全小写
 
 ## 2019-12-02
 
