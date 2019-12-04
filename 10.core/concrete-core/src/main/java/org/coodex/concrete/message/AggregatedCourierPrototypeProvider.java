@@ -16,8 +16,12 @@
 
 package org.coodex.concrete.message;
 
+import java.util.regex.Pattern;
+
 public class AggregatedCourierPrototypeProvider implements CourierPrototypeProvider {
-    static final String AGGREGATED = "Aggregated::";
+//    static final String AGGREGATED = "Aggregated::";
+
+    static final Pattern AGGREGATED_PATTERN = Pattern.compile("^\\s*(?i)Aggregated\\s*\\(([\\s,\\w]+)\\)\\s*$");
 
     @Override
     public Class<? extends CourierPrototype> getPrototype() {
@@ -27,7 +31,33 @@ public class AggregatedCourierPrototypeProvider implements CourierPrototypeProvi
     @Override
     public boolean accept(String param) {
         return param != null &&
-                param.length() > AGGREGATED.length() &&
-                param.substring(0, AGGREGATED.length()).equalsIgnoreCase(AGGREGATED);
+                AGGREGATED_PATTERN.matcher(param).matches();
     }
+
+//    public static void main(String[] args) {
+//        Pattern pattern = Pattern.compile("^\\s*(?i)Aggregated\\s*\\(([\\s,\\w]+)\\)\\s*$");
+//
+//        String [] toCheck = {
+//                "Aggregated(a)",
+//                "aggregated (a, 1, b)",
+//                "  Aggregated (a, b, c)  ",
+//                "  Aggregated (a, b, c)  Aggregated (a, b, c)",
+//                "Aggregated (a, b, c)x"
+//        };
+//
+//        for(String s : toCheck){
+//            Matcher matcher = pattern.matcher(s);
+//            StringBuilder builder = new StringBuilder(s);
+//            boolean matches = matcher.matches();
+//            builder.append(" matches: ").append(matches);
+//            if(matches){
+//                builder.append("\ngroupCount: ").append(matcher.groupCount());
+//                for(int i = 0; i <= matcher.groupCount(); i++){
+//                    builder.append("\n\tgroup").append(i).append(": ").append(matcher.group(i));
+//                }
+//            }
+//            System.out.println(builder.toString());
+//        }
+//
+//    }
 }

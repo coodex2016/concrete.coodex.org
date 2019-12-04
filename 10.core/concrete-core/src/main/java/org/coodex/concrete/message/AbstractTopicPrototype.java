@@ -85,7 +85,7 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
     @Override
     public Subscription subscribe(Observer<M> observer) {
         if (getCourier() instanceof AggregatedCourier) {
-            throw new RuntimeException("AggregatedQueue could not subscribe message.");
+            throw new RuntimeException("Aggregated queue could not subscribe message.");
         }
         if (!subscriptions.containsKey(observer)) {
             synchronized (subscriptions) {

@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import static org.coodex.concrete.message.AggregatedCourierPrototypeProvider.AGGREGATED;
+import static org.coodex.concrete.message.AggregatedCourierPrototypeProvider.AGGREGATED_PATTERN;
 
 public abstract class AggregatedCourierPrototype<M extends Serializable> extends CourierPrototype<M> implements AggregatedCourier {
 
@@ -36,7 +36,7 @@ public abstract class AggregatedCourierPrototype<M extends Serializable> extends
     public AggregatedCourierPrototype(String queue, String destination, Type topicType) {
         super(queue, destination, topicType);
         Common.toArray(
-                destination.substring(AGGREGATED.length() + 1),
+                AGGREGATED_PATTERN.matcher(destination).group(1),
                 ",",
                 new ArrayList<>()
         ).forEach(q -> {

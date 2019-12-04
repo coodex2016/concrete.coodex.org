@@ -38,6 +38,7 @@ public class DefaultTopicPrototype<M extends Serializable> extends AbstractTopic
         if (!sending) {
             try {
                 sending = true;
+                //noinspection unchecked
                 getCourier().deliver(message);
             } finally {
                 sending = false;

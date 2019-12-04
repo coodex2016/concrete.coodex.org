@@ -26,10 +26,14 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-12-04
+
+- concrete-core: 调整聚合队列的destination模式，`destination=aggregated(queue1, queue2)`
+
 ## 2019-12-02
 
 - concrete-core: 发布订阅模式
-    - 发布者支持聚合队列发布，`destination=aggregated::queue1, queue2`
+    - 发布者支持聚合队列发布，~~destination=aggregated::queue1, queue2~~
     - 同一个消息，同一队列上只发布一次
 
 
