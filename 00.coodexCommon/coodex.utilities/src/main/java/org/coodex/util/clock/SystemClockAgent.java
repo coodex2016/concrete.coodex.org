@@ -42,6 +42,11 @@ public class SystemClockAgent implements ClockAgent {
     }
 
     @Override
+    public void sleep(TimeUnit unit, long timeout) throws InterruptedException {
+        unit.sleep(timeout);
+    }
+
+    @Override
     public long toMillis(long duration, TimeUnit timeUnit) {
         return timeUnit.toMillis(duration);
     }

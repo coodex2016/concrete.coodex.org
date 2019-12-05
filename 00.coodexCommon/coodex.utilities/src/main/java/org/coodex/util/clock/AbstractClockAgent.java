@@ -89,4 +89,9 @@ public abstract class AbstractClockAgent implements ClockAgent {
     public long toMillis(long duration, TimeUnit timeUnit) {
         return (long) (timeUnit.toMillis(duration) / magnification);
     }
+
+    @Override
+    public void sleep(TimeUnit unit, long timeout) throws InterruptedException {
+        sleep(unit.toMillis(timeout));
+    }
 }

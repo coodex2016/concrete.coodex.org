@@ -45,5 +45,13 @@ public interface ClockAgent {
      */
     void objWait(Object obj, long millis) throws InterruptedException;
 
+    /**
+     * 替代 {@link TimeUnit#sleep(long)} 接口
+     * @param unit
+     * @param timeout
+     * @throws InterruptedException
+     */
+    void sleep(TimeUnit unit, long timeout) throws InterruptedException;
+
     long toMillis(long duration, TimeUnit timeUnit);
 }

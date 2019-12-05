@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-12-05
+
+- coodex-utilities: 增加`Clock.sleep(TimeUnit, long)`: 对标`TimeUnit.sleep(long)`
+
 ## 2019-12-04
 
 - concrete-core: 调整聚合队列的destination模式，`destination=aggregated(queue1, queue2)`

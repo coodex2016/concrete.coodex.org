@@ -96,6 +96,17 @@ public final class Clock {
         agentSingleton.get().objWait(obj, millis);
     }
 
+    /**
+     * 
+     * @param timeUnit
+     * @param timeout
+     * @throws InterruptedException
+     * @see ClockAgent#sleep(TimeUnit, long) 
+     */
+    public static void sleep(TimeUnit timeUnit, long timeout) throws InterruptedException {
+        agentSingleton.get().sleep(timeUnit, timeout);
+    }
+
     public static long toMillis(long duration, TimeUnit timeUnit) {
         return agentSingleton.get().toMillis(duration, timeUnit);
     }
