@@ -18,8 +18,8 @@ package org.coodex.concrete.amqp;
 
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import org.coodex.concrete.common.AbstractCopier;
 import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.copier.AbstractCopier;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
 

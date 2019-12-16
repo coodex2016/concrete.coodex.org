@@ -26,13 +26,24 @@ import java.util.concurrent.TimeUnit;
 public class Throttler<T> extends AbstractCoalition<T> {
     private ScheduledFuture prevFuture = null;
     private long prevTime = 0;
+    private boolean asyncAlways = false;
 
+    public Throttler(Callback<T> c, int interval, boolean asyncAlways) {
+        super(c, interval);
+        this.asyncAlways = asyncAlways;
+    }
+
+    public Throttler(Callback<T> c, int interval, boolean asyncAlways, ScheduledExecutorService scheduledExecutorService) {
+        super(c, interval, scheduledExecutorService);
+        this.asyncAlways = asyncAlways;
+    }
 
     public Throttler(Callback<T> c, int interval, ScheduledExecutorService scheduledExecutorService) {
-        super(c, interval, scheduledExecutorService);
+        this(c, interval, false, scheduledExecutorService);
     }
+
     public Throttler(Callback<T> c, int interval) {
-        super(c, interval);
+        this(c, interval, false);
     }
 
 //    public static void main(String[] args) throws InterruptedException {
@@ -78,7 +89,11 @@ public class Throttler<T> extends AbstractCoalition<T> {
 
 
             if (next == 0) {
-                runnable.run();
+                if (asyncAlways) {
+                    scheduledExecutorService.execute(runnable);
+                } else {
+                    runnable.run();
+                }
             } else
                 prevFuture = scheduledExecutorService.schedule(runnable, interval / 2, TimeUnit.MILLISECONDS);
         }

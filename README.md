@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-12-16
+
+- 重构copier机制，从`concrete-core`的`org.coodex.concrete.common`移动到`coodex-utilities`的`org.coodex.copier`，原相关接口、实现声明作废
+
 ## 2019-12-05
 
 - coodex-utilities: 增加`Clock.sleep(TimeUnit, long)`: 对标`TimeUnit.sleep(long)`

@@ -46,7 +46,7 @@ public class AMQPApplication extends OwnServiceProvider {
     private final static Logger log = LoggerFactory.getLogger(AMQPApplication.class);
 
 
-    private static OwnModuleBuilder AMQP_MODULE_BUILDER = clz -> new AMQPModule(clz);
+    private static OwnModuleBuilder AMQP_MODULE_BUILDER = AMQPModule::new;
     private final String exchangeName;
     private Channel channel;
     private final Level level;
@@ -74,10 +74,10 @@ public class AMQPApplication extends OwnServiceProvider {
         return AMQP_MODULE_BUILDER;
     }
 
-    @Override
-    protected Subjoin getSubjoin(Map<String, String> map) {
-        return new AMQPSubjoin(map).wrap();
-    }
+//    @Override
+//    protected Subjoin getSubjoin(Map<String, String> map) {
+//        return new AMQPSubjoin(map).wrap();
+//    }
 
     @Override
     protected ServerSideContext getServerSideContext(RequestPackage<Object> requestPackage,
@@ -94,7 +94,7 @@ public class AMQPApplication extends OwnServiceProvider {
     private Map<String, Object> getQueueArguments(Long ttl) {
         if(ttl != null && ttl > 0){
             Map<String, Object> args = new HashMap<>();
-            args.put("x-message-ttl", 60000);
+            args.put("x-message-ttl", ttl);
             return args;
         } else {
             return null;

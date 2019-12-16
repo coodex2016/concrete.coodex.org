@@ -16,8 +16,6 @@
 
 package org.coodex.concrete.common;
 
-import java.util.Collection;
-
 /**
  * 定义复制PO(持久化对象)/VO(视图对象)的标准
  * <p>
@@ -26,56 +24,59 @@ import java.util.Collection;
  * 由AbstractCopier提供默认实现，具体复制实例实现copy(src, target)即可，如有需要，可自行重载init(target)方法
  *
  * @see AbstractCopier
+ * @see org.coodex.copier.Copier
  * <p>
  * Created by davidoff shen on 2017-03-17.
+ * @deprecated 移动到coodex-utilities
  */
-public interface Copier<SRC, TARGET> {
-
-    /**
-     * @return 新建目标对象实例
-     */
-    TARGET newTargetObject();
-
-    /**
-     * @param target 目标对象实例
-     * @return 初始化目标对象
-     */
-    TARGET initTargetObject(TARGET target);
-
-    /**
-     * @return 初始化一个新的目标实例
-     */
-    TARGET initTargetObject();
-
-    /**
-     * @param src
-     * @param target
-     * @return 属性复制
-     */
-    TARGET copy(SRC src, TARGET target);
-
-    /**
-     * @param src
-     * @return 复制一个新的目标实例
-     */
-    TARGET copy(SRC src);
-
-
-    /**
-     * 复制集合
-     *
-     * @param srcCollection
-     * @param clazz
-     * @param <T>
-     * @return
-     */
-    <T extends Collection<TARGET>> T copy(Collection<SRC> srcCollection, Class<T> clazz);
-
-
-    /**
-     * @param srcCollection
-     * @return
-     */
-    Collection<TARGET> copy(Collection<SRC> srcCollection);
+@Deprecated
+public interface Copier<SRC, TARGET> extends org.coodex.copier.Copier<SRC, TARGET> {
+//
+//    /**
+//     * @return 新建目标对象实例
+//     */
+//    TARGET newTargetObject();
+//
+//    /**
+//     * @param target 目标对象实例
+//     * @return 初始化目标对象
+//     */
+//    TARGET initTargetObject(TARGET target);
+//
+//    /**
+//     * @return 初始化一个新的目标实例
+//     */
+//    TARGET initTargetObject();
+//
+//    /**
+//     * @param src
+//     * @param target
+//     * @return 属性复制
+//     */
+//    TARGET copy(SRC src, TARGET target);
+//
+//    /**
+//     * @param src
+//     * @return 复制一个新的目标实例
+//     */
+//    TARGET copy(SRC src);
+//
+//
+//    /**
+//     * 复制集合
+//     *
+//     * @param srcCollection
+//     * @param clazz
+//     * @param <T>
+//     * @return
+//     */
+//    <T extends Collection<TARGET>> T copy(Collection<SRC> srcCollection, Class<T> clazz);
+//
+//
+//    /**
+//     * @param srcCollection
+//     * @return
+//     */
+//    Collection<TARGET> copy(Collection<SRC> srcCollection);
 
 }

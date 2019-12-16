@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.s2.adaptor;
+package org.coodex.concrete.own;
 
-import org.coodex.concrete.common.Account;
-import org.coodex.concrete.s2.api.AccountInfo;
-import org.coodex.copier.Copier;
-import org.coodex.util.AcceptableService;
+import org.coodex.concrete.common.AbstractChangeableSubjoin;
 
-public interface AccountCopier extends Copier<Account, AccountInfo>, AcceptableService<Account> {
+import java.util.Collection;
+import java.util.Map;
+
+public class OwnServiceSubjoin extends AbstractChangeableSubjoin {
+
+    public OwnServiceSubjoin(Map<String, String> map) {
+        super(map);
+    }
+
+    @Override
+    protected Collection<String> skipKeys() {
+        return null;
+    }
 }

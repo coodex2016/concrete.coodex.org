@@ -106,7 +106,9 @@ public abstract class OwnServiceProvider implements Application {
 
     protected abstract OwnModuleBuilder getModuleBuilder();
 
-    protected abstract Subjoin getSubjoin(Map<String, String> map);
+    protected Subjoin getSubjoin(Map<String, String> map){
+        return new OwnServiceSubjoin(map).wrap();
+    };
 
     protected abstract ServerSideContext getServerSideContext(RequestPackage<Object> requestPackage,
                                                               String tokenId, Caller caller);

@@ -18,7 +18,7 @@ package org.coodex.commons.jpa.springdata;
 
 import org.coodex.concrete.api.pojo.PageRequest;
 import org.coodex.concrete.api.pojo.PageResult;
-import org.coodex.concrete.common.Copier;
+import org.coodex.copier.Copier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -43,12 +43,12 @@ public class PageHelper {
     }
 
     public static <SRC, TARGET> PageResult<TARGET> copy(Page<SRC> srcPage, Copier<SRC, TARGET> copier) {
-        PageResult<TARGET> result = new PageResult<TARGET>();
+        PageResult<TARGET> result = new PageResult<>();
         result.setCount(srcPage.getTotalElements());
         result.setTotal((long) srcPage.getTotalPages());
         result.setNum((long) srcPage.getNumber() + 1);
         result.setPageSize(srcPage.getSize());
-        result.setList(new ArrayList<TARGET>());
+        result.setList(new ArrayList<>());
 //        for (SRC src : srcPage.getContent()) {
 //            result.getList().add(copier.copy(src));
 //        }

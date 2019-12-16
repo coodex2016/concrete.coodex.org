@@ -16,10 +16,10 @@
 
 package org.coodex.concrete.s2.adaptor;
 
-import org.coodex.concrete.common.AbstractCopier;
 import org.coodex.concrete.common.Account;
 import org.coodex.concrete.common.NamedAccount;
 import org.coodex.concrete.s2.api.AccountInfo;
+import org.coodex.copier.AbstractCopier;
 
 import java.util.Set;
 

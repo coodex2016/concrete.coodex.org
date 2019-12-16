@@ -28,6 +28,7 @@ import org.coodex.concrete.accounts.organization.repositories.AbstractPersonAcco
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.copier.TwoWayCopier;
 import org.coodex.util.Common;
 
 import javax.inject.Inject;

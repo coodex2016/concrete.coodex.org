@@ -26,13 +26,8 @@ import java.util.Arrays;
 public class WebSocketHelper {
 
     private static SingletonMap<Class, WebSocketModule> modules =
-            new SingletonMap<Class, WebSocketModule>(
-                    new SingletonMap.Builder<Class, WebSocketModule>() {
-                        @Override
-                        public WebSocketModule build(Class key) {
-                            return new WebSocketModule(key);
-                        }
-                    }
+            new SingletonMap<>(
+                    WebSocketModule::new
             );
 
 

@@ -31,7 +31,8 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 /**
  * Created by davidoff shen on 2017-03-09.
  */
-public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Param_Type>> implements ServiceLoader<T> {
+public abstract class AcceptableServiceLoader<Param_Type, T extends AcceptableService<Param_Type>>
+        implements ServiceLoader<T> {
 
     private final static Logger log = LoggerFactory.getLogger(AcceptableServiceLoader.class);
 

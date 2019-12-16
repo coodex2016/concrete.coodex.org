@@ -28,7 +28,7 @@ import org.coodex.concrete.accounts.organization.repositories.AbstractPositionRe
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.OrganizationErrorCodes;
-import org.coodex.concrete.common.TwoWayCopier;
+import org.coodex.copier.TwoWayCopier;
 import org.springframework.data.domain.Sort;
 
 import javax.inject.Inject;

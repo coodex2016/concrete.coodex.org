@@ -21,9 +21,9 @@ import org.coodex.concrete.accounts.AccountConstants;
 import org.coodex.concrete.accounts.TenantAccount;
 import org.coodex.concrete.accounts.tenant.entities.AbstractTenantEntity;
 import org.coodex.concrete.accounts.tenant.repositories.AbstractTenantRepo;
-import org.coodex.concrete.common.AbstractCopier;
 import org.coodex.concrete.common.ClassifiableAccountID;
-import org.coodex.concrete.common.Copier;
+import org.coodex.copier.AbstractCopier;
+import org.coodex.copier.Copier;
 
 import javax.inject.Inject;
 import java.util.Arrays;

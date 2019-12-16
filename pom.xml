@@ -144,6 +144,11 @@
         <spring.data.version>Lovelace-SR9</spring.data.version>
         <spring.boot.version>2.1.6.RELEASE</spring.boot.version>
 
+<!--        <spring.framework.version>5.2.2.RELEASE</spring.framework.version>-->
+<!--        <spring.data.version>Moore-SR2</spring.data.version>-->
+<!--        <spring.boot.version>2.2.2.RELEASE</spring.boot.version>-->
+
+        <netty4.version>4.1.43.Final</netty4.version>
         <jersey.version>2.27</jersey.version>
         <junit.version>4.12</junit.version>
         <freemarker.version>2.3.28</freemarker.version>
@@ -291,6 +296,14 @@
                 <groupId>io.zipkin.brave</groupId>
                 <artifactId>brave-bom</artifactId>
                 <version>${brave.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${netty4.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

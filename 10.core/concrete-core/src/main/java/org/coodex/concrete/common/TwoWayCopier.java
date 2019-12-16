@@ -21,39 +21,43 @@ import java.util.Collection;
 /**
  * 双向copier
  * Created by davidoff shen on 2017-05-11.
+ *
+ * @see org.coodex.copier.TwoWayCopier
+ * @deprecated 移动到coodex-utilities
  */
-public interface TwoWayCopier<A, B> {
+@Deprecated
+public interface TwoWayCopier<A, B> extends org.coodex.copier.TwoWayCopier<A, B> {
 
 
-    A newA();
-
-    A initA();
-
-    A initA(A o);
-
-    B copyA2B(A a);
-
-    B copyA2B(A a, B b);
-
-    <T extends Collection<B>> T copyA2B(Collection<A> srcCollection);
-
-    <T extends Collection<B>> T copyA2B(Collection<A> srcCollection, Class<T> clazz);
-
-    B newB();
-
-    B initB();
-
-    B initB(B o);
-
-    A copyB2A(B b);
-
-    A copyB2A(B b, A a);
-
-    <T extends Collection<A>> T copyB2A(Collection<B> srcCollection);
-
-    <T extends Collection<A>> T copyB2A(Collection<B> srcCollection, Class<T> clazz);
-
-
+//    A newA();
+//
+//    A initA();
+//
+//    A initA(A o);
+//
+//    B copyA2B(A a);
+//
+//    B copyA2B(A a, B b);
+//
+//    <T extends Collection<B>> T copyA2B(Collection<A> srcCollection);
+//
+//    <T extends Collection<B>> T copyA2B(Collection<A> srcCollection, Class<T> clazz);
+//
+//    B newB();
+//
+//    B initB();
+//
+//    B initB(B o);
+//
+//    A copyB2A(B b);
+//
+//    A copyB2A(B b, A a);
+//
+//    <T extends Collection<A>> T copyB2A(Collection<B> srcCollection);
+//
+//    <T extends Collection<A>> T copyB2A(Collection<B> srcCollection, Class<T> clazz);
+//
+//
     Copier<A, B> a2bCopier();
 
     Copier<B, A> b2aCopier();

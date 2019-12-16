@@ -14,98 +14,94 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common;
+package org.coodex.copier;
 
 import java.util.Collection;
 
 /**
  * Created by davidoff shen on 2017-05-11.
- *
- * @see org.coodex.copier.AbstractTwoWayCopier
- * @deprecated 移动到coodex-utilities
  */
-@Deprecated
+@SuppressWarnings("unchecked")
 public abstract class AbstractTwoWayCopier<A, B>
-        extends org.coodex.copier.AbstractTwoWayCopier<A, B>
-//        extends AbstractCopierCommon<A, B>
+        extends AbstractCopierCommon<A, B>
         implements TwoWayCopier<A, B> {
 
+    @Override
+    protected Object copy(Object o, Index srcIndex) {
+        return Index.A.getIndex() == srcIndex.getIndex() ?
+                copyA2B((A) o) : copyB2A((B) o);
+    }
+
+    @Override
+    public A newA() {
+        return (A) newObject(Index.A);
+    }
+
+    @Override
+    public A initA() {
+        return initA(newA());
+    }
+
+    @Override
+    public A initA(A o) {
+        return (A) init(o, Index.A);
+    }
+
+    @Override
+    public A copyB2A(B b) {
+        return copyB2A(b, initA());
+    }
+
 //    @Override
-//    protected Object copy(Object o, Index srcIndex) {
-//        return Index.A.getIndex() == srcIndex.getIndex() ?
-//                copyA2B((A) o) : copyB2A((B) o);
+//    public A copyB2A(B b, A a) {
+//        return null;
 //    }
-//
+
+    @Override
+    public <T extends Collection<A>> T copyB2A(Collection<B> srcCollection) {
+        return copy(srcCollection, Index.B);
+    }
+
+    @Override
+    public <T extends Collection<A>> T copyB2A(Collection<B> srcCollection, Class<T> clazz) {
+        return copy(srcCollection, clazz, Index.B);
+    }
+
+    @Override
+    public B newB() {
+        return (B) newObject(Index.B);
+    }
+
+    @Override
+    public B initB() {
+        return initB(newB());
+    }
+
+    @Override
+    public B initB(B o) {
+        return (B) init(o, Index.B);
+    }
+
+    @Override
+    public B copyA2B(A a) {
+        return copyA2B(a, initB());
+    }
+
 //    @Override
-//    public A newA() {
-//        return (A) newObject(Index.A);
+//    public B copyA2B(A a, B b) {
+//        return null;
 //    }
-//
-//    @Override
-//    public A initA() {
-//        return initA(newA());
-//    }
-//
-//    @Override
-//    public A initA(A o) {
-//        return (A) init(o, Index.A);
-//    }
-//
-//    @Override
-//    public A copyB2A(B b) {
-//        return copyB2A(b, initA());
-//    }
-//
-////    @Override
-////    public A copyB2A(B b, A a) {
-////        return null;
-////    }
-//
-//    @Override
-//    public <T extends Collection<A>> T copyB2A(Collection<B> srcCollection) {
-//        return copy(srcCollection, Index.B);
-//    }
-//
-//    @Override
-//    public <T extends Collection<A>> T copyB2A(Collection<B> srcCollection, Class<T> clazz) {
-//        return copy(srcCollection, clazz, Index.B);
-//    }
-//
-//    @Override
-//    public B newB() {
-//        return (B) newObject(Index.B);
-//    }
-//
-//    @Override
-//    public B initB() {
-//        return initB(newB());
-//    }
-//
-//    @Override
-//    public B initB(B o) {
-//        return (B) init(o, Index.B);
-//    }
-//
-//    @Override
-//    public B copyA2B(A a) {
-//        return copyA2B(a, initB());
-//    }
-//
-////    @Override
-////    public B copyA2B(A a, B b) {
-////        return null;
-////    }
-//
-//    @Override
-//    public <T extends Collection<B>> T copyA2B(Collection<A> srcCollection) {
-//        return copy(srcCollection, Index.A);
-//    }
-//
-//    @Override
-//    public <T extends Collection<B>> T copyA2B(Collection<A> srcCollection, Class<T> clazz) {
-//        return copy(srcCollection, clazz, Index.A);
-//    }
-//
+
+    @Override
+    public <T extends Collection<B>> T copyA2B(Collection<A> srcCollection) {
+        return copy(srcCollection, Index.A);
+    }
+
+    @Override
+    public <T extends Collection<B>> T copyA2B(Collection<A> srcCollection, Class<T> clazz) {
+        return copy(srcCollection, clazz, Index.A);
+    }
+
     @Override
     public Copier<A, B> a2bCopier() {
         return new Copier<A, B>() {

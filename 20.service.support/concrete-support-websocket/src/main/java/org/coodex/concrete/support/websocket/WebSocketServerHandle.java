@@ -278,10 +278,10 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
         return "websocket";
     }
 
-    @Override
-    protected Subjoin getSubjoin(Map<String, String> map) {
-        return new WebSocketSubjoin(map);
-    }
+//    @Override
+//    protected Subjoin getSubjoin(Map<String, String> map) {
+//        return new WebSocketSubjoin(map);
+//    }
 
     private RequestPackage<Object> analysisRequest(String message, Session session) {
         try {

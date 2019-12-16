@@ -22,6 +22,8 @@ import org.coodex.concrete.accounts.organization.entities.OrganizationEntity;
 import org.coodex.concrete.accounts.organization.repositories.AbstractPersonAccountRepo;
 import org.coodex.concrete.common.*;
 import org.coodex.config.Config;
+import org.coodex.copier.Copier;
+import org.coodex.copier.AbstractCopier;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
 
@@ -82,7 +84,7 @@ public abstract class AbstractOrganizationAccountFactory
 //    };
 
     public static Set<String> getAllRoles(AbstractPersonAccountEntity<? extends AbstractPositionEntity> p) {
-        Set<String> roles = new HashSet<String>();
+        Set<String> roles = new HashSet<>();
         if (p.getPositions() != null) {
             for (AbstractPositionEntity position : p.getPositions()) {
                 Set<String> positionRoles = Common.join(p.getRoles(), position.getRoles());

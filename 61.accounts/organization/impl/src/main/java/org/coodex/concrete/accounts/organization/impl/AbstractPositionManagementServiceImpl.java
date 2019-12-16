@@ -24,7 +24,7 @@ import org.coodex.concrete.accounts.organization.pojo.Position;
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.OrganizationErrorCodes;
-import org.coodex.concrete.common.TwoWayCopier;
+import org.coodex.copier.TwoWayCopier;
 import org.coodex.util.Common;
 
 import javax.inject.Inject;

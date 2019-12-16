@@ -159,7 +159,7 @@ public abstract class AbstractJAXRSResource<T> {
             @Override
             public String getAddress() {
                 String xff = httpHeaders.getHeaderString("X-Forwarded-For");
-                if (xff != null) {
+                if (!Common.isBlank(xff)) {
                     return xff.split(",")[0].trim();
                 }
                 return httpRequest.getRemoteAddr();
@@ -209,7 +209,7 @@ public abstract class AbstractJAXRSResource<T> {
             }
 
             Map<String, String> map = ConcreteHelper.updatedMap(serviceContext.getSubjoin());
-            if (map != null && map.size() > 0) {
+            if (map.size() > 0) {
                 for (String key : map.keySet()) {
                     builder = builder.header(key, URLEncoder.encode(map.get(key), "UTF-8"));
                 }
@@ -281,6 +281,5 @@ public abstract class AbstractJAXRSResource<T> {
             return params;
         }
     }
-
 
 }

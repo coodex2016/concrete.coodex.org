@@ -18,7 +18,7 @@ package org.coodex.concrete.accounts.organization.impl.copiers;
 
 import org.coodex.concrete.accounts.AbstractPojo;
 import org.coodex.concrete.accounts.organization.entities.AbstractEntity;
-import org.coodex.concrete.common.AbstractTwoWayCopier;
+import org.coodex.copier.AbstractTwoWayCopier;
 import org.coodex.concrete.common.TenantBuilder;
 import org.coodex.concrete.common.TenantBuilderWrapper;
 

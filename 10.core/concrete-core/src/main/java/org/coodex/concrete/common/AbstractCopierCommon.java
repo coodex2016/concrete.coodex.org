@@ -28,91 +28,94 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 
 /**
  * Created by davidoff shen on 2017-05-11.
+ *
+ * @see org.coodex.copier.AbstractCopierCommon
+ * @deprecated 移动到coodex-utilities
  */
-public abstract class AbstractCopierCommon<A, B> {
+public abstract class AbstractCopierCommon<A, B> extends org.coodex.copier.AbstractCopierCommon<A,B> {
 
-    private Class[] classes = new Class[2];
-
-    protected Class getClass(Index index) {
-        synchronized (this) {
-            if (classes[index.getIndex()] == null) {
-                TypeVariable t = AbstractCopierCommon.class.getTypeParameters()[index.getIndex()];
-                classes[index.getIndex()] = IF.isNull(
-                        typeToClass(solveFromInstance(t, this)), ErrorCodes.UNKNOWN_CLASS, t);
-            }
-        }
-        return classes[index.getIndex()];
-    }
-
-    protected Object newObject(Index index) {
-        try {
-            return getClass(index).newInstance();
-        } catch (Throwable th) {
-            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
-        }
-    }
-
-    protected Object init(Object o, Index index) {
-        if (o == null)
-            o = newObject(index);
-        return o;
-    }
-
-    protected abstract Object copy(Object o, Index srcIndex);
-
-    @SuppressWarnings("unchecked")
-    protected <T extends Collection> T copy(Collection srcCollection, Class<T> tClass, Index srcIndex) {
-        if (srcCollection == null) throw new NullPointerException("srcCollection is NULL.");
-        Collection collection = null;
-        if (List.class.equals(tClass)) {
-            collection = new ArrayList();
-        } else if (Set.class.equals(tClass)) {
-            collection = new HashSet();
-        } else {
-            try {
-                collection = tClass.getConstructor().newInstance();
-            } catch (InstantiationException e) {
-            } catch (IllegalAccessException e) {
-            } catch (InvocationTargetException e) {
-            } catch (NoSuchMethodException e) {
-            }
-        }
-        if (collection == null)
-            throw new IllegalArgumentException("class :" + tClass.getCanonicalName() + " not support.");
-        for (Object src : srcCollection) {
-            collection.add(copy(src, srcIndex));
-        }
-        return (T) collection;
-    }
-
-    private Class<? extends Collection> getCollectionClass(Collection collection) {
-        Class<? extends Collection> clazz = collection.getClass();
-        if (List.class.isAssignableFrom(clazz)) {
-            return List.class;
-        } else if (Set.class.isAssignableFrom(clazz)) {
-            return Set.class;
-        } else
-            return clazz;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected <T extends Collection> T copy(Collection srcCollection, Index srcIndex) {
-        return (T) copy(srcCollection, getCollectionClass(srcCollection), srcIndex);
-    }
-
-    protected enum Index {
-        A(0), B(1);
-
-        private final int index;
-
-        Index(int i) {
-            index = i;
-        }
-
-        int getIndex() {
-            return index;
-        }
-    }
+//    private Class[] classes = new Class[2];
+//
+//    protected Class getClass(Index index) {
+//        synchronized (this) {
+//            if (classes[index.getIndex()] == null) {
+//                TypeVariable t = AbstractCopierCommon.class.getTypeParameters()[index.getIndex()];
+//                classes[index.getIndex()] = IF.isNull(
+//                        typeToClass(solveFromInstance(t, this)), ErrorCodes.UNKNOWN_CLASS, t);
+//            }
+//        }
+//        return classes[index.getIndex()];
+//    }
+//
+//    protected Object newObject(Index index) {
+//        try {
+//            return getClass(index).newInstance();
+//        } catch (Throwable th) {
+//            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
+//        }
+//    }
+//
+//    protected Object init(Object o, Index index) {
+//        if (o == null)
+//            o = newObject(index);
+//        return o;
+//    }
+//
+//    protected abstract Object copy(Object o, Index srcIndex);
+//
+//    @SuppressWarnings("unchecked")
+//    protected <T extends Collection> T copy(Collection srcCollection, Class<T> tClass, Index srcIndex) {
+//        if (srcCollection == null) throw new NullPointerException("srcCollection is NULL.");
+//        Collection collection = null;
+//        if (List.class.equals(tClass)) {
+//            collection = new ArrayList();
+//        } else if (Set.class.equals(tClass)) {
+//            collection = new HashSet();
+//        } else {
+//            try {
+//                collection = tClass.getConstructor().newInstance();
+//            } catch (InstantiationException e) {
+//            } catch (IllegalAccessException e) {
+//            } catch (InvocationTargetException e) {
+//            } catch (NoSuchMethodException e) {
+//            }
+//        }
+//        if (collection == null)
+//            throw new IllegalArgumentException("class :" + tClass.getCanonicalName() + " not support.");
+//        for (Object src : srcCollection) {
+//            collection.add(copy(src, srcIndex));
+//        }
+//        return (T) collection;
+//    }
+//
+//    private Class<? extends Collection> getCollectionClass(Collection collection) {
+//        Class<? extends Collection> clazz = collection.getClass();
+//        if (List.class.isAssignableFrom(clazz)) {
+//            return List.class;
+//        } else if (Set.class.isAssignableFrom(clazz)) {
+//            return Set.class;
+//        } else
+//            return clazz;
+//    }
+//
+//    @SuppressWarnings("unchecked")
+//    protected <T extends Collection> T copy(Collection srcCollection, Index srcIndex) {
+//        return (T) copy(srcCollection, getCollectionClass(srcCollection), srcIndex);
+//    }
+//
+//    protected enum Index {
+//        A(0), B(1);
+//
+//        private final int index;
+//
+//        Index(int i) {
+//            index = i;
+//        }
+//
+//        int getIndex() {
+//            return index;
+//        }
+//    }
 
 
 }

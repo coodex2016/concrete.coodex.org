@@ -21,11 +21,10 @@ import org.coodex.concrete.accounts.organization.api.AbstractPersonManagementSer
 import org.coodex.concrete.accounts.organization.entities.AbstractPersonAccountEntity;
 import org.coodex.concrete.accounts.organization.entities.AbstractPositionEntity;
 import org.coodex.concrete.accounts.organization.pojo.Person;
-import org.coodex.concrete.accounts.organization.repositories.AbstractPersonAccountRepo;
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.OrganizationErrorCodes;
-import org.coodex.concrete.common.TwoWayCopier;
+import org.coodex.copier.TwoWayCopier;
 import org.coodex.util.Common;
 
 import javax.inject.Inject;

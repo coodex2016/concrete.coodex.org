@@ -25,7 +25,7 @@ import org.coodex.concrete.accounts.organization.pojo.Department;
 import org.coodex.concrete.accounts.organization.repositories.AbstractDepartmentRepo;
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.concrete.common.IF;
-import org.coodex.concrete.common.TwoWayCopier;
+import org.coodex.copier.TwoWayCopier;
 import org.coodex.util.Common;
 
 import javax.inject.Inject;

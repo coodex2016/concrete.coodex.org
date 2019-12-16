@@ -18,7 +18,7 @@ package org.coodex.concrete.accounts.tenant.impl.copiers;
 
 import org.coodex.concrete.accounts.tenant.entities.AbstractTenantEntity;
 import org.coodex.concrete.accounts.tenant.pojo.Tenant;
-import org.coodex.concrete.common.AbstractTwoWayCopier;
+import org.coodex.copier.AbstractTwoWayCopier;
 
 import java.util.Calendar;
 
