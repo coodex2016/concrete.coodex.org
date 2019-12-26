@@ -26,6 +26,13 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-12-26
+
+- org.coodex.util.Retry: 增加任务名、单次任务失败，调整所有任务失败的handle到Builder中
+- concrete-core: ThrowableMapperFacade，去除同步关键词，提高性能
+- concrete-support-jaxrs: ConcreteExceptionMapper，UNKNOWN类型错误处理优化
+
+
 ## 2019-12-16
 
 - 重构copier机制，从`concrete-core`的`org.coodex.concrete.common`移动到`coodex-utilities`的`org.coodex.copier`，原相关接口、实现声明作废

@@ -29,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import java.lang.reflect.InvocationTargetException;
 
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 
@@ -74,6 +75,11 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
             if (exception instanceof ConcreteException) {
                 if (((ConcreteException) exception).getCode() != ErrorCodes.UNKNOWN_ERROR) {
                     th = null;
+                } else {
+                    th = exception.getCause();
+                    if (th.getClass().getName().startsWith(InvocationTargetException.class.getPackage().getName())) {
+                        th = th.getCause();
+                    }
                 }
             }
             if (th != null) {

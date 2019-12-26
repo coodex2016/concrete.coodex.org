@@ -17,6 +17,7 @@
 package test.org.coodex.util;
 
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.util.Common;
 import org.coodex.util.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +41,26 @@ public class RetryTest {
 //                    }
 //                })
 //                .scheduler(ExecutorsHelper.newSingleThreadScheduledExecutor("test"))// 指定线程池
-                .build()
-//                .handle(new Retry.AllFailedHandle() { // 当任务尝试数超出最大阈值依然失败时的handle
+//                .named("TaskTest") //指定任务名
+//                .named(new Retry.TaskNameSupplier() { // or supplier方式指定任务名
+//                    @Override
+//                    public String getName() {
+//                        return "TaskTest";
+//                    }
+//                })
+//                .onFailed(new Retry.OnFailed() { //每次失败触发
+//                    @Override
+//                    public void onFailed(Calendar start, int times, Throwable throwable) {
+//                        log.info("on failed: {}, {}, {}", Common.calendarToStr(start), times, throwable == null ? "" : throwable.getLocalizedMessage());
+//                    }
+//                })
+//                .onAllFailed(new Retry.AllFailedHandle() { // 当任务尝试数超出最大阈值依然失败时的handle
 //                    @Override
 //                    public void allFailed(Calendar start, int times) {
 //                        log.info("all failed");
 //                    }
 //                })
+                .build()
                 .execute(new Retry.Task() { // 要多次尝试执行的任务
                     @Override
                     public boolean run(int times) throws Exception {

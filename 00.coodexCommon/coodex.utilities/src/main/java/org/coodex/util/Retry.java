@@ -51,14 +51,18 @@ public class Retry {
     private Integer maxTimes;
     private long initDelay = 0L;
     private NextDelay nextDelay;
+    private TaskNameSupplier taskNameSupplier = null;
+    private OnFailed onFailed = null;
+    private AllFailedHandle allFailedHandle = null;
 
 
     // 第几次
     private int num = 1;
     // 状态
     private Status status = Status.INIT;
-    private AllFailedHandle allFailedHandle;
+    private Task task;
     private Calendar start;
+
 
     private Retry() {
     }
@@ -68,16 +72,26 @@ public class Retry {
     }
 
     public void execute(Task task) {
+        if (task == null) throw new NullPointerException("task is null.");
         synchronized (this) {
             if (!Status.INIT.equals(status))
                 throw new IllegalStateException("task has scheduled.");
-
+            this.task = task;
             status = Status.WAITING;
         }
-        postTask(task);
+        postTask();
     }
 
-    private void postTask(final Task task) {
+    public void execute() {
+        execute(this.task);
+    }
+
+    private String getTaskName() {
+        return taskNameSupplier == null ? task.toString() : taskNameSupplier.getName();
+    }
+
+    private void postTask() {
+
         scheduledExecutorService.schedule(new Runnable() {
             @Override
             public void run() {
@@ -87,6 +101,8 @@ public class Retry {
                     if (start == null) {
                         start = Clock.getCalendar();
                     }
+                    Calendar thisTimes = Clock.getCalendar();
+
                     int times = num;
                     Throwable throwable = null;
                     boolean success = false;
@@ -102,10 +118,11 @@ public class Retry {
                         status = Status.FINISHED;
                         if (success) {
                             if (log.isDebugEnabled())
-                                log.debug("{} success. [{}]", task.toString(), times);
+                                log.debug("{} success. [{}]", getTaskName(), times);
                         } else {
                             if (log.isInfoEnabled())
-                                log.info("{} all failed.", task.toString());
+                                log.info("{} all failed.", getTaskName());
+                            onFailed(thisTimes, times, throwable);
                             if (allFailedHandle != null) {
                                 try {
                                     allFailedHandle.allFailed(start, times);
@@ -115,26 +132,44 @@ public class Retry {
                             }
                         }
                     } else {
+                        onFailed(thisTimes, times, throwable);
                         if (throwable != null && log.isWarnEnabled()) {
-                            log.warn("{} failed [{}] times. {}", task.toString(), times,
+                            log.warn("{} failed [{}] times. {}", getTaskName(), times,
                                     throwable.getLocalizedMessage(), throwable);
                         }
 
                         if (throwable == null && log.isInfoEnabled()) {
-                            log.info("{} failed [{}] times.", task.toString(), times);
+                            log.info("{} failed [{}] times.", getTaskName(), times);
                         }
                         status = Status.WAITING;
-                        postTask(task);
+                        postTask();
                     }
                 }
             }
         }, num == 1 ? initDelay : nextDelay.next(num), TimeUnit.MILLISECONDS);
     }
 
+    public void onFailed(Calendar start, int times, Throwable throwable) {
+        if (onFailed != null) {
+            try {
+                onFailed.onFailed(start, times, throwable);
+            } catch (Throwable t) {
+                log.warn("on failed handle error.", t);
+            }
+        }
+    }
+
     public Status getStatus() {
         return status;
     }
 
+    /**
+     * @param allFailedHandle allFailedHandle
+     * @return
+     * @see Builder#onAllFailed(AllFailedHandle)
+     * @deprecated
+     */
+    @Deprecated
     public Retry handle(AllFailedHandle allFailedHandle) {
         synchronized (this) {
             if (status.status >= Status.RUNNING.getStatus())
@@ -143,6 +178,7 @@ public class Retry {
         }
         return this;
     }
+
 
     public enum Status {
         INIT(0),
@@ -163,6 +199,19 @@ public class Retry {
 
     public interface AllFailedHandle {
         void allFailed(Calendar start, int times);
+    }
+
+    public interface TaskNameSupplier {
+        String getName();
+    }
+
+    public interface OnFailed {
+        /**
+         * @param start     本次任务何时开始
+         * @param times     第几次
+         * @param throwable 异常，如果运行无异常则为<code>null</code>
+         */
+        void onFailed(Calendar start, int times, Throwable throwable);
     }
 
     public interface Task {
@@ -208,6 +257,9 @@ public class Retry {
         private Integer maxTimes;
         private long initDelay = 0L;
         private NextDelay nextDelay;
+        private TaskNameSupplier taskNameSupplier = null;
+        private OnFailed onFailed = null;
+        private AllFailedHandle allFailedHandle = null;
 
         private Builder() {
         }
@@ -250,6 +302,47 @@ public class Retry {
         }
 
         /**
+         * @param name 任务名
+         * @return Builder
+         */
+        public Builder named(final String name) {
+            this.taskNameSupplier = new TaskNameSupplier() {
+                @Override
+                public String getName() {
+                    return name;
+                }
+            };
+            return this;
+        }
+
+        /**
+         * @param taskNameSupplier 任务名Supplier
+         * @return Builder
+         */
+        public Builder named(TaskNameSupplier taskNameSupplier) {
+            this.taskNameSupplier = taskNameSupplier;
+            return this;
+        }
+
+        /**
+         * @param onFailed 每次失败时的处理
+         * @return Builder
+         */
+        public Builder onFailed(OnFailed onFailed) {
+            this.onFailed = onFailed;
+            return this;
+        }
+
+        /**
+         * @param allFailedHandle 全部失败时的处理
+         * @return Builder
+         */
+        public Builder onAllFailed(AllFailedHandle allFailedHandle) {
+            this.allFailedHandle = allFailedHandle;
+            return this;
+        }
+
+        /**
          * @return Retry 实例
          */
         public Retry build() {
@@ -260,6 +353,9 @@ public class Retry {
             retry.scheduledExecutorService = this.scheduledExecutorService == null ?
                     SCHEDULED_EXECUTOR_SERVICE_SINGLETON.get() :
                     this.scheduledExecutorService;
+            retry.taskNameSupplier = this.taskNameSupplier;
+            retry.onFailed = onFailed;
+            retry.allFailedHandle = allFailedHandle;
             return retry;
         }
     }
