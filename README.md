@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2019-12-27
+
+- org.coodex.util.Tracer: 一个信息跟踪小工具
+
 ## 2019-12-26
 
 - org.coodex.util.Retry: 增加任务名、单次任务失败，调整所有任务失败的handle到Builder中
