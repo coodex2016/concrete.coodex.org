@@ -61,10 +61,11 @@ public abstract class AbstractBeanProvider implements BeanProvider {
         ConflictSolution conflictSolution = SOLUTION_CONCRETE_SPI_FACADE.select(clz);
         if (conflictSolution != null) return conflictSolution;
 
-        // 3 从配置文件中读取
+        // 从配置中心读取
         try {
-            Class c = Class.forName(Config.get(ConflictSolution.class.getCanonicalName(), getAppSet()));
-            return (ConflictSolution) c.newInstance();
+            return (ConflictSolution) Class.forName(
+                    Config.get(ConflictSolution.class.getCanonicalName(), getAppSet())
+            ).newInstance();
         } catch (Throwable th) {
         }
 
@@ -74,9 +75,9 @@ public abstract class AbstractBeanProvider implements BeanProvider {
     @Override
     public final <T> T getBean(Class<T> type) {
         Map<String, T> instanceMap = getBeansOfType(type);
+
         // remove create by concrete
-        Set<String> keySet = new HashSet<String>(instanceMap.keySet());
-        for (String name : keySet) {
+        for (String name : new HashSet<String>(instanceMap.keySet())) {
             if (name.startsWith(CREATE_BY_CONCRETE))
                 instanceMap.remove(name);
         }

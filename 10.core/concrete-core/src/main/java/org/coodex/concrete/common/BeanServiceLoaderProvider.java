@@ -31,10 +31,10 @@ public class BeanServiceLoaderProvider /*extends ServiceLoaderImpl<BeanProvider>
 
 ////    private static final BeanProvider DEFAULT_PROVIDER =
 //
-    private static final Singleton<BeanProvider> DEFAULT_PROVIDER_SINGLETON = new Singleton<>(
-            () -> ReflectHelper.throwExceptionObject(
-                    BeanProvider.class, new ConcreteException(ErrorCodes.NO_BEAN_PROVIDER_FOUND))
-    );
+//    private static final Singleton<BeanProvider> DEFAULT_PROVIDER_SINGLETON = new Singleton<>(
+//            () -> ReflectHelper.throwExceptionObject(
+//                    BeanProvider.class, new ConcreteException(ErrorCodes.NO_BEAN_PROVIDER_FOUND))
+//    );
 //
 //    private static final ServiceLoader<BeanProvider> SPI_INSTANCE = new ServiceLoaderImpl<BeanProvider>() {
 //    };//new BeanServiceLoaderProvider();

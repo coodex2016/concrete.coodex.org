@@ -37,14 +37,10 @@ public class JMSCourierPrototype<M extends Serializable> extends CourierPrototyp
                 @Override
                 public JMSFacade build() {
 
+                    //noinspection unchecked
                     return new JMSFacade(getQueue(),
                             driver, String.format("%s@%s", getTopicType().toString(), getQueue()),
-                            new JMSFacade.ObjectListener() {
-                                @Override
-                                public void receive(Object o) {
-                                    getTopic().notify((M) o);
-                                }
-                            }, getMessageType());
+                            o -> getTopic().notify((M) o), getMessageType());
                 }
             }
     );

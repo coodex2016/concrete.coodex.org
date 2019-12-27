@@ -71,6 +71,16 @@ public class Retry {
         return new Builder();
     }
 
+    public void execute(final Runnable runnable) {
+        execute(new Task() {
+            @Override
+            public boolean run(int times) throws Exception {
+                runnable.run();
+                return true;
+            }
+        });
+    }
+
     public void execute(Task task) {
         if (task == null) throw new NullPointerException("task is null.");
         synchronized (this) {

@@ -43,12 +43,12 @@ public class Tracer {
     }
 
     public static void putTrace(String key, Object value) {
-        if (isEnabled())
+        if (isEnabled() && tracer_context.get() != null)
             tracer_context.get().put(key, value);
     }
 
     public static void start(String label) {
-        if (isEnabled()) {
+        if (isEnabled() && tracer_context.get() != null) {
             getStartTimeMap().put(label, Clock.currentTimeMillis());
         }
     }
@@ -59,7 +59,7 @@ public class Tracer {
     }
 
     public static void end(String label) {
-        if (isEnabled() && getStartTimeMap().containsKey(label)) {
+        if (isEnabled() && tracer_context.get() != null && getStartTimeMap().containsKey(label)) {
             long used = Clock.currentTimeMillis() - getStartTimeMap().get(label);
             getStartTimeMap().remove(label);
             putTrace(label,
