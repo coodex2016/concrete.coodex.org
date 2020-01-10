@@ -131,6 +131,15 @@
                 <type>pom</type>
             </dependency>
 
+            <!-- log4j 2 -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>${log4j2.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- zipkin brave -->
             <dependency>
                 <groupId>io.zipkin.brave</groupId>

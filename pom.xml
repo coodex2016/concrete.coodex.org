@@ -143,6 +143,7 @@
         <apache.dubbo.version>2.7.4.1</apache.dubbo.version>
 
         <slf4j.version>1.7.26</slf4j.version>
+        <log4j2.version>2.13.0</log4j2.version>
         <aspectj.version>1.9.4</aspectj.version>
 
         <spring.framework.version>5.1.8.RELEASE</spring.framework.version>
@@ -327,7 +328,14 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>${log4j2.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
