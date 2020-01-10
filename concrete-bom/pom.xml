@@ -104,6 +104,15 @@
                 <scope>import</scope>
             </dependency>
 
+            <!-- apache dubbo -->
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-bom</artifactId>
+                <version>${apache.dubbo.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- jersey -->
             <dependency>
                 <groupId>org.glassfish.jersey</groupId>
@@ -308,11 +317,17 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
-<!--            <dependency>-->
-<!--                <groupId>${project.parent.groupId}</groupId>-->
-<!--                <artifactId>concrete-rx</artifactId>-->
-<!--                <version>${project.parent.version}</version>-->
-<!--            </dependency>-->
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-spring-boot-apache-dubbo</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <!--            <dependency>-->
+            <!--                <groupId>${project.parent.groupId}</groupId>-->
+            <!--                <artifactId>concrete-rx</artifactId>-->
+            <!--                <version>${project.parent.version}</version>-->
+            <!--            </dependency>-->
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
@@ -344,9 +359,15 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
+            <!--            <dependency>-->
+            <!--                <groupId>${project.parent.groupId}</groupId>-->
+            <!--                <artifactId>concrete-support-dubbo</artifactId>-->
+            <!--                <version>${project.parent.version}</version>-->
+            <!--            </dependency>-->
+
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-support-dubbo</artifactId>
+                <artifactId>concrete-support-apache-dubbo</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 
@@ -386,9 +407,15 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
+            <!--            <dependency>-->
+            <!--                <groupId>${project.parent.groupId}</groupId>-->
+            <!--                <artifactId>concrete-dubbo-client</artifactId>-->
+            <!--                <version>${project.parent.version}</version>-->
+            <!--            </dependency>-->
+
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-dubbo-client</artifactId>
+                <artifactId>concrete-apache-dubbo-client</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 

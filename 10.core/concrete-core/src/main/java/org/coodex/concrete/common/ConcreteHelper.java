@@ -33,6 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
 
+import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.util.ReflectHelper.foreachClass;
 
 /**
@@ -44,6 +45,11 @@ public class ConcreteHelper {
 
     public static final String TAG_CLIENT = "client";
     public static final String KEY_LOCATION = "location";
+
+    public static final String TOKEN_KEY = CONCRETE_TOKEN_ID_KEY;
+    public static final String AGENT_KEY = "user-agent";
+    public static final String LOCALE_KEY = "locale";
+
 
     public static final Integer DEFAULT_MAX_QUEUE_SIZE = 0x1988 + 0x0904;
     private static final Integer DEFAULT_CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2;

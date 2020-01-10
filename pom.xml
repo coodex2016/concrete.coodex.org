@@ -70,8 +70,9 @@
         <module>10.core/concrete-test</module>
         <module>10.core/concrete-fsm-impl</module>
         <module>10.core/concrete-jaxrs</module>
-        <module>10.core/concrete-dubbo</module>
+<!--        <module>10.core/concrete-dubbo</module>-->
         <module>10.core/concrete-amqp</module>
+        <module>10.core/concrete-apache-dubbo</module>
         <module>10.core/concrete-core-mock</module>
 
         <module>20.service.support/concrete-support-jaxrs</module>
@@ -79,22 +80,25 @@
         <module>20.service.support/concrete-support-jsr339</module>
         <module>20.service.support/concrete-support-jaxrs-saas-reverse-proxy</module>
         <module>20.service.support/concrete-support-websocket</module>
-        <module>20.service.support/concrete-support-dubbo</module>
+        <!--        <module>20.service.support/concrete-support-dubbo</module>-->
         <module>20.service.support/concrete-support-amqp</module>
         <module>20.service.support/concrete-support-jaxrs-swagger</module>
+        <module>20.service.support/concrete-support-apache-dubbo</module>
 
         <module>30.spring/concrete-core-spring</module>
         <module>30.spring/concrete-commons-spring-data</module>
         <module>30.spring/concrete-spring-boot-jaxrs</module>
         <module>30.spring/concrete-spring-boot-amqp</module>
+        <module>30.spring/concrete-spring-boot-apache-dubbo</module>
 
         <module>50.clients/concrete-api-tools</module>
         <module>50.clients/concrete-client</module>
         <module>50.clients/concrete-jaxrs-client</module>
         <module>50.clients/concrete-websocket-client</module>
-        <module>50.clients/concrete-dubbo-client</module>
+        <!--        <module>50.clients/concrete-dubbo-client</module>-->
         <module>50.clients/concrete-amqp-client</module>
         <module>50.clients/concrete-rx-builder</module>
+        <module>50.clients/concrete-apache-dubbo-client</module>
 
         <module>60.attachments/concrete-attachments</module>
         <module>60.attachments/concrete-attachments-jaxrs</module>
@@ -135,7 +139,8 @@
         <jsr-311.version>1.1.1</jsr-311.version>
         <jsr-339.version>1.0.0.Final</jsr-339.version>
 
-        <dubbo.version>2.6.6</dubbo.version>
+<!--        <dubbo.version>2.6.6</dubbo.version>-->
+        <apache.dubbo.version>2.7.4.1</apache.dubbo.version>
 
         <slf4j.version>1.7.26</slf4j.version>
         <aspectj.version>1.9.4</aspectj.version>
@@ -308,10 +313,18 @@
                 <scope>import</scope>
             </dependency>
 
+<!--            <dependency>-->
+<!--                <groupId>com.alibaba</groupId>-->
+<!--                <artifactId>dubbo</artifactId>-->
+<!--                <version>${dubbo.version}</version>-->
+<!--            </dependency>-->
+
             <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>dubbo</artifactId>
-                <version>${dubbo.version}</version>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-bom</artifactId>
+                <version>${apache.dubbo.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->

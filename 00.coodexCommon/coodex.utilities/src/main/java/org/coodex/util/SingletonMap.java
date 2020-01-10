@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -85,6 +86,16 @@ public class SingletonMap<K, V> {
             }
         }
         return map.get(finalKey);
+    }
+
+    public <C extends Collection<V>> C fill(C collection, Collection<K> keys) {
+        if (collection == null) throw new NullPointerException("collection is null.");
+        if (keys != null && keys.size() > 0) {
+            for (K key : new LinkedHashSet<K>(keys)) {
+                collection.add(get(key));
+            }
+        }
+        return collection;
     }
 
     /**

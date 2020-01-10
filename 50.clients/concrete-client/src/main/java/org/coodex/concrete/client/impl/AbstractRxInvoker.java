@@ -18,9 +18,9 @@ package org.coodex.concrete.client.impl;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.ClientHelper;
+import org.coodex.concrete.api.rx.CompletableFutureBridge;
 import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.apm.Trace;
-import org.coodex.concrete.api.rx.CompletableFutureBridge;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.RxInvoker;
 import org.coodex.concrete.common.ConcreteContext;
@@ -76,15 +76,22 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
         final ServiceContext serviceContext = buildContext(runtimeContext);
         final MethodInvocation invocation = new RXMethodInvocation(runtimeContext, args);
 
-        // 1. before切片
-        ConcreteContext.runWithContext(serviceContext, () -> {
-            ClientHelper.getAsyncInterceptorChain().before(runtimeContext, invocation);
-            return null;
-        });
-
-        // 2. apm
         Trace trace = APM.build();
         trace.start();
+        try {
+            // 1. before切片
+            ConcreteContext.runWithContext(serviceContext, () -> {
+                ClientHelper.getAsyncInterceptorChain().before(runtimeContext, invocation);
+                return null;
+            });
+        } catch (Throwable th) {
+            trace.error(th);
+            trace.finish();
+            throw Common.runtimeException(th);
+        }
+
+        // 2. apm
+
         return wrap(serviceContext, invocation, runtimeContext,
                 futureInvoke(runtimeContext, args), trace);
     }

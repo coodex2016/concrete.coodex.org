@@ -17,20 +17,16 @@
 package org.coodex.concrete.common;
 
 
-import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 
 import java.util.*;
 
+import static org.coodex.util.Common.join;
+
 public abstract class AbstractChangeableSubjoin extends AbstractSubjoin {
 
-    private Singleton<Subjoin> subjoinSingleton = new Singleton<Subjoin>(
-            new Singleton.Builder<Subjoin>() {
-                @Override
-                public Subjoin build() {
-                    return new WrappedSubjoin(AbstractChangeableSubjoin.this);
-                }
-            }
+    private Singleton<Subjoin> subjoinSingleton = new Singleton<>(
+            () -> new WrappedSubjoin(AbstractChangeableSubjoin.this)
     );
 
     public AbstractChangeableSubjoin() {
@@ -70,7 +66,8 @@ public abstract class AbstractChangeableSubjoin extends AbstractSubjoin {
         }
 
         public Set<String> keySet() {
-            return Common.join(subjoin.keySet(), super.keySet());
+            //noinspection unchecked
+            return join(subjoin.keySet(), super.keySet());
         }
 
 //        @Override
@@ -85,7 +82,7 @@ public abstract class AbstractChangeableSubjoin extends AbstractSubjoin {
         public void add(String name, String value) {
             List<String> list = getList(name);
             if (list == null)
-                list = new ArrayList<String>();
+                list = new ArrayList<>();
 
             if (!list.contains(value)) {
                 list.add(value);

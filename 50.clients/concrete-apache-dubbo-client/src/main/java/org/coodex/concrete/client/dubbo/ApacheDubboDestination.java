@@ -21,10 +21,12 @@ import org.coodex.concrete.client.Destination;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class DubboDestination extends Destination {
+public class ApacheDubboDestination extends Destination {
 
     private String name;
-    private String [] registries;
+    private String[] registries;
+    private String protocol;
+    private String url;
 
 
     public String[] getRegistries() {
@@ -33,6 +35,17 @@ public class DubboDestination extends Destination {
 
     public void setRegistries(String[] registries) {
         this.registries = registries;
+        if (this.registries != null && this.registries.length > 1) {
+            Arrays.sort(this.registries);
+        }
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
     }
 
     public String getName() {
@@ -43,17 +56,28 @@ public class DubboDestination extends Destination {
         this.name = name;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DubboDestination)) return false;
+        if (!(o instanceof ApacheDubboDestination)) return false;
         if (!super.equals(o)) return false;
 
-        DubboDestination that = (DubboDestination) o;
+        ApacheDubboDestination that = (ApacheDubboDestination) o;
 
         if (!Objects.equals(name, that.name)) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
-        return Arrays.equals(registries, that.registries);
+        if (!Arrays.equals(registries, that.registries)) return false;
+        if (!Objects.equals(protocol, that.protocol)) return false;
+        return Objects.equals(url, that.url);
     }
 
     @Override
@@ -61,6 +85,8 @@ public class DubboDestination extends Destination {
         int result = super.hashCode();
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + Arrays.hashCode(registries);
+        result = 31 * result + (protocol != null ? protocol.hashCode() : 0);
+        result = 31 * result + (url != null ? url.hashCode() : 0);
         return result;
     }
 }
