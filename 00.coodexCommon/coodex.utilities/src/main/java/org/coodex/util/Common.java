@@ -371,6 +371,44 @@ public class Common {
             os.flush();
     }
 
+//    public static void checkNull(Object o, Supplier<String> supplier) {
+//        if (o == null) throw new NullPointerException(supplier == null ? null : supplier.get());
+//    }
+
+    public static void checkNull(Object o, String msg) {
+        if (o == null) throw new NullPointerException(msg);
+    }
+
+    private static <T extends Comparable<T>> T _max(T c1, T c2) {
+        return c1.compareTo(c2) >= 0 ? c1 : c2;
+    }
+
+    public static <T extends Comparable<T>> boolean between(T t, T bound1, T bound2) {
+        checkNull(t, "t is null");
+        checkNull(bound1, "bound1 is null");
+        checkNull(bound2, "bound2 is null");
+        return t.compareTo(_min(bound1, bound2)) > 0 && t.compareTo(_max(bound1, bound2)) < 0;
+    }
+
+    public static <T extends Comparable<T>> T max(T c1, T c2, T... others) {
+        checkNull(c1, "c1 is null");
+        checkNull(c2, "c2 is null");
+        T currentMax = _max(c1, c2);
+        if (others != null && others.length > 0) {
+            for (int i = 0, len = others.length; i < len; i++) {
+//                int finalI = i;
+//                checkNull(others[i], () -> "c" + (finalI + 3) + " is null");
+                checkNull(others[i], "c" + (i + 3) + " is null");
+                currentMax = _max(currentMax, others[i]);
+            }
+        }
+        return currentMax;
+    }
+
+    private static <T extends Comparable<T>> T _min(T c1, T c2) {
+        return c1.compareTo(c2) <= 0 ? c1 : c2;
+    }
+
     public static String byte2hex(byte[] b) {
         return byte2hex(b, 0, b.length);
     }
@@ -918,6 +956,61 @@ public class Common {
     public static Calendar dateToCalendar(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
+        return calendar;
+    }
+
+    public static <T extends Comparable<T>> T min(T c1, T c2, T... others) {
+        checkNull(c1, "c1 is null");
+        checkNull(c2, "c2 is null");
+        T currentMin = _min(c1, c2);
+        if (others != null && others.length > 0) {
+            for (int i = 0, len = others.length; i < len; i++) {
+//                int finalI = i;
+//                checkNull(others[i], () -> "c" + (finalI + 3) + " is null");
+                checkNull(others[i], "c" + (i + 3) + " is null");
+                currentMin = _min(currentMin, others[i]);
+            }
+        }
+        return currentMin;
+    }
+
+    public static Calendar calendar(int year) {
+        return buildCalendar(year, 0, 1, 0, 0, 0, 0);
+    }
+
+    public static Calendar calendar(int year, int month) {
+        return buildCalendar(year, month, 1, 0, 0, 0, 0);
+    }
+
+    public static Calendar calendar(int year, int month, int date) {
+        return buildCalendar(year, month, date, 0, 0, 0, 0);
+    }
+
+    public static Calendar calendar(int year, int month, int date, int hour) {
+        return buildCalendar(year, month, date, hour, 0, 0, 0);
+    }
+
+    public static Calendar calendar(int year, int month, int date, int hour, int minute) {
+        return buildCalendar(year, month, date, hour, minute, 0, 0);
+    }
+
+    public static Calendar calendar(int year, int month, int date, int hour, int minute, int second) {
+        return buildCalendar(year, month, date, hour, minute, second, 0);
+    }
+
+    public static Calendar calendar(int year, int month, int date, int hour, int minute, int second, int millisecond) {
+        return buildCalendar(year, month, date, hour, minute, second, millisecond);
+    }
+
+    private static Calendar buildCalendar(int year, int month, int date, int hour, int minute, int second, int millisecond) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DATE, date);
+        calendar.set(Calendar.HOUR, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, second);
+        calendar.set(Calendar.MILLISECOND, millisecond);
         return calendar;
     }
 
