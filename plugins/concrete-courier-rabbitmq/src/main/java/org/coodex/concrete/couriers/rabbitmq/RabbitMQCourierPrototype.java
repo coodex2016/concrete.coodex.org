@@ -42,6 +42,7 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
     public static final String KEY_HOST = "host";
     public static final String KEY_PORT = "port";
     public static final String KEY_SSL = "ssl";
+    public static final String KEY_ROUTING_KEY = "routingKey";
     public static final String KEY_EXCHANGER = "exchanger";
     public static final String KEY_TTL = "ttl";
     public static final String DEFAULT_EXCHANGER_NAME = "org.coodex.concrete.topics";
@@ -58,9 +59,10 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
 
     public RabbitMQCourierPrototype(String queue, String destination, Type topicType) {
         super(queue, destination, topicType);
-        routingKey = DigestHelper.md5(
+        String customRoutingKey = ConcreteHelper.getString(TAG_QUEUE, queue, KEY_ROUTING_KEY);
+        routingKey = Common.isBlank(customRoutingKey) ? DigestHelper.sha1(
                 String.format("%s@%s", getTopicType().toString(), queue).getBytes(StandardCharsets.UTF_8)
-        );
+        ) : (customRoutingKey + "@" + queue);
 
         // build connection
         try {

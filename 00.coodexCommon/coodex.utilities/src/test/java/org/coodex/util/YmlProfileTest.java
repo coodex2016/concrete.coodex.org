@@ -18,7 +18,8 @@ package org.coodex.util;
 
 public class YmlProfileTest {
     public static void main(String[] args) {
-        Profile profile = Profile.get("a");
-        System.out.println(profile.getStrList("a"));
+        System.setProperty("Profile.reloadInterval", String.valueOf(10));
+        Profile profile = Profile.get("x");
+        System.out.println(profile.getString("a"));
     }
 }

@@ -1014,6 +1014,28 @@ public class Common {
         return calendar;
     }
 
+    public static Calendar truncate(Calendar calendar, int fromField) {
+        Calendar result = (Calendar) calendar.clone();
+        switch (fromField) {
+            case Calendar.YEAR:
+                result.set(Calendar.YEAR, 1970);
+            case Calendar.MONTH:
+                result.set(Calendar.MONTH, 0);
+            case Calendar.DATE:
+                result.set(Calendar.DATE, 1);
+            case Calendar.HOUR:
+            case Calendar.HOUR_OF_DAY:
+                result.set(Calendar.HOUR, 0);
+            case Calendar.MINUTE:
+                result.set(Calendar.MINUTE, 0);
+            case Calendar.SECOND:
+                result.set(Calendar.SECOND, 0);
+            case Calendar.MILLISECOND:
+                result.set(Calendar.MILLISECOND, 0);
+        }
+        return result;
+    }
+
     public static String now() {
         return now(DEFAULT_DATETIME_FORMAT);
     }

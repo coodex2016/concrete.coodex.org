@@ -20,7 +20,9 @@ import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.coodex.util.Common.*;
 
@@ -74,64 +76,66 @@ public abstract class Profile {
                 }
             }
     );
-    private static final Set<String> NOT_FOUNDS = new HashSet<String>();
-    //    private static final String DEFAULT_KEY = Common.getUUIDStr();
+
     private static final URL DEFAULT_URL;
-//    private static final String YAML_CLASS = "org.yaml.snakeyaml.Yaml";
-//    private static Boolean yamlFirst = null;
+
 
     private static final String RELOAD_INTERVAL = System.getProperty("Profile.reloadInterval");
-    //    @Deprecated
-//    private static final SingletonMap<String, Profile> PROFILES = new SingletonMap<String, Profile>(
-//            new SingletonMap.Builder<String, Profile>() {
-//
-//
-//                @Override
-//                public Profile build(String key) {
-//                    if (DEFAULT_KEY.equals(key)) return new NullProfile();
-//
-//                    if (key.toLowerCase().endsWith(".properties")) {
-//                        return new ProfileBaseProperties(key);
-//                    } else if (key.toLowerCase().endsWith(".yaml")) {
-//                        return new ProfileBaseYaml(key);
-//                    } else {
-//                        return PROFILES.get(findPath(Common.trim(key, ":/\\.")));
-//                    }
-//                }
-//            },
-//            toLong(RELOAD_INTERVAL, 0L) * 1000L
-//    );
+
+    private static final SingletonMap<String, Profile> WRAPPER_PROFILES = new SingletonMap<String, Profile>(new SingletonMap.Builder<String, Profile>() {
+        @Override
+        public Profile build(String key) {
+            return new ProfileWrapper(key);
+        }
+    });
+    private static Singleton<Long> RELOAD_INTERVAL_SINGLETON = new Singleton<Long>(new Singleton.Builder<Long>() {
+        @Override
+        public Long build() {
+            return toLong(RELOAD_INTERVAL, 0L) * 1000L;
+        }
+    });
+    private static final SingletonMap<String, URL> PROFILE_URLS = new SingletonMap<String, URL>(new SingletonMap.Builder<String, URL>() {
+        @Override
+        public URL build(String key) {
+            String[] ex = allSupportedFileExt();
+            for (String s : ex) {
+                if (key.endsWith(s)) {
+                    URL x = Common.getResource(key);
+                    if (x != null) return x;
+                }
+                URL x = Common.getResource(key + s);
+                if (x != null) return x;
+            }
+            if (log.isInfoEnabled()) {
+                StringBuilder builder = new StringBuilder("Profile ")
+                        .append(key).append(" not found.[");
+                for (int i = 0; i < ex.length; i++) {
+                    if (i > 0) {
+                        builder.append(", ");
+                    }
+                    builder.append("'").append(ex[i]).append("'");
+                }
+                builder.append("]");
+                log.info(builder.toString());
+            }
+            return DEFAULT_URL;
+        }
+    }, RELOAD_INTERVAL_SINGLETON.get());
     private static SingletonMap<URL, Profile> URL_PROFILES_MAP = new SingletonMap<URL, Profile>(
             new SingletonMap.Builder<URL, Profile>() {
                 @Override
                 public Profile build(URL key) {
                     if (key == null)
                         throw new NullPointerException("profile url could not be null.");
+                    if (DEFAULT_URL.equals(key)) return new NullProfile();
                     ProfileProvider profileProvider = PROFILE_PROVIDER_LOADER.select(key);
                     if (profileProvider == null) {
                         return new NullProfile();
                     } else {
                         return profileProvider.get(key);
                     }
-//                    String resourceName = key.toString();
-//                    if (resourceName.endsWith(".properties")) {
-//                        return new ProfileBaseProperties(key);
-//                    } else if (resourceName.endsWith(".yml") || resourceName.endsWith(".yaml")) {
-//                        if (!isYamlFirst()) {
-//                            log.warn("YAML not support. class {} not found. {}", YAML_CLASS, key.toString());
-//                            return new NullProfile();
-//                        } else
-//                            return new ProfileBaseYaml(key);
-//                    } else {
-//                        return new NullProfile();
-//                    }
                 }
-            }, toLong(RELOAD_INTERVAL, 0L) * 1000L
-    );
-
-    public static String[] allSupportedFileExt() {
-        return ALL_SUPPORTED_FILE_EXT.get();
-    }
+            }, RELOAD_INTERVAL_SINGLETON.get());
 
     static {
         try {
@@ -141,53 +145,12 @@ public abstract class Profile {
         }
     }
 
-    private static URL findPath(String path) {
-        String[] ex = allSupportedFileExt();
-        //isYamlFirst() ? new String[]{".yml", ".yaml", ".properties"} : new String[]{".properties"};
-        for (String s : ex) {
-            if (path.endsWith(s)) {
-                URL x = Common.getResource(path);
-                if (x != null) return x;
-            }
-            URL x = Common.getResource(path + s);
-            if (x != null) return x;
-        }
-        if (!NOT_FOUNDS.contains(path)) {
-            synchronized (NOT_FOUNDS) {
-                if (!NOT_FOUNDS.contains(path)) {
-                    if (log.isInfoEnabled()) {
-                        StringBuilder builder = new StringBuilder("Profile ")
-                                .append(path).append(" not found.[");
-                        for (int i = 0; i < ex.length; i++) {
-                            if (i > 0) {
-                                builder.append(", ");
-                            }
-                            builder.append("'").append(ex[i]).append("'");
-                        }
-                        builder.append("]");
-                        log.info(builder.toString());
-                    }
-                    NOT_FOUNDS.add(path);
-                }
-            }
-        }
-        return DEFAULT_URL;
+    public static String[] allSupportedFileExt() {
+        return ALL_SUPPORTED_FILE_EXT.get();
     }
 
-//    private static boolean isYamlFirst() {
-//        if (yamlFirst == null) {
-//            try {
-//                Class.forName(YAML_CLASS);
-//                yamlFirst = true;
-//            } catch (ClassNotFoundException e) {
-//                yamlFirst = false;
-//            }
-//        }
-//        return yamlFirst;
-//    }
-
     /**
-     * 根据url获取资源
+     * 根据url获取Profile
      *
      * @param url 资源url
      * @return profile
@@ -196,12 +159,22 @@ public abstract class Profile {
         return URL_PROFILES_MAP.get(url);
     }
 
+    static Profile getByPath(String path) {
+        return get(PROFILE_URLS.get(path));
+    }
+
+
+    /**
+     * 根据path获取Profile
+     *
+     * @param path path
+     * @return profile
+     */
     public static Profile get(String path) {
         if (path == null) {
             throw new IllegalArgumentException("path is null");
         }
-
-        return get(findPath(path));
+        return WRAPPER_PROFILES.get(path);
     }
 
 
@@ -213,159 +186,11 @@ public abstract class Profile {
     @Deprecated
     public static Profile getProfile(String path) {
         return get(path);
-//        Profile p = profiles.get(path);
-//        if (p == null) {
-//            p = new Profile(path);
-//            profiles.put(path, p);
-//        }
-//        return p;
     }
-//    //    private static ScheduledExecutorService RELOAD_POOL;
-//    private static Singleton<ScheduledExecutorService> RELOAD_POOL =
-//            new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
-//                @Override
-//                public ScheduledExecutorService build() {
-//                    return ExecutorsHelper.newSingleThreadScheduledExecutor("profile_reload");
-//                }
-//            });
-//    private static Set<String> notFound = new HashSet<String>();
-//    protected Properties p = new Properties();
-//    private long lastModified = 0;
-//    private String resourcePath;
-//    private File f;
-//    private String location;
-//    private InputStream is;
-//
-//    private Runnable reloadTask = new Runnable() {
-//        public void run() {
-//
-//            try {
-//                if (f == null) {
-//                    loadFromPath(resourcePath, true);
-//                } else if (f.lastModified() != lastModified) {
-//                    lastModified = f.lastModified();
-//                    try {
-//                        is = new FileInputStream(f);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                    load();
-//                }
-//            } finally {
-//                submitReloadTask();
-//            }
-//        }
-//    };
-//
-//    protected Profile(String path) {
-//        this.resourcePath = path;
-//        loadFromPath(path);
-//        submitReloadTask();
-//    }
-
-//    private static ScheduledExecutorService getReloadPool() {
-////        if (RELOAD_POOL == null) {
-////            synchronized (Profile.class) {
-////                if (RELOAD_POOL == null)
-////                    RELOAD_POOL = ExecutorsHelper.newSingleThreadScheduledExecutor();
-////            }
-////        }
-////        return RELOAD_POOL;
-//        return RELOAD_POOL.getInstance();
-//    }
 
     public boolean getBool(String key, boolean v) {
         return toBool(getString(key), v);
     }
-
-//    public static InputStream getResourceAsStream(String resourcePath) throws IOException {
-//        URL url = getResource(Common.trim(resourcePath, '/'));
-//        return url == null ? new FileInputStream(resourcePath) : url.openStream();
-//    }
-
-//    static public URL getResource(String resource) {
-//        return Common.getResource(resource);
-//    }
-
-//    private void loadFromPath(String path) {
-//        loadFromPath(path, false);
-//    }
-
-//    private void submitReloadTask() {
-//        long inteval = -1;
-//        try {
-//            inteval = Long.parseLong(RELOAD_INTERVAL);
-//        } catch (Throwable t) {
-//        }
-//
-//        if (inteval > 0) {
-//            ScheduledExecutorService pool = getReloadPool();
-//            if (pool.isShutdown() || pool.isTerminated()) return;
-//            pool.schedule(reloadTask, inteval, TimeUnit.SECONDS);
-//        }
-//
-//    }
-
-//    private synchronized void loadFromPath(String path, boolean reload) {
-//        if (!path.startsWith("/"))
-//            path = "/" + path;
-//        URL uri = Profile.class.getResource(path);
-//
-//        if (uri == null) {
-//            while (path.startsWith("/"))
-//                path = path.substring(1);
-//
-//            uri = getResource(path);
-//        }
-//
-//        if (uri != null) {
-//            location = uri.toString();
-//            if (location.indexOf('!') >= 0) {
-//                f = null;
-//                is = Profile.class.getResourceAsStream(path);
-//            } else {
-//                f = new File(uri.getFile());
-//                try {
-//                    is = new FileInputStream(f);
-//                    lastModified = f.lastModified();
-//                } catch (FileNotFoundException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//            load();
-//        } else {
-//            if (!reload) {
-//                if (!notFound.contains(path)) {
-//                    notFound.add(path);
-//                    log.info("Profile [" + path + "] not found.");
-//                }
-//            }
-//        }
-//    }
-
-//    public String getLocation() {
-//        return location;
-//    }
-
-//    public Properties getProperties() {
-//        return p;
-//    }
-
-
-//    private void load() {
-//        try {
-//            p.clear();
-//            if (is != null) {
-//                p.load(is);
-//                is.close();
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
 
     public boolean getBool(String key) {
         return getBool(key, false);
@@ -375,7 +200,6 @@ public abstract class Profile {
 
     private boolean isPlaceHolder(String v) {
         return v.startsWith("${") && v.endsWith("}");
-
     }
 
     private String actualValue(String v) {
@@ -466,4 +290,77 @@ public abstract class Profile {
         return toArray(getString(key), delim, v);
     }
 
+}
+
+class ProfileWrapper extends Profile {
+
+    private final String path;
+
+    ProfileWrapper(String path) {
+        this.path = path;
+    }
+
+    private Profile get() {
+        return Profile.getByPath(path);
+    }
+
+    @Override
+    protected String getStringImpl(String key) {
+        return get().getStringImpl(key);
+    }
+
+    @Override
+    public boolean getBool(String key, boolean v) {
+        return get().getBool(key, v);
+    }
+
+    @Override
+    public boolean getBool(String key) {
+        return get().getBool(key);
+    }
+
+    @Override
+    public String getString(String key, String v) {
+        return get().getString(key, v);
+    }
+
+    @Override
+    public String getString(String key) {
+        return get().getString(key);
+    }
+
+    @Override
+    public int getInt(String key) {
+        return get().getInt(key);
+    }
+
+    @Override
+    public int getInt(String key, int v) {
+        return get().getInt(key, v);
+    }
+
+    @Override
+    public long getLong(String key) {
+        return get().getLong(key);
+    }
+
+    @Override
+    public long getLong(String key, long v) {
+        return get().getLong(key, v);
+    }
+
+    @Override
+    public String[] getStrList(String key) {
+        return get().getStrList(key);
+    }
+
+    @Override
+    public String[] getStrList(String key, String delim) {
+        return get().getStrList(key, delim);
+    }
+
+    @Override
+    public String[] getStrList(String key, String delim, String[] v) {
+        return get().getStrList(key, delim, v);
+    }
 }

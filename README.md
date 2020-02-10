@@ -26,6 +26,13 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2020-02-10
+
+- 修复设置Profile.ReloadInterval后部分场景下无法生效问题；重读线程机制优化
+- concrete-courier-rabbitmq:
+  - 可以通过资源文件指定routingKey
+  - 默认为 sha1(TopicJavaType<MessageJavaType>@QueueName)，sha1后字母全小写
+
 ## 2019-12-27
 
 - org.coodex.util.Tracer: 一个信息跟踪小工具

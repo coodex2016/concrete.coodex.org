@@ -30,6 +30,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SingletonMap<K, V> {
 
+    private static final Singleton<ScheduledExecutorService> DEFAULT_SCHEDULED_EXECUTOR_SERVICE = new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
+        @Override
+        public ScheduledExecutorService build() {
+            return ExecutorsHelper.newSingleThreadScheduledExecutor("singletonMap-DEFAULT");
+        }
+    });
+
     private final static Logger log = LoggerFactory.getLogger(SingletonMap.class);
     private final static AtomicInteger poolNumber = new AtomicInteger(1);
     private final Builder<K, V> builder;
@@ -40,20 +47,31 @@ public class SingletonMap<K, V> {
     private final K nullKey;
 
     public SingletonMap(Builder<K, V> builder) {
-        if (builder == null) throw new NullPointerException("builder MUST NOT be null.");
-        this.builder = builder;
-        nullKey = getNullKeyOnce();
+        this(builder, 0, null);
     }
 
     /**
-     * @param builder
+     * @param builder builder
      * @param maxAge  map内对象的最大存在时长，单位为毫秒
      */
     public SingletonMap(Builder<K, V> builder, long maxAge) {
-        this(builder);
+        this(builder, maxAge, null);
+    }
+
+    /**
+     * @param builder                  builder
+     * @param maxAge                   map内对象的最大存在时长，单位为毫秒
+     * @param scheduledExecutorService scheduledExecutorService
+     */
+    public SingletonMap(Builder<K, V> builder, long maxAge, ScheduledExecutorService scheduledExecutorService) {
+        if (builder == null) throw new NullPointerException("builder MUST NOT be null.");
+        this.builder = builder;
+        nullKey = getNullKeyOnce();
         this.maxAge = maxAge;
         if (maxAge > 0) {
-            scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor("singletonMap-" + poolNumber.getAndIncrement());
+            this.scheduledExecutorService = scheduledExecutorService == null ?
+                    DEFAULT_SCHEDULED_EXECUTOR_SERVICE.get() :
+                    scheduledExecutorService;
         }
     }
 

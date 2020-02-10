@@ -20,6 +20,7 @@ public class Singleton<T> {
 
     private final Builder<T> builder;
     private volatile T instance = null;
+    private volatile boolean loaded = false;
 
     public Singleton(Builder<T> builder) {
         if (builder == null) throw new NullPointerException("builder MUST NOT be null.");
@@ -37,10 +38,11 @@ public class Singleton<T> {
     }
 
     public T get() {
-        if (instance == null) {
+        if (!loaded) {
             synchronized (this) {
-                if (instance == null) {
+                if (!loaded) {
                     instance = builder.build();
+                    loaded = true;
                 }
             }
         }
