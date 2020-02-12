@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2020-02-12
+
+- concrete-core: `IF`增加对`Optional`和`Supplier`的支持
+
 ## 2020-02-10
 
 - 修复设置Profile.ReloadInterval后部分场景下无法生效问题；重读线程机制优化

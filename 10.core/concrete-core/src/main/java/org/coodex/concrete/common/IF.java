@@ -16,6 +16,9 @@
 
 package org.coodex.concrete.common;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
 /**
  * Created by davidoff shen on 2016-08-29.
  */
@@ -24,8 +27,8 @@ public class IF {
     /**
      * 当表达式exp为真时，抛出code异常
      *
-     * @param exp test
-     * @param code error code
+     * @param exp     test
+     * @param code    error code
      * @param objects error message params
      */
     public static void is(boolean exp, int code, Object... objects) {
@@ -33,8 +36,16 @@ public class IF {
         if (exp) throw new ConcreteException(code, objects);
     }
 
+    public static void is(Supplier<Boolean> exp, int code, Object... objects) {
+        is(exp.get(), code, objects);
+    }
+
     public static void is(boolean exp, ConcreteException ex) {
         if (exp) throw ex;
+    }
+
+    public static void is(Supplier<Boolean> exp, ConcreteException ex) {
+        is(exp.get(), ex);
     }
 
     public static void is(boolean exp, String message) {
@@ -42,16 +53,21 @@ public class IF {
         if (exp) throw ConcreteHelper.getException(new RuntimeException(message));
     }
 
+    public static void is(Supplier<Boolean> exp, String message) {
+        is(exp.get(), message);
+    }
+
     /**
      * 表达式为否事，抛出code异常
      *
-     * @param exp exp
-     * @param code error code
+     * @param exp     exp
+     * @param code    error code
      * @param objects error message params
      */
     public static void not(boolean exp, int code, Object... objects) throws ConcreteException {
         is(!exp, code, objects);
     }
+
 
     public static void not(boolean exp, ConcreteException ex) throws ConcreteException {
         is(!exp, ex);
@@ -61,11 +77,23 @@ public class IF {
         is(!exp, message);
     }
 
+    public static void not(Supplier<Boolean> exp, int code, Object... objects) throws ConcreteException {
+        not(exp.get(), code, objects);
+    }
+
+    public static void not(Supplier<Boolean> exp, ConcreteException ex) throws ConcreteException {
+        not(exp.get(), ex);
+    }
+
+    public static void not(Supplier<Boolean> exp, String message) throws ConcreteException {
+        not(exp.get(), message);
+    }
+
     /**
      * 当对象o为null是，抛出code异常
      *
-     * @param o test object
-     * @param code error code
+     * @param o       test object
+     * @param code    error code
      * @param objects error message params
      * @return non null
      */
@@ -86,26 +114,53 @@ public class IF {
 //        return isNull(o, ConcreteHelper.getException(new RuntimeException(message)));
     }
 
+    public static <T> T isNull(Supplier<T> o, int code, Object... objects) throws ConcreteException {
+        return isNull(o.get(), code, objects);
+//        return isNull(o, new ConcreteException(code, objects));
+    }
+
+    public static <T> T isNull(Supplier<T> o, ConcreteException exp) throws ConcreteException {
+        return isNull(o.get(), exp);
+    }
+
+    public static <T> T isNull(Supplier<T> o, String message) throws ConcreteException {
+        return isNull(o.get(), message);
+//        return isNull(o, ConcreteHelper.getException(new RuntimeException(message)));
+    }
+
+    public static <T> T isNull(Optional<T> o, int code, Object... objects) throws ConcreteException {
+        return o.orElseThrow(() -> new ConcreteException(code, objects));
+//        return isNull(o, new ConcreteException(code, objects));
+    }
+
+    public static <T> T isNull(Optional<T> o, ConcreteException exp) throws ConcreteException {
+        return o.orElseThrow(() -> exp);
+    }
+
+    public static <T> T isNull(Optional<T> o, String message) throws ConcreteException {
+        return o.orElseThrow(() -> ConcreteHelper.getException(new RuntimeException(message)));
+//        return isNull(o, ConcreteHelper.getException(new RuntimeException(message)));
+    }
+
 
     /**
      * 当对象o不为null时，抛出code异常
      *
-     * @param o object
-     * @param code error code
+     * @param o       object
+     * @param code    error code
      * @param objects error message params
      */
     public static void notNull(Object o, int code, Object... objects) throws ConcreteException {
 //        notNull(o, new ConcreteException(code, objects));
-        is(o != null, code, objects);
+        is((o instanceof Supplier ? ((Supplier) o).get() : o) != null, code, objects);
     }
 
     public static void notNull(Object o, ConcreteException ex) throws ConcreteException {
-        is(o != null, ex);
+        is((o instanceof Supplier ? ((Supplier) o).get() : o) != null, ex);
     }
 
     public static void notNull(Object o, String message) throws ConcreteException {
-//        notNull(o, ConcreteHelper.getException(new RuntimeException(message)));
-        is(o != null, message);
+        is((o instanceof Supplier ? ((Supplier) o).get() : o) != null, message);
     }
 
 }
