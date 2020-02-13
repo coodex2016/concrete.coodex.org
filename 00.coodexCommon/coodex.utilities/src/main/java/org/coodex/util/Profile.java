@@ -20,9 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.coodex.util.Common.*;
 
@@ -53,7 +51,7 @@ import static org.coodex.util.Common.*;
  * @version v1.0 2014-03-18
  */
 public abstract class Profile {
-
+    final static Profile NULL_PROFILE = new NullProfile();
     private final static Logger log = LoggerFactory.getLogger(Profile.class);
 
     private static final AcceptableServiceLoader<URL, ProfileProvider> PROFILE_PROVIDER_LOADER =
@@ -121,16 +119,17 @@ public abstract class Profile {
             return DEFAULT_URL;
         }
     }, RELOAD_INTERVAL_SINGLETON.get());
+
     private static SingletonMap<URL, Profile> URL_PROFILES_MAP = new SingletonMap<URL, Profile>(
             new SingletonMap.Builder<URL, Profile>() {
                 @Override
                 public Profile build(URL key) {
                     if (key == null)
                         throw new NullPointerException("profile url could not be null.");
-                    if (DEFAULT_URL.equals(key)) return new NullProfile();
+                    if (DEFAULT_URL.equals(key)) return NULL_PROFILE;
                     ProfileProvider profileProvider = PROFILE_PROVIDER_LOADER.select(key);
                     if (profileProvider == null) {
-                        return new NullProfile();
+                        return NULL_PROFILE;
                     } else {
                         return profileProvider.get(key);
                     }
@@ -163,7 +162,6 @@ public abstract class Profile {
         return get(PROFILE_URLS.get(path));
     }
 
-
     /**
      * 根据path获取Profile
      *
@@ -175,6 +173,10 @@ public abstract class Profile {
             throw new IllegalArgumentException("path is null");
         }
         return WRAPPER_PROFILES.get(path);
+    }
+
+    public static Profile get(String path1, String path2, String... others) {
+        return new MergedProfile(path1, path2, others);
     }
 
 
@@ -197,6 +199,8 @@ public abstract class Profile {
     }
 
     protected abstract String getStringImpl(String key);
+
+    protected abstract boolean isNull(String key);
 
     private boolean isPlaceHolder(String v) {
         return v.startsWith("${") && v.endsWith("}");
@@ -250,6 +254,11 @@ public abstract class Profile {
         @Override
         protected String getStringImpl(String key) {
             return null;
+        }
+
+        @Override
+        protected boolean isNull(String key) {
+            return true;
         }
     }
 //    {
@@ -310,6 +319,11 @@ class ProfileWrapper extends Profile {
     }
 
     @Override
+    protected boolean isNull(String key) {
+        return get().isNull(key);
+    }
+
+    @Override
     public boolean getBool(String key, boolean v) {
         return get().getBool(key, v);
     }
@@ -362,5 +376,102 @@ class ProfileWrapper extends Profile {
     @Override
     public String[] getStrList(String key, String delim, String[] v) {
         return get().getStrList(key, delim, v);
+    }
+}
+
+class MergedProfile extends Profile {
+    private final List<Profile> profiles = new ArrayList<Profile>();
+
+    MergedProfile(String p1, String p2, String... resources) {
+        Set<String> joined = new HashSet<String>();
+        if (p1 != null) {
+            joined.add(p1);
+            profiles.add(Profile.get(p1));
+        }
+        if (p2 != null && !joined.contains(p2)) {
+            joined.add(p2);
+            profiles.add(Profile.get(p2));
+        }
+
+        for (String x : resources) {
+            if (joined.contains(x)) continue;
+            joined.add(x);
+            profiles.add(Profile.get(x));
+        }
+    }
+
+    private Profile getFirst(String key) {
+        for (Profile p : profiles) {
+            if (!p.isNull(key)) return p;
+        }
+        return NULL_PROFILE;
+    }
+
+    @Override
+    public boolean getBool(String key, boolean v) {
+        return getFirst(key).getBool(key, v);
+    }
+
+    @Override
+    public boolean getBool(String key) {
+        return getFirst(key).getBool(key);
+    }
+
+    @Override
+    public String getString(String key, String v) {
+        return getFirst(key).getString(key, v);
+    }
+
+    @Override
+    public String getString(String key) {
+        return getFirst(key).getString(key);
+    }
+
+    @Override
+    public int getInt(String key) {
+        return getFirst(key).getInt(key);
+    }
+
+    @Override
+    public int getInt(String key, int v) {
+        return getFirst(key).getInt(key, v);
+    }
+
+    @Override
+    public long getLong(String key) {
+        return getFirst(key).getLong(key);
+    }
+
+    @Override
+    public long getLong(String key, long v) {
+        return getFirst(key).getLong(key, v);
+    }
+
+    @Override
+    public String[] getStrList(String key) {
+        return getFirst(key).getStrList(key);
+    }
+
+    @Override
+    public String[] getStrList(String key, String delim) {
+        return getFirst(key).getStrList(key, delim);
+    }
+
+    @Override
+    public String[] getStrList(String key, String delim, String[] v) {
+        return getFirst(key).getStrList(key, delim, v);
+    }
+
+    @Override
+    protected String getStringImpl(String key) {
+        return getFirst(key).getStringImpl(key);
+    }
+
+    @Override
+    protected boolean isNull(String key) {
+        for (Profile p : profiles) {
+            if (!p.isNull(key)) return false;
+        }
+        return true;
     }
 }

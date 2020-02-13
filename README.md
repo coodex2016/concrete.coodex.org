@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2020-02-13
+
+- coodex-utilities: 增加合并多个资源的Profile，`Profile.get(String p1, String p2, String ... others)`
+
 ## 2020-02-12
 
 - concrete-core: `IF`增加对`Optional`和`Supplier`的支持

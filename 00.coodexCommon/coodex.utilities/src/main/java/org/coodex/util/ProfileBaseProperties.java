@@ -127,10 +127,14 @@ public class ProfileBaseProperties extends Profile {
     }
 
 
-
     @Override
     protected String getStringImpl(String key) {
         return p.getProperty(key);
+    }
+
+    @Override
+    protected boolean isNull(String key) {
+        return p.getProperty(key) == null;
     }
 
 

@@ -23,9 +23,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ProfileBaseYaml extends Profile {
 
@@ -122,10 +120,15 @@ public class ProfileBaseYaml extends Profile {
     }
 
     @Override
+    protected boolean isNull(String key) {
+        return valuesMap.get(key) == null;
+    }
+
+    @Override
     public boolean getBool(String key, boolean v) {
         Object o = valuesMap.get(key);
         if (o == null) return v;
-        if (o.getClass().equals(Boolean.class) || o.getClass().equals(boolean.class)) {
+        if (o.getClass().equals(Boolean.class)) {
             return (Boolean) o;
         } else
             return super.getBool(key, v);
@@ -149,3 +152,4 @@ public class ProfileBaseYaml extends Profile {
         return super.getStrList(key, delim, v);
     }
 }
+
