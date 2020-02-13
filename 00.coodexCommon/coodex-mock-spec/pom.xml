@@ -27,7 +27,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>coodex-mock-spec</artifactId>
-    <version>${coodex.utilities.version}</version>
 
     <build>
         <plugins>

@@ -28,7 +28,6 @@
 
     <artifactId>coodex-utilities-servlet</artifactId>
     <packaging>jar</packaging>
-    <version>${coodex.utilities.version}</version>
 
     <dependencies>
         <dependency>

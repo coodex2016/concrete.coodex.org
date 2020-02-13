@@ -27,7 +27,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>shared-cache-memcached</artifactId>
-    <version>${coodex.shared.cache.version}</version>
 
     <dependencies>
         <dependency>

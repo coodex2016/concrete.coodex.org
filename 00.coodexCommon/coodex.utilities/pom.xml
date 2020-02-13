@@ -29,9 +29,6 @@
     <artifactId>coodex-utilities</artifactId>
     <packaging>jar</packaging>
 
-    <version>${coodex.utilities.version}</version>
-
-
     <dependencies>
 
         <dependency>
