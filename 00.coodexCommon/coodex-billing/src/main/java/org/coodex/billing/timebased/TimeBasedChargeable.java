@@ -22,14 +22,23 @@ import org.coodex.billing.Chargeable;
 public interface TimeBasedChargeable extends Chargeable {
 
     /**
+     * @return 消费的原始记录，保证同一笔原始记录在任意时刻计费都是一致的
+     */
+    String getRefId();
+
+    /**
      * @return 计费时段
      */
     Period getPeriod();
+
+    void setPeriod(Period period);
 
     /**
      * @return 模型名称
      */
     String getModel();
+
+    void setModel(String model);
 
     /**
      * @return 模型参数
@@ -37,8 +46,4 @@ public interface TimeBasedChargeable extends Chargeable {
     String getModelParam();
 
     void setModelParam(String modelParam);
-
-    void setModel(String model);
-
-    void setPeriod(Period period);
 }

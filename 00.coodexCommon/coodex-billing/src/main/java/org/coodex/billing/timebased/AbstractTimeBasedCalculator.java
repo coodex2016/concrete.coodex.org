@@ -16,10 +16,7 @@
 
 package org.coodex.billing.timebased;
 
-import org.coodex.billing.Adjustment;
-import org.coodex.billing.Bill;
-import org.coodex.billing.Calculator;
-import org.coodex.billing.Revision;
+import org.coodex.billing.*;
 import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Section;
 import org.slf4j.Logger;
@@ -61,10 +58,25 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
         if (ruleRepository == null)
             return calcWithARule(chargeable);
 
+
         BillingRule[] rules = ruleRepository.getRulesBy(chargeable).toArray(new BillingRule[0]);
         if (rules.length > 1) { // 多条规则
             Arrays.sort(rules); // 按照生效期排序
             List<C> consumptions = new ArrayList<C>();
+            List<PaidAdjustment<C>> adjustments = new ArrayList<PaidAdjustment<C>>();
+            List<Revision> revisions = new ArrayList<Revision>();// 不包含OnlyOnce的
+            List<Revision> onlyOnce = new ArrayList<Revision>();// 包含OnlyOnce的
+            for (Revision revision : chargeable.getRevisions()) {
+                if (revision instanceof PaidAdjustment) {
+                    //noinspection unchecked
+                    adjustments.add((PaidAdjustment<C>) revision);
+                } else {
+                    if (!(revision instanceof OnlyOnce)) {
+                        revisions.add(revision);
+                    }
+                    onlyOnce.add(revision);
+                }
+            }
             boolean onlyOnceAdded = false;
             Calendar end = chargeable.getPeriod().getEnd();
             for (int x = rules.length - 1; x >= 0; x--) {// 由后向前分段
@@ -74,7 +86,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
                     if (chargeable.getPeriod().getStart().after(end))
                         break; // 消费开始时间大于当前段的目标结束时间时，说明本条及之前的都不适用
 
-                    C consumption = copyChangeable(chargeable, !onlyOnceAdded);
+                    C consumption = copyChangeable(chargeable, onlyOnceAdded ? revisions : onlyOnce);
                     consumption.setModel(rule.getModel());
                     consumption.setModelParam(rule.getModelParam());
                     consumption.setPeriod(Period.BUILDER.create((Calendar) start.clone(), (Calendar) end.clone()));
@@ -88,15 +100,15 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
                 case 0:
                     break;
                 case 1:
-                    chargeable = consumptions.get(0);
-                    break;
+                    return adjustBill(calcWithARule(consumptions.get(0)), adjustments);
                 default:
                     Bill<C> bill = new Bill<C>(chargeable);
+
                     for (int x = consumptions.size() - 1; x >= 0; x--) {
                         Bill<C> consumptionBill = calcWithARule(consumptions.get(x));
                         bill.addAllDetails(consumptionBill.getDetails());
                     }
-                    return bill;
+                    return adjustBill(bill, adjustments);
             }
 
         } else if (rules.length == 1) { // 只有一条规则
@@ -110,11 +122,11 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
     /**
      * ！！！ 自行实现，默认实现不靠谱
      *
-     * @param chargeable   chargeable
-     * @param withOnlyOnce 是否增加{@link OnlyOnce}的抵扣
+     * @param chargeable chargeable
+     * @param revisions  revisions
      * @return 根据参数复制一个新的消费对象，用于多规则场景
      */
-    protected C copyChangeable(C chargeable, boolean withOnlyOnce) {
+    protected C copyChangeable(C chargeable, List<Revision> revisions) {
         try {
             return deepCopy(chargeable);
         } catch (Throwable e) {
@@ -145,7 +157,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
      * @return 调整后账单
      */
     @SuppressWarnings("WeakerAccess")
-    protected Bill<C> adjustBill(Bill<C> bill, List<Adjustment<C>> adjustments) {
+    protected Bill<C> adjustBill(Bill<C> bill, List<? extends Adjustment<C>> adjustments) {
         if (adjustments == null || adjustments.size() == 0)
             return bill;
 

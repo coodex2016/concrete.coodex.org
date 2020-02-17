@@ -25,8 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author davidoff
@@ -40,11 +39,11 @@ public class ReflectHelper {
     private ReflectHelper() {
     }
 
-    public static String getParameterName(Object executable, int index, String prefix){
-        if(executable instanceof Method){
-            return getMethodParameterName((Method) executable, index,prefix);
-        } else if(executable instanceof Constructor){
-            return getConstructorParameterName((Constructor) executable,index,prefix);
+    public static String getParameterName(Object executable, int index, String prefix) {
+        if (executable instanceof Method) {
+            return getMethodParameterName((Method) executable, index, prefix);
+        } else if (executable instanceof Constructor) {
+            return getConstructorParameterName((Constructor) executable, index, prefix);
         } else {
             throw new IllegalArgumentException("none Executable object: " + executable);
         }
@@ -53,11 +52,11 @@ public class ReflectHelper {
     private static String getMethodParameterName(Method method, int index, String prefix) {
         String str = null;
         try {
-            str =  getParameterName(method, index);
+            str = getParameterName(method, index);
         } catch (Throwable th) {
 //            str = prefix + index;
         }
-        return Common.isBlank(str) ? (prefix + index): str;
+        return Common.isBlank(str) ? (prefix + index) : str;
     }
 
     public static String getParameterName(Method method, int index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
@@ -339,6 +338,71 @@ public class ReflectHelper {
             return typeToCodeStr(((GenericArrayType) type).getGenericComponentType()) + "[]";
         }
         return builder.toString();
+    }
+
+    private static Object invoke(Method method, Object first, Object[] objects, Object[] args) throws Throwable {
+        if (first == null) throw new NullPointerException();
+        if (method.getDeclaringClass().isAssignableFrom(first.getClass())) {
+            return args == null || args.length == 0 ? method.invoke(first) : method.invoke(first, args);
+        }
+        for (Object o : objects) {
+            if (o == null) throw new NullPointerException();
+            if (method.getDeclaringClass().isAssignableFrom(o.getClass())) {
+                return args == null || args.length == 0 ? method.invoke(o) : method.invoke(o, args);
+            }
+        }
+        throw new RuntimeException("method not found in all objects: " + method.getName());
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static void addInterfaceTo(Class clz, Collection<Class> coll) {
+        if (clz == null) return;
+        if (coll.contains(clz)) return;
+        if (clz.isInterface()) {
+            coll.add(clz);
+        }
+        addInterfaceTo(clz.getSuperclass(), coll);
+        for (Class c : clz.getInterfaces()) {
+            addInterfaceTo(c, coll);
+        }
+    }
+
+//    @SuppressWarnings("rawtypes")
+//    private static Collection<Class> getAllInterface(Class... aClass) {
+//        if (aClass == null || aClass.length == 0) return Collections.emptySet();
+//        Collection<Class> collection = new HashSet<Class>();
+//        for (Class clz : aClass) {
+//            addInterfaceTo(clz, collection);
+//        }
+//        return collection;
+//    }
+
+    @Deprecated
+    public static <T> T extend(final T o, final Object... objects) {
+        return extendInterface(o, objects);
+    }
+
+    public static <T> T extendInterface(final T o, final Object... objects) {
+        if (o == null) return null;
+        if (objects == null || objects.length == 0) return o;
+        //noinspection rawtypes
+        Set<Class> interfaces = new HashSet<Class>();
+        addInterfaceTo(o.getClass(), interfaces);
+        for (Object x : objects) {
+            if (x != null) {
+                addInterfaceTo(x.getClass(), interfaces);
+            }
+        }
+        if (interfaces.size() == 0) return o;
+
+        //noinspection unchecked
+        return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces.toArray(new Class[0]),
+                new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        return ReflectHelper.invoke(method, o, objects, args);
+                    }
+                });
     }
 
     public interface Processor {

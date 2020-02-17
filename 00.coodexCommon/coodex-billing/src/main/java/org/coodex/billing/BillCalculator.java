@@ -42,4 +42,5 @@ public class BillCalculator {
         //noinspection unchecked
         return (Bill<C>) calculator.calc(chargeable);
     }
+
 }

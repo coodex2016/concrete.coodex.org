@@ -97,6 +97,10 @@ public class KTVConsumption implements TimeBasedChargeable {
         // 多条规则时使用
     }
 
+    @Override
+    public String getRefId() {
+        return "月月鸟";
+    }
 
     @Override
     public List<Revision> getRevisions() {
