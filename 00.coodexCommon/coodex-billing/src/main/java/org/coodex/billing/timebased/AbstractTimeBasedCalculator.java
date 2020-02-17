@@ -38,6 +38,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
             new BillingRuleRepository<C>() {
                 @Override
                 public Collection<BillingRule> getRulesBy(C chargeable) {
+                    //noinspection unchecked
                     return Collections.EMPTY_LIST;
                 }
 
@@ -63,13 +64,13 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
         if (rules.length > 1) { // 多条规则
             Arrays.sort(rules); // 按照生效期排序
             List<C> consumptions = new ArrayList<C>();
-            List<PaidAdjustment<C>> adjustments = new ArrayList<PaidAdjustment<C>>();
+            List<Adjustment<C>> adjustments = new ArrayList<Adjustment<C>>();
             List<Revision> revisions = new ArrayList<Revision>();// 不包含OnlyOnce的
             List<Revision> onlyOnce = new ArrayList<Revision>();// 包含OnlyOnce的
             for (Revision revision : chargeable.getRevisions()) {
-                if (revision instanceof PaidAdjustment) {
+                if (revision instanceof Adjustment && revision instanceof PaidAdjustment) {
                     //noinspection unchecked
-                    adjustments.add((PaidAdjustment<C>) revision);
+                    adjustments.add((Adjustment<C>) revision);
                 } else {
                     if (!(revision instanceof OnlyOnce)) {
                         revisions.add(revision);
@@ -161,6 +162,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
         if (adjustments == null || adjustments.size() == 0)
             return bill;
 
+        //noinspection rawtypes
         for (Adjustment adjustment : adjustments) {
             //noinspection unchecked
             long amount = adjustment.adjust(bill);
@@ -248,7 +250,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
             );
             boolean slice = true; // 是否切分，如果whole time算法已处理，则不进行切分
             if (instance.getWholeTimeAlgorithm() != null) {
-                //noinspection unchecked
+
                 List<Bill.Detail> details = instance.getWholeTimeAlgorithm().calc(chargePeriods, chargeable);
                 if (details != null && details.size() > 0) {
                     bill.addAllDetails(details);

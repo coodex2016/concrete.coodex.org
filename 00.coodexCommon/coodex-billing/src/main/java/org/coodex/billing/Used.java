@@ -18,10 +18,12 @@ package org.coodex.billing;
 
 import java.util.Calendar;
 
-public interface PaidAdjustment {
-
+/**
+ * 声明Revision已被使用
+ */
+public interface Used {
     /**
-     * @return 付款时刻
+     * @return 使用时间
      */
-    Calendar paidTimestamp();
+    Calendar usedTimestamp();
 }
