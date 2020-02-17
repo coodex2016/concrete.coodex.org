@@ -83,6 +83,22 @@ public class KTVConsumption implements TimeBasedChargeable {
     }
 
     @Override
+    public void setModelParam(String modelParam) {
+        // 多条规则时使用
+    }
+
+    @Override
+    public void setModel(String model) {
+        // 多条规则时使用
+    }
+
+    @Override
+    public void setPeriod(Period period) {
+        // 多条规则时使用
+    }
+
+
+    @Override
     public List<Revision> getRevisions() {
         return Arrays.asList(
                 new DurationRevision("2小时抵扣", 120),

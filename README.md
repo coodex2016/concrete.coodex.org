@@ -26,6 +26,11 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2020-02-17
+
+- coodex-billing: 时序计费增加多规则机制
+- coodex-utilities: 修复calendar设置小时错误的缺陷
+
 ## 2020-02-13
 
 - coodex-utilities: 增加合并多个资源的Profile，`Profile.get(String p1, String p2, String ... others)`

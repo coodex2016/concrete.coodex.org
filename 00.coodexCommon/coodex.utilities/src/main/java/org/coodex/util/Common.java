@@ -1006,8 +1006,8 @@ public class Common {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);
-        calendar.set(Calendar.DATE, date);
-        calendar.set(Calendar.HOUR, hour);
+        calendar.set(Calendar.DAY_OF_MONTH, date);
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, second);
         calendar.set(Calendar.MILLISECOND, millisecond);
@@ -1025,7 +1025,7 @@ public class Common {
                 result.set(Calendar.DATE, 1);
             case Calendar.HOUR:
             case Calendar.HOUR_OF_DAY:
-                result.set(Calendar.HOUR, 0);
+                result.set(Calendar.HOUR_OF_DAY, 0);
             case Calendar.MINUTE:
                 result.set(Calendar.MINUTE, 0);
             case Calendar.SECOND:

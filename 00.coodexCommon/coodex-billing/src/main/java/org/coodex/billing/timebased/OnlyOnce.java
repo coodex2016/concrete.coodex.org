@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2020 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,8 @@
 
 package org.coodex.billing.timebased;
 
-
-import org.coodex.billing.Chargeable;
-
-public interface TimeBasedChargeable extends Chargeable {
-
-    /**
-     * @return 计费时段
-     */
-    Period getPeriod();
-
-    /**
-     * @return 模型名称
-     */
-    String getModel();
-
-    /**
-     * @return 模型参数
-     */
-    String getModelParam();
-
-    void setModelParam(String modelParam);
-
-    void setModel(String model);
-
-    void setPeriod(Period period);
+/**
+ * 仅使用一次的优惠，用于多计费规则时，一次性金额调整、红包、优惠券等
+ */
+public interface OnlyOnce {
 }

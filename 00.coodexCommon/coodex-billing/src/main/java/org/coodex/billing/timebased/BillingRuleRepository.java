@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2020 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,15 @@
 
 package org.coodex.billing.timebased;
 
+import org.coodex.util.AcceptableService;
 
-import org.coodex.billing.Chargeable;
+import java.util.Collection;
 
-public interface TimeBasedChargeable extends Chargeable {
-
-    /**
-     * @return 计费时段
-     */
-    Period getPeriod();
+public interface BillingRuleRepository<T extends TimeBasedChargeable> extends AcceptableService<T> {
 
     /**
-     * @return 模型名称
+     * @param chargeable 根据消费对象获取适用于消费的一组规则列表
+     * @return
      */
-    String getModel();
-
-    /**
-     * @return 模型参数
-     */
-    String getModelParam();
-
-    void setModelParam(String modelParam);
-
-    void setModel(String model);
-
-    void setPeriod(Period period);
+    Collection<BillingRule> getRulesBy(T chargeable);
 }

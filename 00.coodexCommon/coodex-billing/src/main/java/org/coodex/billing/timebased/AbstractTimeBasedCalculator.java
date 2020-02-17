@@ -25,10 +25,10 @@ import org.coodex.util.Section;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static org.coodex.util.Common.*;
 
 public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable> implements Calculator<C> {
 
@@ -37,11 +37,92 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
     private AcceptableServiceLoader<String, BillingModel<C>> billingModels = new AcceptableServiceLoader<String, BillingModel<C>>() {
     };
 
+    private AcceptableServiceLoader<C, BillingRuleRepository<C>> ruleRepos = new AcceptableServiceLoader<C, BillingRuleRepository<C>>(
+            new BillingRuleRepository<C>() {
+                @Override
+                public Collection<BillingRule> getRulesBy(C chargeable) {
+                    return Collections.EMPTY_LIST;
+                }
+
+                @Override
+                public boolean accept(C param) {
+                    return true;
+                }
+            }
+    ) {
+    };
+
     @SuppressWarnings("WeakerAccess")
     protected abstract TimeUnit getTimeUnit();
 
     @Override
     public Bill<C> calc(C chargeable) {
+        BillingRuleRepository<C> ruleRepository = ruleRepos.select(chargeable);
+        if (ruleRepository == null)
+            return calcWithARule(chargeable);
+
+        BillingRule[] rules = ruleRepository.getRulesBy(chargeable).toArray(new BillingRule[0]);
+        if (rules.length > 1) { // 多条规则
+            Arrays.sort(rules); // 按照生效期排序
+            List<C> consumptions = new ArrayList<C>();
+            boolean onlyOnceAdded = false;
+            Calendar end = chargeable.getPeriod().getEnd();
+            for (int x = rules.length - 1; x >= 0; x--) {// 由后向前分段
+                BillingRule rule = rules[x];
+                if (chargeable.getPeriod().getEnd().after(rule.getStart())) { // 消费结束时间大于规则有效期则说明生效
+                    Calendar start = max(chargeable.getPeriod().getStart(), rule.getStart());// 以消费开始时间和规则生效期之大者作为分段的开始时间
+                    if (chargeable.getPeriod().getStart().after(end))
+                        break; // 消费开始时间大于当前段的目标结束时间时，说明本条及之前的都不适用
+
+                    C consumption = copyChangeable(chargeable, !onlyOnceAdded);
+                    consumption.setModel(rule.getModel());
+                    consumption.setModelParam(rule.getModelParam());
+                    consumption.setPeriod(Period.BUILDER.create((Calendar) start.clone(), (Calendar) end.clone()));
+                    consumptions.add(consumption);
+                    end = rule.getStart(); //将前一条的目标结束时间设置为本条规则生效时间
+                    onlyOnceAdded = true;
+                }
+            }
+
+            switch (consumptions.size()) {
+                case 0:
+                    break;
+                case 1:
+                    chargeable = consumptions.get(0);
+                    break;
+                default:
+                    Bill<C> bill = new Bill<C>(chargeable);
+                    for (int x = consumptions.size() - 1; x >= 0; x--) {
+                        Bill<C> consumptionBill = calcWithARule(consumptions.get(x));
+                        bill.addAllDetails(consumptionBill.getDetails());
+                    }
+                    return bill;
+            }
+
+        } else if (rules.length == 1) { // 只有一条规则
+            chargeable.setModel(rules[0].getModel());
+            chargeable.setModelParam(rules[0].getModelParam());
+        }
+        return calcWithARule(chargeable);
+    }
+
+
+    /**
+     * ！！！ 自行实现，默认实现不靠谱
+     *
+     * @param chargeable   chargeable
+     * @param withOnlyOnce 是否增加{@link OnlyOnce}的抵扣
+     * @return 根据参数复制一个新的消费对象，用于多规则场景
+     */
+    protected C copyChangeable(C chargeable, boolean withOnlyOnce) {
+        try {
+            return deepCopy(chargeable);
+        } catch (Throwable e) {
+            throw runtimeException(e);
+        }
+    }
+
+    private Bill<C> calcWithARule(C chargeable) {
         // 提取计费模型
         BillingModel<C> billingModel = billingModels.select(chargeable.getModel());
         if (billingModel == null) {

@@ -16,12 +16,13 @@
 
 package org.coodex.billing;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * 计费领域对象
  */
-public interface Chargeable {
+public interface Chargeable extends Serializable {
 
     /**
      * @return 单次计费所用到的调整
