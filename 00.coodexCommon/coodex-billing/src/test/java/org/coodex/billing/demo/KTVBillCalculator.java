@@ -16,14 +16,21 @@
 
 package org.coodex.billing.demo;
 
+import org.coodex.billing.Revision;
 import org.coodex.billing.timebased.AbstractTimeBasedCalculator;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class KTVBillCalculator extends AbstractTimeBasedCalculator<KTVConsumption> {
     @Override
     protected TimeUnit getTimeUnit() {
         return TimeUnit.MINUTES;
+    }
+
+    @Override
+    protected KTVConsumption copyChargeable(KTVConsumption chargeable, List<Revision> revisions) {
+        return chargeable;
     }
 
     @Override

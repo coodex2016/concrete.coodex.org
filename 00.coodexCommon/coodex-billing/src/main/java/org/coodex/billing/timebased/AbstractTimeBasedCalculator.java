@@ -87,7 +87,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
                     if (chargeable.getPeriod().getStart().after(end))
                         break; // 消费开始时间大于当前段的目标结束时间时，说明本条及之前的都不适用
 
-                    C consumption = copyChangeable(chargeable, onlyOnceAdded ? revisions : onlyOnce);
+                    C consumption = copyChargeable(chargeable, onlyOnceAdded ? revisions : onlyOnce);
                     consumption.setModel(rule.getModel());
                     consumption.setModelParam(rule.getModelParam());
                     consumption.setPeriod(Period.BUILDER.create((Calendar) start.clone(), (Calendar) end.clone()));
@@ -127,13 +127,15 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
      * @param revisions  revisions
      * @return 根据参数复制一个新的消费对象，用于多规则场景
      */
-    protected C copyChangeable(C chargeable, List<Revision> revisions) {
-        try {
-            return deepCopy(chargeable);
-        } catch (Throwable e) {
-            throw runtimeException(e);
-        }
-    }
+    protected abstract C copyChargeable(C chargeable, List<Revision> revisions);
+//    protected C copyChangeable(C chargeable, List<Revision> revisions) {
+//        try {
+//            return deepCopy(chargeable);
+//        } catch (Throwable e) {
+//            throw runtimeException(e);
+//        }
+//    }
+
 
     private Bill<C> calcWithARule(C chargeable) {
         // 提取计费模型
