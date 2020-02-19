@@ -24,7 +24,7 @@
     <url>https://concrete.coodex.org</url>
     <groupId>org.coodex</groupId>
     <artifactId>concrete.pom</artifactId>
-    <version>0.4.0-RC3</version>
+    <version>0.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -70,7 +70,7 @@
         <module>10.core/concrete-test</module>
         <module>10.core/concrete-fsm-impl</module>
         <module>10.core/concrete-jaxrs</module>
-<!--        <module>10.core/concrete-dubbo</module>-->
+        <!--        <module>10.core/concrete-dubbo</module>-->
         <module>10.core/concrete-amqp</module>
         <module>10.core/concrete-apache-dubbo</module>
         <module>10.core/concrete-core-mock</module>
@@ -139,7 +139,7 @@
         <jsr-311.version>1.1.1</jsr-311.version>
         <jsr-339.version>1.0.0.Final</jsr-339.version>
 
-<!--        <dubbo.version>2.6.6</dubbo.version>-->
+        <!--        <dubbo.version>2.6.6</dubbo.version>-->
         <apache.dubbo.version>2.7.4.1</apache.dubbo.version>
 
         <slf4j.version>1.7.26</slf4j.version>
@@ -150,9 +150,9 @@
         <spring.data.version>Lovelace-SR9</spring.data.version>
         <spring.boot.version>2.1.6.RELEASE</spring.boot.version>
 
-<!--        <spring.framework.version>5.2.2.RELEASE</spring.framework.version>-->
-<!--        <spring.data.version>Moore-SR2</spring.data.version>-->
-<!--        <spring.boot.version>2.2.2.RELEASE</spring.boot.version>-->
+        <!--        <spring.framework.version>5.2.2.RELEASE</spring.framework.version>-->
+        <!--        <spring.data.version>Moore-SR2</spring.data.version>-->
+        <!--        <spring.boot.version>2.2.2.RELEASE</spring.boot.version>-->
 
         <netty4.version>4.1.43.Final</netty4.version>
         <jersey.version>2.27</jersey.version>
@@ -253,11 +253,26 @@
                 <!-- oss -->
                 <snapshotRepository>
                     <id>oss</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                    <url>ttps://hoss.sonatype.org/content/repositories/snapshots</url>
                 </snapshotRepository>
                 <repository>
                     <id>oss</id>
                     <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+
+        <profile>
+            <id>workspace.release</id>
+            <distributionManagement>
+                <!-- oss -->
+                <snapshotRepository>
+                    <id>workspace</id>
+                    <url>${workspace.url.snapshot}</url>
+                </snapshotRepository>
+                <repository>
+                    <id>workspace</id>
+                    <url>${workspace.url.release}</url>
                 </repository>
             </distributionManagement>
         </profile>
@@ -314,11 +329,11 @@
                 <scope>import</scope>
             </dependency>
 
-<!--            <dependency>-->
-<!--                <groupId>com.alibaba</groupId>-->
-<!--                <artifactId>dubbo</artifactId>-->
-<!--                <version>${dubbo.version}</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>com.alibaba</groupId>-->
+            <!--                <artifactId>dubbo</artifactId>-->
+            <!--                <version>${dubbo.version}</version>-->
+            <!--            </dependency>-->
 
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
@@ -396,9 +411,9 @@
             <!-- https://mvnrepository.com/artifact/org.jboss.spec.javax.ws.rs/jboss-jaxrs-api_2.0_spec -->
             <!-- JSR 339 JAX-RS 2.0 -->
             <!--<dependency>-->
-                <!--<groupId>org.jboss.spec.javax.ws.rs</groupId>-->
-                <!--<artifactId>jboss-jaxrs-api_2.0_spec</artifactId>-->
-                <!--<version>${jsr-339.version}</version>-->
+            <!--<groupId>org.jboss.spec.javax.ws.rs</groupId>-->
+            <!--<artifactId>jboss-jaxrs-api_2.0_spec</artifactId>-->
+            <!--<version>${jsr-339.version}</version>-->
             <!--</dependency>-->
 
             <!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
@@ -571,11 +586,11 @@
 
 
             <!-- hibernate validator -->
-<!--            <dependency>-->
-<!--                <groupId>org.hibernate.validator</groupId>-->
-<!--                <artifactId>hibernate-validator</artifactId>-->
-<!--                <version>${hibernate.validator.version}</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>org.hibernate.validator</groupId>-->
+            <!--                <artifactId>hibernate-validator</artifactId>-->
+            <!--                <version>${hibernate.validator.version}</version>-->
+            <!--            </dependency>-->
 
         </dependencies>
 
