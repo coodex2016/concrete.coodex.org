@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2020 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package org.coodex.billing;
+package org.coodex.billing.timebased;
+
+import org.coodex.billing.Bill;
+import org.coodex.billing.Revision;
+import org.coodex.util.AcceptableService;
 
 /**
- * 费用调整
+ * 根据抵扣创建明细
+ *
+ * @param <T>
  */
-public interface Adjustment<C extends Chargeable> extends Revision {
+public interface RevisionToDetail<T extends Revision> extends AcceptableService<T> {
 
-    /**
-     * @param bill 待调整的账单
-     * @return 调整金额，整数调增，负数调减，为0则表示不调整
-     */
-    long adjust(Bill<C> bill);
+    Bill.Detail toDetail(T revision, Period period, long amount);
 }

@@ -382,7 +382,16 @@ public class ReflectHelper {
         return extendInterface(o, objects);
     }
 
-    public static <T> T extendInterface(final T o, final Object... objects) {
+
+    /**
+     *
+     * @param o object
+     * @param objects 需要扩展出来的对象，只扩展接口
+     * @param <S> 必须是接口
+     * @param <T> extends S
+     * @return 扩展后的对象
+     */
+    public static <S, T extends S> S extendInterface(final T o, final Object... objects) {
         if (o == null) return null;
         if (objects == null || objects.length == 0) return o;
         //noinspection rawtypes
@@ -396,7 +405,7 @@ public class ReflectHelper {
         if (interfaces.size() == 0) return o;
 
         //noinspection unchecked
-        return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces.toArray(new Class[0]),
+        return (S) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces.toArray(new Class[0]),
                 new InvocationHandler() {
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
