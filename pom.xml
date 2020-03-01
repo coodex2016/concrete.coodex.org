@@ -241,7 +241,7 @@
                 <!-- oss -->
                 <snapshotRepository>
                     <id>oss</id>
-                    <url>https://hoss.sonatype.org/content/repositories/snapshots</url>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
                 </snapshotRepository>
                 <repository>
                     <id>oss</id>
