@@ -16,10 +16,10 @@
 
 package org.coodex.concrete.message;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 public interface CourierPrototypeProvider
-        extends AcceptableService<String> {
+        extends SelectableService<String> {
 
     Class<? extends CourierPrototype> getPrototype();
 }

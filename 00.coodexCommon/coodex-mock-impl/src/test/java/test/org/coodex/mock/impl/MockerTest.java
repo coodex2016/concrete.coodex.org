@@ -135,6 +135,13 @@ public class MockerTest {
         @Mock.Inject("testInject")
         public double[][] coordinates;
 
+        @Coordinates
+        public double longitude;
+        @Coordinates(dimension = Coordinates.Dimension.LATITUDE)
+        public double latitude;
+        @Coordinates
+        public Coordinates.Value coordinatesValue;
+
         public Pojo3rd pojo3rd;
 
         private String string;

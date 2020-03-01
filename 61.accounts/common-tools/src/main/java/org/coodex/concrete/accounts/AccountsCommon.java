@@ -22,8 +22,8 @@ import org.coodex.concrete.common.TenantBuilderWrapper;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.config.Config;
-import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Clock;
+import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.ServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
 import org.springframework.data.repository.CrudRepository;
@@ -66,36 +66,38 @@ public class AccountsCommon {
     private static final String TAG_ACCOUNTS_SETTING = "concrete_accounts";
 
 
-    private static final AcceptableServiceLoader<String, PasswordGenerator> PASSWORD_GENERATORS =
-            new AcceptableServiceLoader<
-                    String, PasswordGenerator>(DEFAULT_PASSWORD_GENERATOR){};
+    private static final LazySelectableServiceLoader<String, PasswordGenerator> PASSWORD_GENERATORS =
+            new LazySelectableServiceLoader<
+                    String, PasswordGenerator>(DEFAULT_PASSWORD_GENERATOR) {
+            };
 
-    public static final String getDefaultPassword() {
+    public static String getDefaultPassword() {
         return getEncodedPassword(null);
     }
 
-    public static final String getEncodedPassword(String pwd) {
+    public static String getEncodedPassword(String pwd) {
         return PASSWORD_GENERATORS.select(ORGANIZATION_PREFIX).encode(null);
     }
 
-    public static final String getApplicationName() {
+    public static String getApplicationName() {
 //        return SETTINGS.getString("application.name",
 //                ConcreteHelper.getProfile().getString("application.name", "coodex.org"));
         return Config.getValue("application.name", "coodex.org", TAG_ACCOUNTS_SETTING, getAppSet());
     }
 
-    public static final boolean getBool(String key, boolean defaultValue) {
+    public static boolean getBool(String key, boolean defaultValue) {
         return Config.getValue(key, defaultValue, TAG_ACCOUNTS_SETTING, getAppSet());
     }
 
-    public static final int getInt(String key, int defaultValue) {
+    public static int getInt(String key, int defaultValue) {
         return Config.getValue(key, defaultValue, TAG_ACCOUNTS_SETTING, getAppSet());
     }
 
-    public static final String getString(String key) {
+    public static String getString(String key) {
         return getString(key, null);
     }
-    public static final String getString(String key, String defaultValue) {
+
+    public static String getString(String key, String defaultValue) {
         return defaultValue == null ?
                 Config.get(key, TAG_ACCOUNTS_SETTING, getAppSet()) :
                 Config.getValue(key, defaultValue, TAG_ACCOUNTS_SETTING, getAppSet());
@@ -176,7 +178,7 @@ public class AccountsCommon {
         token.removeAttribute("accounts.temp.authKey." + entity.getId());
         IF.not(TOTPAuthenticator.authenticate(authCode, authKey), AUTHORIZE_FAILED);
         entity.setAuthCodeKey(authKey);
-        entity.setAuthCodeKeyActiveTime(Clock.getCalendar());
+        entity.setAuthCodeKeyActiveTime(Clock.now());
 
         putLoggingData("bind", authKey);
 

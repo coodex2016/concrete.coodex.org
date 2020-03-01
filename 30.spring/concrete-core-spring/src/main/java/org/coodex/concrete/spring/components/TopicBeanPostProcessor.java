@@ -25,27 +25,16 @@ import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concrete.message.AbstractTopic;
 import org.coodex.concrete.message.Queue;
 import org.coodex.concrete.message.TopicKey;
-import org.coodex.concrete.message.Topics;
 import org.coodex.util.Common;
-import org.coodex.util.ReflectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
-import javax.inject.Inject;
 import javax.inject.Named;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.*;
 import static org.coodex.util.Common.runtimeException;
@@ -53,64 +42,87 @@ import static org.coodex.util.GenericTypeHelper.toReference;
 
 
 @Named
-public class TopicBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter {
+public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<TopicBeanPostProcessor.InjectTopicKey> {
 
     private final static Logger log = LoggerFactory.getLogger(TopicBeanPostProcessor.class);
-    private static AtomicLong index = new AtomicLong(0);
-    private Set<TopicKey> injected = new HashSet<TopicKey>();
-    @Inject
-    private DefaultListableBeanFactory defaultListableBeanFactory;
-    private Class<? extends Annotation>[] injectableAnnotations = new Class[]{Inject.class};
+    private Set<TopicKey> injected = new HashSet<>();
 
-    private boolean isInjectable(Field field) {
-        for (Class<? extends Annotation> clz : injectableAnnotations) {
-            if (field.getAnnotation(clz) != null) return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
-        scan(bean, bean.getClass(), beanName);
-        return super.postProcessAfterInstantiation(bean, beanName);
-    }
-
+    @SuppressWarnings("rawtypes")
     private boolean isTopic(Field field) {
         Class c = field.getType();
         return c.isInterface() && AbstractTopic.class.isAssignableFrom(c);
     }
 
-    private void scan(Object bean, Class<?> beanClass, String beanName) {
-        for (Field field : ReflectHelper.getAllDeclaredFields(beanClass)) {
-            if (/*isInjectable(field) &&*/ isTopic(field)) {
-                Queue queue = field.getAnnotation(Queue.class);
-                String queueName = queue == null ? null : queue.value();
-                Type topicType = toReference(field.getGenericType(), beanClass);
-                if (isInjectable(field)) {
-                    registerBean(topicType, queueName, beanClass);
-                } else {
-                    AbstractTopic topic = Topics.get(topicType, queueName);
-                    try {
-                        field.setAccessible(true);
-                        field.set(bean, topic);
-                        log.warn("{} {} {} injected. use @Inject plz.", beanName, topicType, field.getName());
-                    } catch (Throwable e) {
-                        throw runtimeException(e);
-                    }
-                }
-//                if (!topicInstance.contains(topic)) {
-//                    synchronized (this) {
-//                        if (!topicInstance.contains(topic)) {
-//
-//                            registerBean(topicType, queueName, beanClass);
-//                            topicInstance.add(topic);
-//
-//                        }
-//                    }
-//                }
-            }
+
+    @Override
+    protected boolean accept(Field field) {
+        return isTopic(field);
+    }
+
+    @Override
+    protected Class<?> getInjectClass(InjectTopicKey key, Class<?> beanClass) {
+        String cName = String.format("TopicBean$$CBC$$%08X", getIndex());
+        String className = String.format("%s.%s", TopicBeanPostProcessor.class.getPackage().getName(), cName);
+
+        ParameterizedType pt = (ParameterizedType) key.getTopicType();
+
+        try {
+            Class<?> clz = getBeanClass(key.getTopicType(), key.getThisQueue(), className, pt, beanClass);
+            log.info("Topic Bean Class created: {}, {}, {}. ", key.getQueue(), key.getTopicType().toString(), clz.getName());
+            return clz;
+        } catch (Throwable th) {
+            throw Common.runtimeException(th);
         }
     }
+
+
+    @Override
+    protected String newBeanName() {
+        return "topic_" + Common.getUUIDStr();
+    }
+
+    private String getQueueName(Field field) {
+        Queue queue = field.getAnnotation(Queue.class);
+        return queue == null ? null : queue.value();
+    }
+
+    private Type getTopicType(Field field, Class<?> beanClass) {
+        return toReference(field.getGenericType(), beanClass);
+    }
+
+    @Override
+    @Deprecated
+    protected boolean injectNoneAnnotation() {
+        return true;
+    }
+
+    @Override
+    protected InjectTopicKey getKey(Class<?> beanClass, Field field) {
+        return new InjectTopicKey(getQueueName(field), getTopicType(field, beanClass));
+    }
+
+//    @SuppressWarnings("rawtypes")
+//    private void scan(Object bean, Class<?> beanClass, String beanName) {
+//        for (Field field : ReflectHelper.getAllDeclaredFields(beanClass)) {
+//            if (/*isInjectable(field) &&*/ isTopic(field)) {
+//                Queue queue = field.getAnnotation(Queue.class);
+//                String queueName = queue == null ? null : queue.value();
+//                Type topicType = toReference(field.getGenericType(), beanClass);
+//                if (isInjectable(field)) {
+//                    registerBean(topicType, queueName, beanClass);
+//                } else {
+//                    AbstractTopic topic = Topics.get(topicType, queueName);
+//                    try {
+//                        field.setAccessible(true);
+//                        field.set(bean, topic);
+//                        log.warn("{} {} {} injected. use @Inject plz.", beanName, topicType, field.getName());
+//                    } catch (Throwable e) {
+//                        throw runtimeException(e);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     private javassist.bytecode.annotation.Annotation queue(String queueName, ConstPool constPool) {
         javassist.bytecode.annotation.Annotation annotation =
@@ -119,61 +131,22 @@ public class TopicBeanPostProcessor extends InstantiationAwareBeanPostProcessorA
         return annotation;
     }
 
-    //
-//    private String messageType(Type messageType) {
-//        StringBuilder builder = new StringBuilder();
-//        if (messageType instanceof Class) {
-//            builder.append(classType((Class) messageType));
-//        } else if (messageType instanceof ParameterizedType) {
-//            builder.append(parameterizedType((ParameterizedType) messageType));
-//        } else if (messageType instanceof GenericArrayType) {
-//            GenericArrayType genericArrayType = (GenericArrayType) messageType;
-//            builder.append(messageType(genericArrayType.getGenericComponentType()))
-//                    .append("[]");
-//        } else {
-//            builder.append(messageType.toString());
-//        }
-//        return builder.toString();
-//    }
-//
-//    private String parameterizedType(ParameterizedType type) {
-//        StringBuilder builder = new StringBuilder();
-//        builder.append(messageType(type.getOwnerType()))
-//                .append('<');
-//        for (int i = 0; i < type.getActualTypeArguments().length; i++) {
-//            if (i > 0)
-//                builder.append(", ");
-//            builder.append(messageType(type.getActualTypeArguments()[i]));
-//        }
-//        builder.append('>');
-//        return builder.toString();
-//    }
-//
-//    private String classType(Class type) {
-//        if (type.isArray()) {
-//            return classType(type.getComponentType()) + "[]";
-//        } else {
-//            return type.getName();
-//        }
-//    }
-//
-
 
     private void registerBean(Type topicType, String queueName, Class<?> contextClass) {
         try {
             TopicKey topicKey = new TopicKey(queueName, topicType);
             if (!injected.contains(topicKey)) {
                 synchronized (this) {
-                    if(!injected.contains(topicKey)) {
+                    if (!injected.contains(topicKey)) {
                         String beanName = "topic_" + Common.getUUIDStr();
-                        String cName = String.format("TopicBean$$CBC$$%08X", index.incrementAndGet());
+                        String cName = String.format("TopicBean$$CBC$$%08X", getIndex());
                         String className = String.format("%s.%s", contextClass.getPackage().getName(), cName);
 
 
                         ParameterizedType pt = (ParameterizedType) topicType;
 
                         Class<?> clz = getBeanClass(topicType, queueName, className, pt, contextClass);
-                        defaultListableBeanFactory.registerSingleton(beanName, clz.getConstructor().newInstance());
+                        getBeanFactory().registerSingleton(beanName, clz.getConstructor().newInstance());
                         log.info("Topic Bean registered: {}, {}, {}, {}. ", beanName, queueName, topicType.toString(), clz.getName());
                         injected.add(topicKey);
                     }
@@ -185,19 +158,7 @@ public class TopicBeanPostProcessor extends InstantiationAwareBeanPostProcessorA
 
     }
 
-//    private Class<?> getBeanClassByCGLib(Type topicType, String queueName, String className, ParameterizedType pt) {
-//        ClassWriter classWriter = new ClassWriter(1);
-//        classWriter.visit(V1_6, ACC_PUBLIC, className,new SignatureAttribute.ClassSignature(
-//                null,
-//                classType(AbstractTopicFactoryBean.class.getName(), topicType),
-//                null).encode(), "",null );
-//        classWriter.visitEnd();
-//        byte[] code = classWriter.toByteArray();
-//
-//        return null;
-//    }
-
-
+    @SuppressWarnings("rawtypes")
     private Class<?> getBeanClass(Type topicType, String queueName, String className,
                                   ParameterizedType pt, Class<?> contextClass) throws CannotCompileException {
 //        Class topicClass = (Class) pt.getRawType();
@@ -222,6 +183,8 @@ public class TopicBeanPostProcessor extends InstantiationAwareBeanPostProcessorA
 
         if (queueName != null) {
             classFile.addAttribute(aggregate(constPool, queue(queueName, constPool)));
+        } else {
+            classFile.addAttribute(aggregate(constPool, primary(constPool)));
         }
 
         // 增加获取队列名方法
@@ -247,57 +210,38 @@ public class TopicBeanPostProcessor extends InstantiationAwareBeanPostProcessorA
                 "    return topicType;\n" +
                 "}", ctClass));
 
-        // methods
-        for (Method method : ((Class) pt.getRawType()).getMethods()) {
-            boolean voidReturn = method.getReturnType().equals(void.class);
-            CtMethod ctMethod = new CtMethod(
-                    voidReturn ? CtClass.voidType :
-                            classPool.getOrNull(method.getReturnType().getName()),
-                    method.getName(),
-                    toCtClass(method.getParameterTypes(), classPool),
-                    ctClass
-            );
-            List<SignatureAttribute.Type> parameters = new ArrayList<SignatureAttribute.Type>();
+        buildMethods(classPool, ctClass, (Class<?>) pt.getRawType(), topicType, contextClass,
+                "org.coodex.concrete.message.Topics.get(getTopicType(), getQueueName())");
 
-            for (int i = 0; i < method.getGenericParameterTypes().length; i++) {
-                parameters.add(JavassistHelper.classType(
-                        toReference(method.getGenericParameterTypes()[i], topicType),
-                        contextClass));
-            }
+        //        return (Class<?>) ctClass.toClass();
+        return IS_JAVA_9_AND_LAST.get() ? ctClass.toClass(TopicBeanPostProcessor.class) : ctClass.toClass();
+    }
 
-            ctMethod.setGenericSignature(new SignatureAttribute.MethodSignature(
-                    null,
-                    parameters.toArray(new SignatureAttribute.Type[0]),
-                    voidReturn ? null : JavassistHelper.classType(
-                            toReference(method.getGenericReturnType(), topicType),
-                            contextClass),
-                    null
-            ).encode());
-            StringBuilder body = new StringBuilder();
-            body.append('{');
-            if (!voidReturn) {
-                body.append("return ");
-            }
 
-            body.append("((")
-                    .append(((Class) pt.getRawType()).getName())
-                    .append(")org.coodex.concrete.message.Topics.get(getTopicType(), getQueueName())).");
+//    private Class<?> getBeanClassByCGLib(Type topicType, String queueName, String className, ParameterizedType pt) {
+//        ClassWriter classWriter = new ClassWriter(1);
+//        classWriter.visit(V1_6, ACC_PUBLIC, className,new SignatureAttribute.ClassSignature(
+//                null,
+//                classType(AbstractTopicFactoryBean.class.getName(), topicType),
+//                null).encode(), "",null );
+//        classWriter.visitEnd();
+//        byte[] code = classWriter.toByteArray();
+//
+//        return null;
+//    }
 
-            body.append(method.getName())
-                    .append('(');
-            if (method.getParameterTypes().length > 0) {
-                body.append("$$");
-            }
-            body.append(");");
+    public static class InjectTopicKey extends TopicKey implements InjectInfoKey {
 
-            body.append("}");
-            ctMethod.setBody(body.toString());
+        private final String thisQueue;
 
-            ctClass.addMethod(ctMethod);
+        public InjectTopicKey(String queue, Type topicType) {
+            super(queue, topicType);
+            this.thisQueue = queue;
         }
 
-//        return (Class<?>) ctClass.toClass();
-        return IS_JAVA_9_AND_LAST.get() ? ctClass.toClass(contextClass) : ctClass.toClass();
+        public String getThisQueue() {
+            return thisQueue;
+        }
     }
 
 //    @Override

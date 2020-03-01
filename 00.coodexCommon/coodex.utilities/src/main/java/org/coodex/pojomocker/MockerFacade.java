@@ -51,19 +51,13 @@ public class MockerFacade {
 
     private static final DefaultMockers DEFAULT_MOCKER = new DefaultMockers();
 
-    static final AcceptableServiceLoader<Annotation, Mocker<Annotation>> MOCKER_LOADER =
-            new AcceptableServiceLoader<Annotation, Mocker<Annotation>>(
-                    new ServiceLoaderImpl<Mocker<Annotation>>() {
-                        @Override
-                        public Mocker<Annotation> getDefault() {
-                            return DEFAULT_MOCKER;
-                        }
-                    }
-            ){};
+    static final LazySelectableServiceLoader<Annotation, Mocker<Annotation>> MOCKER_LOADER =
+            new LazySelectableServiceLoader<Annotation, Mocker<Annotation>>(DEFAULT_MOCKER) {
+            };
 
-    private static final AcceptableServiceLoader<String, RelationPolicy> RELATION_POLICY_LOADER =
-            new AcceptableServiceLoader<String, RelationPolicy>(new ServiceLoaderImpl<RelationPolicy>() {
-            }){};
+    private static final LazySelectableServiceLoader<String, RelationPolicy> RELATION_POLICY_LOADER =
+            new LazySelectableServiceLoader<String, RelationPolicy>() {
+            };
 //    private static final Map<String, PojoInfo> POJO_INFO_MAP = new HashMap<String, PojoInfo>();
 
     private static final SequenceContext SEQUENCE_CONTEXT = new SequenceContext();
@@ -103,7 +97,7 @@ public class MockerFacade {
             throw new RuntimeException(typeVariableInfo(type, context));
         } else {
             try {
-                return $mock(type, new PojoProperty((PojoProperty)null, type) {
+                return $mock(type, new PojoProperty((PojoProperty) null, type) {
                     @Override
                     public Annotation[] getAnnotations() {
                         return method.getAnnotations();
@@ -814,7 +808,7 @@ public class MockerFacade {
 
 
     private static SequenceGenerator getSequenceGenerator(String key, Sequence.NotFound notFound,
-                                       PojoProperty pojoProperty) {
+                                                          PojoProperty pojoProperty) {
         SequenceGenerator generator = SEQUENCE_CONTEXT.get(key);
         if (generator == null) {
             switch (notFound) {

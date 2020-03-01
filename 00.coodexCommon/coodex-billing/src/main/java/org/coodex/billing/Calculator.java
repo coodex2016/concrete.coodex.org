@@ -16,14 +16,14 @@
 
 package org.coodex.billing;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 /**
  * 基于计费领域对象的账单计算器
  *
  * @param <C> 计费领域对象
  */
-public interface Calculator<C extends Chargeable> extends AcceptableService<C> {
+public interface Calculator<C extends Chargeable> extends SelectableService<C> {
 
     Bill<C> calc(C chargeable);
 }

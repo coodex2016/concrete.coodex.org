@@ -18,17 +18,23 @@ package org.coodex.util;
 
 public class Singleton<T> {
 
-    private final Builder<T> builder;
+    private Builder<T> builder;
     private volatile T instance = null;
     private volatile boolean loaded = false;
 
+    Singleton() {
+    }
+
     public Singleton(Builder<T> builder) {
+        setBuilder(builder);
+    }
+
+    private void setBuilder(Builder<T> builder) {
         if (builder == null) throw new NullPointerException("builder MUST NOT be null.");
         this.builder = builder;
     }
 
     /**
-     *
      * @return
      * @see Singleton#get()
      */

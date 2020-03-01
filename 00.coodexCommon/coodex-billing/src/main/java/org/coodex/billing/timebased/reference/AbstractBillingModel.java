@@ -18,12 +18,12 @@ package org.coodex.billing.timebased.reference;
 
 import org.coodex.billing.timebased.BillingModel;
 import org.coodex.billing.timebased.TimeBasedChargeable;
-import org.coodex.util.AcceptableServiceLoader;
+import org.coodex.util.LazySelectableServiceLoader;
 
 public abstract class AbstractBillingModel<C extends TimeBasedChargeable> implements BillingModel<C> {
 
-    private final AcceptableServiceLoader<String, ModelProfileFactory> modelProfileFactoryAcceptableServiceLoader
-            = new AcceptableServiceLoader<String, ModelProfileFactory>() {
+    private final LazySelectableServiceLoader<String, ModelProfileFactory> modelProfileFactorySelectableServiceLoader
+            = new LazySelectableServiceLoader<String, ModelProfileFactory>() {
     };
 
     /**
@@ -39,7 +39,7 @@ public abstract class AbstractBillingModel<C extends TimeBasedChargeable> implem
     @Override
     public Instance<C> create(C chargeable) {
         return new AbstractModelInstance<C>(
-                modelProfileFactoryAcceptableServiceLoader
+                modelProfileFactorySelectableServiceLoader
                         .select(chargeable.getModel())
                         .build(chargeable.getModelParam())
         ) {

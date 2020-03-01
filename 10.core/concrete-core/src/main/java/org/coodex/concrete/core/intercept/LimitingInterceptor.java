@@ -21,15 +21,15 @@ import org.coodex.concrete.api.LimitingStrategy;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
-import org.coodex.util.AcceptableServiceLoader;
+import org.coodex.util.LazySelectableServiceLoader;
 
 import static org.coodex.concrete.common.ErrorCodes.OVERRUN;
 import static org.coodex.concrete.core.intercept.InterceptOrders.LIMITING;
 
 @ServerSide
 public class LimitingInterceptor extends AbstractSyncInterceptor {
-    private static final AcceptableServiceLoader<DefinitionContext, LimitingStrategy> STRATEGY_ACCEPTABLE_SERVICE_LOADER
-            = new AcceptableServiceLoader<DefinitionContext, LimitingStrategy>(new TokenBucketLimiting() {
+    private static final LazySelectableServiceLoader<DefinitionContext, LimitingStrategy> STRATEGY_ACCEPTABLE_SERVICE_LOADER
+            = new LazySelectableServiceLoader<DefinitionContext, LimitingStrategy>(new TokenBucketLimiting() {
         @Override
         public boolean accept(DefinitionContext param) {
             return true;

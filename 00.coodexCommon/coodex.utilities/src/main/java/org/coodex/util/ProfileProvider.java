@@ -18,7 +18,7 @@ package org.coodex.util;
 
 import java.net.URL;
 
-public interface ProfileProvider extends AcceptableService<URL>, Comparable<ProfileProvider> {
+public interface ProfileProvider extends SelectableService<URL>, Comparable<ProfileProvider> {
 
     /**
      * @return 此ProfileProvider支持的文件名后缀

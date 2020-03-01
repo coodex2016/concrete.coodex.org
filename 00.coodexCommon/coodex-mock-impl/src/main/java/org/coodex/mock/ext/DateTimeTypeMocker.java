@@ -62,7 +62,7 @@ public class DateTimeTypeMocker extends AbstractTypeMocker<DateTime> {
             if (Date.class.equals(clazz)) {
                 return new Date(dateTime);
             } else if (Calendar.class.equals(clazz)) {
-                Calendar calendar = Clock.getCalendar();
+                Calendar calendar = Clock.now();
                 calendar.setTimeInMillis(dateTime);
                 return calendar;
             } else if (String.class.equals(clazz)) {

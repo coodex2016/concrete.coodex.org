@@ -36,20 +36,9 @@ public class ZipkinTraceFactory implements TraceFactory {
     public Parallel.RunnerWrapper createWrapper() {
         final TraceContext context = CurrentTraceContext.Default.create().get();
         return context == null ? null :
-                new Parallel.RunnerWrapper() {
-                    @Override
-                    public Runnable wrap(final Runnable runnable) {
-                        return new Runnable() {
-                            @Override
-                            public void run() {
-                                CurrentTraceContext.Scope scope = CurrentTraceContext.Default.create().maybeScope(context);
-                                try {
-                                    runnable.run();
-                                } finally {
-                                    scope.close();
-                                }
-                            }
-                        };
+                runnable -> (Runnable) () -> {
+                    try (CurrentTraceContext.Scope ignored = CurrentTraceContext.Default.create().maybeScope(context)) {
+                        runnable.run();
                     }
                 };
     }

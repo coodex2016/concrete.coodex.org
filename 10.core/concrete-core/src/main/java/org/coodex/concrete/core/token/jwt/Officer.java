@@ -16,12 +16,12 @@
 
 package org.coodex.concrete.core.token.jwt;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 /**
  * 签发延签
  */
-public interface Officer extends AcceptableService<String> {
+public interface Officer extends SelectableService<String> {
 
     byte[] issue(String headerAndPayload);
 

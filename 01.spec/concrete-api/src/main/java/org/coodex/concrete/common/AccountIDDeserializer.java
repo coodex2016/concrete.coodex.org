@@ -16,12 +16,12 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 /**
  * Created by davidoff shen on 2017-07-17.
  */
-public interface AccountIDDeserializer extends AcceptableService<String> {
+public interface AccountIDDeserializer extends SelectableService<String> {
 
     AccountID deserialize(String accountIDStr);
 }

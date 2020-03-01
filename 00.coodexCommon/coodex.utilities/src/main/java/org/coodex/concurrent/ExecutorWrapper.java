@@ -16,8 +16,6 @@
 
 package org.coodex.concurrent;
 
-import org.coodex.util.Clock;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -27,7 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+
+import static org.coodex.util.ReflectHelper.getAllInterfaces;
 
 /**
  * Created by davidoff shen on 2016-09-05.
@@ -40,47 +39,92 @@ final class ExecutorWrapper {
     static <T extends ExecutorService> T wrap(T executorService) {
         // TODO 动态代理，当Executor shutdown或shutdownNow的时候脱离管理
         if (executorService instanceof ScheduledExecutorService) {
-            final ScheduledExecutorService scheduledExecutorService = (ScheduledExecutorService) executorService;
-
+//            final ScheduledExecutorService scheduledExecutorService = (ScheduledExecutorService) executorService;
+//            final ScheduledExecutorService scheduledExecutorService = new ScheduledExecutorServiceImpl((ScheduledExecutorService) executorService);
             //noinspection unchecked
             executorService = (T) Proxy.newProxyInstance(
                     ScheduledExecutorService.class.getClassLoader(),
-                    scheduledExecutorService.getClass().getInterfaces(),
-                    new InvocationHandler() {
-                        @Override
-                        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                            Object[] argsCopy = args;
-
-                            if (method.getDeclaringClass().equals(ScheduledExecutorService.class)) {
-                                if (args != null && args.length > 0) {
-                                    argsCopy = new Object[args.length];
-                                    System.arraycopy(args, 0, argsCopy, 0, args.length);
-                                }
-                                if (argsCopy != null && argsCopy.length == 2 && "schedule".equals(method.getName())) {
-                                    argsCopy[1] = Clock.toMillis((Long) args[1], (TimeUnit) args[2]);
-                                    //noinspection ConstantConditions
-                                    argsCopy[2] = TimeUnit.MILLISECONDS;
-                                } else if (argsCopy != null && argsCopy.length == 2 &&
-                                        ("scheduleAtFixedRate".equals(method.getName()) ||
-                                        "scheduleWithFixedDelay".equals(method.getName()))) {
-                                    argsCopy[1] = Clock.toMillis((Long) args[1], (TimeUnit) args[3]);
-                                    //noinspection ConstantConditions
-                                    argsCopy[2] = Clock.toMillis((Long) args[2], (TimeUnit) args[3]);
-                                    //noinspection ConstantConditions
-                                    argsCopy[3] = TimeUnit.MILLISECONDS;
-                                }
-                            }
-                            if (argsCopy == null || argsCopy.length == 0)
-                                return method.invoke(scheduledExecutorService);
-                            else
-                                return method.invoke(scheduledExecutorService, argsCopy);
-                        }
-                    });
+                    getAllInterfaces(executorService.getClass()),
+                    getInvocationHandlerByType(ScheduledExecutorService.class,
+                            executorService,
+                            new ScheduledExecutorServiceImpl((ScheduledExecutorService) executorService))
+//                    new InvocationHandler() {
+//                        @Override
+//                        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+//                            Object object = method.getDeclaringClass().isAssignableFrom(ScheduledExecutorService.class) ?
+//                                    scheduledExecutorService : finalExecutorService;
+//
+//                            if (args == null || args.length == 0)
+//                                return method.invoke(object);
+//                            else
+//                                return method.invoke(object, args);
+//                        }
+//                    }
+            );
+        } else {
+            //noinspection unchecked
+            executorService = (T) Proxy.newProxyInstance(
+                    ExecutorService.class.getClassLoader(),
+                    getAllInterfaces(executorService.getClass()),
+                    getInvocationHandlerByType(ExecutorService.class,
+                            executorService,
+                            new ExecutorServiceImpl(executorService))
+//                    new InvocationHandler() {
+//                        @Override
+//                        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+//                            Object object = method.getDeclaringClass().isAssignableFrom(ExecutorService.class) ?
+//                                    serviceImpl : finalExecutorService;
+//
+//                            if (args == null || args.length == 0)
+//                                return method.invoke(object);
+//                            else
+//                                return method.invoke(object, args);
+//                        }
+//                    }
+            );
         }
         executors.add(executorService);
 
         return executorService;
     }
+
+
+//    @SuppressWarnings("unchecked")
+//    private static <T extends ExecutorService> T wrapScheduleExecutorService(final ScheduledExecutorService scheduledExecutorService) {
+//        return (T) Proxy.newProxyInstance(
+//                ScheduledExecutorService.class.getClassLoader(),
+//                scheduledExecutorService.getClass().getInterfaces(),
+//                new InvocationHandler() {
+//                    @Override
+//                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+//                        Object[] argsCopy = args;
+//
+//                        if (method.getDeclaringClass().equals(ScheduledExecutorService.class)) {
+//                            if (args != null && args.length > 0) {
+//                                argsCopy = new Object[args.length];
+//                                System.arraycopy(args, 0, argsCopy, 0, args.length);
+//                            }
+//                            if (argsCopy != null && argsCopy.length == 2 && "schedule".equals(method.getName())) {
+//                                argsCopy[1] = Clock.toMillis((Long) args[1], (TimeUnit) args[2]);
+//                                //noinspection ConstantConditions
+//                                argsCopy[2] = TimeUnit.MILLISECONDS;
+//                            } else if (argsCopy != null && argsCopy.length == 2 &&
+//                                    ("scheduleAtFixedRate".equals(method.getName()) ||
+//                                            "scheduleWithFixedDelay".equals(method.getName()))) {
+//                                argsCopy[1] = Clock.toMillis((Long) args[1], (TimeUnit) args[3]);
+//                                //noinspection ConstantConditions
+//                                argsCopy[2] = Clock.toMillis((Long) args[2], (TimeUnit) args[3]);
+//                                //noinspection ConstantConditions
+//                                argsCopy[3] = TimeUnit.MILLISECONDS;
+//                            }
+//                        }
+//                        if (argsCopy == null || argsCopy.length == 0)
+//                            return method.invoke(scheduledExecutorService);
+//                        else
+//                            return method.invoke(scheduledExecutorService, argsCopy);
+//                    }
+//                });
+//    }
 
     static void shutdown() {
         for (ExecutorService service : executors) {
@@ -96,5 +140,20 @@ final class ExecutorWrapper {
                 list.addAll(service.shutdownNow());
         }
         return list;
+    }
+
+    private static InvocationHandler getInvocationHandlerByType(final Class<? extends ExecutorService> executorClass, final Object origin, final Object impl) {
+        return new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                Object object = method.getDeclaringClass().isAssignableFrom(executorClass) ?
+                        impl : origin;
+
+                if (args == null || args.length == 0)
+                    return method.invoke(object);
+                else
+                    return method.invoke(object, args);
+            }
+        };
     }
 }

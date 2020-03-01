@@ -23,7 +23,7 @@ package org.coodex.closure;
 public abstract class AbstractClosureContext<VariantType> {
 
 
-    private ThreadLocal<VariantType> threadLocal = new ThreadLocal<VariantType>();
+    private final ThreadLocal<VariantType> threadLocal = new ThreadLocal<VariantType>();
 
     protected final VariantType $getVariant() {
         return threadLocal.get();

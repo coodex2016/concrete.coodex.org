@@ -35,16 +35,6 @@ import java.util.concurrent.TimeUnit;
 public final class Clock {
 
     public static final String KEY_MAGNIFICATION = Clock.class.getName() + ".magnification";
-
-
-    public static final Float getMagnification() {
-        return Config.getValue(
-                KEY_MAGNIFICATION,
-                Common.to(System.getProperty(KEY_MAGNIFICATION), 1.0f),
-                "clock");
-    }
-
-
     private static Singleton<ClockAgent> agentSingleton = new Singleton<ClockAgent>(new Singleton.Builder<ClockAgent>() {
         @Override
         public ClockAgent build() {
@@ -60,6 +50,35 @@ public final class Clock {
             }
         }
     });
+    private static final Singleton<TimestampProvider> TIMESTAMP_PROVIDER_SINGLETON = new Singleton<TimestampProvider>(
+            new Singleton.Builder<TimestampProvider>() {
+                @Override
+                public TimestampProvider build() {
+                    return new ServiceLoaderImpl<TimestampProvider>(new TimestampProvider() {
+                        @Override
+                        public Calendar now() {
+                            return Clock.getCalendar();
+                        }
+                    }) {
+                    }.get();
+                }
+            }
+    );
+
+    /**
+     * @return 获取当前时间，可以通过外部注入
+     * @see TimestampProvider
+     */
+    public static Calendar now() {
+        return (Calendar) TIMESTAMP_PROVIDER_SINGLETON.get().now().clone();
+    }
+
+    public static Float getMagnification() {
+        return Config.getValue(
+                KEY_MAGNIFICATION,
+                Common.to(System.getProperty(KEY_MAGNIFICATION), 1.0f),
+                "clock");
+    }
 
     /**
      * @return
@@ -71,7 +90,7 @@ public final class Clock {
 
     /**
      * @return
-     * @see ClockAgent#sleep(long)
+     * @see ClockAgent#getCalendar()
      */
     public static Calendar getCalendar() {
         return agentSingleton.get().getCalendar();
@@ -97,11 +116,10 @@ public final class Clock {
     }
 
     /**
-     * 
      * @param timeUnit
      * @param timeout
      * @throws InterruptedException
-     * @see ClockAgent#sleep(TimeUnit, long) 
+     * @see ClockAgent#sleep(TimeUnit, long)
      */
     public static void sleep(TimeUnit timeUnit, long timeout) throws InterruptedException {
         agentSingleton.get().sleep(timeUnit, timeout);

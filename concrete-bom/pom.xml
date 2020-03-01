@@ -31,12 +31,12 @@
     <dependencyManagement>
         <dependencies>
 
-<!--            &lt;!&ndash; JSR 349 Bean Validation 1.1  &ndash;&gt;-->
-<!--            <dependency>-->
-<!--                <groupId>javax.validation</groupId>-->
-<!--                <artifactId>validation-api</artifactId>-->
-<!--                <version>${jsr-349.version}</version>-->
-<!--            </dependency>-->
+            <!--            &lt;!&ndash; JSR 349 Bean Validation 1.1  &ndash;&gt;-->
+            <!--            <dependency>-->
+            <!--                <groupId>javax.validation</groupId>-->
+            <!--                <artifactId>validation-api</artifactId>-->
+            <!--                <version>${jsr-349.version}</version>-->
+            <!--            </dependency>-->
 
             <!-- JSR 311 JAX-RS: The JavaTM API for RESTful Web Services 1.0 -->
             <dependency>
@@ -131,11 +131,11 @@
                 <type>pom</type>
             </dependency>
 
-            <!-- log4j 2 -->
+            <!-- coodex -->
             <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-bom</artifactId>
-                <version>${log4j2.version}</version>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>coodex-bom</artifactId>
+                <version>${coodex.utilities.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -161,25 +161,13 @@
                 <version>2.2.6</version>
             </dependency>
 
-            <!-- slf4j -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
 
             <!-- hibernate validator -->
-<!--            <dependency>-->
-<!--                <groupId>org.hibernate.validator</groupId>-->
-<!--                <artifactId>hibernate-validator</artifactId>-->
-<!--                <version>${hibernate.validator.version}</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>org.hibernate.validator</groupId>-->
+            <!--                <artifactId>hibernate-validator</artifactId>-->
+            <!--                <version>${hibernate.validator.version}</version>-->
+            <!--            </dependency>-->
 
 
             <!-- hibernate -->
@@ -209,55 +197,6 @@
                 <version>${javassist.verion}</version>
             </dependency>
 
-            <!-- coodex -->
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>coodex-utilities</artifactId>
-                <version>${coodex.utilities.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>coodex-billing</artifactId>
-                <version>${coodex.utilities.version}</version>
-            </dependency>
-
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>coodex-utilities-servlet</artifactId>
-                <version>${coodex.utilities.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>shared-cache</artifactId>
-                <version>${coodex.shared.cache.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>shared-cache-jedis</artifactId>
-                <version>${coodex.shared.cache.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>shared-cache-memcached</artifactId>
-                <version>${coodex.shared.cache.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>coodex-mock-spec</artifactId>
-                <version>${coodex.utilities.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>coodex-mock-impl</artifactId>
-                <version>${coodex.utilities.version}</version>
-            </dependency>
 
             <!-- concrete -->
             <dependency>

@@ -16,11 +16,11 @@
 
 package org.coodex.ssl;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 import javax.net.ssl.SSLContext;
 
-public interface SSLContextFactory extends AcceptableService<String> {
+public interface SSLContextFactory extends SelectableService<String> {
 
     SSLContext getSSLContext(String param) throws Throwable;
 }

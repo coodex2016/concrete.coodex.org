@@ -16,12 +16,12 @@
 
 package org.coodex.concrete.message;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
 
-public interface Serializer extends AcceptableService<String> {
+public interface Serializer extends SelectableService<String> {
 
     byte[] serialize(Serializable o);
 

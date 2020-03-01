@@ -24,6 +24,8 @@ import java.util.Calendar;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static org.coodex.util.Common.longToCalendar;
+
 /**
  * 重试模板
  */
@@ -61,7 +63,7 @@ public class Retry {
     // 状态
     private Status status = Status.INIT;
     private Task task;
-    private Calendar start;
+    private Long start;
 
 
     private Retry() {
@@ -109,9 +111,9 @@ public class Retry {
                     if (Status.FINISHED.equals(status)) return;
                     status = Status.RUNNING;
                     if (start == null) {
-                        start = Clock.getCalendar();
+                        start = Clock.currentTimeMillis();
                     }
-                    Calendar thisTimes = Clock.getCalendar();
+                    Long thisTimes = Clock.currentTimeMillis();
 
                     int times = num;
                     Throwable throwable = null;
@@ -132,17 +134,17 @@ public class Retry {
                         } else {
                             if (log.isInfoEnabled())
                                 log.info("{} all failed.", getTaskName());
-                            onFailed(thisTimes, times, throwable);
+                            onFailed(longToCalendar(thisTimes), times, throwable);
                             if (allFailedHandle != null) {
                                 try {
-                                    allFailedHandle.allFailed(start, times);
+                                    allFailedHandle.allFailed(longToCalendar(start), times);
                                 } catch (Throwable t) {
                                     log.warn("handle error.", t);
                                 }
                             }
                         }
                     } else {
-                        onFailed(thisTimes, times, throwable);
+                        onFailed(longToCalendar(thisTimes), times, throwable);
                         if (throwable != null && log.isWarnEnabled()) {
                             log.warn("{} failed [{}] times. {}", getTaskName(), times,
                                     throwable.getLocalizedMessage(), throwable);
@@ -156,7 +158,7 @@ public class Retry {
                     }
                 }
             }
-        }, num == 1 ? initDelay : nextDelay.next(num), TimeUnit.MILLISECONDS);
+        }, num == 1 ? initDelay : Clock.toMillis(nextDelay.next(num), TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
     }
 
     public void onFailed(Calendar start, int times, Throwable throwable) {
@@ -229,9 +231,9 @@ public class Retry {
         /**
          * @param times 第几次，从1开始
          * @return 是否完成
-         * @throws Exception 异常
+         * @throws Throwable 异常
          */
-        boolean run(int times) throws Exception;
+        boolean run(int times) throws Throwable;
     }
 
     /**

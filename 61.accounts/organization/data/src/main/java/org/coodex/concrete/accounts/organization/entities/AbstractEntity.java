@@ -42,7 +42,7 @@ public abstract class AbstractEntity implements Serializable {
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Calendar created = Clock.getCalendar();
+    private Calendar created = Clock.now();
 
     public String getId() {
         return id;

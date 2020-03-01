@@ -16,11 +16,11 @@
 
 package org.coodex.concrete.core.signature;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 /**
  * 干扰有效性验证
  */
-public interface NoiseValidator extends AcceptableService<String> {
+public interface NoiseValidator extends SelectableService<String> {
     void checkNoise(String keyId, String noise);
 }

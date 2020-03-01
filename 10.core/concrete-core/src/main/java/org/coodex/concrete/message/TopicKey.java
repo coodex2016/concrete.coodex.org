@@ -43,10 +43,22 @@ public class TopicKey {
         return new TopicKey(topicKey.queue, topicKey.topicType);
     }
 
+    public String getQueue() {
+        return queue;
+    }
+
+    public Type getTopicType() {
+        return topicType;
+    }
+
+    public String getTopicTypeName() {
+        return topicTypeName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) return false;
 
         TopicKey topicKey = (TopicKey) o;
 

@@ -84,7 +84,7 @@ public class JedisClientFactory implements SharedCacheClientFactory {
         int index = desc.indexOf(':');
         if (index < 0) return new HostAndPort(desc, DEFAULT_PORT);
         String host = desc.substring(0, index).trim();
-        int port = Integer.valueOf(desc.substring(index + 1).trim());
+        int port = Integer.parseInt(desc.substring(index + 1).trim());
         return new HostAndPort(host, port);
     }
 
@@ -97,5 +97,10 @@ public class JedisClientFactory implements SharedCacheClientFactory {
     @Override
     public SharedCacheClient getClientInstance() {
         return client.get();
+    }
+
+    @Override
+    public boolean accept(String param) {
+        return isAccepted(param);
     }
 }

@@ -10,6 +10,8 @@ env.yml
 /.idea/
 *.iml
 
+*.log
+
 **.pdf
 .project
 .classpath

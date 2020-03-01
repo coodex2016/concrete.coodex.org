@@ -27,7 +27,7 @@ import java.util.Calendar;
 public class Hourly implements Segmentation {
     @Override
     public long next() {
-        Calendar c = Clock.getCalendar();
+        Calendar c = Clock.now();
         c.add(Calendar.HOUR_OF_DAY, 1);
         return clearCalendar(c);
     }

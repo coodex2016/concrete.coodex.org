@@ -17,12 +17,12 @@
 package org.coodex.concrete.common;
 
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 /**
  * Created by davidoff shen on 2017-04-20.
  */
-public interface IronPenFactory extends AcceptableService<String> {
+public interface IronPenFactory extends SelectableService<String> {
 
     IronPen getIronPen(String paperName);
 

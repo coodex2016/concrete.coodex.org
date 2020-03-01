@@ -29,8 +29,8 @@ import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.InterceptorChain;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
 import org.coodex.ssl.SSLContextFactory;
-import org.coodex.util.AcceptableServiceLoader;
-import org.coodex.util.ServiceLoader;
+import org.coodex.util.LazySelectableServiceLoader;
+import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
 import org.coodex.util.Singleton;
 
@@ -42,27 +42,36 @@ import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
 
 public class ClientHelper {
 
-    private ClientHelper(){}
-
-
+    private static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE_SINGLETON = new Singleton<>(
+            () -> ConcreteHelper.getScheduler("rx-client")
+    );
+    @SuppressWarnings("rawtypes")
+    private static final LazySelectableServiceLoader<Class, CompletableFutureBridge> BRIDGE_LOADER =
+            new LazySelectableServiceLoader<Class, CompletableFutureBridge>() {
+            };
+    //            new Singleton<>(() -> new SelectableServiceLoader<Class, CompletableFutureBridge>() {
+//            });
     private static Singleton<InstanceBuilder> instanceBuilder =
             new Singleton<>(() -> new ServiceLoaderImpl<InstanceBuilder>(new JavaProxyInstanceBuilder()) {
             }.get());
+    //            new Singleton<>(()->new SelectableServiceLoader<Destination, InvokerFactory>() {
+//            });
+    private static LazySelectableServiceLoader<Destination, InvokerFactory> invokerFactoryProviders =
+            new LazySelectableServiceLoader<Destination, InvokerFactory>() {
+            };
+    private static LazySelectableServiceLoader<String, SSLContextFactory> sslContextFactoryAcceptableServiceLoader =
+            new LazySelectableServiceLoader<String, SSLContextFactory>() {
+            };
 
-    private static Singleton<AcceptableServiceLoader<Destination, InvokerFactory>> invokerFactoryProviders =
-            new Singleton<>(()->new AcceptableServiceLoader<Destination, InvokerFactory>() {
-            });
-
-    private static Singleton<AcceptableServiceLoader<String, SSLContextFactory>>
-            sslContextFactoryAcceptableServiceLoader
-            = new Singleton<>(() -> new AcceptableServiceLoader<String, SSLContextFactory>() {
-    });
-
-    private static Singleton<ServiceLoader<ConcreteInterceptor>> interceptorServiceLoader = new Singleton<>(
-            () -> new ServiceLoaderImpl<ConcreteInterceptor>() {
-            }
-    );
-
+    //            = new Singleton<>(() -> new SelectableServiceLoader<String, SSLContextFactory>() {
+//    });
+    private static LazyServiceLoader<ConcreteInterceptor> interceptorServiceLoader =
+            new LazyServiceLoader<ConcreteInterceptor>() {
+            };
+    //            new Singleton<>(
+//            () -> new ServiceLoaderImpl<ConcreteInterceptor>() {
+//            }
+//    );
     private static Singleton<SyncInterceptorChain> syncInterceptorChain = new Singleton<>(
             () -> {
                 SyncInterceptorChain instance = new SyncInterceptorChain();
@@ -70,13 +79,18 @@ public class ClientHelper {
                 return instance;
             }
     );
-
     private static Singleton<AsyncInterceptorChain> asyncInterceptorChain =
             new Singleton<>(() -> {
                 AsyncInterceptorChain instance = new AsyncInterceptorChain();
                 buildChain(instance);
                 return instance;
             });
+    private static LazySelectableServiceLoader<String, DestinationFactory<Destination, String>> destinationFactorySelectableServiceLoader
+            = new LazySelectableServiceLoader<String, DestinationFactory<Destination, String>>() {
+    };
+
+    private ClientHelper() {
+    }
 
     public static JSONSerializer getJSONSerializer() {
         return JSONSerializerFactory.getInstance();
@@ -86,9 +100,9 @@ public class ClientHelper {
         return instanceBuilder.get();
     }
 
-    public static AcceptableServiceLoader<Destination, InvokerFactory> getInvokerFactoryProviders() {
-        return invokerFactoryProviders.get();
-    }
+//    public static SelectableServiceLoader<Destination, InvokerFactory> getInvokerFactoryProviders() {
+//        return invokerFactoryProviders.get();
+//    }
 
     @SuppressWarnings("unchecked")
     public static boolean isReactiveExtension(Class<?> clz) {
@@ -107,29 +121,25 @@ public class ClientHelper {
     }
 
     /**
-     * @param module
-     * @param key
-     * @return
+     * @param module module
+     * @param key    key
+     * @return value
      */
     public static String getString(String module, String key) {
         return ConcreteHelper.getString(TAG_CLIENT, module, key);
     }
 
     public static Destination getDestination(String module) {
-        return destinationFactoryAcceptableServiceLoader.select(module).build(module);
+        return destinationFactorySelectableServiceLoader.select(module).build(module);
     }
 
-    private static AcceptableServiceLoader<String, DestinationFactory<Destination,String>> destinationFactoryAcceptableServiceLoader
-            = new AcceptableServiceLoader<String, DestinationFactory<Destination, String>>(){};
-
-    private static AcceptableServiceLoader<String, SSLContextFactory> getSSLContextFactoryAcceptableServiceLoader() {
-        return sslContextFactoryAcceptableServiceLoader.get();
-    }
+//    private static SelectableServiceLoaderImpl<String, SSLContextFactory> getSSLContextFactoryAcceptableServiceLoader() {
+//        return sslContextFactoryAcceptableServiceLoader.get();
+//    }
 
     public static SSLContext getSSLContext(String ssl) {
         try {
-            return getSSLContextFactoryAcceptableServiceLoader()
-                    .select(ssl).getSSLContext(ssl);
+            return sslContextFactoryAcceptableServiceLoader.select(ssl).getSSLContext(ssl);
         } catch (Throwable th) {
             throw ConcreteHelper.getException(th);
         }
@@ -139,19 +149,18 @@ public class ClientHelper {
     public static SSLContext getSSLContext(Destination destination) {
         String ssl = getString(destination.getIdentify(), "ssl");
         try {
-            return getSSLContextFactoryAcceptableServiceLoader()
-                    .select(ssl).getSSLContext(ssl);
+            return sslContextFactoryAcceptableServiceLoader.select(ssl).getSSLContext(ssl);
         } catch (Throwable th) {
             throw ConcreteHelper.getException(th);
         }
     }
 
-    private static ServiceLoader<ConcreteInterceptor> getInterceptorServiceLoader() {
-        return interceptorServiceLoader.get();
-    }
+//    private static ServiceLoader<ConcreteInterceptor> getInterceptorServiceLoader() {
+//        return interceptorServiceLoader.get();
+//    }
 
     private static void buildChain(Set<ConcreteInterceptor> chain) {
-        for (ConcreteInterceptor interceptor : getInterceptorServiceLoader().getAll().values()) {
+        for (ConcreteInterceptor interceptor : interceptorServiceLoader.getAll().values()) {
             if (!(interceptor instanceof InterceptorChain))
                 chain.add(interceptor);
         }
@@ -165,20 +174,13 @@ public class ClientHelper {
         return asyncInterceptorChain.get();
     }
 
-    private static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE_SINGLETON = new Singleton<>(
-            () -> ConcreteHelper.getScheduler("rx-client")
-    );
-    private static final Singleton<AcceptableServiceLoader<Class, CompletableFutureBridge>> BRIDGE_LOADER =
-            new Singleton<>(() -> new AcceptableServiceLoader<Class, CompletableFutureBridge>() {
-            });
-
     /**
-     * @param destination
-     * @param clazz
+     * @param destination destination
+     * @param clazz       clazz
      * @return 根据指定的类确定实际的Invoker
      */
-    public static Invoker getInvoker(Destination destination, Class clazz) {
-        InvokerFactory invokerFactory = IF.isNull(getInvokerFactoryProviders().select(destination),
+    public static Invoker getInvoker(Destination destination, Class<?> clazz) {
+        InvokerFactory invokerFactory = IF.isNull(invokerFactoryProviders.select(destination),
                 "Cannot found InvokerFactory for " + destination.toString());
         return clazz.getAnnotation(ReactiveExtensionFor.class) == null ?
                 invokerFactory.getSyncInvoker(destination) :
@@ -189,8 +191,8 @@ public class ClientHelper {
         return SCHEDULED_EXECUTOR_SERVICE_SINGLETON.get();
     }
 
-    public static CompletableFutureBridge getCompletableFutureBridge(Class type) {
-        return BRIDGE_LOADER.get().select(type);
+    public static CompletableFutureBridge getCompletableFutureBridge(Class<?> type) {
+        return BRIDGE_LOADER.select(type);
     }
 
 

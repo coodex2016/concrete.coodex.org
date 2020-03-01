@@ -18,6 +18,7 @@ package org.coodex.util;
 
 import org.coodex.closure.CallableClosure;
 import org.coodex.closure.StackClosureContext;
+import org.coodex.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +33,13 @@ public class Tracer {
     private static Singleton<Boolean> TRACE_ENABLED = new Singleton<Boolean>(new Singleton.Builder<Boolean>() {
         @Override
         public Boolean build() {
-            return Common.toBool(System.getProperty("org.coodex.util.Tracer"), false);
+//            return Common.toBool(System.getProperty("org.coodex.util.Tracer"), false);
+            return Config.getValue("org.coodex.util.Tracer", false);
         }
     });
     private static String START_TIME_KEY = Common.getUUIDStr();
     private Logger logger = log;
-    private NameSupplier nameSupplier = null;
+    private Common.Supplier<String> nameSupplier = null;
 
     private Tracer() {
     }
@@ -92,16 +94,16 @@ public class Tracer {
     }
 
     public Tracer named(final String name) {
-        nameSupplier = Common.isBlank(name) ? null : new NameSupplier() {
+        nameSupplier = Common.isBlank(name) ? null : new Common.Supplier<String>() {
             @Override
-            public String getName() {
+            public String get() {
                 return name;
             }
         };
         return this;
     }
 
-    public Tracer named(NameSupplier nameSupplier) {
+    public Tracer named(Common.Supplier<String> nameSupplier) {
         this.nameSupplier = nameSupplier;
         return this;
     }
@@ -160,7 +162,7 @@ public class Tracer {
         StringBuilder builder = new StringBuilder();
 
         if (nameSupplier != null)
-            builder.append("TRACER ").append(nameSupplier.getName()).append(": [");
+            builder.append("TRACER ").append(nameSupplier.get()).append(": [");
         else
             builder.append("[");
 

@@ -16,9 +16,9 @@
 
 package org.coodex.concurrent.locks;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
-public interface ResourceLockProvider extends AcceptableService<ResourceId> {
+public interface ResourceLockProvider extends SelectableService<ResourceId> {
 
     ResourceLock getLock(ResourceId id);
 }

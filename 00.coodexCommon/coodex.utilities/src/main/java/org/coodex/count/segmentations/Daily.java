@@ -30,7 +30,7 @@ public class Daily implements Segmentation {
 
     @Override
     public long next() {
-        Calendar c = Clock.getCalendar();
+        Calendar c = Clock.now();
         c.add(Calendar.DATE, 1);
         c.set(Calendar.HOUR, 0);
         return clearCalendar(c);

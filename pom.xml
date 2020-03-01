@@ -58,19 +58,21 @@
         <module>00.coodexCommon/coodex.sharedcache</module>
         <module>00.coodexCommon/coodex.sharedcache.jedis</module>
         <module>00.coodexCommon/coodex.sharedcache.memcached</module>
-
-        <module>01.spec/concrete-api</module>
-        <module>01.spec/concrete-fsm</module>
         <module>00.coodexCommon/coodex-mock-spec</module>
         <module>00.coodexCommon/coodex-mock-impl</module>
         <module>00.coodexCommon/coodex-billing</module>
+        <module>00.coodexCommon/coodex-junit-enhance</module>
+
+        <module>00.coodexCommon/coodex-bom</module>
+
+        <module>01.spec/concrete-api</module>
+        <module>01.spec/concrete-fsm</module>
 
         <module>10.core/concrete-core</module>
         <module>10.core/concrete-websocket</module>
         <module>10.core/concrete-test</module>
         <module>10.core/concrete-fsm-impl</module>
         <module>10.core/concrete-jaxrs</module>
-        <!--        <module>10.core/concrete-dubbo</module>-->
         <module>10.core/concrete-amqp</module>
         <module>10.core/concrete-apache-dubbo</module>
         <module>10.core/concrete-core-mock</module>
@@ -80,7 +82,6 @@
         <module>20.service.support/concrete-support-jsr339</module>
         <module>20.service.support/concrete-support-jaxrs-saas-reverse-proxy</module>
         <module>20.service.support/concrete-support-websocket</module>
-        <!--        <module>20.service.support/concrete-support-dubbo</module>-->
         <module>20.service.support/concrete-support-amqp</module>
         <module>20.service.support/concrete-support-jaxrs-swagger</module>
         <module>20.service.support/concrete-support-apache-dubbo</module>
@@ -95,7 +96,6 @@
         <module>50.clients/concrete-client</module>
         <module>50.clients/concrete-jaxrs-client</module>
         <module>50.clients/concrete-websocket-client</module>
-        <!--        <module>50.clients/concrete-dubbo-client</module>-->
         <module>50.clients/concrete-amqp-client</module>
         <module>50.clients/concrete-rx-builder</module>
         <module>50.clients/concrete-apache-dubbo-client</module>
@@ -106,7 +106,6 @@
 
         <module>61.accounts</module>
 
-        <module>concrete-bom</module>
 
         <module>plugins/plugins.concrete-formatters-freemarker</module>
         <module>plugins/plugins.concrete-serializer-jackson2</module>
@@ -122,7 +121,7 @@
         <module>s2/concrete-s2-api</module>
         <module>s2/concrete-s2-impl</module>
 
-        <module>test-case</module>
+        <module>concrete-bom</module>
 
     </modules>
 
@@ -147,8 +146,10 @@
         <aspectj.version>1.9.4</aspectj.version>
 
         <spring.framework.version>5.1.8.RELEASE</spring.framework.version>
+        <!--        <spring.framework.version>5.2.3.RELEASE</spring.framework.version>-->
         <spring.data.version>Lovelace-SR9</spring.data.version>
         <spring.boot.version>2.1.6.RELEASE</spring.boot.version>
+        <!--        <spring.boot.version>2.2.4.RELEASE</spring.boot.version>-->
 
         <!--        <spring.framework.version>5.2.2.RELEASE</spring.framework.version>-->
         <!--        <spring.data.version>Moore-SR2</spring.data.version>-->
@@ -156,7 +157,7 @@
 
         <netty4.version>4.1.43.Final</netty4.version>
         <jersey.version>2.27</jersey.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13</junit.version>
         <freemarker.version>2.3.28</freemarker.version>
         <fastjson.version>1.2.58</fastjson.version>
         <guice.version>4.2.2</guice.version>
@@ -203,19 +204,6 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.1</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>1.6</version>
                         <executions>
@@ -253,7 +241,7 @@
                 <!-- oss -->
                 <snapshotRepository>
                     <id>oss</id>
-                    <url>ttps://hoss.sonatype.org/content/repositories/snapshots</url>
+                    <url>https://hoss.sonatype.org/content/repositories/snapshots</url>
                 </snapshotRepository>
                 <repository>
                     <id>oss</id>
@@ -263,16 +251,16 @@
         </profile>
 
         <profile>
-            <id>workspace.release</id>
+            <id>coodex.release</id>
             <distributionManagement>
                 <!-- oss -->
                 <snapshotRepository>
-                    <id>workspace</id>
-                    <url>${workspace.url.snapshot}</url>
+                    <id>coodex.release</id>
+                    <url>${coodex.url.snapshot}</url>
                 </snapshotRepository>
                 <repository>
-                    <id>workspace</id>
-                    <url>${workspace.url.release}</url>
+                    <id>coodex.release</id>
+                    <url>${coodex.url.release}</url>
                 </repository>
             </distributionManagement>
         </profile>
@@ -284,12 +272,44 @@
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
-                    <version>3.5.0.1254</version>
+                    <version>3.7.0.1746</version>
                 </plugin>
             </plugins>
         </pluginManagement>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <additionalOptions>-html5</additionalOptions>
+                    <additionalOptions>-Xdoclint:none</additionalOptions>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
@@ -304,7 +324,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.5</version>
+                <version>2.7</version>
             </plugin>
 
         </plugins>
@@ -343,13 +363,6 @@
                 <scope>import</scope>
             </dependency>
 
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-bom</artifactId>
-                <version>${log4j2.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
 
             <dependency>
                 <groupId>commons-beanutils</groupId>
@@ -369,6 +382,14 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>${log4j2.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-parent -->

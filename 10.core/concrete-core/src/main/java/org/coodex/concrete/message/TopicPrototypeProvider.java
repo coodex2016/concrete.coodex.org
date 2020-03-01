@@ -16,10 +16,10 @@
 
 package org.coodex.concrete.message;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 public interface TopicPrototypeProvider
-        extends AcceptableService<Class<? extends AbstractTopic>> {
+        extends SelectableService<Class<? extends AbstractTopic>> {
 
     Class<? extends AbstractTopicPrototype> getPrototype();
 

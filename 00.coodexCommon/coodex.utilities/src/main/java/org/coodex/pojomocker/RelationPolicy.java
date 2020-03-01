@@ -16,7 +16,7 @@
 
 package org.coodex.pojomocker;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import java.util.List;
  * Created by davidoff shen on 2017-05-11.
  */
 @Deprecated
-public interface RelationPolicy extends AcceptableService<String> {
+public interface RelationPolicy extends SelectableService<String> {
 
     String[] getPolicyNames();
 

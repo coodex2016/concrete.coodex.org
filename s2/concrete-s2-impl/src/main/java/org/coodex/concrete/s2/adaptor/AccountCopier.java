@@ -19,7 +19,7 @@ package org.coodex.concrete.s2.adaptor;
 import org.coodex.concrete.common.Account;
 import org.coodex.concrete.s2.api.AccountInfo;
 import org.coodex.copier.Copier;
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
-public interface AccountCopier extends Copier<Account, AccountInfo>, AcceptableService<Account> {
+public interface AccountCopier extends Copier<Account, AccountInfo>, SelectableService<Account> {
 }

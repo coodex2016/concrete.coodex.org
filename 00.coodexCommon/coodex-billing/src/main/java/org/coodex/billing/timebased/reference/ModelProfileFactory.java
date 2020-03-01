@@ -16,7 +16,7 @@
 
 package org.coodex.billing.timebased.reference;
 
-import org.coodex.util.AcceptableServiceFactory;
+import org.coodex.util.SelectableServiceFactory;
 
-public interface ModelProfileFactory extends AcceptableServiceFactory<ModelProfile,String> {
+public interface ModelProfileFactory extends SelectableServiceFactory<ModelProfile,String> {
 }

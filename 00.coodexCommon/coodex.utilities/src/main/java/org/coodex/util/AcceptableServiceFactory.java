@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2020 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,12 @@
 
 package org.coodex.util;
 
-public interface AcceptableServiceFactory<PRODUCT, PARAM> extends AcceptableService<PARAM> {
-
-    PRODUCT build(PARAM param);
+/**
+ * 使用 {@link SelectableServiceFactory} 替代
+ * @param <PRODUCT>
+ * @param <PARAM>
+ * @deprecated
+ */
+@Deprecated
+public interface AcceptableServiceFactory<PRODUCT, PARAM> extends SelectableServiceFactory<PARAM, PARAM> {
 }

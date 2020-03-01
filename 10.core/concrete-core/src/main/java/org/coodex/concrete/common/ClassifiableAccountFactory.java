@@ -18,7 +18,7 @@ package org.coodex.concrete.common;
 
 import org.coodex.util.Common;
 
-public abstract class ClassifiableAccountFactory implements AcceptableAccountFactory<ClassifiableAccountID> {
+public abstract class ClassifiableAccountFactory implements SelectableAccountFactory<ClassifiableAccountID> {
 
     private Integer[] types = null;
 

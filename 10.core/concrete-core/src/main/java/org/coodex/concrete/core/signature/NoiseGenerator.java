@@ -16,11 +16,11 @@
 
 package org.coodex.concrete.core.signature;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 /**
  * 干扰生成器
  */
-public interface NoiseGenerator extends AcceptableService<String> {
+public interface NoiseGenerator extends SelectableService<String> {
     String generateNoise();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2020 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@
 package org.coodex.util;
 
 /**
- * Created by davidoff shen on 2017-03-09.
+ * 使用{@link SelectableService}替代
+ *
+ * @param <PARAM>
+ * @deprecated
  */
-public interface AcceptableService<Param_Type> {
-
-    boolean accept(Param_Type param);
-
+@Deprecated
+public interface AcceptableService<PARAM> extends SelectableService<PARAM> {
 }

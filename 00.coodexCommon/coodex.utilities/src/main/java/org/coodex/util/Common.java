@@ -33,10 +33,41 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static java.lang.Integer.parseInt;
+import static java.lang.Long.parseLong;
+
 /**
  * @author davidoff
  */
 public class Common {
+
+    public static final String PATH_SEPARATOR = System
+            .getProperty("path.separator");
+    //    private static String[] toPackages(String[] patterns) {
+//        Set<String> result = new LinkedHashSet<String>();
+//        for (int i = 0, l = patterns.length; i < l; i++) {
+//            result.add(pathRoot(patterns[i]));
+//        }
+//        return result.toArray(new String[0]);
+//    }
+    public static final String FILE_SEPARATOR = System
+            .getProperty("file.separator");
+    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+    public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
+    public static final String DEFAULT_DATETIME_FORMAT =
+            DEFAULT_DATE_FORMAT + " " + DEFAULT_TIME_FORMAT;
+    private static final String LINE_SEPARATOR = System
+            .getProperty("line.separator");
+    private final static Logger log = LoggerFactory.getLogger(Common.class);
+    private static final int TO_LOWER = 'a' - 'A';
+    private final static String DEFAULT_DELIM = ".-_ /\\";
+    private static ThreadLocal<SingletonMap<String, DateFormat>> threadLocal
+            = new ThreadLocal<SingletonMap<String, DateFormat>>();
+    private static LazySelectableServiceLoader<Class<?>, StringConvertWithDefaultValue> converterServiceLoader
+            = new LazySelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>() {
+    };
+    private Common() {
+    }
 
     private static String pathRoot(String pattern) {
         StringBuilder builder = new StringBuilder();
@@ -54,14 +85,6 @@ public class Common {
             builder.append(node);
         return trim(builder.toString());
     }
-
-//    private static String[] toPackages(String[] patterns) {
-//        Set<String> result = new LinkedHashSet<String>();
-//        for (int i = 0, l = patterns.length; i < l; i++) {
-//            result.add(pathRoot(patterns[i]));
-//        }
-//        return result.toArray(new String[0]);
-//    }
 
     private static Set<PathPattern> toPathPatterns(String[] paths) {
         Set<PathPattern> pathPatterns = new LinkedHashSet<PathPattern>();
@@ -188,39 +211,6 @@ public class Common {
         }
     }
 
-    public interface ResourceFilter {
-        boolean accept(String root, String resourceName);
-    }
-
-    private Common(){}
-
-    private static final String LINE_SEPARATOR = System
-            .getProperty("line.separator");
-    public static final String PATH_SEPARATOR = System
-            .getProperty("path.separator");
-    public static final String FILE_SEPARATOR = System
-            .getProperty("file.separator");
-    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
-    public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
-    public static final String DEFAULT_DATETIME_FORMAT =
-            DEFAULT_DATE_FORMAT + " " + DEFAULT_TIME_FORMAT;
-    private final static Logger log = LoggerFactory.getLogger(Common.class);
-    private static final int TO_LOWER = 'a' - 'A';
-    private final static String DEFAULT_DELIM = ".-_ /\\";
-    private static ThreadLocal<SingletonMap<String, DateFormat>> threadLocal
-            = new ThreadLocal<SingletonMap<String, DateFormat>>();
-    private static Singleton<AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue>> converterServiceLoader
-            = new Singleton<AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue>>(
-            new Singleton.Builder<AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue>>() {
-                @Override
-                public AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue> build() {
-                    return new AcceptableServiceLoader<Class<?>, StringConvertWithDefaultValue>() {
-                    };
-                }
-            }
-    );
-
-
     public static <T> Set<T> arrayToSet(T[] array) {
         return new HashSet<T>(Arrays.asList(array));
     }
@@ -233,6 +223,16 @@ public class Common {
         byte[] buf = content == null ? new byte[0] : content.getBytes();
         return DigestHelper.sha1(buf);
     }
+//    private static Singleton<SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>> converterServiceLoader
+//            = new Singleton<SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>>(
+//            new Singleton.Builder<SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>>() {
+//                @Override
+//                public SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue> build() {
+//                    return new SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>() {
+//                    };
+//                }
+//            }
+//    );
 
     public static <T> boolean inArray(T el, T[] array) {
 //        boolean in = false;
@@ -371,10 +371,6 @@ public class Common {
             os.flush();
     }
 
-//    public static void checkNull(Object o, Supplier<String> supplier) {
-//        if (o == null) throw new NullPointerException(supplier == null ? null : supplier.get());
-//    }
-
     public static void checkNull(Object o, String msg) {
         if (o == null) throw new NullPointerException(msg);
     }
@@ -389,6 +385,10 @@ public class Common {
         checkNull(bound2, "bound2 is null");
         return t.compareTo(_min(bound1, bound2)) > 0 && t.compareTo(_max(bound1, bound2)) < 0;
     }
+
+//    public static void checkNull(Object o, Supplier<String> supplier) {
+//        if (o == null) throw new NullPointerException(supplier == null ? null : supplier.get());
+//    }
 
     public static <T extends Comparable<T>> T max(T c1, T c2, T... others) {
         checkNull(c1, "c1 is null");
@@ -449,7 +449,6 @@ public class Common {
 
         return -1;
     }
-
 
     public static byte[] hex2byte(String hexString) {
         return hex2byte(hexString, LINE_SEPARATOR + " ");
@@ -545,11 +544,6 @@ public class Common {
         return strBuf.toString();
     }
 
-//    @Deprecated
-//    public static File getFile(String fileName) throws IOException {
-//        return getNewFile(fileName);
-//    }
-
     public static File getNewFile(String fileName) throws IOException {
         File f = new File(fileName);
         if (!f.getParentFile().exists()) {
@@ -608,6 +602,11 @@ public class Common {
         return -1;
     }
 
+//    @Deprecated
+//    public static File getFile(String fileName) throws IOException {
+//        return getNewFile(fileName);
+//    }
+
     public static String concat(List<String> list, String split) {
         if (list == null) return null;
         switch (list.size()) {
@@ -640,7 +639,7 @@ public class Common {
             //noinspection unchecked
             return (T) toArray(str, ",", (String[]) value);
         }
-        StringConvertWithDefaultValue defaultValue = converterServiceLoader.get().select(cls);
+        StringConvertWithDefaultValue defaultValue = converterServiceLoader.select(cls);
         if (defaultValue == null) {
             throw new RuntimeException("String to " + cls + " is not supported.");
         }
@@ -648,20 +647,48 @@ public class Common {
         return (T) defaultValue.convertTo(str, value, cls);
     }
 
+    public static int toInt(String str, Supplier<Integer> valueSupplier) {
+        try {
+            return parseInt(str);
+        } catch (Throwable th) {
+            return valueSupplier.get();
+        }
+    }
+
     public static int toInt(String str, int value) {
         try {
-            return Integer.valueOf(str);
+            return parseInt(str);
         } catch (Throwable th) {
             return value;
         }
     }
 
+    public static long toLong(String str, Supplier<Long> value) {
+        try {
+            return parseLong(str);
+        } catch (Throwable th) {
+            return value.get();
+        }
+    }
+
     public static long toLong(String str, long value) {
         try {
-            return Long.valueOf(str);
+            return parseLong(str);
         } catch (Throwable th) {
             return value;
         }
+    }
+
+    public static boolean toBool(String str, Supplier<Boolean> v) {
+        String s = nullToStr(str);
+        if (s.equals("1") || s.equalsIgnoreCase("T")
+                || s.equalsIgnoreCase("TRUE"))
+            return true;
+        else if (s.equals("0") || s.equalsIgnoreCase("F")
+                || s.equalsIgnoreCase("FALSE"))
+            return false;
+        else
+            return v.get();
     }
 
     public static boolean toBool(String str, boolean v) {
@@ -687,12 +714,20 @@ public class Common {
         return list;
     }
 
-    public static String[] toArray(String str, String delim, String[] v) {
-        List<String> list = toArray(str, delim, v == null ? null : Arrays.asList(v));
-        return list == null ? null : list.toArray(new String[0]);
+    public static String[] toArray(String str, String delim, Supplier<String[]> v) {
+        List<String> list = toArray(str, delim, (List<String>) null);
+        return list == null ? v.get() : list.toArray(new String[0]);
 //        return toArray(str, delim, v == null ? new ArrayList<String>() : Arrays.asList(v))
 //                .toArray(new String[0]);
     }
+
+    public static String[] toArray(String str, String delim, String[] v) {
+        List<String> list = toArray(str, delim, (List<String>) null);
+        return list == null ? v : list.toArray(new String[0]);
+//        return toArray(str, delim, v == null ? new ArrayList<String>() : Arrays.asList(v))
+//                .toArray(new String[0]);
+    }
+
 
     private static boolean inArray(char ch, char[] chars) {
         for (char c : chars) {
@@ -1041,11 +1076,35 @@ public class Common {
     }
 
     public static String now(String format) {
-        return dateToStr(Clock.getCalendar().getTime(), format);
+        return dateToStr(Clock.now().getTime(), format);
     }
 
     public static RuntimeException runtimeException(Throwable th) {
         return th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th.getLocalizedMessage(), th);
+    }
+
+    public static Long getSystemStart() {
+        return ManagementFactory.getRuntimeMXBean().getStartTime();
+    }
+
+    private static boolean isMatch(Pattern p, String str) {
+        return p.matcher(str).find();
+    }
+
+    public interface Supplier<T> {
+        T get();
+    }
+
+    public interface Function<T, R>{
+        R apply(T t);
+    }
+
+    public interface ResourceFilter {
+        boolean accept(String root, String resourceName);
+    }
+
+    public interface Processor {
+        void process(URL resource, String resourceName);
     }
 
     public static class StringToFloat implements StringConvertWithDefaultValue {
@@ -1104,20 +1163,6 @@ public class Common {
         }
     }
 
-    public static Long getSystemStart() {
-        return ManagementFactory.getRuntimeMXBean().getStartTime();
-    }
-
-
-    private static boolean isMatch(Pattern p, String str){
-        return p.matcher(str).find();
-    }
-
-    public interface Processor {
-        void process(URL resource, String resourceName);
-    }
-
-
     private static class PathPattern {
         private Pattern pattern;
         private String path;
@@ -1128,7 +1173,7 @@ public class Common {
             this.pattern = Pattern.compile(
                     "^" + Common.trim(path)
                             .replaceAll("\\.", "\\\\.")
-                            .replaceAll("/\\*{2,}/","(/|/.+/)")
+                            .replaceAll("/\\*{2,}/", "(/|/.+/)")
                             .replaceAll("\\*{2,}", ".+")// 两个以上*匹配任意字符
                             .replaceAll("\\*", "[^/]+")
                             + ".*"

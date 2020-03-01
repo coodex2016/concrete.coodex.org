@@ -20,6 +20,7 @@ import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.*;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.config.Config;
+import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
 import org.coodex.util.Singleton;
@@ -36,6 +37,7 @@ import java.util.Set;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
+@SuppressWarnings({"SpringComponentScan", "SpringFacetCodeInspection"})
 @Configuration
 @ComponentScan({
         "org.coodex.concrete.spring.components",
@@ -45,9 +47,15 @@ public class ConcreteSpringConfiguration {
 
     private final static Logger log = LoggerFactory.getLogger(ConcreteSpringConfiguration.class);
 
-    private static Singleton<ServiceLoader<InterceptorLoader>> INTERCEPTOR_LOADER =
-            new Singleton<>(() -> new ServiceLoaderImpl<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
-            });
+//    private static Singleton<ServiceLoader<InterceptorLoader>> INTERCEPTOR_LOADER =
+//            new Singleton<>(() -> new ServiceLoaderImpl<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
+//            });
+
+    private static LazyServiceLoader<InterceptorLoader> INTERCEPTOR_LOADER =
+            new LazyServiceLoader<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
+            };
+//            new Singleton<>(() -> new ServiceLoaderImpl<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
+//            });
 
     @Bean
     public BeanProvider springBeanProvider() {
@@ -84,7 +92,7 @@ public class ConcreteSpringConfiguration {
     public Set<ConcreteInterceptor> interceptors() {
         Set<ConcreteInterceptor> set = new HashSet<>();
         for (Map.Entry<String, Class<? extends ConcreteInterceptor>> entry :
-                INTERCEPTOR_LOADER.get().get().getInterceptorSupportedMap().entrySet()) {
+                INTERCEPTOR_LOADER.get().getInterceptorSupportedMap().entrySet()) {
 
             if (Config.getValue("interceptors." + entry.getKey(), false, "concrete", getAppSet())) {
                 try {

@@ -16,14 +16,14 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 import java.util.Map;
 
 /**
  * Created by davidoff shen on 2016-11-01.
  */
-public interface ConflictSolution extends AcceptableService<Class> {
+public interface ConflictSolution extends SelectableService<Class> {
 
 //    boolean accepted(Class<?> clazz);
 

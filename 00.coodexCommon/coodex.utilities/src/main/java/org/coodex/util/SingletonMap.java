@@ -20,10 +20,7 @@ import org.coodex.concurrent.ExecutorsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,11 +37,10 @@ public class SingletonMap<K, V> {
     private final static Logger log = LoggerFactory.getLogger(SingletonMap.class);
     private final static AtomicInteger poolNumber = new AtomicInteger(1);
     private final Builder<K, V> builder;
+    private final Map<K, V> map = new HashMap<K, V>();
+    private final K nullKey;
     private long maxAge = 0;
     private ScheduledExecutorService scheduledExecutorService;
-    private final Map<K, V> map = new HashMap<K, V>();
-
-    private final K nullKey;
 
     public SingletonMap(Builder<K, V> builder) {
         this(builder, 0, null);
@@ -104,6 +100,14 @@ public class SingletonMap<K, V> {
             }
         }
         return map.get(finalKey);
+    }
+
+    public Set<K> keySet() {
+        return new HashSet<K>(map.keySet());
+    }
+
+    public Set<Map.Entry<K, V>> entrySet() {
+        return map.entrySet();
     }
 
     public <C extends Collection<V>> C fill(C collection, Collection<K> keys) {

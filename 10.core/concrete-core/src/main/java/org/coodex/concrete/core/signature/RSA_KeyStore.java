@@ -17,9 +17,9 @@
 package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.common.ServiceContext;
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
-public interface RSA_KeyStore extends AcceptableService<ServiceContext> {
+public interface RSA_KeyStore extends SelectableService<ServiceContext> {
 
     byte[] getPrivateKey(String paperName, String keyId);
 

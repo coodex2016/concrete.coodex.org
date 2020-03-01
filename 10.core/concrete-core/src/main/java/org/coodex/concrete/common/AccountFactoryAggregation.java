@@ -16,15 +16,16 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.util.AcceptableServiceLoader;
+import org.coodex.util.LazySelectableServiceLoader;
 
 /**
  * Created by davidoff shen on 2017-04-27.
  */
 public class AccountFactoryAggregation<ID extends AccountID> implements AccountFactory<ID> {
 
-    private final static AcceptableServiceLoader<AccountID, AcceptableAccountFactory<AccountID>>
-            ACCOUNT_FACTORY_LOADER = new AcceptableServiceLoader<AccountID, AcceptableAccountFactory<AccountID>>(){};
+    private final static LazySelectableServiceLoader<AccountID, SelectableAccountFactory<AccountID>>
+            ACCOUNT_FACTORY_LOADER = new LazySelectableServiceLoader<AccountID, SelectableAccountFactory<AccountID>>() {
+    };
 
 
     @Override

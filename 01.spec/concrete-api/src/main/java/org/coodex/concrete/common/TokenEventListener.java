@@ -16,12 +16,12 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 /**
  * Created by davidoff shen on 2017-05-20.
  */
-public interface TokenEventListener extends AcceptableService<Token.Event> {
+public interface TokenEventListener extends SelectableService<Token.Event> {
 
     void before(Token token);
 

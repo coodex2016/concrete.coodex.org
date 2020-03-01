@@ -16,9 +16,9 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
-public interface ThrowableMapper extends AcceptableService<Throwable> {
+public interface ThrowableMapper extends SelectableService<Throwable> {
 
     ErrorInfo toErrorInfo(Throwable throwable);
 

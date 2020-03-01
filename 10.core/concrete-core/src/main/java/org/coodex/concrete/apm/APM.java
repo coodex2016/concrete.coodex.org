@@ -18,99 +18,152 @@ package org.coodex.concrete.apm;
 
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concurrent.Parallel;
-import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
-import org.coodex.util.Singleton;
+import org.coodex.util.LazyServiceLoader;
 
 import java.util.concurrent.ExecutorService;
 
 public class APM {
 
-    private static Singleton<ServiceLoader<TraceFactory>> traceFactoryServiceSingleton =
-            new Singleton<>(
-                    new Singleton.Builder<ServiceLoader<TraceFactory>>() {
-                        @Override
-                        public ServiceLoader<TraceFactory> build() {
-                            return new ServiceLoaderImpl<TraceFactory>() {
+    private static final Trace doNothing = new Trace() {
+        @Override
+        public Trace start() {
+            return this;
+        }
 
-                                private Trace doNothing = new Trace() {
-                                    @Override
-                                    public Trace start() {
-                                        return this;
-                                    }
+        @Override
+        public Trace start(String name) {
+            return this;
+        }
 
-                                    @Override
-                                    public Trace start(String name) {
-                                        return this;
-                                    }
+        @Override
+        public Trace type(String type) {
+            return this;
+        }
 
-                                    @Override
-                                    public Trace type(String type) {
-                                        return this;
-                                    }
-
-                                    @Override
-                                    public Trace tag(String name, String value) {
-                                        return this;
-                                    }
+        @Override
+        public Trace tag(String name, String value) {
+            return this;
+        }
 
 
-                                    @Override
-                                    public void error(Throwable throwable) {
+        @Override
+        public void error(Throwable throwable) {
 
-                                    }
+        }
 
-                                    @Override
-                                    public void finish() {
+        @Override
+        public void finish() {
 
-                                    }
+        }
 
-                                    @Override
-                                    public void hack(Subjoin subjoin) {
+        @Override
+        public void hack(Subjoin subjoin) {
 
-                                    }
-                                };
+        }
+    };
+    private static final TraceFactory defaultFactory = new TraceFactory() {
+        @Override
+        public Trace create() {
+            return doNothing;
+        }
 
-                                private TraceFactory defaultFactory = new TraceFactory() {
-                                    @Override
-                                    public Trace create() {
-                                        return doNothing;
-                                    }
+        @Override
+        public Trace loadFrom(Subjoin subjoin) {
+            return doNothing;
+        }
 
-                                    @Override
-                                    public Trace loadFrom(Subjoin subjoin) {
-                                        return doNothing;
-                                    }
+        @Override
+        public Parallel.RunnerWrapper createWrapper() {
+            return null;
+        }
+    };
+    private static LazyServiceLoader<TraceFactory> traceFactoryServiceSingleton =
+            new LazyServiceLoader<TraceFactory>(defaultFactory) {
+            };
 
-                                    @Override
-                                    public Parallel.RunnerWrapper createWrapper() {
-                                        return null;
-                                    }
-                                };
-
-                                @Override
-                                public TraceFactory getDefault() {
-                                    return defaultFactory;
-                                }
-                            };
-                        }
-                    }
-            );
+//            new Singleton<>(
+//                    new Singleton.Builder<ServiceLoader<TraceFactory>>() {
+//                        @Override
+//                        public ServiceLoader<TraceFactory> build() {
+//                            return new ServiceLoaderImpl<TraceFactory>() {
+//
+//                                private Trace doNothing = new Trace() {
+//                                    @Override
+//                                    public Trace start() {
+//                                        return this;
+//                                    }
+//
+//                                    @Override
+//                                    public Trace start(String name) {
+//                                        return this;
+//                                    }
+//
+//                                    @Override
+//                                    public Trace type(String type) {
+//                                        return this;
+//                                    }
+//
+//                                    @Override
+//                                    public Trace tag(String name, String value) {
+//                                        return this;
+//                                    }
+//
+//
+//                                    @Override
+//                                    public void error(Throwable throwable) {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void finish() {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void hack(Subjoin subjoin) {
+//
+//                                    }
+//                                };
+//
+//                                private TraceFactory defaultFactory = new TraceFactory() {
+//                                    @Override
+//                                    public Trace create() {
+//                                        return doNothing;
+//                                    }
+//
+//                                    @Override
+//                                    public Trace loadFrom(Subjoin subjoin) {
+//                                        return doNothing;
+//                                    }
+//
+//                                    @Override
+//                                    public Parallel.RunnerWrapper createWrapper() {
+//                                        return null;
+//                                    }
+//                                };
+//
+//                                @Override
+//                                public TraceFactory getDefault() {
+//                                    return defaultFactory;
+//                                }
+//                            };
+//                        }
+//                    }
+//            );
 
     public static Trace build() {
-        return traceFactoryServiceSingleton.get().get().create();
+        return traceFactoryServiceSingleton.get().create();
     }
 
     public static Trace build(Subjoin subjoin) {
-        return traceFactoryServiceSingleton.get().get().loadFrom(subjoin);
+        return traceFactoryServiceSingleton.get().loadFrom(subjoin);
     }
 
     public static Parallel.Batch parallel(ExecutorService executorService, Runnable... runnables) {
+//        return Parallel.builder().withExecutorService(executorService)
 
         return new Parallel(executorService,
-                traceFactoryServiceSingleton.get()
-                        .get()
-                        .createWrapper()
+                traceFactoryServiceSingleton.get().createWrapper()
         ).run(runnables);
     }
 

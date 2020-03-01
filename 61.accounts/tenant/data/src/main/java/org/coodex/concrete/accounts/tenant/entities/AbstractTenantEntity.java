@@ -47,7 +47,7 @@ public class AbstractTenantEntity implements Serializable, CanLoginEntity {
     private long surplus = 0;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Calendar created = Clock.getCalendar();
+    private Calendar created = Clock.now();
     // 密码散列值
     private String password;
     // 二步验证的key

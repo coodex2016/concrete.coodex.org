@@ -18,11 +18,10 @@ package org.coodex.concrete.common;
 
 import org.coodex.concrete.common.conflictsolutions.ThrowException;
 import org.coodex.config.Config;
-import org.coodex.util.AcceptableServiceLoader;
+import org.coodex.util.LazySelectableServiceLoader;
 
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
@@ -35,8 +34,9 @@ public abstract class AbstractBeanProvider implements BeanProvider {
 
     private static final ConflictSolution DEFAULT_CONFLICT_SOLUTION = new ThrowException();
 
-    private static final AcceptableServiceLoader<Class, ConflictSolution> SOLUTION_CONCRETE_SPI_FACADE =
-            new AcceptableServiceLoader<Class, ConflictSolution>(){};
+    private static final LazySelectableServiceLoader<Class, ConflictSolution> SOLUTION_CONCRETE_SPI_FACADE =
+            new LazySelectableServiceLoader<Class, ConflictSolution>() {
+            };
 
     private static final ConflictSolution getSolution(Class<?> clz) {
 //        // 1 从BeanProvider里找

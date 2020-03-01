@@ -26,35 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by davidoff shen on 2016-09-05.
  */
 public class ExecutorsHelper {
-    private ExecutorsHelper(){}
-
-    /**
-     * 基于 Executors.DefaultThreadFactory 改造
-     */
-    static class DefaultNamedThreadFactory implements ThreadFactory {
-        private static final AtomicInteger poolNumber = new AtomicInteger(1);
-        private final ThreadGroup group;
-        private final AtomicInteger threadNumber = new AtomicInteger(1);
-        private final String namePrefix;
-
-        DefaultNamedThreadFactory(String namePrefix) {
-            SecurityManager s = System.getSecurityManager();
-            group = (s != null) ? s.getThreadGroup() :
-                    Thread.currentThread().getThreadGroup();
-            this.namePrefix = namePrefix == null ? ("coodex-pool-" + poolNumber.getAndIncrement() + "-thread") : namePrefix;
-        }
-
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread t = new Thread(group, r,
-                    namePrefix + "-" + threadNumber.getAndIncrement(),
-                    0);
-            if (t.isDaemon())
-                t.setDaemon(false);
-            if (t.getPriority() != Thread.NORM_PRIORITY)
-                t.setPriority(Thread.NORM_PRIORITY);
-            return t;
-        }
+    private ExecutorsHelper() {
     }
 
     private static PriorityRunnable getPriorityRunnable(Runnable runnable) {
@@ -62,7 +34,6 @@ public class ExecutorsHelper {
                 (PriorityRunnable) runnable :
                 new PriorityRunnable(Thread.NORM_PRIORITY, runnable);
     }
-
 
     public static ExecutorService newPriorityThreadPool(final int coreSize, int maxSize, int maxWait, String namePrefix) {
         return newPriorityThreadPool(coreSize, maxSize, maxWait, 60L, namePrefix);
@@ -93,6 +64,7 @@ public class ExecutorsHelper {
         priorityBlockingQueue.setThreadPoolExecutor(threadPool);
         return ExecutorWrapper.wrap(threadPool);
     }
+
     public static ExecutorService newLinkedThreadPool(final int coreSize, int maxSize, int maxWait, String namePrefix) {
         return newLinkedThreadPool(coreSize, maxSize, maxWait, 60L, namePrefix);
     }
@@ -113,8 +85,6 @@ public class ExecutorsHelper {
 //        linkedBlockingQueue.setThreadPoolExecutor(threadPool);
 //        return ExecutorWrapper.wrap(threadPool);
     }
-
-
 
     public static ExecutorService newFixedThreadPool(int nThreads, String namePrefix) {
         return newFixedThreadPool(nThreads, new DefaultNamedThreadFactory(namePrefix));
@@ -171,11 +141,39 @@ public class ExecutorsHelper {
         void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor);
     }
 
+    /**
+     * 基于 Executors.DefaultThreadFactory 改造
+     */
+    static class DefaultNamedThreadFactory implements ThreadFactory {
+        private static final AtomicInteger poolNumber = new AtomicInteger(1);
+        private final ThreadGroup group;
+        private final AtomicInteger threadNumber = new AtomicInteger(1);
+        private final String namePrefix;
+
+        DefaultNamedThreadFactory(String namePrefix) {
+            SecurityManager s = System.getSecurityManager();
+            group = (s != null) ? s.getThreadGroup() :
+                    Thread.currentThread().getThreadGroup();
+            this.namePrefix = namePrefix == null ? ("coodex-pool-" + poolNumber.getAndIncrement() + "-thread") : namePrefix;
+        }
+
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(group, r,
+                    namePrefix + "-" + threadNumber.getAndIncrement(),
+                    0);
+            if (t.isDaemon())
+                t.setDaemon(false);
+            if (t.getPriority() != Thread.NORM_PRIORITY)
+                t.setPriority(Thread.NORM_PRIORITY);
+            return t;
+        }
+    }
+
     static class CoodexLinkedBlockingQueue extends LinkedBlockingQueue<Runnable>
-            implements CoodexBlockingQueue
-    {
-        private ThreadPoolExecutor threadPoolExecutor;
+            implements CoodexBlockingQueue {
         private final int maximumSize;
+        private ThreadPoolExecutor threadPoolExecutor;
 
         public CoodexLinkedBlockingQueue(int maximumSize) {
             this.maximumSize = maximumSize;
@@ -196,10 +194,9 @@ public class ExecutorsHelper {
     }
 
     static class CoodexPriorityBlockingQueue extends PriorityBlockingQueue<Runnable>
-            implements CoodexBlockingQueue
-    {
-        private ThreadPoolExecutor threadPoolExecutor;
+            implements CoodexBlockingQueue {
         private final int maximumSize;
+        private ThreadPoolExecutor threadPoolExecutor;
 
 
         CoodexPriorityBlockingQueue(int maximumSize) {

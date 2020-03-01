@@ -17,9 +17,9 @@
 package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.common.*;
-import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.DigestHelper;
 import org.coodex.util.I18N;
+import org.coodex.util.LazySelectableServiceLoader;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -30,8 +30,8 @@ import java.util.function.Supplier;
 public class HmacPen extends AbstractIronPen {
 
 
-    private static final AcceptableServiceLoader<ServiceContext, HMAC_KeyStore> HMAC_KEY_STORE_PROVIDERS =
-            new AcceptableServiceLoader<ServiceContext, HMAC_KeyStore>(
+    private static final LazySelectableServiceLoader<ServiceContext, HMAC_KeyStore> HMAC_KEY_STORE_PROVIDERS =
+            new LazySelectableServiceLoader<ServiceContext, HMAC_KeyStore>(
                     new HMAC_KeyStoreDefaultImpl()
             ) {
             };

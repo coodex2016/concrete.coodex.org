@@ -16,6 +16,8 @@
 
 package org.coodex.config;
 
+import org.coodex.util.Common;
+
 public interface Configuration {
 
 
@@ -36,5 +38,7 @@ public interface Configuration {
     String get(String key, String... namespaces);
 
     <T> T getValue(String key, T defaultValue, String... namespace);
+
+    <T> T getValue(String key, Common.Supplier<T> defaultValueSupplier, String ... namespace);
 
 }

@@ -17,7 +17,8 @@
 package org.coodex.concrete.message;
 
 import org.coodex.concrete.message.serializers.DefaultSerializer;
-import org.coodex.util.AcceptableServiceLoader;
+import org.coodex.util.LazySelectableServiceLoader;
+import org.coodex.util.SelectableServiceLoader;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -31,14 +32,17 @@ public class Topics {
     public static final String QUEUE_PA55W0RD = "password";
     public static final String SERIALIZER_TYPE = "serializer";
     private static final Serializer DEFAULT_SERIALIZER = new DefaultSerializer();
-    private static AcceptableServiceLoader<String, Serializer> serializerAcceptableServiceLoader =
-            new AcceptableServiceLoader<String, Serializer>(){};
+    private static SelectableServiceLoader<String, Serializer> serializerSelectableServiceLoader =
+            new LazySelectableServiceLoader<String, Serializer>() {
+            };
 
-    private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> topicProviders =
-            new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(){};
+    @SuppressWarnings("rawtypes")
+    private static SelectableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> topicProviders =
+            new LazySelectableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>() {
+            };
 
     public static Serializer getSerializer(String serializerType) {
-        Serializer serializer = serializerAcceptableServiceLoader.select(serializerType);
+        Serializer serializer = serializerSelectableServiceLoader.select(serializerType);
         return serializer == null ? DEFAULT_SERIALIZER : serializer;
     }
 

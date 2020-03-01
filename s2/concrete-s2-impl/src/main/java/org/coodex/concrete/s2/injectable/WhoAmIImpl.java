@@ -24,8 +24,7 @@ import org.coodex.concrete.s2.adaptor.AccountCopier;
 import org.coodex.concrete.s2.adaptor.NamedAccountCopier;
 import org.coodex.concrete.s2.api.AccountInfo;
 import org.coodex.concrete.s2.api.WhoAmI;
-import org.coodex.util.AcceptableServiceLoader;
-import org.coodex.util.Singleton;
+import org.coodex.util.LazySelectableServiceLoader;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -35,20 +34,22 @@ public class WhoAmIImpl implements WhoAmI {
 
 
     private static final AccountCopier DEFAULT_ACCOUNT_COPIER = new NamedAccountCopier();
-
+    @SuppressWarnings("rawtypes")
+    private static LazySelectableServiceLoader<Account, AccountCopier> ACCOUNT_COPIER_LOADER =
+            new LazySelectableServiceLoader<Account, AccountCopier>(DEFAULT_ACCOUNT_COPIER) {
+            };
     @Inject
     private Token token;
-    private static Singleton<AcceptableServiceLoader<Account, AccountCopier>> ACCOUNT_COPIER_LOADER =
-            new Singleton<>(() ->
-                    new AcceptableServiceLoader<Account, AccountCopier>(DEFAULT_ACCOUNT_COPIER) {
-                    });
+//            new Singleton<>(() ->
+//                    new SelectableServiceLoader<Account, AccountCopier>(DEFAULT_ACCOUNT_COPIER) {
+//                    });
 
+    @SuppressWarnings("rawtypes")
     @Override
     public AccountInfo get() {
         Account account = token.currentAccount();
         return IF.isNull(
-                ACCOUNT_COPIER_LOADER.get()
-                        .select(IF.isNull(account, ErrorCodes.NONE_ACCOUNT, token.getTokenId())),
+                ACCOUNT_COPIER_LOADER.select(IF.isNull(account, ErrorCodes.NONE_ACCOUNT, token.getTokenId())),
                 ErrorCodes.NONE_IMPLEMENTS_FOUND_FOR,
                 AccountCopier.class.getName(),
                 account

@@ -26,6 +26,20 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2020-03-02
+
+- 作废AcceptableXXX的命名，改为SelectableXXX
+- SelectableServiceLoader重构为接口
+- 增加 LazyServiceLoader 和 LazySelectableServiceLoader，简化代码结构
+- `org.coodex.util.Clock`增加`now()`接口，可以自行实现`org.coodex.util.TimestampProvider`在上下文中指定当前时刻
+- `org.coodex.config.Config`调整机制，增加基于`System.getProperties()`的`Configuration`，在系统提供的configuration中找不到指定配置项时，会在系统属性中查找
+- `org.coodex.concurrent.Parallel`增加对`Callable`的支持
+- 部分工具类增加对java8函数式的支持
+- mock: 模拟坐标时，可以指定模拟的维度，适用于单双精度类型的模拟
+- 增加`coodex-bom`模块，为下一步重构项目结构做准备
+- 增加`coodex-junit-enhance`，对部分单元调试场景需求进行了强化，[详见](https://concrete.coodex.org/coodex-junit-enhance/)
+- `coodex-core-spring`增加对ServiceLoader和SelectableServiceLoader的注入支持
+
 ## 2020-02-17
 
 - coodex-billing: 时序计费增加多规则机制

@@ -15,6 +15,7 @@
  */
 package org.coodex.util;
 
+import org.coodex.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +54,9 @@ import static org.coodex.util.Common.*;
 public abstract class Profile {
     final static Profile NULL_PROFILE = new NullProfile();
     private final static Logger log = LoggerFactory.getLogger(Profile.class);
-
-    private static final AcceptableServiceLoader<URL, ProfileProvider> PROFILE_PROVIDER_LOADER =
-            new AcceptableServiceLoader<URL, ProfileProvider>() {
+    private static final LazySelectableServiceLoader<URL, ProfileProvider> PROFILE_PROVIDER_LOADER =
+            new LazySelectableServiceLoader<URL, ProfileProvider>() {
             };
-
     private static final Singleton<String[]> ALL_SUPPORTED_FILE_EXT = new Singleton<String[]>(
             new Singleton.Builder<String[]>() {
                 @Override
@@ -74,25 +73,30 @@ public abstract class Profile {
                 }
             }
     );
-
     private static final URL DEFAULT_URL;
-
-
-    private static final String RELOAD_INTERVAL = System.getProperty("Profile.reloadInterval");
-
     private static final SingletonMap<String, Profile> WRAPPER_PROFILES = new SingletonMap<String, Profile>(new SingletonMap.Builder<String, Profile>() {
         @Override
         public Profile build(String key) {
             return new ProfileWrapper(key);
         }
     });
-    private static Singleton<Long> RELOAD_INTERVAL_SINGLETON = new Singleton<Long>(new Singleton.Builder<Long>() {
+
+
+    //    private static final String RELOAD_INTERVAL = System.getProperty("Profile.reloadInterval");
+    private static final Singleton<Long> RELOAD_INTERVAL_SINGLETON = new Singleton<Long>(new Singleton.Builder<Long>() {
         @Override
         public Long build() {
-            return toLong(RELOAD_INTERVAL, 0L) * 1000L;
+//            return toLong(RELOAD_INTERVAL, 0L) * 1000L;
+            return Config.BASE_SYSTEM_PROPERTIES.getValue(Profile.class.getName() + ".reloadInterval", new Supplier<Long>() {
+                @Override
+                public Long get() {
+                    return toLong(System.getProperty("Profile.reloadInterval"), 0L);
+                }
+            }) * 1000L;
         }
     });
-    private static final SingletonMap<String, URL> PROFILE_URLS = new SingletonMap<String, URL>(new SingletonMap.Builder<String, URL>() {
+    private static final SingletonMap<String, URL> PROFILE_URLS
+            = new SingletonMap<String, URL>(new SingletonMap.Builder<String, URL>() {
         @Override
         public URL build(String key) {
             String[] ex = allSupportedFileExt();
@@ -120,7 +124,7 @@ public abstract class Profile {
         }
     }, RELOAD_INTERVAL_SINGLETON.get());
 
-    private static SingletonMap<URL, Profile> URL_PROFILES_MAP = new SingletonMap<URL, Profile>(
+    private static final SingletonMap<URL, Profile> URL_PROFILES_MAP = new SingletonMap<URL, Profile>(
             new SingletonMap.Builder<URL, Profile>() {
                 @Override
                 public Profile build(URL key) {
@@ -223,6 +227,11 @@ public abstract class Profile {
         return v;
     }
 
+    public String getString(String key, Common.Supplier<String> supplier) {
+        String s = getStringImpl(key);
+        return s == null ? supplier.get() : actualValue(s);
+    }
+
     public String getString(String key, String v) {
         String s = getStringImpl(key);
         return s == null ? v : actualValue(s);
@@ -250,29 +259,20 @@ public abstract class Profile {
 //        return v;
 //    }
 
-    private static class NullProfile extends Profile {
-        @Override
-        protected String getStringImpl(String key) {
-            return null;
-        }
-
-        @Override
-        protected boolean isNull(String key) {
-            return true;
-        }
+    public String getString(String key) {
+        return getString(key, (String) null);
     }
 //    {
 //        String s = p.getProperty(key);
 //        return s == null ? v : actualValue(s);
 //    }
 
-
-    public String getString(String key) {
-        return getString(key, null);
-    }
-
     public int getInt(String key) {
         return getInt(key, 0);
+    }
+
+    public int getInt(String key, Supplier<Integer> v) {
+        return toInt(getString(key), v);
     }
 
     public int getInt(String key, int v) {
@@ -287,16 +287,41 @@ public abstract class Profile {
         return toLong(getString(key), v);
     }
 
+    public long getLong(String key, Supplier<Long> v) {
+        return toLong(getString(key), v);
+    }
+
     public String[] getStrList(String key) {
         return getStrList(key, ",");
     }
 
     public String[] getStrList(String key, String delim) {
-        return getStrList(key, delim, null);
+        return getStrList(key, delim, (String[]) null);
+    }
+
+    public String[] getStrList(String key, String delim, Supplier<String[]> supplier) {
+        return toArray(getString(key), delim, supplier);
+    }
+
+    public String[] getStrList(String key, Supplier<String[]> supplier) {
+        return toArray(getString(key), ",", supplier);
     }
 
     public String[] getStrList(String key, String delim, String[] v) {
         return toArray(getString(key), delim, v);
+    }
+
+
+    private static class NullProfile extends Profile {
+        @Override
+        protected String getStringImpl(String key) {
+            return null;
+        }
+
+        @Override
+        protected boolean isNull(String key) {
+            return true;
+        }
     }
 
 }

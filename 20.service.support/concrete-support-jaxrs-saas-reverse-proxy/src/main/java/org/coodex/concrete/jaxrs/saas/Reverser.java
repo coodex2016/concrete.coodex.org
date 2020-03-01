@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.jaxrs.saas;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 /**
  * 根据路由属性获得concrete服务的set的根路径;
@@ -25,7 +25,7 @@ import org.coodex.util.AcceptableService;
  * <p>
  * Created by davidoff shen on 2017-03-22.
  */
-public interface Reverser extends AcceptableService<String> {
+public interface Reverser extends SelectableService<String> {
 
     /**
      * 根据routeBy获得concrete服务set根路径，返回值应该是set的内部地址

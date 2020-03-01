@@ -16,7 +16,7 @@
 
 package org.coodex.util;
 
-public interface StringConvertWithDefaultValue extends AcceptableService<Class<?>> {
+public interface StringConvertWithDefaultValue extends SelectableService<Class<?>> {
 
     Object convertTo(String str, Object defaultValue, Class<?> type);
 

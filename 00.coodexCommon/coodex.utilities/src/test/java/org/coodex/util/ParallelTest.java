@@ -20,21 +20,23 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.coodex.concurrent.Parallel;
 
+import java.util.concurrent.Callable;
+
 public class ParallelTest {
 
-    public static void main(String [] args){
+    public static void main(String[] args) {
         //使用10个线程的线程池作为并行处理容器
 //        Parallel parallel = new Parallel(ExecutorsHelper.newFixedThreadPool(10));
         Parallel parallel = new Parallel();
-        Runnable [] runnables = new Runnable[20];
-        for(int i = 0; i < runnables.length; i ++){
+        Runnable[] runnables = new Runnable[20];
+        for (int i = 0; i < runnables.length; i++) {
             // 每个任务随机执行0-5000毫秒, 20%几率抛异常
             runnables[i] = new Runnable() {
                 @Override
                 public void run() {
                     try {
                         Thread.sleep(Common.random(5000));
-                        if(Common.random(5)>3)
+                        if (Common.random(5) > 3)
                             throw new RuntimeException("test");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -46,8 +48,30 @@ public class ParallelTest {
         //所有任务执行完成后
         Parallel.Batch batch = parallel.run(runnables);
 
-        System.out.println(JSON.toJSONString(batch,SerializerFeature.PrettyFormat));
+        System.out.println(JSON.toJSONString(batch, SerializerFeature.PrettyFormat));
 
         System.out.println(batch.getTimeConsuming());
+
+        Callable<Long>[] callables = new Callable[20];
+        for (int i = 0; i < callables.length; i++) {
+            callables[i] = new Callable<Long>() {
+                @Override
+                public Long call() throws Exception {
+                    try {
+                        Thread.sleep(Common.random(5000));
+                        if (Common.random(5) > 3)
+                            throw new RuntimeException("test");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    return Clock.currentTimeMillis();
+                }
+            };
+        }
+
+        Parallel.CallableBatch<Long> callableBatch = parallel.call(callables);
+        System.out.println(JSON.toJSONString(callableBatch, SerializerFeature.PrettyFormat));
+
+        System.out.println(callableBatch.getTimeConsuming());
     }
 }

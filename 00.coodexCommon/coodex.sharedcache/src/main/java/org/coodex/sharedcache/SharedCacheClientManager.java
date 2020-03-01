@@ -16,10 +16,7 @@
 
 package org.coodex.sharedcache;
 
-import org.coodex.util.Singleton;
-
-import java.util.Iterator;
-import java.util.ServiceLoader;
+import org.coodex.util.LazySelectableServiceLoader;
 
 /**
  * Created by davidoff shen on 2016-11-23.
@@ -28,16 +25,18 @@ public class SharedCacheClientManager {
 
 
     //    private static ServiceLoader<SharedCacheClientFactory> factoryProviders;
-    private static Singleton<ServiceLoader<SharedCacheClientFactory>> factoryProviders =
-            new Singleton<ServiceLoader<SharedCacheClientFactory>>(new Singleton.Builder<ServiceLoader<SharedCacheClientFactory>>() {
-                @Override
-                public ServiceLoader<SharedCacheClientFactory> build() {
-                    return ServiceLoader.load(SharedCacheClientFactory.class);
-                }
-            });
+    private static LazySelectableServiceLoader<String, SharedCacheClientFactory> factoryProviders =
+            new LazySelectableServiceLoader<String, SharedCacheClientFactory>() {
+            };
+//            new Singleton<ServiceLoader<SharedCacheClientFactory>>(new Singleton.Builder<ServiceLoader<SharedCacheClientFactory>>() {
+//                @Override
+//                public ServiceLoader<SharedCacheClientFactory> build() {
+//                    return ServiceLoader.load(SharedCacheClientFactory.class);
+//                }
+//            });
 
     private static void load() {
-        factoryProviders.get();
+//        factoryProviders.get();
 //        if (factoryProviders == null) {
 //            synchronized (SharedCacheClientManager.class) {
 //                if (factoryProviders == null)
@@ -49,15 +48,17 @@ public class SharedCacheClientManager {
     public static SharedCacheClient getClient(String driverName) {
         if (driverName == null) throw new NullPointerException("distributed cache driverName must not be NULL.");
 
-        load();
+//        load();
+        SharedCacheClientFactory sharedCacheClientFactory = factoryProviders.select(driverName);
+//        Iterator<SharedCacheClientFactory> factories = factoryProviders.get().iterator();
+//        while (factories.hasNext()) {
+//            SharedCacheClientFactory factory = factories.next();
+//            if (factory.isAccepted(driverName)) {
+//                return factory.getClientInstance();
+//            }
+//        }
 
-        Iterator<SharedCacheClientFactory> factories = factoryProviders.get().iterator();
-        while (factories.hasNext()) {
-            SharedCacheClientFactory factory = factories.next();
-            if (factory.isAccepted(driverName)) {
-                return factory.getClientInstance();
-            }
-        }
+        if (sharedCacheClientFactory != null) return sharedCacheClientFactory.getClientInstance();
         throw new SharedCacheClientFactoryProviderNotFoundException(driverName);
     }
 

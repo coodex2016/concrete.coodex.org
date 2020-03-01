@@ -16,7 +16,7 @@
 
 package org.coodex.pojomocker;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 import java.lang.annotation.Annotation;
 
@@ -24,7 +24,7 @@ import java.lang.annotation.Annotation;
  * Created by davidoff shen on 2017-05-11.
  */
 @Deprecated
-public interface Mocker<A extends Annotation> extends AcceptableService<A> {
+public interface Mocker<A extends Annotation> extends SelectableService<A> {
 
     Object mock(A mockAnnotation, Class clazz);
 }

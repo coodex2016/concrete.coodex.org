@@ -16,10 +16,12 @@
 
 package org.coodex.sharedcache;
 
+import org.coodex.util.SelectableService;
+
 /**
  * Created by davidoff shen on 2016-11-23.
  */
-public interface SharedCacheClientFactory {
+public interface SharedCacheClientFactory extends SelectableService<String> {
 
     Long DEFAULT_MAX_CACHED_SECENDS = 3600l;
 

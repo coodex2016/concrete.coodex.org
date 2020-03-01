@@ -61,7 +61,7 @@ public abstract class DateTimeSequence<T> extends AbstractConfigurableSequenceGe
             }
         }
         if (start == null) {
-            start = Clock.getCalendar();
+            start = Clock.now();
         }
 
         String inteval = getConfig().getValue("interval", "1h");

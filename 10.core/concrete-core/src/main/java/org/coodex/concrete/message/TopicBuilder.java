@@ -26,8 +26,8 @@ import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.StringMemberValue;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
-import org.coodex.util.AcceptableServiceLoader;
-import org.coodex.util.Singleton;
+import org.coodex.util.LazySelectableServiceLoader;
+import org.coodex.util.SelectableServiceLoader;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,23 +42,28 @@ import static org.coodex.concrete.message.CourierBuilder.getMessageType;
 import static org.coodex.util.Common.runtimeException;
 
 @SuppressWarnings("rawtypes")
-class TopicBuilder
-        implements SingletonMap.Builder<TopicKey, AbstractTopic> {
+class TopicBuilder implements SingletonMap.Builder<TopicKey, AbstractTopic> {
+
     private final static Logger log = LoggerFactory.getLogger(TopicBuilder.class);
-    private static final TopicPrototypeProvider defaultTopicPrototypeProvider
-            = new DefaultTopicPrototypeProvider();
-    private static Singleton<AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>> singletonProviders =
-            new Singleton<>(
-                    () -> new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider){}
-            );
+
+    private static final TopicPrototypeProvider defaultTopicPrototypeProvider = new DefaultTopicPrototypeProvider();
+
+    private static SelectableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> topicPrototypeProviderLoader =
+            new LazySelectableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider) {
+            };
+    //            new Singleton<>(
+//                    () -> new SelectableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider){}
+//            );
 //    private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> providers =
 //            new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider){};
+
     private static SingletonMap<TopicKey, AbstractTopic> topics =
             new SingletonMap<>(new TopicBuilder());
+
     private AtomicLong index = new AtomicLong(0);
 
     static AbstractTopic buildTopic(TopicKey key) {
-        return topics.get(key);
+        return topics.get(TopicKey.copy(key));
     }
 
     private Class<? extends AbstractTopic> getClass(Type topicType) {
@@ -84,7 +89,7 @@ class TopicBuilder
     public AbstractTopic build(TopicKey key) {
         try {
             Class<? extends AbstractTopic> topicClass = getClass(key.topicType);
-            TopicPrototypeProvider provider = singletonProviders.get().select(topicClass);
+            TopicPrototypeProvider provider = topicPrototypeProviderLoader.select(topicClass);
             if (provider == null) {
                 if (defaultTopicPrototypeProvider.accept(topicClass)) {
                     provider = defaultTopicPrototypeProvider;

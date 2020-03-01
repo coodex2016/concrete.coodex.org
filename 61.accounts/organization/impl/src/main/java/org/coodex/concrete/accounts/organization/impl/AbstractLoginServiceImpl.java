@@ -93,7 +93,7 @@ public abstract class AbstractLoginServiceImpl
                 loginCacheEntryEntity.setCredential(newCredential());
                 loginCacheEntryEntity.setValidation(getValidationFromNow());
             }
-            loginCacheEntryEntity.setLastLogin(Clock.getCalendar());
+            loginCacheEntryEntity.setLastLogin(Clock.now());
             setValidation(loginCacheEntryEntity);
             return loginCacheEntryRepo.save(loginCacheEntryEntity).getCredential();
         } catch (RuntimeException e) { // rollback
@@ -130,7 +130,7 @@ public abstract class AbstractLoginServiceImpl
      * @return
      */
     protected Calendar getValidationFromNow() {
-        Calendar calendar = Clock.getCalendar();
+        Calendar calendar = Clock.now();
         calendar.add(Calendar.DATE, AccountsCommon.getInt("validation.days", 7));
         return calendar;
     }

@@ -24,12 +24,17 @@ import java.lang.reflect.Type;
 
 import static org.coodex.util.GenericTypeHelper.typeToClass;
 
+@SuppressWarnings("rawtypes")
 public class CoordinatesTypeMocker extends AbstractTypeMocker<Coordinates> {
+
     @Override
     protected Class[] getSupportedClasses() {
         return new Class[]{
                 float[].class, Float[].class,
-                double[].class, Double.class
+                double[].class, Double[].class,
+                float.class, Float.class,
+                Double.class, double.class,
+                Coordinates.Value.class
         };
     }
 
@@ -47,6 +52,17 @@ public class CoordinatesTypeMocker extends AbstractTypeMocker<Coordinates> {
             Array.set(result, 1, NumberTypeMocker.mock(c.getComponentType(), mockAnnotation.latitude(), mockAnnotation.digits()));
             return result;
         }
-        return null;
+
+        if (Coordinates.Value.class.equals(targetType)) {
+            Coordinates.Value value = new Coordinates.Value();
+            value.setLongitude((Double) NumberTypeMocker.mock(Double.class, mockAnnotation.longitude(), mockAnnotation.digits()));
+            value.setLatitude((Double) NumberTypeMocker.mock(Double.class, mockAnnotation.latitude(), mockAnnotation.digits()));
+            return value;
+        }
+
+        return NumberTypeMocker.mock(targetType,
+                mockAnnotation.dimension().equals(Coordinates.Dimension.LONGITUDE) ? mockAnnotation.longitude() : mockAnnotation.latitude(),
+                mockAnnotation.digits());
+
     }
 }

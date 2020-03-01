@@ -17,12 +17,12 @@
 package org.coodex.concrete.accounts;
 
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 /**
  * Created by davidoff shen on 2017-05-03.
  */
-public interface PasswordGenerator extends AcceptableService<String> {
+public interface PasswordGenerator extends SelectableService<String> {
 
     /**
      * 创建一个密码

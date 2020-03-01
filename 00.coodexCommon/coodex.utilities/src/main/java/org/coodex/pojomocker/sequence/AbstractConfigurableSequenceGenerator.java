@@ -18,6 +18,7 @@ package org.coodex.pojomocker.sequence;
 
 import org.coodex.config.Config;
 import org.coodex.config.Configuration;
+import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 @Deprecated
 public abstract class AbstractConfigurableSequenceGenerator<T> extends AbstractSequenceGenerator<T> {
@@ -45,6 +46,15 @@ public abstract class AbstractConfigurableSequenceGenerator<T> extends AbstractS
                         return Config.getValue(key, defaultValue, contextNameSpace);
                     } else {
                         return Config.getValue(key, defaultValue, namespace);
+                    }
+                }
+
+                @Override
+                public <T> T getValue(String key, Common.Supplier<T> defaultValueSupplier, String... namespace) {
+                    if (namespace == null || namespace.length == 0) {
+                        return Config.getValue(key, defaultValueSupplier, contextNameSpace);
+                    } else {
+                        return Config.getValue(key, defaultValueSupplier, namespace);
                     }
                 }
             };

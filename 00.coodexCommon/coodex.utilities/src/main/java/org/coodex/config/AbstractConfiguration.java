@@ -23,6 +23,12 @@ import java.util.List;
 
 public abstract class AbstractConfiguration implements Configuration {
 
+    @Override
+    public <T> T getValue(String key, Common.Supplier<T> defaultValueSupplier, String... namespace) {
+        String strValue = get(key, namespace);
+        if(strValue == null) return defaultValueSupplier.get();
+        return Common.to(strValue, defaultValueSupplier.get());
+    }
 
     @Override
     public <T> T getValue(String key, T defaultValue, String... namespace) {
@@ -52,7 +58,7 @@ public abstract class AbstractConfiguration implements Configuration {
 
     private List<String> buildKeys(String key, List<String> namespaces, int deep) {
         List<String> keys = new ArrayList<String>();
-        if(namespaces != null) {
+        if (namespaces != null) {
             for (int i = deep - 1; i < namespaces.size(); i++) {
                 String temp = "";
                 for (int j = i + 1; j < namespaces.size(); j++) {

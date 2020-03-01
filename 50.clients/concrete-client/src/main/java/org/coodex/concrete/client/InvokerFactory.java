@@ -16,9 +16,9 @@
 
 package org.coodex.concrete.client;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
-public interface InvokerFactory extends AcceptableService<Destination> {
+public interface InvokerFactory extends SelectableService<Destination> {
 
 
     /**

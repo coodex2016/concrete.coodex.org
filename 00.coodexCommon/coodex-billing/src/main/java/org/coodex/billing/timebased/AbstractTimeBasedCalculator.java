@@ -17,9 +17,8 @@
 package org.coodex.billing.timebased;
 
 import org.coodex.billing.*;
-import org.coodex.util.AcceptableServiceLoader;
+import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.Section;
-import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,37 +30,59 @@ import static org.coodex.util.Common.max;
 public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable> implements Calculator<C> {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractTimeBasedCalculator.class);
-    private static Singleton<AcceptableServiceLoader<Revision, RevisionToDetail<Revision>>> detailCreators =
-            new Singleton<AcceptableServiceLoader<Revision, RevisionToDetail<Revision>>>(
-                    new Singleton.Builder<AcceptableServiceLoader<Revision, RevisionToDetail<Revision>>>() {
-                        @Override
-                        public AcceptableServiceLoader<Revision, RevisionToDetail<Revision>> build() {
-                            return new AcceptableServiceLoader<Revision, RevisionToDetail<Revision>>(
-                                    new RevisionToDetail<Revision>() {
-                                        @Override
-                                        public Bill.Detail toDetail(Revision revision, Period period, long amount) {
-                                            if (revision instanceof TimeBasedRevision) {
-                                                return new TimeBasedDetailImpl(period, amount, revision, revision.getName());
-                                            } else if (revision instanceof Adjustment) {
-                                                return amount == 0 ? null : new Bill.AdjustDetail(amount, revision.getName(), revision);
-                                            } else {
-                                                throw new RuntimeException("do not support this revision: " + (revision == null ? null : revision.getClass()));
-                                            }
-                                        }
+    private static final RevisionToDetail<Revision> DEFAULT_REVISION = new RevisionToDetail<Revision>() {
+        @Override
+        public Bill.Detail toDetail(Revision revision, Period period, long amount) {
+            if (revision instanceof TimeBasedRevision) {
+                return new TimeBasedDetailImpl(period, amount, revision, revision.getName());
+            } else if (revision instanceof Adjustment) {
+                return amount == 0 ? null : new Bill.AdjustDetail(amount, revision.getName(), revision);
+            } else {
+                throw new RuntimeException("do not support this revision: " + (revision == null ? null : revision.getClass()));
+            }
+        }
 
-                                        @Override
-                                        public boolean accept(Revision param) {
-                                            return true;
-                                        }
-                                    }
-                            ) {
-                            };
-                        }
-                    }
-            );
-    private AcceptableServiceLoader<String, BillingModel<C>> billingModels = new AcceptableServiceLoader<String, BillingModel<C>>() {
+        @Override
+        public boolean accept(Revision param) {
+            return true;
+        }
     };
-    private AcceptableServiceLoader<C, BillingRuleRepository<C>> ruleRepos = new AcceptableServiceLoader<C, BillingRuleRepository<C>>(
+
+    private static LazySelectableServiceLoader<Revision, RevisionToDetail<Revision>> detailCreators =
+            new LazySelectableServiceLoader<Revision, RevisionToDetail<Revision>>(DEFAULT_REVISION) {
+            };
+
+    //    private static Singleton<SelectableServiceLoader<Revision, RevisionToDetail<Revision>>> detailCreators =
+//            new Singleton<SelectableServiceLoader<Revision, RevisionToDetail<Revision>>>(
+//                    new Singleton.Builder<SelectableServiceLoader<Revision, RevisionToDetail<Revision>>>() {
+//                        @Override
+//                        public SelectableServiceLoader<Revision, RevisionToDetail<Revision>> build() {
+//                            return new SelectableServiceLoader<Revision, RevisionToDetail<Revision>>(
+//                                    new RevisionToDetail<Revision>() {
+//                                        @Override
+//                                        public Bill.Detail toDetail(Revision revision, Period period, long amount) {
+//                                            if (revision instanceof TimeBasedRevision) {
+//                                                return new TimeBasedDetailImpl(period, amount, revision, revision.getName());
+//                                            } else if (revision instanceof Adjustment) {
+//                                                return amount == 0 ? null : new Bill.AdjustDetail(amount, revision.getName(), revision);
+//                                            } else {
+//                                                throw new RuntimeException("do not support this revision: " + (revision == null ? null : revision.getClass()));
+//                                            }
+//                                        }
+//
+//                                        @Override
+//                                        public boolean accept(Revision param) {
+//                                            return true;
+//                                        }
+//                                    }
+//                            ) {
+//                            };
+//                        }
+//                    }
+//            );
+    private LazySelectableServiceLoader<String, BillingModel<C>> billingModels = new LazySelectableServiceLoader<String, BillingModel<C>>() {
+    };
+    private LazySelectableServiceLoader<C, BillingRuleRepository<C>> ruleRepos = new LazySelectableServiceLoader<C, BillingRuleRepository<C>>(
             new BillingRuleRepository<C>() {
                 @Override
                 public Collection<BillingRule> getRulesBy(C chargeable) {
@@ -197,7 +218,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
             long amount = adjustment.adjust(bill);
 //            if (amount != 0) {
             // new Bill.AdjustDetail(amount, adjustment.getName(), adjustment)
-            Bill.Detail detail = detailCreators.get().select(adjustment).toDetail(adjustment, null, amount);
+            Bill.Detail detail = detailCreators.select(adjustment).toDetail(adjustment, null, amount);
             if (detail != null)
                 bill.addDetail(detail);
 //            }
@@ -340,7 +361,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
                 for (Period period : revised) {
                     //
                     // new TimeBasedDetailImpl(period, 0, revision, revision.getName())
-                    bill.addDetail(detailCreators.get().select(revision).toDetail(revision, period, 0));
+                    bill.addDetail(detailCreators.select(revision).toDetail(revision, period, 0));
                 }
                 chargePeriods = Section.sub(chargePeriods, revised, Period.BUILDER);
             }

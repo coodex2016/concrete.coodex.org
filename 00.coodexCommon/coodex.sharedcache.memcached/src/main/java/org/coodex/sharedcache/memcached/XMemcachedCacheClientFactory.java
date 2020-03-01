@@ -73,4 +73,9 @@ public class XMemcachedCacheClientFactory implements SharedCacheClientFactory {
             builder = memcachedClientBuilder;
         }
     }
+
+    @Override
+    public boolean accept(String param) {
+        return isAccepted(param);
+    }
 }

@@ -16,16 +16,13 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.util.AcceptableServiceLoader;
-import org.coodex.util.Singleton;
+import org.coodex.util.LazySelectableServiceLoader;
 
 public class ThrowableMapperFacade {
 
-    private static Singleton<AcceptableServiceLoader<Throwable, ThrowableMapper>> mapperLoader
-            = new Singleton<>(
-            () -> new AcceptableServiceLoader<Throwable, ThrowableMapper>() {
-            }
-    );
+    private static LazySelectableServiceLoader<Throwable, ThrowableMapper> mapperLoader
+            = new LazySelectableServiceLoader<Throwable, ThrowableMapper>() {
+    };
 
 
     public static ErrorInfo toErrorInfo(Throwable exception) {
@@ -35,7 +32,7 @@ public class ThrowableMapperFacade {
         if (concreteException != null) {
             return new ErrorInfo(concreteException.getCode(), concreteException.getMessage());
         } else {
-            ThrowableMapper mapper = mapperLoader.get().select(exception);
+            ThrowableMapper mapper = mapperLoader.select(exception);
             if (mapper != null) {
                 return mapper.toErrorInfo(exception);
             } else {

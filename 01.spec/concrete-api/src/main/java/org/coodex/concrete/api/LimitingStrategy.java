@@ -17,9 +17,9 @@
 package org.coodex.concrete.api;
 
 import org.coodex.concrete.common.DefinitionContext;
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
-public interface LimitingStrategy extends AcceptableService<DefinitionContext> {
+public interface LimitingStrategy extends SelectableService<DefinitionContext> {
 
     boolean apply(DefinitionContext definitionContext);
 

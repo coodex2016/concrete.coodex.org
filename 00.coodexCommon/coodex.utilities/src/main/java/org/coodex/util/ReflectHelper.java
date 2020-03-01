@@ -39,6 +39,28 @@ public class ReflectHelper {
     private ReflectHelper() {
     }
 
+    public static <T extends Annotation> T getAnnotation(Class<T> annotationClass, AnnotatedElement element, Set<AnnotatedElement> checked) {
+        if (checked.contains(element))
+            return null;
+        checked.add(element);
+        T t = element.getAnnotation(annotationClass);
+        if (t != null) return t;
+        for (Annotation annotation : element.getAnnotations()) {
+            t = getAnnotation(annotationClass, annotation.annotationType(), checked);
+            if (t != null) return t;
+        }
+        return null;
+    }
+
+    public static <T extends Annotation> T getAnnotation(Class<T> annotationClass, AnnotatedElement... elements) {
+        Set<AnnotatedElement> checked = new HashSet<AnnotatedElement>();
+        for (AnnotatedElement element : elements) {
+            T t = getAnnotation(annotationClass, element, checked);
+            if (t != null) return t;
+        }
+        return null;
+    }
+
     public static String getParameterName(Object executable, int index, String prefix) {
         if (executable instanceof Method) {
             return getMethodParameterName((Method) executable, index, prefix);
@@ -352,6 +374,13 @@ public class ReflectHelper {
             }
         }
         throw new RuntimeException("method not found in all objects: " + method.getName());
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static Class[] getAllInterfaces(Class clz) {
+        Collection<Class> coll = new HashSet<Class>();
+        addInterfaceTo(clz, coll);
+        return coll.toArray(new Class[0]);
     }
 
     @SuppressWarnings("rawtypes")

@@ -44,6 +44,43 @@ public class SignUtil {
     public static final String KEY_FIELD_SIGN = "sign";
     public static final String KEY_FIELD_KEY_ID = "keyId";
     public static final String KEY_FIELD_NOISE = "noise";
+    public static final String TAG_SIGNATRUE = "signature";
+    //    public static final Profile PROFILE = getProfile(TAG_SIGNATRUE);
+    private static final LazySelectableServiceLoader<String, IronPenFactory> IRON_PEN_FACTORY_CONCRETE_SPI_FACADE
+            = new LazySelectableServiceLoader<String, IronPenFactory>() {
+    };
+    private static final SignatureSerializer DEFAULT_SERIALIZER = new DefaultSignatureSerializer();
+    private static final ServiceLoader<SignatureSerializer> SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE
+            = new ServiceLoaderImpl<SignatureSerializer>(DEFAULT_SERIALIZER) {
+    };
+    private static final NoiseValidator defaultValidator = new NoiseValidator() {
+        @Override
+        public void checkNoise(String keyId, String noise) {
+
+        }
+
+        @Override
+        public boolean accept(String param) {
+            return true;
+        }
+    };
+    private static final LazySelectableServiceLoader<String, NoiseValidator> validatorLoader =
+            new LazySelectableServiceLoader<String, NoiseValidator>(defaultValidator) {
+            };
+    private static final NoiseGenerator defaultGenerator = new NoiseGenerator() {
+        @Override
+        public String generateNoise() {
+            return String.valueOf(Common.random(0, Integer.MAX_VALUE));
+        }
+
+        @Override
+        public boolean accept(String param) {
+            return true;
+        }
+    };
+    private static final LazySelectableServiceLoader<String, NoiseGenerator> generatorLoader =
+            new LazySelectableServiceLoader<String, NoiseGenerator>(defaultGenerator) {
+            };
 
     public static String getKeyId() {
         return SubjoinWrapper.getInstance().get(AbstractSignatureInterceptor.getPropertyName(KEY_FIELD_KEY_ID));
@@ -92,7 +129,6 @@ public class SignUtil {
         return objectMap;
     }
 
-
     public static Map<String, Object> buildContent(DefinitionContext context, Object[] args) {
         AbstractUnit unit = AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());
         AbstractParam[] params = unit.getParameters();
@@ -117,46 +153,6 @@ public class SignUtil {
         }
         return result;
     }
-
-    public static final String TAG_SIGNATRUE = "signature";
-
-    //    public static final Profile PROFILE = getProfile(TAG_SIGNATRUE);
-    private static final AcceptableServiceLoader<String, IronPenFactory> IRON_PEN_FACTORY_CONCRETE_SPI_FACADE
-            = new AcceptableServiceLoader<String, IronPenFactory>(){};
-    private static final SignatureSerializer DEFAULT_SERIALIZER = new DefaultSignatureSerializer();
-    private static final ServiceLoader<SignatureSerializer> SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE
-            = new ServiceLoaderImpl<SignatureSerializer>(DEFAULT_SERIALIZER) {
-    };
-
-    private static final NoiseValidator defaultValidator = new NoiseValidator() {
-        @Override
-        public void checkNoise(String keyId, String noise) {
-
-        }
-
-        @Override
-        public boolean accept(String param) {
-            return true;
-        }
-    };
-
-    private static final AcceptableServiceLoader<String, NoiseValidator> validatorLoader =
-            new AcceptableServiceLoader<String, NoiseValidator>(defaultValidator){};
-
-    private static final NoiseGenerator defaultGenerator = new NoiseGenerator() {
-        @Override
-        public String generateNoise() {
-            return String.valueOf(Common.random(0, Integer.MAX_VALUE));
-        }
-
-        @Override
-        public boolean accept(String param) {
-            return true;
-        }
-    };
-    private static final AcceptableServiceLoader<String, NoiseGenerator> generatorLoader =
-            new AcceptableServiceLoader<String, NoiseGenerator>(defaultGenerator){};
-
 
     private static String getString(Profile profile, String key, String paperName) {
         return Common.isBlank(paperName) ? profile.getString(key) : profile.getString(key + "." + paperName);

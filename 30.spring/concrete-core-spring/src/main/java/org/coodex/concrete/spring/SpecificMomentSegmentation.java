@@ -20,8 +20,6 @@ import org.coodex.count.Segmentation;
 import org.coodex.util.Clock;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 
-import java.util.Calendar;
-
 /**
  * @see org.springframework.scheduling.support.CronSequenceGenerator
  * Created by davidoff shen on 2017-04-19.
@@ -36,7 +34,7 @@ public class SpecificMomentSegmentation implements Segmentation {
 
     @Override
     public long next() {
-        return cronSequenceGenerator.next(Clock.getCalendar().getTime()).getTime();
+        return cronSequenceGenerator.next(Clock.now().getTime()).getTime();
     }
 
 }

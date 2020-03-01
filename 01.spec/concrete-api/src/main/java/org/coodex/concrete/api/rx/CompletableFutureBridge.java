@@ -16,11 +16,11 @@
 
 package org.coodex.concrete.api.rx;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 import java.util.concurrent.CompletableFuture;
 
-public interface CompletableFutureBridge extends AcceptableService<Class> {
+public interface CompletableFutureBridge extends SelectableService<Class> {
 
     Object bridging(CompletableFuture completableFuture);
 }

@@ -95,7 +95,7 @@ public class ByWorkDay implements ServiceTimingChecker {
             }
         }
 
-        Calendar c = Clock.getCalendar();
+        Calendar c = Clock.now();
         return weekday[c.get(Calendar.DAY_OF_WEEK) - 1];
     }
 

@@ -17,14 +17,14 @@
 package org.coodex.billing.timebased;
 
 import org.coodex.billing.Bill;
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 import java.util.List;
 
 /**
  * 时序计费模型
  */
-public interface BillingModel<C extends TimeBasedChargeable> extends AcceptableService<String> {
+public interface BillingModel<C extends TimeBasedChargeable> extends SelectableService<String> {
 
     /**
      * @param chargeable 计费对象

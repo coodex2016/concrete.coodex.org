@@ -16,11 +16,11 @@
 
 package org.coodex.concrete.couriers.jms;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 import javax.jms.ConnectionFactory;
 
-public interface ConnectionFactoryProvider extends AcceptableService<String> {
+public interface ConnectionFactoryProvider extends SelectableService<String> {
 
     ConnectionFactory build(String driver);
 }

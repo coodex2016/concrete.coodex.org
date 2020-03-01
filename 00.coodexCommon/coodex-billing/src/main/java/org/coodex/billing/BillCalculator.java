@@ -16,26 +16,27 @@
 
 package org.coodex.billing;
 
-import org.coodex.util.AcceptableServiceLoader;
-import org.coodex.util.Singleton;
+import org.coodex.util.LazySelectableServiceLoader;
 
 public class BillCalculator {
 
 
-    private static final
-    Singleton<AcceptableServiceLoader<Chargeable, Calculator<Chargeable>>> CALCULATOR_LOADER =
-            new Singleton<AcceptableServiceLoader<Chargeable, Calculator<Chargeable>>>(new Singleton.Builder<AcceptableServiceLoader<Chargeable, Calculator<Chargeable>>>() {
-                @Override
-                public AcceptableServiceLoader<Chargeable, Calculator<Chargeable>> build() {
-                    return new AcceptableServiceLoader<Chargeable, Calculator<Chargeable>>() {
-                    };
-                }
-            });
+    private static final LazySelectableServiceLoader<Chargeable, Calculator<Chargeable>> CALCULATOR_LOADER =
+            new LazySelectableServiceLoader<Chargeable, Calculator<Chargeable>>() {
+            };
+//    Singleton<SelectableServiceLoader<Chargeable, Calculator<Chargeable>>> CALCULATOR_LOADER =
+//            new Singleton<SelectableServiceLoader<Chargeable, Calculator<Chargeable>>>(new Singleton.Builder<SelectableServiceLoader<Chargeable, Calculator<Chargeable>>>() {
+//                @Override
+//                public SelectableServiceLoader<Chargeable, Calculator<Chargeable>> build() {
+//                    return new SelectableServiceLoader<Chargeable, Calculator<Chargeable>>() {
+//                    };
+//                }
+//            });
 
 
     public static <C extends Chargeable> Bill<C> calc(C chargeable) {
         if (chargeable == null) throw new NullPointerException("chargeable is null.");
-        Calculator<Chargeable> calculator = CALCULATOR_LOADER.get().select(chargeable);
+        Calculator<Chargeable> calculator = CALCULATOR_LOADER.select(chargeable);
         if (calculator == null) {
             throw new RuntimeException("no Calculator instance found for " + chargeable.getClass() + ". " + chargeable.toString());
         }

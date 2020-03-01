@@ -19,8 +19,8 @@ package org.coodex.concrete.couriers.jms;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.message.Serializer;
 import org.coodex.concrete.message.Topics;
-import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Common;
+import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +35,13 @@ import static org.coodex.concrete.message.Topics.*;
 
 class JMSFacade {
 
-    private final static AcceptableServiceLoader<String, ConnectionFactoryProvider>
-            connectionFactoryProviderAcceptableServiceLoader =
-            new AcceptableServiceLoader<String, ConnectionFactoryProvider>(){};
+    private final static LazySelectableServiceLoader<String, ConnectionFactoryProvider>
+            CONNECTION_FACTORY_PROVIDER_SELECTABLE_SERVICE_LOADER =
+            new LazySelectableServiceLoader<String, ConnectionFactoryProvider>() {
+            };
     private final static SingletonMap<String, ConnectionFactory> connectionFactorySingletonMap
             = new SingletonMap<>(key -> {
-        ConnectionFactoryProvider cfp = connectionFactoryProviderAcceptableServiceLoader.select(key);
+        ConnectionFactoryProvider cfp = CONNECTION_FACTORY_PROVIDER_SELECTABLE_SERVICE_LOADER.select(key);
         if (cfp == null) {
             throw new RuntimeException("no ConnectionFactoryProvider found for :" + key);
         } else {
@@ -48,7 +49,7 @@ class JMSFacade {
         }
     });
     private final static Logger log = LoggerFactory.getLogger(JMSFacade.class);
-//    private static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
+    //    private static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
     private final String name;
     private final String driver;
     private final String topicName;

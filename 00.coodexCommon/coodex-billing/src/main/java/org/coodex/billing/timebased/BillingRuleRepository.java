@@ -16,11 +16,11 @@
 
 package org.coodex.billing.timebased;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 import java.util.Collection;
 
-public interface BillingRuleRepository<T extends TimeBasedChargeable> extends AcceptableService<T> {
+public interface BillingRuleRepository<T extends TimeBasedChargeable> extends SelectableService<T> {
 
     /**
      * @param chargeable 根据消费对象获取适用于消费的一组规则列表

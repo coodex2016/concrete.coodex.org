@@ -17,11 +17,28 @@
 package org.coodex.config;
 
 import org.coodex.util.Common;
-import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
+import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.Singleton;
 
+import java.util.List;
+import java.util.Properties;
+
+/**
+ * 基于System.getProperty实现Configuration，在provider中找不到时，则到系统属性中找
+ */
 public class Config {
+
+    public final static AbstractConfiguration BASE_SYSTEM_PROPERTIES = new AbstractConfiguration() {
+
+        @Override
+        protected String search(String namespace, List<String> keys) {
+            Properties properties = System.getProperties();
+            for (String key : keys) {
+                if (properties.containsKey(key)) return System.getProperty(key);
+            }
+            return null;
+        }
+    };
 
 //    private static Singleton<Configuration> defaultConfiguration = new Singleton<Configuration>(
 //            new Singleton.Builder<Configuration>() {
@@ -32,44 +49,82 @@ public class Config {
 //            }
 //    );
 
-    private static Singleton<ServiceLoader<Configuration>> configurationServiceLoader =
-            new Singleton<ServiceLoader<Configuration>>(
-                    new Singleton.Builder<ServiceLoader<Configuration>>() {
+    private static LazyServiceLoader<DefaultConfigurationProvider> configurationProviderLazyServiceLoader =
+            new LazyServiceLoader<DefaultConfigurationProvider>(new DefaultConfigurationProvider() {
+                @Override
+                public Configuration get() {
+                    return new ConfigurationBaseProfile();
+                }
+            }) {
+            };
+
+    private static LazyServiceLoader<Configuration> configurationServiceLoader =
+            new LazyServiceLoader<Configuration>(
+                    new Singleton.Builder<Configuration>() {
                         @Override
-                        public ServiceLoader<Configuration> build() {
-                            return new ServiceLoaderImpl<Configuration>(
-                                    new ServiceLoaderImpl<DefaultConfigurationProvider>(new DefaultConfigurationProvider() {
-                                        @Override
-                                        public Configuration get() {
-                                            return new ConfigurationBaseProfile();
-                                        }
-                                    }) {
-                                    }.get()
-                                            .get()) {
-                            };
+                        public Configuration build() {
+                            return configurationProviderLazyServiceLoader.get().get();
                         }
                     }
-            );
+//                    new Singleton.Builder<ServiceLoader<Configuration>>() {
+//                        @Override
+//                        public ServiceLoader<Configuration> build() {
+//                            return new ServiceLoaderImpl<Configuration>(
+//                                    new ServiceLoaderImpl<DefaultConfigurationProvider>(new DefaultConfigurationProvider() {
+//                                        @Override
+//                                        public Configuration get() {
+//                                            return new ConfigurationBaseProfile();
+//                                        }
+//                                    }) {
+//                                    }.get()
+//                                            .get()) {
+//                            };
+//                        }
+//                    }
+            ) {
+            };
 
 
     public static Configuration getConfig() {
-        return configurationServiceLoader.get().get();
+        return configurationServiceLoader.get();
     }
 
     public static String get(String key, String... namespaces) {
-        return getConfig().get(key, namespaces);
+        String v = getConfig().get(key, namespaces);
+        return v == null ? BASE_SYSTEM_PROPERTIES.get(key, namespaces) : v;
     }
 
-    public static <T> T getValue(String key, T defaultValue, String... namespace) {
-        return getConfig().getValue(key, defaultValue, namespace);
+
+    public static <T> T getValue(final String key, final T defaultValue, final String... namespace) {
+        return getConfig().getValue(key, new Common.Supplier<T>() {
+            @Override
+            public T get() {
+                return BASE_SYSTEM_PROPERTIES.getValue(key, defaultValue, namespace);
+
+            }
+        }, namespace);
     }
+
+    public static <T> T getValue(final String key, final Common.Supplier<T> defaultValueSupplier, final String... namespace) {
+        return getConfig().getValue(key, new Common.Supplier<T>() {
+            @Override
+            public T get() {
+                return BASE_SYSTEM_PROPERTIES.getValue(key, defaultValueSupplier, namespace);
+            }
+        }, namespace);
+    }
+
 
     public static String[] getArray(String key, String... namespaces) {
-        return Common.toArray(getConfig().get(key, namespaces), ",", (String[]) null);
+        return Common.toArray(get(key, namespaces), ",", (String[]) null);
     }
 
     public static String[] getArray(String key, String delim, String[] defaultValue, String... namespaces) {
-        return Common.toArray(getConfig().get(key, namespaces), delim, defaultValue);
+        return Common.toArray(get(key, namespaces), delim, defaultValue);
+    }
+
+    public static String[] getArray(String key, String delim, Common.Supplier<String[]> supplier, String... namespaces) {
+        return Common.toArray(get(key, namespaces), delim, supplier);
     }
 
 }

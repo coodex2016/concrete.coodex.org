@@ -21,9 +21,9 @@ import org.coodex.concrete.api.Modules;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.token.TokenWrapper;
-import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
+import org.coodex.util.LazySelectableServiceLoader;
 
 import java.util.Calendar;
 import java.util.List;
@@ -36,8 +36,8 @@ import static org.coodex.concrete.core.intercept.InterceptOrders.PRODUCTION_CHEC
 public class ProductionValidationInterceptor extends AbstractSyncInterceptor {
 
     private Token token = TokenWrapper.getInstance();
-    private AcceptableServiceLoader<Account, ProductionRepository> productionRepositoryAcceptableServiceLoader =
-            new AcceptableServiceLoader<Account, ProductionRepository>() {
+    private LazySelectableServiceLoader<Account, ProductionRepository> productionRepositorySelectableServiceLoader =
+            new LazySelectableServiceLoader<Account, ProductionRepository>() {
             };
 
     @Override
@@ -96,7 +96,7 @@ public class ProductionValidationInterceptor extends AbstractSyncInterceptor {
     }
 
     private void productionCheck(DefinitionContext context, Account account) {
-        ProductionRepository productionRepository = productionRepositoryAcceptableServiceLoader.select(account);
+        ProductionRepository productionRepository = productionRepositorySelectableServiceLoader.select(account);
         if (productionRepository == null) return;
 
         Modules modules = context.getAnnotation(Modules.class);
@@ -109,7 +109,7 @@ public class ProductionValidationInterceptor extends AbstractSyncInterceptor {
         Calendar overRun = production.getCalendar();
         if (overRun == null) return;
 
-        Calendar now = Clock.getCalendar();
+        Calendar now = Clock.now();
 
         if (now.after(overRun)) {
             throw new ConcreteException(PRODUCTION_OVERDUE, production.getProductionName());

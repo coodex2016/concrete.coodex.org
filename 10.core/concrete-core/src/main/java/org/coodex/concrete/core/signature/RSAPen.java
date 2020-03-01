@@ -20,8 +20,8 @@ import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.ServiceContext;
-import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Common;
+import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.RSACommon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +34,8 @@ public class RSAPen extends AbstractIronPen {
     private final static Logger log = LoggerFactory.getLogger(RSAPen.class);
 
 
-    private static final AcceptableServiceLoader<ServiceContext, RSA_KeyStore> RSA_KEY_STORE_PROVIDERS =
-            new AcceptableServiceLoader<ServiceContext, RSA_KeyStore>(new RSA_KeyStoreDefaultImpl()) {
+    private static final LazySelectableServiceLoader<ServiceContext, RSA_KeyStore> RSA_KEY_STORE_PROVIDERS =
+            new LazySelectableServiceLoader<ServiceContext, RSA_KeyStore>(new RSA_KeyStoreDefaultImpl()) {
             };
 
     RSAPen(String paperName) {

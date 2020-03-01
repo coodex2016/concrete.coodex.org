@@ -16,11 +16,11 @@
 
 package org.coodex.concrete.client;
 
-import org.coodex.util.AcceptableServiceFactory;
+import org.coodex.util.SelectableServiceFactory;
 
 /**
  * 目标描述工厂。判定参数是模块名
  */
-public interface DestinationFactory<L extends Destination, S> extends AcceptableServiceFactory<Destination, String> {
+public interface DestinationFactory<L extends Destination, S> extends SelectableServiceFactory<Destination, String> {
 
 }

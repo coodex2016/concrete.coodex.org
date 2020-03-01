@@ -19,8 +19,8 @@ package org.coodex.billing.timebased.reference;
 import org.coodex.billing.timebased.BillingModel;
 import org.coodex.billing.timebased.Period;
 import org.coodex.billing.timebased.TimeBasedChargeable;
-import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Common;
+import org.coodex.util.LazySelectableServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +32,7 @@ import java.util.List;
 public abstract class AbstractModelInstance<C extends TimeBasedChargeable> implements BillingModel.Instance<C> {
     private final static Logger log = LoggerFactory.getLogger(AbstractModelInstance.class);
 
+    @SuppressWarnings("rawtypes")
     private static final Comparator<BillingModel.Fragment> FRAGMENT_COMPARATOR = new Comparator<BillingModel.Fragment>() {
         @Override
         public int compare(BillingModel.Fragment o1, BillingModel.Fragment o2) {
@@ -39,12 +40,12 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
         }
     };
 
-    private final AcceptableServiceLoader<AlgorithmProfile, AlgorithmFactory<C, AlgorithmProfile>>
-            algorithmFactoryAcceptableServiceLoader = new AcceptableServiceLoader<AlgorithmProfile, AlgorithmFactory<C, AlgorithmProfile>>() {
+    private final LazySelectableServiceLoader<AlgorithmProfile, AlgorithmFactory<C, AlgorithmProfile>>
+            algorithmFactorySelectableServiceLoader = new LazySelectableServiceLoader<AlgorithmProfile, AlgorithmFactory<C, AlgorithmProfile>>() {
     };
 
-    private final AcceptableServiceLoader<SlicerProfile, SlicerFactory<C, SlicerProfile>>
-            slicerFactoryAcceptableServiceLoader = new AcceptableServiceLoader<SlicerProfile, SlicerFactory<C, SlicerProfile>>() {
+    private final LazySelectableServiceLoader<SlicerProfile, SlicerFactory<C, SlicerProfile>>
+            slicerFactorySelectableServiceLoader = new LazySelectableServiceLoader<SlicerProfile, SlicerFactory<C, SlicerProfile>>() {
     };
 
     private final ModelProfile modelProfile;
@@ -55,13 +56,13 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
 
     private BillingModel.Algorithm<C> getAlgorithm(AlgorithmProfile algorithmProfile) {
         if (algorithmProfile == null) return null;
-        AlgorithmFactory<C, AlgorithmProfile> factory = algorithmFactoryAcceptableServiceLoader.select(algorithmProfile);
+        AlgorithmFactory<C, AlgorithmProfile> factory = algorithmFactorySelectableServiceLoader.select(algorithmProfile);
         return factory == null ? null : factory.build(algorithmProfile);
     }
 
     private FragmentSlicer<C> getSlicer(SlicerProfile slicerProfile) {
         if (slicerProfile == null) return null;
-        SlicerFactory<C, SlicerProfile> slicerFactory = slicerFactoryAcceptableServiceLoader.select(slicerProfile);
+        SlicerFactory<C, SlicerProfile> slicerFactory = slicerFactorySelectableServiceLoader.select(slicerProfile);
         return slicerFactory == null ? null : slicerFactory.build(slicerProfile);
     }
 

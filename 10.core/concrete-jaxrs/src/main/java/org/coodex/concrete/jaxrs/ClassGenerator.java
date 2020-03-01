@@ -17,12 +17,12 @@
 package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 /**
  * Created by davidoff shen on 2016-11-26.
  */
-public interface ClassGenerator extends AcceptableService<String> {
+public interface ClassGenerator extends SelectableService<String> {
 
 //    @Deprecated
 //    boolean FRONTEND_DEV_MODE = ConcreteHelper.isDevModel()            ;

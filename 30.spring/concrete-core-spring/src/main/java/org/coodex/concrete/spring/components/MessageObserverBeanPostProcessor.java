@@ -31,6 +31,7 @@ public class MessageObserverBeanPostProcessor extends InstantiationAwareBeanPost
 
     private final static Logger log = LoggerFactory.getLogger(MessageObserverBeanPostProcessor.class);
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof Observer) {
@@ -40,6 +41,7 @@ public class MessageObserverBeanPostProcessor extends InstantiationAwareBeanPost
         return super.postProcessAfterInitialization(bean, beanName);
     }
 
+    @SuppressWarnings("rawtypes")
     private AbstractTopic getTopic(Observer observer, String beanName) {
         MessageConsumer messageConsumer = observer.getClass().getAnnotation(MessageConsumer.class);
         Type topicType = null;

@@ -16,11 +16,11 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 import java.util.List;
 
-public interface ProductionRepository extends AcceptableService<Account> {
+public interface ProductionRepository extends SelectableService<Account> {
 
     List<Production> getProductionsBy(Account account, String[] modules);
 

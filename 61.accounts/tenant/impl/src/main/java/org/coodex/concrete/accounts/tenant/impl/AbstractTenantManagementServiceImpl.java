@@ -155,8 +155,8 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
     }
 
     protected Calendar getValidation(Calendar validation, int count, int unit) {
-        validation = validation == null ? Clock.getCalendar() : (Calendar) validation.clone();
-        Calendar result = Clock.getCalendar();
+        validation = validation == null ? Clock.now() : (Calendar) validation.clone();
+        Calendar result = Clock.now();
         result.setTimeInMillis(Math.max(Clock.currentTimeMillis(), validation.getTimeInMillis()));
         switch (unit) {
             case 1:
@@ -197,7 +197,7 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
         E tenantEntity = getTenantEntity(tenant);
         long now = Clock.currentTimeMillis();
         IF.is(tenantEntity.isUsing(), AccountsErrorCodes.TENANT_IN_USING);
-        Calendar validation = Clock.getCalendar();
+        Calendar validation = Clock.now();
         validation.setTimeInMillis(now + tenantEntity.getSurplus());
         tenantEntity.setSurplus(0l);
         tenantEntity.setValidation(validation);

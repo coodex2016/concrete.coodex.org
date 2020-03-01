@@ -18,14 +18,14 @@ package org.coodex.billing.timebased;
 
 import org.coodex.billing.Bill;
 import org.coodex.billing.Revision;
-import org.coodex.util.AcceptableService;
+import org.coodex.util.SelectableService;
 
 /**
  * 根据抵扣创建明细
  *
  * @param <T>
  */
-public interface RevisionToDetail<T extends Revision> extends AcceptableService<T> {
+public interface RevisionToDetail<T extends Revision> extends SelectableService<T> {
 
     Bill.Detail toDetail(T revision, Period period, long amount);
 }

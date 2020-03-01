@@ -31,5 +31,35 @@ public @interface Coordinates {
 
     String latitude() default "(-90, 90)";
 
+    /**
+     * @return 单一简单数据可用，用以指定其模拟维度
+     */
+    Dimension dimension() default Dimension.LONGITUDE;
+
     int digits() default 8;
+
+    enum Dimension {
+        LONGITUDE, LATITUDE
+    }
+
+    class Value {
+        private double longitude;
+        private double latitude;
+
+        public double getLongitude() {
+            return longitude;
+        }
+
+        public void setLongitude(double longitude) {
+            this.longitude = longitude;
+        }
+
+        public double getLatitude() {
+            return latitude;
+        }
+
+        public void setLatitude(double latitude) {
+            this.latitude = latitude;
+        }
+    }
 }

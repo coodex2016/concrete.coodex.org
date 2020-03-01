@@ -23,8 +23,8 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.SignatureAttribute;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
-import org.coodex.util.AcceptableServiceLoader;
 import org.coodex.util.Common;
+import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ import static org.coodex.util.GenericTypeHelper.solveFromType;
 /**
  * 不同的队列、不同主题构建唯一的搬运工类
  * 类型定义：
- *
+ * <p>
  * {@literal @}Queue("queueName") public class ClassNameWithIndex
  * extends Prototype<MessageType>
  * implements Courier<MessageType>{}
@@ -57,8 +57,9 @@ class CourierBuilder
             new SingletonMap<>(
                     new CourierBuilder()
             );
-    private static AcceptableServiceLoader<String, CourierPrototypeProvider> providers =
-            new AcceptableServiceLoader<String, CourierPrototypeProvider>(){};
+    private static LazySelectableServiceLoader<String, CourierPrototypeProvider> providers =
+            new LazySelectableServiceLoader<String, CourierPrototypeProvider>() {
+            };
     private AtomicLong index = new AtomicLong(0);
 
     static <M extends Serializable> Courier<M> buildCourier(TopicKey topicKey) {
@@ -94,7 +95,7 @@ class CourierBuilder
         try {
             String destination = getDestination(key.queue);
             CourierPrototypeProvider provider = null;
-            if(!Common.isBlank(destination))
+            if (!Common.isBlank(destination))
                 provider = providers.select(destination);
             Class<? extends CourierPrototype> prototype =
                     provider == null ?
