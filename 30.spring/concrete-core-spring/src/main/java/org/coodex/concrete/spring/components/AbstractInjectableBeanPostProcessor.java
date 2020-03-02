@@ -30,8 +30,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.Primary;
 
 import javax.inject.Inject;
@@ -54,6 +54,10 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
     private final static Logger log = LoggerFactory.getLogger(AbstractInjectableBeanPostProcessor.class);
     private static AtomicLong index = new AtomicLong(0);
 
+    //    @Inject
+//    private ListableBeanFactory listableBeanFactory;
+//    @Inject
+//    private BeanDefinitionRegistry beanDefinitionRegistry;
     @Inject
     private DefaultListableBeanFactory defaultListableBeanFactory;
     @SuppressWarnings("unchecked")
@@ -163,13 +167,13 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
                         if (!injectedCache.containsKey(key)) {
                             Class<?> injectClass = getInjectClass(key, beanClass);
                             String newBeanName = newBeanName();
-                            BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(injectClass).getBeanDefinition();
+                            BeanDefinition beanDefinition = new RootBeanDefinition(injectClass);
                             if (injectClass.getAnnotation(Primary.class) != null)
                                 beanDefinition.setPrimary(true);
 
-                            getBeanFactory().registerBeanDefinition(newBeanName, beanDefinition);
+                            getDefaultListableBeanFactory().registerBeanDefinition(newBeanName, beanDefinition);
 //                            getBeanFactory().registerSingleton(newBeanName, instance);
-                            log.info("new singleton bean registered: {}, {} ", newBeanName, injectClass.getName());
+                            log.info("new bean registered: {}, {} ", newBeanName, injectClass.getName());
                             injectedCache.put(key, injectClass);
                         }
                     }
@@ -193,7 +197,7 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
 //        }
     }
 
-    protected DefaultListableBeanFactory getBeanFactory() {
+    protected DefaultListableBeanFactory getDefaultListableBeanFactory() {
         return defaultListableBeanFactory;
     }
 }

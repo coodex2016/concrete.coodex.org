@@ -37,7 +37,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.*;
-import static org.coodex.util.Common.runtimeException;
 import static org.coodex.util.GenericTypeHelper.toReference;
 
 
@@ -132,31 +131,31 @@ public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<
     }
 
 
-    private void registerBean(Type topicType, String queueName, Class<?> contextClass) {
-        try {
-            TopicKey topicKey = new TopicKey(queueName, topicType);
-            if (!injected.contains(topicKey)) {
-                synchronized (this) {
-                    if (!injected.contains(topicKey)) {
-                        String beanName = "topic_" + Common.getUUIDStr();
-                        String cName = String.format("TopicBean$$CBC$$%08X", getIndex());
-                        String className = String.format("%s.%s", contextClass.getPackage().getName(), cName);
-
-
-                        ParameterizedType pt = (ParameterizedType) topicType;
-
-                        Class<?> clz = getBeanClass(topicType, queueName, className, pt, contextClass);
-                        getBeanFactory().registerSingleton(beanName, clz.getConstructor().newInstance());
-                        log.info("Topic Bean registered: {}, {}, {}, {}. ", beanName, queueName, topicType.toString(), clz.getName());
-                        injected.add(topicKey);
-                    }
-                }
-            }
-        } catch (Throwable th) {
-            throw runtimeException(th);
-        }
-
-    }
+//    private void registerBean(Type topicType, String queueName, Class<?> contextClass) {
+//        try {
+//            TopicKey topicKey = new TopicKey(queueName, topicType);
+//            if (!injected.contains(topicKey)) {
+//                synchronized (this) {
+//                    if (!injected.contains(topicKey)) {
+//                        String beanName = "topic_" + Common.getUUIDStr();
+//                        String cName = String.format("TopicBean$$CBC$$%08X", getIndex());
+//                        String className = String.format("%s.%s", contextClass.getPackage().getName(), cName);
+//
+//
+//                        ParameterizedType pt = (ParameterizedType) topicType;
+//
+//                        Class<?> clz = getBeanClass(topicType, queueName, className, pt, contextClass);
+//                        getBeanDefinitionRegistry().registerSingleton(beanName, clz.getConstructor().newInstance());
+//                        log.info("Topic Bean registered: {}, {}, {}, {}. ", beanName, queueName, topicType.toString(), clz.getName());
+//                        injected.add(topicKey);
+//                    }
+//                }
+//            }
+//        } catch (Throwable th) {
+//            throw runtimeException(th);
+//        }
+//
+//    }
 
     @SuppressWarnings("rawtypes")
     private Class<?> getBeanClass(Type topicType, String queueName, String className,

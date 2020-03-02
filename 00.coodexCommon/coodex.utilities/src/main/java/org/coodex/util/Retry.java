@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -49,7 +50,10 @@ public class Retry {
                 }
             }
     );
+    // 负责任务调度
     private ScheduledExecutorService scheduledExecutorService;
+    // 负责执行任务
+    private ExecutorService executorService;
     private Integer maxTimes;
     private long initDelay = 0L;
     private NextDelay nextDelay;
@@ -76,7 +80,7 @@ public class Retry {
     public void execute(final Runnable runnable) {
         execute(new Task() {
             @Override
-            public boolean run(int times) throws Exception {
+            public boolean run(int times) {
                 runnable.run();
                 return true;
             }
@@ -103,8 +107,7 @@ public class Retry {
     }
 
     private void postTask() {
-
-        scheduledExecutorService.schedule(new Runnable() {
+        Runnable toPost = new Runnable() {
             @Override
             public void run() {
                 synchronized (Retry.this) {
@@ -113,7 +116,7 @@ public class Retry {
                     if (start == null) {
                         start = Clock.currentTimeMillis();
                     }
-                    Long thisTimes = Clock.currentTimeMillis();
+                    long thisTimes = Clock.currentTimeMillis();
 
                     int times = num;
                     Throwable throwable = null;
@@ -158,7 +161,22 @@ public class Retry {
                     }
                 }
             }
-        }, num == 1 ? initDelay : Clock.toMillis(nextDelay.next(num), TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
+        };
+
+        if (executorService != null) {
+            final Runnable tmp = toPost;
+            toPost = new Runnable() {
+                @Override
+                public void run() {
+                    executorService.execute(tmp);
+                }
+            };
+        }
+
+        scheduledExecutorService.schedule(toPost,
+                num == 1
+                        ? initDelay
+                        : Clock.toMillis(nextDelay.next(num), TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
     }
 
     public void onFailed(Calendar start, int times, Throwable throwable) {
@@ -177,7 +195,7 @@ public class Retry {
 
     /**
      * @param allFailedHandle allFailedHandle
-     * @return
+     * @return Retry
      * @see Builder#onAllFailed(AllFailedHandle)
      * @deprecated
      */
@@ -267,6 +285,7 @@ public class Retry {
     public static class Builder {
 
         private ScheduledExecutorService scheduledExecutorService;
+        private ExecutorService executorService;
         private Integer maxTimes;
         private long initDelay = 0L;
         private NextDelay nextDelay;
@@ -277,8 +296,21 @@ public class Retry {
         private Builder() {
         }
 
+        /**
+         * @param scheduledExecutorService 调度线程池
+         * @return Builder
+         */
         public Builder scheduler(ScheduledExecutorService scheduledExecutorService) {
             this.scheduledExecutorService = scheduledExecutorService;
+            return this;
+        }
+
+        /**
+         * @param executorService 任务执行线程池
+         * @return Builder
+         */
+        public Builder executor(ExecutorService executorService) {
+            this.executorService = executorService;
             return this;
         }
 
@@ -366,6 +398,7 @@ public class Retry {
             retry.scheduledExecutorService = this.scheduledExecutorService == null ?
                     SCHEDULED_EXECUTOR_SERVICE_SINGLETON.get() :
                     this.scheduledExecutorService;
+            retry.executorService = this.executorService;
             retry.taskNameSupplier = this.taskNameSupplier;
             retry.onFailed = onFailed;
             retry.allFailedHandle = allFailedHandle;

@@ -39,6 +39,7 @@ public interface SomeService {
 - 增加`coodex-bom`模块，为下一步重构项目结构做准备
 - 增加`coodex-junit-enhance`，对部分单元调试场景需求进行了强化，[详见](https://concrete.coodex.org/coodex-junit-enhance/)
 - `coodex-core-spring`增加对ServiceLoader和SelectableServiceLoader的注入支持
+- Retry可以指定任务执行线程池，ScheduledExecutorService的线程数没法伸缩，所以，通过两个线程池来完成，维持一个较小的ScheduledExecutorService进行任务调度，使用可伸缩ExecutorService进行任务执行
 
 ## 2020-02-17
 

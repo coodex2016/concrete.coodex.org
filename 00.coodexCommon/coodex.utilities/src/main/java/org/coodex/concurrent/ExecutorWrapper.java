@@ -35,7 +35,6 @@ final class ExecutorWrapper {
 
     private static final Set<ExecutorService> executors = new HashSet<ExecutorService>();
 
-
     static <T extends ExecutorService> T wrap(T executorService) {
         // TODO 动态代理，当Executor shutdown或shutdownNow的时候脱离管理
         if (executorService instanceof ScheduledExecutorService) {

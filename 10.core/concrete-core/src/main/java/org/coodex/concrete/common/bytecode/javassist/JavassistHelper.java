@@ -28,6 +28,7 @@ import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -38,8 +39,6 @@ import java.util.Collection;
  * Created by davidoff shen on 2016-11-24.
  */
 public class JavassistHelper {
-
-    private final static Logger log = LoggerFactory.getLogger(JavassistHelper.class);
 
     public final static Singleton<Boolean> IS_JAVA_9_AND_LAST = new Singleton<>(
             () -> {
@@ -52,8 +51,9 @@ public class JavassistHelper {
                 }
             }
     );
+    private final static Logger log = LoggerFactory.getLogger(JavassistHelper.class);
 
-//    public static String getGenericSignature(ParameterizedType type){
+    //    public static String getGenericSignature(ParameterizedType type){
 //        List<String> arguments = new ArrayList<String>();
 //        for(Type t : type.getActualTypeArguments()){
 //            if(t instanceof ParameterizedType){
@@ -65,7 +65,6 @@ public class JavassistHelper {
 //        }
 //        return null;
 //    }
-
     private final static SingletonMap<ClassLoader, ClassPool> classPools =
             new SingletonMap<>(key -> {
                 ClassPool classPool = new ClassPool(true);
@@ -95,6 +94,35 @@ public class JavassistHelper {
         return new SignatureAttribute.ClassType(className, args.toArray(new SignatureAttribute.TypeArgument[0]));
     }
 
+    private static SignatureAttribute.ObjectType objectType(Type type) {
+        if (type instanceof Class) {
+            if (((Class) type).isArray()) {
+                int d = 0;
+                Class array = (Class) type;
+                while (array.isArray()) {
+                    d++;
+                    array = array.getComponentType();
+                }
+                return new SignatureAttribute.ArrayType(d, new SignatureAttribute.ClassType(array.getName()));
+            } else {
+                return new SignatureAttribute.ClassType(((Class) type).getName());
+            }
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) type;
+            return classType(pt.getRawType().getTypeName(), pt.getActualTypeArguments());
+        } else if (type instanceof GenericArrayType) {
+            Type t = type;
+            int d = 0;
+            while (t instanceof GenericArrayType) {
+                t = ((GenericArrayType) t).getGenericComponentType();
+                d++;
+            }
+            return new SignatureAttribute.ArrayType(d, objectType(t));
+        } else {
+            return new SignatureAttribute.TypeVariable(type.getTypeName());
+        }
+    }
+
     public static String getTypeName(Class<?> c) {
         return c.getName();
     }
@@ -102,7 +130,7 @@ public class JavassistHelper {
     public static String getSignature(SignatureAttribute.Type type) {
         if (type instanceof SignatureAttribute.ObjectType) {
             return ((SignatureAttribute.ObjectType) type).encode();
-        } else if(type instanceof SignatureAttribute.BaseType){
+        } else if (type instanceof SignatureAttribute.BaseType) {
             return String.valueOf(((SignatureAttribute.BaseType) type).getDescriptor());
         }
         return null;

@@ -19,6 +19,7 @@ package test.org.coodex.bean.processors;
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
 import org.coodex.util.DefaultService;
 import org.coodex.util.SelectableServiceLoader;
+import org.coodex.util.ServiceLoader;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,8 +31,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import test.org.coodex.bean.processors.b.NumberSelectableService;
 import test.org.coodex.bean.processors.b.SelectableServiceImpl;
 import test.org.coodex.bean.processors.b.SelectableTest;
+import test.org.coodex.bean.processors.c.GenericSelectableService;
+import test.org.coodex.bean.processors.c.GenericSelectableServiceX;
+import test.org.coodex.bean.processors.c.GenericService;
 
 import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Import(ConcreteSpringConfiguration.class)
@@ -59,6 +65,8 @@ public class SelectableServiceLoaderTest {
     @Inject
     @DefaultService(NumberSelectableService.OddNumberSelectableService.class)
     private SelectableServiceLoader<Integer, NumberSelectableService> serviceLoader6;
+
+
 
 
     @Test
