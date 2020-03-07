@@ -52,7 +52,7 @@ public class AllTrustedSSLContextFactory implements SSLContextFactory {
 
             @Override
             public X509Certificate[] getAcceptedIssuers() {
-                return null;
+                return new X509Certificate[0];
             }
         }}, new SecureRandom());
 

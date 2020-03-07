@@ -35,8 +35,15 @@ import java.nio.charset.StandardCharsets;
 public class Log4j2LoggerProvider extends AbstractLoggerProvider {
     private final static Singleton<String> CONSOLE_APPENDER_KEY = new Singleton<>(() -> Config.getValue("logger.appender.console", "Console"));
 
+    protected String getFileAppenderDefaultPattern() {
+        return "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n";
+    }
 
-    private static Logger newLogger(String loggerName) {
+    protected String getDefaultPath() {
+        return "logs/";
+    }
+
+    private Logger newLogger(String loggerName) {
         LoggerContext ctx = LoggerContext.getContext(false);
         Configuration configuration = ctx.getConfiguration();
         // new Appender
@@ -48,7 +55,7 @@ public class Log4j2LoggerProvider extends AbstractLoggerProvider {
         return LoggerFactory.getLogger(loggerName);
     }
 
-    private static void buildConsoleAppender(Configuration configuration) {
+    private void buildConsoleAppender(Configuration configuration) {
         Appender appender = ConsoleAppender.newBuilder()
                 .setName(CONSOLE_APPENDER_KEY.get())
 //                .withName(CONSOLE_APPENDER_KEY.get())
@@ -68,7 +75,7 @@ public class Log4j2LoggerProvider extends AbstractLoggerProvider {
         configuration.addAppender(appender);
     }
 
-    private static void newLoggerConfig(String loggerName, Configuration configuration) {
+    private void newLoggerConfig(String loggerName, Configuration configuration) {
 
         Level level = Level.toLevel(
                 Config.getValue("logger." + loggerName + ".level", Config.get("logger.level")),
@@ -94,7 +101,7 @@ public class Log4j2LoggerProvider extends AbstractLoggerProvider {
         configuration.addLogger(loggerName, loggerConfig);
     }
 
-    private static void newAppender(String loggerName, Configuration configuration) {
+    private void newAppender(String loggerName, Configuration configuration) {
         Appender appender = FileAppender.newBuilder()
                 .setConfiguration(configuration)
                 .setName(loggerName)
@@ -105,11 +112,11 @@ public class Log4j2LoggerProvider extends AbstractLoggerProvider {
                                 .withCharset(StandardCharsets.UTF_8)
                                 .withPattern(Config.getValue("logger." + loggerName + ".pattern",
                                         Config.getValue("logger.pattern",
-                                                "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n")))
+                                                getFileAppenderDefaultPattern())))
                                 .build()
                 )
                 .withAppend(false)
-                .withFileName(Config.getValue("logger.path", "logs/") + loggerName + ".log")
+                .withFileName(Config.getValue("logger.path", getDefaultPath()) + loggerName + ".log")
                 .build();
         appender.start();
         configuration.addAppender(appender);

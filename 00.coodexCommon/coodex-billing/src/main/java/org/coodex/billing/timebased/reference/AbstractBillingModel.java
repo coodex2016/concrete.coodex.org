@@ -19,10 +19,11 @@ package org.coodex.billing.timebased.reference;
 import org.coodex.billing.timebased.BillingModel;
 import org.coodex.billing.timebased.TimeBasedChargeable;
 import org.coodex.util.LazySelectableServiceLoader;
+import org.coodex.util.SelectableServiceLoader;
 
 public abstract class AbstractBillingModel<C extends TimeBasedChargeable> implements BillingModel<C> {
 
-    private final LazySelectableServiceLoader<String, ModelProfileFactory> modelProfileFactorySelectableServiceLoader
+    private final SelectableServiceLoader<String, ModelProfileFactory> modelProfileFactorySelectableServiceLoader
             = new LazySelectableServiceLoader<String, ModelProfileFactory>() {
     };
 

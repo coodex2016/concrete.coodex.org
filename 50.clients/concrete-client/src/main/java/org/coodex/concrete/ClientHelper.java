@@ -18,7 +18,10 @@ package org.coodex.concrete;
 
 import org.coodex.concrete.api.rx.CompletableFutureBridge;
 import org.coodex.concrete.api.rx.ReactiveExtensionFor;
-import org.coodex.concrete.client.*;
+import org.coodex.concrete.client.Destination;
+import org.coodex.concrete.client.InstanceBuilder;
+import org.coodex.concrete.client.Invoker;
+import org.coodex.concrete.client.InvokerFactory;
 import org.coodex.concrete.client.impl.JavaProxyInstanceBuilder;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.IF;
@@ -29,10 +32,7 @@ import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.InterceptorChain;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
 import org.coodex.ssl.SSLContextFactory;
-import org.coodex.util.LazySelectableServiceLoader;
-import org.coodex.util.LazyServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
-import org.coodex.util.Singleton;
+import org.coodex.util.*;
 
 import javax.net.ssl.SSLContext;
 import java.util.Set;
@@ -85,8 +85,8 @@ public class ClientHelper {
                 buildChain(instance);
                 return instance;
             });
-    private static LazySelectableServiceLoader<String, DestinationFactory<Destination, String>> destinationFactorySelectableServiceLoader
-            = new LazySelectableServiceLoader<String, DestinationFactory<Destination, String>>() {
+    private static SelectableFactoryLoader<String, Destination> destinationFactorySelectableServiceLoader
+            = new SelectableFactoryLoaderImpl<String, Destination>() {
     };
 
     private ClientHelper() {
@@ -130,7 +130,7 @@ public class ClientHelper {
     }
 
     public static Destination getDestination(String module) {
-        return destinationFactorySelectableServiceLoader.select(module).build(module);
+        return destinationFactorySelectableServiceLoader.build(module);
     }
 
 //    private static SelectableServiceLoaderImpl<String, SSLContextFactory> getSSLContextFactoryAcceptableServiceLoader() {

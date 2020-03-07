@@ -18,7 +18,6 @@ package org.coodex.concrete.client.amqp;
 
 import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.client.AbstractDestinationFactory;
-import org.coodex.concrete.client.Destination;
 import org.coodex.util.Common;
 
 public class AMQPDestinationFactory extends AbstractDestinationFactory<AMQPDestination> {
@@ -30,7 +29,7 @@ public class AMQPDestinationFactory extends AbstractDestinationFactory<AMQPDesti
     }
 
     @Override
-    public Destination build(String module) {
+    public AMQPDestination build(String module) {
         AMQPDestination destination = init(new AMQPDestination(), module);
         destination.setHost(ClientHelper.getString(module, "amqp.host"));
         String port = ClientHelper.getString(module, "amqp.port");
@@ -45,7 +44,7 @@ public class AMQPDestinationFactory extends AbstractDestinationFactory<AMQPDesti
         destination.setUsername(ClientHelper.getString(module, "amqp.username"));
         destination.setPassword(ClientHelper.getString(module, "amqp.password"));
         destination.setExchangeName(ClientHelper.getString(module, "amqp.exchange"));
-        destination.setSharedExecutorName(ClientHelper.getString(module,"amqp.executorName"));
+        destination.setSharedExecutorName(ClientHelper.getString(module, "amqp.executorName"));
         return destination;
     }
 

@@ -21,9 +21,6 @@ import org.coodex.concrete.core.intercept.*;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.config.Config;
 import org.coodex.util.LazyServiceLoader;
-import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
-import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -57,6 +54,17 @@ public class ConcreteSpringConfiguration {
 //            new Singleton<>(() -> new ServiceLoaderImpl<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
 //            });
 
+    private static Map<String, Class<? extends ConcreteInterceptor>> getInterceptorSupportedMap() {
+        return new HashMap<String, Class<? extends ConcreteInterceptor>>() {{
+            put("rbac", RBACInterceptor.class);
+            put("limiting", LimitingInterceptor.class);
+            put("signature", SignatureInterceptor.class);
+            put("log", OperationLogInterceptor.class);
+            put("timing", ServiceTimingInterceptor.class);
+            put("beanValidation", BeanValidationInterceptor.class);
+        }};
+    }
+
     @Bean
     public BeanProvider springBeanProvider() {
         return new SpringBeanProvider();
@@ -75,17 +83,6 @@ public class ConcreteSpringConfiguration {
     @Bean
     public Subjoin subjoinWrapper() {
         return SubjoinWrapper.getInstance();
-    }
-
-    private static Map<String, Class<? extends ConcreteInterceptor>> getInterceptorSupportedMap() {
-        return new HashMap<String, Class<? extends ConcreteInterceptor>>() {{
-            put("rbac", RBACInterceptor.class);
-            put("limiting", LimitingInterceptor.class);
-            put("signature", SignatureInterceptor.class);
-            put("log", OperationLogInterceptor.class);
-            put("timing", ServiceTimingInterceptor.class);
-            put("beanValidation", BeanValidationInterceptor.class);
-        }};
     }
 
     @Bean

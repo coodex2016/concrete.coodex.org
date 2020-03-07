@@ -16,13 +16,22 @@
 
 package org.coodex.util;
 
-/**
- * 使用 {@link SelectableFactory} 替代
- *
- * @param <PRODUCT>
- * @param <PARAM>
- * @deprecated
- */
-@Deprecated
-public interface AcceptableServiceFactory<PRODUCT, PARAM> extends SelectableFactory<PARAM, PARAM> {
+public abstract class SelectableFactoryLoaderImpl<PARAM, PROD>
+        extends SelectableServiceLoaderImpl<PARAM, SelectableFactory<PROD, PARAM>>
+        implements SelectableFactoryLoader<PARAM, PROD> {
+
+    public SelectableFactoryLoaderImpl() {
+    }
+
+    public SelectableFactoryLoaderImpl(SelectableFactory<PROD, PARAM> defaultService) {
+        super(defaultService);
+    }
+
+    @Override
+    public PROD build(PARAM param) {
+        SelectableFactory<PROD, PARAM> factory = select(param);
+        if (factory != null)
+            return factory.build(param);
+        throw new RuntimeException("none factory found for :" + param);
+    }
 }

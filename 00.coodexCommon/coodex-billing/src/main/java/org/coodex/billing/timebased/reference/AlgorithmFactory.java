@@ -18,8 +18,8 @@ package org.coodex.billing.timebased.reference;
 
 import org.coodex.billing.timebased.BillingModel;
 import org.coodex.billing.timebased.TimeBasedChargeable;
-import org.coodex.util.SelectableServiceFactory;
+import org.coodex.util.SelectableFactory;
 
 public interface AlgorithmFactory<C extends TimeBasedChargeable, T extends AlgorithmProfile>
-        extends SelectableServiceFactory<BillingModel.Algorithm<C>, T> {
+        extends SelectableFactory<BillingModel.Algorithm<C>, T> {
 }

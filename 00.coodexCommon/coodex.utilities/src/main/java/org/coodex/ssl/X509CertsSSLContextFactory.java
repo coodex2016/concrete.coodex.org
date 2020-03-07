@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -32,6 +32,8 @@ import java.security.KeyStoreException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class X509CertsSSLContextFactory implements SSLContextFactory {
@@ -40,37 +42,53 @@ public class X509CertsSSLContextFactory implements SSLContextFactory {
 
 
     private static final String CERT_PATH = "certPath:".toLowerCase();
-    private static final String CLASS_PATH = "classpath:";
-    private static final String ALIAS = "concrete-certs-alias-";
+    private static final String CLASS_PATH = "cp:";
+//    private static final String ALIAS = "coodex-certs-alias-";
+
+//    private final X509TrustManager x509TrustManager;
 
     @Override
     public SSLContext getSSLContext(String param) throws Throwable {
         String certPath = Common.trim(param.substring(CERT_PATH.length()), ',', ' ', ':', ';');
         Set<String> allPath = Common.arrayToSet(Common.toArray(certPath, ";", new String[0]));
-        SSLContext sslContext = SSLContext.getInstance("SSL");
+        SSLContext sslContext = SSLContext.getInstance("TLSV1.2");
+        List<X509TrustManager> trustManagers = new ArrayList<X509TrustManager>();
 
-        KeyStore trusted = KeyStore.getInstance(KeyStore.getDefaultType());
-        trusted.load(null); // 初始化一个空库
+//        KeyStore trusted = KeyStore.getInstance(KeyStore.getDefaultType());
+//        trusted.load(null); // 初始化一个空库
 
-        int index = 1;
+//        int index = 1;
 
         for (String path : allPath) {
             if (Common.isBlank(path)) continue;
             if (path.toLowerCase().startsWith(CLASS_PATH)) {
                 String[] certs = Common.toArray(path.substring(CLASS_PATH.length()), ",", new String[0]);
                 for (String cert : certs) {
-                    loadCertFromInputStream(trusted, getCertFromResource(cert), ALIAS + index++);
+                    InputStream inputStream = Common.getResource(cert).openStream();
+                    try {
+                        trustManagers.add(new X509TrustManagerImpl(inputStream));
+                    } finally {
+                        inputStream.close();
+                    }
+//                    loadCertFromInputStream(trusted, getCertFromResource(cert), ALIAS + index++);
                 }
             } else {
-                loadCertFromInputStream(trusted, getCertFromFile(path), ALIAS + index++);
+                InputStream inputStream = getCertFromFile(path);
+                if (inputStream == null) continue;
+                try {
+                    trustManagers.add(new X509TrustManagerImpl(inputStream));
+                } finally {
+                    inputStream.close();
+                }
+//                loadCertFromInputStream(trusted, getCertFromFile(path), ALIAS + index++);
             }
         }
 
         //返回trustManager
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        trustManagerFactory.init(trusted);
+//        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("X509");
+//        trustManagerFactory.init(trusted);
 
-        sslContext.init(null, trustManagerFactory.getTrustManagers(), new SecureRandom());
+        sslContext.init(null, trustManagers.toArray(new X509TrustManager[0]),null);
 
         return sslContext;
     }

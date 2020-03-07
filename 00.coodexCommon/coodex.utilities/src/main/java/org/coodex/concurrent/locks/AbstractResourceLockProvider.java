@@ -48,7 +48,7 @@ public abstract class AbstractResourceLockProvider implements ResourceLockProvid
                 }
             }
     );
-    protected Map<ResourceId, AbstractResourceLock> locksMap = new HashMap<ResourceId, AbstractResourceLock>(8);
+    protected final Map<ResourceId, AbstractResourceLock> locksMap = new HashMap<ResourceId, AbstractResourceLock>(8);
 
     private Runnable cleanRunner = new Runnable() {
         @Override

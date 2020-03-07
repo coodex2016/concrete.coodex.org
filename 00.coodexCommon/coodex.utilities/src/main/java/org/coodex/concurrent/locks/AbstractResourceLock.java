@@ -121,23 +121,24 @@ public abstract class AbstractResourceLock implements ResourceLock {
 
 
     private long toMillis(long time, TimeUnit unit) {
-        switch (unit) {
-            case NANOSECONDS:
-                return time / 1000000l;
-            case MICROSECONDS:
-                return time / 1000l;
-            case MILLISECONDS:
-                return time;
-            case SECONDS:
-                return time * 1000l;
-            case MINUTES:
-                return time * 1000l * 60;
-            case HOURS:
-                return time * 1000l * 60 * 60;
-            case DAYS:
-                return time * 1000l * 60 * 60 * 24;
-        }
-        return 0l;
+        return unit.toMillis(time);
+//        switch (unit) {
+//            case NANOSECONDS:
+//                return time / 1000000L;
+//            case MICROSECONDS:
+//                return time / 1000L;
+//            case MILLISECONDS:
+//                return time;
+//            case SECONDS:
+//                return time * 1000L;
+//            case MINUTES:
+//                return time * 1000L * 60;
+//            case HOURS:
+//                return time * 1000L * 60 * 60;
+//            case DAYS:
+//                return time * 1000L * 60 * 60 * 24;
+//        }
+//        return 0l;
     }
 
     @Override

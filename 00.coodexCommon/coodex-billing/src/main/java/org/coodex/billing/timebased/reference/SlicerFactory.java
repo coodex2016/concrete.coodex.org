@@ -17,7 +17,7 @@
 package org.coodex.billing.timebased.reference;
 
 import org.coodex.billing.timebased.TimeBasedChargeable;
-import org.coodex.util.SelectableServiceFactory;
+import org.coodex.util.SelectableFactory;
 
 /**
  * 切片器工厂
@@ -26,5 +26,5 @@ import org.coodex.util.SelectableServiceFactory;
  * @param <T> 切片参数
  */
 public interface SlicerFactory<C extends TimeBasedChargeable, T extends SlicerProfile>
-        extends SelectableServiceFactory<FragmentSlicer<C>, T> {
+        extends SelectableFactory<FragmentSlicer<C>, T> {
 }

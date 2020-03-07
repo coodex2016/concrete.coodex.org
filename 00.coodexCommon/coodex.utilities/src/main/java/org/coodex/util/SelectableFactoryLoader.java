@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2020 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.coodex.util;
 
-public interface SelectableServiceFactory<PRODUCT, PARAM> extends SelectableService<PARAM> {
+public interface SelectableFactoryLoader<PARAM, PROD> extends SelectableServiceLoader<PARAM, SelectableFactory<PROD, PARAM>> {
 
-    PRODUCT build(PARAM param);
+    PROD build(PARAM param);
 }

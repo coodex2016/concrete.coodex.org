@@ -19,10 +19,12 @@ package org.coodex.concrete.common;
 import org.coodex.util.AcceptableService;
 
 /**
- * 使用 {@link org.coodex.util.SelectableServiceFactory}
- * @deprecated
+ * 使用 {@link org.coodex.util.SelectableFactory}
+ *
  * @param <ID>
+ * @deprecated
  */
 @Deprecated
-public interface AcceptableAccountFactory<ID extends AccountID> extends AccountFactory<ID>, AcceptableService<ID> {
+public interface AcceptableAccountFactory<ID extends AccountID>
+        extends AccountFactory<ID>, AcceptableService<ID> {
 }

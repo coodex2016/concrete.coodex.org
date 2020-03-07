@@ -23,7 +23,6 @@ import javassist.CtMethod;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.SignatureAttribute;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
-import org.coodex.util.ReflectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -39,10 +38,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.toCtClass;
@@ -81,11 +77,18 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
 
     @Override
     public final boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
-        scan(bean, bean.getClass(), beanName);
+        scan(bean, bean.getClass(), beanName, bean.getClass());
         return super.postProcessAfterInstantiation(bean, beanName);
     }
 
-//    protected abstract boolean isInjected(Class<?> beanClass, Field injectField);
+
+    //    @Override
+//    public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
+//        scan(null, beanClass, beanName, beanClass);
+//        return super.postProcessBeforeInstantiation(beanClass, beanName);
+//    }
+
+    //    protected abstract boolean isInjected(Class<?> beanClass, Field injectField);
 //
 //    protected abstract InjectInfo getInjectedBean(Class<?> beanClass, Field injectField);
 
@@ -158,26 +161,41 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
         }
     }
 
-    private void scan(Object bean, Class<?> beanClass, String beanName) {
-        for (Field field : ReflectHelper.getAllDeclaredFields(beanClass)) {
+    private synchronized void scan(Object bean, Class<?> beanClass, String beanName, Class<?> scanClass) {
+        if (Object.class.equals(scanClass)) return;
+        for (Field field : scanClass.getDeclaredFields()) {
             if (accept(field)) {
+                if (bean == null)
+                    log.debug("process {} {}: {} extends {}",
+                            toReference(field.getGenericType(), beanClass),
+                            field.getName(), beanClass.getName(), scanClass.getName());
                 K key = getKey(beanClass, field);
                 if (!injectedCache.containsKey(key)) {
-                    synchronized (this) {
-                        if (!injectedCache.containsKey(key)) {
-                            Class<?> injectClass = getInjectClass(key, beanClass);
-                            String newBeanName = newBeanName();
-                            BeanDefinition beanDefinition = new RootBeanDefinition(injectClass);
-                            if (injectClass.getAnnotation(Primary.class) != null)
-                                beanDefinition.setPrimary(true);
+                    Class<?> injectClass = getInjectClass(key, beanClass);
+                    String newBeanName = newBeanName();
+                    BeanDefinition beanDefinition = new RootBeanDefinition(injectClass);
+                    if (injectClass.getAnnotation(Primary.class) != null)
+                        beanDefinition.setPrimary(true);
 
-                            getDefaultListableBeanFactory().registerBeanDefinition(newBeanName, beanDefinition);
+                    getDefaultListableBeanFactory().registerBeanDefinition(newBeanName, beanDefinition);
 //                            getBeanFactory().registerSingleton(newBeanName, instance);
-                            log.info("new bean registered: {}, {} ", newBeanName, injectClass.getName());
-                            injectedCache.put(key, injectClass);
-                        }
+                    if (log.isInfoEnabled()) {
+                        StringJoiner joiner = new StringJoiner(", ");
+                        Arrays.stream(injectClass.getGenericInterfaces())
+                                .map(type -> toReference(type, injectClass))
+                                .forEach(type -> joiner.add(type.toString()));
+                        String interfaces = joiner.length() > 0 ? (" implements " + joiner.toString()) : "";
+                        log.info("new bean registered: {}, {} extends {}{}",
+                                newBeanName, injectClass.getName(),
+                                toReference(injectClass.getGenericSuperclass(), injectClass),
+                                interfaces);
                     }
+                    injectedCache.put(key, injectClass);
                 }
+
+
+                if (bean == null) continue;
+
                 if (isInjectable(field)) {
                     log.info("{} {} {} injected.", beanName, toReference(field.getGenericType(), beanClass), field.getName());
                 } else if (injectNoneAnnotation()) { // 向前兼容,0.4.1开始废弃
@@ -192,10 +210,56 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
             }
         }
 
-//        for (Method method : beanClass.getMethods()) {
-//
-//        }
+        scan(bean, beanClass, beanName, scanClass.getSuperclass());
     }
+
+//    private  void scan(Object bean, Class<?> beanClass, String beanName) {
+////        for (Field field : ReflectHelper.getAllDeclaredFields(beanClass)) {
+////            if (accept(field)) {
+////                K key = getKey(beanClass, field);
+////                if (!injectedCache.containsKey(key)) {
+////                    Class<?> injectClass = getInjectClass(key, beanClass);
+////                    String newBeanName = newBeanName();
+////                    BeanDefinition beanDefinition = new RootBeanDefinition(injectClass);
+////                    if (injectClass.getAnnotation(Primary.class) != null)
+////                        beanDefinition.setPrimary(true);
+////
+////                    getDefaultListableBeanFactory().registerBeanDefinition(newBeanName, beanDefinition);
+//////                            getBeanFactory().registerSingleton(newBeanName, instance);
+////                    if (log.isInfoEnabled()) {
+////                        StringJoiner joiner = new StringJoiner(", ");
+////                        Arrays.stream(injectClass.getGenericInterfaces())
+////                                .map(type -> toReference(type, injectClass))
+////                                .forEach(type -> joiner.add(type.toString()));
+////                        String interfaces = joiner.length() > 0 ? (" implements " + joiner.toString()) : "";
+////                        log.info("new bean registered: {}, {} extends {}{}",
+////                                newBeanName, injectClass.getName(),
+////                                toReference(injectClass.getGenericSuperclass(), injectClass),
+////                                interfaces);
+////                    }
+////                    injectedCache.put(key, injectClass);
+////
+////                }
+////                if (bean == null) return;
+////
+////                if (isInjectable(field)) {
+////                    log.info("{} {} {} injected.", beanName, toReference(field.getGenericType(), beanClass), field.getName());
+////                } else if (injectNoneAnnotation()) { // 向前兼容,0.4.1开始废弃
+////                    try {
+////                        field.setAccessible(true);
+////                        field.set(bean, injectedCache.get(key).newInstance());
+////                        log.warn("{} {} {} injected. use @Inject plz.", beanName, toReference(field.getGenericType(), beanClass), field.getName());
+////                    } catch (Throwable e) {
+////                        throw runtimeException(e);
+////                    }
+////                }
+////            }
+////        }
+//
+////        for (Method method : beanClass.getMethods()) {
+////
+////        }
+//    }
 
     protected DefaultListableBeanFactory getDefaultListableBeanFactory() {
         return defaultListableBeanFactory;
