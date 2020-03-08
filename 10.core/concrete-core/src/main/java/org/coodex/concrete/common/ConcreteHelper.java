@@ -21,7 +21,6 @@ import org.coodex.concrete.api.Priority;
 import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.config.Config;
-import org.coodex.util.ClassNameFilter;
 import org.coodex.util.Common;
 import org.coodex.util.ReflectHelper;
 import org.coodex.util.SingletonMap;
@@ -41,7 +40,7 @@ import static org.coodex.util.ReflectHelper.foreachClass;
  */
 public class ConcreteHelper {
 
-    public static final String VERSION = "0.4.0-SNAPSHOT";
+    public static final String VERSION = "0.4.0";
 
     public static final String TAG_CLIENT = "client";
     public static final String KEY_LOCATION = "location";
@@ -252,7 +251,7 @@ public class ConcreteHelper {
         //clz.getAnnotation(Abstract.class) != null
         return Common.isBlank(concreteService.value()) ?
                 (concreteService.nonspecific() ? "" : clz.getCanonicalName()) :
-                Common.trim(concreteService.value(),"/\\.");
+                Common.trim(concreteService.value(), "/\\.");
     }
 
 //    public static String getMethodName(Method method) {
@@ -352,7 +351,7 @@ public class ConcreteHelper {
     }
 
 
-    public static boolean isAbstract(Class<?> clz){
+    public static boolean isAbstract(Class<?> clz) {
         ConcreteService service = clz.getAnnotation(ConcreteService.class);
         return service != null && service.nonspecific();
     }
@@ -384,8 +383,6 @@ public class ConcreteHelper {
 //    }
 
 
-
-
     public static int getPriority(Method method, Class<?> clz) {
         Priority priority = ConcreteHelper.getContext(method, clz).getAnnotation(Priority.class);
         return priority == null ?
@@ -398,7 +395,7 @@ public class ConcreteHelper {
         return getPriority(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
     }
 
-    public static DefinitionContext getContext(Method method, Class<?> clz) throws ConcreteException{
+    public static DefinitionContext getContext(Method method, Class<?> clz) throws ConcreteException {
         return IF.isNull(getContext(method, clz, new Stack<>()), ErrorCodes.MODULE_DEFINITION_NOT_FOUND);
     }
 
@@ -524,7 +521,7 @@ public class ConcreteHelper {
         return null;
     }
 
-    public static DefinitionContext getDefinitionContext(Class<?> cls, Method method){
+    public static DefinitionContext getDefinitionContext(Class<?> cls, Method method) {
         DefinitionContextImpl definitionContext = new DefinitionContextImpl();
         definitionContext.setDeclaringClass(cls);
         definitionContext.setDeclaringMethod(method);
