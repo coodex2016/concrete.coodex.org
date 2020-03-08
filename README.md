@@ -26,6 +26,15 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2020-03-08
+
+- 发布0.4.0，0.4.x分支仅用于缺陷修复，不再增加新能力
+- 开启0.5.x分支，TODO
+  - 放弃对java8以前版本的支持
+  - 重构SPI部分
+  - 项目结构分拆
+  - 其他优化
+
 ## 2020-03-02
 
 - 作废AcceptableXXX的命名，改为SelectableXXX
