@@ -24,7 +24,7 @@
     <url>https://concrete.coodex.org</url>
     <groupId>org.coodex</groupId>
     <artifactId>concrete.pom</artifactId>
-    <version>0.4.0</version>
+    <version>0.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -53,75 +53,20 @@
     </developers>
 
     <modules>
-        <module>00.coodexCommon/coodex.utilities</module>
-        <module>00.coodexCommon/coodex.utilities.servlet</module>
-        <module>00.coodexCommon/coodex.sharedcache</module>
-        <module>00.coodexCommon/coodex.sharedcache.jedis</module>
-        <module>00.coodexCommon/coodex.sharedcache.memcached</module>
-        <module>00.coodexCommon/coodex-mock-spec</module>
-        <module>00.coodexCommon/coodex-mock-impl</module>
-        <module>00.coodexCommon/coodex-billing</module>
-        <module>00.coodexCommon/coodex-junit-enhance</module>
 
-        <module>00.coodexCommon/coodex-bom</module>
+<!--        <module>01.spec/concrete-fsm</module>-->
+<!--        <module>10.core/concrete-fsm-impl</module>-->
 
-        <module>01.spec/concrete-api</module>
-        <module>01.spec/concrete-fsm</module>
+<!--        <module>20.service.support/concrete-support-jaxrs-saas-reverse-proxy</module>-->
 
-        <module>10.core/concrete-core</module>
-        <module>10.core/concrete-websocket</module>
-        <module>10.core/concrete-test</module>
-        <module>10.core/concrete-fsm-impl</module>
-        <module>10.core/concrete-jaxrs</module>
-        <module>10.core/concrete-amqp</module>
-        <module>10.core/concrete-apache-dubbo</module>
-        <module>10.core/concrete-core-mock</module>
+<!--        <module>60.attachments/concrete-attachments</module>-->
+<!--        <module>60.attachments/concrete-attachments-jaxrs</module>-->
+<!--        <module>60.attachments/concrete-attachments-repo-fastdfs</module>-->
 
-        <module>20.service.support/concrete-support-jaxrs</module>
-        <module>20.service.support/concrete-support-jsr311</module>
-        <module>20.service.support/concrete-support-jsr339</module>
-        <module>20.service.support/concrete-support-jaxrs-saas-reverse-proxy</module>
-        <module>20.service.support/concrete-support-websocket</module>
-        <module>20.service.support/concrete-support-amqp</module>
-        <module>20.service.support/concrete-support-jaxrs-swagger</module>
-        <module>20.service.support/concrete-support-apache-dubbo</module>
+<!--        <module>concrete-bom</module>-->
 
-        <module>30.spring/concrete-core-spring</module>
-        <module>30.spring/concrete-commons-spring-data</module>
-        <module>30.spring/concrete-spring-boot-jaxrs</module>
-        <module>30.spring/concrete-spring-boot-amqp</module>
-        <module>30.spring/concrete-spring-boot-apache-dubbo</module>
-
-        <module>50.clients/concrete-api-tools</module>
-        <module>50.clients/concrete-client</module>
-        <module>50.clients/concrete-jaxrs-client</module>
-        <module>50.clients/concrete-websocket-client</module>
-        <module>50.clients/concrete-amqp-client</module>
-        <module>50.clients/concrete-rx-builder</module>
-        <module>50.clients/concrete-apache-dubbo-client</module>
-
-        <module>60.attachments/concrete-attachments</module>
-        <module>60.attachments/concrete-attachments-jaxrs</module>
-        <module>60.attachments/concrete-attachments-repo-fastdfs</module>
-
-        <module>61.accounts</module>
-
-
-        <module>plugins/plugins.concrete-formatters-freemarker</module>
-        <module>plugins/plugins.concrete-serializer-jackson2</module>
-        <module>plugins/plugins.concrete-serializer-jsonb-jdk8</module>
-        <module>plugins/concrete-courier-jms</module>
-        <module>plugins/concrete-courier-jms-activemq</module>
-        <module>plugins/concrete-courier-rabbitmq</module>
-        <module>plugins/concrete-apm-zipkin</module>
-        <module>plugins/concrete-apm-plugin-mysql</module>
-        <module>plugins/concrete-apm-plugin-mysql8</module>
-        <module>plugins/concrete-rx-observable</module>
-
-        <module>s2/concrete-s2-api</module>
-        <module>s2/concrete-s2-impl</module>
-
-        <module>concrete-bom</module>
+        <module>coodex-libs-pom</module>
+        <module>concrete-pom</module>
 
     </modules>
 
@@ -181,8 +126,8 @@
         <snakeyaml.version>1.24</snakeyaml.version>
         <cglib.version>3.2.12</cglib.version>
 
-        <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>
-        <coodex.shared.cache.version>${project.parent.version}</coodex.shared.cache.version>
+<!--        <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>-->
+<!--        <coodex.shared.cache.version>${project.parent.version}</coodex.shared.cache.version>-->
 
 
     </properties>
@@ -409,6 +354,12 @@
                 <version>${fastjson.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+
             <!-- https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305 -->
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
@@ -604,8 +555,9 @@
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-core</artifactId>
-                <version>2.0.8</version>
+                <version>2.1.1</version>
             </dependency>
+
 
 
             <!-- hibernate validator -->
