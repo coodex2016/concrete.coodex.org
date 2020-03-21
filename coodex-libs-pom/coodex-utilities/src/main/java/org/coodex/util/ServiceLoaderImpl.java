@@ -39,24 +39,21 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 
     private final static Logger log = LoggerFactory.getLogger(ServiceLoaderImpl.class);
-    private Singleton<Instances> instances = new Singleton<Instances>(
-            new Singleton.Builder<Instances>() {
-                @Override
-                public Instances build() {
-                    Instances instances = new Instances();
-                    instances.instancesMap = new HashMap<String, T>();
-                    java.util.ServiceLoader<ServiceLoaderProvider> serviceLoaderProviders =
-                            java.util.ServiceLoader.load(ServiceLoaderProvider.class);
+    private Singleton<Instances> instances = new Singleton<>(
+            () -> {
+                Instances instances = new Instances();
+                instances.instancesMap = new HashMap<>();
+                java.util.ServiceLoader<ServiceLoaderProvider> serviceLoaderProviders =
+                        java.util.ServiceLoader.load(ServiceLoaderProvider.class);
 
-                    for (ServiceLoaderProvider provider : serviceLoaderProviders) {
-                        instances.instancesMap.putAll(provider.load(getInterfaceClass()));
-                    }
-                    if (instances.instancesMap.size() == 0) {
-                        log.debug("no ServiceProvider found for [{}], using default provider.", getInterfaceClass().getCanonicalName());
-                    }
-                    instances.unmodifiedMap = Collections.unmodifiableMap(instances.instancesMap);
-                    return instances;
+                for (ServiceLoaderProvider provider : serviceLoaderProviders) {
+                    instances.instancesMap.putAll(provider.load(getInterfaceClass()));
                 }
+                if (instances.instancesMap.size() == 0) {
+                    log.debug("no ServiceProvider found for [{}], using default provider.", getInterfaceClass().getCanonicalName());
+                }
+                instances.unmodifiedMap = Collections.unmodifiableMap(instances.instancesMap);
+                return instances;
             }
     );
 
@@ -148,7 +145,7 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
     public T get(Class<? extends T> providerClass) {
 //        load();
 //        return (P) getInstance(providerClass.getCanonicalName());
-        Map<String, T> copy = new HashMap<String, T>();
+        Map<String, T> copy = new HashMap<>();
         for (Map.Entry<String, T> entry : instances.get().instancesMap.entrySet()) {
 //            T t = instances.get(key);
             if (entry.getValue() != null && providerClass.isAssignableFrom(entry.getValue().getClass())) {

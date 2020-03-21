@@ -171,13 +171,13 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
     }
 
     private String getUnitDeclaredName() {
-        List<Class> inheritedChain = ConcreteHelper.inheritedChain(
+        List<Class<?>> inheritedChain = ConcreteHelper.inheritedChain(
                 getMethod().getDeclaringClass(), getDeclaringModule().getInterfaceClass());
         if (inheritedChain == null)
             inheritedChain = Collections.emptyList();
 
         StringBuilder buffer = new StringBuilder();
-        for (Class c : inheritedChain) {
+        for (Class<?> c : inheritedChain) {
             String serviceName = ConcreteHelper.getServiceName(c);
             if (!Common.isBlank(serviceName))
                 buffer.append(slash(Common.camelCase(serviceName, true)));

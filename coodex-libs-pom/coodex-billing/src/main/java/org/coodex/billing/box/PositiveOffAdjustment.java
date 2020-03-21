@@ -25,6 +25,7 @@ import org.coodex.billing.Chargeable;
  *
  * @param <C>
  */
+@SuppressWarnings("unused")
 public class PositiveOffAdjustment<C extends Chargeable> extends AbstractOffAdjustment<C> {
 
     /**

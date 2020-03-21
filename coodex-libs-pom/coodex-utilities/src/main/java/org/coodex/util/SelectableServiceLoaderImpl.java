@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 import static org.coodex.util.GenericTypeHelper.typeToClass;
@@ -37,7 +38,7 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 public abstract class SelectableServiceLoaderImpl<Param_Type, T extends SelectableService<Param_Type>>
         implements SelectableServiceLoader<Param_Type, T>, ServiceLoader<T> {
 
-    public static final Common.Function<Method, RuntimeException> EXCEPTION_FUNCTION =
+    public static final Function<Method, RuntimeException> EXCEPTION_FUNCTION =
             method -> new RuntimeException("no instance found."
                     + method.getDeclaringClass().getName()
                     + "." + method.getName());
@@ -47,7 +48,7 @@ public abstract class SelectableServiceLoaderImpl<Param_Type, T extends Selectab
 
     private ServiceLoader<T> serviceLoaderFacade;
     private T defaultService = null;
-    private Common.Function<Method, RuntimeException> exceptionFunction = null;
+    private Function<Method, RuntimeException> exceptionFunction = null;
 
     public SelectableServiceLoaderImpl() {
         this((T) null);
@@ -62,11 +63,11 @@ public abstract class SelectableServiceLoaderImpl<Param_Type, T extends Selectab
      *
      * @param exceptionFunction exceptionFunction
      */
-    public SelectableServiceLoaderImpl(Common.Function<Method, RuntimeException> exceptionFunction) {
+    public SelectableServiceLoaderImpl(Function<Method, RuntimeException> exceptionFunction) {
         this.exceptionFunction = exceptionFunction;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "unused"})
     protected Class<Param_Type> getParamType() {
         return typeToClass(solveFromInstance(SelectableServiceLoaderImpl.class.getTypeParameters()[0], this));
     }

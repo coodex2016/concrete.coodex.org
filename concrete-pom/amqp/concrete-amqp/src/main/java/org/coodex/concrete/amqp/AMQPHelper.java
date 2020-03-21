@@ -28,10 +28,12 @@ import static org.coodex.concrete.amqp.AMQPConstants.DEFAULT_EXCHANGE_NAME;
 
 public class AMQPHelper {
 
-    private static SingletonMap<Class, AMQPModule> modules =
-            new SingletonMap<>(
-                    AMQPModule::new
-            );
+    private static SingletonMap<Class<?>, AMQPModule> modules = SingletonMap.<Class<?>, AMQPModule>builder()
+            .function(AMQPModule::new)
+            .build();
+//            new SingletonMap<>(
+//                    AMQPModule::new
+//            );
 
 
     @SuppressWarnings("unchecked")
@@ -51,7 +53,7 @@ public class AMQPHelper {
     }
 
 
-    public static String getExchangeName(String exchangeName){
+    public static String getExchangeName(String exchangeName) {
         return Common.isBlank(exchangeName) ? DEFAULT_EXCHANGE_NAME : exchangeName;
     }
 }

@@ -23,30 +23,24 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public abstract class AbstractCoalition<T> implements Coalition<T> {
 
+    private static final Singleton<ScheduledExecutorService> sesSingleton = new Singleton<>(
+            () -> ExecutorsHelper.newScheduledThreadPool(Common.toInt(
+                    System.getProperty("coalition.executors.size"), 3
+                    ),
+                    "CoalitionPool")
+    );
     protected final ScheduledExecutorService scheduledExecutorService;// = Executors.newScheduledThreadPool(1);
     protected final Coalition.Callback<T> callback;
-    protected final int interval;
+    protected final long interval;
 
-    private static final Singleton<ScheduledExecutorService> sesSingleton = new Singleton<ScheduledExecutorService>(
-            new Singleton.Builder<ScheduledExecutorService>() {
-                @Override
-                public ScheduledExecutorService build() {
-                    return ExecutorsHelper.newScheduledThreadPool(Common.toInt(
-                            System.getProperty("coalition.executors.size"), 3
-                            ),
-                            "CoalitionPool");
-                }
-            }
-    );
-
-    public AbstractCoalition(Coalition.Callback<T> c, int interval, ScheduledExecutorService scheduledExecutorService) {
+    public AbstractCoalition(Coalition.Callback<T> c, long interval, ScheduledExecutorService scheduledExecutorService) {
         if (scheduledExecutorService == null) throw new NullPointerException("scheduledExecutorService is null.");
         this.scheduledExecutorService = scheduledExecutorService;
         this.callback = c;
         this.interval = interval;
     }
 
-    public AbstractCoalition(Coalition.Callback<T> c, int interval) {
+    public AbstractCoalition(Coalition.Callback<T> c, long interval) {
         this(c, interval, sesSingleton.get());
     }
 

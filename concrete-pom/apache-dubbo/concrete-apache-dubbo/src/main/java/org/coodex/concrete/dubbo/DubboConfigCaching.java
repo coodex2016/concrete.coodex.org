@@ -31,16 +31,22 @@ public class DubboConfigCaching {
 
     public static final String DEFAULT_APPLICATION_NAME = "concrete-dubbo-application";
     public static final String DEFAULT_VERSION = "1.0.0";
-    private static final SingletonMap<String, ApplicationConfig> applicationConfigs = new SingletonMap<>(ApplicationConfig::new);
-    private static final SingletonMap<String, RegistryConfig> registryConfigs = new SingletonMap<>(RegistryConfig::new);
-    private static final SingletonMap<String, ProtocolConfig> protocolConfigs = new SingletonMap<>(name -> {
+
+    private static final SingletonMap<String, ApplicationConfig> applicationConfigs
+            = SingletonMap.<String, ApplicationConfig>builder().function(ApplicationConfig::new).build();
+
+    private static final SingletonMap<String, RegistryConfig> registryConfigs
+            = SingletonMap.<String, RegistryConfig>builder().function(RegistryConfig::new).build();
+
+    private static final SingletonMap<String, ProtocolConfig> protocolConfigs
+            = SingletonMap.<String, ProtocolConfig>builder().function(name -> {
         // TODO 根据不同的协议进行解析，暂定为protocol:port，未设置port时则使用默认端口
         int index = name.indexOf(':');
         return index > 0 ?
                 new ProtocolConfig(name.substring(0, index), Integer.parseInt(name.substring(index + 1))) :
                 new ProtocolConfig(name);
 
-    });
+    }).build();
 
 
     public static String getServiceVersion(String version) {

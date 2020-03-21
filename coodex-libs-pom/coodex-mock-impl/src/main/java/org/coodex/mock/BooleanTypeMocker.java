@@ -1,11 +1,12 @@
 package org.coodex.mock;
 
 import org.coodex.util.Common;
+import org.coodex.util.Singleton;
 
 import java.lang.reflect.Type;
 
 public class BooleanTypeMocker extends AbstractTypeMocker<Mock.Boolean> {
-    static Class[] SUPPORTED = new Class[]{
+    static Class<?>[] SUPPORTED = new Class<?>[]{
             boolean.class, Boolean.class,//0,1
             byte.class, Byte.class,//2,3
             short.class, Short.class,//4,5
@@ -15,17 +16,17 @@ public class BooleanTypeMocker extends AbstractTypeMocker<Mock.Boolean> {
             String.class//12
     };
 
-    private static BooleanTypeMocker instance;
+    private static Singleton<BooleanTypeMocker> instance = new Singleton<>(BooleanTypeMocker::new);
 
-    public BooleanTypeMocker() {
-        instance = this;
-    }
+//    public BooleanTypeMocker() {
+//        instance = this;
+//    }
 
-    static Object mock(Class c){
-        if(instance == null){
-            instance = new BooleanTypeMocker();
-        }
-        return instance.mock(null,null, c);
+    static Object mock(Class<?> c) {
+//        if(instance == null){
+//            instance = new BooleanTypeMocker();
+//        }
+        return instance.get().mock(null, null, c);
     }
 
     @Override
@@ -34,7 +35,7 @@ public class BooleanTypeMocker extends AbstractTypeMocker<Mock.Boolean> {
     }
 
     @Override
-    protected Class[] getSupportedClasses() {
+    protected Class<?>[] getSupportedClasses() {
         return SUPPORTED;
     }
 
@@ -48,7 +49,7 @@ public class BooleanTypeMocker extends AbstractTypeMocker<Mock.Boolean> {
     }
 
     private Object toType(boolean b, BooleanMockConfig config, Type targetType) {
-        Class c = getClassFromType(targetType);
+        Class<?> c = getClassFromType(targetType);
         int index = Common.findInArray(c, SUPPORTED);
         switch (index) {
             case 0:

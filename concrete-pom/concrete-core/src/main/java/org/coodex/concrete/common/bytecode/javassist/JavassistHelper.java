@@ -28,7 +28,6 @@ import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -65,14 +64,15 @@ public class JavassistHelper {
 //        }
 //        return null;
 //    }
-    private final static SingletonMap<ClassLoader, ClassPool> classPools =
-            new SingletonMap<>(key -> {
+    private final static SingletonMap<ClassLoader, ClassPool> classPools
+            = SingletonMap.<ClassLoader, ClassPool>builder()
+            .function(key -> {
                 ClassPool classPool = new ClassPool(true);
                 classPool.appendClassPath(new LoaderClassPath(key));
                 return classPool;
-            });
+            }).build();
 
-    public static ClassPool getClassPool(Class clz) {
+    public static ClassPool getClassPool(Class<?> clz) {
         return clz == null ? ClassPool.getDefault() : classPools.get(clz.getClassLoader());
     }
 
@@ -94,34 +94,34 @@ public class JavassistHelper {
         return new SignatureAttribute.ClassType(className, args.toArray(new SignatureAttribute.TypeArgument[0]));
     }
 
-    private static SignatureAttribute.ObjectType objectType(Type type) {
-        if (type instanceof Class) {
-            if (((Class) type).isArray()) {
-                int d = 0;
-                Class array = (Class) type;
-                while (array.isArray()) {
-                    d++;
-                    array = array.getComponentType();
-                }
-                return new SignatureAttribute.ArrayType(d, new SignatureAttribute.ClassType(array.getName()));
-            } else {
-                return new SignatureAttribute.ClassType(((Class) type).getName());
-            }
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) type;
-            return classType(pt.getRawType().getTypeName(), pt.getActualTypeArguments());
-        } else if (type instanceof GenericArrayType) {
-            Type t = type;
-            int d = 0;
-            while (t instanceof GenericArrayType) {
-                t = ((GenericArrayType) t).getGenericComponentType();
-                d++;
-            }
-            return new SignatureAttribute.ArrayType(d, objectType(t));
-        } else {
-            return new SignatureAttribute.TypeVariable(type.getTypeName());
-        }
-    }
+//    private static SignatureAttribute.ObjectType objectType(Type type) {
+//        if (type instanceof Class) {
+//            if (((Class) type).isArray()) {
+//                int d = 0;
+//                Class array = (Class) type;
+//                while (array.isArray()) {
+//                    d++;
+//                    array = array.getComponentType();
+//                }
+//                return new SignatureAttribute.ArrayType(d, new SignatureAttribute.ClassType(array.getName()));
+//            } else {
+//                return new SignatureAttribute.ClassType(((Class) type).getName());
+//            }
+//        } else if (type instanceof ParameterizedType) {
+//            ParameterizedType pt = (ParameterizedType) type;
+//            return classType(pt.getRawType().getTypeName(), pt.getActualTypeArguments());
+//        } else if (type instanceof GenericArrayType) {
+//            Type t = type;
+//            int d = 0;
+//            while (t instanceof GenericArrayType) {
+//                t = ((GenericArrayType) t).getGenericComponentType();
+//                d++;
+//            }
+//            return new SignatureAttribute.ArrayType(d, objectType(t));
+//        } else {
+//            return new SignatureAttribute.TypeVariable(type.getTypeName());
+//        }
+//    }
 
     public static String getTypeName(Class<?> c) {
         return c.getName();

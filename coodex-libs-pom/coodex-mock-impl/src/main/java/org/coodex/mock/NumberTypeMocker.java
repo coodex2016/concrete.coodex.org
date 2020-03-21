@@ -17,6 +17,7 @@
 package org.coodex.mock;
 
 import org.coodex.util.Common;
+import org.coodex.util.Singleton;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -29,11 +30,12 @@ import static org.coodex.mock.Mock.Number.DEFAULT_RANGE;
 
 /**
  * 按照{@link Mock.Number}约定的一个模拟器实现
+ *
  * @author Davidoff
  */
 public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
-    static Class[] SUPPORTED = new Class[]{
+    static Class<?>[] SUPPORTED = new Class<?>[]{
             byte.class, Byte.class,
             short.class, Short.class,
             int.class, Integer.class,
@@ -48,16 +50,16 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
     private static char[] LEFT_BRACKETS_INCLUDE = "[".toCharArray();
     private static char[] RIGHT_BRACKETS_INCLUDE = "]".toCharArray();
 
-    private static NumberTypeMocker instance;
+    private static Singleton<NumberTypeMocker> instance = new Singleton<>(NumberTypeMocker::new);
 
-    public NumberTypeMocker() {
-        instance = this;
-    }
+//    public NumberTypeMocker() {
+//        instance = this;
+//    }
 
-    static Object mock(Class c) {
-        if (instance == null)
-            instance = new NumberTypeMocker();
-        return instance.mock(null, null, c);
+    static Object mock(Class<?> c) {
+//        if (instance == null)
+//            instance = new NumberTypeMocker();
+        return instance.get().mock(null, null, c);
     }
 
     private static boolean inArray(char ch, char[] chars) {
@@ -68,7 +70,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
     }
 
     private static List<String> split(String range) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         StringBuilder builder = null;
         for (char ch : range.toCharArray()) {
             if (inArray(ch, DELIMITER)) {
@@ -122,7 +124,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 //        }
 //    }
 
-    private static <T extends Number> Range<T> buildRange(String left, String right, Class<T> c) {
+    private static <T> Range<T> buildRange(String left, String right, Class<T> c) {
         if (!inArray(left.charAt(0), RANGE_START)) {
             throw new MockException("invalid range: " + left);
         }
@@ -157,9 +159,9 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
         }
     }
 
-    private static <T extends Number> Alternative<T> getAlternative(String range, Class<T> clz) {
+    private static <T> Alternative<T> getAlternative(String range, Class<T> clz) {
         List<String> list = split(range);
-        Merge<T> merge = new Merge<T>();
+        Merge<T> merge = new Merge<>();
         for (int i = 0, len = list.size(); i < len; ) {
             String s = list.get(i);
             if (inArray(s.charAt(0), RANGE_START)) {
@@ -173,7 +175,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
         return merge;
     }
 
-    private static <T extends Number> Alternative<T> buildSingle(String s, Class<T> c) {
+    private static <T> Alternative<T> buildSingle(String s, Class<T> c) {
         if (Byte.class.equals(c) || byte.class.equals(c)) {
             //noinspection unchecked
             return (Single<T>) new ByteSingle(s);
@@ -261,8 +263,32 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 //        return (T) getAlternative(range, SUPPORTED[index]);
 //    }
 
+    public static Object mock(Type targetType, String range, int digits) {
+        Class<?> c = getClassFromType(targetType);
+        int index = Common.findInArray(c, SUPPORTED);
+
+        return round(index, getAlternative(range, SUPPORTED[index]).mock(), digits);
+    }
+
+    private static Object round(int i, Object value, int digits) {
+        if (digits == -1) return value;
+
+        final BigDecimal bigDecimal = new BigDecimal(value.toString()).setScale(digits, BigDecimal.ROUND_HALF_UP);
+        switch (i) {
+            case 8:// float
+            case 9:
+                return bigDecimal.floatValue();
+            case 10:// double
+            case 11:
+                return bigDecimal.doubleValue();
+            default:
+                return value;
+        }
+
+    }
+
     @Override
-    protected Class[] getSupportedClasses() {
+    protected Class<?>[] getSupportedClasses() {
         return SUPPORTED;
     }
 
@@ -280,40 +306,16 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
         return mock(targetType, range, digits);
     }
 
-    public static Object mock(Type targetType, String range, int digits) {
-        Class c = getClassFromType(targetType);
-        int index = Common.findInArray(c, SUPPORTED);
 
-        return round(index, getAlternative(range, SUPPORTED[index]).mock(), digits);
-    }
-
-    private static Object round(int i, Object value, int digits) {
-        if(digits == -1) return value;
-
-        final BigDecimal bigDecimal = new BigDecimal(value.toString()).setScale(digits, BigDecimal.ROUND_HALF_UP);
-        switch (i) {
-            case 8:// float
-            case 9:
-                return bigDecimal.floatValue();
-            case 10:// double
-            case 11:
-                return bigDecimal.doubleValue();
-            default:
-                return value;
-        }
-
-    }
-
-
-    private interface Alternative<T extends Number> {
+    private interface Alternative<T> {
         int weight();
 
         T mock();
     }
 
-    private static class Merge<T extends Number> implements Alternative<T> {
+    private static class Merge<T> implements Alternative<T> {
 
-        private List<Alternative<T>> alternatives = new ArrayList<Alternative<T>>();
+        private List<Alternative<T>> alternatives = new ArrayList<>();
         private int weight = 0;
 
         void add(Alternative<T> alternative) {
@@ -348,7 +350,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
         }
     }
 
-    private abstract static class Single<T extends Number> implements Alternative<T> {
+    private abstract static class Single<T> implements Alternative<T> {
         private T value;
         private String numberStr;
 
@@ -503,7 +505,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
         }
     }
 
-    private abstract static class Range<T extends Number> implements Alternative<T> {
+    private abstract static class Range<T> implements Alternative<T> {
 
         int weight;
         T min;
@@ -526,6 +528,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
         abstract T parseMax(String max);
 
+        @SuppressWarnings("unused")
         abstract int calcWeight();
 
         @Override

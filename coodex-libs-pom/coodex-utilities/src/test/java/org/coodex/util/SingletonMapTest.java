@@ -19,19 +19,22 @@ package org.coodex.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SingtonMapTest {
-    private final static Logger log = LoggerFactory.getLogger(SingtonMapTest.class);
+public class SingletonMapTest {
+    private final static Logger log = LoggerFactory.getLogger(SingletonMapTest.class);
 
-    public static void main(String[] args) {
-        SingletonMap<String, String> map = new SingletonMap<String, String>(
-                new SingletonMap.Builder<String, String>() {
-                    @Override
-                    public String build(String key) {
-                        log.debug("new object build for {}", key);
-                        return key;
-                    }
-                }, 5000
-        );
-        map.get("123");
+    public static void main(String[] args) throws InterruptedException {
+        SingletonMap<String, String> map = SingletonMap.<String, String>builder()
+                .function(key -> {
+                    log.debug("new object build for {}", key);
+                    return key;
+                })
+                .activeOnGet(true)
+                .maxAge(1000)
+                .build();
+
+        for (int i = 1; i < 50; i++) {
+            map.get("123");
+            Thread.sleep(i * 200);
+        }
     }
 }

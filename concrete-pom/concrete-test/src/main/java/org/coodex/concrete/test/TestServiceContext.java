@@ -29,13 +29,7 @@ import static org.coodex.concrete.core.token.TokenWrapper.newToken;
 public class TestServiceContext extends AbstractContainerContext implements org.coodex.concrete.common.TestServiceContext {
 
 
-    private static SingletonMap<String, Token> tokens =
-            new SingletonMap<String, Token>(new SingletonMap.Builder<String, Token>() {
-                @Override
-                public Token build(final String key) {
-                    return newToken();
-                }
-            });
+    private static SingletonMap<String, Token> tokens = SingletonMap.<String, Token>builder().function(key -> newToken()).build();
 
     public TestServiceContext(String tokenId, Subjoin subjoin) {
         super(new TestCaller(), getTestToken(tokenId), subjoin, null);

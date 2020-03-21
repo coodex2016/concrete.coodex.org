@@ -18,16 +18,17 @@ package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.common.IronPen;
 import org.coodex.concrete.common.IronPenFactory;
+import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
-import org.coodex.util.StringKeySingletonMap;
 
 /**
  * Created by davidoff shen on 2017-04-24.
  */
 public class RSAPenFactory implements IronPenFactory {
-    private static final SingletonMap<String, RSAPen> RSA_PEN_SINGLETON_MAP = new StringKeySingletonMap<>(
-            RSAPen::new
-    );
+    private static final SingletonMap<String, RSAPen> RSA_PEN_SINGLETON_MAP = SingletonMap.<String, RSAPen>builder()
+            .function(RSAPen::new)
+            .nullKey("null_" + Common.getUUIDStr()).build();
+
     @Override
     public IronPen getIronPen(String paperName) {
         return RSA_PEN_SINGLETON_MAP.get(paperName);

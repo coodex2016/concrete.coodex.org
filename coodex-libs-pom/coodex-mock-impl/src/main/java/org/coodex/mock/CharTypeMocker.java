@@ -17,6 +17,7 @@
 package org.coodex.mock;
 
 import org.coodex.util.Common;
+import org.coodex.util.Singleton;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -24,21 +25,21 @@ import java.util.List;
 import java.util.Random;
 
 public class CharTypeMocker extends AbstractTypeMocker<Mock.Char> {
-    static Class[] SUPPORTED_CLASSES = new Class[]{
+    static Class<?>[] SUPPORTED_CLASSES = new Class<?>[]{
             char.class, Character.class,
             String.class
     };
 
-    private static CharTypeMocker instance;
+    private static Singleton<CharTypeMocker> instance = new Singleton<>(CharTypeMocker::new);
 
-    public CharTypeMocker() {
-        instance = this;
-    }
+//    public CharTypeMocker() {
+//        instance = this;
+//    }
 
-    static Object mock(Class c) {
-        if (instance == null)
-            instance = new CharTypeMocker();
-        return instance.mock(null, c);
+    static Object mock(Class<?> c) {
+//        if (instance == null)
+//            instance = new CharTypeMocker();
+        return instance.get().mock(null, c);
     }
 
     static int[] getRange(String strRange, boolean bmp) {
@@ -62,7 +63,7 @@ public class CharTypeMocker extends AbstractTypeMocker<Mock.Char> {
     }
 
     @Override
-    protected Class[] getSupportedClasses() {
+    protected Class<?>[] getSupportedClasses() {
         return SUPPORTED_CLASSES;
     }
 
@@ -118,7 +119,7 @@ public class CharTypeMocker extends AbstractTypeMocker<Mock.Char> {
     }
 
     static class CodePointSetCharRange implements CharRange {
-        private List<CharCodeSet> list = new ArrayList<CharCodeSet>();
+        private List<CharCodeSet> list = new ArrayList<>();
 
         CodePointSetCharRange(CharCodeSet[] sets, boolean bmp) {
             for (CharCodeSet set : sets) {

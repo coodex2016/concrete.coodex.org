@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class FixedDateSlicerFactory<C extends TimeBasedChargeable> implements SlicerFactory<C, FixedDateSlicerProfile> {
     @Override
     public FragmentSlicer<C> build(FixedDateSlicerProfile fixedDateSlicerProfile) {
-        return new FixedDateSlicer<C>(fixedDateSlicerProfile);
+        return new FixedDateSlicer<>(fixedDateSlicerProfile);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class FixedDateSlicerFactory<C extends TimeBasedChargeable> implements Sl
                 while (start.after(period.getStart())) {
                     start.add(Calendar.DATE, -1);
                 }
-                List<Period> periods = new ArrayList<Period>();
+                List<Period> periods = new ArrayList<>();
                 while (start.before(period.getEnd())) {
                     Calendar next = (Calendar) start.clone();
                     next.add(Calendar.DATE, 1);

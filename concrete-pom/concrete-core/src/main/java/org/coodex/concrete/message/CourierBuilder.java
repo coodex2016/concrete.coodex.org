@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
 import static org.coodex.concrete.message.Topics.TAG_QUEUE;
@@ -48,15 +49,14 @@ import static org.coodex.util.GenericTypeHelper.solveFromType;
  * implements Courier<MessageType>{}
  */
 class CourierBuilder
-        implements SingletonMap.Builder<TopicKey, Courier> {
+        implements Function<TopicKey, Courier> {
 
 
     private final static Logger log = LoggerFactory.getLogger(CourierBuilder.class);
 
-    private static SingletonMap<TopicKey, Courier> couriers =
-            new SingletonMap<>(
-                    new CourierBuilder()
-            );
+    private static SingletonMap<TopicKey, Courier> couriers
+            = SingletonMap.<TopicKey, Courier>builder().function(new CourierBuilder()).build();
+    
     private static LazySelectableServiceLoader<String, CourierPrototypeProvider> providers =
             new LazySelectableServiceLoader<String, CourierPrototypeProvider>() {
             };
@@ -90,7 +90,7 @@ class CourierBuilder
 
     @Override
     @SuppressWarnings("unchecked")
-    public Courier build(TopicKey key) {
+    public Courier apply(TopicKey key) {
 
         try {
             String destination = getDestination(key.queue);

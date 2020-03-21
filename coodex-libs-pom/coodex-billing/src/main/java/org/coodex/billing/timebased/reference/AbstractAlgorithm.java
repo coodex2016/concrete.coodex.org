@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractAlgorithm<C extends TimeBasedChargeable> implements BillingModel.Algorithm<C> {
     @Override
     public List<Bill.Detail> calc(List<Period> periodList, C chargeable) {
-        List<Bill.Detail> details = new ArrayList<Bill.Detail>();
+        List<Bill.Detail> details = new ArrayList<>();
         if (isDiscontinuityAllowed() && periodList.size() > 1) {
             details.add(
                     calc(

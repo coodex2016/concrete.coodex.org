@@ -25,20 +25,16 @@ import java.lang.reflect.Type;
 public interface TypeMocker<A extends Annotation> {
 
     /**
-     * 模拟器是否适用目标类型和指定的用Mock修饰过的Annotation
-     *
-     * @param mockAnnotation
-     * @param targetType
-     * @return
+     * @param mockAnnotation mockAnnotation
+     * @param targetType     targetType
+     * @return 模拟器是否适用目标类型和指定的用Mock修饰过的Annotation
      */
     boolean accept(A mockAnnotation, Type targetType);
 
     /**
-     * 根据mockAnnotation和目标类型
-     *
-     * @param mockAnnotation
-     * @param targetType
-     * @return
+     * @param mockAnnotation mockAnnotation
+     * @param targetType     targetType
+     * @return 根据mockAnnotation和目标类型
      */
     Object mock(A mockAnnotation, Mock.Nullable nullable, Type targetType);
 }

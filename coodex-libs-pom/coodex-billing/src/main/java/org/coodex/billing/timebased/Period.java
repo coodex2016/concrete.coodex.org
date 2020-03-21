@@ -28,13 +28,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Period extends Section<Calendar> {
 
-    @SuppressWarnings("WeakerAccess")
-    public static final Builder<Calendar, Period> BUILDER = new Builder<Calendar, Period>() {
-        @Override
-        public Period create(Calendar start, Calendar end) {
-            return new Period(start, end);
-        }
-    };
+    public static final Builder<Calendar, Period> BUILDER = Period::new;
 
     private Period(Calendar start, Calendar end) {
         super(start, end);

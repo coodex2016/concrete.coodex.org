@@ -52,8 +52,7 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
 //    private static Map<String, AMQPFacade> facadeMap = new HashMap<String, AMQPFacade>();
 
     private final static Logger log = LoggerFactory.getLogger(AMQPInvoker.class);
-    private final Level level;
-    private static SingletonMap<AMQPDestination, Facade> facadeSingletonMap = new SingletonMap<>(
+    private static SingletonMap<AMQPDestination, Facade> facadeSingletonMap = SingletonMap.<AMQPDestination, Facade>builder().function(
             key -> {
                 try {
                     return new Facade(getConnection(key), key.getExchangeName());
@@ -63,7 +62,8 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
                     throw new RuntimeException(th.getLocalizedMessage(), th);
                 }
             }
-    );
+    ).build();
+    private final Level level;
 
     AMQPInvoker(AMQPDestination destination) {
         super(destination);
@@ -157,7 +157,7 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
         }
 
         void send(String message) throws IOException {
-            channel.basicPublish(exchangeName,ROUTE_KEY_REQUEST + clientId,
+            channel.basicPublish(exchangeName, ROUTE_KEY_REQUEST + clientId,
                     null, message.getBytes(StandardCharsets.UTF_8));
         }
     }

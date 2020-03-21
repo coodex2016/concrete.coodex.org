@@ -34,7 +34,7 @@ import static org.coodex.billing.timebased.reference.box.Utils.setDate;
 public class FragmentSlicerFactory<C extends TimeBasedChargeable> implements SlicerFactory<C, FragmentSlicerProfile> {
     @Override
     public FragmentSlicer<C> build(FragmentSlicerProfile fragmentSlicerProfile) {
-        return new FragmentSlicerImpl<C>(fragmentSlicerProfile);
+        return new FragmentSlicerImpl<>(fragmentSlicerProfile);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class FragmentSlicerFactory<C extends TimeBasedChargeable> implements Sli
         @Override
         public List<Period> slice(Period period, C chargeable) {
             try {
-                List<Period> result = new ArrayList<Period>();
+                List<Period> result = new ArrayList<>();
                 Calendar fStart = getCal(fragmentProfile.getStartTime());
                 Calendar fEnd = getCal(fragmentProfile.getEndTime());
                 setDate(fStart, period.getStart());

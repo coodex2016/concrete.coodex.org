@@ -35,34 +35,21 @@ import java.util.concurrent.TimeUnit;
 public final class Clock {
 
     public static final String KEY_MAGNIFICATION = Clock.class.getName() + ".magnification";
-    private static Singleton<ClockAgent> agentSingleton = new Singleton<ClockAgent>(new Singleton.Builder<ClockAgent>() {
-        @Override
-        public ClockAgent build() {
-            if (getMagnification() == 1.0f) {
-                return new SystemClockAgent();
-            } else {
-                return new ServiceLoaderImpl<ClockAgent>() {
-                    @Override
-                    public ClockAgent getDefault() {
-                        return new DefaultClockAgent();
-                    }
-                }.get();
-            }
+    private static Singleton<ClockAgent> agentSingleton = new Singleton<>(() -> {
+        if (getMagnification() == 1.0f) {
+            return new SystemClockAgent();
+        } else {
+            return new ServiceLoaderImpl<ClockAgent>() {
+                @Override
+                public ClockAgent getDefault() {
+                    return new DefaultClockAgent();
+                }
+            }.get();
         }
     });
-    private static final Singleton<TimestampProvider> TIMESTAMP_PROVIDER_SINGLETON = new Singleton<TimestampProvider>(
-            new Singleton.Builder<TimestampProvider>() {
-                @Override
-                public TimestampProvider build() {
-                    return new ServiceLoaderImpl<TimestampProvider>(new TimestampProvider() {
-                        @Override
-                        public Calendar now() {
-                            return Clock.getCalendar();
-                        }
-                    }) {
-                    }.get();
-                }
-            }
+    private static final Singleton<TimestampProvider> TIMESTAMP_PROVIDER_SINGLETON = new Singleton<>(
+            () -> new ServiceLoaderImpl<TimestampProvider>(Clock::getCalendar) {
+            }.get()
     );
 
     /**
@@ -84,6 +71,7 @@ public final class Clock {
      * @return
      * @see ClockAgent#currentTimeMillis()
      */
+    @SuppressWarnings("JavaDoc")
     public static long currentTimeMillis() {
         return agentSingleton.get().currentTimeMillis();
     }
@@ -92,6 +80,7 @@ public final class Clock {
      * @return
      * @see ClockAgent#getCalendar()
      */
+    @SuppressWarnings("JavaDoc")
     public static Calendar getCalendar() {
         return agentSingleton.get().getCalendar();
     }
@@ -101,6 +90,7 @@ public final class Clock {
      * @throws InterruptedException
      * @see ClockAgent#sleep(long)
      */
+    @SuppressWarnings("JavaDoc")
     public static void sleep(long millis) throws InterruptedException {
         agentSingleton.get().sleep(millis);
     }
@@ -111,6 +101,7 @@ public final class Clock {
      * @throws InterruptedException
      * @see ClockAgent#objWait(Object, long)
      */
+    @SuppressWarnings("JavaDoc")
     public static void objWait(Object obj, long millis) throws InterruptedException {
         agentSingleton.get().objWait(obj, millis);
     }
@@ -121,6 +112,7 @@ public final class Clock {
      * @throws InterruptedException
      * @see ClockAgent#sleep(TimeUnit, long)
      */
+    @SuppressWarnings("JavaDoc")
     public static void sleep(TimeUnit timeUnit, long timeout) throws InterruptedException {
         agentSingleton.get().sleep(timeUnit, timeout);
     }

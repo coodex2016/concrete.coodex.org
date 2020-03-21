@@ -40,42 +40,38 @@ public class JedisClientFactory implements SharedCacheClientFactory {
 //    private static AbstractJedisClient client;
 
     //    private static Profile_Deprecated profile;
-    private static Singleton<AbstractJedisClient> client = new Singleton<AbstractJedisClient>(
-            new Singleton.Builder<AbstractJedisClient>() {
-                @Override
-                public AbstractJedisClient build() {
+    private static Singleton<AbstractJedisClient> client = new Singleton<>(
+            () -> {
 //                    profile = Profile_Deprecated.getProfile("sharedcache-jedis.properties");
-                    String[] redisServers = Config.getArray("redisServers", NAMESPACE_JEDIS);
-                    if (redisServers == null) throw new RuntimeException("no redis server defined.");
+                String[] redisServers = Config.getArray("redisServers", NAMESPACE_JEDIS);
+                if (redisServers == null) throw new RuntimeException("no redis server defined.");
 
 
-                    Set<HostAndPort> servers = new HashSet<HostAndPort>();
-                    for (String server : redisServers) {
-                        try {
-                            servers.add(toHostAndPort(server));
-                        } catch (Throwable e) {
-                            throw new RuntimeException("unknown redis server: " + server, e);
-                        }
+                Set<HostAndPort> servers = new HashSet<>();
+                for (String server : redisServers) {
+                    try {
+                        servers.add(toHostAndPort(server));
+                    } catch (Throwable e) {
+                        throw new RuntimeException("unknown redis server: " + server, e);
                     }
+                }
 
-                    GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+                GenericObjectPoolConfig<Object> poolConfig = new GenericObjectPoolConfig<>();
 
-                    poolConfig.setMinIdle(Config.getValue("pool.minIdle", GenericObjectPoolConfig.DEFAULT_MIN_IDLE, NAMESPACE_JEDIS));
-                    poolConfig.setMaxIdle(Config.getValue("pool.maxIdle", GenericObjectPoolConfig.DEFAULT_MAX_IDLE, NAMESPACE_JEDIS));
-                    poolConfig.setMaxTotal(Config.getValue("pool.maxTotal", GenericObjectPoolConfig.DEFAULT_MAX_TOTAL, NAMESPACE_JEDIS));
+                poolConfig.setMinIdle(Config.getValue("pool.minIdle", GenericObjectPoolConfig.DEFAULT_MIN_IDLE, NAMESPACE_JEDIS));
+                poolConfig.setMaxIdle(Config.getValue("pool.maxIdle", GenericObjectPoolConfig.DEFAULT_MAX_IDLE, NAMESPACE_JEDIS));
+                poolConfig.setMaxTotal(Config.getValue("pool.maxTotal", GenericObjectPoolConfig.DEFAULT_MAX_TOTAL, NAMESPACE_JEDIS));
 
-                    // TODO 安全认证
+                // TODO 安全认证
 
+                if (servers.size() == 0) throw new RuntimeException("no redis server defined.");
+                long defaultMaxCacheTime = Config.getValue("defaultMaxCacheTime", DEFAULT_MAX_CACHED_SECONDS, NAMESPACE_JEDIS) * 1000;
 
-                    if (servers.size() == 0) throw new RuntimeException("no redis server defined.");
-                    long defaultMaxCacheTime = Config.getValue("defaultMaxCacheTime", DEFAULT_MAX_CACHED_SECONDS, NAMESPACE_JEDIS) * 1000;
-
-                    if (servers.size() == 1) {
-                        HostAndPort server = servers.iterator().next();
-                        return new JedisSingleNodeClient(new JedisPool(poolConfig, server.getHost(), server.getPort()), defaultMaxCacheTime);
-                    } else {
-                        return new JedisClusterClient(new JedisCluster(servers, poolConfig), defaultMaxCacheTime);
-                    }
+                if (servers.size() == 1) {
+                    HostAndPort server = servers.iterator().next();
+                    return new JedisSingleNodeClient(new JedisPool(poolConfig, server.getHost(), server.getPort()), defaultMaxCacheTime);
+                } else {
+                    return new JedisClusterClient(new JedisCluster(servers, poolConfig), defaultMaxCacheTime);
                 }
             }
     );

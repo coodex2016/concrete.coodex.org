@@ -20,16 +20,20 @@ import org.coodex.concrete.accounts.organization.entities.AbstractPersonAccountE
 import org.coodex.concrete.accounts.organization.entities.AbstractPositionEntity;
 import org.coodex.concrete.accounts.organization.entities.OrganizationEntity;
 import org.coodex.concrete.accounts.organization.repositories.AbstractPersonAccountRepo;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.Account;
+import org.coodex.concrete.common.ClassifiableAccountFactory;
+import org.coodex.concrete.common.ClassifiableAccountID;
+import org.coodex.concrete.common.IF;
 import org.coodex.config.Config;
-import org.coodex.copier.Copier;
 import org.coodex.copier.AbstractCopier;
+import org.coodex.copier.Copier;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
 
 import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 import static org.coodex.concrete.accounts.AccountConstants.TYPE_ORGANIZATION;
 import static org.coodex.concrete.common.AccountsErrorCodes.NONE_THIS_ACCOUNT;
@@ -42,6 +46,7 @@ public abstract class AbstractOrganizationAccountFactory
                 P extends AbstractPersonAccountEntity<J>>
         extends ClassifiableAccountFactory {
 
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     protected AbstractPersonAccountRepo<P> accountRepo;
     private Copier<P, OrganizationAccount> accountCopier = new AbstractCopier<P, OrganizationAccount>() {
@@ -54,22 +59,21 @@ public abstract class AbstractOrganizationAccountFactory
             organizationAccount.setTenant(p.getTenant());
             return organizationAccount;
         }
-
-
     };
 
-    private SingletonMap<String, OrganizationAccount> accountSingletonMap = new SingletonMap<>(
-            new SingletonMap.Builder<String, OrganizationAccount>() {
+    private SingletonMap<String, OrganizationAccount> accountSingletonMap = SingletonMap.<String, OrganizationAccount>builder()
+            .function(new Function<String, OrganizationAccount>() {
                 @Override
-                public OrganizationAccount build(String key) {
+                public OrganizationAccount apply(String key) {
                     P person = accountRepo.findById(key).orElse(null);
                     return person == null ? null : accountCopier.copy(person);
                 }
-            },
-            Config.getValue("cache.object.life", 10,
+            })
+            .maxAge(Config.getValue("cache.object.life", 10L,
                     AbstractOrganizationAccountFactory.class.getPackage().getName()
-            ) * 60 * 1000
-    );
+            ) * 60L * 1000L)
+            .build();
+
 //    private ConcreteCache<String, OrganizationAccount> accountCache = new ConcreteCache<String, OrganizationAccount>() {
 //        @Override
 //        protected OrganizationAccount load(String key) {

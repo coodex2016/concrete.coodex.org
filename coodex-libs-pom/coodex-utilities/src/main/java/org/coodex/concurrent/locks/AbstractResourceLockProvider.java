@@ -30,34 +30,25 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractResourceLockProvider implements ResourceLockProvider {
     public final static long RESOURCE_CACHE_MAX_LIFE = 10000L; // 10 seconds
+
     public final static long POLLING_CYCLE = RESOURCE_CACHE_MAX_LIFE / 2;
+
     private final static Logger log = LoggerFactory.getLogger(AbstractResourceLockProvider.class);
+
     private static AbstractResourceLock[] toArraysParam = new AbstractResourceLock[0];
-    private static Comparator<AbstractResourceLock> comparator = new Comparator<AbstractResourceLock>() {
-        @Override
-        public int compare(AbstractResourceLock o1, AbstractResourceLock o2) {
-            return (int) (o1.getLastActive() - o2.getLastActive());
-        }
-    };
-    private static Singleton<ScheduledExecutorService> scheduledExecutorServiceSingleton = new Singleton<ScheduledExecutorService>(
 
-            new Singleton.Builder<ScheduledExecutorService>() {
-                @Override
-                public ScheduledExecutorService build() {
-                    return ExecutorsHelper.newSingleThreadScheduledExecutor("cleanDeathResource");
-                }
-            }
+    private static Comparator<AbstractResourceLock> comparator = (o1, o2) -> (int) (o1.getLastActive() - o2.getLastActive());
+
+    private static Singleton<ScheduledExecutorService> scheduledExecutorServiceSingleton = new Singleton<>(
+            () -> ExecutorsHelper.newSingleThreadScheduledExecutor("cleanDeathResource")
     );
-    protected final Map<ResourceId, AbstractResourceLock> locksMap = new HashMap<ResourceId, AbstractResourceLock>(8);
+    protected final Map<ResourceId, AbstractResourceLock> locksMap = new HashMap<>(8);
 
-    private Runnable cleanRunner = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                cleanDeathResource();
-            } finally {
-                poll();
-            }
+    private Runnable cleanRunner = () -> {
+        try {
+            cleanDeathResource();
+        } finally {
+            poll();
         }
     };
 
@@ -90,9 +81,9 @@ public abstract class AbstractResourceLockProvider implements ResourceLockProvid
             int count = 0;
             AbstractResourceLock[] locks = locksMap.values().toArray(toArraysParam);
             Arrays.sort(locks, comparator);
-            for (int i = 0, l = locks.length; i < l; i++) {
-                if (locks[i].isDeath()) {
-                    locksMap.remove(locks[i].getId());
+            for (AbstractResourceLock lock : locks) {
+                if (lock.isDeath()) {
+                    locksMap.remove(lock.getId());
                     count++;
                 } else {
                     break;

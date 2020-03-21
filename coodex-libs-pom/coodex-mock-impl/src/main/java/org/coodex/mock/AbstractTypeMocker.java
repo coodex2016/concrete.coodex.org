@@ -24,9 +24,11 @@ import java.lang.reflect.Type;
 
 public abstract class AbstractTypeMocker<A extends Annotation> implements TypeMocker<A> {
 
-    private static Class getClassFromType(Type targetType, boolean throwException) {
+    private Class<?>[] SUPPORTED = null;
+
+    private static Class<?> getClassFromType(Type targetType, boolean throwException) {
         if (targetType instanceof Class) {
-            return (Class) targetType;
+            return (Class<?>) targetType;
         } else if (targetType instanceof ParameterizedType) {
             return getClassFromType(((ParameterizedType) targetType).getRawType(), throwException);
         } else {
@@ -38,11 +40,11 @@ public abstract class AbstractTypeMocker<A extends Annotation> implements TypeMo
         }
     }
 
-    protected static Class getClassFromType(Type targetType) {
+    protected static Class<?> getClassFromType(Type targetType) {
         return getClassFromType(targetType, true);
     }
 
-    protected abstract Class[] getSupportedClasses();
+    protected abstract Class<?>[] getSupportedClasses();
 
     protected abstract boolean accept(A annotation);
 
@@ -51,9 +53,8 @@ public abstract class AbstractTypeMocker<A extends Annotation> implements TypeMo
         return accept(mockAnnotation) && Common.inArray(getClassFromType(targetType, false), getSupported());
     }
 
-    private Class[] SUPPORTED = null;
-    private Class[] getSupported(){
-        if(SUPPORTED == null){
+    private Class<?>[] getSupported() {
+        if (SUPPORTED == null) {
             SUPPORTED = getSupportedClasses();
         }
         return SUPPORTED;
@@ -62,7 +63,7 @@ public abstract class AbstractTypeMocker<A extends Annotation> implements TypeMo
     @Override
     public Object mock(A mockAnnotation, Mock.Nullable nullable, Type targetType) {
         if (nullable != null) {
-            Class c = getClassFromType(targetType, false);
+            Class<?> c = getClassFromType(targetType, false);
             if (c == null || !c.isPrimitive()) {
                 if (Math.random() < nullable.probability()) return null;
             }

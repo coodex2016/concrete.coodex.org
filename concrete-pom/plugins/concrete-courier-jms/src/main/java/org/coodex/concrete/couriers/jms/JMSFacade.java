@@ -39,15 +39,18 @@ class JMSFacade {
             CONNECTION_FACTORY_PROVIDER_SELECTABLE_SERVICE_LOADER =
             new LazySelectableServiceLoader<String, ConnectionFactoryProvider>() {
             };
+
     private final static SingletonMap<String, ConnectionFactory> connectionFactorySingletonMap
-            = new SingletonMap<>(key -> {
-        ConnectionFactoryProvider cfp = CONNECTION_FACTORY_PROVIDER_SELECTABLE_SERVICE_LOADER.select(key);
-        if (cfp == null) {
-            throw new RuntimeException("no ConnectionFactoryProvider found for :" + key);
-        } else {
-            return cfp.build(key);
-        }
-    });
+            = SingletonMap.<String, ConnectionFactory>builder()
+            .function(key -> {
+                ConnectionFactoryProvider cfp = CONNECTION_FACTORY_PROVIDER_SELECTABLE_SERVICE_LOADER.select(key);
+                if (cfp == null) {
+                    throw new RuntimeException("no ConnectionFactoryProvider found for :" + key);
+                } else {
+                    return cfp.build(key);
+                }
+            }).build();
+
     private final static Logger log = LoggerFactory.getLogger(JMSFacade.class);
     //    private static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newSingleThreadScheduledExecutor();
     private final String name;

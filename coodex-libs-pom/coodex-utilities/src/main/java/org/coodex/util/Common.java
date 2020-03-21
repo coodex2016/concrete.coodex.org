@@ -29,6 +29,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -50,22 +51,28 @@ public class Common {
 //        }
 //        return result.toArray(new String[0]);
 //    }
-    public static final String FILE_SEPARATOR = System
-            .getProperty("file.separator");
+    public static final String FILE_SEPARATOR = System.getProperty("file.separator");
+
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+
     public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
-    public static final String DEFAULT_DATETIME_FORMAT =
-            DEFAULT_DATE_FORMAT + " " + DEFAULT_TIME_FORMAT;
-    private static final String LINE_SEPARATOR = System
-            .getProperty("line.separator");
+
+    public static final String DEFAULT_DATETIME_FORMAT = DEFAULT_DATE_FORMAT + " " + DEFAULT_TIME_FORMAT;
+
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
     private final static Logger log = LoggerFactory.getLogger(Common.class);
+
     private static final int TO_LOWER = 'a' - 'A';
+
     private final static String DEFAULT_DELIM = ".-_ /\\";
-    private static ThreadLocal<SingletonMap<String, DateFormat>> threadLocal
-            = new ThreadLocal<SingletonMap<String, DateFormat>>();
+
+    private static ThreadLocal<SingletonMap<String, DateFormat>> threadLocal = new ThreadLocal<>();
+
     private static LazySelectableServiceLoader<Class<?>, StringConvertWithDefaultValue> converterServiceLoader
             = new LazySelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>() {
     };
+
     private Common() {
     }
 
@@ -87,7 +94,7 @@ public class Common {
     }
 
     private static Set<PathPattern> toPathPatterns(String[] paths) {
-        Set<PathPattern> pathPatterns = new LinkedHashSet<PathPattern>();
+        Set<PathPattern> pathPatterns = new LinkedHashSet<>();
         if (paths != null && paths.length > 0) {
             for (String path : paths) {
                 pathPatterns.add(new PathPattern(Common.trim(path) + "/"));
@@ -97,18 +104,13 @@ public class Common {
     }
 
     private static Collection<String> merge(Collection<PathPattern> pathPatterns) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (PathPattern pathPattern : pathPatterns) {
             list.add(pathPattern.path);
         }
         String[] toMerge = list.toArray(new String[0]);
         list.clear();
-        Arrays.sort(toMerge, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.length() - o2.length();
-            }
-        });
+        Arrays.sort(toMerge, Comparator.comparingInt(String::length));
         for (String s : toMerge) {
             boolean exits = false;
             for (String x : list) {
@@ -127,18 +129,15 @@ public class Common {
     public static void forEach(Processor processor, final ResourceFilter filter, String... paths) {
         try {
             final Set<PathPattern> pathPatterns = toPathPatterns(paths);
-            ResourceFilter resourceFilter = new ResourceFilter() {
-                @Override
-                public boolean accept(String root, String resourceName) {
-                    boolean pathOk = false;
-                    for (PathPattern pathPattern : pathPatterns) {
-                        if (pathPattern.pattern.matcher(resourceName).matches()) {
-                            pathOk = true;
-                            break;
-                        }
+            ResourceFilter resourceFilter = (root, resourceName) -> {
+                boolean pathOk = false;
+                for (PathPattern pathPattern : pathPatterns) {
+                    if (pathPattern.pattern.matcher(resourceName).matches()) {
+                        pathOk = true;
+                        break;
                     }
-                    return pathOk && filter.accept(root, resourceName);
                 }
+                return pathOk && filter.accept(root, resourceName);
             };
             for (String path : merge(pathPatterns)) {
                 path = trim(path, '/');
@@ -164,19 +163,16 @@ public class Common {
                     }
                 }
             }
-        } catch (IOException e) {
-            log.warn("resource search failed. {}.", e.getLocalizedMessage(), e);
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             log.warn("resource search failed. {}.", e.getLocalizedMessage(), e);
         }
     }
 
     //
     private static void forEachInZip(String root, String path, Processor processor, ResourceFilter filter, File zipFile) throws IOException {
-        ZipFile zip = new ZipFile(zipFile);
 
-        log.debug("Scan items in [{}]:{{}}", zipFile.getAbsolutePath(), path);
-        try {
+        try (ZipFile zip = new ZipFile(zipFile)) {
+            log.debug("Scan items in [{}]:{{}}", zipFile.getAbsolutePath(), path);
             Enumeration<? extends ZipEntry> entries = zip.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
@@ -187,8 +183,6 @@ public class Common {
                     processor.process(new URL(root + "/" + entryName), entryName);
                 }
             }
-        } finally {
-            zip.close();
         }
     }
 
@@ -212,7 +206,7 @@ public class Common {
     }
 
     public static <T> Set<T> arrayToSet(T[] array) {
-        return new HashSet<T>(Arrays.asList(array));
+        return new HashSet<>(Arrays.asList(array));
     }
 
     public static String getUUIDStr() {
@@ -235,25 +229,14 @@ public class Common {
 //    );
 
     public static <T> boolean inArray(T el, T[] array) {
-//        boolean in = false;
-//        for (T t : array) {
-//            if ((el == t) || (t != null && t.equals(el))) {
-//                in = true;
-//                break;
-//            }
-//        }
-//        return in;
         return findInArray(el, array) >= 0;
     }
 
     public static <T> int findInArray(T el, T[] array) {
-//        boolean in = false;
         for (int i = 0; i < array.length; i++) {
             T t = array[i];
-            if ((el == t) || (t != null && t.equals(el))) {
+            if (Objects.equals(t, el)) {
                 return i;
-//                in = true;
-//                break;
             }
         }
         return -1;
@@ -266,23 +249,16 @@ public class Common {
     public static byte[] serialize(Object object) throws IOException {
         // 序列化obj
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        try {
+        try (ObjectOutputStream oos = new ObjectOutputStream(bos)) {
             oos.writeObject(object);
             return bos.toByteArray();
-        } finally {
-            oos.close();
         }
     }
 
     public static Object deserialize(byte[] buf) throws IOException, ClassNotFoundException {
         // 反序列化成一个clone对象
-        ByteArrayInputStream bis = new ByteArrayInputStream(buf);
-        ObjectInputStream ois = new ObjectInputStream(bis);
-        try {
+        try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(buf))) {
             return ois.readObject();
-        } finally {
-            ois.close();
         }
     }
 
@@ -296,6 +272,7 @@ public class Common {
         return random(0, max);
     }
 
+    @SuppressWarnings("RedundantCast")
     public static int random(int min, int max) {
 //        if (max == Integer.MAX_VALUE)
 //            max = max - 1;
@@ -303,8 +280,8 @@ public class Common {
         return (int) random((long) min, (long) max);
     }
 
-    public static long random(long min, long max) {
 
+    public static long random(long min, long max) {
         if (min == max) return min;
         float _min = Math.min(min, max);
         float _max = Math.max(min, max);
@@ -320,14 +297,13 @@ public class Common {
         return _min + Math.random() * (_max - _min);
     }
 
+    @SuppressWarnings("unused")
     public static <K extends Serializable, V extends Serializable> void copyMap(
             Map<K, V> org, Map<K, V> target) {
         for (K key : org.keySet())
             try {
                 target.put(deepCopy(key), deepCopy(org.get(key)));
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
+            } catch (ClassNotFoundException | IOException e) {
                 throw new RuntimeException(e);
             }
     }
@@ -390,6 +366,7 @@ public class Common {
 //        if (o == null) throw new NullPointerException(supplier == null ? null : supplier.get());
 //    }
 
+    @SafeVarargs
     public static <T extends Comparable<T>> T max(T c1, T c2, T... others) {
         checkNull(c1, "c1 is null");
         checkNull(c2, "c2 is null");
@@ -417,6 +394,7 @@ public class Common {
         return byte2hex(b, offset, length, 0, null);
     }
 
+    @SuppressWarnings("unused")
     public static String byte2hex(byte[] b, int col, String split) {
         return byte2hex(b, 0, b.length, col, split);
     }
@@ -450,6 +428,7 @@ public class Common {
         return -1;
     }
 
+    @SuppressWarnings("unused")
     public static byte[] hex2byte(String hexString) {
         return hex2byte(hexString, LINE_SEPARATOR + " ");
     }
@@ -458,7 +437,7 @@ public class Common {
         char[] ignore = ignoreChars == null ? new char[0] : ignoreChars.toCharArray();
         int hi = -1, low = -1;
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        boolean closed = true;
+        boolean closed;
         for (char c : hexString.toCharArray()) {
             int charValue = hexCharValue(c);
             if (charValue == -1) {
@@ -470,7 +449,7 @@ public class Common {
             } else {
                 hi = low;
                 low = charValue;
-                closed = hi != -1 && low != -1;
+                closed = hi != -1;
             }
 
             if (closed && low != -1) {
@@ -480,6 +459,7 @@ public class Common {
             }
         }
         if (low != -1) {
+            //noinspection ConstantConditions
             byteArrayOutputStream.write(hi == -1 ? low : ((hi << 4 | low)));
         }
         return byteArrayOutputStream.toByteArray();
@@ -492,8 +472,9 @@ public class Common {
      * @param set2
      * @return
      */
+    @SuppressWarnings("JavaDoc")
     public static <T> Set<T> intersection(Set<T> set1, Set<T> set2) {
-        Set<T> result = new HashSet<T>(set1);
+        Set<T> result = new HashSet<>(set1);
         result.retainAll(set2);
         return result;
     }
@@ -505,16 +486,17 @@ public class Common {
      * @param todiv
      * @return
      */
+    @SuppressWarnings("JavaDoc")
     public static <T> Set<T> difference(Set<T> org, Set<T> todiv) {
-        Set<T> result = new HashSet<T>(org);
+        Set<T> result = new HashSet<>(org);
         result.removeAll(todiv);
         return result;
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T, C extends Collection<T>> C join(C instance, Collection... collections) {
+    @SafeVarargs
+    private static <T, C extends Collection<T>> C join(C instance, Collection<? extends T>... collections) {
         if (collections != null && collections.length > 0) {
-            for (Collection c : collections) {
+            for (Collection<? extends T> c : collections) {
                 if (c != null) instance.addAll(c);
             }
         }
@@ -527,14 +509,17 @@ public class Common {
      * @param sets
      * @return
      */
+    @SafeVarargs
+    @SuppressWarnings("JavaDoc")
     public static <T> Set<T> join(Collection<T>... sets) {
-        return join(new HashSet<T>(), sets);
+        return join(new HashSet<>(), sets);
     }
 
+    @SuppressWarnings("unused")
     public static String native2AscII(String str) {
         if (str == null) return null;
         char[] charPoints = str.toCharArray();
-        StringBuffer strBuf = new StringBuffer();
+        StringBuilder strBuf = new StringBuilder();
         for (char ch : charPoints) {
             if (ch < 256)
                 strBuf.append(ch);
@@ -544,6 +529,7 @@ public class Common {
         return strBuf.toString();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static File getNewFile(String fileName) throws IOException {
         File f = new File(fileName);
         if (!f.getParentFile().exists()) {
@@ -630,7 +616,7 @@ public class Common {
                 return null;
             throw new NullPointerException("value is null.");
         }
-        Class cls = value.getClass();
+        Class<?> cls = value.getClass();
         if (cls.equals(String.class)) {
             //noinspection unchecked
             return (T) (str == null ? value : str);
@@ -679,6 +665,7 @@ public class Common {
         }
     }
 
+    @SuppressWarnings("unused")
     public static boolean toBool(String str, Supplier<Boolean> v) {
         String s = nullToStr(str);
         if (s.equals("1") || s.equalsIgnoreCase("T")
@@ -707,7 +694,7 @@ public class Common {
         if (Common.isBlank(str))
             return v;
         StringTokenizer st = new StringTokenizer(str, delim, false);
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         while (st.hasMoreElements()) {
             list.add(st.nextToken().trim());
         }
@@ -825,10 +812,9 @@ public class Common {
         return builder.toString();
     }
 
+    @Deprecated
     public static boolean isSameStr(String s1, String s2) {
-        if (s1 == s2) return true;
-        if (s1 == null || s2 == null) return false;
-        return s1.equals(s2);
+        return Objects.equals(s1, s2);
     }
 
     public static Calendar copy(Calendar calendar) {
@@ -836,7 +822,7 @@ public class Common {
     }
 
     public static String lowerFirstChar(String string) {
-        if (string == null) return string;
+        if (string == null) return null;
         char[] charSeq = string.toCharArray();
         if (charSeq.length > 0 && charSeq[0] >= 'A' && charSeq[0] <= 'Z') {
             charSeq[0] = (char) (charSeq[0] + TO_LOWER);
@@ -846,7 +832,7 @@ public class Common {
     }
 
     public static String upperFirstChar(String string) {
-        if (string == null) return string;
+        if (string == null) return null;
         char[] charSeq = string.toCharArray();
         if (charSeq.length > 0 && charSeq[0] >= 'a' && charSeq[0] <= 'z') {
             charSeq[0] = (char) (charSeq[0] - TO_LOWER);
@@ -887,6 +873,7 @@ public class Common {
      * @param strB
      * @return
      */
+    @SuppressWarnings("JavaDoc")
     private static int calculateStringDistance(String strA, String strB) {
         int lenA = strA.length();
         int lenB = strB.length();
@@ -914,14 +901,16 @@ public class Common {
      * @param s2
      * @return
      */
+    @SuppressWarnings({"JavaDoc", "unused"})
     public static double similarity(String s1, String s2) {
         if (s1 == null || s2 == null) return 0.0f;
         if (s1.equals(s2)) return 1.0f;
         return 1.0f - calculateStringDistance(s1, s2) / (Math.max(s1.length(), s2.length()) * 1.0f);
     }
 
+    @SuppressWarnings("unused")
     public static <T> Map<String, T> subMap(String prefix, Map<String, T> map) {
-        Map<String, T> subMap = new HashMap<String, T>();
+        Map<String, T> subMap = new HashMap<>();
         String prefixKey = prefix.endsWith(".") ? prefix : (prefix + '.');
         int length = prefixKey.length();
         for (String key : map.keySet()) {
@@ -944,20 +933,15 @@ public class Common {
         return getSafetyDateFormat(format).format(date);
     }
 
+
+    @SuppressWarnings("unused")
     public static String dateToStr(Date date) {
         return dateToStr(date, DEFAULT_DATETIME_FORMAT);
     }
 
     public static DateFormat getSafetyDateFormat(String format) {
         if (threadLocal.get() == null) {
-            threadLocal.set(new SingletonMap<String, DateFormat>(
-                    new SingletonMap.Builder<String, DateFormat>() {
-                        @Override
-                        public DateFormat build(String key) {
-                            return new SimpleDateFormat(key);
-                        }
-                    }
-            ));
+            threadLocal.set(SingletonMap.<String, DateFormat>builder().function(SimpleDateFormat::new).build());
         }
         return threadLocal.get().get(format);
     }
@@ -974,6 +958,7 @@ public class Common {
         return dateToCalendar(strToDate(str, format));
     }
 
+    @SuppressWarnings("unused")
     public static String longToDateStr(long l) {
         return longToDateStr(l, DEFAULT_DATETIME_FORMAT);
     }
@@ -994,6 +979,7 @@ public class Common {
         return calendar;
     }
 
+    @SafeVarargs
     public static <T extends Comparable<T>> T min(T c1, T c2, T... others) {
         checkNull(c1, "c1 is null");
         checkNull(c2, "c2 is null");
@@ -1087,17 +1073,10 @@ public class Common {
         return ManagementFactory.getRuntimeMXBean().getStartTime();
     }
 
-    private static boolean isMatch(Pattern p, String str) {
-        return p.matcher(str).find();
-    }
+//    private static boolean isMatch(Pattern p, String str) {
+//        return p.matcher(str).find();
+//    }
 
-    public interface Supplier<T> {
-        T get();
-    }
-
-    public interface Function<T, R>{
-        R apply(T t);
-    }
 
     public interface ResourceFilter {
         boolean accept(String root, String resourceName);

@@ -30,7 +30,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.regex.Pattern;
+import java.util.function.Function;
 
 import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.util.ReflectHelper.foreachClass;
@@ -83,10 +83,11 @@ public class ConcreteHelper {
 //        }
 //    });
 
-    private static SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap = new SingletonMap<>(
-            new SingletonMap.Builder<String, ScheduledExecutorService>() {
+    private static SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
+            = SingletonMap.<String, ScheduledExecutorService>builder()
+            .function(new Function<String, ScheduledExecutorService>() {
                 @Override
-                public ScheduledExecutorService build(String key) {
+                public ScheduledExecutorService apply(String key) {
                     String aliasTo = Config.get("scheduler", key, getAppSet());
                     if (Common.isBlank(aliasTo)) {
                         return ExecutorsHelper.newScheduledThreadPool(
@@ -97,14 +98,14 @@ public class ConcreteHelper {
                         return scheduledExecutorMap.get(aliasTo);
                     }
                 }
-            }
-    );
+            }).build();
 
-    private static SingletonMap<String, ExecutorService> executorServiceMap = new SingletonMap<>(
-            new SingletonMap.Builder<String, ExecutorService>() {
+    private static SingletonMap<String, ExecutorService> executorServiceMap
+            = SingletonMap.<String, ExecutorService>builder()
+            .function(new Function<String, ExecutorService>() {
 
                 @Override
-                public ExecutorService build(String key) {
+                public ExecutorService apply(String key) {
                     String aliasTo = Config.get("executor", key, getAppSet());
                     if (Common.isBlank(aliasTo)) {
                         return ExecutorsHelper.newPriorityThreadPool(
@@ -117,18 +118,10 @@ public class ConcreteHelper {
                     } else {
                         return executorServiceMap.get(aliasTo);
                     }
-//                    return ExecutorsHelper.newP;
                 }
-            }
-    );
-
-//    @Deprecated
-//    private static Profile_Deprecated getDefaultProfile(String tag) {
-//        return Profile_Deprecated.getProfile(tag + ".properties");
-//    }
+            }).build();
 
     public static Integer getTokenMaxIdleInMinute() {
-//        return getProfile().getInt("token.maxIdleTime", 60);
         return Config.getValue("token.maxIdleTime", 60, getAppSet());
     }
 
@@ -320,35 +313,35 @@ public class ConcreteHelper {
         }, packageParrterns);
     }
 
-    private static String[] toPackages(String[] patterns) {
-        String[] result = new String[patterns.length];
-        for (int i = 0, l = patterns.length; i < l; i++) {
-            result[i] = toPackage(patterns[i]);
-        }
-        return result;
-    }
+//    private static String[] toPackages(String[] patterns) {
+//        String[] result = new String[patterns.length];
+//        for (int i = 0, l = patterns.length; i < l; i++) {
+//            result[i] = toPackage(patterns[i]);
+//        }
+//        return result;
+//    }
 
-    private static String toPackage(String parttern) {
-        int i = parttern.indexOf('*');
-        return Common.trim(i > 0 ? parttern.substring(0, i) : parttern, '.');
-    }
+//    private static String toPackage(String parttern) {
+//        int i = parttern.indexOf('*');
+//        return Common.trim(i > 0 ? parttern.substring(0, i) : parttern, '.');
+//    }
 
-    private static boolean isMatch(Class<?> clazz, String... packagePartterns) {
-        String className = clazz.getName();
-        for (String s : packagePartterns) {
-            if (s.indexOf('*') > 0) {
-                if (Pattern.compile("^" +
-                        s.replaceAll("\\.", "\\\\.")
-                                .replaceAll("\\*\\*", ".+")
-                                .replaceAll("\\*", "[\\\\w]+")).matcher(className).find())
-                    return true;
-            } else {
-                if (className.startsWith(s))
-                    return true;
-            }
-        }
-        return false;
-    }
+//    private static boolean isMatch(Class<?> clazz, String... packagePartterns) {
+//        String className = clazz.getName();
+//        for (String s : packagePartterns) {
+//            if (s.indexOf('*') > 0) {
+//                if (Pattern.compile("^" +
+//                        s.replaceAll("\\.", "\\\\.")
+//                                .replaceAll("\\*\\*", ".+")
+//                                .replaceAll("\\*", "[\\\\w]+")).matcher(className).find())
+//                    return true;
+//            } else {
+//                if (className.startsWith(s))
+//                    return true;
+//            }
+//        }
+//        return false;
+//    }
 
 
     public static boolean isAbstract(Class<?> clz) {
@@ -391,6 +384,7 @@ public class ConcreteHelper {
     }
 
 
+    @SuppressWarnings("rawtypes")
     public static int getPriority(AbstractUnit unit) {
         return getPriority(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
     }
@@ -399,7 +393,7 @@ public class ConcreteHelper {
         return IF.isNull(getContext(method, clz, new Stack<>()), ErrorCodes.MODULE_DEFINITION_NOT_FOUND);
     }
 
-    private static boolean isRoot(Class clz) {
+    private static boolean isRoot(Class<?> clz) {
         if (clz == null) return true;
 
         String className = clz.getName();
@@ -500,8 +494,7 @@ public class ConcreteHelper {
 //        return annotation == null ? method.getDeclaringClass().getAnnotation(annotationClass) : annotation;
 //    }
 
-    @SuppressWarnings("unchecked")
-    public static List<Class> inheritedChain(Class root, Class sub) {
+    public static List<Class<?>> inheritedChain(Class<?> root, Class<?> sub) {
         if (root == null || root.getAnnotation(ConcreteService.class) == null) return null;
 //        Stack<Class<?>> inheritedChain = new Stack<Class<?>>();
         if (root.equals(sub)) {
@@ -509,9 +502,9 @@ public class ConcreteHelper {
         }
         for (Class<?> c : sub.getInterfaces()) {
             if (root.isAssignableFrom(c)) {
-                List<Class> subChain = inheritedChain(root, c);
+                List<Class<?>> subChain = inheritedChain(root, c);
                 if (subChain != null) {
-                    List<Class> inheritedChain = new ArrayList<>();
+                    List<Class<?>> inheritedChain = new ArrayList<>();
                     inheritedChain.add(c);
                     inheritedChain.addAll(subChain);
                     return inheritedChain;

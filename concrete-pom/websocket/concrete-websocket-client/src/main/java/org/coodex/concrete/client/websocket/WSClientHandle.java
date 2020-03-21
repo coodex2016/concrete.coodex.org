@@ -42,8 +42,8 @@ public class WSClientHandle {
     private final static Logger log = LoggerFactory.getLogger(WSClientHandle.class);
     private Map<Destination, Session> sessionMap = new HashMap<>();
     private JSONSerializer serializer = JSONSerializerFactory.getInstance();
-    private SingletonMap<WebsocketDestination, Object> locks = new SingletonMap<>(
-            key -> new Object());
+    private SingletonMap<WebsocketDestination, Object> locks = SingletonMap.<WebsocketDestination, Object>builder()
+            .function(key -> new Object()).build();
 
 
     WSClientHandle() {

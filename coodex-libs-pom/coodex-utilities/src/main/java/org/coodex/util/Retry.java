@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import static org.coodex.util.Common.longToCalendar;
 
@@ -42,14 +43,10 @@ public class Retry {
             return 5;
         }
     };
-    private static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE_SINGLETON = new Singleton<ScheduledExecutorService>(
-            new Singleton.Builder<ScheduledExecutorService>() {
-                @Override
-                public ScheduledExecutorService build() {
-                    return ExecutorsHelper.newScheduledThreadPool(Runtime.getRuntime().availableProcessors() * 2, "retry");
-                }
-            }
+    private static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE_SINGLETON = new Singleton<>(
+            () -> ExecutorsHelper.newScheduledThreadPool(Runtime.getRuntime().availableProcessors() * 2, "retry")
     );
+
     // 负责任务调度
     private ScheduledExecutorService scheduledExecutorService;
     // 负责执行任务
@@ -78,12 +75,9 @@ public class Retry {
     }
 
     public void execute(final Runnable runnable) {
-        execute(new Task() {
-            @Override
-            public boolean run(int times) {
-                runnable.run();
-                return true;
-            }
+        execute(times -> {
+            runnable.run();
+            return true;
         });
     }
 
@@ -107,70 +101,62 @@ public class Retry {
     }
 
     private void postTask() {
-        Runnable toPost = new Runnable() {
-            @Override
-            public void run() {
-                synchronized (Retry.this) {
-                    if (Status.FINISHED.equals(status)) return;
-                    status = Status.RUNNING;
-                    if (start == null) {
-                        start = Clock.currentTimeMillis();
-                    }
-                    long thisTimes = Clock.currentTimeMillis();
+        Runnable toPost = () -> {
+            synchronized (Retry.this) {
+                if (Status.FINISHED.equals(status)) return;
+                status = Status.RUNNING;
+                if (start == null) {
+                    start = Clock.currentTimeMillis();
+                }
+                long thisTimes = Clock.currentTimeMillis();
 
-                    int times = num;
-                    Throwable throwable = null;
-                    boolean success = false;
-                    try {
-                        success = task.run(times);
-                    } catch (Throwable th) {
-                        throwable = th;
-                    } finally {
-                        num++;
-                    }
+                int times = num;
+                Throwable throwable = null;
+                boolean success = false;
+                try {
+                    success = task.run(times);
+                } catch (Throwable th) {
+                    throwable = th;
+                } finally {
+                    num++;
+                }
 
-                    if (success || num > maxTimes) {
-                        status = Status.FINISHED;
-                        if (success) {
-                            if (log.isDebugEnabled())
-                                log.debug("{} success. [{}]", getTaskName(), times);
-                        } else {
-                            if (log.isInfoEnabled())
-                                log.info("{} all failed.", getTaskName());
-                            onFailed(longToCalendar(thisTimes), times, throwable);
-                            if (allFailedHandle != null) {
-                                try {
-                                    allFailedHandle.allFailed(longToCalendar(start), times);
-                                } catch (Throwable t) {
-                                    log.warn("handle error.", t);
-                                }
+                if (success || num > maxTimes) {
+                    status = Status.FINISHED;
+                    if (success) {
+                        if (log.isDebugEnabled())
+                            log.debug("{} success. [{}]", getTaskName(), times);
+                    } else {
+                        if (log.isInfoEnabled())
+                            log.info("{} all failed.", getTaskName());
+                        onFailed(longToCalendar(thisTimes), times, throwable);
+                        if (allFailedHandle != null) {
+                            try {
+                                allFailedHandle.allFailed(longToCalendar(start), times);
+                            } catch (Throwable t) {
+                                log.warn("handle error.", t);
                             }
                         }
-                    } else {
-                        onFailed(longToCalendar(thisTimes), times, throwable);
-                        if (throwable != null && log.isWarnEnabled()) {
-                            log.warn("{} failed [{}] times. {}", getTaskName(), times,
-                                    throwable.getLocalizedMessage(), throwable);
-                        }
-
-                        if (throwable == null && log.isInfoEnabled()) {
-                            log.info("{} failed [{}] times.", getTaskName(), times);
-                        }
-                        status = Status.WAITING;
-                        postTask();
                     }
+                } else {
+                    onFailed(longToCalendar(thisTimes), times, throwable);
+                    if (throwable != null && log.isWarnEnabled()) {
+                        log.warn("{} failed [{}] times. {}", getTaskName(), times,
+                                throwable.getLocalizedMessage(), throwable);
+                    }
+
+                    if (throwable == null && log.isInfoEnabled()) {
+                        log.info("{} failed [{}] times.", getTaskName(), times);
+                    }
+                    status = Status.WAITING;
+                    postTask();
                 }
             }
         };
 
         if (executorService != null) {
             final Runnable tmp = toPost;
-            toPost = new Runnable() {
-                @Override
-                public void run() {
-                    executorService.execute(tmp);
-                }
-            };
+            toPost = () -> executorService.execute(tmp);
         }
 
         scheduledExecutorService.schedule(toPost,
@@ -300,6 +286,7 @@ public class Retry {
          * @param scheduledExecutorService 调度线程池
          * @return Builder
          */
+        @SuppressWarnings("unused")
         public Builder scheduler(ScheduledExecutorService scheduledExecutorService) {
             this.scheduledExecutorService = scheduledExecutorService;
             return this;
@@ -309,6 +296,7 @@ public class Retry {
          * @param executorService 任务执行线程池
          * @return Builder
          */
+        @SuppressWarnings("unused")
         public Builder executor(ExecutorService executorService) {
             this.executorService = executorService;
             return this;
@@ -318,6 +306,7 @@ public class Retry {
          * @param maxRetryTimes 最大尝试次数，应不小于1，默认5次
          * @return Builder
          */
+        @SuppressWarnings("unused")
         public Builder maxTimes(int maxRetryTimes) {
             if (maxRetryTimes < 1) {
                 throw new IllegalArgumentException("illegal maxRetryTimes: " + maxRetryTimes);
@@ -331,6 +320,7 @@ public class Retry {
          * @param unit      unit
          * @return Builder
          */
+        @SuppressWarnings("unused")
         public Builder initDelay(long initDelay, TimeUnit unit) {
             this.initDelay = unit.toMillis(initDelay);
             return this;
@@ -351,12 +341,7 @@ public class Retry {
          * @return Builder
          */
         public Builder named(final String name) {
-            this.taskNameSupplier = new NameSupplier() {
-                @Override
-                public String getName() {
-                    return name;
-                }
-            };
+            this.taskNameSupplier = () -> name;
             return this;
         }
 
@@ -373,6 +358,7 @@ public class Retry {
          * @param onFailed 每次失败时的处理
          * @return Builder
          */
+        @SuppressWarnings("unused")
         public Builder onFailed(OnFailed onFailed) {
             this.onFailed = onFailed;
             return this;
@@ -382,6 +368,7 @@ public class Retry {
          * @param allFailedHandle 全部失败时的处理
          * @return Builder
          */
+        @SuppressWarnings("unused")
         public Builder onAllFailed(AllFailedHandle allFailedHandle) {
             this.allFailedHandle = allFailedHandle;
             return this;

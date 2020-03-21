@@ -16,23 +16,13 @@
 
 package org.coodex.util;
 
-import org.coodex.util.ProfileBasedTranslateService;
-import org.coodex.util.ServiceLoaderImpl;
-import org.coodex.util.Singleton;
-import org.coodex.util.TranslateService;
-
 import java.util.Locale;
 
 public class I18N {
 
-    private static Singleton<TranslateService> TRANSLATE_SERVICE_SINGLETON = new Singleton<TranslateService>(
-            new Singleton.Builder<TranslateService>() {
-                @Override
-                public TranslateService build() {
-                    return new ServiceLoaderImpl<TranslateService>(new ProfileBasedTranslateService()) {
-                    }.get();
-                }
-            }
+    private static Singleton<TranslateService> TRANSLATE_SERVICE_SINGLETON = new Singleton<>(
+            () -> new ServiceLoaderImpl<TranslateService>(new ProfileBasedTranslateService()) {
+            }.get()
     );
 
     public static TranslateService getTranslateService() {
@@ -43,6 +33,7 @@ public class I18N {
         return getTranslateService().translate(key);
     }
 
+    @SuppressWarnings("unused")
     public static String translate(String key, Locale locale) {
         return getTranslateService().translate(key, locale);
     }

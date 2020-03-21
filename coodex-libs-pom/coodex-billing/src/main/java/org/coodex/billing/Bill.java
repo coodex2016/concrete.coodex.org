@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class Bill<C extends Chargeable> {
     private final C chargeable;
-    private List<Detail> details = new ArrayList<Detail>();
+    private List<Detail> details = new ArrayList<>();
 
     public Bill(C chargeable) {
         this.chargeable = chargeable;
@@ -76,8 +76,9 @@ public class Bill<C extends Chargeable> {
     /**
      * @return 所有被用掉的调整项目
      */
+    @SuppressWarnings("unused")
     public Set<Revision> getUsedRevisions() {
-        Set<Revision> revisionSet = new HashSet<Revision>();
+        Set<Revision> revisionSet = new HashSet<>();
         for (Detail detail : details) {
             if (detail.usedRevision() != null)
                 revisionSet.add(detail.usedRevision());

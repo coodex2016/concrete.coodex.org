@@ -25,20 +25,14 @@ import java.util.List;
 public class AModule extends AbstractModule<AUnit> {
 
     //    private static final Map<Class, AModule> modules = new ConcurrentHashMap<Class, AModule>();
-    private static final SingletonMap<Class, AModule> modules = new SingletonMap<Class, AModule>(
-            new SingletonMap.Builder<Class, AModule>() {
-                @Override
-                public AModule build(Class key) {
-                    return new AModule(key);
-                }
-            }
-    );
+    private static final SingletonMap<Class, AModule> modules
+            = SingletonMap.<Class, AModule>builder().function(AModule::new).build();
 
     public AModule(Class<?> interfaceClass) {
         super(interfaceClass);
     }
 
-    private static final AModule getModule(Class clz) {
+    private static AModule getModule(Class clz) {
 //        if (!modules.containsKey(clz)) {
 //            synchronized (AModule.class) {
 //                if (!modules.containsKey(clz)) {

@@ -19,28 +19,24 @@ package org.coodex.billing.timebased;
 import org.coodex.billing.Bill;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 public class TimeBasedBill<C extends TimeBasedChargeable> extends Bill<C> {
 
-    private static final Comparator<Detail> DETAIL_COMPARATOR = new Comparator<Detail>() {
-        @Override
-        public int compare(Detail o1, Detail o2) {
-            TimeBasedDetail detail1 = o1 instanceof TimeBasedDetail ? (TimeBasedDetail) o1 : null;
-            TimeBasedDetail detail2 = o2 instanceof TimeBasedDetail ? (TimeBasedDetail) o2 : null;
-            if (detail1 != null && detail2 != null) {
-                return detail1.getPeriod().getStart().compareTo(detail2.getPeriod().getStart());
-            }
-            if (detail1 != null) {
-                return -1;
-            }
-            if (detail2 != null) {
-                return 1;
-            }
-            return 0;
+    private static final Comparator<Detail> DETAIL_COMPARATOR = (o1, o2) -> {
+        TimeBasedDetail detail1 = o1 instanceof TimeBasedDetail ? (TimeBasedDetail) o1 : null;
+        TimeBasedDetail detail2 = o2 instanceof TimeBasedDetail ? (TimeBasedDetail) o2 : null;
+        if (detail1 != null && detail2 != null) {
+            return detail1.getPeriod().getStart().compareTo(detail2.getPeriod().getStart());
         }
+        if (detail1 != null) {
+            return -1;
+        }
+        if (detail2 != null) {
+            return 1;
+        }
+        return 0;
     };
 
     public TimeBasedBill(C chargeable) {
@@ -49,8 +45,8 @@ public class TimeBasedBill<C extends TimeBasedChargeable> extends Bill<C> {
 
     @Override
     public List<Detail> getDetails() {
-        List<Detail> details = new ArrayList<Detail>(super.getDetails());
-        Collections.sort(details, DETAIL_COMPARATOR);
+        List<Detail> details = new ArrayList<>(super.getDetails());
+        details.sort(DETAIL_COMPARATOR);
         return details;
     }
 }

@@ -16,63 +16,70 @@
 
 package org.coodex.util;
 
+import lombok.Builder;
+import org.coodex.concurrent.Debouncer;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
+@Builder
 public class SingletonMap<K, V> {
 
-    private static final Singleton<ScheduledExecutorService> DEFAULT_SCHEDULED_EXECUTOR_SERVICE = new Singleton<ScheduledExecutorService>(new Singleton.Builder<ScheduledExecutorService>() {
-        @Override
-        public ScheduledExecutorService build() {
-            return ExecutorsHelper.newSingleThreadScheduledExecutor("singletonMap-DEFAULT");
-        }
-    });
+    private static final Singleton<ScheduledExecutorService> DEFAULT_SCHEDULED_EXECUTOR_SERVICE
+            = new Singleton<>(() -> ExecutorsHelper.newSingleThreadScheduledExecutor("singletonMap-DEFAULT"));
 
-    private final static Logger log = LoggerFactory.getLogger(SingletonMap.class);
-    private final static AtomicInteger poolNumber = new AtomicInteger(1);
-    private final Builder<K, V> builder;
-    private final Map<K, V> map = new HashMap<K, V>();
-    private final K nullKey;
+    private final static Logger log = LoggerFactory.getLogger(org.coodex.util.SingletonMap.class);
+    private final Map<K, Value<K, V>> map = new HashMap<>();
+
+    private Function<K, V> function;
+    private K nullKey;
+    @Builder.Default
+    private boolean activeOnGet = false;
+    @Builder.Default
     private long maxAge = 0;
     private ScheduledExecutorService scheduledExecutorService;
 
-    public SingletonMap(Builder<K, V> builder) {
-        this(builder, 0, null);
-    }
+//    @Deprecated
+//    public SingletonMap(Function<K, V> builder) {
+//        this(builder, 0, null);
+//    }
+//
+//    /**
+//     * @param builder builder
+//     * @param maxAge  map内对象的最大存在时长，单位为毫秒
+//     */
+//    @Deprecated
+//    public SingletonMap(Function<K, V> builder, long maxAge) {
+//        this(builder, maxAge, null);
+//    }
+//
+//    /**
+//     * @param builder                  builder
+//     * @param maxAge                   map内对象的最大存在时长，单位为毫秒
+//     * @param scheduledExecutorService scheduledExecutorService
+//     */
+//    @Deprecated
+//    public SingletonMap(Function<K, V> builder, long maxAge, ScheduledExecutorService scheduledExecutorService) {
+//        this(builder, null, false, maxAge, scheduledExecutorService);
+//    }
 
-    /**
-     * @param builder builder
-     * @param maxAge  map内对象的最大存在时长，单位为毫秒
-     */
-    public SingletonMap(Builder<K, V> builder, long maxAge) {
-        this(builder, maxAge, null);
-    }
-
-    /**
-     * @param builder                  builder
-     * @param maxAge                   map内对象的最大存在时长，单位为毫秒
-     * @param scheduledExecutorService scheduledExecutorService
-     */
-    public SingletonMap(Builder<K, V> builder, long maxAge, ScheduledExecutorService scheduledExecutorService) {
-        if (builder == null) throw new NullPointerException("builder MUST NOT be null.");
-        this.builder = builder;
-        nullKey = getNullKeyOnce();
-        this.maxAge = maxAge;
-        if (maxAge > 0) {
-            this.scheduledExecutorService = scheduledExecutorService == null ?
-                    DEFAULT_SCHEDULED_EXECUTOR_SERVICE.get() :
-                    scheduledExecutorService;
+    @SuppressWarnings("unused")
+    private SingletonMap(Function<K, V> function,
+                         K nullKey, boolean activeOnGet,
+                         long maxAge, ScheduledExecutorService scheduledExecutorService) {
+        this.function = function;
+        this.nullKey = nullKey;
+        this.maxAge = Math.max(0, maxAge);
+        if (this.maxAge > 0) {
+            this.activeOnGet = activeOnGet;
+            this.scheduledExecutorService = scheduledExecutorService == null ? DEFAULT_SCHEDULED_EXECUTOR_SERVICE.get() : scheduledExecutorService;
         }
-    }
-
-    protected K getNullKeyOnce() {
-        return null;
     }
 
 
@@ -80,71 +87,91 @@ public class SingletonMap<K, V> {
         return map.containsKey(key == null ? nullKey : key);
     }
 
+    public V get(K key, Supplier<V> supplier) {
+        if (supplier == null) throw new NullPointerException("supplier is null");
+        return get(key, (k) -> supplier.get());
+    }
+
     public V get(final K key) {
+        return get(key, function);
+    }
+
+    public V get(final K key, Function<K, V> function) {
+        if (function == null) throw new NullPointerException("function is null.");
         final K finalKey = key == null ? nullKey : key;
         if (!map.containsKey(finalKey)) {
             synchronized (map) {
                 if (!map.containsKey(finalKey)) {
-                    V o = builder.build(key);
-                    map.put(finalKey, o);
+                    V o = function.apply(finalKey);
+                    Value<K, V> value = new Value<>();
+                    value.value = o;
                     if (maxAge > 0) {
-                        scheduledExecutorService.schedule(new Runnable() {
-                            @Override
-                            public void run() {
-                                log.debug("{} die.", key);
-                                remove(finalKey);
-                            }
-                        }, maxAge, TimeUnit.MILLISECONDS);
+                        value.debouncer = new Debouncer<>(k -> {
+                            log.debug("{} die.", k);
+                            map.remove(k);
+                        }, maxAge, scheduledExecutorService);
                     }
+                    map.put(finalKey, value);
                 }
             }
         }
-        return map.get(finalKey);
+        Value<K, V> value = map.get(finalKey);
+        if (activeOnGet) {
+            value.debouncer.call(finalKey);
+            log.debug("{} active.", finalKey);
+        }
+        return value.value;
     }
 
     public Set<K> keySet() {
-        return new HashSet<K>(map.keySet());
+        return Collections.unmodifiableSet(map.keySet());
     }
 
     public Set<Map.Entry<K, V>> entrySet() {
-        return map.entrySet();
+        return map.entrySet().stream().map(entry -> new Map.Entry<K, V>() {
+
+            @Override
+            public K getKey() {
+                return entry.getKey();
+            }
+
+            @Override
+            public V getValue() {
+                return entry.getValue().value;
+            }
+
+            @Override
+            public V setValue(V value) {
+                return null;
+            }
+        }).collect(Collectors.toSet());
     }
 
     public <C extends Collection<V>> C fill(C collection, Collection<K> keys) {
         if (collection == null) throw new NullPointerException("collection is null.");
         if (keys != null && keys.size() > 0) {
-            for (K key : new LinkedHashSet<K>(keys)) {
+            for (K key : new LinkedHashSet<>(keys)) {
                 collection.add(get(key));
             }
         }
         return collection;
     }
 
-    /**
-     * @param key
-     * @return
-     * @see SingletonMap#get(Object)
-     */
-    @Deprecated
-    public V getInstance(final K key) {
-        return get(key);
-    }
-
     public V remove(K key) {
         final K finalKey = key == null ? nullKey : key;
         if (map.containsKey(finalKey)) {
             synchronized (map) {
-                if (map.containsKey(finalKey))
-                    return map.remove(finalKey);
+                if (map.containsKey(finalKey)) {
+                    Value<K, V> value = map.remove(finalKey);
+                    return value == null ? null : value.value;
+                }
             }
         }
         return null;
     }
 
     public Collection<V> values() {
-        synchronized (map) {
-            return map.values();
-        }
+        return map.values().stream().map(value -> value.value).collect(Collectors.toList());
     }
 
     public void clear() {
@@ -154,10 +181,37 @@ public class SingletonMap<K, V> {
         }
     }
 
-
-    public interface Builder<K, V> {
-        V build(K key);
+    static class Value<K, V> {
+        private Debouncer<K> debouncer;
+        private V value;
     }
 
+//    @lombok.Builder(access = AccessLevel.PUBLIC)
+//    @Getter
+//    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+//    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+//    public static class Builder<K, V> {
+//        private Function<K, V> function;
+//        private K nullKey;
+//        private boolean activeOnGet = false;
+//        private long maxAge;
+//        private ScheduledExecutorService scheduledExecutorService;
+//
+//        Builder<K, V> _clone() {
+//            Builder<K, V> builder = new Builder<>();
+//            builder.function = function;
+//            builder.nullKey = nullKey;
+//            builder.maxAge = Math.max(0, maxAge);
+//            if (builder.maxAge > 0) {
+//                builder.scheduledExecutorService = scheduledExecutorService == null ? DEFAULT_SCHEDULED_EXECUTOR_SERVICE.get() : scheduledExecutorService;
+//                builder.activeOnGet = activeOnGet;
+//            }
+//            return builder;
+//        }
+//
+//        public SingletonMap<K, V> buildMap() {
+//            return new SingletonMap<>(this);
+//        }
+//    }
 
 }

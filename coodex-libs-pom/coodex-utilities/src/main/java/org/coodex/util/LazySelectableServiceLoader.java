@@ -19,6 +19,7 @@ package org.coodex.util;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 import static org.coodex.util.GenericTypeHelper.typeToClass;
@@ -34,10 +35,8 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
     }
 
     public LazySelectableServiceLoader(final T defaultProvider) {
-        singleton = new Singleton<SelectableServiceLoader<Param_Type, T>>(new Singleton.Builder<SelectableServiceLoader<Param_Type, T>>() {
-            @Override
-            public SelectableServiceLoaderImpl<Param_Type, T> build() {
-                return new SelectableServiceLoaderImpl<Param_Type, T>(defaultProvider) {
+        singleton = new Singleton<>(
+                () -> new SelectableServiceLoaderImpl<Param_Type, T>(defaultProvider) {
 
                     @Override
                     protected Class<Param_Type> getParamType() {
@@ -48,16 +47,12 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
                     protected Class<T> getInterfaceClass() {
                         return LazySelectableServiceLoader.this.getInterfaceClass();
                     }
-                };
-            }
-        });
+                });
     }
 
-    public LazySelectableServiceLoader(final Common.Function<Method, RuntimeException> exceptionFunction) {
-        singleton = new Singleton<SelectableServiceLoader<Param_Type, T>>(new Singleton.Builder<SelectableServiceLoader<Param_Type, T>>() {
-            @Override
-            public SelectableServiceLoaderImpl<Param_Type, T> build() {
-                return new SelectableServiceLoaderImpl<Param_Type, T>(exceptionFunction) {
+    public LazySelectableServiceLoader(final Function<Method, RuntimeException> exceptionFunction) {
+        singleton = new Singleton<>(
+                () -> new SelectableServiceLoaderImpl<Param_Type, T>(exceptionFunction) {
                     @Override
                     protected Class<Param_Type> getParamType() {
                         return LazySelectableServiceLoader.this.getParamType();
@@ -67,10 +62,7 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
                     protected Class<T> getInterfaceClass() {
                         return LazySelectableServiceLoader.this.getInterfaceClass();
                     }
-                };
-
-            }
-        });
+                });
     }
 
     @Override

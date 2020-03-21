@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.coodex.concrete.accounts.AccountManagementRoles.*;
@@ -73,11 +74,11 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
         if (roles.contains(TENANT_MANAGER)) {
             if (!Common.isBlank(orgId)) {
                 OrganizationEntity organizationEntity = organizationRepo.findById(orgId).orElse(null);
-                if (Common.isSameStr(organizationEntity == null ? null : organizationEntity.getTenant(), getTenant())) return;
+                if (Objects.equals(organizationEntity == null ? null : organizationEntity.getTenant(), getTenant())) return;
             } else {
                 if (account instanceof TenantAccount) {
                     TenantAccount tenantAccount = (TenantAccount) account;
-                    if (Common.isSameStr(tenantAccount.getAppSet(), ConcreteHelper.getAppSet())) {
+                    if (Objects.equals(tenantAccount.getAppSet(), ConcreteHelper.getAppSet())) {
                         return;
                     } else {
                         log.info("{}(set {}) cannot use in this set: {}.",

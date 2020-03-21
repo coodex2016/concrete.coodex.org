@@ -16,38 +16,28 @@
 
 package org.coodex.util;
 
+import java.util.function.Supplier;
+
 public class Singleton<T> {
 
-    private Builder<T> builder;
+    private Supplier<T> builder;
     private volatile T instance = null;
     private volatile boolean loaded = false;
 
-    Singleton() {
+    public Singleton() {
     }
 
-    public Singleton(Builder<T> builder) {
-        setBuilder(builder);
-    }
-
-    private void setBuilder(Builder<T> builder) {
+    public Singleton(Supplier<T> builder) {
         if (builder == null) throw new NullPointerException("builder MUST NOT be null.");
         this.builder = builder;
     }
 
-    /**
-     * @return
-     * @see Singleton#get()
-     */
-    @Deprecated
-    public T getInstance() {
-        return get();
-    }
 
     public T get() {
         if (!loaded) {
             synchronized (this) {
                 if (!loaded) {
-                    instance = builder.build();
+                    instance = builder.get();
                     loaded = true;
                 }
             }
@@ -55,7 +45,4 @@ public class Singleton<T> {
         return instance;
     }
 
-    public interface Builder<T> {
-        T build();
-    }
 }

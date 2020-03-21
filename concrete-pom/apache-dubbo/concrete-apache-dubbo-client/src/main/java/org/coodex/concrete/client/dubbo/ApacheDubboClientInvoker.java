@@ -46,21 +46,19 @@ public class ApacheDubboClientInvoker extends AbstractSyncInvoker {
     private final static Logger log = LoggerFactory.getLogger(ApacheDubboClientInvoker.class);
     private final static String CLIENT_AGENT = "concrete-apache-dubbo-client-" + VERSION;
 
-    private static final SingletonMap<ReferenceKey, Object> REFERENCE_MAP = new SingletonMap<>(new SingletonMap.Builder<ReferenceKey, Object>() {
-        @Override
-        public Object build(ReferenceKey key) {
-            @SuppressWarnings("rawtypes")
-            ReferenceConfig referenceConfig = new ReferenceConfig();
-            referenceConfig.setApplication(getApplicationConfig(key.dubboDestination.getName()));
-            referenceConfig.setRegistries(getRegistries(key.dubboDestination.getRegistries()));
-            referenceConfig.setProtocol(key.dubboDestination.getProtocol());
-            referenceConfig.setUrl(key.dubboDestination.getUrl());
-            //noinspection unchecked
-            referenceConfig.setInterface(key.serviceClass);
-            referenceConfig.setVersion(VERSION);
-            return referenceConfig.get();
-        }
-    });
+    private static final SingletonMap<ReferenceKey, Object> REFERENCE_MAP = SingletonMap.<ReferenceKey, Object>builder()
+            .function(key -> {
+                @SuppressWarnings("rawtypes")
+                ReferenceConfig referenceConfig = new ReferenceConfig();
+                referenceConfig.setApplication(getApplicationConfig(key.dubboDestination.getName()));
+                referenceConfig.setRegistries(getRegistries(key.dubboDestination.getRegistries()));
+                referenceConfig.setProtocol(key.dubboDestination.getProtocol());
+                referenceConfig.setUrl(key.dubboDestination.getUrl());
+                //noinspection unchecked
+                referenceConfig.setInterface(key.serviceClass);
+                referenceConfig.setVersion(VERSION);
+                return referenceConfig.get();
+            }).build();
 
     public ApacheDubboClientInvoker(Destination destination) {
         super(destination);

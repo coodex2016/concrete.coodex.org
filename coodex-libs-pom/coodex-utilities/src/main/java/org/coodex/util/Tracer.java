@@ -16,7 +16,6 @@
 
 package org.coodex.util;
 
-import org.coodex.closure.CallableClosure;
 import org.coodex.closure.StackClosureContext;
 import org.coodex.config.Config;
 import org.slf4j.Logger;
@@ -26,20 +25,18 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 public class Tracer {
     private final static Logger log = LoggerFactory.getLogger(Tracer.class);
-    private static final StackClosureContext<Map<String, Object>> tracer_context = new StackClosureContext<Map<String, Object>>();
-    private static Singleton<Boolean> TRACE_ENABLED = new Singleton<Boolean>(new Singleton.Builder<Boolean>() {
-        @Override
-        public Boolean build() {
+    private static final StackClosureContext<Map<String, Object>> tracer_context = new StackClosureContext<>();
+    private static Singleton<Boolean> TRACE_ENABLED = new Singleton<>(() -> {
 //            return Common.toBool(System.getProperty("org.coodex.util.Tracer"), false);
-            return Config.getValue("org.coodex.util.Tracer", false);
-        }
+        return Config.getValue("org.coodex.util.Tracer", false);
     });
     private static String START_TIME_KEY = Common.getUUIDStr();
     private Logger logger = log;
-    private Common.Supplier<String> nameSupplier = null;
+    private Supplier<String> nameSupplier = null;
 
     private Tracer() {
     }
@@ -94,28 +91,20 @@ public class Tracer {
     }
 
     public Tracer named(final String name) {
-        nameSupplier = Common.isBlank(name) ? null : new Common.Supplier<String>() {
-            @Override
-            public String get() {
-                return name;
-            }
-        };
+        nameSupplier = Common.isBlank(name) ? null : () -> name;
         return this;
     }
 
-    public Tracer named(Common.Supplier<String> nameSupplier) {
+    public Tracer named(Supplier<String> nameSupplier) {
         this.nameSupplier = nameSupplier;
         return this;
     }
 
     public void trace(final Runnable runnable) {
         if (isEnabled()) {
-            trace(new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    runnable.run();
-                    return null;
-                }
+            trace((Callable<Void>) () -> {
+                runnable.run();
+                return null;
             });
         } else {
             runnable.run();
@@ -126,16 +115,11 @@ public class Tracer {
         if (isEnabled()) {
             long start = Clock.currentTimeMillis();
             Throwable throwable = null;
-            Map<String, Object> context = new LinkedHashMap<String, Object>();
+            Map<String, Object> context = new LinkedHashMap<>();
             try {
                 context.put(START_TIME_KEY, new HashMap<String, Long>());
                 //noinspection unchecked
-                return (T) tracer_context.call(context, new CallableClosure() {
-                    @Override
-                    public Object call() throws Throwable {
-                        return callable.call();
-                    }
-                });
+                return (T) tracer_context.call(context, callable::call);
             } catch (Throwable th) {
                 throwable = th;
             } finally {

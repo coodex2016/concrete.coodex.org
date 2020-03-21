@@ -70,6 +70,7 @@ public final class Mocker {
         return getMockerProvider().mock(type, context, annotations);
     }
 
+    @SuppressWarnings("unused")
     public static Object mockMethod(Method method) {
         return mockMethod(method, method.getDeclaringClass());
     }
@@ -83,17 +84,17 @@ public final class Mocker {
     }
 
     public static Annotation[] getTypeAnnotations(Type instanceType) {
-        Class contextClass = null;
+        Class<?> contextClass = null;
         if (instanceType instanceof Class) {
-            contextClass = (Class) instanceType;
+            contextClass = (Class<?>) instanceType;
         } else if (instanceType instanceof ParameterizedType) {
-            contextClass = (Class) ((ParameterizedType) instanceType).getRawType();
+            contextClass = (Class<?>) ((ParameterizedType) instanceType).getRawType();
         }
         return contextClass == null ? null : contextClass.getAnnotations();
     }
 
     private static Annotation[] merge(Annotation[]... annotations) {
-        List<Annotation> list = new ArrayList<Annotation>();
+        List<Annotation> list = new ArrayList<>();
         if (annotations != null) {
             for (Annotation[] array : annotations) {
                 if (array != null && array.length > 0) {
@@ -104,6 +105,7 @@ public final class Mocker {
         return list.toArray(new Annotation[0]);
     }
 
+    @SuppressWarnings("unused")
     public static Object mockParameter(Method method, int index) {
         return mockParameter(method, index, method.getDeclaringClass());
     }

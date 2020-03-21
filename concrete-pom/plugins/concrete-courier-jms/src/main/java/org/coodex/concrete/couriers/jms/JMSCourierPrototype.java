@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import javax.jms.JMSException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.util.function.Supplier;
 
 import static org.coodex.concrete.couriers.jms.JMSCourierPrototypeProvider.JMS_PREFIX;
 
@@ -32,10 +33,10 @@ public class JMSCourierPrototype<M extends Serializable> extends CourierPrototyp
     private final static Logger log = LoggerFactory.getLogger(JMSCourierPrototype.class);
 
     private final String driver;
-    private final Singleton<JMSFacade> jmsFacadeSingleton = new Singleton<JMSFacade>(
-            new Singleton.Builder<JMSFacade>() {
+    private final Singleton<JMSFacade> jmsFacadeSingleton = new Singleton<>(
+            new Supplier<JMSFacade>() {
                 @Override
-                public JMSFacade build() {
+                public JMSFacade get() {
 
                     //noinspection unchecked
                     return new JMSFacade(getQueue(),

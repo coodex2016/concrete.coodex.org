@@ -33,8 +33,9 @@ public class TokenBucketLimiting implements LimitingStrategy {
 
     private static String DEFAULT_BUCKET = Common.getUUIDStr();
 
-    private static final SingletonMap<String, Bucket> BUCKET_SINGLETON_MAP = new SingletonMap<>(
-            key -> {
+    private static final SingletonMap<String, Bucket> BUCKET_SINGLETON_MAP
+            = SingletonMap.<String, Bucket>builder()
+            .function(key -> {
                 String[] namespace;
                 if (DEFAULT_BUCKET.equalsIgnoreCase(key)) {
                     namespace = new String[]{"tokenBucket", getAppSet()};
@@ -52,8 +53,7 @@ public class TokenBucketLimiting implements LimitingStrategy {
                 Bucket bucket = new Bucket(capacity, flow);
                 bucket.name = key;
                 return bucket;
-            }
-    );
+            }).build();
 
     @Override
     public boolean apply(DefinitionContext definitionContext) {

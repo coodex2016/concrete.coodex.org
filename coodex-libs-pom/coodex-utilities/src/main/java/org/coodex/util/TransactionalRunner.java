@@ -16,14 +16,14 @@
 
 package org.coodex.util;
 
-import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 /**
  * 在一次事务中运行
  */
 public interface TransactionalRunner {
 
-    <TR> TR apply(Common.Supplier<TR> supplier);
+    <TR> TR apply(Supplier<TR> supplier);
 
     void run(Runnable runnable);
 }

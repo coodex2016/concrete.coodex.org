@@ -48,16 +48,19 @@ public class BillingRule implements Comparable<BillingRule> {
         return modelParam;
     }
 
+    @SuppressWarnings("unused")
     public BillingRule withModel(String model) {
         this.model = model;
         return this;
     }
 
+    @SuppressWarnings("unused")
     public BillingRule withStart(Calendar start) {
         this.start = start;
         return this;
     }
 
+    @SuppressWarnings("unused")
     public BillingRule withModelParam(String modelParam) {
         this.modelParam = modelParam;
         return this;

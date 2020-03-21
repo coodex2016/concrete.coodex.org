@@ -17,6 +17,7 @@
 package org.coodex.mock;
 
 import org.coodex.util.Common;
+import org.coodex.util.Singleton;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -24,25 +25,36 @@ import java.util.List;
 
 public abstract class AbstractRelationStrategy implements RelationStrategy {
 
-    private String[] strategies = null;
+    //    private String[] strategies = Singleton<;
+    private Singleton<String[]> strategies = new Singleton<>(() -> {
+        Class<?> c = AbstractRelationStrategy.this.getClass();
+        List<String> list = new ArrayList<>();
+        for (Method method : c.getMethods()) {
+            Strategy strategy = method.getAnnotation(Strategy.class);
+            if (strategy != null) {
+                list.add(strategy.value());
+            }
+        }
+        return list.toArray(new String[0]);
+    });
 
     @Override
     public final boolean accept(String strategyName) {
-        if (strategies == null) {
-            synchronized (this) {
-                if (strategies == null) {
-                    Class c = getClass();
-                    List<String> list = new ArrayList<String>();
-                    for (Method method : c.getMethods()) {
-                        Strategy strategy = method.getAnnotation(Strategy.class);
-                        if (strategy != null) {
-                            list.add(strategy.value());
-                        }
-                    }
-                    strategies = list.toArray(new String[0]);
-                }
-            }
-        }
-        return Common.inArray(strategyName, strategies);
+//        if (strategies == null) {
+//            synchronized (this) {
+//                if (strategies == null) {
+//                    Class<?> c = getClass();
+//                    List<String> list = new ArrayList<>();
+//                    for (Method method : c.getMethods()) {
+//                        Strategy strategy = method.getAnnotation(Strategy.class);
+//                        if (strategy != null) {
+//                            list.add(strategy.value());
+//                        }
+//                    }
+//                    strategies = list.toArray(new String[0]);
+//                }
+//            }
+//        }
+        return Common.inArray(strategyName, strategies.get());
     }
 }

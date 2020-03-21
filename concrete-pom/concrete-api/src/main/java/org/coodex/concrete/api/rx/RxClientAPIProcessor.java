@@ -24,7 +24,6 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
-import javax.lang.model.AnnotatedConstruct;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.*;
@@ -77,31 +76,29 @@ public class RxClientAPIProcessor extends AbstractProcessor {
 //            return ServiceLoader.load(RxCodeBuilder.class);
 //        }
 //    });
-    private static SingletonMap<String, RxCodeBuilder> builderSingletonMap = new SingletonMap<>(new SingletonMap.Builder<String, RxCodeBuilder>() {
-        @Override
-        public RxCodeBuilder build(String key) {
-            try {
-                Class clazz = Class.forName(key);
-                return (RxCodeBuilder) clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-                return null;
-            }
-        }
-    });
-    private static Class[] mirrorClasses = new Class[]{
-            ArrayType.class,
-            DeclaredType.class,
-            ErrorType.class,
-            ExecutableType.class,
-            IntersectionType.class,
-            NoType.class,
-            NullType.class,
-            PrimitiveType.class,
-            ReferenceType.class,
-            TypeVariable.class,
-            UnionType.class,
-            WildcardType.class
-    };
+    private static SingletonMap<String, RxCodeBuilder> builderSingletonMap = SingletonMap.<String, RxCodeBuilder>builder()
+            .function(key -> {
+                try {
+                    Class<?> clazz = Class.forName(key);
+                    return (RxCodeBuilder) clazz.newInstance();
+                } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                    return null;
+                }
+            }).build();
+//    private static Class<?>[] mirrorClasses = new Class[]{
+//            ArrayType.class,
+//            DeclaredType.class,
+//            ErrorType.class,
+//            ExecutableType.class,
+//            IntersectionType.class,
+//            NoType.class,
+//            NullType.class,
+//            PrimitiveType.class,
+//            ReferenceType.class,
+//            TypeVariable.class,
+//            UnionType.class,
+//            WildcardType.class
+//    };
 
     private static String autoBox(PrimitiveType type) {
         return AUTO_BOXED_TYPES[Common.findInArray(type.toString(), PRIMITIVE_TYPES)];
@@ -159,24 +156,24 @@ public class RxClientAPIProcessor extends AbstractProcessor {
 //        return rxCodeBuilders.size() > 0 ? rxCodeBuilders.iterator().next() : null;
     }
 
-    private static String getNames(AnnotatedConstruct construct, Class[] elementClasses) {
-        StringBuilder builder = new StringBuilder();
-        boolean blank = true;
-        for (Class e : elementClasses) {
-            if (e.isAssignableFrom(construct.getClass())) {
-                if (!blank) {
-                    builder.append(", ");
-                }
-                builder.append(e.getSimpleName());
-                blank = false;
-            }
-        }
-        return builder.toString();
-    }
+//    private static String getNames(AnnotatedConstruct construct, Class<?>[] elementClasses) {
+//        StringBuilder builder = new StringBuilder();
+//        boolean blank = true;
+//        for (Class<?> e : elementClasses) {
+//            if (e.isAssignableFrom(construct.getClass())) {
+//                if (!blank) {
+//                    builder.append(", ");
+//                }
+//                builder.append(e.getSimpleName());
+//                blank = false;
+//            }
+//        }
+//        return builder.toString();
+//    }
 
-    private static String getMirrorType(TypeMirror typeMirror) {
-        return getNames(typeMirror, mirrorClasses);
-    }
+//    private static String getMirrorType(TypeMirror typeMirror) {
+//        return getNames(typeMirror, mirrorClasses);
+//    }
 
     private static Set<String> getBuilders() {
         Set<String> result = new HashSet<>();

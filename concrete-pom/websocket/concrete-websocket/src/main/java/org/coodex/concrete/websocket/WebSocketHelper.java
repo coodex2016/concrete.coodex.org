@@ -25,10 +25,7 @@ import java.util.Arrays;
 
 public class WebSocketHelper {
 
-    private static SingletonMap<Class, WebSocketModule> modules =
-            new SingletonMap<>(
-                    WebSocketModule::new
-            );
+    private static SingletonMap<Class, WebSocketModule> modules = SingletonMap.<Class, WebSocketModule>builder().function(WebSocketModule::new).build();
 
 
     @SuppressWarnings("unchecked")

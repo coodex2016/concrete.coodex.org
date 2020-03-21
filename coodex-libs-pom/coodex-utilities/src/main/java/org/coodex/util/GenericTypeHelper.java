@@ -19,30 +19,25 @@ package org.coodex.util;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 public class GenericTypeHelper {
 
-    private static SingletonMap<Type, GenericTypeInfo> typeInfos = new SingletonMap<Type, GenericTypeInfo>(
-            new SingletonMap.Builder<Type, GenericTypeInfo>() {
-                @Override
-                public GenericTypeInfo build(Type key) {
-                    return new GenericTypeInfo(key);
-                }
-            }
-    );
+    private static SingletonMap<Type, GenericTypeInfo> typeInfos = SingletonMap.<Type, GenericTypeInfo>builder()
+            .function(GenericTypeInfo::new).build();
 
-    public static Type solveFromInstance(TypeVariable t, Object instance){
-        if(instance == null) return t;
-        if(instance instanceof Type) return solveFromType(t, (Type) instance);
+    public static Type solveFromInstance(TypeVariable t, Object instance) {
+        if (instance == null) return t;
+        if (instance instanceof Type) return solveFromType(t, (Type) instance);
         Type result = solveFromType(t, instance.getClass());
-        if(result instanceof TypeVariable){
+        if (result instanceof TypeVariable) {
             // 内部类处理
-            for(Field field: instance.getClass().getDeclaredFields()){
-                if(field.getName().startsWith("this$")){
+            for (Field field : instance.getClass().getDeclaredFields()) {
+                if (field.getName().startsWith("this$")) {
                     field.setAccessible(true);
                     try {
                         Type x = solveFromInstance((TypeVariable) result, field.get(instance));
-                        if(!(x instanceof TypeVariable)){
+                        if (!(x instanceof TypeVariable)) {
                             return x;
                         }
                     } catch (IllegalAccessException e) {
@@ -54,13 +49,13 @@ public class GenericTypeHelper {
         return result;
     }
 
-    public static Type solveFromType(TypeVariable t, Type context){
+    public static Type solveFromType(TypeVariable t, Type context) {
         return typeInfos.get(context).find(t);
     }
 
     @Deprecated
     public static Type solve(TypeVariable t, Object context) {
-        if(context instanceof Type){
+        if (context instanceof Type) {
             return solveFromType(t, (Type) context);
         } else {
             return solveFromInstance(t, context);
@@ -178,31 +173,28 @@ public class GenericTypeHelper {
     private static class ParameterizedTypeImpl implements ParameterizedType {
         private final Type rawType;
         private final Type ownerType;
-        private final List<Type> actualTypeArguments = new ArrayList<Type>();
-        private final Singleton<String> stringSingleton = new Singleton<String>(
-                new Singleton.Builder<String>() {
-                    @Override
-                    public String build() {
-                        StringBuilder builder = new StringBuilder(((Class) getRawType()).getName());
-                        if (actualTypeArguments.size() > 0) {
-                            builder.append("<");
+        private final List<Type> actualTypeArguments = new ArrayList<>();
+        private final Singleton<String> stringSingleton = new Singleton<>(
+                () -> {
+                    StringBuilder builder = new StringBuilder(((Class) getRawType()).getName());
+                    if (actualTypeArguments.size() > 0) {
+                        builder.append("<");
 
-                            for (int i = 0; i < actualTypeArguments.size(); i++) {
-                                if (i > 0) builder.append(',');
-                                Type t = actualTypeArguments.get(i);
-                                if (t == null) {
-                                    builder.append("null");
-                                } else if (t instanceof TypeVariable) {
-                                    builder.append(((TypeVariable) t).getName())
-                                            .append(" in ").append(((TypeVariable) t).getGenericDeclaration());
-                                } else {
-                                    builder.append(t.toString());
-                                }
+                        for (int i = 0; i < actualTypeArguments.size(); i++) {
+                            if (i > 0) builder.append(',');
+                            Type t = actualTypeArguments.get(i);
+                            if (t == null) {
+                                builder.append("null");
+                            } else if (t instanceof TypeVariable) {
+                                builder.append(((TypeVariable) t).getName())
+                                        .append(" in ").append(((TypeVariable) t).getGenericDeclaration());
+                            } else {
+                                builder.append(t.toString());
                             }
-                            builder.append(">");
                         }
-                        return builder.toString();
+                        builder.append(">");
                     }
+                    return builder.toString();
                 }
         );
 

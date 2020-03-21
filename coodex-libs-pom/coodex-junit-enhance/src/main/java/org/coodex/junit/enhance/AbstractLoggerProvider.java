@@ -20,7 +20,8 @@ import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 
 public abstract class AbstractLoggerProvider implements LoggerProvider {
-    private SingletonMap<String, Logger> loggerSingletonMap = new SingletonMap<>(AbstractLoggerProvider.this::build);
+    private SingletonMap<String, Logger> loggerSingletonMap = SingletonMap.<String, Logger>builder()
+            .function(AbstractLoggerProvider.this::build).build();
 
     @Override
     public final Logger getLogger(String name) {

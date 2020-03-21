@@ -17,6 +17,7 @@
 package org.coodex.mock;
 
 import org.coodex.util.Common;
+import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,24 +40,24 @@ public class StringTypeMocker extends AbstractTypeMocker<Mock.String> {
 
     private final static Logger log = LoggerFactory.getLogger(StringTypeMocker.class);
 
-    private static Class[] SUPPORTED_CLASSES = new Class[]{
+    private static Class<?>[] SUPPORTED_CLASSES = new Class<?>[]{
             String.class
     };
 
-    private static StringTypeMocker instance;
+    private static Singleton<StringTypeMocker> instance = new Singleton<>(StringTypeMocker::new);
 
-    public StringTypeMocker() {
-        instance = this;
-    }
+//    public StringTypeMocker() {
+//        instance = this;
+//    }
 
     static String mock() {
-        if (instance == null) {
-            instance = new StringTypeMocker();
-        }
-        return (String) instance.mock(null, null, String.class);
+//        if (instance == null) {
+//            instance = new StringTypeMocker();
+//        }
+        return (String) instance.get().mock(null, null, String.class);
     }
     @Override
-    protected Class[] getSupportedClasses() {
+    protected Class<?>[] getSupportedClasses() {
         return SUPPORTED_CLASSES;
     }
 
@@ -65,7 +67,7 @@ public class StringTypeMocker extends AbstractTypeMocker<Mock.String> {
     }
 
     @Override
-    public Object mock(Mock.String mockAnnotation, Type targetType) {
+    public String mock(Mock.String mockAnnotation, Type targetType) {
         return getStringRange(mockAnnotation).random();
     }
 
@@ -102,16 +104,13 @@ public class StringTypeMocker extends AbstractTypeMocker<Mock.String> {
         if (!Common.isBlank(stringAnnotation.txtResource())) {
             URL url = Common.getResource(stringAnnotation.txtResource());
             if (url != null) {
-                List<String> stringList = new ArrayList<String>();
+                List<String> stringList = new ArrayList<>();
                 try {
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
-                    try {
+                    try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8))) {
                         String line;
                         while ((line = bufferedReader.readLine()) != null) {
                             stringList.add(line);
                         }
-                    } finally {
-                        bufferedReader.close();
                     }
                 } catch (Throwable throwable) {
                     log.warn("load resource [{}] error: {}", stringAnnotation, throwable.getLocalizedMessage(), throwable);
@@ -157,7 +156,7 @@ public class StringTypeMocker extends AbstractTypeMocker<Mock.String> {
         private List<String> list;
 
         ArrayStringRange(List<String> strings) {
-            list = new ArrayList<String>(strings);
+            list = new ArrayList<>(strings);
         }
 
         @Override

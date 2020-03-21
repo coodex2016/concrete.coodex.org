@@ -16,17 +16,17 @@
 
 package test.org.coodex.concrete.runner;
 
-import org.coodex.util.Common;
 import org.coodex.util.TransactionalRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Named;
+import java.util.function.Supplier;
 
 @Named
 public class ExampleRunner implements TransactionalRunner {
     @Override
     @Transactional
-    public <TR> TR apply(Common.Supplier<TR> supplier) {
+    public <TR> TR apply(Supplier<TR> supplier) {
         return supplier.get();
     }
 

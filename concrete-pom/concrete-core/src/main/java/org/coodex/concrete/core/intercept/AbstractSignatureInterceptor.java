@@ -92,59 +92,17 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
             }
     ) {
     };
-
-    @Override
-    public int getOrder() {
-        return InterceptOrders.SIGNATURE;
-    }
-
-    @Override
-    protected boolean accept_(DefinitionContext context) {
-//        ServiceContext serviceContext = getServiceContext();
-        return context.getAnnotation(Signable.class) != null;
-//        &&
-//                (serviceContext instanceof ServerSideContext ||
-//                        serviceContext instanceof ClientSideContext);
-    }
+    private static final Supplier<String> SERVER_SIDE_VERIFY_FAILED = () -> I18N.translate("sign.serverSideVerifyFailed");
+    private static final Supplier<String> NO_SIGNATURE_FOUND = () -> I18N.translate("sign.noSignatureFound");
 
 //    private int getModel() {
 //        return getServiceContext().getSide() == null ? SIDE_SERVER : getServiceContext().getSide().intValue();
 //    }
+    private static final SingletonMap<String, PropertyNameReload> PROPERTY_NAMES = SingletonMap.<String, PropertyNameReload>builder()
+            .function(PropertyNameReload::new).nullKey("null_" + Common.getUUIDStr()).build();
 
-    @Override
-    public void before(DefinitionContext context, MethodInvocation joinPoint) {
-        SignUtil.HowToSign howToSign = SignUtil.howToSign(context);
-        ServiceContext serviceContext = getServiceContext();
-        if (serviceContext instanceof ServerSideContext) {
-            serverSide_Verify(context, joinPoint, howToSign);
-        } else if (serviceContext instanceof ClientSideContext) {
-            clientSide_Sign(context, joinPoint, howToSign);
-        }
-    }
-
-    /**
-     * TODO 通过subjoin来传递
-     */
-    @Override
-    public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
-        SignUtil.HowToSign howToSign = SignUtil.howToSign(context);
-        ServiceContext serviceContext = getServiceContext();
-        if (serviceContext instanceof ServerSideContext) {
-            return serverSide_Sign(context, joinPoint, howToSign, result);
-        } else if (serviceContext instanceof ClientSideContext) {
-            return clientSide_Verify(context, joinPoint, howToSign, result);
-        }
-        return result;
-    }
-
-    private static final Supplier<String> SERVER_SIDE_VERIFY_FAILED = () -> I18N.translate("sign.serverSideVerifyFailed");
-    private static final Supplier<String> NO_SIGNATURE_FOUND = () -> I18N.translate("sign.noSignatureFound");
     private static final Supplier<String> NOISE_MUST_NOT_NULL =
             () -> String.format(I18N.translate("sign.mustNotNull"), getPropertyName(KEY_FIELD_NOISE));
-
-    private static final SingletonMap<String, PropertyNameReload> PROPERTY_NAMES = new StringKeySingletonMap<>(
-            PropertyNameReload::new
-    );
 
     private static void serverSide_Verify(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
         Map<String, Object> content = buildContent(
@@ -244,6 +202,40 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         }
     }
 
+    private static Object serverSign(Signature signature, String algorithm, String keyId, IronPen ironPen, SignatureSerializer serializer) throws IllegalAccessException {
+        signature.setNoise(getNoiseGenerator(keyId).generateNoise());
+        signature.setSign(
+                Base64.encodeBase64String(
+                        ironPen.sign(serializer.serialize(signatureToMap(signature)), algorithm, keyId)));
+        return signature;
+    }
+
+    private static Map<String, Object> signatureToMap(Signature signature) throws IllegalAccessException {
+        if (signature == null) return null;
+        Map<String, Object> result = new HashMap<>();
+        for (Field field : ReflectHelper.getAllDeclaredFields(signature.getClass())) {
+            if (!field.getDeclaringClass().equals(Signature.class) || KEY_FIELD_NOISE.equals(field.getName())) {
+                field.setAccessible(true);
+                result.put(field.getName(), field.get(signature));
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public int getOrder() {
+        return InterceptOrders.SIGNATURE;
+    }
+
+    @Override
+    protected boolean accept_(DefinitionContext context) {
+//        ServiceContext serviceContext = getServiceContext();
+        return context.getAnnotation(Signable.class) != null;
+//        &&
+//                (serviceContext instanceof ServerSideContext ||
+//                        serviceContext instanceof ClientSideContext);
+    }
+
 //    @Deprecated
 //    private Object serverModel(RuntimeContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
 //        try {
@@ -276,30 +268,34 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 //        }
 //    }
 
-    private static Object serverSign(Signature signature, String algorithm, String keyId, IronPen ironPen, SignatureSerializer serializer) throws IllegalAccessException {
-        signature.setNoise(getNoiseGenerator(keyId).generateNoise());
-        signature.setSign(
-                Base64.encodeBase64String(
-                        ironPen.sign(serializer.serialize(signatureToMap(signature)), algorithm, keyId)));
-        return signature;
+    @Override
+    public void before(DefinitionContext context, MethodInvocation joinPoint) {
+        SignUtil.HowToSign howToSign = SignUtil.howToSign(context);
+        ServiceContext serviceContext = getServiceContext();
+        if (serviceContext instanceof ServerSideContext) {
+            serverSide_Verify(context, joinPoint, howToSign);
+        } else if (serviceContext instanceof ClientSideContext) {
+            clientSide_Sign(context, joinPoint, howToSign);
+        }
     }
 
-
-    private static Map<String, Object> signatureToMap(Signature signature) throws IllegalAccessException {
-        if (signature == null) return null;
-        Map<String, Object> result = new HashMap<>();
-        for (Field field : ReflectHelper.getAllDeclaredFields(signature.getClass())) {
-            if (!field.getDeclaringClass().equals(Signature.class) || KEY_FIELD_NOISE.equals(field.getName())) {
-                field.setAccessible(true);
-                result.put(field.getName(), field.get(signature));
-            }
+    /**
+     * TODO 通过subjoin来传递
+     */
+    @Override
+    public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
+        SignUtil.HowToSign howToSign = SignUtil.howToSign(context);
+        ServiceContext serviceContext = getServiceContext();
+        if (serviceContext instanceof ServerSideContext) {
+            return serverSide_Sign(context, joinPoint, howToSign, result);
+        } else if (serviceContext instanceof ClientSideContext) {
+            return clientSide_Verify(context, joinPoint, howToSign, result);
         }
         return result;
     }
 
 
     ////////////
-
 
     private void clientSide_Sign(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
 
@@ -339,7 +335,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
                 .sign(data, algorithm, keyId));
 
         putKeyField(content, KEY_FIELD_SIGN, sign, context, joinPoint);
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("signature for[ {} ]: \n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}",
                     context.getDeclaringMethod().getName(),
                     getPropertyName(KEY_FIELD_NOISE), noise,
@@ -386,9 +382,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     }
 
 
-
     protected abstract String dataToString(byte[] data);
-
 
 
     private static class PropertyNameReload {

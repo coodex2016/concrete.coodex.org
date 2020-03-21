@@ -20,11 +20,12 @@ import org.coodex.util.Common;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public abstract class AbstractConfiguration implements Configuration {
 
     @Override
-    public <T> T getValue(String key, Common.Supplier<T> defaultValueSupplier, String... namespace) {
+    public <T> T getValue(String key, Supplier<T> defaultValueSupplier, String... namespace) {
         String strValue = get(key, namespace);
         if(strValue == null) return defaultValueSupplier.get();
         return Common.to(strValue, defaultValueSupplier.get());
@@ -47,7 +48,7 @@ public abstract class AbstractConfiguration implements Configuration {
 
     protected List<String> toList(String... namespaces) {
         if (namespaces == null) return null;
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String namespace : namespaces) {
             if (!Common.isBlank(namespace)) {
                 list.add(namespace);
@@ -57,7 +58,7 @@ public abstract class AbstractConfiguration implements Configuration {
     }
 
     private List<String> buildKeys(String key, List<String> namespaces, int deep) {
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         if (namespaces != null) {
             for (int i = deep - 1; i < namespaces.size(); i++) {
                 String temp = "";

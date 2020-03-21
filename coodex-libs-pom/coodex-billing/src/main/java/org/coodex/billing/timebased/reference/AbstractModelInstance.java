@@ -33,12 +33,7 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
     private final static Logger log = LoggerFactory.getLogger(AbstractModelInstance.class);
 
     @SuppressWarnings("rawtypes")
-    private static final Comparator<BillingModel.Fragment> FRAGMENT_COMPARATOR = new Comparator<BillingModel.Fragment>() {
-        @Override
-        public int compare(BillingModel.Fragment o1, BillingModel.Fragment o2) {
-            return o1.getPeriod().getStart().compareTo(o2.getPeriod().getStart());
-        }
-    };
+    private static final Comparator<BillingModel.Fragment> FRAGMENT_COMPARATOR = Comparator.comparing(o -> o.getPeriod().getStart());
 
     private final LazySelectableServiceLoader<AlgorithmProfile, AlgorithmFactory<C, AlgorithmProfile>>
             algorithmFactorySelectableServiceLoader = new LazySelectableServiceLoader<AlgorithmProfile, AlgorithmFactory<C, AlgorithmProfile>>() {
@@ -66,6 +61,7 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
         return slicerFactory == null ? null : slicerFactory.build(slicerProfile);
     }
 
+    @SuppressWarnings("unused")
     protected ModelProfile getModelProfile() {
         return modelProfile;
     }
@@ -90,7 +86,7 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
 
     @Override
     public List<BillingModel.Fragment<C>> slice(Period period, C chargeable) {
-        List<BillingModel.Fragment<C>> fragments = new ArrayList<BillingModel.Fragment<C>>();
+        List<BillingModel.Fragment<C>> fragments = new ArrayList<>();
         for (FragmentProfile profile : modelProfile.getFragmentProfiles()) {
             FragmentSlicer<C> slicer = getSlicer(profile.getSlicerProfile());
             if (slicer == null) {
@@ -101,15 +97,15 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
                 throwExceptionIfNotBlank(Period.sub(periods, Collections.singletonList(period), Period.BUILDER), "out of range:");
 
                 for (Period p : periods) {
-                    fragments.add(new BillingModel.Fragment<C>(getAlgorithm(profile.getAlgorithmProfile()), p));
+                    fragments.add(new BillingModel.Fragment<>(getAlgorithm(profile.getAlgorithmProfile()), p));
                 }
             }
         }
         if (fragments.size() > 0) {
-            Collections.sort(fragments, FRAGMENT_COMPARATOR);
+            fragments.sort(FRAGMENT_COMPARATOR);
             // 从前向后找，如果后一个开始时间大于前一个的结束时间，则说明有重复的时间段，抛错
-            List<Period> test = new ArrayList<Period>();
-            List<Period> duplicated = new ArrayList<Period>();
+            List<Period> test = new ArrayList<>();
+            List<Period> duplicated = new ArrayList<>();
             Period prev = fragments.get(0).getPeriod();
             test.add(prev);
             for (int i = 1; i < fragments.size(); i++) {
@@ -128,12 +124,12 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
                     log.warn("from {} to {} is missing.",
                             Common.calendarToStr(p.getStart()),
                             Common.calendarToStr(p.getEnd()));
-                    fragments.add(new BillingModel.Fragment<C>(null, p));
+                    fragments.add(new BillingModel.Fragment<>(null, p));
                 }
-                Collections.sort(fragments, FRAGMENT_COMPARATOR);
+                fragments.sort(FRAGMENT_COMPARATOR);
             }
         } else {
-            fragments.add(new BillingModel.Fragment<C>(null, period));
+            fragments.add(new BillingModel.Fragment<>(null, period));
             log.warn("slice result is empty.");
         }
         return fragments;

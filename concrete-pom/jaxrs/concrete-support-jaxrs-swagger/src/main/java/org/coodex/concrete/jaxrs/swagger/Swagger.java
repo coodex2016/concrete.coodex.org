@@ -51,9 +51,8 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
             LinkedHashSet::new
     );
 
-    private static SingletonMap<String, String> swaggerJson = new SingletonMap<>(
-            (key) -> SwaggerHelper.toJson(key, new ArrayList<>(classes.get()))
-    );
+    private static SingletonMap<String, String> swaggerJson = SingletonMap.<String, String>builder()
+            .function((key) -> SwaggerHelper.toJson(key, new ArrayList<>(classes.get()))).build();
 
     private static String[] swagger_files = {
             "favicon-16x16.png",
@@ -66,8 +65,8 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
             "swagger-ui-standalone-preset.js"
     };
 
-    private static SingletonMap<String, StaticFileContent> staticFileContents =
-            new SingletonMap<>(key -> {
+    private static SingletonMap<String, StaticFileContent> staticFileContents = SingletonMap.<String, StaticFileContent>builder()
+            .function(key -> {
                 if (Common.inArray(key, swagger_files)) {
                     try {
                         String type = "text/html";
@@ -94,10 +93,12 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
                     }
                 }
                 return null;
-            });
+            }).build();
 
     @Context
     private UriInfo uri;
+    @Context
+    private UriInfo uriInfo;
 
     @Override
     public Class[] getClasses() {
@@ -112,9 +113,6 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
         // TODO 如何区分不同的应用
         classes.get().add(concreteService);
     }
-
-    @Context
-    private UriInfo uriInfo;
 
     private String getContextPath() {
         return uri.getBaseUri().getPath();

@@ -88,12 +88,13 @@ public @interface Mock {
          *
          * 如果是类，MockerProvider应予以警告
          */
-        Class<? extends SequenceMockerFactory> factory();
+        Class<? extends SequenceMockerFactory<?>> factory();
     }
 
     /**
      * 定义一组序列模拟器
      */
+    @SuppressWarnings("unused")
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
     @interface Sequences {
@@ -252,7 +253,7 @@ public @interface Mock {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @interface Assignation {
-        Class value();
+        Class<?> value();
     }
 
     /**

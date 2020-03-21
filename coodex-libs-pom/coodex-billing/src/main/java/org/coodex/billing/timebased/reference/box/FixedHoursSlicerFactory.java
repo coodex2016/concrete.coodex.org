@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class FixedHoursSlicerFactory<C extends TimeBasedChargeable> implements SlicerFactory<C, FixedHoursSlicerProfile> {
     @Override
     public FragmentSlicer<C> build(FixedHoursSlicerProfile fixedHoursSlicerProfile) {
-        return new FixedHoursSlicer<C>(fixedHoursSlicerProfile.getFixedHours());
+        return new FixedHoursSlicer<>(fixedHoursSlicerProfile.getFixedHours());
     }
 
     @Override
@@ -47,7 +47,7 @@ public class FixedHoursSlicerFactory<C extends TimeBasedChargeable> implements S
         @Override
         public List<Period> slice(Period period, C chargeable) {
             Calendar start = (Calendar) period.getStart().clone();
-            List<Period> result = new ArrayList<Period>();
+            List<Period> result = new ArrayList<>();
             while (start.before(period.getEnd())) {
                 Calendar next = (Calendar) start.clone();
                 next.add(Calendar.HOUR, fixedHours);

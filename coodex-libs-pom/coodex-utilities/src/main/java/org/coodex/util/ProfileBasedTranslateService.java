@@ -30,35 +30,21 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
     private final static Logger log = LoggerFactory.getLogger(ProfileBasedTranslateService.class);
 
 
-    private List<ResourcesMapper> mappers = new LinkedList<ResourcesMapper>();
+    private List<ResourcesMapper> mappers = new LinkedList<>();
 
-    private SingletonMap<CacheKey, String> translateCache = new SingletonMap<CacheKey, String>(
-            new SingletonMap.Builder<CacheKey, String>() {
-                @Override
-                public String build(CacheKey key) {
-                    return ProfileBasedTranslateService.this.get(key.key, key.locale);
-                }
-            }
-    );
+    private SingletonMap<CacheKey, String> translateCache = SingletonMap.<CacheKey, String>builder()
+            .function(key -> ProfileBasedTranslateService.this.get(key.key, key.locale)).build();
 
     ProfileBasedTranslateService() {
-        Common.forEach(new Common.Processor() {
-                           @Override
-                           public void process(URL resource, String resourceName) {
-                               mappers.add(new ResourcesMapper(resourceName, resource));
-                           }
-                       },
-                new Common.ResourceFilter() {
-                    @Override
-                    public boolean accept(String root, String resourceName) {
-                        String[] allSupported = Profile.allSupportedFileExt();
-                        for (String ext : allSupported) {
-                            if (resourceName.endsWith(ext)) {
-                                return true;
-                            }
+        Common.forEach((resource, resourceName) -> mappers.add(new ResourcesMapper(resourceName, resource)),
+                (root, resourceName) -> {
+                    String[] allSupported = Profile.allSupportedFileExt();
+                    for (String ext : allSupported) {
+                        if (resourceName.endsWith(ext)) {
+                            return true;
                         }
-                        return false;
                     }
+                    return false;
                 },
                 "i18n");
     }
@@ -82,7 +68,7 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
     }
 
     private String get(String key, Locale locale) {
-        List<ResourcesMapper> list = new LinkedList<ResourcesMapper>();
+        List<ResourcesMapper> list = new LinkedList<>();
         for (ResourcesMapper mapper : mappers) {
             if (mapper.accept(locale) && in(key, mapper.name)) {
                 list.add(mapper);
@@ -103,9 +89,9 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
         return null;
     }
 
-    private void appendResource(URL resource, String resourceName) {
-        mappers.add(new ResourcesMapper(resourceName, resource));
-    }
+//    private void appendResource(URL resource, String resourceName) {
+//        mappers.add(new ResourcesMapper(resourceName, resource));
+//    }
 
     private static class ResourcesMapper implements Comparable<ResourcesMapper> {
         private String name;

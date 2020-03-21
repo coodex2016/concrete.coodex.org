@@ -24,11 +24,11 @@ import java.util.concurrent.TimeUnit;
 public class Debouncer<T> extends AbstractCoalition<T> {
     private ScheduledFuture prevFuture = null;
 
-    public Debouncer(Callback<T> c, int interval, ScheduledExecutorService scheduledExecutorService) {
+    public Debouncer(Callback<T> c, long interval, ScheduledExecutorService scheduledExecutorService) {
         super(c, interval, scheduledExecutorService);
     }
 
-    public Debouncer(Callback<T> c, int interval) {
+    public Debouncer(Callback<T> c, long interval) {
         super(c, interval);
     }
 

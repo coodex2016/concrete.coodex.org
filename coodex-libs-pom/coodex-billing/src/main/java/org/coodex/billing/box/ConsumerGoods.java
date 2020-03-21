@@ -53,10 +53,12 @@ public class ConsumerGoods implements Adjustment<Chargeable> {
         return name + "[" + price + " x " + quantity + "]";
     }
 
+    @SuppressWarnings("unused")
     public int getPrice() {
         return price;
     }
 
+    @SuppressWarnings("unused")
     public float getQuantity() {
         return quantity;
     }

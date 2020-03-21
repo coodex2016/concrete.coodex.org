@@ -111,10 +111,10 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
         BillingRule[] rules = ruleRepository.getRulesBy(chargeable).toArray(new BillingRule[0]);
         if (rules.length > 1) { // 多条规则
             Arrays.sort(rules); // 按照生效期排序
-            List<C> consumptions = new ArrayList<C>();
-            List<Adjustment<C>> adjustments = new ArrayList<Adjustment<C>>();
-            List<Revision> revisions = new ArrayList<Revision>();// 不包含OnlyOnce的
-            List<Revision> onlyOnce = new ArrayList<Revision>();// 包含OnlyOnce的
+            List<C> consumptions = new ArrayList<>();
+            List<Adjustment<C>> adjustments = new ArrayList<>();
+            List<Revision> revisions = new ArrayList<>();// 不包含OnlyOnce的
+            List<Revision> onlyOnce = new ArrayList<>();// 包含OnlyOnce的
             for (Revision revision : chargeable.getRevisions()) {
                 if (revision instanceof Adjustment && revision instanceof PaidAdjustment) {
                     //noinspection unchecked
@@ -151,7 +151,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
                 case 1:
                     return adjustBill(calcWithARule(consumptions.get(0)), adjustments);
                 default:
-                    Bill<C> bill = new Bill<C>(chargeable);
+                    Bill<C> bill = new Bill<>(chargeable);
 
                     for (int x = consumptions.size() - 1; x >= 0; x--) {
                         Bill<C> consumptionBill = calcWithARule(consumptions.get(x));
@@ -193,7 +193,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
         }
 
         // 记账
-        BillCalc<C> billCalc = new BillCalc<C>(chargeable, billingModel);
+        BillCalc<C> billCalc = new BillCalc<>(chargeable, billingModel);
         Bill<C> bill = billCalc.getBill(getTimeUnit());
 
         // 账单总额调整
@@ -271,9 +271,9 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
         private final C chargeable;
         private final BillingModel<C> billingModel;
 
-        private List<WholeTimeRevision> wholeTimeRevisions = new ArrayList<WholeTimeRevision>();
-        private List<FragmentRevision> fragmentRevisions = new ArrayList<FragmentRevision>();
-        private List<Adjustment<C>> adjustments = new ArrayList<Adjustment<C>>();
+        private List<WholeTimeRevision> wholeTimeRevisions = new ArrayList<>();
+        private List<FragmentRevision> fragmentRevisions = new ArrayList<>();
+        private List<Adjustment<C>> adjustments = new ArrayList<>();
 
         private BillCalc(C chargeable, BillingModel<C> billingModel) {
             this.chargeable = chargeable;
@@ -282,10 +282,10 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
         }
 
         Bill<C> getBill(TimeUnit unit) {
-            TimeBasedBill<C> bill = new TimeBasedBill<C>(chargeable);
+            TimeBasedBill<C> bill = new TimeBasedBill<>(chargeable);
             if (chargeable.getPeriod().duration(unit) == 0) return bill;
 
-            List<Period> chargePeriods = new ArrayList<Period>();
+            List<Period> chargePeriods = new ArrayList<>();
             chargePeriods.add(chargeable.getPeriod());
 
             chargePeriods = beforeSlice(unit, bill, chargePeriods);

@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.coodex.util.Common.*;
 
@@ -57,77 +59,62 @@ public abstract class Profile {
     private static final LazySelectableServiceLoader<URL, ProfileProvider> PROFILE_PROVIDER_LOADER =
             new LazySelectableServiceLoader<URL, ProfileProvider>() {
             };
-    private static final Singleton<String[]> ALL_SUPPORTED_FILE_EXT = new Singleton<String[]>(
-            new Singleton.Builder<String[]>() {
-                @Override
-                public String[] build() {
-                    ProfileProvider[] profileProviders = PROFILE_PROVIDER_LOADER.getAll().values().toArray(new ProfileProvider[0]);
-                    Arrays.sort(profileProviders);
-                    List<String> list = new ArrayList<String>();
-                    for (ProfileProvider profileProvider : profileProviders) {
-                        if (profileProvider.isAvailable()) {
-                            list.addAll(Arrays.asList(profileProvider.getSupported()));
-                        }
+    private static final Singleton<String[]> ALL_SUPPORTED_FILE_EXT = new Singleton<>(
+            () -> {
+                ProfileProvider[] profileProviders = PROFILE_PROVIDER_LOADER.getAll().values().toArray(new ProfileProvider[0]);
+                Arrays.sort(profileProviders);
+                List<String> list = new ArrayList<>();
+                for (ProfileProvider profileProvider : profileProviders) {
+                    if (profileProvider.isAvailable()) {
+                        list.addAll(Arrays.asList(profileProvider.getSupported()));
                     }
-                    return list.toArray(new String[0]);
                 }
+                return list.toArray(new String[0]);
             }
     );
     private static final URL DEFAULT_URL;
-    private static final SingletonMap<String, Profile> WRAPPER_PROFILES = new SingletonMap<String, Profile>(new SingletonMap.Builder<String, Profile>() {
-        @Override
-        public Profile build(String key) {
-            return new ProfileWrapper(key);
-        }
-    });
-
-
-    //    private static final String RELOAD_INTERVAL = System.getProperty("Profile.reloadInterval");
-    private static final Singleton<Long> RELOAD_INTERVAL_SINGLETON = new Singleton<Long>(new Singleton.Builder<Long>() {
-        @Override
-        public Long build() {
-//            return toLong(RELOAD_INTERVAL, 0L) * 1000L;
-            return Config.BASE_SYSTEM_PROPERTIES.getValue(Profile.class.getName() + ".reloadInterval", new Supplier<Long>() {
+    @SuppressWarnings("StaticInitializerReferencesSubClass")
+    private static final SingletonMap<String, Profile> WRAPPER_PROFILES = SingletonMap.<String, Profile>builder()
+            .function(ProfileWrapper::new).build();
+    private static final Singleton<Long> RELOAD_INTERVAL_SINGLETON = new Singleton<>(
+            () -> Config.BASE_SYSTEM_PROPERTIES.getValue(Profile.class.getName() + ".reloadInterval",
+                    () -> toLong(System.getProperty("Profile.reloadInterval"), 0L)
+            ) * 1000L
+    );
+    private static final SingletonMap<String, URL> PROFILE_URLS = SingletonMap.<String, URL>builder()
+            .function(new Function<String, URL>() {
                 @Override
-                public Long get() {
-                    return toLong(System.getProperty("Profile.reloadInterval"), 0L);
-                }
-            }) * 1000L;
-        }
-    });
-    private static final SingletonMap<String, URL> PROFILE_URLS
-            = new SingletonMap<String, URL>(new SingletonMap.Builder<String, URL>() {
-        @Override
-        public URL build(String key) {
-            String[] ex = allSupportedFileExt();
-            for (String s : ex) {
-                if (key.endsWith(s)) {
-                    URL x = Common.getResource(key);
-                    if (x != null) return x;
-                }
-                URL x = Common.getResource(key + s);
-                if (x != null) return x;
-            }
-            if (log.isInfoEnabled()) {
-                StringBuilder builder = new StringBuilder("Profile ")
-                        .append(key).append(" not found.[");
-                for (int i = 0; i < ex.length; i++) {
-                    if (i > 0) {
-                        builder.append(", ");
+                public URL apply(String key) {
+                    String[] ex = allSupportedFileExt();
+                    for (String s : ex) {
+                        if (key.endsWith(s)) {
+                            URL x = Common.getResource(key);
+                            if (x != null) return x;
+                        }
+                        URL x = Common.getResource(key + s);
+                        if (x != null) return x;
                     }
-                    builder.append("'").append(ex[i]).append("'");
+                    if (log.isInfoEnabled()) {
+                        StringBuilder builder = new StringBuilder("Profile ")
+                                .append(key).append(" not found.[");
+                        for (int i = 0; i < ex.length; i++) {
+                            if (i > 0) {
+                                builder.append(", ");
+                            }
+                            builder.append("'").append(ex[i]).append("'");
+                        }
+                        builder.append("]");
+                        log.info(builder.toString());
+                    }
+                    return DEFAULT_URL;
                 }
-                builder.append("]");
-                log.info(builder.toString());
-            }
-            return DEFAULT_URL;
-        }
-    }, RELOAD_INTERVAL_SINGLETON.get());
-
-    private static final SingletonMap<URL, Profile> URL_PROFILES_MAP = new SingletonMap<URL, Profile>(
-            new SingletonMap.Builder<URL, Profile>() {
+            })
+            .maxAge(RELOAD_INTERVAL_SINGLETON.get())
+            .build();
+    private static final SingletonMap<URL, Profile> URL_PROFILES_MAP = SingletonMap.<URL, Profile>builder()
+            .function(new Function<URL, Profile>() {
                 @Override
-                public Profile build(URL key) {
+                public Profile apply(URL key) {
                     if (key == null)
                         throw new NullPointerException("profile url could not be null.");
                     if (DEFAULT_URL.equals(key)) return NULL_PROFILE;
@@ -138,7 +125,9 @@ public abstract class Profile {
                         return profileProvider.get(key);
                     }
                 }
-            }, RELOAD_INTERVAL_SINGLETON.get());
+            })
+            .maxAge(RELOAD_INTERVAL_SINGLETON.get())
+            .build();
 
     static {
         try {
@@ -227,7 +216,7 @@ public abstract class Profile {
         return v;
     }
 
-    public String getString(String key, Common.Supplier<String> supplier) {
+    public String getString(String key, Supplier<String> supplier) {
         String s = getStringImpl(key);
         return s == null ? supplier.get() : actualValue(s);
     }
@@ -271,6 +260,7 @@ public abstract class Profile {
         return getInt(key, 0);
     }
 
+    @SuppressWarnings("unused")
     public int getInt(String key, Supplier<Integer> v) {
         return toInt(getString(key), v);
     }
@@ -287,6 +277,7 @@ public abstract class Profile {
         return toLong(getString(key), v);
     }
 
+    @SuppressWarnings("unused")
     public long getLong(String key, Supplier<Long> v) {
         return toLong(getString(key), v);
     }
@@ -299,10 +290,12 @@ public abstract class Profile {
         return getStrList(key, delim, (String[]) null);
     }
 
+    @SuppressWarnings("unused")
     public String[] getStrList(String key, String delim, Supplier<String[]> supplier) {
         return toArray(getString(key), delim, supplier);
     }
 
+    @SuppressWarnings("unused")
     public String[] getStrList(String key, Supplier<String[]> supplier) {
         return toArray(getString(key), ",", supplier);
     }
@@ -405,10 +398,10 @@ class ProfileWrapper extends Profile {
 }
 
 class MergedProfile extends Profile {
-    private final List<Profile> profiles = new ArrayList<Profile>();
+    private final List<Profile> profiles = new ArrayList<>();
 
     MergedProfile(String p1, String p2, String... resources) {
-        Set<String> joined = new HashSet<String>();
+        Set<String> joined = new HashSet<>();
         if (p1 != null) {
             joined.add(p1);
             profiles.add(Profile.get(p1));

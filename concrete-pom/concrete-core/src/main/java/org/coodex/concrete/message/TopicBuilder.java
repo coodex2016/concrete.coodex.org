@@ -36,13 +36,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
 import static org.coodex.concrete.message.CourierBuilder.getMessageType;
 import static org.coodex.util.Common.runtimeException;
 
 @SuppressWarnings("rawtypes")
-class TopicBuilder implements SingletonMap.Builder<TopicKey, AbstractTopic> {
+class TopicBuilder implements Function<TopicKey, AbstractTopic> {
 
     private final static Logger log = LoggerFactory.getLogger(TopicBuilder.class);
 
@@ -57,8 +58,8 @@ class TopicBuilder implements SingletonMap.Builder<TopicKey, AbstractTopic> {
 //    private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> providers =
 //            new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider){};
 
-    private static SingletonMap<TopicKey, AbstractTopic> topics =
-            new SingletonMap<>(new TopicBuilder());
+    private static SingletonMap<TopicKey, AbstractTopic> topics = SingletonMap.<TopicKey, AbstractTopic>builder()
+            .function(new TopicBuilder()).build();
 
     private AtomicLong index = new AtomicLong(0);
 
@@ -86,7 +87,7 @@ class TopicBuilder implements SingletonMap.Builder<TopicKey, AbstractTopic> {
     }
 
     @Override
-    public AbstractTopic build(TopicKey key) {
+    public AbstractTopic apply(TopicKey key) {
         try {
             Class<? extends AbstractTopic> topicClass = getClass(key.topicType);
             TopicPrototypeProvider provider = topicPrototypeProviderLoader.select(topicClass);

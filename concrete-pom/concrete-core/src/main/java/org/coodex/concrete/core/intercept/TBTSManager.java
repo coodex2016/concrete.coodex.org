@@ -32,14 +32,8 @@ class TBTSManager {
 
 //    private static Map<String, Set<Subscription>> subscriptionsMap = new HashMap<String, Set<Subscription>>();
 
-    private static SingletonMap<String, Set<Subscription>> subscriptionsMap = new SingletonMap<String, Set<Subscription>>(
-            new SingletonMap.Builder<String, Set<Subscription>>() {
-                @Override
-                public Set<Subscription> build(String key) {
-                    return new HashSet<Subscription>();
-                }
-            }
-    );
+    private static final SingletonMap<String, Set<Subscription>> subscriptionsMap
+            = SingletonMap.<String, Set<Subscription>>builder().function(key -> new HashSet<>()).build();
 
 
     static void putSubscription(Subscription subscription) {

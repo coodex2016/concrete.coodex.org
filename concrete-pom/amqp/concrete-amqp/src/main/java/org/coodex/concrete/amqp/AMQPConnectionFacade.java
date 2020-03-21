@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutorService;
 public class AMQPConnectionFacade {
 
 
+    private static final String DEFAULT_SHARED_EXECUTORS_NAME = "amqp.executor";
     private static AbstractCopier<ConnectionFactory, AMQPConnectionConfig> configCopier =
             new AbstractCopier<ConnectionFactory, AMQPConnectionConfig>() {
                 @Override
@@ -43,21 +44,14 @@ public class AMQPConnectionFacade {
                     return amqpConnectionConfig;
                 }
             };
+    private static SingletonMap<String, ExecutorService> executorServiceSingletonMap
+            = SingletonMap.<String, ExecutorService>builder().function(key -> ConcreteHelper.getExecutor(Common.isBlank(key) ? DEFAULT_SHARED_EXECUTORS_NAME : key))
+            .nullKey(DEFAULT_SHARED_EXECUTORS_NAME).build();
 
-    private static final String DEFAULT_SHARED_EXECUTORS_NAME = "amqp.executor";
-
-    private static SingletonMap<String, ExecutorService> executorServiceSingletonMap =
-            new SingletonMap<String, ExecutorService>(key -> ConcreteHelper.getExecutor(Common.isBlank(key) ? DEFAULT_SHARED_EXECUTORS_NAME : key)) {
-                @Override
-                protected String getNullKeyOnce() {
-                    return DEFAULT_SHARED_EXECUTORS_NAME;
-                }
-            };
-
-    private static SingletonMap<AMQPConnectionConfig, Connection> connectionSingletonMap =
-            new SingletonMap<>(key -> {
+    private static SingletonMap<AMQPConnectionConfig, Connection> connectionSingletonMap
+            = SingletonMap.<AMQPConnectionConfig, Connection>builder().function(
+            key -> {
                 try {
-
                     return toConnectionFactory(key).newConnection(
                             executorServiceSingletonMap.get(key.getSharedExecutorName())
                     );
@@ -66,7 +60,7 @@ public class AMQPConnectionFacade {
                 } catch (Throwable th) {
                     throw new RuntimeException(th.getLocalizedMessage(), th);
                 }
-            });
+            }).build();
 
     private static AMQPConnectionConfig clean(AMQPConnectionConfig amqpConnectionConfig) throws NoSuchAlgorithmException, KeyManagementException, URISyntaxException {
         AMQPConnectionConfig connectionConfig = configCopier.copy(toConnectionFactory(amqpConnectionConfig));

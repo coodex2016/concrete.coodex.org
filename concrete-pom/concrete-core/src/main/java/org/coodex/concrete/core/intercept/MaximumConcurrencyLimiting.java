@@ -31,7 +31,7 @@ public class MaximumConcurrencyLimiting implements LimitingStrategy {
 
     private static final String TAG_MC = "limiting.maximum.concurrency";
     private static final SingletonMap<String, ConcurrencyStrategy> STRATEGY_SINGLETON_MAP =
-            new SingletonMap<>(ConcurrencyStrategy::new);
+            SingletonMap.<String, ConcurrencyStrategy>builder().function(ConcurrencyStrategy::new).build();
 
     @Override
     public boolean apply(DefinitionContext definitionContext) {

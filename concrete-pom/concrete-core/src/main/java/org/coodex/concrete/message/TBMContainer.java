@@ -49,14 +49,7 @@ public class TBMContainer {
 //            }
 //    );
     private static TBMContainer tbmContainer = new TBMContainer();
-    private static SingletonMap<String, TBMQueue> queues = new SingletonMap<String, TBMQueue>(
-            new SingletonMap.Builder<String, TBMQueue>() {
-                @Override
-                public TBMQueue build(String key) {
-                    return new TBMQueue();
-                }
-            }
-    );
+    private static SingletonMap<String, TBMQueue> queues = SingletonMap.<String, TBMQueue>builder().function(key -> new TBMQueue()).build();
 
 
     private TBMContainer() {

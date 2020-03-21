@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.function.Supplier;
 
 import static org.coodex.util.clock.ClockAgentService.PORT;
 
@@ -39,10 +40,10 @@ public class RemoteClockAgent extends AbstractClockAgent {
         long start;
     }
 
-    private static Singleton<Configuration> configurationSingleton = new Singleton<Configuration>(
-            new Singleton.Builder<Configuration>() {
+    private static Singleton<Configuration> configurationSingleton = new Singleton<>(
+            new Supplier<Configuration>() {
                 @Override
-                public Configuration build() {
+                public Configuration get() {
                     Socket socket = new Socket();
                     try {
                         socket.connect(new InetSocketAddress(getHost(), getPort()));
@@ -70,7 +71,7 @@ public class RemoteClockAgent extends AbstractClockAgent {
                 }
 
                 private String getHost() {
-                    String host = Config.get(KEY_REMOTE_HOST,"clock");
+                    String host = Config.get(KEY_REMOTE_HOST, "clock");
                     return host == null ? System.getProperty(KEY_REMOTE_HOST) : host;
                 }
 

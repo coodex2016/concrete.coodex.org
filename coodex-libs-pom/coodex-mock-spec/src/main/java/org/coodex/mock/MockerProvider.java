@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 
 public interface MockerProvider {
 
-//    String DEFAULT_NAMESPACE = "mock";
+    //    String DEFAULT_NAMESPACE = "mock";
     String ASSIGNATIONS_PACKAGE = "mock.assign";
 
     /**
@@ -30,7 +30,15 @@ public interface MockerProvider {
      * @param <T>         类型泛型
      * @return 模拟值
      */
-    <T> T mock(Class<T> type, Annotation... annotations);
+    default <T> T mock(Class<T> type, Annotation... annotations) {
+        Object o = mock(type, type, annotations);
+        if (o == null || type.isAssignableFrom(o.getClass())) {
+            //noinspection unchecked
+            return (T) o;
+        } else {
+            throw new ClassCastException();
+        }
+    }
 
     /**
      * @param type        要模拟类型的type，需要是具体的，不能有{@link java.lang.reflect.TypeVariable}

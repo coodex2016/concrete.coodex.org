@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.support.dubbo;
 
-import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ProtocolConfig;
 import org.apache.dubbo.config.RegistryConfig;
 import org.apache.dubbo.config.ServiceConfig;
@@ -30,19 +29,16 @@ import java.util.Set;
 
 public class ApacheDubboApplication extends AbstractDubboApplication {
 
-    private static Singleton<RegistryConfig> simpleRegistry = new Singleton<>(new Singleton.Builder<RegistryConfig>() {
-        @Override
-        public RegistryConfig build() {
-            // SimpleRegistryService
-            ServiceConfig<RegistryService> config = new ServiceConfig<>();
-            config.setApplication(DubboConfigCaching.getApplicationConfig("simple-registry"));
-            ProtocolConfig protocolConfig = new ProtocolConfig();
-            protocolConfig.setPort(9090);
-            config.setProtocol(protocolConfig);
+    private static Singleton<RegistryConfig> simpleRegistry = new Singleton<>(() -> {
+        // SimpleRegistryService
+        ServiceConfig<RegistryService> config = new ServiceConfig<>();
+        config.setApplication(DubboConfigCaching.getApplicationConfig("simple-registry"));
+        ProtocolConfig protocolConfig = new ProtocolConfig();
+        protocolConfig.setPort(9090);
+        config.setProtocol(protocolConfig);
 //            config.setRef(new SimpleRegistryService());
-            // SimpleRegistry
-            return DubboConfigCaching.getSimpleRegistry();
-        }
+        // SimpleRegistry
+        return DubboConfigCaching.getSimpleRegistry();
     });
 
 

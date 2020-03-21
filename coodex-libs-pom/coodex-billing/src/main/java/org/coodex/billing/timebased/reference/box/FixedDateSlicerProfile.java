@@ -24,6 +24,7 @@ import org.coodex.billing.timebased.reference.SlicerProfile;
 public class FixedDateSlicerProfile implements SlicerProfile {
     private final String startTime;
 
+    @SuppressWarnings("unused")
     public FixedDateSlicerProfile() {
         this(null);
     }

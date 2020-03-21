@@ -28,17 +28,17 @@ public class Throttler<T> extends AbstractCoalition<T> {
     private long prevTime = 0;
     private boolean asyncAlways = false;
 
-    public Throttler(Callback<T> c, int interval, boolean asyncAlways) {
+    public Throttler(Callback<T> c, long interval, boolean asyncAlways) {
         super(c, interval);
         this.asyncAlways = asyncAlways;
     }
 
-    public Throttler(Callback<T> c, int interval, boolean asyncAlways, ScheduledExecutorService scheduledExecutorService) {
+    public Throttler(Callback<T> c, long interval, boolean asyncAlways, ScheduledExecutorService scheduledExecutorService) {
         super(c, interval, scheduledExecutorService);
         this.asyncAlways = asyncAlways;
     }
 
-    public Throttler(Callback<T> c, int interval, ScheduledExecutorService scheduledExecutorService) {
+    public Throttler(Callback<T> c, long interval, ScheduledExecutorService scheduledExecutorService) {
         this(c, interval, false, scheduledExecutorService);
     }
 

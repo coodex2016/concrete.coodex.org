@@ -29,6 +29,7 @@ public abstract class AbstractOffAdjustment<C extends Chargeable> implements Adj
         this.name = name;
     }
 
+    @SuppressWarnings("unused")
     public float getOffRate() {
         return offRate;
     }

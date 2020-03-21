@@ -1218,9 +1218,10 @@ public enum CharCodeSet {
         this.bmp = this.max < 0x10000;
     }
 
+    @SuppressWarnings("unused")
     public static CharCodeSet[] getBasicMultilingualPlane() {
         if (JAVA_CHAR_CODE_SET == null) {
-            List<CharCodeSet> list = new ArrayList<CharCodeSet>();
+            List<CharCodeSet> list = new ArrayList<>();
             for (CharCodeSet charCodeSet : CharCodeSet.class.getEnumConstants()) {
                 if (charCodeSet.isBmp()) {
                     list.add(charCodeSet);

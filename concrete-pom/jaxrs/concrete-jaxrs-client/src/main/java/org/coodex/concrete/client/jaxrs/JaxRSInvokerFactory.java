@@ -25,9 +25,9 @@ import org.coodex.util.SingletonMap;
 
 public class JaxRSInvokerFactory implements InvokerFactory {
 
-    private static SingletonMap<Destination, JaxRSInvoker> INVOKER_MAP = new SingletonMap<>(
-            key -> new JaxRSInvoker((JaxRSDestination) key)
-    );
+    private static SingletonMap<Destination, JaxRSInvoker> INVOKER_MAP
+            = SingletonMap.<Destination, JaxRSInvoker>builder()
+            .function(key -> new JaxRSInvoker((JaxRSDestination) key)).build();
 
     @Override
     public Invoker getSyncInvoker(Destination destination) {

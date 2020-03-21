@@ -43,12 +43,11 @@ public abstract class AbstractTenantAccountFactory extends ClassifiableAccountFa
 //        }
 //    };
 
-    private SingletonMap<String, TenantAccount> accountSingletonMap = new SingletonMap<>(
-            key -> newAccount(key),
-            Config.getValue("cache.object.life", 10,
+    private SingletonMap<String, TenantAccount> accountSingletonMap = SingletonMap.<String, TenantAccount>builder()
+            .function(this::newAccount).maxAge(Config.getValue("cache.object.life", 10,
                     AbstractTenantAccountFactory.class.getPackage().getName()
-            ) * 60 * 1000
-    );
+            ) * 60L * 1000L).build();
+
 
     protected abstract TenantAccount newAccount(String key);
 

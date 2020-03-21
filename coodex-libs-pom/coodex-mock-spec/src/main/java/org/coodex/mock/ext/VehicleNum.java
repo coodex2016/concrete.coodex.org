@@ -46,6 +46,7 @@ public @interface VehicleNum {
             Province.广东};
 
 
+    @SuppressWarnings("NonAsciiCharacters")
     enum Province {
         西藏('藏', "ABCDEFG"), 浙江('浙', "ABCDEFGHJKL"),
         湖北('鄂', "ABCDEFGHJKLMNPQ"), 贵州('贵', "ABCDEFGHJ"),

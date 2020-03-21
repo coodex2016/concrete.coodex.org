@@ -18,10 +18,10 @@ package org.coodex.config;
 
 import org.coodex.util.Common;
 import org.coodex.util.LazyServiceLoader;
-import org.coodex.util.Singleton;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 /**
  * 基于System.getProperty实现Configuration，在provider中找不到时，则到系统属性中找
@@ -50,38 +50,11 @@ public class Config {
 //    );
 
     private static LazyServiceLoader<DefaultConfigurationProvider> configurationProviderLazyServiceLoader =
-            new LazyServiceLoader<DefaultConfigurationProvider>(new DefaultConfigurationProvider() {
-                @Override
-                public Configuration get() {
-                    return new ConfigurationBaseProfile();
-                }
-            }) {
+            new LazyServiceLoader<DefaultConfigurationProvider>(ConfigurationBaseProfile::new) {
             };
 
     private static LazyServiceLoader<Configuration> configurationServiceLoader =
-            new LazyServiceLoader<Configuration>(
-                    new Singleton.Builder<Configuration>() {
-                        @Override
-                        public Configuration build() {
-                            return configurationProviderLazyServiceLoader.get().get();
-                        }
-                    }
-//                    new Singleton.Builder<ServiceLoader<Configuration>>() {
-//                        @Override
-//                        public ServiceLoader<Configuration> build() {
-//                            return new ServiceLoaderImpl<Configuration>(
-//                                    new ServiceLoaderImpl<DefaultConfigurationProvider>(new DefaultConfigurationProvider() {
-//                                        @Override
-//                                        public Configuration get() {
-//                                            return new ConfigurationBaseProfile();
-//                                        }
-//                                    }) {
-//                                    }.get()
-//                                            .get()) {
-//                            };
-//                        }
-//                    }
-            ) {
+            new LazyServiceLoader<Configuration>(() -> configurationProviderLazyServiceLoader.get().get()) {
             };
 
 
@@ -96,22 +69,11 @@ public class Config {
 
 
     public static <T> T getValue(final String key, final T defaultValue, final String... namespace) {
-        return getConfig().getValue(key, new Common.Supplier<T>() {
-            @Override
-            public T get() {
-                return BASE_SYSTEM_PROPERTIES.getValue(key, defaultValue, namespace);
-
-            }
-        }, namespace);
+        return getConfig().getValue(key, () -> BASE_SYSTEM_PROPERTIES.getValue(key, defaultValue, namespace), namespace);
     }
 
-    public static <T> T getValue(final String key, final Common.Supplier<T> defaultValueSupplier, final String... namespace) {
-        return getConfig().getValue(key, new Common.Supplier<T>() {
-            @Override
-            public T get() {
-                return BASE_SYSTEM_PROPERTIES.getValue(key, defaultValueSupplier, namespace);
-            }
-        }, namespace);
+    public static <T> T getValue(final String key, final Supplier<T> defaultValueSupplier, final String... namespace) {
+        return getConfig().getValue(key, () -> BASE_SYSTEM_PROPERTIES.getValue(key, defaultValueSupplier, namespace), namespace);
     }
 
 
@@ -123,7 +85,7 @@ public class Config {
         return Common.toArray(get(key, namespaces), delim, defaultValue);
     }
 
-    public static String[] getArray(String key, String delim, Common.Supplier<String[]> supplier, String... namespaces) {
+    public static String[] getArray(String key, String delim, Supplier<String[]> supplier, String... namespaces) {
         return Common.toArray(get(key, namespaces), delim, supplier);
     }
 

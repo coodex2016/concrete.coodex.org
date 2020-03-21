@@ -84,7 +84,7 @@ public class DurationRevision implements WholeTimeRevision {
 
     @Override
     public List<Period> revised(List<Period> periods) {
-        List<Period> result = new ArrayList<Period>();
+        List<Period> result = new ArrayList<>();
         int index = fromStart ? 0 : periods.size() - 1;
         int remainder = duration;
         while (fromStart ? index < periods.size() : index >= 0) {
