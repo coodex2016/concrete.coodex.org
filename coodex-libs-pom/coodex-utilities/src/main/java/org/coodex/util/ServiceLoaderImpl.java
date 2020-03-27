@@ -19,12 +19,14 @@ package org.coodex.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringJoiner;
 
+import static org.coodex.util.Common.cast;
 import static org.coodex.util.GenericTypeHelper.solveFromInstance;
-import static org.coodex.util.GenericTypeHelper.typeToClass;
 
 /**
  * <S>待coodex utilities放弃1.5时移入org.coodex.util</S>
@@ -35,7 +37,6 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
  * <p>
  * Created by davidoff shen on 2016-11-30.
  */
-// TODO 排序
 public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 
     private final static Logger log = LoggerFactory.getLogger(ServiceLoaderImpl.class);
@@ -47,10 +48,18 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
                         java.util.ServiceLoader.load(ServiceLoaderProvider.class);
 
                 for (ServiceLoaderProvider provider : serviceLoaderProviders) {
-                    instances.instancesMap.putAll(provider.load(getInterfaceClass()));
+                    instances.instancesMap.putAll(provider.load(getServiceType()));
                 }
-                if (instances.instancesMap.size() == 0) {
-                    log.debug("no ServiceProvider found for [{}], using default provider.", getInterfaceClass().getCanonicalName());
+                if (log.isDebugEnabled()) {
+                    if (instances.instancesMap.size() == 0) {
+                        log.debug("no ServiceProvider found for [{}], using default provider.", getServiceType().getTypeName());
+
+                    } else {
+                        StringJoiner joiner = new StringJoiner("\n\t");
+                        instances.instancesMap.forEach((k, v) -> joiner.add(k + ": " + v.toString()));
+                        log.debug("{} SPI instances loaded for: {} instances: \n\t{}",
+                                instances.instancesMap.size(), getServiceType(), joiner.toString());
+                    }
                 }
                 instances.unmodifiedMap = Collections.unmodifiableMap(instances.instancesMap);
                 return instances;
@@ -58,6 +67,13 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
     );
 
     private T defaultProvider;
+    private Singleton<Map<String, T>> allInstanceSingleton = new Singleton<>(() -> {
+        Map<String, T> map = new HashMap<>();
+        for (Map.Entry<String, Object> entry : instances.get().unmodifiedMap.entrySet()) {
+            map.put(entry.getKey(), cast(entry.getValue()));
+        }
+        return map;
+    });
 
     public ServiceLoaderImpl() {
         this(null);
@@ -67,87 +83,41 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
         this.defaultProvider = defaultProvider;
     }
 
-//    private void load() {
-//        if (instances == null) {
-//            synchronized (this) {
-//                if (instances == null) {
-//                    loadInstances();
-//                }
-//            }
-//        }
-//    }
+    protected Object $getInstance() {
+        return this;
+    }
 
-
-    //    private Type solve(TypeVariable t, Object instance){
-////        Type x = t;
-////        while(x instanceof TypeVariable){
-////
-////        }
-//    }
-    @SuppressWarnings("unchecked")
-    protected Class<T> getInterfaceClass() {
-//        Type t = ServiceLoaderImpl.class.getTypeParameters()[0];
-//        Object instance = this;
-//        while(t instanceof TypeVariable){
-//            Type x = solve((TypeVariable) t, instance.getClass());
-//            if(x instanceof TypeVariable){
-//
-//            }
-//        }
-//        return typeToClass(solve(ServiceLoaderImpl.class.getTypeParameters()[0], getClass()));
-        return typeToClass(
-                solveFromInstance(ServiceLoaderImpl.class.getTypeParameters()[0], this)
+    protected Type getServiceType() {
+        return solveFromInstance(
+                ServiceLoader.class.getTypeParameters()[0],
+                $getInstance()
         );
     }
+
+//    @Deprecated
+//    protected Class<?> getInterfaceClass() {
+//        return typeToClass(getServiceType());
+//    }
 
     @Override
     public T getDefault() {
         if (defaultProvider == null) {
-            throw new RuntimeException("no provider found for: " + getInterfaceClass().getName());
+            throw new RuntimeException("no provider found for: " + getServiceType().getTypeName());
         } else {
             return defaultProvider;
         }
     }
 
-//    private Instances loadInstances() {
-//        instances = new HashMap<String, T>();
-//        java.util.ServiceLoader<ServiceLoaderProvider> serviceLoaderProviders =
-//                java.util.ServiceLoader.load(ServiceLoaderProvider.class);
-//
-//        for (ServiceLoaderProvider provider : serviceLoaderProviders) {
-//            instances.putAll(provider.load(getInterfaceClass()));
-//        }
-//        if (instances.size() == 0) {
-//            log.debug("no ServiceProvider found for [{}], using default provider.", getInterfaceClass().getCanonicalName());
-//        }
-//        unmodifiedMap = Collections.unmodifiableMap(instances);
-//    }
-
-
-//    protected Map<String, T> $getInstances() {
-//        load();
-//        return instances;
-//    }
-
     @Override
     public Map<String, T> getAll() {
-//        load();
-//        if (unmodifiedMap == null) {
-//            // ?? 为啥会出现？
-//            log.debug("how it happened ?????", new Exception());
-//            return Collections.unmodifiableMap(instances);
-//        }
-//        return unmodifiedMap;
-        return instances.get().unmodifiedMap;
+        return allInstanceSingleton.get();
     }
+
 
     @Override
     public T get(Class<? extends T> providerClass) {
-//        load();
-//        return (P) getInstance(providerClass.getCanonicalName());
-        Map<String, T> copy = new HashMap<>();
-        for (Map.Entry<String, T> entry : instances.get().instancesMap.entrySet()) {
-//            T t = instances.get(key);
+        Map<String, Object> copy = new HashMap<>();
+        for (Map.Entry<String, Object> entry : instances.get().instancesMap.entrySet()) {
             if (entry.getValue() != null && providerClass.isAssignableFrom(entry.getValue().getClass())) {
                 copy.put(entry.getKey(), entry.getValue());
             }
@@ -161,20 +131,19 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
                     return null;
                 }
             case 1:
-                return copy.values().iterator().next();
+                return cast(copy.values().iterator().next());
         }
-//        T t =  getInstance(providerClass.getName());
         return conflict(providerClass, copy);
     }
 
-    protected T conflict(Class<? extends T> providerClass, Map<String, T> map) {
+    protected T conflict(Class<? extends T> providerClass, Map<String, Object> map) {
         T t = get(providerClass.getName());
         if (t != null) return t;
 
-        StringBuilder buffer = new StringBuilder(getInterfaceClass().getName());
+        StringBuilder buffer = new StringBuilder(getServiceType().getTypeName());
         buffer.append("[providerClass: ").append(providerClass.getName()).append("]");
         buffer.append(" has ").append(map.size()).append(" services:[");
-        for (T service : map.values()) {
+        for (Object service : map.values()) {
             buffer.append("\n\t").append(service.getClass().getName());
         }
         buffer.append("]");
@@ -183,14 +152,14 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 
     @Override
     public T get(String name) {
-        T instance = instances.get().instancesMap.get(name);
+        T instance = cast(instances.get().instancesMap.get(name));
         return instance == null ? getDefault() : instance;
     }
 
     protected T conflict() {
-        StringBuilder buffer = new StringBuilder(getInterfaceClass().getName());
+        StringBuilder buffer = new StringBuilder(getServiceType().getTypeName());
         buffer.append(" has ").append(instances.get().instancesMap.size()).append(" services:[");
-        for (T service : instances.get().instancesMap.values()) {
+        for (Object service : instances.get().instancesMap.values()) {
             buffer.append("\n\t").append(service.getClass().getName());
         }
         buffer.append("]");
@@ -198,19 +167,18 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public T get() {
         if (instances.get().instancesMap.size() == 0)
             return getDefault();
         else if (instances.get().instancesMap.size() == 1)
-            return (T) instances.get().instancesMap.values().toArray()[0];
+            return cast(instances.get().instancesMap.values().toArray()[0]);
         else
             return conflict();
     }
 
 
-    private class Instances {
-        Map<String, T> instancesMap = null;
-        Map<String, T> unmodifiedMap = null;
+    private static class Instances {
+        Map<String, Object> instancesMap = null;
+        Map<String, Object> unmodifiedMap = null;
     }
 }

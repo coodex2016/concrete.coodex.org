@@ -28,6 +28,11 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2020-03-27
+
+- SPI机制优化,强化了泛型匹配,强化了基于java.util.ServiceLoader的加载器
+- 结构继续完善调整,为项目分拆做准备
+
 ## 2020-03-21
 
 - 0.5.0初次提交

@@ -20,9 +20,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.util.Common;
-import org.coodex.util.ServiceLoaderImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,14 +33,14 @@ import static org.coodex.concrete.common.ErrorCodes.SIGNATURE_KEY_LOAD_FAILED;
 import static org.coodex.concrete.core.signature.SignUtil.getString;
 
 public class RSA_KeyStoreDefaultImpl implements RSA_KeyStore {
-    private final static Logger log = LoggerFactory.getLogger(RSA_KeyStoreDefaultImpl.class);
+//    private final static Logger log = LoggerFactory.getLogger(RSA_KeyStoreDefaultImpl.class);
 
-    // TODO 0.4.2 移除
-    @SuppressWarnings("deprecation")
-    private static final ServiceLoaderImpl<RSAKeyStore> COMPATIBILITY_LOADER = new ServiceLoaderImpl<RSAKeyStore>(
-            new RSAKeyStoreDefaultImpl()
-    ) {
-    };
+//    // TO DO 0.4.2 移除
+//    @SuppressWarnings("deprecation")
+//    private static final ServiceLoaderImpl<RSAKeyStore> COMPATIBILITY_LOADER = new ServiceLoaderImpl<RSAKeyStore>(
+//            new RSAKeyStoreDefaultImpl()
+//    ) {
+//    };
 
     static byte[] loadKey(List<String> properties, List<String> resources) throws IOException {
         String s = null;
@@ -124,16 +121,16 @@ public class RSA_KeyStoreDefaultImpl implements RSA_KeyStore {
      *
      * @param paperName paperName
      * @param keyId     keyId
-     * @return
+     * @return privateKey
      */
     @Override
     public byte[] getPrivateKey(String paperName, String keyId) {
-        byte[] bytes = COMPATIBILITY_LOADER.get().getPrivateKey(paperName);
-        if (bytes != null) {
-            //noinspection deprecation
-            log.warn("{} deprecated. use {} plz.", RSAKeyStore.class.getName(), RSA_KeyStore.class.getName());
-            return bytes;
-        }
+//        byte[] bytes = COMPATIBILITY_LOADER.get().getPrivateKey(paperName);
+//        if (bytes != null) {
+//            //noinspection deprecation
+//            log.warn("{} deprecated. use {} plz.", RSAKeyStore.class.getName(), RSA_KeyStore.class.getName());
+//            return bytes;
+//        }
         try {
             return loadKey(
                     getConfigKeys(paperName, keyId, "privateKey"),
@@ -158,16 +155,15 @@ public class RSA_KeyStoreDefaultImpl implements RSA_KeyStore {
      *
      * @param paperName paperName
      * @param keyId     keyId
-     * @return
+     * @return publicKey
      */
     @Override
     public byte[] getPublicKey(String paperName, String keyId) {
-        byte[] bytes = COMPATIBILITY_LOADER.get().getPublicKey(paperName, keyId);
-        if (bytes != null) {
-            //noinspection deprecation
-            log.warn("{} deprecated. use {} plz.", RSAKeyStore.class.getName(), RSA_KeyStore.class.getName());
-            return bytes;
-        }
+//        byte[] bytes = COMPATIBILITY_LOADER.get().getPublicKey(paperName, keyId);
+//        if (bytes != null) {
+//            log.warn("{} deprecated. use {} plz.", RSAKeyStore.class.getName(), RSA_KeyStore.class.getName());
+//            return bytes;
+//        }
 
         try {
             return loadKey(

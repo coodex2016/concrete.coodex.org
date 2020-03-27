@@ -18,6 +18,7 @@ package test.org.coodex.bean.processors;
 
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
 import org.coodex.util.DefaultService;
+import org.coodex.util.SelectableService;
 import org.coodex.util.SelectableServiceLoader;
 import org.coodex.util.ServiceLoader;
 import org.junit.Assert;
@@ -60,7 +61,7 @@ public class SelectableServiceLoaderTest {
     private SelectableServiceLoader<String, SelectableTest> serviceLoader4;
 
     @Inject
-    private SelectableServiceLoader<Integer, NumberSelectableService> serviceLoader5;
+    private SelectableServiceLoader<Number, SelectableService<Number>> serviceLoader5;
 
     @Inject
     @DefaultService(NumberSelectableService.OddNumberSelectableService.class)
@@ -83,7 +84,8 @@ public class SelectableServiceLoaderTest {
         Assert.assertNull(serviceLoader4);
 
         Assert.assertNotNull(serviceLoader5.select(2));
-        Assert.assertNull(serviceLoader5.select(1));
+//        Assert.assertNull(serviceLoader5.select( 1L));
+        Assert.assertNotNull(serviceLoader5.select( 1L));
 
         Assert.assertNotNull(serviceLoader6.select(2));
         Assert.assertNotNull(serviceLoader6.select(1));

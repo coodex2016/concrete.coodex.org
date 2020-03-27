@@ -23,8 +23,8 @@ import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.Level;
 import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.concrete.own.RequestPackage;
-import org.coodex.concrete.own.ResponsePackage;
 import org.coodex.concrete.websocket.WebSocketHelper;
+import org.coodex.concrete.websocket.WebSocketUnit;
 import org.coodex.config.Config;
 import org.coodex.util.Singleton;
 import org.slf4j.Logger;
@@ -36,14 +36,11 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 public class WSInvoker extends AbstractOwnRxInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(WSInvoker.class);
-
-    private final Level level;
-    private final WebsocketDestination destination;
-
-
     private static Singleton<WSClientHandle> handle = new Singleton<>(
             WSClientHandle::new
     );
+    private final Level level;
+    private final WebsocketDestination destination;
     private JSONSerializer serializer = JSONSerializerFactory.getInstance();
 
     WSInvoker(Destination destination) {
@@ -70,7 +67,7 @@ public class WSInvoker extends AbstractOwnRxInvoker {
     }
 
     @Override
-    protected void send(RequestPackage requestPackage) throws Throwable {
+    protected void send(RequestPackage<?> requestPackage) throws Throwable {
         handle.get().send(destination, requestPackage);
     }
 
@@ -80,7 +77,7 @@ public class WSInvoker extends AbstractOwnRxInvoker {
     }
 
     @Override
-    protected OwnServiceUnit findUnit(DefinitionContext context) {
+    protected WebSocketUnit findUnit(DefinitionContext context) {
         return WebSocketHelper.findUnit(context);
     }
 

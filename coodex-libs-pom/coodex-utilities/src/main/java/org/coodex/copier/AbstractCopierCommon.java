@@ -32,9 +32,9 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 @SuppressWarnings("ALL")
 public abstract class AbstractCopierCommon<A, B> {
 
-    private Class[] classes = new Class[2];
+    private Class<?>[] classes = new Class<?>[2];
 
-    protected Class getClass(Index index) {
+    protected Class<?> getClass(Index index) {
         synchronized (this) {
             if (classes[index.getIndex()] == null) {
                 TypeVariable t = AbstractCopierCommon.class.getTypeParameters()[index.getIndex()];
@@ -67,9 +67,9 @@ public abstract class AbstractCopierCommon<A, B> {
         if (srcCollection == null) throw new NullPointerException("srcCollection is NULL.");
         Collection collection = null;
         if (List.class.equals(tClass)) {
-            collection = new ArrayList();
+            collection = new ArrayList<>();
         } else if (Set.class.equals(tClass)) {
-            collection = new HashSet();
+            collection = new HashSet<>();
         } else {
             try {
                 collection = tClass.getConstructor().newInstance();
@@ -84,7 +84,7 @@ public abstract class AbstractCopierCommon<A, B> {
         for (Object src : srcCollection) {
             collection.add(copy(src, srcIndex));
         }
-        return (T) collection;
+        return Common.cast(collection);
     }
 
     private Class<? extends Collection> getCollectionClass(Collection collection) {
@@ -99,7 +99,7 @@ public abstract class AbstractCopierCommon<A, B> {
 
     @SuppressWarnings("unchecked")
     protected <T extends Collection> T copy(Collection srcCollection, Index srcIndex) {
-        return (T) copy(srcCollection, getCollectionClass(srcCollection), srcIndex);
+        return Common.cast(copy(srcCollection, getCollectionClass(srcCollection), srcIndex));
     }
 
     protected enum Index {

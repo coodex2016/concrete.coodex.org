@@ -19,6 +19,8 @@ package org.coodex.mock;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import static com.sun.jmx.mbeanserver.Util.cast;
+
 public interface MockerProvider {
 
     //    String DEFAULT_NAMESPACE = "mock";
@@ -33,8 +35,7 @@ public interface MockerProvider {
     default <T> T mock(Class<T> type, Annotation... annotations) {
         Object o = mock(type, type, annotations);
         if (o == null || type.isAssignableFrom(o.getClass())) {
-            //noinspection unchecked
-            return (T) o;
+            return cast(o);
         } else {
             throw new ClassCastException();
         }

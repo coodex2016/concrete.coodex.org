@@ -29,16 +29,12 @@
     <artifactId>concrete-pom</artifactId>
     <packaging>pom</packaging>
 
-    <properties>
-        <coodex.libs.version>${project.parent.version}</coodex.libs.version>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.coodex</groupId>
                 <artifactId>coodex-bom</artifactId>
-                <version>${coodex.libs.version}</version>
+                <version>${project.parent.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -60,23 +56,21 @@
         <module>concrete-client</module>
         <module>concrete-rx-builder</module>
 
-        <module>amqp/concrete-amqp</module>
-        <module>amqp/concrete-support-amqp</module>
-        <module>amqp/concrete-amqp-client</module>
-        <module>amqp/concrete-spring-boot-amqp</module>
+        <module>amqp-pom</module>
 
         <module>apache-dubbo/concrete-apache-dubbo</module>
         <module>apache-dubbo/concrete-support-apache-dubbo</module>
         <module>apache-dubbo/concrete-apache-dubbo-client</module>
         <module>apache-dubbo/concrete-spring-boot-apache-dubbo</module>
 
-        <module>jaxrs/concrete-jaxrs</module>
-        <module>jaxrs/concrete-support-jaxrs</module>
-        <module>jaxrs/concrete-support-jaxrs-swagger</module>
-        <module>jaxrs/concrete-support-jsr311</module>
-        <module>jaxrs/concrete-support-jsr339</module>
-        <module>jaxrs/concrete-jaxrs-client</module>
-        <module>jaxrs/concrete-spring-boot-jaxrs</module>
+        <module>jaxrs-pom</module>
+<!--        <module>jaxrs/concrete-jaxrs</module>-->
+<!--        <module>jaxrs/concrete-support-jaxrs</module>-->
+<!--        <module>jaxrs/concrete-support-jaxrs-swagger</module>-->
+<!--        <module>jaxrs/concrete-support-jsr311</module>-->
+<!--        <module>jaxrs/concrete-support-jsr339</module>-->
+<!--        <module>jaxrs/concrete-jaxrs-client</module>-->
+<!--        <module>jaxrs/concrete-spring-boot-jaxrs</module>-->
 
         <module>websocket/concrete-websocket</module>
         <module>websocket/concrete-support-websocket</module>

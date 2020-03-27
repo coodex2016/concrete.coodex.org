@@ -31,13 +31,6 @@
     <dependencyManagement>
         <dependencies>
 
-            <!--            &lt;!&ndash; JSR 349 Bean Validation 1.1  &ndash;&gt;-->
-            <!--            <dependency>-->
-            <!--                <groupId>javax.validation</groupId>-->
-            <!--                <artifactId>validation-api</artifactId>-->
-            <!--                <version>${jsr-349.version}</version>-->
-            <!--            </dependency>-->
-
             <!-- JSR 311 JAX-RS: The JavaTM API for RESTful Web Services 1.0 -->
             <dependency>
                 <groupId>javax.ws.rs</groupId>
@@ -78,6 +71,7 @@
                 <scope>import</scope>
             </dependency>
 
+            <!-- spring data -->
             <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-releasetrain</artifactId>
@@ -131,15 +125,6 @@
                 <type>pom</type>
             </dependency>
 
-            <!-- coodex -->
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>coodex-bom</artifactId>
-                <version>${coodex.utilities.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
             <!-- zipkin brave -->
             <dependency>
                 <groupId>io.zipkin.brave</groupId>
@@ -160,15 +145,6 @@
                 <artifactId>javax.el</artifactId>
                 <version>2.2.6</version>
             </dependency>
-
-
-            <!-- hibernate validator -->
-            <!--            <dependency>-->
-            <!--                <groupId>org.hibernate.validator</groupId>-->
-            <!--                <artifactId>hibernate-validator</artifactId>-->
-            <!--                <version>${hibernate.validator.version}</version>-->
-            <!--            </dependency>-->
-
 
             <!-- hibernate -->
             <dependency>
@@ -198,6 +174,10 @@
             </dependency>
 
 
+
+
+
+
             <!-- concrete -->
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
@@ -205,11 +185,11 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-fsm</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>${project.parent.groupId}</groupId>-->
+<!--                <artifactId>concrete-fsm</artifactId>-->
+<!--                <version>${project.parent.version}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
@@ -223,11 +203,11 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-fsm-impl</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>${project.parent.groupId}</groupId>-->
+<!--                <artifactId>concrete-fsm-impl</artifactId>-->
+<!--                <version>${project.parent.version}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
@@ -253,83 +233,6 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-spring-boot-jaxrs</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-spring-boot-amqp</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-spring-boot-apache-dubbo</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <!--            <dependency>-->
-            <!--                <groupId>${project.parent.groupId}</groupId>-->
-            <!--                <artifactId>concrete-rx</artifactId>-->
-            <!--                <version>${project.parent.version}</version>-->
-            <!--            </dependency>-->
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-jaxrs</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-support-jsr311</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-support-jsr339</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-support-jaxrs-swagger</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-support-websocket</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <!--            <dependency>-->
-            <!--                <groupId>${project.parent.groupId}</groupId>-->
-            <!--                <artifactId>concrete-support-dubbo</artifactId>-->
-            <!--                <version>${project.parent.version}</version>-->
-            <!--            </dependency>-->
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-support-apache-dubbo</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-support-jaxrs-saas-reverse-proxy</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-support-amqp</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
@@ -340,55 +243,6 @@
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-client</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-amqp-client</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-jaxrs-client</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <!--            <dependency>-->
-            <!--                <groupId>${project.parent.groupId}</groupId>-->
-            <!--                <artifactId>concrete-dubbo-client</artifactId>-->
-            <!--                <version>${project.parent.version}</version>-->
-            <!--            </dependency>-->
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-apache-dubbo-client</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-websocket-client</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-attachments</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-attachments-jaxrs</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-attachments-repo-fastdfs</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 
@@ -415,55 +269,6 @@
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-serializer-jsonb-jdk8</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <!-- accounts -->
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-accounts-organization-api</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-accounts-organization-data</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-accounts-organization-impl</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-accounts-tenant-api</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-accounts-tenant-data</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-accounts-tenant-impl</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-accounts-simple-api</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-accounts-simple-impl</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 
@@ -503,16 +308,23 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
+
+            <!-- coodex -->
             <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-s2-api</artifactId>
+                <groupId>org.coodex</groupId>
+                <artifactId>coodex-bom</artifactId>
                 <version>${project.parent.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
+            <!-- concret-amqp -->
             <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-s2-impl</artifactId>
+                <groupId>org.coodex.concrete.amqp</groupId>
+                <artifactId>concrete-amqp-bom</artifactId>
                 <version>${project.parent.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
         </dependencies>

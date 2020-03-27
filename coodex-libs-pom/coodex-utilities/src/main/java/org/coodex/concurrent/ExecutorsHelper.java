@@ -174,6 +174,7 @@ public class ExecutorsHelper {
 
     static class CoodexLinkedBlockingQueue extends LinkedBlockingQueue<Runnable>
             implements CoodexBlockingQueue {
+
         private final int maximumSize;
         private ThreadPoolExecutor threadPoolExecutor;
 

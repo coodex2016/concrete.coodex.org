@@ -45,6 +45,7 @@ public class CounterFacade {
      * @param value
      * @param <T>
      */
+    @SafeVarargs
     public static <T extends Countable> void count(T... value) {
 //        COUNTER_FACTORY.get().count(value);
         count(Arrays.asList(value));

@@ -45,16 +45,15 @@ import static org.coodex.concrete.own.PackageHelper.buildRequest;
 public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractOwnRxInvoker.class);
-
-    protected static JSONSerializer getSerializer(){
-        return JSONSerializerFactory.getInstance();
-    }
+    private static TimeLimitedMap<String, CompletableFutureCallBack> callbackMap = new TimeLimitedMap<>();
 
     public AbstractOwnRxInvoker(Destination destination) {
         super(destination);
     }
 
-    private static TimeLimitedMap<String, CompletableFutureCallBack> callbackMap = new TimeLimitedMap<>();
+    protected static JSONSerializer getSerializer() {
+        return JSONSerializerFactory.getInstance();
+    }
 
     private static ResponsePackage<Object> parse(String responseMessage) {
         try {
@@ -69,6 +68,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
 
     // TODO 重构
+    @SuppressWarnings("unchecked")
     static void processMessage(final String message) {
 
         ResponsePackage<Object> responsePackage = parse(message);
@@ -96,7 +96,6 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
                 ClientTokenManagement.setTokenId(completableFutureCallBack.getDestination(), responsePackage.getConcreteTokenId());
                 if (responsePackage.getContent() == null ||
                         void.class.equals(completableFutureCallBack.getContext().getDeclaringMethod().getReturnType())) {
-                    //noinspection unchecked
                     completableFutureCallBack.getCompletableFuture().complete(null);
 //                    completed = true;
                 } else {
@@ -106,7 +105,6 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
                                             completableFutureCallBack.getContext().getDeclaringMethod().getGenericReturnType(),
                                             completableFutureCallBack.getContext().getDeclaringClass()));
 //                    if (result != null) {
-                    //noinspection unchecked
                     completableFutureCallBack.getCompletableFuture().complete(result);
 //                    }
 //                    completed = true;
@@ -138,10 +136,12 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
     protected abstract ClientSideContext getContext();
 
+    @SuppressWarnings("rawtypes")
     protected abstract OwnServiceUnit findUnit(DefinitionContext context);
 
     protected abstract Level getLoggingLevel();
 
+    @SuppressWarnings("rawtypes")
     @Override
     protected CompletableFuture futureInvoke(DefinitionContext runtimeContext, Object[] args) {
         CompletableFuture completableFuture = new CompletableFuture();
@@ -217,7 +217,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
     protected abstract Logger getLogger();
 
-    protected abstract void send(RequestPackage requestPackage) throws Throwable;
+    protected abstract void send(RequestPackage<?> requestPackage) throws Throwable;
 
     private static class BaseCallBack {
 
@@ -258,6 +258,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private static class CompletableFutureCallBack extends BaseCallBack {
         private final CompletableFuture completableFuture;
 

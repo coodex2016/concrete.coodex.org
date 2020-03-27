@@ -81,14 +81,24 @@ public class SelectableServiceLoaderBeanPostProcessor extends AbstractInjectable
                 //noinspection rawtypes,unchecked
                 cache.put(className, new SelectableServiceLoaderImpl((SelectableService) defaultService) {
                     @Override
-                    protected Class getParamType() {
-                        return typeToClass(key.getParamType());
+                    protected Type getServiceType() {
+                        return key.getServiceType();
                     }
 
                     @Override
-                    protected Class getInterfaceClass() {
-                        return typeToClass(key.getServiceType());
+                    protected Type getParameterType() {
+                        return key.getParamType();
                     }
+
+                    //                    @Override
+//                    protected Class getParamType() {
+//                        return typeToClass(key.getParamType());
+//                    }
+//
+//                    @Override
+//                    protected Class getInterfaceClass() {
+//                        return typeToClass(key.getServiceType());
+//                    }
                 });
             } catch (Throwable e) {
                 throw new RuntimeException(e);

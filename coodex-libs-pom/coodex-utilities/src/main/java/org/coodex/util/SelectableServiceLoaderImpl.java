@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -38,6 +38,7 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 public abstract class SelectableServiceLoaderImpl<Param_Type, T extends SelectableService<Param_Type>>
         implements SelectableServiceLoader<Param_Type, T>, ServiceLoader<T> {
 
+    @SuppressWarnings("unused")
     public static final Function<Method, RuntimeException> EXCEPTION_FUNCTION =
             method -> new RuntimeException("no instance found."
                     + method.getDeclaringClass().getName()
@@ -67,15 +68,34 @@ public abstract class SelectableServiceLoaderImpl<Param_Type, T extends Selectab
         this.exceptionFunction = exceptionFunction;
     }
 
-    @SuppressWarnings({"unchecked", "unused"})
-    protected Class<Param_Type> getParamType() {
-        return typeToClass(solveFromInstance(SelectableServiceLoaderImpl.class.getTypeParameters()[0], this));
+    //    @SuppressWarnings("unused")
+//    protected final Class<?> getParamType() {
+//        return typeToClass(solveFromInstance(SelectableServiceLoaderImpl.class.getTypeParameters()[0], this));
+//    }
+//
+    protected Type getParameterType() {
+        return solveFromInstance(
+                SelectableServiceLoader.class.getTypeParameters()[0],
+                $getInstance()
+        );
     }
 
-    @SuppressWarnings("unchecked")
-    protected Class<T> getInterfaceClass() {
-        return typeToClass(solveFromInstance(SelectableServiceLoaderImpl.class.getTypeParameters()[1], this));
+
+    protected Object $getInstance() {
+        return this;
     }
+
+    protected Type getServiceType() {
+        return solveFromInstance(
+                SelectableServiceLoader.class.getTypeParameters()[1],
+                $getInstance()
+        );
+    }
+
+//    @Deprecated
+//    protected Class<?> getInterfaceClass() {
+//        return typeToClass(solveFromInstance(SelectableServiceLoaderImpl.class.getTypeParameters()[1], $getInstance()));
+//    }
 
 
     private ServiceLoader<T> getServiceLoaderFacade() {
@@ -84,10 +104,10 @@ public abstract class SelectableServiceLoaderImpl<Param_Type, T extends Selectab
                 if (serviceLoaderFacade == null) {
                     // 如果没有指定默认服务，并且指定了异常的函数提供，则代理出一个所有方法
                     if (defaultService == null && exceptionFunction != null) {
-                        //noinspection unchecked
-                        defaultService = (T) Proxy.newProxyInstance(
+                        // todo 动态继承
+                        defaultService = Common.cast(Proxy.newProxyInstance(
                                 SelectableService.class.getClassLoader(),
-                                new Class[]{getInterfaceClass()},
+                                new Class<?>[]{typeToClass(getServiceType())},
                                 new InvocationHandler() {
                                     @Override
                                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -100,7 +120,7 @@ public abstract class SelectableServiceLoaderImpl<Param_Type, T extends Selectab
                                         }
                                     }
                                 }
-                        );
+                        ));
                     }
                     this.serviceLoaderFacade = new ServiceLoaderImpl<T>() {
                         @Override
@@ -109,9 +129,14 @@ public abstract class SelectableServiceLoaderImpl<Param_Type, T extends Selectab
                         }
 
                         @Override
-                        protected Class<T> getInterfaceClass() {
-                            return SelectableServiceLoaderImpl.this.getInterfaceClass();
+                        protected Type getServiceType() {
+                            return SelectableServiceLoaderImpl.this.getServiceType();
                         }
+
+                        //                        @Override
+//                        protected Class<?> getInterfaceClass() {
+//                            return SelectableServiceLoaderImpl.this.getInterfaceClass();
+//                        }
                     };
                 }
             }
@@ -120,20 +145,25 @@ public abstract class SelectableServiceLoaderImpl<Param_Type, T extends Selectab
     }
 
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private boolean accept(T instance, Param_Type param) {
 //        Class tClass = instance.getClass();
-        Class paramClass = param == null ? null : param.getClass();
+        Class<?> paramClass = param == null ? null : param.getClass();
 //        Type t = ;
         if (paramClass == null)
             return instance.accept(null);
 
-        // todo 需要考虑泛型数组的问题
-        Class required = typeToClass(solveFromInstance(
-                SelectableService.class.getTypeParameters()[0], instance));
+
+//         to do 需要考虑泛型数组的问题
+//        Class required = typeToClass(
+//        solveFromInstance(
+//                SelectableService.class.getTypeParameters()[0], instance));
         //(t instanceof ParameterizedType) ? (Class) ((ParameterizedType) t).getRawType() : (Class) t;
 
-        if (required != null && required.isAssignableFrom(paramClass)) {
+//        return instance.accept(param);
+        if (ReflectHelper.isMatch(
+                paramClass,
+                solveFromInstance(SelectableService.class.getTypeParameters()[0], instance))
+        ) {
             return instance.accept(param);
         } else {
             return false;
@@ -177,11 +207,11 @@ public abstract class SelectableServiceLoaderImpl<Param_Type, T extends Selectab
         return null;
     }
 
-    //    @Override
-    @Deprecated
-    public Collection<T> getAllInstances() {
-        return getServiceLoaderFacade().getAll().values();
-    }
+//    //    @Override
+//    @Deprecated
+//    public Collection<T> getAllInstances() {
+//        return getServiceLoaderFacade().getAll().values();
+//    }
 
     @Override
     public T get(Class<? extends T> providerClass) {

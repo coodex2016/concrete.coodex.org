@@ -19,14 +19,15 @@ package org.coodex.util;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
+
+import static org.coodex.util.Common.cast;
 
 public class GenericTypeHelper {
 
     private static SingletonMap<Type, GenericTypeInfo> typeInfos = SingletonMap.<Type, GenericTypeInfo>builder()
             .function(GenericTypeInfo::new).build();
 
-    public static Type solveFromInstance(TypeVariable t, Object instance) {
+    public static Type solveFromInstance(TypeVariable<?> t, Object instance) {
         if (instance == null) return t;
         if (instance instanceof Type) return solveFromType(t, (Type) instance);
         Type result = solveFromType(t, instance.getClass());
@@ -36,7 +37,7 @@ public class GenericTypeHelper {
                 if (field.getName().startsWith("this$")) {
                     field.setAccessible(true);
                     try {
-                        Type x = solveFromInstance((TypeVariable) result, field.get(instance));
+                        Type x = solveFromInstance((TypeVariable<?>) result, field.get(instance));
                         if (!(x instanceof TypeVariable)) {
                             return x;
                         }
@@ -49,36 +50,36 @@ public class GenericTypeHelper {
         return result;
     }
 
-    public static Type solveFromType(TypeVariable t, Type context) {
+    public static Type solveFromType(TypeVariable<?> t, Type context) {
         return typeInfos.get(context).find(t);
     }
 
-    @Deprecated
-    public static Type solve(TypeVariable t, Object context) {
-        if (context instanceof Type) {
-            return solveFromType(t, (Type) context);
-        } else {
-            return solveFromInstance(t, context);
-        }
-    }
+//    @Deprecated
+//    public static Type solve(TypeVariable t, Object context) {
+//        if (context instanceof Type) {
+//            return solveFromType(t, (Type) context);
+//        } else {
+//            return solveFromInstance(t, context);
+//        }
+//    }
 
     public static Type toReference(Type t, Type context) {
         return t instanceof TypeVariable ?
-                solveFromType((TypeVariable) t, context) :
+                solveFromType((TypeVariable<?>) t, context) :
                 build(t, context);
     }
 
-    public static Class typeToClass(Type type) {
+    public static Class<?> typeToClass(Type type) {
         if (type instanceof Class) {
-            return (Class) type;
+            return (Class<?>) type;
         } else if (type instanceof ParameterizedType) {
-            return (Class) ((ParameterizedType) type).getRawType();
+            return (Class<?>) ((ParameterizedType) type).getRawType();
         } else {
             return null;
         }
     }
 
-    public static Type buildParameterizedType(Class c, Type... parameters) {
+    public static Type buildParameterizedType(Class<?> c, Type... parameters) {
         return new ParameterizedTypeImpl(c, parameters);
     }
 
@@ -92,12 +93,13 @@ public class GenericTypeHelper {
         } else if (t instanceof GenericArrayType) {
             return new GenericArrayTypeImpl(contextInfo, (GenericArrayType) t);
         } else if (t instanceof TypeVariable) {
-            return contextInfo.find((TypeVariable) t);
+            return contextInfo.find((TypeVariable<?>) t);
         } else {
             return t;
         }
     }
 
+    @SuppressWarnings("unused")
     public abstract static class GenericType<T> {
 
         private final Type type;
@@ -131,8 +133,7 @@ public class GenericTypeHelper {
         GenericArrayTypeImpl(GenericTypeInfo genericTypeInfo, GenericArrayType genericArrayType) {
             Type gct = genericArrayType.getGenericComponentType();
             if (gct instanceof TypeVariable) {
-                //noinspection unchecked
-                genericComponentType = genericTypeInfo.find((TypeVariable<Class>) gct);
+                genericComponentType = genericTypeInfo.find(cast(gct));
             } else if (gct instanceof ParameterizedType) {
                 genericComponentType = new ParameterizedTypeImpl(genericTypeInfo, (ParameterizedType) gct);
             } else if (gct instanceof GenericArrayType) {
@@ -160,7 +161,7 @@ public class GenericTypeHelper {
             if (o == null || getClass() != o.getClass()) return false;
 
             GenericArrayTypeImpl that = (GenericArrayTypeImpl) o;
-            return genericComponentType != null ? genericComponentType.equals(that.genericComponentType) : that.genericComponentType == null;
+            return Objects.equals(genericComponentType, that.genericComponentType);
 //            return Objects.equals(genericComponentType, that.genericComponentType);
         }
 
@@ -176,7 +177,7 @@ public class GenericTypeHelper {
         private final List<Type> actualTypeArguments = new ArrayList<>();
         private final Singleton<String> stringSingleton = new Singleton<>(
                 () -> {
-                    StringBuilder builder = new StringBuilder(((Class) getRawType()).getName());
+                    StringBuilder builder = new StringBuilder(((Class<?>) getRawType()).getName());
                     if (actualTypeArguments.size() > 0) {
                         builder.append("<");
 
@@ -186,8 +187,8 @@ public class GenericTypeHelper {
                             if (t == null) {
                                 builder.append("null");
                             } else if (t instanceof TypeVariable) {
-                                builder.append(((TypeVariable) t).getName())
-                                        .append(" in ").append(((TypeVariable) t).getGenericDeclaration());
+                                builder.append(((TypeVariable<?>) t).getName())
+                                        .append(" in ").append(((TypeVariable<?>) t).getGenericDeclaration());
                             } else {
                                 builder.append(t.toString());
                             }
@@ -201,9 +202,7 @@ public class GenericTypeHelper {
         ParameterizedTypeImpl(Type rawType, Type... parameters) {
             this.rawType = rawType;
             this.ownerType = rawType;
-            for (Type t : parameters) {
-                actualTypeArguments.add(t);
-            }
+            Collections.addAll(actualTypeArguments, parameters);
         }
 
 
@@ -212,7 +211,7 @@ public class GenericTypeHelper {
             ownerType = pt.getOwnerType();
             for (Type t : pt.getActualTypeArguments()) {
                 if (t instanceof TypeVariable) {
-                    actualTypeArguments.add(genericTypeInfo.find((TypeVariable<Class>) t));
+                    actualTypeArguments.add(genericTypeInfo.find((TypeVariable<?>) t));
                 } else if (t instanceof ParameterizedType) {
                     actualTypeArguments.add(new ParameterizedTypeImpl(genericTypeInfo, (ParameterizedType) t));
                 } else if (t instanceof GenericArrayType) {
@@ -270,23 +269,22 @@ public class GenericTypeHelper {
 
     private static class GenericTypeInfo {
 
-        private Map<TypeVariable<Class>, Type> map = new ConcurrentHashMap<TypeVariable<Class>, Type>();
-        private Set<Type> processed = new HashSet<Type>();
+        private Map<TypeVariable<? extends Class<?>>, Type> map = new ConcurrentHashMap<>();
+        private Set<Type> processed = new HashSet<>();
 
         GenericTypeInfo(Type x) {
             process(x);
         }
 
-        Type find(TypeVariable t) {
+        Type find(TypeVariable<?> t) {
             Type type = map.get(t);
             if (type == null) return t;
             if (type instanceof TypeVariable) {
-                return find((TypeVariable) type);
+                return find((TypeVariable<?>) type);
             } else if (type instanceof ParameterizedType) {
                 return new ParameterizedTypeImpl(this, (ParameterizedType) type);
             } else if (type instanceof GenericArrayType) {
                 return new GenericArrayTypeImpl(this, (GenericArrayType) type);
-
             } else {
                 return type;
             }
@@ -298,19 +296,19 @@ public class GenericTypeHelper {
             processed.add(x);
 
             if (x instanceof Class) {
-                Class c = (Class) x;
+                Class<?> c = (Class<?>) x;
                 if (c.isArray()) {
                     process(c.getComponentType());
                 } else {
                     if (!c.isInterface())
                         process(c.getGenericSuperclass());
-                    for (Type intf : ((Class) x).getGenericInterfaces()) {
-                        process(intf);
+                    for (Type _interface : ((Class<?>) x).getGenericInterfaces()) {
+                        process(_interface);
                     }
                 }
 
             } else if (x instanceof ParameterizedType) {
-                Class c = (Class) ((ParameterizedType) x).getRawType();
+                Class<?> c = (Class<?>) ((ParameterizedType) x).getRawType();
                 ParameterizedType pt = (ParameterizedType) x;
                 for (int i = 0; i < c.getTypeParameters().length; i++) {
                     map.put(c.getTypeParameters()[i], pt.getActualTypeArguments()[i]);
@@ -318,9 +316,10 @@ public class GenericTypeHelper {
                 process(c);
             } else if (x instanceof GenericArrayType) {
                 process(((GenericArrayType) x).getGenericComponentType());
-            } else {
-
             }
+//            else if(x instanceof TypeVariable) {
+//                TypeVariable<?> typeVariable = (TypeVariable<?>) x;
+//            }
         }
     }
 

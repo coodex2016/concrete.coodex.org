@@ -21,10 +21,6 @@ import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
-import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,48 +28,47 @@ import java.util.List;
 import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.concrete.core.signature.SignUtil.TAG_SIGNATRUE;
-import static org.coodex.concrete.core.signature.SignUtil.getString;
 
 public class HMAC_KeyStoreDefaultImpl implements HMAC_KeyStore {
 
-    private final static Logger log = LoggerFactory.getLogger(HMAC_KeyStoreDefaultImpl.class);
+//    private final static Logger log = LoggerFactory.getLogger(HMAC_KeyStoreDefaultImpl.class);
 
-    @SuppressWarnings("deprecation")
-    private static ServiceLoader<HmacKeyStore> COMPATIBILITY_LOADER = new ServiceLoaderImpl<HmacKeyStore>(
-            new HmacKeyStore() {
-                /**
-                 * 优先级
-                 * hmacKey.paperName.keyId
-                 * hmacKey.paperName
-                 * hmacKey.keyId
-                 * hmacKey
-                 *
-                 * @param paperName paperName
-                 * @param keyId keyId
-                 * @return hmacKey
-                 */
-                @Override
-                public byte[] getHmacKey(String paperName, String keyId) {
-                    String s = getHmacKeyStr(paperName, keyId);
-                    return s == null ? null : s.getBytes();
-                }
-            }) {
-    };
+//    @SuppressWarnings("deprecation")
+//    private static ServiceLoader<HmacKeyStore> COMPATIBILITY_LOADER = new ServiceLoaderImpl<HmacKeyStore>(
+//            new HmacKeyStore() {
+//                /**
+//                 * 优先级
+//                 * hmacKey.paperName.keyId
+//                 * hmacKey.paperName
+//                 * hmacKey.keyId
+//                 * hmacKey
+//                 *
+//                 * @param paperName paperName
+//                 * @param keyId keyId
+//                 * @return hmacKey
+//                 */
+//                @Override
+//                public byte[] getHmacKey(String paperName, String keyId) {
+//                    String s = getHmacKeyStr(paperName, keyId);
+//                    return s == null ? null : s.getBytes();
+//                }
+//            }) {
+//    };
 
-    private static String getHmacKeyStr(String paperName, String keyId) {
-        if (Common.isBlank(keyId))
-            return getString("hmacKey", paperName, null);
-        String key = null;
-        if (!Common.isBlank(paperName)) {
-            key = getString("hmacKey." + paperName + "." + keyId, null, null);
-            if (key == null)
-                key = getString("hmacKey." + paperName, null, null);
-        }
-        if (key == null)
-            key = getString("hmacKey", keyId, null);
-
-        return key == null ? getString("hmacKey", null, null) : key;
-    }
+//    private static String getHmacKeyStr(String paperName, String keyId) {
+//        if (Common.isBlank(keyId))
+//            return getString("hmacKey", paperName, null);
+//        String key = null;
+//        if (!Common.isBlank(paperName)) {
+//            key = getString("hmacKey." + paperName + "." + keyId, null, null);
+//            if (key == null)
+//                key = getString("hmacKey." + paperName, null, null);
+//        }
+//        if (key == null)
+//            key = getString("hmacKey", keyId, null);
+//
+//        return key == null ? getString("hmacKey", null, null) : key;
+//    }
 
 
     private static String getHmacKeyStr(String paperName, String keyId, String module) {
@@ -115,9 +110,9 @@ public class HMAC_KeyStoreDefaultImpl implements HMAC_KeyStore {
         if (s != null) {
             return s.getBytes();
         }
-        //noinspection deprecation
-        log.warn("{} deprecated. use {} plz.", HmacKeyStore.class.getName(), HMAC_KeyStore.class.getName());
-        return COMPATIBILITY_LOADER.get().getHmacKey(paperName, keyId);
+        return null;
+//        log.warn("{} deprecated. use {} plz.", HmacKeyStore.class.getName(), HMAC_KeyStore.class.getName());
+//        return COMPATIBILITY_LOADER.get().getHmacKey(paperName, keyId);
 
     }
 

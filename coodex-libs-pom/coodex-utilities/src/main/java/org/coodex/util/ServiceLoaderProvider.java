@@ -16,9 +16,19 @@
 
 package org.coodex.util;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 
 public interface ServiceLoaderProvider {
 
-    <S> Map<String, S> load(Class<S> serviceClass);
+
+//    @Deprecated
+//    <S> Map<String, S> load(Class<S> serviceClass);
+
+    /**
+     * @param serviceType serviceType
+     * @return 按照服务类型加载所有实例
+     */
+    Map<String, Object> load(Type serviceType);
+
 }

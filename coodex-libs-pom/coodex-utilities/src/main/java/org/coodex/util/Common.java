@@ -69,7 +69,7 @@ public class Common {
 
     private static ThreadLocal<SingletonMap<String, DateFormat>> threadLocal = new ThreadLocal<>();
 
-    private static LazySelectableServiceLoader<Class<?>, StringConvertWithDefaultValue> converterServiceLoader
+    private static SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue> converterServiceLoader
             = new LazySelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>() {
     };
 
@@ -264,8 +264,7 @@ public class Common {
 
     public static <T extends Serializable> T deepCopy(T object)
             throws IOException, ClassNotFoundException {
-        //noinspection unchecked
-        return (T) deserialize(serialize(object));
+        return cast(deserialize(serialize(object)));
     }
 
     public static int random(int max) {
@@ -618,19 +617,16 @@ public class Common {
         }
         Class<?> cls = value.getClass();
         if (cls.equals(String.class)) {
-            //noinspection unchecked
-            return (T) (str == null ? value : str);
+            return cast(str == null ? value : str);
         }
         if (cls.isArray() && cls.getComponentType().equals(String.class)) {
-            //noinspection unchecked
-            return (T) toArray(str, ",", (String[]) value);
+            return cast(toArray(str, ",", (String[]) value));
         }
         StringConvertWithDefaultValue defaultValue = converterServiceLoader.select(cls);
         if (defaultValue == null) {
             throw new RuntimeException("String to " + cls + " is not supported.");
         }
-        //noinspection unchecked
-        return (T) defaultValue.convertTo(str, value, cls);
+        return cast(defaultValue.convertTo(str, value, cls));
     }
 
     public static int toInt(String str, Supplier<Integer> valueSupplier) {
@@ -1034,7 +1030,7 @@ public class Common {
         calendar.set(Calendar.MILLISECOND, millisecond);
         return calendar;
     }
-
+    @SuppressWarnings("fallthrough")
     public static Calendar truncate(Calendar calendar, int fromField) {
         Calendar result = (Calendar) calendar.clone();
         switch (fromField) {
@@ -1053,6 +1049,7 @@ public class Common {
                 result.set(Calendar.SECOND, 0);
             case Calendar.MILLISECOND:
                 result.set(Calendar.MILLISECOND, 0);
+            default:
         }
         return result;
     }
@@ -1174,7 +1171,11 @@ public class Common {
         public int hashCode() {
             return originalPath.hashCode();
         }
+    }
 
+    @SuppressWarnings("unchecked")
+    public static <T> T cast(Object obj) {
+        return (T) obj;
     }
 
 

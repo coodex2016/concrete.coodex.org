@@ -30,12 +30,12 @@ import java.util.concurrent.ExecutorService;
  */
 public class Parallel {
 
-    private static RunnerWrapper defaultWrapper = new RunnerWrapper() {
-        @Override
-        public Runnable wrap(Runnable runnable) {
-            return runnable;
-        }
-    };
+    //    private static RunnerWrapper defaultWrapper = new RunnerWrapper() {
+//        @Override
+//        public Runnable wrap(Runnable runnable) {
+//            return runnable;
+//        }
+//    };
     private final ExecutorService executorService;
     private final RunnerWrapper wrapper;
 
@@ -85,13 +85,15 @@ public class Parallel {
         return batch;
     }
 
-    public <V> CallableBatch<V> call(Callable<V>... callable) {
+    @SafeVarargs
+    public final <V> CallableBatch<V> call(Callable<V>... callable) {
         return call(null, callable);
     }
 
-    public <V> CallableBatch<V> call(CallableWrapper<V> wrapper, Callable<V>... callable) {
+    @SafeVarargs
+    public final <V> CallableBatch<V> call(CallableWrapper<V> wrapper, Callable<V>... callable) {
 
-        CallableBatch<V> batch = new CallableBatch<V>();
+        CallableBatch<V> batch = new CallableBatch<>();
         batch.start = Clock.currentTimeMillis();
 
         if (callable != null && callable.length > 0) {
@@ -125,19 +127,16 @@ public class Parallel {
     private Task newTask(final Runnable runnable, int i, final CountDownLatch latch/*, final Object lock*/) {
         final Task task = new Task();
         task.id = i;
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                task.start = Clock.currentTimeMillis();
-                try {
-                    runnable.run();
-                } catch (Throwable th) {
-                    task.throwable = th;
-                } finally {
-                    task.end = Clock.currentTimeMillis();
-                    task.finished = true;
-                    latch.countDown();
-                }
+        Runnable run = () -> {
+            task.start = Clock.currentTimeMillis();
+            try {
+                runnable.run();
+            } catch (Throwable th) {
+                task.throwable = th;
+            } finally {
+                task.end = Clock.currentTimeMillis();
+                task.finished = true;
+                latch.countDown();
             }
         };
 
@@ -150,21 +149,18 @@ public class Parallel {
     }
 
     private <V> CallableTask<V> newTask(final Callable<V> callable, int i, final CountDownLatch latch) {
-        final CallableTask<V> task = new CallableTask<V>();
+        final CallableTask<V> task = new CallableTask<>();
         task.id = i;
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                task.start = Clock.currentTimeMillis();
-                try {
-                    task.result = callable.call();
-                } catch (Throwable th) {
-                    task.throwable = th;
-                } finally {
-                    task.end = Clock.currentTimeMillis();
-                    task.finished = true;
-                    latch.countDown();
-                }
+        Runnable run = () -> {
+            task.start = Clock.currentTimeMillis();
+            try {
+                task.result = callable.call();
+            } catch (Throwable th) {
+                task.throwable = th;
+            } finally {
+                task.end = Clock.currentTimeMillis();
+                task.finished = true;
+                latch.countDown();
             }
         };
 
@@ -191,6 +187,7 @@ public class Parallel {
         boolean finished = false;
         Integer id;
 
+        @SuppressWarnings("unused")
         public long getTimeConsuming() {
             return end - start;
         }
@@ -252,7 +249,7 @@ public class Parallel {
 
 
     public static class Batch extends AbstractBatch {
-        private List<Task> tasks = new ArrayList<Task>();
+        private List<Task> tasks = new ArrayList<>();
 
         public List<Task> getTasks() {
             return tasks;
@@ -260,7 +257,7 @@ public class Parallel {
     }
 
     public static class CallableBatch<V> extends AbstractBatch {
-        private List<CallableTask<V>> tasks = new ArrayList<CallableTask<V>>();
+        private List<CallableTask<V>> tasks = new ArrayList<>();
 
         public List<CallableTask<V>> getTasks() {
             return tasks;

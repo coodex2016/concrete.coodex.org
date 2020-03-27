@@ -100,7 +100,7 @@ public class TimeLimitedMap<K, V> {
     }
 
     private static class Task<V> {
-        ScheduledFuture future;
+        ScheduledFuture<?> future;
         V value;
     }
 

@@ -17,6 +17,7 @@
 package org.coodex.util;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -37,15 +38,23 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
     public LazySelectableServiceLoader(final T defaultProvider) {
         singleton = new Singleton<>(
                 () -> new SelectableServiceLoaderImpl<Param_Type, T>(defaultProvider) {
+//                    @Override
+//                    protected Object $getInstance() {
+//                        return LazySelectableServiceLoader.this;
+//                    }
 
+                    //                    @Override
+//                    protected Class<?> getParamType() {
+//                        return LazySelectableServiceLoader.this.getParamType();
+//                    }
+//
+//                    @Override
+//                    protected Class<?> getInterfaceClass() {
+//                        return LazySelectableServiceLoader.this.getInterfaceClass();
+//                    }
                     @Override
-                    protected Class<Param_Type> getParamType() {
-                        return LazySelectableServiceLoader.this.getParamType();
-                    }
-
-                    @Override
-                    protected Class<T> getInterfaceClass() {
-                        return LazySelectableServiceLoader.this.getInterfaceClass();
+                    protected Object $getInstance() {
+                        return LazySelectableServiceLoader.this;
                     }
                 });
     }
@@ -54,13 +63,8 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
         singleton = new Singleton<>(
                 () -> new SelectableServiceLoaderImpl<Param_Type, T>(exceptionFunction) {
                     @Override
-                    protected Class<Param_Type> getParamType() {
-                        return LazySelectableServiceLoader.this.getParamType();
-                    }
-
-                    @Override
-                    protected Class<T> getInterfaceClass() {
-                        return LazySelectableServiceLoader.this.getInterfaceClass();
+                    protected Object $getInstance() {
+                        return LazySelectableServiceLoader.this;
                     }
                 });
     }
@@ -70,75 +74,51 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
         return singleton.get().select(param);
     }
 
-//    @Override
-//    public List<T> getServiceInstances(Param_Type param) {
-//        return selectAll(param);
-//    }
 
     @Override
     public List<T> selectAll(Param_Type param_type) {
         return singleton.get().selectAll(param_type);
     }
 
-//    @Override
-//    public T getServiceInstance(Param_Type param) {
-//        return select(param);
-//    }
-
-//    @Override
-//    @Deprecated
-//    public Collection<T> getAllInstances() {
-//        return get().getAllInstances();
-//    }
-
-//    @Override
-//    public Map<String, T> getInstances() {
-//        return getAll();
-//    }
 
     @Override
     public Map<String, T> getAll() {
         return singleton.get().getAll();
     }
 
-//    @Override
-//    public T getInstance(Class<? extends T> providerClass) {
-//        return get(providerClass);
-//    }
 
-//    @Override
-//    public T get(Class<? extends T> serviceClass) {
-//        return get().get(serviceClass);
-//    }
-
-//    @Override
-//    public T getInstance(String name) {
-//        return get(name);
-//    }
-
-    //    @Override
-//    public T get(String name) {
-//        return get().get(name);
-//    }
-//
     @Override
     public T getDefault() {
         return singleton.get().getDefault();
     }
+
+
+//    protected Type getParameterType() {
+//        return solveFromInstance(
+//                SelectableServiceLoaderImpl.class.getTypeParameters()[0],
+//                $getInstance()
+//        );
+//    }
 //
-//    @Override
-//    public T getDefaultProvider() {
-//        return getDefault();
+//
+//    protected Object $getInstance() {
+//        return this;
+//    }
+//
+//    protected Type getServiceType() {
+//        return solveFromInstance(
+//                SelectableServiceLoaderImpl.class.getTypeParameters()[1],
+//                $getInstance()
+//        );
 //    }
 
-
-    @SuppressWarnings("unchecked")
-    protected Class<Param_Type> getParamType() {
-        return typeToClass(solveFromInstance(LazySelectableServiceLoader.class.getTypeParameters()[0], this));
-    }
-
-    @SuppressWarnings("unchecked")
-    protected Class<T> getInterfaceClass() {
-        return typeToClass(solveFromInstance(LazySelectableServiceLoader.class.getTypeParameters()[1], this));
-    }
+//    @SuppressWarnings("unchecked")
+//    protected Class<?> getParamType() {
+//        return typeToClass(solveFromInstance(LazySelectableServiceLoader.class.getTypeParameters()[0], this));
+//    }
+//
+//    @SuppressWarnings("unchecked")
+//    protected Class<?> getInterfaceClass() {
+//        return typeToClass(solveFromInstance(LazySelectableServiceLoader.class.getTypeParameters()[1], this));
+//    }
 }

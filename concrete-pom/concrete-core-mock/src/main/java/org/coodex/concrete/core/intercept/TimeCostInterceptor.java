@@ -32,14 +32,14 @@ import java.util.Map;
 @ServerSide
 public class TimeCostInterceptor extends AbstractSyncInterceptor {
     private final static Logger log = LoggerFactory.getLogger(TimeCostInterceptor.class);
-
-    private Boolean accept = null;
     private static ServiceLoader<ConcreteInterceptor> loader = new ServiceLoaderImpl<ConcreteInterceptor>() {
+
         @Override
-        protected ConcreteInterceptor conflict(Class<? extends ConcreteInterceptor> providerClass, Map<String, ConcreteInterceptor> map) {
-            return map.values().iterator().next();
+        protected ConcreteInterceptor conflict(Class<? extends ConcreteInterceptor> providerClass, Map<String, Object> map) {
+            return (ConcreteInterceptor) map.values().iterator().next();
         }
     };
+    private Boolean accept = null;
 
     @Override
     protected boolean accept_(DefinitionContext context) {

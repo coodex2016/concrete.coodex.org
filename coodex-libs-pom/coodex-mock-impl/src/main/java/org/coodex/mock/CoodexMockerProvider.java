@@ -33,6 +33,7 @@ import java.util.*;
 import static org.coodex.mock.Mock.Depth.DEFAULT_DEPTH;
 import static org.coodex.mock.Mock.Dimension.*;
 import static org.coodex.mock.Mock.Dimensions.SAME_DEFAULT;
+import static org.coodex.util.Common.cast;
 import static org.coodex.util.GenericTypeHelper.*;
 
 /**
@@ -585,7 +586,8 @@ public class CoodexMockerProvider implements MockerProvider {
         return null;
     }
 
-    private Map<?, ?> buildMapInstance(Class<? extends Map<?, ?>> mapClass, int d, Annotation... annotations) {
+    @SuppressWarnings("rawtypes")
+    private Map buildMapInstance(Class<? extends Map> mapClass, int d, Annotation... annotations) {
         if (Map.class.equals(mapClass)) {
             return DIMENSIONS_CONTEXT.get().ordered(d) ? new LinkedHashMap<>() : new HashMap<>();
         }
@@ -594,9 +596,9 @@ public class CoodexMockerProvider implements MockerProvider {
 
         try {
             if (mapClass.isInterface()) {
-                return (Map<?, ?>) getProxyObject(
+                return cast(getProxyObject(
                         DIMENSIONS_CONTEXT.get().ordered(d) ? new LinkedHashMap<>() : new HashMap<>(),
-                        mapClass);
+                        mapClass));
             } else {
                 Constructor<?> constructor = mapClass.getConstructor();
                 constructor.setAccessible(true);
@@ -676,13 +678,11 @@ public class CoodexMockerProvider implements MockerProvider {
                     ParameterizedType parameterizedType = (ParameterizedType) componentType;
                     Class<?> c = typeToClass((parameterizedType).getRawType());
                     if (Collection.class.isAssignableFrom(c)) {
-                        //noinspection unchecked,CastCanBeRemovedNarrowingVariableType
-                        return mockCollection((Class<? extends Collection<?>>) c,
+                        return mockCollection(cast(c),
                                 solveFromType(Collection.class.getTypeParameters()[0], parameterizedType),
                                 d + 1, annotations);
                     } else if (Map.class.isAssignableFrom(c)) {
-                        //noinspection unchecked,CastCanBeRemovedNarrowingVariableType
-                        return mockMap((Class<? extends Map<?, ?>>) c, d + 1,
+                        return mockMap(cast(c), d + 1,
                                 solveFromType(Map.class.getTypeParameters()[0], componentType),
                                 solveFromType(Map.class.getTypeParameters()[1], componentType),
                                 annotations);
@@ -707,11 +707,10 @@ public class CoodexMockerProvider implements MockerProvider {
         };
 
 
-        //noinspection unchecked
-        return (C) runCallable(
+        return cast(runCallable(
                 getDimensionsClosure(d,
                         getCollectionSequenceClosure(closure),
-                        annotations));
+                        annotations)));
     }
 
     private CallableClosure getCollectionSequenceClosure(final CallableClosure callableClosure) {

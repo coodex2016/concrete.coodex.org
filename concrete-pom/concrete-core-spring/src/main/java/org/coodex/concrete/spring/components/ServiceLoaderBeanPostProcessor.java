@@ -92,11 +92,14 @@ public class ServiceLoaderBeanPostProcessor extends AbstractInjectableBeanPostPr
                                 : key.getDefaultServiceClass().newInstance();
 
                 cache.put(className, new ServiceLoaderImpl() {
-
                     @Override
-                    protected Class getInterfaceClass() {
-                        return typeToClass(serviceType);
+                    protected Type getServiceType() {
+                        return serviceType;
                     }
+                    //                    @Override
+//                    protected Class getInterfaceClass() {
+//                        return typeToClass(serviceType);
+//                    }
 
                     @Override
                     public Object getDefault() {

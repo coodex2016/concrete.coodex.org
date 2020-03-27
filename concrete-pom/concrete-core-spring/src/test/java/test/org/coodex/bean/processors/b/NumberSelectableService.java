@@ -35,4 +35,12 @@ public interface NumberSelectableService extends SelectableService<Integer> {
             return param != null && param % 2 == 1;
         }
     }
+
+    @Named
+    class LongOddNumberSelectableService implements SelectableService<Long>{
+        @Override
+        public boolean accept(Long param) {
+            return true;
+        }
+    }
 }

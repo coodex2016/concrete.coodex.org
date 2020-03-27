@@ -23,48 +23,45 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileBaseYaml extends Profile {
 
     private final static Logger log = LoggerFactory.getLogger(ProfileBaseYaml.class);
-    private Map<String, Object> valuesMap = new HashMap<String, Object>();
+    private Map<String, Object> valuesMap = new HashMap<>();
 
-    @Deprecated
-    ProfileBaseYaml(String path) {
-        try {
-            init(path);
-        } catch (IOException e) {
-            log.warn("init [{}] yaml profile failed", path, e);
-        }
-    }
+//    @Deprecated
+//    ProfileBaseYaml(String path) {
+//        try {
+//            init(path);
+//        } catch (IOException e) {
+//            log.warn("init [{}] yaml profile failed", path, e);
+//        }
+//    }
 
     ProfileBaseYaml(URL url) {
         try {
-            init(url, null);
+            init(url);
         } catch (IOException e) {
             log.warn("init [{}] yaml profile failed", url, e);
         }
     }
 
-    private void init(URL url, String path) throws IOException {
+    private void init(URL url) throws IOException {
         Yaml yaml = new Yaml();
         if (url != null) {
-            InputStream is = url.openStream();
-            try {
+            try (InputStream is = url.openStream()) {
                 Map<Object, Object> map = yaml.load(is);
                 map(null, map);
-            } finally {
-                is.close();
             }
-        } else {
-            log.info("{} not found.", path);
         }
     }
 
-    private void init(String path) throws IOException {
-        init(Common.getResource(path), path);
-    }
+//    private void init(String path) throws IOException {
+//        init(Common.getResource(path), path);
+//    }
 
     private void map(String prefix, Map<Object, Object> map) {
         if (map == null) return;
@@ -75,8 +72,7 @@ public class ProfileBaseYaml extends Profile {
                 valuesMap.put(key, null);
             }
             if (value instanceof Map) {
-                //noinspection unchecked
-                map(key, (Map<Object, Object>) value);
+                map(key, Common.cast(value));
             } else {
                 valuesMap.put(key, value);
             }
@@ -85,7 +81,7 @@ public class ProfileBaseYaml extends Profile {
 
     private String toString(Object o) {
         if (o == null) return null;
-        Class type = o.getClass();
+        Class<?> type = o.getClass();
         if (type.isArray()) {
             Object[] array = (Object[]) o;
             StringBuilder builder = new StringBuilder();
@@ -99,7 +95,7 @@ public class ProfileBaseYaml extends Profile {
         } else if (Collection.class.isAssignableFrom(type)) {
             boolean appendSP = false;
             StringBuilder builder = new StringBuilder();
-            for (Object el : (Collection) o) {
+            for (Object el : (Collection<?>) o) {
                 if (appendSP) {
                     builder.append(", ");
                 } else {

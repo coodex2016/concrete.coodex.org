@@ -22,6 +22,7 @@ import org.coodex.concrete.api.rx.CompletableFutureBridge;
 import java.util.concurrent.CompletableFuture;
 
 public class CompletableFutureObservableBridge implements CompletableFutureBridge {
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Object bridging(CompletableFuture completableFuture) {
         return Observable.create(subscriber ->

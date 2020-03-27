@@ -54,19 +54,20 @@
 
     <modules>
 
-<!--        <module>01.spec/concrete-fsm</module>-->
-<!--        <module>10.core/concrete-fsm-impl</module>-->
+        <!--        <module>01.spec/concrete-fsm</module>-->
+        <!--        <module>10.core/concrete-fsm-impl</module>-->
 
-<!--        <module>20.service.support/concrete-support-jaxrs-saas-reverse-proxy</module>-->
+        <!--        <module>20.service.support/concrete-support-jaxrs-saas-reverse-proxy</module>-->
 
-<!--        <module>60.attachments/concrete-attachments</module>-->
-<!--        <module>60.attachments/concrete-attachments-jaxrs</module>-->
-<!--        <module>60.attachments/concrete-attachments-repo-fastdfs</module>-->
+        <!--        <module>60.attachments/concrete-attachments</module>-->
+        <!--        <module>60.attachments/concrete-attachments-jaxrs</module>-->
+        <!--        <module>60.attachments/concrete-attachments-repo-fastdfs</module>-->
 
-<!--        <module>concrete-bom</module>-->
+        <!--        <module>concrete-bom</module>-->
 
         <module>coodex-libs-pom</module>
         <module>concrete-pom</module>
+        <module>concrete-bom</module>
 
     </modules>
 
@@ -126,8 +127,8 @@
         <snakeyaml.version>1.24</snakeyaml.version>
         <cglib.version>3.2.12</cglib.version>
 
-<!--        <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>-->
-<!--        <coodex.shared.cache.version>${project.parent.version}</coodex.shared.cache.version>-->
+        <!--        <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>-->
+        <!--        <coodex.shared.cache.version>${project.parent.version}</coodex.shared.cache.version>-->
 
 
     </properties>
@@ -256,12 +257,15 @@
             </plugin>
 
 
-
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
                     <compilerArgument>-parameters</compilerArgument>
+<!--                    <compilerArguments>-->
+<!--                        <Xlint/>-->
+<!--                        <parameters/>-->
+<!--                    </compilerArguments>-->
                     <source>1.8</source>
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
@@ -302,12 +306,6 @@
                 <scope>import</scope>
             </dependency>
 
-            <!--            <dependency>-->
-            <!--                <groupId>com.alibaba</groupId>-->
-            <!--                <artifactId>dubbo</artifactId>-->
-            <!--                <version>${dubbo.version}</version>-->
-            <!--            </dependency>-->
-
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo-bom</artifactId>
@@ -344,15 +342,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-parent -->
-            <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>slf4j-parent</artifactId>-->
-            <!--<version>>${slf4j.version}</version>-->
-            <!--<returnType>pom</returnType>-->
-            <!--<scope>import</scope>-->
-            <!--</dependency>-->
 
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -442,12 +431,6 @@
                 <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-                <!--<exclusions>-->
-                <!--<exclusion>-->
-                <!--<groupId>org.springframework.boot</groupId>-->
-                <!--<artifactId>spring-boot-starter-logging</artifactId>-->
-                <!--</exclusion>-->
-                <!--</exclusions>-->
             </dependency>
 
             <dependency>
@@ -457,15 +440,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <!-- guice IoC -->
-            <!--<dependency>-->
-            <!--<groupId>com.google.inject</groupId>-->
-            <!--<artifactId>guice-bom</artifactId>-->
-            <!--<version>${guice.version}</version>-->
-            <!--<returnType>pom</returnType>-->
-            <!--<scope>import</scope>-->
-            <!--</dependency>-->
 
             <!-- https://mvnrepository.com/artifact/aopalliance/aopalliance -->
             <dependency>
@@ -563,15 +537,6 @@
                 <artifactId>swagger-core</artifactId>
                 <version>2.1.1</version>
             </dependency>
-
-
-
-            <!-- hibernate validator -->
-            <!--            <dependency>-->
-            <!--                <groupId>org.hibernate.validator</groupId>-->
-            <!--                <artifactId>hibernate-validator</artifactId>-->
-            <!--                <version>${hibernate.validator.version}</version>-->
-            <!--            </dependency>-->
 
         </dependencies>
 

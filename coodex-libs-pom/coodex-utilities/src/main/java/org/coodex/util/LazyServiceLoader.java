@@ -42,18 +42,27 @@ public abstract class LazyServiceLoader<T> /*extends Singleton<ServiceLoader<T>>
 
     public LazyServiceLoader(final T defaultProvider) {
         singleton = new Singleton<>(() -> new ServiceLoaderImpl<T>(defaultProvider) {
+//            @Override
+//            protected Class<?> getInterfaceClass() {
+//                return LazyServiceLoader.this.getInterfaceClass();
+//            }
+
             @Override
-            protected Class<T> getInterfaceClass() {
-                return LazyServiceLoader.this.getInterfaceClass();
+            protected Object $getInstance() {
+                return LazyServiceLoader.this;
             }
         });
     }
 
     public LazyServiceLoader(final Supplier<T> builder) {
         singleton = new Singleton<>(() -> new ServiceLoaderImpl<T>() {
+            //            @Override
+//            protected Class<?> getInterfaceClass() {
+//                return LazyServiceLoader.this.getInterfaceClass();
+//            }
             @Override
-            protected Class<T> getInterfaceClass() {
-                return LazyServiceLoader.this.getInterfaceClass();
+            protected Object $getInstance() {
+                return LazyServiceLoader.this;
             }
 
             @Override
@@ -98,8 +107,8 @@ public abstract class LazyServiceLoader<T> /*extends Singleton<ServiceLoader<T>>
     }
 
 
-    @SuppressWarnings("unchecked")
-    protected Class<T> getInterfaceClass() {
-        return typeToClass(solveFromInstance(LazyServiceLoader.class.getTypeParameters()[0], this));
-    }
+//    @SuppressWarnings("unchecked")
+//    protected Class<?> getInterfaceClass() {
+//        return typeToClass(solveFromInstance(LazyServiceLoader.class.getTypeParameters()[0], this));
+//    }
 }

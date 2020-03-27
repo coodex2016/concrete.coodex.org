@@ -18,6 +18,7 @@ package org.coodex.config;
 
 import org.coodex.util.Common;
 import org.coodex.util.LazyServiceLoader;
+import org.coodex.util.ServiceLoader;
 
 import java.util.List;
 import java.util.Properties;
@@ -49,12 +50,13 @@ public class Config {
 //            }
 //    );
 
-    private static LazyServiceLoader<DefaultConfigurationProvider> configurationProviderLazyServiceLoader =
+    private static ServiceLoader<DefaultConfigurationProvider> configurationProviderLazyServiceLoader =
             new LazyServiceLoader<DefaultConfigurationProvider>(ConfigurationBaseProfile::new) {
             };
 
-    private static LazyServiceLoader<Configuration> configurationServiceLoader =
+    private static ServiceLoader<Configuration> configurationServiceLoader =
             new LazyServiceLoader<Configuration>(() -> configurationProviderLazyServiceLoader.get().get()) {
+
             };
 
 

@@ -18,6 +18,8 @@ package org.coodex.billing;
 
 import org.coodex.util.LazySelectableServiceLoader;
 
+import static org.coodex.util.Common.cast;
+
 public class BillCalculator {
 
 
@@ -40,8 +42,7 @@ public class BillCalculator {
         if (calculator == null) {
             throw new RuntimeException("no Calculator instance found for " + chargeable.getClass() + ". " + chargeable.toString());
         }
-        //noinspection unchecked
-        return (Bill<C>) calculator.calc(chargeable);
+        return cast(calculator.calc(chargeable));
     }
 
 }
