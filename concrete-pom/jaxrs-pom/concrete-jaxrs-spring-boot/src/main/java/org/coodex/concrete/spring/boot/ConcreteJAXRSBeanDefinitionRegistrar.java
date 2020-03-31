@@ -39,7 +39,7 @@ public class ConcreteJAXRSBeanDefinitionRegistrar
         return runtime.getApiPackages();
     }
 
-    static Class[] getClasses() {
+    static Class<?>[] getClasses() {
         return runtime.getClasses();
     }
 
