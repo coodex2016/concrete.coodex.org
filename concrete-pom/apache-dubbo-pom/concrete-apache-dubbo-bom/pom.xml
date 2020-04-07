@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2019 coodex.org (jujus.shen@126.com)
+  ~ Copyright (c) 2020 coodex.org (jujus.shen@126.com)
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,50 +19,37 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>amqp-pom</artifactId>
-        <groupId>org.coodex.concrete.amqp</groupId>
+        <artifactId>apache-dubbo-pom</artifactId>
+        <groupId>org.coodex.concrete.dubbo</groupId>
         <version>0.5.0-SNAPSHOT</version>
-        <!--        <relativePath>../pom.xml</relativePath>-->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>concrete-amqp-bom</artifactId>
+    <artifactId>concrete-apache-dubbo-bom</artifactId>
     <packaging>pom</packaging>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
-                <artifactId>cocnrete-amqp-client</artifactId>
+                <artifactId>concrete-apache-dubbo-client</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
-                <artifactId>cocnrete-amqp-service</artifactId>
+                <artifactId>concrete-apache-dubbo-service</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
-                <artifactId>cocnrete-amqp-spring-bot</artifactId>
+                <artifactId>concrete-apache-dubbo-spring-boot</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
-
-    <!--    <dependencies>-->
-
-    <!--        <dependency>-->
-    <!--            <groupId>org.coodex.concrete</groupId>-->
-    <!--            <artifactId>concrete-core</artifactId>-->
-    <!--            <version>${project.parent.version}</version>-->
-    <!--        </dependency>-->
-
-    <!--        <dependency>-->
-    <!--            <groupId>com.rabbitmq</groupId>-->
-    <!--            <artifactId>amqp-client</artifactId>-->
-    <!--        </dependency>-->
-    <!--    </dependencies>-->
 
 
 </project>

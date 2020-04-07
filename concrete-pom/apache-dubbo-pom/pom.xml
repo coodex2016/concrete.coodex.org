@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2019 coodex.org (jujus.shen@126.com)
+  ~ Copyright (c) 2020 coodex.org (jujus.shen@126.com)
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,24 +18,22 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>amqp-pom</artifactId>
-        <groupId>org.coodex.concrete.amqp</groupId>
+        <artifactId>concrete-pom</artifactId>
+        <groupId>org.coodex.concrete</groupId>
         <version>0.5.0-SNAPSHOT</version>
-<!--        <relativePath>../pom.xml</relativePath>-->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>concrete-amqp-service</artifactId>
+    <artifactId>apache-dubbo-pom</artifactId>
+    <groupId>org.coodex.concrete.dubbo</groupId>
+    <packaging>pom</packaging>
 
-    <dependencies>
-
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-amqp</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-    </dependencies>
-
+    <modules>
+        <module>concrete-apache-dubbo</module>
+        <module>concrete-apache-dubbo-client</module>
+        <module>concrete-apache-dubbo-service</module>
+        <module>concrete-apache-dubbo-spring-boot</module>
+        <module>concrete-apache-dubbo-bom</module>
+    </modules>
 
 </project>

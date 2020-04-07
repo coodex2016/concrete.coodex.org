@@ -58,37 +58,16 @@
 
         <module>amqp-pom</module>
 
-        <module>apache-dubbo/concrete-apache-dubbo</module>
-        <module>apache-dubbo/concrete-support-apache-dubbo</module>
-        <module>apache-dubbo/concrete-apache-dubbo-client</module>
-        <module>apache-dubbo/concrete-spring-boot-apache-dubbo</module>
+        <module>apache-dubbo-pom</module>
 
         <module>jaxrs-pom</module>
-<!--        <module>jaxrs/concrete-jaxrs</module>-->
-<!--        <module>jaxrs/concrete-support-jaxrs</module>-->
-<!--        <module>jaxrs/concrete-support-jaxrs-swagger</module>-->
-<!--        <module>jaxrs/concrete-support-jsr311</module>-->
-<!--        <module>jaxrs/concrete-support-jsr339</module>-->
-<!--        <module>jaxrs/concrete-jaxrs-client</module>-->
-<!--        <module>jaxrs/concrete-spring-boot-jaxrs</module>-->
 
-        <module>websocket/concrete-websocket</module>
-        <module>websocket/concrete-support-websocket</module>
-        <module>websocket/concrete-websocket-client</module>
+        <module>websocket-pom</module>
 
-        <module>plugins/concrete-apm-plugin-mysql</module>
-        <module>plugins/concrete-apm-plugin-mysql8</module>
-        <module>plugins/concrete-apm-zipkin</module>
-        <module>plugins/concrete-courier-jms</module>
-        <module>plugins/concrete-courier-jms-activemq</module>
-        <module>plugins/concrete-courier-rabbitmq</module>
-        <module>plugins/concrete-rx-observable</module>
-        <module>plugins/concrete-serializer-jackson2</module>
-        <module>plugins/concrete-serializer-jsonb-jdk8</module>
-        <module>plugins/concrete-formatters-freemarker</module>
+        <module>plugins-pom</module>
 
-        <module>s2/concrete-s2-api</module>
-        <module>s2/concrete-s2-impl</module>
+<!--        <module>s2/concrete-s2-api</module>-->
+<!--        <module>s2/concrete-s2-impl</module>-->
 
         <module>../concrete-accounts</module>
 

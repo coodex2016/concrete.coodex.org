@@ -174,10 +174,6 @@
             </dependency>
 
 
-
-
-
-
             <!-- concrete -->
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
@@ -318,10 +314,37 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- concret-amqp -->
+            <!-- concrete-amqp -->
             <dependency>
                 <groupId>org.coodex.concrete.amqp</groupId>
                 <artifactId>concrete-amqp-bom</artifactId>
+                <version>${project.parent.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- concrete-jaxrs -->
+            <dependency>
+                <groupId>org.coodex.concrete.jaxrs</groupId>
+                <artifactId>concrete-jaxrs-bom</artifactId>
+                <version>${project.parent.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- concrete-apache-dubbo -->
+            <dependency>
+                <groupId>org.coodex.concrete.dubbo</groupId>
+                <artifactId>concrete-apache-dubbo-bom</artifactId>
+                <version>${project.parent.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- concrete-websocket -->
+            <dependency>
+                <groupId>org.coodex.concrete.websocket</groupId>
+                <artifactId>concrete-websocket-bom</artifactId>
                 <version>${project.parent.version}</version>
                 <type>pom</type>
                 <scope>import</scope>

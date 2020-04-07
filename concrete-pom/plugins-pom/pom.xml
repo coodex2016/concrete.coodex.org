@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2019 coodex.org (jujus.shen@126.com)
+  ~ Copyright (c) 2020 coodex.org (jujus.shen@126.com)
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,24 +18,31 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>amqp-pom</artifactId>
-        <groupId>org.coodex.concrete.amqp</groupId>
+        <artifactId>concrete-pom</artifactId>
+        <groupId>org.coodex.concrete</groupId>
         <version>0.5.0-SNAPSHOT</version>
-<!--        <relativePath>../pom.xml</relativePath>-->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>concrete-amqp-service</artifactId>
+    <artifactId>plugins-pom</artifactId>
+    <packaging>pom</packaging>
 
-    <dependencies>
+    <modules>
+        <module>concrete-apm-plugin-mysql8</module>
+        <module>concrete-apm-plugin-mysql</module>
+        <module>concrete-apm-zipkin</module>
 
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-amqp</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
+        <module>concrete-courier-jms</module>
+        <module>concrete-courier-jms-activemq</module>
+        <module>concrete-courier-rabbitmq</module>
 
-    </dependencies>
+        <module>concrete-formatters-freemarker</module>
+
+        <module>concrete-rx-observable</module>
+
+        <module>concrete-serializer-jackson2</module>
+        <module>concrete-serializer-jsonb-jdk8</module>
+    </modules>
 
 
 </project>

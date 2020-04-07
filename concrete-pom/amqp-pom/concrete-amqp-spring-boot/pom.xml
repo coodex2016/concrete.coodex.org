@@ -26,7 +26,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>concrete-spring-boot-amqp</artifactId>
+    <artifactId>concrete-amqp-spring-boot</artifactId>
 
     <dependencies>
         <dependency>
@@ -37,7 +37,7 @@
 
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-support-amqp</artifactId>
+            <artifactId>concrete-amqp-service</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
