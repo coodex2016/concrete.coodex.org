@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
@@ -29,10 +28,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Supplier;
 
 import static org.coodex.concrete.common.ConcreteContext.KEY_TOKEN;
 import static org.coodex.concrete.common.ConcreteContext.runServiceWithContext;
@@ -45,6 +42,7 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
  * <p>
  * Created by davidoff shen on 2016-11-01.
  */
+@SuppressWarnings("unused")
 public abstract class AbstractJAXRSResource<T> {
 
 
@@ -60,9 +58,9 @@ public abstract class AbstractJAXRSResource<T> {
     protected HttpServletRequest httpRequest;
 
 
-    private static boolean isDevModel() {
-        return ConcreteHelper.isDevModel("jaxrs");
-    }
+//    private static boolean isDevModel() {
+//        return ConcreteHelper.isDevModel("jaxrs");
+//    }
 
 
 //    private static
@@ -72,9 +70,9 @@ public abstract class AbstractJAXRSResource<T> {
         return Thread.currentThread().getStackTrace()[deep + 2].getMethodName();
     }
 
-    private <R> R convert(R result) {
-        return result;
-    }
+//    private <R> R convert(R result) {
+//        return result;
+//    }
 
     protected int getPriority(Method method) {
         return ConcreteHelper.getPriority(method, clz);
@@ -89,11 +87,11 @@ public abstract class AbstractJAXRSResource<T> {
 //                        .getToken(tokenId);
 //    }
 
-    @SuppressWarnings("unchecked")
     protected Class<T> getInterfaceClass() {
-        return (Class<T>) typeToClass(solveFromInstance(AbstractJAXRSResource.class.getTypeParameters()[0], this));
+        return Common.cast(typeToClass(solveFromInstance(AbstractJAXRSResource.class.getTypeParameters()[0], this)));
     }
 
+    @SuppressWarnings("SameParameterValue")
     protected Method findMethod(String methodName, Class<?> c) {
         String methodKey = getMethodNameInStack(3);
         synchronized (methodMap) {
@@ -135,23 +133,23 @@ public abstract class AbstractJAXRSResource<T> {
      */
     protected abstract int getMethodStartIndex();
 
-    /**
-     * 根据动态创建method的参数类型反查接口method的参数类型
-     *
-     * @param parameterTypes 动态创建method的参数类型
-     * @return 接口定义method的参数类型
-     */
-    private Class<?>[] getParameterTypes(Class<?>[] parameterTypes) {
-        if (isDevModel()) {
-            return parameterTypes;
-        } else {
-            int count = parameterTypes.length - getMethodStartIndex();
-            Class<?>[] result = new Class[count];
-            if (count > 0)
-                System.arraycopy(parameterTypes, getMethodStartIndex(), result, 0, count);
-            return result;
-        }
-    }
+//    /**
+//     * 根据动态创建method的参数类型反查接口method的参数类型
+//     *
+//     * @param parameterTypes 动态创建method的参数类型
+//     * @return 接口定义method的参数类型
+//     */
+//    private Class<?>[] getParameterTypes(Class<?>[] parameterTypes) {
+//        if (isDevModel()) {
+//            return parameterTypes;
+//        } else {
+//            int count = parameterTypes.length - getMethodStartIndex();
+//            Class<?>[] result = new Class[count];
+//            if (count > 0)
+//                System.arraycopy(parameterTypes, getMethodStartIndex(), result, 0, count);
+//            return result;
+//        }
+//    }
 
     protected JAXRSServiceContext buildContext(String tokenId/*,Token token, AbstractUnit unit*/) {
 
@@ -181,21 +179,20 @@ public abstract class AbstractJAXRSResource<T> {
                 null : locales.get(0);
     }
 
-    protected Response buildResponse(String tokenId, final Method method, final Object[] params, /*RunWithToken runWithToken*/ CallableClosure callable) {
+    protected Response buildResponse(String tokenId, final Method method, final Object[] params, /*RunWithToken runWithToken*/ Supplier<?> supplier) {
 
         JAXRSServiceContext serviceContext = buildContext(tokenId);
         // apm
-//        JaxRSServiceHelper.
         Trace trace = APM.build(serviceContext.getSubjoin())
                 .tag("remote", serviceContext.getCaller().getAddress())
                 .tag("agent", serviceContext.getCaller().getClientProvider())
                 .start(String.format("jaxrs: %s.%s", method.getDeclaringClass().getName(), method.getName()));
         try {
-            Object result = runServiceWithContext(serviceContext, callable,
+            Object result = runServiceWithContext(serviceContext, supplier,
                     getInterfaceClass(), method, params);
             Response.ResponseBuilder builder = result == null ? Response.noContent() : Response.ok();
             String tokenIdAfterInvoke = serviceContext.getTokenId();
-            if (!Common.isSameStr(tokenId, tokenIdAfterInvoke) && !Common.isBlank(tokenIdAfterInvoke)) {
+            if (!Objects.equals(tokenId, tokenIdAfterInvoke) && !Common.isBlank(tokenIdAfterInvoke)) {
                 builder = setTokenInfo(tokenIdAfterInvoke, builder);
             }
 
@@ -217,7 +214,7 @@ public abstract class AbstractJAXRSResource<T> {
             return builder.build();
         } catch (Throwable throwable) {
             trace.error(throwable);
-            throw Common.runtimeException(throwable);
+            throw Common.rte(throwable);
         } finally {
             trace.finish();
         }
@@ -230,10 +227,14 @@ public abstract class AbstractJAXRSResource<T> {
         return buildResponse(tokenId, method, params,
                 () -> {
                     Object instance = BeanServiceLoaderProvider.getBeanProvider().getBean(getInterfaceClass());
-                    if (paramCount == 0)
-                        return method.invoke(instance);
-                    else
-                        return method.invoke(instance, params);
+                    try {
+                        if (paramCount == 0)
+                            return method.invoke(instance);
+                        else
+                            return method.invoke(instance, params);
+                    } catch (Throwable th) {
+                        throw Common.rte(th);
+                    }
                 });
 
     }
@@ -254,6 +255,7 @@ public abstract class AbstractJAXRSResource<T> {
         Object runWithToken(Token token);
     }
 
+
     public class ResponseBuilder {
         private final String tokenId;
         private final Method method;
@@ -265,8 +267,8 @@ public abstract class AbstractJAXRSResource<T> {
             this.params = params;
         }
 
-        public Response build(/*RunWithToken runWithToken*/ CallableClosure callable) {
-            return buildResponse(tokenId, method, params, callable);
+        public Response build(/*RunWithToken runWithToken*/ Supplier<?> supplier) {
+            return buildResponse(tokenId, method, params, supplier);
         }
 
         public String getTokenId() {

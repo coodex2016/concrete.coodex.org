@@ -17,7 +17,7 @@
 package test.org.coodex.bean.processors;
 
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
-import org.coodex.util.DefaultService;
+//import org.coodex.util.DefaultService;
 import org.coodex.util.ServiceLoader;
 import org.junit.Assert;
 import org.junit.Test;
@@ -42,13 +42,13 @@ public class ServiceLoaderBeanTest {
     private ServiceLoader<TestIntf> test1;
 
     @Inject
-    @DefaultService
+//    @DefaultService
     private ServiceLoader<TestIntf> test2;
 
     private ServiceLoader<TestIntf> test3;//null;
 
     @Inject
-    @DefaultService(TestIntfImplWithQualifier.class)
+//    @DefaultService(TestIntfImplWithQualifier.class)
     private ServiceLoader<TestIntf> test4;
 
 

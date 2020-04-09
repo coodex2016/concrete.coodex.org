@@ -113,7 +113,7 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
 
             connection = AMQPConnectionFacade.getConnection(connectionConfig);
         } catch (Throwable th) {
-            throw Common.runtimeException(th);
+            throw Common.rte(th);
         }
     }
 
@@ -127,7 +127,7 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
                 queueName = channel.queueDeclare().getQueue();
                 channel.queueBind(queueName, exchangerName, routingKey);
             } catch (Throwable th) {
-                throw Common.runtimeException(th);
+                throw Common.rte(th);
             }
         }
     }
@@ -139,7 +139,7 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
                 channel.basicPublish(exchangerName, routingKey, null,
                         serializer.serialize(message));
             } catch (IOException e) {
-                throw Common.runtimeException(e);
+                throw Common.rte(e);
             }
         } else {
             throw new RuntimeException("rabbitmq channel NOT build: " + getQueue());

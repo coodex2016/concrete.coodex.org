@@ -19,10 +19,12 @@ package org.coodex.concrete.client.impl;
 import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ServiceContext;
+import org.coodex.util.Common;
 
 import java.util.concurrent.CompletableFuture;
 
 import static org.coodex.concrete.ClientHelper.getRxClientScheduler;
+import static org.coodex.util.Common.cast;
 
 public class SyncToRxInvoker extends AbstractRxInvoker {
     private final AbstractSyncInvoker invoker;
@@ -32,18 +34,21 @@ public class SyncToRxInvoker extends AbstractRxInvoker {
         this.invoker = invoker;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
-    protected CompletableFuture futureInvoke(DefinitionContext runtimeContext, Object[] args) {
-        final CompletableFuture completableFuture = new CompletableFuture();
+    protected CompletableFuture<?> futureInvoke(DefinitionContext runtimeContext, Object[] args) {
+        final CompletableFuture<?> completableFuture = new CompletableFuture<>();
         getRxClientScheduler().execute(() -> {
             try {
                 ConcreteContext.runWithContext(buildContext(runtimeContext), () -> {
-                    completableFuture.complete(invoker.execute(
-                            runtimeContext.getDeclaringClass(),
-                            runtimeContext.getDeclaringMethod(),
-                            args
-                    ));
+                    try {
+                        completableFuture.complete(cast(invoker.execute(
+                                runtimeContext.getDeclaringClass(),
+                                runtimeContext.getDeclaringMethod(),
+                                args
+                        )));
+                    } catch (Throwable throwable) {
+                        throw Common.rte(throwable);
+                    }
                     return null;
                 });
 

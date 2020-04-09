@@ -40,7 +40,7 @@ import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 
     private final static Logger log = LoggerFactory.getLogger(ServiceLoaderImpl.class);
-    private Singleton<Instances> instances = new Singleton<>(
+    private Singleton<Instances> instances = Singleton.with(
             () -> {
                 Instances instances = new Instances();
                 instances.instancesMap = new HashMap<>();
@@ -67,7 +67,7 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
     );
 
     private T defaultProvider;
-    private Singleton<Map<String, T>> allInstanceSingleton = new Singleton<>(() -> {
+    private Singleton<Map<String, T>> allInstanceSingleton = Singleton.with(() -> {
         Map<String, T> map = new HashMap<>();
         for (Map.Entry<String, Object> entry : instances.get().unmodifiedMap.entrySet()) {
             map.put(entry.getKey(), cast(entry.getValue()));

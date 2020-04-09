@@ -16,7 +16,25 @@
 
 package org.coodex.closure;
 
+import org.coodex.util.Common;
+
+import java.util.function.Supplier;
+
+/**
+ * @deprecated 使用 {@link java.util.function.Supplier}替代
+ */
+@Deprecated
 public interface CallableClosure {
 
     Object call() throws Throwable;
+
+    default Supplier<?> toSupplier(){
+        return ()-> {
+            try {
+                return call();
+            } catch (Throwable throwable) {
+                throw Common.rte(throwable);
+            }
+        };
+    }
 }

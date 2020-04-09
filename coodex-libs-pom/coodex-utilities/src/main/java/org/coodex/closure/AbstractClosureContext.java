@@ -17,37 +17,33 @@
 package org.coodex.closure;
 
 
+import java.util.function.Supplier;
+
 /**
  * Created by davidoff shen on 2016-09-04.
  */
-public abstract class AbstractClosureContext<VariantType> {
+public abstract class AbstractClosureContext<T> {
 
+    // 本地线程变量，用于存储上下文变量信息
+    private final ThreadLocal<T> threadLocal = new ThreadLocal<>();
 
-    private final ThreadLocal<VariantType> threadLocal = new ThreadLocal<VariantType>();
-
-    protected final VariantType $getVariant() {
+    protected final T getVariant() {
         return threadLocal.get();
     }
 
-//    @Deprecated
-//    protected final Object closureRun(VariantType variant, Closure runnable) {
-//        if (runnable == null) return null;
-//        threadLocal.set(variant);
-//        try {
-//            return runnable.run();
-//        } finally {
-//            threadLocal.remove();
-//        }
-//    }
-
-    protected final Object closureRun(VariantType variant, CallableClosure callable) throws Throwable {
-        if (callable == null) return null;
+    protected final Object get(T variant, Supplier<?> supplier) {
+        if (supplier == null) return null;
         threadLocal.set(variant);
         try {
-            return callable.call();
+            return supplier.get();
         } finally {
             threadLocal.remove();
         }
+    }
+
+    @Deprecated
+    protected final Object closureRun(T variant, CallableClosure callable) throws Throwable {
+        return get(variant, callable == null ? null : callable.toSupplier());
     }
 
 }

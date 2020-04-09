@@ -36,10 +36,12 @@ import java.util.Set;
 import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 import static org.coodex.concrete.accounts.AccountsCommon.getTenant;
 import static org.coodex.concrete.common.OrganizationErrorCodes.NONE_THIS_ORGANIZATION;
+import static org.coodex.util.Common.cast;
 
 /**
  * Created by davidoff shen on 2017-05-18.
  */
+@SuppressWarnings("CdiInjectionPointsInspection")
 public abstract class AbstractOrgService<J extends AbstractPositionEntity, P extends AbstractPersonAccountEntity<J>> {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractOrgService.class);
@@ -63,18 +65,19 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
      * [指定组织，根据职位的的权限进行判定，当人员的职位上有ORGANIZATION_MANAGER角色时，则人员拥有职位所属组织及其下级的管理权]
      * ORGANIZATION_MANAGER
      *
-     * @param orgId
+     * @param orgId orgId
      */
     protected void checkManagementPermission(String orgId) {
         ConcreteException exception = new ConcreteException(ErrorCodes.NO_AUTHORIZATION);
-        Account<ClassifiableAccountID> account = token.currentAccount();
+        Account<ClassifiableAccountID> account = cast(token.currentAccount());
         Set<String> roles = account.getRoles();
         if (roles.contains(AccessAllow.PREROGATIVE)) return;
         if (roles.contains(SYSTEM_MANAGER)) return;
         if (roles.contains(TENANT_MANAGER)) {
             if (!Common.isBlank(orgId)) {
                 OrganizationEntity organizationEntity = organizationRepo.findById(orgId).orElse(null);
-                if (Objects.equals(organizationEntity == null ? null : organizationEntity.getTenant(), getTenant())) return;
+                if (Objects.equals(organizationEntity == null ? null : organizationEntity.getTenant(), getTenant()))
+                    return;
             } else {
                 if (account instanceof TenantAccount) {
                     TenantAccount tenantAccount = (TenantAccount) account;
@@ -92,7 +95,7 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
 
         if (!Common.isBlank(orgId)) {
             P person = personAccountRepo.findById(account.getId().getId()).orElse(null);
-            if(person != null) {
+            if (person != null) {
                 for (J position : person.getPositions()) {
                     if (position.getRoles() != null && position.getRoles().contains(ORGANIZATION_MANAGER)) {
                         // orgId是否是position.belongTo的下级机构
@@ -113,8 +116,8 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
     /**
      * 循环检查，递归线性上级是否存在自己的id
      *
-     * @param higherLevelEntity
-     * @param id
+     * @param higherLevelEntity higherLevelEntity
+     * @param id                id
      */
     protected void circleCheck(OrganizationEntity higherLevelEntity, String id) {
         OrganizationEntity organizationEntity = higherLevelEntity;
@@ -127,9 +130,9 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
     /**
      * 检查同一组织下是否存在重名的组织
      *
-     * @param higherLevel
-     * @param name
-     * @param id
+     * @param higherLevel higherLevel
+     * @param name        name
+     * @param id          id
      */
     protected void checkDuplication(String higherLevel, String name, String id) {
         if (id == null) {
@@ -144,7 +147,7 @@ public abstract class AbstractOrgService<J extends AbstractPositionEntity, P ext
     /**
      * 归属组织是否存在，部门管理服务使用
      *
-     * @param belongTo
+     * @param belongTo belongTo
      */
     protected OrganizationEntity checkBelongToExists(String belongTo) {
         IF.isNull(belongTo, NONE_THIS_ORGANIZATION);

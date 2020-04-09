@@ -50,7 +50,7 @@ public abstract class AbstractCopierCommon<A, B> {
         try {
             return getClass(index).newInstance();
         } catch (Throwable th) {
-            throw Common.runtimeException(th);
+            throw Common.rte(th);
         }
     }
 

@@ -24,31 +24,29 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.coodex.util.TypeHelper.toTypeReference;
-
 /**
  * Created by davidoff shen on 2017-05-12.
  */
 public class PojoInfo {
     private final Type type;
-    private final Class rowType;
-    private final Map<String, PojoProperty> properties = new HashMap<String, PojoProperty>();
+    private final Class<?> rowType;
+    private final Map<String, PojoProperty> properties = new HashMap<>();
 
-    @Deprecated
-    public PojoInfo(Type type, Type... context) {
-        this.type = toTypeReference(type, context);
-        rowType = TypeHelper.typeToClass(this.type);
-        if (rowType == null) throw new RuntimeException(type + " is NOT POJO.");
-
-//        Set<Type> contextSet = new HashSet<Type>();
-//        if (context != null && context.length > 0) {
-//            contextSet.addAll(Arrays.asList(context));
-//        }
-//        contextSet.add(type);
-//        context = contextSet.toArray(new Type[0]);
-        buildMethodProperties();
-        buildFieldProperties();
-    }
+//    @Deprecated
+//    public PojoInfo(Type type, Type... context) {
+//        this.type = org.coodex.util.TypeHelper.toTypeReference(type, context);
+//        rowType = TypeHelper.typeToClass(this.type);
+//        if (rowType == null) throw new RuntimeException(type + " is NOT POJO.");
+//
+////        Set<Type> contextSet = new HashSet<Type>();
+////        if (context != null && context.length > 0) {
+////            contextSet.addAll(Arrays.asList(context));
+////        }
+////        contextSet.add(type);
+////        context = contextSet.toArray(new Type[0]);
+//        buildMethodProperties();
+//        buildFieldProperties();
+//    }
 
     public PojoInfo(Type type) {
         this.type = type;
@@ -62,7 +60,7 @@ public class PojoInfo {
         return type;
     }
 
-    public Class getRowType() {
+    public Class<?> getRowType() {
         return rowType;
     }
 
@@ -71,7 +69,7 @@ public class PojoInfo {
             int mod = field.getModifiers();
             if (Modifier.isPublic(mod) && !Modifier.isStatic(mod) && !properties.containsKey(field.getName())) {
                 properties.put(field.getName(),
-                        buildProperty(null,field,
+                        buildProperty(null, field,
                                 Modifier.isFinal(field.getModifiers()),
                                 GenericTypeHelper.toReference(field.getGenericType(), this.type),
                                 field.getName()));
@@ -128,14 +126,13 @@ public class PojoInfo {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     private boolean isReadOnly(Method method) {
         try {
             rowType.getMethod(
                     "set" + method.getName().substring(method.getName().startsWith("is") ? 2 : 3),
                     method.getReturnType());
             return false;
-        } catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException ignored) {
         }
         return true;
     }
@@ -144,7 +141,7 @@ public class PojoInfo {
         return getField(beanName, rowType);
     }
 
-    private Field getField(String fieldName, Class c) {
+    private Field getField(String fieldName, Class<?> c) {
         if (c == null) return null;
         try {
             return c.getDeclaredField(fieldName);

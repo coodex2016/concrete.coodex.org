@@ -23,11 +23,11 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public abstract class AbstractCoalition<T> implements Coalition<T> {
 
-    private static final Singleton<ScheduledExecutorService> sesSingleton = new Singleton<>(
-            () -> ExecutorsHelper.newScheduledThreadPool(Common.toInt(
-                    System.getProperty("coalition.executors.size"), 3
-                    ),
-                    "CoalitionPool")
+    private static final Singleton<ScheduledExecutorService> sesSingleton = Singleton.with(
+            () -> ExecutorsHelper.newScheduledThreadPool(
+                    Common.toInt(System.getProperty("coalition.executors.size"), 3),
+                    "CoalitionPool"
+            )
     );
     protected final ScheduledExecutorService scheduledExecutorService;// = Executors.newScheduledThreadPool(1);
     protected final Coalition.Callback<T> callback;

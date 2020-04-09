@@ -21,13 +21,12 @@ import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.ErrorMessageFacade;
 import org.coodex.concrete.jaxrs.logging.ServerLogger;
+import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Configurable;
 import javax.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -36,7 +35,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.coodex.concrete.common.ConcreteHelper.foreachClassInPackages;
+import static org.coodex.util.Common.cast;
 
+@SuppressWarnings("unused")
 public abstract class ConcreteJaxrsApplication
         extends Application
         implements
@@ -52,18 +53,16 @@ public abstract class ConcreteJaxrsApplication
     private String name;
 
     private Application application = null;
-    private Configurable configurable = null;
+    //    private Configurable<?> configurable = null;
     private boolean exceptionMapperRegistered = false;
 
-    private ServiceLoader<ServiceRegisteredListener> registerNotifyServiceServiceLoader = new ServiceLoaderImpl<ServiceRegisteredListener>() {
-        @Override
-        public ServiceRegisteredListener getDefault() {
-            return (instance, concreteService) -> {
-            };
-        }
+    private ServiceLoader<ServiceRegisteredListener> registerNotifyServiceServiceLoader
+            = new LazyServiceLoader<ServiceRegisteredListener>((instance, concreteService) -> {
+    }) {
     };
 
-    private ServiceLoader<DefaultJaxrsClassGetter> getterServiceLoader = new ServiceLoaderImpl<DefaultJaxrsClassGetter>() {
+    private ServiceLoader<DefaultJaxrsClassGetter> getterServiceLoader
+            = new LazyServiceLoader<DefaultJaxrsClassGetter>() {
     };
 
     public ConcreteJaxrsApplication() {
@@ -89,7 +88,6 @@ public abstract class ConcreteJaxrsApplication
         this.name = name;
     }
 
-    @SuppressWarnings({"unsafe"})
     public Set<Class<?>> getServicesClasses() {
         return servicesClasses;
     }
@@ -202,8 +200,7 @@ public abstract class ConcreteJaxrsApplication
         if (ConcreteHelper.isConcreteService(clz)) {
             registerConcreteService(clz);
         } else if (AbstractErrorCodes.class.isAssignableFrom(clz)) {
-            //noinspection unchecked
-            ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) clz);
+            ErrorMessageFacade.register(cast(clz));
         } else {
             if (ConcreteExceptionMapper.class.isAssignableFrom(clz)) {
                 exceptionMapperRegistered = true;
@@ -244,14 +241,14 @@ public abstract class ConcreteJaxrsApplication
         return Collections.unmodifiableSet(set);
     }
 
-    private class UnableNewInstanceException extends RuntimeException {
-        UnableNewInstanceException(Throwable th) {
-            super(th);
-        }
-    }
-
     @Override
     public String getNamespace() {
         return "jaxrs";
+    }
+
+    private static class UnableNewInstanceException extends RuntimeException {
+        UnableNewInstanceException(Throwable th) {
+            super(th);
+        }
     }
 }

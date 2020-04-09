@@ -36,7 +36,7 @@ import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 
 public abstract class AbstractInvoker implements Invoker {
 
-    private static Method findTargetMethod(Class targetClass, Method method) {
+    private static Method findTargetMethod(Class<?> targetClass, Method method) {
         Method targetMethod = null;
         for (Method m : targetClass.getMethods()) {
             if (m.getName().equals(method.getName()) && Arrays.equals(m.getParameterTypes(), method.getParameterTypes())) {
@@ -52,8 +52,8 @@ public abstract class AbstractInvoker implements Invoker {
     }
 
     // TODO 移到AbstractRxInvoker中
-    protected static DefinitionContext getDefinitionContext(Class rxClass, Method method) {
-        final Class targetClass = ((ReactiveExtensionFor) rxClass.getAnnotation(ReactiveExtensionFor.class)).value();
+    protected static DefinitionContext getDefinitionContext(Class<?> rxClass, Method method) {
+        final Class<?> targetClass = rxClass.getAnnotation(ReactiveExtensionFor.class).value();
         final Method targetMethod = findTargetMethod(targetClass, method);
         return ConcreteHelper.getDefinitionContext(targetClass, targetMethod);
     }

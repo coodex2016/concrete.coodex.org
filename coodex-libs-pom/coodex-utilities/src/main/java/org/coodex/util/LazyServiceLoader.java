@@ -41,7 +41,7 @@ public abstract class LazyServiceLoader<T> /*extends Singleton<ServiceLoader<T>>
     }
 
     public LazyServiceLoader(final T defaultProvider) {
-        singleton = new Singleton<>(() -> new ServiceLoaderImpl<T>(defaultProvider) {
+        singleton = Singleton.with(() -> new ServiceLoaderImpl<T>(defaultProvider) {
 //            @Override
 //            protected Class<?> getInterfaceClass() {
 //                return LazyServiceLoader.this.getInterfaceClass();
@@ -55,7 +55,7 @@ public abstract class LazyServiceLoader<T> /*extends Singleton<ServiceLoader<T>>
     }
 
     public LazyServiceLoader(final Supplier<T> builder) {
-        singleton = new Singleton<>(() -> new ServiceLoaderImpl<T>() {
+        singleton = Singleton.with(() -> new ServiceLoaderImpl<T>() {
             //            @Override
 //            protected Class<?> getInterfaceClass() {
 //                return LazyServiceLoader.this.getInterfaceClass();

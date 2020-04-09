@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static org.coodex.util.Common.cast;
 import static org.coodex.util.Common.max;
 
 public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable> implements Calculator<C> {
@@ -86,8 +87,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
             new BillingRuleRepository<C>() {
                 @Override
                 public Collection<BillingRule> getRulesBy(C chargeable) {
-                    //noinspection unchecked
-                    return Collections.EMPTY_LIST;
+                    return Collections.emptyList();
                 }
 
                 @Override
@@ -98,7 +98,6 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
     ) {
     };
 
-    @SuppressWarnings("WeakerAccess")
     protected abstract TimeUnit getTimeUnit();
 
     @Override
@@ -117,8 +116,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
             List<Revision> onlyOnce = new ArrayList<>();// 包含OnlyOnce的
             for (Revision revision : chargeable.getRevisions()) {
                 if (revision instanceof Adjustment && revision instanceof PaidAdjustment) {
-                    //noinspection unchecked
-                    adjustments.add((Adjustment<C>) revision);
+                    adjustments.add(cast( revision));
                 } else {
                     if (!(revision instanceof OnlyOnce)) {
                         revisions.add(revision);
@@ -207,21 +205,15 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
      * @param adjustments 调整项目
      * @return 调整后账单
      */
-    @SuppressWarnings("WeakerAccess")
     protected Bill<C> adjustBill(Bill<C> bill, List<? extends Adjustment<C>> adjustments) {
         if (adjustments == null || adjustments.size() == 0)
             return bill;
 
-        //noinspection rawtypes
-        for (Adjustment adjustment : adjustments) {
-            //noinspection unchecked
+        for (Adjustment<C> adjustment : adjustments) {
             long amount = adjustment.adjust(bill);
-//            if (amount != 0) {
-            // new Bill.AdjustDetail(amount, adjustment.getName(), adjustment)
             Bill.Detail detail = detailCreators.select(adjustment).toDetail(adjustment, null, amount);
             if (detail != null)
                 bill.addDetail(detail);
-//            }
         }
         return bill;
     }
@@ -237,7 +229,6 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
             this(period, amount, null, item);
         }
 
-        @SuppressWarnings("WeakerAccess")
         public TimeBasedDetailImpl(Period period, long amount, Revision revision, String item) {
             this.period = period;
             this.amount = amount;
@@ -379,8 +370,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
                     } else if (revision instanceof FragmentRevision) {
                         fragmentRevisions.add((FragmentRevision) revision);
                     } else if (revision instanceof Adjustment) {
-                        //noinspection unchecked
-                        adjustments.add((Adjustment<C>) revision);
+                        adjustments.add(cast(revision));
                     } else {
                         log.warn("unsupported Revision: {}, {}", revision.getClass().getName(), revision.getName());
                     }

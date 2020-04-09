@@ -40,7 +40,7 @@ public class JedisClientFactory implements SharedCacheClientFactory {
 //    private static AbstractJedisClient client;
 
     //    private static Profile_Deprecated profile;
-    private static Singleton<AbstractJedisClient> client = new Singleton<>(
+    private static Singleton<AbstractJedisClient> client = Singleton.with(
             () -> {
 //                    profile = Profile_Deprecated.getProfile("sharedcache-jedis.properties");
                 String[] redisServers = Config.getArray("redisServers", NAMESPACE_JEDIS);

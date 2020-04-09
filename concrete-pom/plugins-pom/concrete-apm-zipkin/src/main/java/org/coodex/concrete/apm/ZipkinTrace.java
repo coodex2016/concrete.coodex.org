@@ -42,14 +42,13 @@ public class ZipkinTrace extends AbstractTrace {
 
     private static final String TRACE_ID = "X-APM-TRACE-ID";
     private static final String SPAN_ID = "X-APM-SPAN-ID";
-    private static Singleton<Tracing> tracingSingleton = new Singleton<>(
+    private static Singleton<Tracing> tracingSingleton = Singleton.with(
             () -> {
                 Tracing.Builder builder = Tracing.newBuilder();
                 String url = Config.get("zipkin.location", getAppSet());
                 if (url != null) {
                     Sender sender = OkHttpSender.create(url + "/api/v2/spans");
-                    //noinspection ConstantConditions
-                    builder = builder.spanReporter(AsyncReporter.builder(sender)
+                    builder.spanReporter(AsyncReporter.builder(sender)
                             .closeTimeout(500, TimeUnit.MILLISECONDS)
                             .build(SpanBytesEncoder.JSON_V2));
                 }
@@ -104,7 +103,6 @@ public class ZipkinTrace extends AbstractTrace {
             span = span.name(name);
         if (!Common.isBlank(type))
             span = span.tag("type", type);
-
 
 
         if (map.size() > 0) {

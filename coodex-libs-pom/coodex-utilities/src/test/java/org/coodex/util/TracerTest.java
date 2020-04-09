@@ -20,7 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
-import java.util.concurrent.Callable;
+
+import static org.coodex.util.Common.sleep;
 
 public class TracerTest {
 
@@ -32,33 +33,22 @@ public class TracerTest {
 
         System.out.println(
                 Tracer.newTracer()
-//                .logger(log) //  org.slf4j.Logger
-//                .logger(String.class) // logger will be named after clazz
-//                .logger("TEST") // logger name
-//                .named("test") // tracer名
-//                .named(new NameSupplier() { // supplier方式指定tracer名
-//                    @Override
-//                    public String getName() {
-//                        return "test";
-//                    }
-//                })
-                        .trace(new Callable<String>() {
-                            @Override
-                            public String call() throws Exception {
-                                Tracer.putTrace("hello", "coodex"); // 需要跟踪的信息项
+                        .trace(() -> {
 
-                                Tracer.start("case1");
-                                Clock.sleep(1000);
-                                Tracer.end("case1");
+                            Tracer.putTrace("hello", "coodex"); // 需要跟踪的信息项
 
-                                Tracer.start("case2");
-                                Clock.sleep(300);
-                                Tracer.end("case2");
-                                if (new Random().nextBoolean())
-                                    throw new RuntimeException("em~~~~");
-                                else
-                                    return "hello tracer.";
-                            }
+                            Tracer.start("case1");
+                            sleep(1000);
+                            Tracer.end("case1");
+
+                            Tracer.start("case2");
+                            sleep(300);
+                            Tracer.end("case2");
+                            if (new Random().nextBoolean())
+                                throw new RuntimeException("em~~~~");
+                            else
+                                return "hello tracer.";
+
                         })
         );
     }

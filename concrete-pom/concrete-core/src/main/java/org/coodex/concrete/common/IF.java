@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.common;
 
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.function.Supplier;
 

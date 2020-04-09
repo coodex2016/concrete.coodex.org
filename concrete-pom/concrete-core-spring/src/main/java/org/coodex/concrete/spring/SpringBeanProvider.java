@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.coodex.util.Common.cast;
+
 /**
  * Created by davidoff shen on 2016-09-02.
  */
@@ -61,21 +63,18 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
             return new HashMap<>();
         } else {
             Map<String, T> map = new HashMap<>(context.getBeansOfType(type));
-            for (Class c : collectionBeanTypes()) {
-                //noinspection unchecked
+            for (Class<?> c : collectionBeanTypes()) {
                 if (c.isAssignableFrom(type)) {
                     // 数组
-                    Class arrayClass = Array.newInstance(type, 0).getClass();
-                    //noinspection unchecked
-                    Map<String, Object> x = context.getBeansOfType(arrayClass);
+                    Class<?> arrayClass = Array.newInstance(type, 0).getClass();
+                    Map<String, ?> x = context.getBeansOfType(arrayClass);
                     if (x != null && x.size() > 0) {
                         int index = 0;
-                        for (Map.Entry<String, Object> entry : x.entrySet()) {
+                        for (Map.Entry<String, ?> entry : x.entrySet()) {
                             if (entry.getValue() == null) continue;
                             for (int l = 0, len = Array.getLength(entry.getValue()); l < len; l++) {
                                 String key = entry.getKey() + "_array_" + index;
-                                //noinspection unchecked
-                                map.put(key, (T) Array.get(entry.getValue(), l));
+                                map.put(key, cast(Array.get(entry.getValue(), l)));
                                 index++;
                             }
                         }
@@ -86,17 +85,16 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
                     }
 
                     // 集合
+                    @SuppressWarnings("rawtypes")
                     Map<String, Collection> collectionBeans = context.getBeansOfType(Collection.class);
-                    for (Map.Entry<String, Collection> entry : collectionBeans.entrySet()) {
+                    for (@SuppressWarnings("rawtypes") Map.Entry<String, Collection> entry : collectionBeans.entrySet()) {
                         int index = 0;
                         if (entry.getValue() == null || entry.getValue().size() == 0) continue;
                         for (Object o : entry.getValue()) {
                             if (o == null) continue;
-                            //noinspection unchecked
                             if (c.isAssignableFrom(o.getClass())) {
                                 String key = entry.getKey() + "_collection_" + index;
-                                //noinspection unchecked
-                                map.put(key, (T) o);
+                                map.put(key, cast(o));
                                 index++;
                             }
                         }
@@ -111,7 +109,7 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
         }
     }
 
-    protected Class[] collectionBeanTypes() {
+    protected Class<?>[] collectionBeanTypes() {
         return new Class[]{
                 ConcreteInterceptor.class
         };

@@ -17,7 +17,6 @@
 package test.org.coodex.bean.processors;
 
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
-import org.coodex.util.DefaultService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +26,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import test.org.coodex.bean.processors.a.TestIntf;
-import test.org.coodex.bean.processors.a.TestQualifier;
 
 import javax.inject.Inject;
 
@@ -43,11 +41,11 @@ public class XXXTest {
 
     @Inject
 //    @TestQualifier(Throwable.class)
-    @DefaultService
+//    @DefaultService
     private TestIntf testIntf2;
 
     @Test
-    public void test(){
+    public void test() {
         System.out.println(testIntf);
         System.out.println(testIntf2);
         Assert.assertNotEquals(testIntf, testIntf2);

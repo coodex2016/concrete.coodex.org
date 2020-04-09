@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public final class Clock {
 
     public static final String KEY_MAGNIFICATION = Clock.class.getName() + ".magnification";
-    private static Singleton<ClockAgent> agentSingleton = new Singleton<>(() -> {
+    private static Singleton<ClockAgent> agentSingleton = Singleton.with(() -> {
         if (getMagnification() == 1.0f) {
             return new SystemClockAgent();
         } else {
@@ -47,17 +47,18 @@ public final class Clock {
             }.get();
         }
     });
-    private static final Singleton<TimestampProvider> TIMESTAMP_PROVIDER_SINGLETON = new Singleton<>(
-            () -> new ServiceLoaderImpl<TimestampProvider>(Clock::getCalendar) {
-            }.get()
-    );
+
+    private static final ServiceLoader<TimestampProvider> TIMESTAMP_PROVIDER_LOADER
+            = new LazyServiceLoader<TimestampProvider>(Clock::getCalendar) {
+    };
+
 
     /**
      * @return 获取当前时间，可以通过外部注入
      * @see TimestampProvider
      */
     public static Calendar now() {
-        return (Calendar) TIMESTAMP_PROVIDER_SINGLETON.get().now().clone();
+        return (Calendar) TIMESTAMP_PROVIDER_LOADER.get().now().clone();
     }
 
     public static Float getMagnification() {

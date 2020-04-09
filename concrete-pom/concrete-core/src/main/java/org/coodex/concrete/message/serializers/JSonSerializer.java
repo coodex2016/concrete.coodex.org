@@ -33,7 +33,7 @@ public class JSonSerializer implements Serializer {
         try {
             return JSONSerializerFactory.getInstance().toJson(o).getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw Common.runtimeException(e);
+            throw Common.rte(e);
         }
     }
 
@@ -43,7 +43,7 @@ public class JSonSerializer implements Serializer {
         try {
             return JSONSerializerFactory.getInstance().parse(new String(bytes, "UTF-8"), type);
         } catch (UnsupportedEncodingException e) {
-            throw Common.runtimeException(e);
+            throw Common.rte(e);
         }
     }
 

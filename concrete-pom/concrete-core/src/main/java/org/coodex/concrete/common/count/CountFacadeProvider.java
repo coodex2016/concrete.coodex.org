@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.common.ConcreteHelper.getScheduler;
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
+import static org.coodex.util.Common.cast;
 import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 
 /**
@@ -50,44 +51,51 @@ public class CountFacadeProvider implements CountFacade {
 //    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE
 //            = ExecutorsHelper.newScheduledThreadPool(ConcreteHelper.getProfile().getInt("counter.thread.pool.size", 10));
 
-    // 为啥怎么干???
-    public static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE = new Singleton<>(
+    // 为啥这么干???
+    public static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE = Singleton.with(
             () -> ExecutorsHelper.newScheduledThreadPool(
-                    Config.getValue("counter.thread.pool.size",10,"counter"),
+                    Config.getValue("counter.thread.pool.size", 10, "counter"),
                     "counter"
             )
     );
 
     private final static Logger log = LoggerFactory.getLogger(CountFacadeProvider.class);
     private final static AtomicInteger atomicInteger = new AtomicInteger(0);
-    private final static ServiceLoader<Counter> counterProvider = new ServiceLoaderImpl<Counter>() {
+    private final static ServiceLoader<Counter<Countable>> counterProvider = new ServiceLoaderImpl<Counter<Countable>>() {
     };
-    private Map<Class, CounterChain> chainMap;
 
-    @SuppressWarnings("unchecked")
-    private void buildMap() {
-        TypeVariable t = Counter.class.getTypeParameters()[0];
-        chainMap = new HashMap<>();
+    private Singleton<Map<Class<?>, CounterChain<Countable>>> chainMapSingleton
+            = Singleton.with(
+            () -> {
+                Map<Class<?>, CounterChain<Countable>> chainMap = new HashMap<>();
+                TypeVariable<?> t = Counter.class.getTypeParameters()[0];
 
-        for (Counter counter : counterProvider.getAll().values()) {
-
-            Type type = solveFromInstance(t, counter);
-            if (type instanceof Class) {
-                try {
-                    getCounterChain((Class) type).addCounter(counter);
-                    if (counter instanceof SegmentedCounter)
-                        schedule((SegmentedCounter) counter);
-                } catch (Throwable th) {
-                    log.warn("error occurred: {}", th.getLocalizedMessage(), th);
+                for (Counter<Countable> counter : counterProvider.getAll().values()) {
+                    Type type = solveFromInstance(t, counter);
+                    if (type instanceof Class) {
+                        try {
+                            Class<?> c = (Class<?>) type;
+                            if (chainMap.containsKey(c)) {
+                                chainMap.get(c).addCounter(counter);
+                            } else {
+                                CounterChain<Countable> counterChain = newCounterChain(c);
+                                counterChain.addCounter(counter);
+                                chainMap.put(c, counterChain);
+                            }
+                            if (counter instanceof SegmentedCounter)
+                                schedule((SegmentedCounter<Countable>) counter);
+                        } catch (Throwable th) {
+                            log.warn("error occurred: {}", th.getLocalizedMessage(), th);
+                        }
+                    } else {
+                        log.warn("type nonsupport: {}", type);
+                    }
                 }
-
-            } else {
-                log.warn("type nonsupport: {}", type);
+                return chainMap;
             }
-        }
-    }
+    );
 
-    private void schedule(final SegmentedCounter counter) {
+    private void schedule(final SegmentedCounter<Countable> counter) {
         final Segmentation segmentation = counter.getSegmentation();
         if (segmentation != null) {
             long next = segmentation.next();
@@ -105,16 +113,7 @@ public class CountFacadeProvider implements CountFacade {
         }
     }
 
-    private CounterChain getCounterChain(Class clz) throws IllegalAccessException, CannotCompileException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        synchronized (chainMap) {
-            if (!chainMap.keySet().contains(clz)) {
-                chainMap.put(clz, newCounterChain(clz));
-            }
-        }
-        return chainMap.get(clz);
-    }
-
-    private CounterChain newCounterChain(Class clz) throws CannotCompileException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+    private CounterChain<Countable> newCounterChain(Class<?> clz) throws CannotCompileException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         ClassPool classPool = ClassPool.getDefault();
 //        String className = String.format("CounterChain$%s$%08X", clz.getSimpleName(), atomicInteger.incrementAndGet());
         String className = String.format("%s.CounterChain$%s$%08X", CounterChain.class.getPackage().getName(), clz.getSimpleName(), atomicInteger.incrementAndGet());
@@ -138,28 +137,23 @@ public class CountFacadeProvider implements CountFacade {
 
         newClass.addConstructor(spiConstructor);
 
-//        return (CounterChain) newClass.toClass().getConstructor(new Class[0]).newInstance();
-        CounterChain counterChain = (CounterChain) (IS_JAVA_9_AND_LAST.get() ?
-                newClass.toClass(CounterChain.class) :
-                newClass.toClass())
-                .getConstructor(new Class[0])
-                .newInstance();
+        CounterChain<Countable> counterChain = cast(
+                (IS_JAVA_9_AND_LAST.get() ?
+                        newClass.toClass(CounterChain.class) :
+                        newClass.toClass())
+                        .getConstructor(new Class[0])
+                        .newInstance()
+        );
         log.info("CounterChain created: {}, {}", counterChain.getClass().getName(), clz.getName());
         return counterChain;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends Countable> void count(final T value) {
-        if (chainMap == null)
-            synchronized (CountFacadeProvider.class) {
-                if (chainMap == null)
-                    buildMap();
-            }
         if (value != null) {
-            for (Class clz : chainMap.keySet()) {
+            for (Class<?> clz : chainMapSingleton.get().keySet()) {
                 if (clz.isAssignableFrom(value.getClass())) {
-                    chainMap.get(clz).count(value);
+                    chainMapSingleton.get().get(clz).count(value);
                 }
             }
         }

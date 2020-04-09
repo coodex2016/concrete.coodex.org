@@ -175,7 +175,7 @@ public class GenericTypeHelper {
         private final Type rawType;
         private final Type ownerType;
         private final List<Type> actualTypeArguments = new ArrayList<>();
-        private final Singleton<String> stringSingleton = new Singleton<>(
+        private final Singleton<String> stringSingleton = Singleton.with(
                 () -> {
                     StringBuilder builder = new StringBuilder(((Class<?>) getRawType()).getName());
                     if (actualTypeArguments.size() > 0) {
@@ -302,7 +302,7 @@ public class GenericTypeHelper {
                 } else {
                     if (!c.isInterface())
                         process(c.getGenericSuperclass());
-                    for (Type _interface : ((Class<?>) x).getGenericInterfaces()) {
+                    for (Type _interface : c.getGenericInterfaces()) {
                         process(_interface);
                     }
                 }

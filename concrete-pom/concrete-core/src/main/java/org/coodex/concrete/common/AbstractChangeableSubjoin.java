@@ -25,7 +25,7 @@ import static org.coodex.util.Common.join;
 
 public abstract class AbstractChangeableSubjoin extends AbstractSubjoin {
 
-    private Singleton<Subjoin> subjoinSingleton = new Singleton<>(
+    private Singleton<Subjoin> subjoinSingleton = Singleton.with(
             () -> new WrappedSubjoin(AbstractChangeableSubjoin.this)
     );
 
@@ -66,7 +66,6 @@ public abstract class AbstractChangeableSubjoin extends AbstractSubjoin {
         }
 
         public Set<String> keySet() {
-            //noinspection unchecked
             return join(subjoin.keySet(), super.keySet());
         }
 
@@ -74,8 +73,6 @@ public abstract class AbstractChangeableSubjoin extends AbstractSubjoin {
 //        public void set(String name, List<String> values) {
 //            super.set(name, values);
 //        }
-
-
 
 
         @Override

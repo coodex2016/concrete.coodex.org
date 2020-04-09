@@ -16,7 +16,7 @@ public class BooleanTypeMocker extends AbstractTypeMocker<Mock.Boolean> {
             String.class//12
     };
 
-    private static Singleton<BooleanTypeMocker> instance = new Singleton<>(BooleanTypeMocker::new);
+    private static Singleton<BooleanTypeMocker> instance = Singleton.with(BooleanTypeMocker::new);
 
 //    public BooleanTypeMocker() {
 //        instance = this;

@@ -39,12 +39,11 @@ import java.util.Collection;
  */
 public class JavassistHelper {
 
-    public final static Singleton<Boolean> IS_JAVA_9_AND_LAST = new Singleton<>(
+    public final static Singleton<Boolean> IS_JAVA_9_AND_LAST = Singleton.with(
             () -> {
                 try {
                     //noinspection JavaReflectionMemberAccess
-                    Class.class.getMethod("getModule");
-                    return true;
+                    return Class.class.getMethod("getModule") != null;
                 } catch (NoSuchMethodException e) {
                     return false;
                 }
@@ -94,34 +93,6 @@ public class JavassistHelper {
         return new SignatureAttribute.ClassType(className, args.toArray(new SignatureAttribute.TypeArgument[0]));
     }
 
-//    private static SignatureAttribute.ObjectType objectType(Type type) {
-//        if (type instanceof Class) {
-//            if (((Class) type).isArray()) {
-//                int d = 0;
-//                Class array = (Class) type;
-//                while (array.isArray()) {
-//                    d++;
-//                    array = array.getComponentType();
-//                }
-//                return new SignatureAttribute.ArrayType(d, new SignatureAttribute.ClassType(array.getName()));
-//            } else {
-//                return new SignatureAttribute.ClassType(((Class) type).getName());
-//            }
-//        } else if (type instanceof ParameterizedType) {
-//            ParameterizedType pt = (ParameterizedType) type;
-//            return classType(pt.getRawType().getTypeName(), pt.getActualTypeArguments());
-//        } else if (type instanceof GenericArrayType) {
-//            Type t = type;
-//            int d = 0;
-//            while (t instanceof GenericArrayType) {
-//                t = ((GenericArrayType) t).getGenericComponentType();
-//                d++;
-//            }
-//            return new SignatureAttribute.ArrayType(d, objectType(t));
-//        } else {
-//            return new SignatureAttribute.TypeVariable(type.getTypeName());
-//        }
-//    }
 
     public static String getTypeName(Class<?> c) {
         return c.getName();

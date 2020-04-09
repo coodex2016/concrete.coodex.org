@@ -43,7 +43,7 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
         super(destination);
     }
 
-    public static Object buildSyncInstance(Class targetClass) {
+    public static Object buildSyncInstance(Class<?> targetClass) {
         return Proxy.newProxyInstance(targetClass.getClassLoader(), new Class<?>[]{targetClass}, (proxy1, method, args) -> {
             if (method.getDeclaringClass().equals(Object.class))
                 return method.invoke(proxy1, args);
@@ -60,7 +60,7 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
      * @return 返回响应式接口对象
      */
     @Override
-    public Object invoke(Object instance, Class clz, Method method, Object... args) {
+    public Object invoke(Object instance, Class<?> clz, Method method, Object... args) {
         CompletableFutureBridge bridge = getCompletableFutureBridge(method.getReturnType());
         if (bridge == null) {
             throw new RuntimeException("none completableFutureBridge found:" + method.getReturnType());
@@ -71,7 +71,7 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
     }
 
     @Override
-    public CompletableFuture invokeAsync(Object instance, Class clz, Method method, Object... args) {
+    public CompletableFuture<?> invokeAsync(Object instance, Class<?> clz, Method method, Object... args) {
         final DefinitionContext runtimeContext = getDefinitionContext(clz, method);
         final ServiceContext serviceContext = buildContext(runtimeContext);
         final MethodInvocation invocation = new RXMethodInvocation(runtimeContext, args);
@@ -87,7 +87,7 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
         } catch (Throwable th) {
             trace.error(th);
             trace.finish();
-            throw Common.runtimeException(th);
+            throw Common.rte(th);
         }
 
         // 2. apm
@@ -104,16 +104,15 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
      * @param trace          trace
      * @return 在future的基础上增加拦截器处理和apm处理
      */
-    private CompletableFuture wrap(ServiceContext serviceContext,
-                                   MethodInvocation invocation,
-                                   DefinitionContext runtimeContext,
-                                   CompletableFuture future, Trace trace) {
-        //noinspection unchecked
+    private CompletableFuture<?> wrap(ServiceContext serviceContext,
+                                      MethodInvocation invocation,
+                                      DefinitionContext runtimeContext,
+                                      CompletableFuture<?> future, Trace trace) {
         return future.handleAsync((BiFunction<Object, Throwable, Object>) (o, throwable) -> {
             if (throwable != null) { // 异常
                 trace.error(throwable);
                 try {
-                    throw Common.runtimeException(throwable);
+                    throw Common.rte(throwable);
                 } finally {
                     trace.finish();
                 }
@@ -124,7 +123,7 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
                     );
                 } catch (Throwable th) {
                     trace.error(th);
-                    throw Common.runtimeException(th);
+                    throw Common.rte(th);
                 } finally {
                     trace.finish();
                 }
@@ -132,5 +131,5 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
         }, getRxClientScheduler());
     }
 
-    protected abstract CompletableFuture futureInvoke(DefinitionContext runtimeContext, Object[] args);
+    protected abstract CompletableFuture<?> futureInvoke(DefinitionContext runtimeContext, Object[] args);
 }

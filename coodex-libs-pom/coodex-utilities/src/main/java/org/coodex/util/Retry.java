@@ -43,7 +43,7 @@ public class Retry {
             return 5;
         }
     };
-    private static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE_SINGLETON = new Singleton<>(
+    private static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE_SINGLETON = Singleton.with(
             () -> ExecutorsHelper.newScheduledThreadPool(Runtime.getRuntime().availableProcessors() * 2, "retry")
     );
 

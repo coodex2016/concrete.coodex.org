@@ -21,18 +21,19 @@ import org.coodex.concrete.client.AbstractDestinationFactory;
 import org.coodex.concrete.client.Destination;
 import org.coodex.util.Common;
 
+import java.util.Objects;
 import java.util.Stack;
 
-public class AliasDesitinationFactory extends AbstractDestinationFactory<Destination> {
+public class AliasDestinationFactory extends AbstractDestinationFactory<Destination> {
 
     public static final String ALIAS_PROTOCOLS = "alias:";
-    private static ThreadLocal<Stack<String>> stackThreadLocal = new ThreadLocal<Stack<String>>();
+    private static ThreadLocal<Stack<String>> stackThreadLocal = new ThreadLocal<>();
 
     @Override
     public Destination build(String module) {
         Stack<String> stack = stackThreadLocal.get();
         if (stack == null) {
-            stack = new Stack<String>();
+            stack = new Stack<>();
             stackThreadLocal.set(stack);
         }
         if (stack.contains(module)) {
@@ -43,7 +44,7 @@ public class AliasDesitinationFactory extends AbstractDestinationFactory<Destina
                 String ref = stack.get(i);
                 builder.append(ref);
 
-                if (Common.isSameStr(ref, module)) break;
+                if (Objects.equals(ref, module)) break;
 
                 builder.append(" -> ");
             }

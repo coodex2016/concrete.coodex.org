@@ -47,7 +47,7 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
 
     private final static Logger log = LoggerFactory.getLogger(Swagger.class);
 
-    private static Singleton<Set<Class>> classes = new Singleton<>(
+    private static Singleton<Set<Class<?>>> classes = Singleton.with(
             LinkedHashSet::new
     );
 
@@ -77,16 +77,13 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
                         } else if (key.endsWith(".png")) {
                             type = "image/png";
                         }
-                        InputStream inputStream = Common.getResource("swagger/" + key).openStream();
-                        try {
+                        try (InputStream inputStream = Common.getResource("swagger/" + key).openStream()) {
                             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                             Common.copyStream(inputStream, byteArrayOutputStream);
                             StaticFileContent fileContent = new StaticFileContent();
                             fileContent.type = type;
                             fileContent.content = byteArrayOutputStream.toByteArray();
                             return fileContent;
-                        } finally {
-                            inputStream.close();
                         }
                     } catch (Throwable e) {
                         log.warn("load file failed: {}.", key, e);
@@ -101,14 +98,14 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
     private UriInfo uriInfo;
 
     @Override
-    public Class[] getClasses() {
+    public Class<?>[] getClasses() {
         return Common.toBool(ConcreteHelper.getString("swagger", null, "swagger"), true) ?
                 new Class[]{Swagger.class} :
                 new Class[0];
     }
 
     @Override
-    public void register(Object instance, Class concreteService) {
+    public void register(Object instance, Class<?> concreteService) {
         if (Polling.class.equals(concreteService)) return;
         // TODO 如何区分不同的应用
         classes.get().add(concreteService);

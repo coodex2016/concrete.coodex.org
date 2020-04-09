@@ -48,13 +48,11 @@ public class ApacheDubboClientInvoker extends AbstractSyncInvoker {
 
     private static final SingletonMap<ReferenceKey, Object> REFERENCE_MAP = SingletonMap.<ReferenceKey, Object>builder()
             .function(key -> {
-                @SuppressWarnings("rawtypes")
-                ReferenceConfig referenceConfig = new ReferenceConfig();
+                ReferenceConfig<?> referenceConfig = new ReferenceConfig<>();
                 referenceConfig.setApplication(getApplicationConfig(key.dubboDestination.getName()));
                 referenceConfig.setRegistries(getRegistries(key.dubboDestination.getRegistries()));
                 referenceConfig.setProtocol(key.dubboDestination.getProtocol());
                 referenceConfig.setUrl(key.dubboDestination.getUrl());
-                //noinspection unchecked
                 referenceConfig.setInterface(key.serviceClass);
                 referenceConfig.setVersion(VERSION);
                 return referenceConfig.get();
@@ -65,7 +63,7 @@ public class ApacheDubboClientInvoker extends AbstractSyncInvoker {
     }
 
     @Override
-    protected Object execute(Class clz, Method method, Object[] args) throws Throwable {
+    protected Object execute(Class<?> clz, Method method, Object[] args) throws Throwable {
         ApacheDubboDestination dubboDestination = (ApacheDubboDestination) getDestination();
         ClientSideContext context = (ClientSideContext) ConcreteContext.getServiceContext();
         String tokenId = ClientTokenManagement.getTokenId(getDestination(), context.getTokenId());
@@ -118,10 +116,10 @@ public class ApacheDubboClientInvoker extends AbstractSyncInvoker {
     }
 
     static class ReferenceKey {
-        private Class serviceClass;
+        private Class<?> serviceClass;
         private ApacheDubboDestination dubboDestination;
 
-        public ReferenceKey(Class serviceClass, ApacheDubboDestination dubboDestination) {
+        public ReferenceKey(Class<?> serviceClass, ApacheDubboDestination dubboDestination) {
             this.serviceClass = serviceClass;
             this.dubboDestination = dubboDestination;
         }

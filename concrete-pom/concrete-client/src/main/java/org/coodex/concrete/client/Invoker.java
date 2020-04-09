@@ -20,6 +20,6 @@ import java.lang.reflect.Method;
 
 public interface Invoker {
 
-    Object invoke(Object instance, Class clz, Method method, Object... args) throws Throwable;
+    Object invoke(Object instance, Class<?> clz, Method method, Object... args) throws Throwable;
 
 }

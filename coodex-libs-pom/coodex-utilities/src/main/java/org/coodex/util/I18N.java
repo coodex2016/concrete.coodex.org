@@ -20,7 +20,7 @@ import java.util.Locale;
 
 public class I18N {
 
-    private static Singleton<TranslateService> TRANSLATE_SERVICE_SINGLETON = new Singleton<>(
+    private static Singleton<TranslateService> TRANSLATE_SERVICE_SINGLETON = Singleton.with(
             () -> new ServiceLoaderImpl<TranslateService>(new ProfileBasedTranslateService()) {
             }.get()
     );
@@ -33,7 +33,6 @@ public class I18N {
         return getTranslateService().translate(key);
     }
 
-    @SuppressWarnings("unused")
     public static String translate(String key, Locale locale) {
         return getTranslateService().translate(key, locale);
     }

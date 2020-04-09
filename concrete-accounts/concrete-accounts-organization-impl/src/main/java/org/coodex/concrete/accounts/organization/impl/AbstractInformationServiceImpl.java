@@ -26,6 +26,7 @@ import org.coodex.concrete.accounts.organization.repositories.AbstractDepartment
 import org.coodex.concrete.accounts.organization.repositories.AbstractInstitutionRepo;
 import org.coodex.concrete.accounts.organization.repositories.AbstractPositionRepo;
 import org.coodex.concrete.api.pojo.StrID;
+import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.OrganizationErrorCodes;
 import org.coodex.copier.TwoWayCopier;
@@ -35,10 +36,12 @@ import javax.inject.Inject;
 import java.util.*;
 
 import static org.coodex.concrete.accounts.AccountsCommon.getTenant;
+import static org.coodex.util.Common.cast;
 
 /**
  * Created by davidoff shen on 2017-05-18.
  */
+@SuppressWarnings("CdiInjectionPointsInspection")
 public abstract class AbstractInformationServiceImpl<
         I extends Institution, D extends Department,
         J extends Position, P extends Person,
@@ -72,7 +75,7 @@ public abstract class AbstractInformationServiceImpl<
     @Override
     public List<InstitutionFull<I, D, J, P>> get() {
 
-        List<InstitutionFull<I, D, J, P>> institutionFullList = new ArrayList<InstitutionFull<I, D, J, P>>();
+        List<InstitutionFull<I, D, J, P>> institutionFullList = new ArrayList<>();
         for (IE institution : institutionRepo.findByTenantAndHigherLevelIdIsNullOrderByDisplayOrderDesc(getTenant())) {
             institutionFullList.add($getOneInstitutionFull(institution.getId()));
         }
@@ -82,7 +85,9 @@ public abstract class AbstractInformationServiceImpl<
     protected InstitutionFull<I, D, J, P> $getOneInstitutionFull(String id) {
 
         // TODO 需要考虑缓存
-        IE institutionEntity = IF.isNull(institutionRepo.findById(id).orElse(null), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
+        IE institutionEntity = institutionRepo.findById(id)
+                .orElseThrow(() -> new ConcreteException(OrganizationErrorCodes.NONE_THIS_INSTITUTION));
+
         InstitutionFull<I, D, J, P> institutionFull = new InstitutionFull<>();
         institutionFull.setId(institutionEntity.getId());
         institutionFull.setInstitution(institutionCopier.copyB2A(institutionEntity));
@@ -112,14 +117,14 @@ public abstract class AbstractInformationServiceImpl<
     protected void appendPositionsAndPersons(OrganizationEntity institutionEntity, List<StrID<J>> positionList, List<StrID<P>> personList) {
         Set<String> personIdSet = new HashSet<>();
         for (JE positionEntity : positionRepo.findByBelongOrderByDisplayOrderDesc(institutionEntity.getId())) {
-            positionList.add(new StrID<J>(positionEntity.getId(), positionCopier.copyB2A(positionEntity)));
+            positionList.add(new StrID<>(positionEntity.getId(), positionCopier.copyB2A(positionEntity)));
             for (PE personEntity : personAccountRepo.findAll(
-                    SpecCommon.<PE, JE>memberOf("positions", positionEntity),
+                    SpecCommon.memberOf("positions", positionEntity),
                     Sort.by(Sort.Order.desc("displayOrder")))) {
 
                 if (!personIdSet.contains(personEntity.getId())) {
                     personIdSet.add(personEntity.getId());
-                    personList.add(new StrID<P>(personEntity.getId(), personCopier.copyB2A(personEntity)));
+                    personList.add(new StrID<>(personEntity.getId(), personCopier.copyB2A(personEntity)));
                 }
             }
         }
@@ -132,12 +137,12 @@ public abstract class AbstractInformationServiceImpl<
 
     protected DepartmentFull<D, J, P> $getOneDepartmentFull(String id) {
         // TODO 需要考虑缓存
-        DE departmentEntity = IF.isNull(departmentRepo.findById(id).orElse(null), OrganizationErrorCodes.NONE_THIS_DEPARTMENT);
-        DepartmentFull<D, J, P> departmentFull = new DepartmentFull<D, J, P>();
+        DE departmentEntity = departmentRepo.findById(id).orElseThrow(() -> new ConcreteException(OrganizationErrorCodes.NONE_THIS_DEPARTMENT));
+        DepartmentFull<D, J, P> departmentFull = new DepartmentFull<>();
         departmentFull.setDepartment(departmentCopier.copyB2A(departmentEntity));
         departmentFull.setId(departmentEntity.getId());
-        departmentFull.setPersons(new ArrayList<StrID<P>>());
-        departmentFull.setPositions(new ArrayList<StrID<J>>());
+        departmentFull.setPersons(new ArrayList<>());
+        departmentFull.setPositions(new ArrayList<>());
         appendPositionsAndPersons(departmentEntity, departmentFull.getPositions(), departmentFull.getPersons());
         return departmentFull;
     }
@@ -150,40 +155,52 @@ public abstract class AbstractInformationServiceImpl<
     @Override
     public List<StrID<Organization>> getHigherLevelOrganizations(String id) {
         OrganizationEntity organizationEntity =
-                IF.isNull(organizationRepo.findById(id).orElse(null), OrganizationErrorCodes.NONE_THIS_ORGANIZATION).getHigherLevel();
+                organizationRepo.findById(id)
+                        .orElseThrow(() -> new ConcreteException(OrganizationErrorCodes.NONE_THIS_ORGANIZATION))
+                        .getHigherLevel();
 
-        List<StrID<Organization>> organizationList = new ArrayList<StrID<Organization>>();
+        List<StrID<Organization>> organizationList = new ArrayList<>();
         while (organizationEntity != null) {
-            organizationList.add(new StrID<Organization>(
-                    organizationEntity.getId(),
-                    organizationEntity instanceof AbstractDepartmentEntity ?
-                            departmentCopier.copyB2A((DE) organizationEntity) :
-                            institutionCopier.copyB2A((IE) organizationEntity)));
+
+            Organization organization = null;
+            if (organizationEntity instanceof AbstractDepartmentEntity) {
+                DE de = cast(organizationEntity);
+                organization = departmentCopier.copyB2A(de);
+            } else if (organizationEntity instanceof AbstractInstitutionEntity) {
+                IE ie = cast(organizationEntity);
+                organization = institutionCopier.copyB2A(ie);
+            }
+
+            organizationList.add(new StrID<>(organizationEntity.getId(), organization));
+
+            organizationEntity = organizationEntity.getHigherLevel();
         }
 
         // 反序
-        StrID<Organization>[] array = organizationList.toArray(new StrID[0]);
-        for (int i = 0, l = array.length, h = l / 2; i < h; i++) {
-            StrID<Organization> temp = array[i];
-            array[i] = array[l - 1 - i];
-            array[l - 1 - i] = temp;
-        }
 
-        return Arrays.asList(array);
+//        StrID<Organization>[] array = organizationList.toArray(new StrID[0]);
+//        for (int i = 0, l = array.length, h = l / 2; i < h; i++) {
+//            StrID<Organization> temp = array[i];
+//            array[i] = array[l - 1 - i];
+//            array[l - 1 - i] = temp;
+//        }
+
+        Collections.reverse(organizationList);
+        return organizationList;
     }
 
 
     @Override
     public StrID<I> getInstitution(String id) {
-        IE institutionEntity = IF.isNull(institutionRepo.findById(id).orElse(null), OrganizationErrorCodes.NONE_THIS_INSTITUTION);
-        return new StrID<I>(institutionEntity.getId(), institutionCopier.copyB2A(institutionEntity));
+        IE institutionEntity = institutionRepo.findById(id).orElseThrow(() -> new ConcreteException(OrganizationErrorCodes.NONE_THIS_INSTITUTION));
+        return new StrID<>(institutionEntity.getId(), institutionCopier.copyB2A(institutionEntity));
     }
 
     @Override
     public List<StrID<I>> getInstitutions() {
-        List<StrID<I>> list = new ArrayList<StrID<I>>();
+        List<StrID<I>> list = new ArrayList<>();
         for (IE institutionEntity : institutionRepo.findByTenantAndHigherLevelIdIsNullOrderByDisplayOrderDesc(getTenant())) {
-            list.add(new StrID<I>(institutionEntity.getId(), institutionCopier.copyB2A(institutionEntity)));
+            list.add(new StrID<>(institutionEntity.getId(), institutionCopier.copyB2A(institutionEntity)));
         }
         return list;
     }
@@ -192,9 +209,9 @@ public abstract class AbstractInformationServiceImpl<
     public List<StrID<I>> getInstitutionsOf(String higherLevel) {
         if (higherLevel != null)
             checkBelongToExists(higherLevel);
-        List<StrID<I>> list = new ArrayList<StrID<I>>();
+        List<StrID<I>> list = new ArrayList<>();
         for (IE institutionEntity : institutionRepo.findByTenantAndHigherLevelIdOrderByDisplayOrderDesc(getTenant(), higherLevel)) {
-            list.add(new StrID<I>(institutionEntity.getId(), institutionCopier.copyB2A(institutionEntity)));
+            list.add(new StrID<>(institutionEntity.getId(), institutionCopier.copyB2A(institutionEntity)));
         }
         return list;
     }
@@ -244,10 +261,10 @@ public abstract class AbstractInformationServiceImpl<
 
     protected List<StrID<D>> $getDepartmentsOfOrganization(String organization) {
         checkBelongToExists(organization);
-        List<StrID<D>> list = new ArrayList<StrID<D>>();
+        List<StrID<D>> list = new ArrayList<>();
         for (DE departmentEntity : departmentRepo.findByTenantAndHigherLevelIdOrderByDisplayOrderDesc(
                 getTenant(), organization)) {
-            list.add(new StrID<D>(departmentEntity.getId(), departmentCopier.copyB2A(departmentEntity)));
+            list.add(new StrID<>(departmentEntity.getId(), departmentCopier.copyB2A(departmentEntity)));
         }
         return list;
     }
@@ -259,9 +276,9 @@ public abstract class AbstractInformationServiceImpl<
 
     protected List<StrID<J>> $getPositionsOfOrganization(String organization) {
         checkBelongToExists(organization);
-        List<StrID<J>> list = new ArrayList<StrID<J>>();
+        List<StrID<J>> list = new ArrayList<>();
         for (JE positionEntity : positionRepo.findByBelongOrderByDisplayOrderDesc(organization)) {
-            list.add(new StrID<J>(positionEntity.getId(), positionCopier.copyB2A(positionEntity)));
+            list.add(new StrID<>(positionEntity.getId(), positionCopier.copyB2A(positionEntity)));
         }
         return list;
     }
@@ -272,8 +289,8 @@ public abstract class AbstractInformationServiceImpl<
     }
 
     protected List<StrID<P>> $getPersonsOfOrganization(String organization) {
-        List<StrID<P>> personList = new ArrayList<StrID<P>>();
-        appendPositionsAndPersons(checkBelongToExists(organization), new ArrayList<StrID<J>>(), personList);
+        List<StrID<P>> personList = new ArrayList<>();
+        appendPositionsAndPersons(checkBelongToExists(organization), new ArrayList<>(), personList);
         return personList;
     }
 
@@ -284,18 +301,19 @@ public abstract class AbstractInformationServiceImpl<
 
     @Override
     public List<StrID<I>> getInstitutionsOfPerson(String person) {
-        PE personEntity = IF.isNull(personAccountRepo.findById(person).orElse(null), OrganizationErrorCodes.PERSON_NOT_EXISTS);
-        Set<String> institutions = new HashSet<String>();
-        List<StrID<I>> institutionList = new ArrayList<StrID<I>>();
+        PE personEntity = personAccountRepo.findById(person).orElseThrow(() -> new ConcreteException(OrganizationErrorCodes.PERSON_NOT_EXISTS));
+        Set<String> institutions = new HashSet<>();
+        List<StrID<I>> institutionList = new ArrayList<>();
         for (JE positionEntity : personEntity.getPositions()) {
             OrganizationEntity organizationEntity = positionEntity.getBelongTo();
             while (organizationEntity != null) {
                 if (organizationEntity instanceof AbstractInstitutionEntity) {
                     if (!institutions.contains(organizationEntity.getId())) {
                         institutions.add(organizationEntity.getId());
+                        IE ie = cast(organizationEntity);
                         institutionList.add(
-                                new StrID<I>(organizationEntity.getId(),
-                                        institutionCopier.copyB2A((IE) organizationEntity)));
+                                new StrID<>(organizationEntity.getId(), institutionCopier.copyB2A(ie))
+                        );
                     }
                 }
                 organizationEntity = organizationEntity.getHigherLevel();
@@ -306,18 +324,19 @@ public abstract class AbstractInformationServiceImpl<
 
     @Override
     public List<StrID<D>> getDepartmentsOfPerson(String person) {
-        PE personEntity = IF.isNull(personAccountRepo.findById(person).orElse(null), OrganizationErrorCodes.PERSON_NOT_EXISTS);
-        Set<String> departments = new HashSet<String>();
-        List<StrID<D>> departmentList = new ArrayList<StrID<D>>();
+        PE personEntity = personAccountRepo.findById(person).orElseThrow(() -> new ConcreteException(OrganizationErrorCodes.PERSON_NOT_EXISTS));
+        Set<String> departments = new HashSet<>();
+        List<StrID<D>> departmentList = new ArrayList<>();
         for (JE positionEntity : personEntity.getPositions()) {
             OrganizationEntity organizationEntity = positionEntity.getBelongTo();
             while (organizationEntity != null) {
                 if (organizationEntity instanceof AbstractDepartmentEntity) {
                     if (!departments.contains(organizationEntity.getId())) {
                         departments.add(organizationEntity.getId());
+                        DE de = cast(organizationEntity);
                         departmentList.add(
-                                new StrID<D>(organizationEntity.getId(),
-                                        departmentCopier.copyB2A((DE) organizationEntity)));
+                                new StrID<>(organizationEntity.getId(), departmentCopier.copyB2A(de))
+                        );
                     }
                 } else {
                     break;
@@ -330,10 +349,10 @@ public abstract class AbstractInformationServiceImpl<
 
     @Override
     public List<StrID<J>> getPositionsOfPerson(String person) {
-        PE personEntity = IF.isNull(personAccountRepo.findById(person).orElse(null), OrganizationErrorCodes.PERSON_NOT_EXISTS);
-        List<StrID<J>> positionList = new ArrayList<StrID<J>>();
+        PE personEntity = personAccountRepo.findById(person).orElseThrow(() -> new ConcreteException(OrganizationErrorCodes.PERSON_NOT_EXISTS));
+        List<StrID<J>> positionList = new ArrayList<>();
         for (JE positionEntity : personEntity.getPositions()) {
-            positionList.add(new StrID<J>(positionEntity.getId(), positionCopier.copyB2A(positionEntity)));
+            positionList.add(new StrID<>(positionEntity.getId(), positionCopier.copyB2A(positionEntity)));
         }
         return positionList;
     }

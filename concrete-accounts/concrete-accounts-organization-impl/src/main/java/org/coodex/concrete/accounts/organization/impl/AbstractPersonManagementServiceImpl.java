@@ -22,6 +22,7 @@ import org.coodex.concrete.accounts.organization.entities.AbstractPersonAccountE
 import org.coodex.concrete.accounts.organization.entities.AbstractPositionEntity;
 import org.coodex.concrete.accounts.organization.pojo.Person;
 import org.coodex.concrete.api.pojo.StrID;
+import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.OrganizationErrorCodes;
 import org.coodex.copier.TwoWayCopier;
@@ -29,6 +30,7 @@ import org.coodex.util.Common;
 
 import javax.inject.Inject;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.coodex.concrete.accounts.AccountsCommon.getTenant;
@@ -39,6 +41,7 @@ import static org.coodex.concrete.common.OrganizationErrorCodes.POSITION_NOT_EXI
 /**
  * Created by davidoff shen on 2017-05-10.
  */
+@SuppressWarnings("CdiInjectionPointsInspection")
 public abstract class AbstractPersonManagementServiceImpl
         <J extends AbstractPositionEntity,
                 E extends AbstractPersonAccountEntity<J>, P extends Person>
@@ -63,13 +66,14 @@ public abstract class AbstractPersonManagementServiceImpl
         personEntity.setPositions(getPositionsWithPermissionCheck(positions));
         person = personCopier.copyB2A(personAccountRepo.save(personEntity), person);
         putLoggingData("new", person);
-        return new StrID<P>(personEntity.getId(), person);
+        return new StrID<>(personEntity.getId(), person);
     }
 
     protected Set<J> getPositionsWithPermissionCheck(String[] positions) {
-        Set<J> positionEntities = new HashSet<J>();
+        Set<J> positionEntities = new HashSet<>();
         for (String positionId : positions) {
-            J positionEntity = IF.isNull(getPositionRepo().findById(positionId).orElse(null), POSITION_NOT_EXISTS);
+            J positionEntity = getPositionRepo().findById(positionId)
+                    .orElseThrow(()->new ConcreteException( POSITION_NOT_EXISTS));
             checkManagementPermission(positionEntity.getBelong());
             positionEntities.add(positionEntity);
         }
@@ -85,17 +89,17 @@ public abstract class AbstractPersonManagementServiceImpl
     @Override
     public void update(String id, P person) {
         E personEntity = getPersonEntityWithPermissionCheck(id);
-        if (!Common.isSameStr(person.getCellphone(), personEntity.getCellphone()) && person.getCellphone() != null) {
+        if (!Objects.equals(person.getCellphone(), personEntity.getCellphone()) && person.getCellphone() != null) {
             IF.is(personAccountRepo.countByCellphoneAndTenant(person.getCellphone(), getTenant()) != 0, OrganizationErrorCodes.CELL_PHONE_EXISTS);
         }
-        if (!Common.isSameStr(person.getIdCardNo(), personEntity.getIdCardNo()) && person.getIdCardNo() != null) {
+        if (!Objects.equals(person.getIdCardNo(), personEntity.getIdCardNo()) && person.getIdCardNo() != null) {
             IF.is(personAccountRepo.countByIdCardNoAndTenant(person.getIdCardNo(), getTenant()) != 0, OrganizationErrorCodes.ID_CARD_NO_EXISTS);
         }
-        if (!Common.isSameStr(person.getEmail(), personEntity.getEmail()) && person.getEmail() != null) {
+        if (!Objects.equals(person.getEmail(), personEntity.getEmail()) && person.getEmail() != null) {
             IF.is(personAccountRepo.countByEmailAndTenant(person.getEmail(), getTenant()) != 0, OrganizationErrorCodes.EMAIL_EXISTS);
         }
         E old = deepCopy(personEntity);
-        putLoggingData("old", deepCopy(personEntity));
+        putLoggingData("old", deepCopy(old));
         putLoggingData("new", personAccountRepo.save(personCopier.copyA2B(person, personEntity)));
     }
 

@@ -40,7 +40,7 @@ public class RemoteClockAgent extends AbstractClockAgent {
         long start;
     }
 
-    private static Singleton<Configuration> configurationSingleton = new Singleton<>(
+    private static Singleton<Configuration> configurationSingleton = Singleton.with(
             new Supplier<Configuration>() {
                 @Override
                 public Configuration get() {

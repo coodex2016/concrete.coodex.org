@@ -70,7 +70,7 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
                             accountId, accountName, category, subClass, message)
     ) {
     };
-    static ThreadLocal<Account<? extends AccountID>> OPERATOR = new ThreadLocal<>();
+    static ThreadLocal<Account<?>> OPERATOR = new ThreadLocal<>();
 
     private static String buildLog(String category, String subClass, String messageTemplate,
                                    Class<? extends LogFormatter> formatterClass) {
@@ -124,7 +124,7 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
         return context.getAnnotation(OperationLog.class) != null || context.getAnnotation(LogAtomic.class) != null;
     }
 
-    private Account getOperator() {
+    private Account<?> getOperator() {
         try {
             return TokenWrapper.getInstance().currentAccount();
         } catch (Throwable th) {
@@ -161,8 +161,14 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
 
 
     @Override
-    public Object invoke(MethodInvocation invocation) throws Throwable {
-        return LOGGING.call(new HashMap<>(), () -> super.invoke(invocation));
+    public Object invoke(MethodInvocation invocation) {
+        return LOGGING.call(new HashMap<>(), () -> {
+            try {
+                return super.invoke(invocation);
+            } catch (Throwable throwable) {
+                throw Common.rte(throwable);
+            }
+        });
     }
 
 //    @Override
@@ -175,11 +181,11 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
     @Override
     public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
         try {
-            Account account = getOperator();
+            Account<?> account = getOperator();
             String accountId = account == null ? null : account.getId() instanceof AccountID ? ((AccountID) account.getId()).serialize() : account.getId().toString();
             String accountName = account == null ? "Anonymous" : null;
             if (account != null) {
-                accountName = account instanceof NamedAccount ? ((NamedAccount) account).getName() : "Unknown";
+                accountName = account instanceof NamedAccount ? ((NamedAccount<?>) account).getName() : "Unknown";
             }
             String category = null;
             String subClass = null;
@@ -217,8 +223,6 @@ public class OperationLogInterceptor extends AbstractSyncInterceptor {
 
         } catch (Throwable th) {
             log.warn("{}", th.getLocalizedMessage(), th);
-        } finally {
-
         }
         return super.after(context, joinPoint, result);
     }

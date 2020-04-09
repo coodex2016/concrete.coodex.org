@@ -30,7 +30,7 @@ public class ProfileProviderBaseYaml extends AbstractProfileProvider {
 
     private static final String YAML_CLASS = "org.yaml.snakeyaml.Yaml";
 
-    private static final Singleton<Boolean> YAML_SUPPORTED = new Singleton<>(() -> {
+    private static final Singleton<Boolean> YAML_SUPPORTED = Singleton.with(() -> {
         try {
             Class.forName(YAML_CLASS);
             return true;

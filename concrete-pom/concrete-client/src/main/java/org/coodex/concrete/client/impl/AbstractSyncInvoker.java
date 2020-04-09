@@ -36,29 +36,35 @@ public abstract class AbstractSyncInvoker extends AbstractInvoker {
         super(destination);
     }
 
-    protected abstract Object execute(Class clz, Method method, Object[] args) throws Throwable;
+    protected abstract Object execute(Class<?> clz, Method method, Object[] args) throws Throwable;
 
     @Override
-    public Object invoke(final Object instance, final Class clz, final Method method, final Object... args) {
+    public Object invoke(final Object instance, final Class<?> clz, final Method method, final Object... args) {
         ServiceContext serviceContext = buildContext(ConcreteHelper.getDefinitionContext(clz, method));
         Trace trace = APM.build().tag("interface", clz.getName())
                 .tag("method", method.getName())
                 .start(String.format("client invoke: %s", getDestination().getLocation()));
         trace.hack(serviceContext.getSubjoin());
         try {
-            return ConcreteContext.runWithContext(serviceContext, () -> ClientHelper.getSyncInterceptorChain().invoke(new ClientMethodInvocation(instance, clz, method, args) {
-                @Override
-                public Object proceed() throws Throwable {
-                    if (isMock()) {
-                        return Mocker.mockMethod(method, clz);
-                    } else {
-                        return execute(clz, method, args);
-                    }
+            return ConcreteContext.runWithContext(serviceContext, () -> {
+                try {
+                    return ClientHelper.getSyncInterceptorChain().invoke(new ClientMethodInvocation(instance, clz, method, args) {
+                        @Override
+                        public Object proceed() throws Throwable {
+                            if (isMock()) {
+                                return Mocker.mockMethod(method, clz);
+                            } else {
+                                return execute(clz, method, args);
+                            }
+                        }
+                    });
+                } catch (Throwable throwable) {
+                    throw Common.rte(throwable);
                 }
-            }));
+            });
         } catch (Throwable throwable) {
             trace.error(throwable);
-            throw Common.runtimeException(throwable);
+            throw Common.rte(throwable);
         } finally {
             trace.finish();
         }

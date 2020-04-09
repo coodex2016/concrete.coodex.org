@@ -36,7 +36,7 @@ public class TokenWrapper implements Token {
 
     private static final Token singletonInstance = new TokenWrapper();
     private static Singleton<TokenManager> tokenManager =
-            new Singleton<>(() -> {
+            Singleton.with(() -> {
                 try {
                     return BeanServiceLoaderProvider
                             .getBeanProvider()
@@ -49,7 +49,7 @@ public class TokenWrapper implements Token {
                 }
             });
 
-    public static final Token getInstance() {
+    public static Token getInstance() {
         return singletonInstance;
     }
 
@@ -106,12 +106,12 @@ public class TokenWrapper implements Token {
 
 
     @Override
-    public Account currentAccount() {
+    public Account<?> currentAccount() {
         return getToken().currentAccount();
     }
 
     @Override
-    public void setAccount(Account account) {
+    public void setAccount(Account<?> account) {
         getToken().setAccount(account);
     }
 
@@ -128,12 +128,6 @@ public class TokenWrapper implements Token {
     @Override
     public String getTokenId() {
         return getToken(false).getTokenId();
-    }
-
-    @Override
-    @Deprecated
-    public <T> T getAttribute(String key) {
-        return getToken().getAttribute(key);
     }
 
     @Override

@@ -18,6 +18,7 @@ package org.coodex.concrete.message;
 
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.IF;
+import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,22 +34,20 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
 
     private final static Logger log = LoggerFactory.getLogger(AbstractTopicPrototype.class);
 
-    private static final Singleton<Executor> POOL_SINGLETON = new Singleton<>(
+    private static final Singleton<Executor> POOL_SINGLETON = Singleton.with(
             () -> ConcreteHelper.getExecutor("topic")
     );
-    @SuppressWarnings("rawtypes")
-    private final Courier courier;
+
+    private final Courier<?> courier;
 
     private final Map<Observer<M>, SubscriptionImpl> subscriptions = new ConcurrentHashMap<>();
 
-    @SuppressWarnings("WeakerAccess")
     public AbstractTopicPrototype(Courier<M> courier) {
         this.courier = courier;
         IF.isNull(courier, "courier MUST NOT null.")
                 .associate(this);
     }
 
-    @SuppressWarnings("WeakerAccess")
     protected Set<Observer<M>> getObservers() {
         return Collections.unmodifiableSet(subscriptions.keySet());
     }
@@ -67,17 +66,14 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
     }
 
     protected String getQueue() {
-        //noinspection rawtypes
         return courier instanceof CourierPrototype ?
-                ((CourierPrototype) courier).getQueue() : null;
+                ((CourierPrototype<?>) courier).getQueue() : null;
     }
 
-    @SuppressWarnings("rawtypes")
-    protected Courier getCourier() {
+    protected Courier<?> getCourier() {
         return courier;
     }
 
-    @SuppressWarnings("WeakerAccess")
     protected Executor getExecutor() {
         return POOL_SINGLETON.get();
     }
@@ -105,8 +101,7 @@ public abstract class AbstractTopicPrototype<M extends Serializable> implements 
         Set<Observer<M>> observers = getObservers();
         for (final Observer<M> observer : observers) {
 
-            //noinspection unchecked
-            final MessageFilter<M> finalFilter = (observer instanceof MessageFilter) ? (MessageFilter<M>) observer : null;
+            final MessageFilter<M> finalFilter = (observer instanceof MessageFilter) ? Common.cast(observer) : null;
             getExecutor().execute(() -> {
                 try {
                     if (finalFilter == null || finalFilter.handle(message)) {

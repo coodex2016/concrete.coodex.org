@@ -36,7 +36,7 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
     }
 
     public LazySelectableServiceLoader(final T defaultProvider) {
-        singleton = new Singleton<>(
+        singleton = Singleton.with(
                 () -> new SelectableServiceLoaderImpl<Param_Type, T>(defaultProvider) {
 //                    @Override
 //                    protected Object $getInstance() {
@@ -60,7 +60,7 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
     }
 
     public LazySelectableServiceLoader(final Function<Method, RuntimeException> exceptionFunction) {
-        singleton = new Singleton<>(
+        singleton = Singleton.with(
                 () -> new SelectableServiceLoaderImpl<Param_Type, T>(exceptionFunction) {
                     @Override
                     protected Object $getInstance() {

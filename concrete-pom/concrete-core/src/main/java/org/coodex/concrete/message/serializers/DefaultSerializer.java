@@ -23,22 +23,24 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 
+import static org.coodex.util.Common.cast;
+
 public class DefaultSerializer implements Serializer {
     @Override
     public byte[] serialize(Serializable o) {
         try {
             return Common.serialize(o);
         } catch (IOException e) {
-            throw Common.runtimeException(e);
+            throw Common.rte(e);
         }
     }
 
     @Override
     public <T extends Serializable> T deserialize(byte[] bytes, Type type) {
         try {
-            return (T) Common.deserialize(bytes);
+            return cast(Common.deserialize(bytes));
         } catch (Throwable throwable) {
-            throw Common.runtimeException(throwable);
+            throw Common.rte(throwable);
         }
     }
 

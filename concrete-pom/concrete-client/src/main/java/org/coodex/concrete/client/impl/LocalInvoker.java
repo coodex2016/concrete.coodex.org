@@ -19,6 +19,7 @@ package org.coodex.concrete.client.impl;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.LocalServiceContext;
 import org.coodex.concrete.common.*;
+import org.coodex.util.Common;
 
 import java.lang.reflect.Method;
 
@@ -30,7 +31,7 @@ public class LocalInvoker extends AbstractSyncInvoker {
     }
 
     @Override
-    protected Object execute(Class clz, Method method, Object[] args) throws Throwable {
+    protected Object execute(Class<?> clz, Method method, Object[] args) throws Throwable {
         return method.invoke(BeanServiceLoaderProvider.getBeanProvider().getBean(clz), args);
     }
 
@@ -49,18 +50,24 @@ public class LocalInvoker extends AbstractSyncInvoker {
     /**
      * 本地调用不走客户端切片
      *
-     * @param instance
-     * @param clz
-     * @param method
-     * @param args
-     * @return
+     * @param instance instance
+     * @param clz      clz
+     * @param method   method
+     * @param args     args
+     * @return invoke result
      */
     @Override
-    public Object invoke(final Object instance, final Class clz, final Method method, final Object... args) {
+    public Object invoke(final Object instance, final Class<?> clz, final Method method, final Object... args) {
 
         return ConcreteContext.runServiceWithContext(
                 buildContext(ConcreteHelper.getDefinitionContext(clz, method)),
-                () -> execute(clz, method, args),
+                () -> {
+                    try {
+                        return execute(clz, method, args);
+                    } catch (Throwable throwable) {
+                        throw Common.rte(throwable);
+                    }
+                },
                 clz, method, args);
     }
 

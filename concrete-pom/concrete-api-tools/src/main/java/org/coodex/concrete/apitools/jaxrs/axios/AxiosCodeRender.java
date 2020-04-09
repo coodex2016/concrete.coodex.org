@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.coodex.concrete.apitools.APIHelper.loadModules;
+import static org.coodex.util.Common.cast;
 
 public class AxiosCodeRender extends AbstractRender {
 
@@ -55,34 +56,34 @@ public class AxiosCodeRender extends AbstractRender {
         String moduleName = getRenderDesc().substring(RENDER_NAME.length());
         moduleName = Common.isBlank(moduleName) ? "concrete" : moduleName.substring(1);
         List<JaxrsModule> moduleList = loadModules(RENDER_NAME, packages);
-        Map<String, Object> versionAndStyle = new HashMap<String, Object>();
+        Map<String, Object> versionAndStyle = new HashMap<>();
         versionAndStyle.put("version", ConcreteHelper.VERSION);
         versionAndStyle.put("style", JaxRSHelper.used024Behavior());
 
         writeTo("jaxrs/concrete.js", "concrete.ftl", versionAndStyle);
         for (JaxrsModule module : moduleList) {
-            Map<String, Object> param = new HashMap<String, Object>();
+            Map<String, Object> param = new HashMap<>();
             param.put("moduleName", moduleName);
             param.put("serviceName", module.getInterfaceClass().getSimpleName());
 
-            Map<String,Map<String,Object>> methods = new HashMap<String,Map<String,Object>>();
+            Map<String,Map<String,Object>> methods = new HashMap<>();
 
             for(JaxrsUnit unit : module.getUnits()){
                 String methodName = unit.getMethod().getName();
                 Map<String, Object> method = methods.get(methodName);
                 if(method == null){
-                    method = new HashMap<String, Object>();
+                    method = new HashMap<>();
                     method.put("name", methodName);
                     methods.put(methodName,method);
                 }
-                List<Map<String, Object>> overloads = (List<Map<String, Object>>) method.get("overloads");
+                List<Map<String, Object>> overloads = cast(method.get("overloads"));
                 if(overloads == null){
-                    overloads = new ArrayList<Map<String, Object>>();
+                    overloads = new ArrayList<>();
                     method.put("overloads", overloads);
                 }
-                Map<String, Object> overload = new HashMap<String, Object>();
+                Map<String, Object> overload = new HashMap<>();
                 overloads.add(overload);
-                List<String> params = new ArrayList<String>();
+                List<String> params = new ArrayList<>();
                 for(JaxrsParam p: unit.getParameters()){
                     params.add(p.getName());
                 }

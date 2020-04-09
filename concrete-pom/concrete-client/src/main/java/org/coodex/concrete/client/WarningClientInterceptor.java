@@ -22,13 +22,12 @@ import org.coodex.concrete.core.intercept.AbstractSyncInterceptor;
 import org.coodex.concrete.core.intercept.annotations.ClientSide;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
-import org.coodex.util.ServiceLoaderImpl;
-import org.coodex.util.Singleton;
+import org.coodex.util.LazyServiceLoader;
+import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.List;
 
 import static org.coodex.concrete.core.intercept.InterceptOrders.OTHER;
@@ -37,17 +36,21 @@ import static org.coodex.concrete.core.intercept.InterceptOrders.OTHER;
 public class WarningClientInterceptor extends AbstractSyncInterceptor {
 
     private final static Logger log = LoggerFactory.getLogger(WarningClientInterceptor.class);
-    private static Type type = new GenericTypeHelper.GenericType<List<WarningData>>() {
-    }.getType();
-//    private static Singleton<Collection<WarningHandle>> WARNING_HANDLES = new Singleton<>(new Singleton.Builder<Collection<WarningHandle>>() {
+    private static final ServiceLoader<WarningHandle> WARNING_HANDLES
+            = new LazyServiceLoader<WarningHandle>() {
+    };
+    //    private static Singleton<Collection<WarningHandle>> WARNING_HANDLES = new Singleton<>(new Singleton.Builder<Collection<WarningHandle>>() {
 //        @Override
 //        public Collection<WarningHandle> build() {
 //            return new ServiceLoaderImpl<WarningHandle>() {
 //            }.getAllInstances();
 //        }
 //    });
-private static Singleton<Collection<WarningHandle>> WARNING_HANDLES = new Singleton<>(() -> new ServiceLoaderImpl<WarningHandle>() {
-}.getAll().values());
+//    private static Singleton<Collection<WarningHandle>> WARNING_HANDLES
+//            = Singleton.with(() -> new ServiceLoaderImpl<WarningHandle>() {
+//    }.getAll().values());
+    private static Type type = new GenericTypeHelper.GenericType<List<WarningData>>() {
+    }.getType();
 
     @Override
     protected boolean accept_(DefinitionContext context) {
@@ -79,7 +82,7 @@ private static Singleton<Collection<WarningHandle>> WARNING_HANDLES = new Single
                         .parse(warnings, type);
                 if (warningList.size() > 0) {
                     for (Warning warning : warningList) {
-                        for (WarningHandle handle : WARNING_HANDLES.get()) {
+                        for (WarningHandle handle : WARNING_HANDLES.getAll().values()) {
                             try {
                                 handle.onWarning(clientSideContext.getDestination(), warning);
                             } catch (Throwable th) {

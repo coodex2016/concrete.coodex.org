@@ -73,12 +73,7 @@ public abstract class AbstractToken implements Token {
         runListeners(Event.CREATED, false);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public <T> T getAttribute(String key) {
-        return (T) getAttribute(key, null);
-    }
+
 
 
     protected abstract void $renew();

@@ -25,7 +25,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>coodex-libs-pom</artifactId>
+    <artifactId>coodex-libraries</artifactId>
     <packaging>pom</packaging>
 
     <dependencyManagement>

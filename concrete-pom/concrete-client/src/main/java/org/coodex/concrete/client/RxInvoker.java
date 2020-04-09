@@ -21,5 +21,5 @@ import java.util.concurrent.CompletableFuture;
 
 public interface RxInvoker extends Invoker {
 
-    CompletableFuture invokeAsync(Object instance, Class clz, Method method, Object... args);
+    CompletableFuture<?> invokeAsync(Object instance, Class<?> clz, Method method, Object... args);
 }

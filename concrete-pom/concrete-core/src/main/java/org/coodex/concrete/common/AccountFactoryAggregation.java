@@ -18,6 +18,8 @@ package org.coodex.concrete.common;
 
 import org.coodex.util.LazySelectableServiceLoader;
 
+import static org.coodex.util.Common.cast;
+
 /**
  * Created by davidoff shen on 2017-04-27.
  */
@@ -30,7 +32,6 @@ public class AccountFactoryAggregation<ID extends AccountID> implements AccountF
 
     @Override
     public Account<ID> getAccountByID(ID id) {
-        //noinspection unchecked
-        return (Account<ID>) ACCOUNT_FACTORY_LOADER.select(id).getAccountByID(id);
+        return cast(ACCOUNT_FACTORY_LOADER.select(id).getAccountByID(id));
     }
 }

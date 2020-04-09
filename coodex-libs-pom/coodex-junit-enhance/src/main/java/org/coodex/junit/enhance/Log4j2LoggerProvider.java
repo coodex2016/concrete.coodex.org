@@ -33,7 +33,8 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 
 public class Log4j2LoggerProvider extends AbstractLoggerProvider {
-    private final static Singleton<String> CONSOLE_APPENDER_KEY = new Singleton<>(() -> Config.getValue("logger.appender.console", "Console"));
+    private final static Singleton<String> CONSOLE_APPENDER_KEY
+            = Singleton.with(() -> Config.getValue("logger.appender.console", "Console"));
 
     protected String getFileAppenderDefaultPattern() {
         return "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n";

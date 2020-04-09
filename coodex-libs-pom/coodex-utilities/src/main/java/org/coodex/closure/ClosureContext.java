@@ -16,26 +16,29 @@
 
 package org.coodex.closure;
 
+import java.util.function.Supplier;
+
 /**
  * Created by davidoff shen on 2017-04-20.
  */
 public interface ClosureContext<T> {
-
+    /**
+     * @return 获取上下文中的变量值
+     */
     T get();
 
-//    T get(T defaultValue);
+    Object call(T var, Supplier<?> supplier);
 
 //    @Deprecated
-//    Object run(T var, Closure runnable);
-
-    Object call(T var, CallableClosure callable) throws Throwable;
-
-    /**
-     * 如果运行有异常，则转为运行期异常
-     *
-     * @param var
-     * @param callableClosure
-     * @return
-     */
-    Object useRTE(T var, CallableClosure callableClosure);
+//    Object call(T var, CallableClosure callable) throws Throwable;
+//
+//    /**
+//     * 如果运行有异常，则转为运行期异常
+//     *
+//     * @param var
+//     * @param callableClosure
+//     * @return
+//     */
+//    @Deprecated
+//    Object useRTE(T var, CallableClosure callableClosure);
 }

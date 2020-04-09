@@ -39,7 +39,7 @@ public abstract class AbstractResourceLockProvider implements ResourceLockProvid
 
     private static Comparator<AbstractResourceLock> comparator = (o1, o2) -> (int) (o1.getLastActive() - o2.getLastActive());
 
-    private static Singleton<ScheduledExecutorService> scheduledExecutorServiceSingleton = new Singleton<>(
+    private static Singleton<ScheduledExecutorService> scheduledExecutorServiceSingleton = Singleton.with(
             () -> ExecutorsHelper.newSingleThreadScheduledExecutor("cleanDeathResource")
     );
     protected final Map<ResourceId, AbstractResourceLock> locksMap = new HashMap<>(8);

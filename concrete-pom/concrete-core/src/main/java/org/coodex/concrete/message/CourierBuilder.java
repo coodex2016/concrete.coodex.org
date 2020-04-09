@@ -37,6 +37,7 @@ import java.util.function.Function;
 
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
 import static org.coodex.concrete.message.Topics.TAG_QUEUE;
+import static org.coodex.util.Common.cast;
 import static org.coodex.util.GenericTypeHelper.solveFromType;
 
 
@@ -48,6 +49,7 @@ import static org.coodex.util.GenericTypeHelper.solveFromType;
  * extends Prototype<MessageType>
  * implements Courier<MessageType>{}
  */
+@SuppressWarnings("rawtypes")
 class CourierBuilder
         implements Function<TopicKey, Courier> {
 
@@ -56,15 +58,14 @@ class CourierBuilder
 
     private static SingletonMap<TopicKey, Courier> couriers
             = SingletonMap.<TopicKey, Courier>builder().function(new CourierBuilder()).build();
-    
+
     private static LazySelectableServiceLoader<String, CourierPrototypeProvider> providers =
             new LazySelectableServiceLoader<String, CourierPrototypeProvider>() {
             };
     private AtomicLong index = new AtomicLong(0);
 
     static <M extends Serializable> Courier<M> buildCourier(TopicKey topicKey) {
-        //noinspection unchecked
-        return couriers.get(topicKey);
+        return cast(couriers.get(topicKey));
     }
 
     private static String getDestination(String queue) {
@@ -89,8 +90,7 @@ class CourierBuilder
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Courier apply(TopicKey key) {
+    public Courier<?> apply(TopicKey key) {
 
         try {
             String destination = getDestination(key.queue);
@@ -128,13 +128,13 @@ class CourierBuilder
             ctConstructor.setBody("{super($$);}");
             ctClass.addConstructor(ctConstructor);
 
-            Class<Courier> courierClass = (Class<Courier>) (IS_JAVA_9_AND_LAST.get() ? ctClass.toClass(CourierBuilder.class) : ctClass.toClass());
-            Constructor courierConstructor = courierClass.getConstructor(String.class, String.class, Type.class);
-            Courier courier = (Courier) courierConstructor.newInstance(key.queue, destination, key.topicType);
+            Class<?> courierClass = IS_JAVA_9_AND_LAST.get() ? ctClass.toClass(CourierBuilder.class) : ctClass.toClass();
+            Constructor<?> courierConstructor = courierClass.getConstructor(String.class, String.class, Type.class);
+            Courier<?> courier = cast(courierConstructor.newInstance(key.queue, destination, key.topicType));
             log.info("Courier build. {}, {}", courierClass.getName(), key.toString());
             return courier;
         } catch (Throwable th) {
-            throw Common.runtimeException(th);
+            throw Common.rte(th);
         }
     }
 

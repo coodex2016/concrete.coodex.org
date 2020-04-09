@@ -127,10 +127,10 @@ public class TBMContainer {
     public interface TBMListener {
         String getTokenId();
 
-        void onMessage(ServerSideMessage serverSideMessage);
+        void onMessage(ServerSideMessage<?> serverSideMessage);
     }
 
-    static class SSMImpl implements ServerSideMessage {
+    static class SSMImpl implements ServerSideMessage<Object> {
         private String subject = null;
         private String host = null;
         private String id;
@@ -143,8 +143,8 @@ public class TBMContainer {
             if (message.message instanceof Subject) {
                 this.subject = ((Subject) message.message).getSubject();
             } else if (message.message != null) {
-                Class clz = message.message.getClass();
-                MessageSubject messageSubject = (MessageSubject) clz.getAnnotation(MessageSubject.class);
+                Class<?> clz = message.message.getClass();
+                MessageSubject messageSubject = clz.getAnnotation(MessageSubject.class);
                 if (messageSubject != null) {
                     this.subject = messageSubject.value();
                 }

@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.closure.CallableClosure;
 import org.coodex.closure.ClosureContext;
 import org.coodex.closure.StackClosureContext;
 import org.coodex.concrete.client.ClientSideContext;
@@ -24,6 +23,7 @@ import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.ConcreteMethodInvocation;
 import org.coodex.concrete.core.intercept.InterceptorChain;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
+import org.coodex.util.Common;
 import org.coodex.util.ServiceLoader;
 import org.coodex.util.ServiceLoaderImpl;
 import org.coodex.util.Singleton;
@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Created by davidoff shen on 2017-04-20.
@@ -42,11 +43,10 @@ public final class ConcreteContext {
 
     public static final String KEY_TOKEN = Token.CONCRETE_TOKEN_ID_KEY;
     public static final String KEY_LOCALE = "CONCRETE-LOCALE";
+    public static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<>();
+    private static final ClosureContext<ServiceContext> CONTEXT = new StackClosureContext<>();
 
-    private static final ClosureContext<ServiceContext> CONTEXT = new StackClosureContext<ServiceContext>();
-    public static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<Map<String, Object>>();
-
-    private static Singleton<SyncInterceptorChain> interceptorChainSingleton = new Singleton<>(
+    private static Singleton<SyncInterceptorChain> interceptorChainSingleton = Singleton.with(
             () -> {
                 SyncInterceptorChain syncInterceptorChain = new SyncInterceptorChain();
                 ServiceLoader<ConcreteInterceptor> serviceLoader = new ServiceLoaderImpl<ConcreteInterceptor>() {
@@ -106,17 +106,17 @@ public final class ConcreteContext {
 
         @Override
         public Set<String> keySet() {
-            return new HashSet<String>();
+            return new HashSet<>();
         }
 
         @Override
         public Collection<Object> values() {
-            return new HashSet<Object>();
+            return new HashSet<>();
         }
 
         @Override
         public Set<Entry<String, Object>> entrySet() {
-            return new HashSet<Entry<String, Object>>();
+            return new HashSet<>();
         }
     };
 
@@ -127,18 +127,18 @@ public final class ConcreteContext {
     /**
      * 放入记录日志所需的数据
      *
-     * @param key
-     * @param value
+     * @param key   key
+     * @param value value
      */
-    public static final void putLoggingData(String key, Object value) {
+    public static void putLoggingData(String key, Object value) {
         getLogging().put(key, value);
     }
 
-    public static final Map<String, Object> getLoggingData() {
+    public static Map<String, Object> getLoggingData() {
         return getLogging();
     }
 
-    private static final Map<String, Object> getLogging() {
+    private static Map<String, Object> getLogging() {
         Map<String, Object> logging = LOGGING.get();
         return logging == null ? emptyLogging : logging;
     }
@@ -159,9 +159,9 @@ public final class ConcreteContext {
 //    }
 
 
-    public static final Object runWithContext(final ServiceContext context, final CallableClosure callable) {
+    public static Object runWithContext(final ServiceContext context, final Supplier<?> supplier) {
         try {
-            return CONTEXT.call(context, callable);
+            return CONTEXT.call(context, supplier);
         } catch (Throwable throwable) {
             throw ConcreteHelper.getException(throwable);
         }
@@ -171,22 +171,22 @@ public final class ConcreteContext {
     /**
      * 服务端运行
      *
-     * @param context
-     * @param callable
-     * @param interfaceClass
-     * @param method
-     * @param params
-     * @return
+     * @param context        context
+     * @param supplier       supplier
+     * @param interfaceClass interfaceClass
+     * @param method         method
+     * @param params         params
+     * @return 运行结果
      */
-    public static final Object runServiceWithContext(
+    public static Object runServiceWithContext(
             final ServiceContext context,
-            final CallableClosure callable,
+            final Supplier<?> supplier,
 //            AbstractUnit unit,
             Class<?> interfaceClass,
             Method method,
             Object[] params) {
         if (context instanceof ClientSideContext) {
-            return runWithContext(context, callable);
+            return runWithContext(context, supplier);
         } else {
             try {
                 return CONTEXT.call(context, () -> {
@@ -199,7 +199,7 @@ public final class ConcreteContext {
 
                         @Override
                         public Object proceed() throws Throwable {
-                            return callable.call();
+                            return supplier.get();
                         }
 
                         @Override
@@ -207,7 +207,11 @@ public final class ConcreteContext {
                             return BeanServiceLoaderProvider.getBeanProvider().getBean(interfaceClass);
                         }
                     };
-                    return interceptorChainSingleton.get().invoke(invocation);
+                    try {
+                        return interceptorChainSingleton.get().invoke(invocation);
+                    } catch (Throwable throwable) {
+                        throw Common.rte(throwable);
+                    }
 //                    interceptorChainSingleton.getInstance().before(runtimeContext, invocation);
 //                    try {
 //                        return interceptorChainSingleton.getInstance()
@@ -225,7 +229,7 @@ public final class ConcreteContext {
 
     private abstract static class ServiceMethodInvocation implements ConcreteMethodInvocation {
         private final Object[] arguments;
-//        private final Object instance;
+        //        private final Object instance;
         private final Method method;
 
         private ServiceMethodInvocation(Method method, Object[] arguments) {

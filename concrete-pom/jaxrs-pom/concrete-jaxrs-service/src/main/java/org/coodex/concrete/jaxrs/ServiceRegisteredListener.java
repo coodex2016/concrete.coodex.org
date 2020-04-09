@@ -18,5 +18,5 @@ package org.coodex.concrete.jaxrs;
 
 public interface ServiceRegisteredListener {
 
-    void register(Object instance, Class concreteService);
+    void register(Object instance, Class<?> concreteService);
 }

@@ -25,16 +25,15 @@ import java.util.Set;
 
 public class MockUtil {
 
-    private static boolean except(Class clz, Set<Class> classSet) {
+    private static boolean except(Class<?> clz, Set<Class<?>> classSet) {
         if (classSet == null) return false;
         return classSet.contains(clz);
     }
 
-    public static Object mockMethod(ProceedingJoinPoint proceedingJoinPoint, Set<Class> excepted) throws Throwable {
+    public static Object mockMethod(ProceedingJoinPoint proceedingJoinPoint, Set<Class<?>> excepted) throws Throwable {
         CodeSignature func = (CodeSignature) proceedingJoinPoint.getSignature();
-        Class methodClass = func.getDeclaringType();
+        Class<?> methodClass = func.getDeclaringType();
         if (except(methodClass, excepted)) return proceedingJoinPoint.proceed();
-        //noinspection unchecked
         Method method = methodClass.getMethod(func.getName(), func.getParameterTypes());
         if (method.getAnnotation(MockIgnore.class) != null) return proceedingJoinPoint.proceed();
         return Mocker.mockMethod(method, methodClass);

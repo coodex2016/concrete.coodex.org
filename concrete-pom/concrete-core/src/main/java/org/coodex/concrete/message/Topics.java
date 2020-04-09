@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 
 import static org.coodex.concrete.message.TopicBuilder.buildTopic;
+import static org.coodex.util.Common.cast;
 
 public class Topics {
 
@@ -33,17 +34,18 @@ public class Topics {
     public static final String SERIALIZER_TYPE = "serializer";
     private static final Serializer DEFAULT_SERIALIZER = new DefaultSerializer();
     private static SelectableServiceLoader<String, Serializer> serializerSelectableServiceLoader =
-            new LazySelectableServiceLoader<String, Serializer>() {
+            new LazySelectableServiceLoader<String, Serializer>(DEFAULT_SERIALIZER) {
             };
 
-    @SuppressWarnings("rawtypes")
-    private static SelectableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> topicProviders =
-            new LazySelectableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>() {
-            };
+//    @SuppressWarnings("rawtypes")
+//    private static SelectableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> topicProviders =
+//            new LazySelectableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>() {
+//            };
 
     public static Serializer getSerializer(String serializerType) {
-        Serializer serializer = serializerSelectableServiceLoader.select(serializerType);
-        return serializer == null ? DEFAULT_SERIALIZER : serializer;
+        return serializerSelectableServiceLoader.select(serializerType);
+//        Serializer serializer = serializerSelectableServiceLoader.select(serializerType);
+//        return serializer == null ? DEFAULT_SERIALIZER : serializer;
     }
 
 //    public static <M, T extends AbstractTopic<M>> T get(GenericType<T> genericType) {
@@ -67,8 +69,7 @@ public class Topics {
 //    }
 
     public static <M extends Serializable, T extends AbstractTopic<M>> T get(Type type, String queue) {
-        //noinspection unchecked
-        return (T) buildTopic(new TopicKey(queue, type));
+        return cast(buildTopic(new TopicKey(queue, type)));
     }
 
 

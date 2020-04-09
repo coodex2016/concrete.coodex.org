@@ -42,7 +42,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.toCtClass;
-import static org.coodex.util.Common.runtimeException;
+import static org.coodex.util.Common.rte;
 import static org.coodex.util.GenericTypeHelper.toReference;
 
 public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKey> extends InstantiationAwareBeanPostProcessorAdapter {
@@ -204,7 +204,7 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
                         field.set(bean, injectedCache.get(key).newInstance());
                         log.warn("{} {} {} injected. use @Inject plz.", beanName, toReference(field.getGenericType(), beanClass), field.getName());
                     } catch (Throwable e) {
-                        throw runtimeException(e);
+                        throw rte(e);
                     }
                 }
             }

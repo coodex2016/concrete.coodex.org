@@ -30,20 +30,23 @@ import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import static org.coodex.concrete.common.ConcreteHelper.*;
 import static org.coodex.concrete.dubbo.DubboConfigCaching.getApplicationConfig;
 import static org.coodex.concrete.dubbo.DubboConfigCaching.getServiceVersion;
 
+@SuppressWarnings("unused")
 public abstract class AbstractDubboApplication implements Application {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractDubboApplication.class);
 
     private final String applicationName;
-    private Singleton<String> version = new Singleton<>(this::getVersion);
+    private Singleton<String> version = Singleton.with(this::getVersion);
 
     public AbstractDubboApplication(String applicationName) {
         this.applicationName = applicationName;
@@ -86,7 +89,7 @@ public abstract class AbstractDubboApplication implements Application {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void registerConcreteService(Class<?> clz) {
         // 惰性加载，确保在运行期拿到实现实例
-        final Singleton<Object> serviceImpl = new Singleton<>(() -> BeanServiceLoaderProvider.getBeanProvider().getBean(clz));
+        final Singleton<Object> serviceImpl = Singleton.with(() -> BeanServiceLoaderProvider.getBeanProvider().getBean(clz));
 
         // serviceConfig
         ServiceConfig serviceConfig = new ServiceConfig();
@@ -118,14 +121,20 @@ public abstract class AbstractDubboApplication implements Application {
                         tokenId);
                 Object result = ConcreteContext.runServiceWithContext(
                         serverSideContext,
-                        () -> (args == null || args.length == 0) ?
-                                method.invoke(serviceImpl.get()) :
-                                method.invoke(serviceImpl.get(), args),
+                        () -> {
+                            try {
+                                return (args == null || args.length == 0) ?
+                                        method.invoke(serviceImpl.get()) :
+                                        method.invoke(serviceImpl.get(), args);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                throw ConcreteHelper.getException(e);
+                            }
+                        },
                         clz, method, args);
 
                 try {
                     String newTokenId = serverSideContext.getTokenId();
-                    if (!Common.isBlank(newTokenId) && !Common.isSameStr(newTokenId, tokenId)) {
+                    if (!Common.isBlank(newTokenId) && !Objects.equals(newTokenId, tokenId)) {
                         subjoin.add(Token.CONCRETE_TOKEN_ID_KEY, newTokenId);
                     }
                 } catch (Throwable th) {

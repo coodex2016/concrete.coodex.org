@@ -136,20 +136,18 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
     protected abstract ClientSideContext getContext();
 
-    @SuppressWarnings("rawtypes")
-    protected abstract OwnServiceUnit findUnit(DefinitionContext context);
+    protected abstract OwnServiceUnit<?> findUnit(DefinitionContext context);
 
     protected abstract Level getLoggingLevel();
 
-    @SuppressWarnings("rawtypes")
     @Override
-    protected CompletableFuture futureInvoke(DefinitionContext runtimeContext, Object[] args) {
-        CompletableFuture completableFuture = new CompletableFuture();
+    protected CompletableFuture<?> futureInvoke(DefinitionContext runtimeContext, Object[] args) {
+        CompletableFuture<?> completableFuture = new CompletableFuture<>();
         ClientHelper.getRxClientScheduler().execute(() -> {
-            final OwnServiceUnit unit = findUnit(runtimeContext);
+            final OwnServiceUnit<?> unit = findUnit(runtimeContext);
             // build request
             String msgId = Common.getUUIDStr();
-            final RequestPackage requestPackage = buildRequest(msgId, unit, args);
+            final RequestPackage<?> requestPackage = buildRequest(msgId, unit, args);
 
             CompletableFutureCallBack observableCallBack = new CompletableFutureCallBack(
                     completableFuture,

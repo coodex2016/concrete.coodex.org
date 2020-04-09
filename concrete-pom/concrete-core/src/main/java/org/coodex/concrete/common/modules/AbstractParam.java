@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import static org.coodex.util.Common.camelCase;
+import static org.coodex.util.Common.cast;
 
 /**
  * Created by davidoff shen on 2016-11-30.
@@ -53,9 +54,7 @@ public abstract class AbstractParam implements Annotated {
     }
 
     /**
-     * 参数类型
-     *
-     * @return
+     * @return 参数类型
      */
     public Class<?> getType() {
         return parameter.getType();
@@ -68,9 +67,7 @@ public abstract class AbstractParam implements Annotated {
     }
 
     /**
-     * 参数泛型类型
-     *
-     * @return
+     * @return 参数泛型类型
      */
     public Type getGenericType() {
         return parameter.getGenericType();
@@ -78,9 +75,7 @@ public abstract class AbstractParam implements Annotated {
 
 
     /**
-     * 参数名
-     *
-     * @return
+     * @return 参数名
      */
     public String getName() {
         return camelCase(parameter.getName());
@@ -88,9 +83,7 @@ public abstract class AbstractParam implements Annotated {
 
 
     /**
-     * 参数索引号
-     *
-     * @return
+     * @return 参数索引号
      */
     public int getIndex() {
         return parameter.getIndex();
@@ -99,12 +92,12 @@ public abstract class AbstractParam implements Annotated {
     @Override
     public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
         Target target = annotationClass.getAnnotation(Target.class);
-        if(target != null && Common.inArray(ElementType.ANNOTATION_TYPE, target.value())){
-            for(Annotation annotation: parameter.getAnnotations()){
-                if(annotation.annotationType().equals(annotationClass))
-                    return (T) annotation;
-                Annotation x  = annotation.annotationType().getAnnotation(annotationClass);
-                if(x != null) return (T) x;
+        if (target != null && Common.inArray(ElementType.ANNOTATION_TYPE, target.value())) {
+            for (Annotation annotation : parameter.getAnnotations()) {
+                if (annotation.annotationType().equals(annotationClass))
+                    return cast(annotation);
+                Annotation x = annotation.annotationType().getAnnotation(annotationClass);
+                if (x != null) return cast(x);
 
             }
 

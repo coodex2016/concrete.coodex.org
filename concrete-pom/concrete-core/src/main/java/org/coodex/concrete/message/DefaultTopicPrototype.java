@@ -17,20 +17,17 @@
 package org.coodex.concrete.message;
 
 import org.coodex.concrete.common.IF;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.coodex.util.Common;
 
 import java.io.Serializable;
 
 public class DefaultTopicPrototype<M extends Serializable> extends AbstractTopicPrototype<M> {
-    private final static Logger log = LoggerFactory.getLogger(AbstractTopicPrototype.class);
-
+    //    private final static Logger log = LoggerFactory.getLogger(AbstractTopicPrototype.class);
+    private boolean sending = false;
 
     public DefaultTopicPrototype(Courier<M> courier) {
         super(courier);
     }
-
-    private boolean sending = false;
 
     @Override
     public void publish(final M message) {
@@ -38,8 +35,7 @@ public class DefaultTopicPrototype<M extends Serializable> extends AbstractTopic
         if (!sending) {
             try {
                 sending = true;
-                //noinspection unchecked
-                getCourier().deliver(message);
+                getCourier().deliver(Common.cast(message));
             } finally {
                 sending = false;
             }

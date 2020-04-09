@@ -48,12 +48,12 @@ class ReadOnlyToken implements Token {
     }
 
     @Override
-    public Account currentAccount() {
+    public Account<?> currentAccount() {
         return token.currentAccount();
     }
 
     @Override
-    public void setAccount(Account account) {
+    public void setAccount(Account<?> account) {
         throw new RuntimeException("cannot set account in listener.");
     }
 
@@ -70,12 +70,6 @@ class ReadOnlyToken implements Token {
     @Override
     public String getTokenId() {
         return token.getTokenId();
-    }
-
-    @Override
-    @Deprecated
-    public <T> T getAttribute(String key) {
-        return token.getAttribute(key);
     }
 
     @Override
@@ -100,7 +94,7 @@ class ReadOnlyToken implements Token {
 
     @Override
     public void flush() {
-        throw new RuntimeException("cannot flust in listener");
+        throw new RuntimeException("cannot flush in listener");
     }
 
     @Override

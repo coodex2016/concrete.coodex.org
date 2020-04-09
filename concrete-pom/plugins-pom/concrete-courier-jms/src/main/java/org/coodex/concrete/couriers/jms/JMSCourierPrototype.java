@@ -17,6 +17,7 @@
 package org.coodex.concrete.couriers.jms;
 
 import org.coodex.concrete.message.CourierPrototype;
+import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,15 +34,14 @@ public class JMSCourierPrototype<M extends Serializable> extends CourierPrototyp
     private final static Logger log = LoggerFactory.getLogger(JMSCourierPrototype.class);
 
     private final String driver;
-    private final Singleton<JMSFacade> jmsFacadeSingleton = new Singleton<>(
+    private final Singleton<JMSFacade> jmsFacadeSingleton = Singleton.with(
             new Supplier<JMSFacade>() {
                 @Override
                 public JMSFacade get() {
 
-                    //noinspection unchecked
                     return new JMSFacade(getQueue(),
                             driver, String.format("%s@%s", getTopicType().toString(), getQueue()),
-                            o -> getTopic().notify((M) o), getMessageType());
+                            o -> getTopic().notify(Common.cast(o)), getMessageType());
                 }
             }
     );

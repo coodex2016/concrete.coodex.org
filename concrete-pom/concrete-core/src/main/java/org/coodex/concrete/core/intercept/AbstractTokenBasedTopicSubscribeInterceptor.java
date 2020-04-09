@@ -23,12 +23,15 @@ import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
-import org.coodex.concrete.message.*;
+import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.concrete.message.MessageConsumer;
+import org.coodex.concrete.message.MessageFilter;
+import org.coodex.concrete.message.TokenBasedTopic;
+import org.coodex.concrete.message.Topics;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
 import org.coodex.util.Singleton;
 
-import javax.inject.Inject;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 
@@ -41,16 +44,14 @@ import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 public abstract class AbstractTokenBasedTopicSubscribeInterceptor<M extends Serializable> extends AbstractInterceptor {
 
 
-    @Inject
-    private Token token;
-    private Singleton<TokenBasedTopic<M>> tokenBasedTopicSingleton = new Singleton<>(
-            this::buildTopic
-    );
+    private Token token = TokenWrapper.getInstance();
+
+    private Singleton<TokenBasedTopic<M>> tokenBasedTopicSingleton = Singleton.with(this::buildTopic);
 
     private TokenBasedTopic<M> buildTopic() {
         MessageConsumer messageConsumer = getClass().getAnnotation(MessageConsumer.class);
         String queue = null;
-        Class<? extends AbstractTopic> clz = TokenBasedTopic.class;
+        Class<?> clz = TokenBasedTopic.class;
         if (messageConsumer != null) {
             queue = messageConsumer.queue();
             if (TokenBasedTopic.class.isAssignableFrom(messageConsumer.topicType())) {

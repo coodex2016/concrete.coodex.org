@@ -73,7 +73,7 @@ public class SyncWrapper {
 
 
     public static <V> V call(ResourceLock lock, long time, Callable<V> callable) throws Exception {
-        boolean locked = false;
+        boolean locked;
         if (time > 0) {
             locked = lock.tryLock(time, TimeUnit.MILLISECONDS);
         } else {

@@ -20,7 +20,6 @@ import org.coodex.concrete.api.ConcreteService;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.modules.AbstractUnit;
-import org.coodex.concrete.jaxrs.Body;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.Common;
 import org.coodex.util.TypeHelper;
@@ -28,12 +27,10 @@ import org.coodex.util.TypeHelper;
 import javax.ws.rs.HttpMethod;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.coodex.concrete.jaxrs.JaxRSHelper.slash;
-import static org.coodex.concrete.jaxrs.JaxRSHelper.used024Behavior;
 import static org.coodex.concrete.jaxrs.Predicates.getHttpMethod;
 import static org.coodex.concrete.jaxrs.Predicates.removePredicate;
 
@@ -232,12 +229,12 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
     }
 
     private boolean isBodyPrimitive(JaxrsParam param) {
-        if (used024Behavior()) {
-            return param.getDeclaredAnnotation(Body.class) != null;
-        } else {
-            //noinspection IndexOfReplaceableByContains
-            return getDeclaredName().indexOf(String.format("{%s}", param.getName())) < 0;
-        }
+//        if (used024Behavior()) {
+//            return param.getDeclaredAnnotation(Body.class) != null;
+//        } else {
+        //noinspection IndexOfReplaceableByContains
+        return getDeclaredName().indexOf(String.format("{%s}", param.getName())) < 0;
+//        }
     }
 
     @Override
@@ -284,6 +281,8 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
 
     @Override
     public int compareTo(AbstractUnit o) {
+        // todo 优化正则表达式
+        //noinspection RegExpRedundantEscape
         int v = getName().replaceAll("(\\{)[^{^}]{0,256}(\\})", "")
                 .compareTo(o.getName().replaceAll("(\\{)[^{^}]{0,256}(\\})", ""));
         if (v == 0)

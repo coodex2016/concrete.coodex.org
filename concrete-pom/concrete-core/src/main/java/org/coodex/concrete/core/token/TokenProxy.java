@@ -68,8 +68,7 @@ public class TokenProxy implements Token {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Account currentAccount() {
+    public Account<?> currentAccount() {
         return this.proxy == null ? null : this.proxy.currentAccount();
     }
 
@@ -84,13 +83,13 @@ public class TokenProxy implements Token {
     }
 
     @Override
-    public void setAccount(Account account) {
+    public void setAccount(Account<?> account) {
         forSet().setAccount(account);
     }
 
     @Override
     public boolean isAccountCredible() {
-        return proxy == null ? false : proxy.isAccountCredible();
+        return proxy != null && proxy.isAccountCredible();
     }
 
     @Override
@@ -103,11 +102,6 @@ public class TokenProxy implements Token {
         return proxy == null ? null : proxy.getTokenId();
     }
 
-    @Override
-    @Deprecated
-    public <T> T getAttribute(String key) {
-        return proxy == null ? null : (T) proxy.getAttribute(key);
-    }
 
     @Override
     public <T> T getAttribute(String key, Class<T> clz) {

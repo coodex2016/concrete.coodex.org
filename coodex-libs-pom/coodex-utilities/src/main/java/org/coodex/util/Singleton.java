@@ -20,16 +20,18 @@ import java.util.function.Supplier;
 
 public class Singleton<T> {
 
-    private Supplier<T> builder;
+    private Supplier<T> supplier;
     private volatile T instance = null;
     private volatile boolean loaded = false;
 
-    public Singleton() {
+
+    private Singleton(Supplier<T> supplier) {
+        if (supplier == null) throw new NullPointerException("supplier MUST NOT be null.");
+        this.supplier = supplier;
     }
 
-    public Singleton(Supplier<T> builder) {
-        if (builder == null) throw new NullPointerException("builder MUST NOT be null.");
-        this.builder = builder;
+    public static <T> Singleton<T> with(Supplier<T> supplier) {
+        return new Singleton<>(supplier);
     }
 
 
@@ -37,7 +39,7 @@ public class Singleton<T> {
         if (!loaded) {
             synchronized (this) {
                 if (!loaded) {
-                    instance = builder.get();
+                    instance = supplier.get();
                     loaded = true;
                 }
             }

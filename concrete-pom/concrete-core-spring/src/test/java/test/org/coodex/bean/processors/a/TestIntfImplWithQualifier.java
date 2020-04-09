@@ -16,13 +16,11 @@
 
 package test.org.coodex.bean.processors.a;
 
-import org.coodex.util.DefaultService;
-
 import javax.inject.Named;
 
 @Named
 //@TestQualifier(Throwable.class)
-@DefaultService
+//@DefaultService
 public class TestIntfImplWithQualifier implements TestIntf {
     @Override
     public String x() {

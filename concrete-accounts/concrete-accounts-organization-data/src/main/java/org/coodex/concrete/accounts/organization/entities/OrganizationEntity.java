@@ -21,6 +21,7 @@ import javax.persistence.*;
 /**
  * Created by davidoff shen on 2017-05-03.
  */
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
 @Table(name = "t_concrete_accounts_organization")
 @Inheritance

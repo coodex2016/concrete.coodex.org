@@ -70,7 +70,7 @@ public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<
             log.info("Topic Bean Class created: {}, {}, {}. ", key.getQueue(), key.getTopicType().toString(), clz.getName());
             return clz;
         } catch (Throwable th) {
-            throw Common.runtimeException(th);
+            throw Common.rte(th);
         }
     }
 

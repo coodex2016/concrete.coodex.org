@@ -16,11 +16,11 @@
 
 package org.coodex.concrete.test;
 
-import org.coodex.closure.CallableClosure;
 import org.coodex.concrete.common.AbstractSubjoin;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.Subjoin;
+import org.coodex.util.Common;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -46,12 +46,13 @@ public class ConcreteTestRule implements TestRule {
                 try {
                     runWithContext(
                             new TestServiceContext(tokenId, getSubjoin(description)),
-                            new CallableClosure() {
-                                @Override
-                                public Object call() throws Throwable {
+                            () -> {
+                                try {
                                     base.evaluate();
-                                    return null;
+                                } catch (Throwable throwable) {
+                                    throw Common.rte(throwable);
                                 }
+                                return null;
                             });
                 } catch (ConcreteException ce) {
                     throw (ce.getCause() != null && ce.getCode() == ErrorCodes.UNKNOWN_ERROR) ? ce.getCause() : ce;

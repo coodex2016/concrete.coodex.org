@@ -59,7 +59,7 @@ public abstract class Profile {
     private static final LazySelectableServiceLoader<URL, ProfileProvider> PROFILE_PROVIDER_LOADER =
             new LazySelectableServiceLoader<URL, ProfileProvider>() {
             };
-    private static final Singleton<String[]> ALL_SUPPORTED_FILE_EXT = new Singleton<>(
+    private static final Singleton<String[]> ALL_SUPPORTED_FILE_EXT = Singleton.with(
             () -> {
                 ProfileProvider[] profileProviders = PROFILE_PROVIDER_LOADER.getAll().values().toArray(new ProfileProvider[0]);
                 Arrays.sort(profileProviders);
@@ -76,7 +76,7 @@ public abstract class Profile {
     @SuppressWarnings("StaticInitializerReferencesSubClass")
     private static final SingletonMap<String, Profile> WRAPPER_PROFILES = SingletonMap.<String, Profile>builder()
             .function(ProfileWrapper::new).build();
-    private static final Singleton<Long> RELOAD_INTERVAL_SINGLETON = new Singleton<>(
+    private static final Singleton<Long> RELOAD_INTERVAL_SINGLETON = Singleton.with(
             () -> Config.BASE_SYSTEM_PROPERTIES.getValue(Profile.class.getName() + ".reloadInterval",
                     () -> toLong(System.getProperty("Profile.reloadInterval"), 0L)
             ) * 1000L

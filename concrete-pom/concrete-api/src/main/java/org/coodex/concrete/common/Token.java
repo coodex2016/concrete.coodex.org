@@ -28,16 +28,12 @@ public interface Token extends Serializable {
     String CONCRETE_TOKEN_ID_KEY = "CONCRETE-TOKEN-ID";
 
     /**
-     * 令牌创建时间
-     *
-     * @return
+     * @return 令牌创建时间
      */
     long created();
 
     /**
-     * 是否还有效
-     *
-     * @return
+     * @return 是否还有效
      */
     boolean isValid();
 
@@ -47,11 +43,9 @@ public interface Token extends Serializable {
     void invalidate();
 
     /**
-     * 当前账户
-     *
-     * @return
+     * @return 当前账户
      */
-    Account currentAccount();
+    Account<?> currentAccount();
 
 //    /**
 //     * 失效事件，此时应清空全部缓存的数据
@@ -61,62 +55,52 @@ public interface Token extends Serializable {
     /**
      * 设置当前账户
      *
-     * @param account
+     * @param account account
      */
-    void setAccount(Account account);
+    void setAccount(Account<?> account);
 
     /**
-     * 当前账户是否可信
-     *
-     * @return
+     * @return 当前账户是否可信
      */
     boolean isAccountCredible();
 
     /**
      * 设置账户是否可信
      *
-     * @param credible
+     * @param credible credible
      */
     void setAccountCredible(boolean credible);
 
     /**
-     * 获取令牌id
-     *
-     * @return
+     * @return 获取令牌id
      */
     String getTokenId();
 
     /**
-     * 从令牌中获取属性
-     *
-     * @param key
-     * @param <T>
-     * @return
+     * @param key key
+     * @param clz clz
+     * @param <T> <T>
+     * @return 从令牌中获取属性
      */
-    @Deprecated
-    <T> T getAttribute(String key);
-
     <T> T getAttribute(String key, Class<T> clz);
 
     /**
      * 将属性缓存到令牌中
      *
-     * @param key
-     * @param attribute
+     * @param key       key
+     * @param attribute attribute
      */
     void setAttribute(String key, Serializable attribute);
 
     /**
      * 从令牌中移除属性
      *
-     * @param key
+     * @param key key
      */
     void removeAttribute(String key);
 
     /**
-     * 遍历所有属性
-     *
-     * @return
+     * @return 遍历所有属性
      */
     Enumeration<String> attributeNames();
 

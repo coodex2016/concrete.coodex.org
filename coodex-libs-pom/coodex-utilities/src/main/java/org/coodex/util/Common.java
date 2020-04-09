@@ -25,6 +25,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,15 +44,8 @@ import static java.lang.Long.parseLong;
  */
 public class Common {
 
-    public static final String PATH_SEPARATOR = System
-            .getProperty("path.separator");
-    //    private static String[] toPackages(String[] patterns) {
-//        Set<String> result = new LinkedHashSet<String>();
-//        for (int i = 0, l = patterns.length; i < l; i++) {
-//            result.add(pathRoot(patterns[i]));
-//        }
-//        return result.toArray(new String[0]);
-//    }
+    public static final String PATH_SEPARATOR = System.getProperty("path.separator");
+
     public static final String FILE_SEPARATOR = System.getProperty("file.separator");
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
@@ -58,6 +53,10 @@ public class Common {
     public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
 
     public static final String DEFAULT_DATETIME_FORMAT = DEFAULT_DATE_FORMAT + " " + DEFAULT_TIME_FORMAT;
+
+    public static final Long SYSTEM_START_TIME = ManagementFactory.getRuntimeMXBean().getStartTime();
+
+    public static final int PROCESSOR_COUNT = Runtime.getRuntime().availableProcessors();
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -214,19 +213,13 @@ public class Common {
     }
 
     public static String sha1(String content) {
-        byte[] buf = content == null ? new byte[0] : content.getBytes();
+        return sha1(content, StandardCharsets.UTF_8);
+    }
+
+    public static String sha1(String content, Charset charset) {
+        byte[] buf = (content == null) ? new byte[0] : content.getBytes(charset);
         return DigestHelper.sha1(buf);
     }
-//    private static Singleton<SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>> converterServiceLoader
-//            = new Singleton<SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>>(
-//            new Singleton.Builder<SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>>() {
-//                @Override
-//                public SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue> build() {
-//                    return new SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>() {
-//                    };
-//                }
-//            }
-//    );
 
     public static <T> boolean inArray(T el, T[] array) {
         return findInArray(el, array) >= 0;
@@ -592,20 +585,23 @@ public class Common {
 //        return getNewFile(fileName);
 //    }
 
-    public static String concat(List<String> list, String split) {
+    public static String concat(Collection<String> list, String split) {
         if (list == null) return null;
         switch (list.size()) {
             case 0:
                 return "";
             case 1:
-                return list.get(0);
+                return list.iterator().next();
             default:
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < list.size(); i++) {
-                    if (i > 0) builder.append(split);
-                    builder.append(list.get(i));
-                }
-                return builder.toString();
+                StringJoiner joiner = new StringJoiner(split);
+                list.forEach(joiner::add);
+                return joiner.toString();
+//                StringBuilder builder = new StringBuilder();
+//                for (int i = 0; i < list.size(); i++) {
+//                    if (i > 0) builder.append(split);
+//                    builder.append(list.get(i));
+//                }
+//                return builder.toString();
         }
     }
 
@@ -628,6 +624,20 @@ public class Common {
         }
         return cast(defaultValue.convertTo(str, value, cls));
     }
+
+
+//    public static <T> T to(String str, Supplier<T> defaultSupplier) {
+//        if (defaultSupplier == null) {
+//            if (str == null) return null;
+//            throw new NullPointerException("defaultValue Supplier is null.");
+//        }
+//        return getT(str, GenericTypeHelper.typeToClass(
+//                GenericTypeHelper.solveFromInstance(
+//                        Supplier.class.getTypeParameters()[0],
+//                        defaultSupplier
+//                )
+//        ), defaultSupplier);
+//    }
 
     public static int toInt(String str, Supplier<Integer> valueSupplier) {
         try {
@@ -808,11 +818,6 @@ public class Common {
         return builder.toString();
     }
 
-    @Deprecated
-    public static boolean isSameStr(String s1, String s2) {
-        return Objects.equals(s1, s2);
-    }
-
     public static Calendar copy(Calendar calendar) {
         return calendar == null ? null : (Calendar) calendar.clone();
     }
@@ -865,11 +870,10 @@ public class Common {
     /**
      * http://www.cnblogs.com/yujunyong/articles/2004724.html
      *
-     * @param strA
-     * @param strB
-     * @return
+     * @param strA strA
+     * @param strB strB
+     * @return string distance from strA to strB
      */
-    @SuppressWarnings("JavaDoc")
     private static int calculateStringDistance(String strA, String strB) {
         int lenA = strA.length();
         int lenB = strB.length();
@@ -891,20 +895,16 @@ public class Common {
     }
 
     /**
-     * 两个字符串的相似度
-     *
-     * @param s1
-     * @param s2
-     * @return
+     * @param s1 s1
+     * @param s2 s2
+     * @return 两个字符串的相似度
      */
-    @SuppressWarnings({"JavaDoc", "unused"})
     public static double similarity(String s1, String s2) {
-        if (s1 == null || s2 == null) return 0.0f;
-        if (s1.equals(s2)) return 1.0f;
-        return 1.0f - calculateStringDistance(s1, s2) / (Math.max(s1.length(), s2.length()) * 1.0f);
+        if (s1 == null || s2 == null) return 0.0d;
+        if (s1.equals(s2)) return 1.0d;
+        return 1.0d - calculateStringDistance(s1, s2) / (Math.max(s1.length(), s2.length()) * 1.0d);
     }
 
-    @SuppressWarnings("unused")
     public static <T> Map<String, T> subMap(String prefix, Map<String, T> map) {
         Map<String, T> subMap = new HashMap<>();
         String prefixKey = prefix.endsWith(".") ? prefix : (prefix + '.');
@@ -929,8 +929,6 @@ public class Common {
         return getSafetyDateFormat(format).format(date);
     }
 
-
-    @SuppressWarnings("unused")
     public static String dateToStr(Date date) {
         return dateToStr(date, DEFAULT_DATETIME_FORMAT);
     }
@@ -954,7 +952,6 @@ public class Common {
         return dateToCalendar(strToDate(str, format));
     }
 
-    @SuppressWarnings("unused")
     public static String longToDateStr(long l) {
         return longToDateStr(l, DEFAULT_DATETIME_FORMAT);
     }
@@ -1030,6 +1027,7 @@ public class Common {
         calendar.set(Calendar.MILLISECOND, millisecond);
         return calendar;
     }
+
     @SuppressWarnings("fallthrough")
     public static Calendar truncate(Calendar calendar, int fromField) {
         Calendar result = (Calendar) calendar.clone();
@@ -1062,18 +1060,26 @@ public class Common {
         return dateToStr(Clock.now().getTime(), format);
     }
 
-    public static RuntimeException runtimeException(Throwable th) {
+    public static RuntimeException rte(Throwable th) {
         return th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th.getLocalizedMessage(), th);
     }
 
     public static Long getSystemStart() {
-        return ManagementFactory.getRuntimeMXBean().getStartTime();
+        return SYSTEM_START_TIME;
     }
 
-//    private static boolean isMatch(Pattern p, String str) {
-//        return p.matcher(str).find();
-//    }
+    @SuppressWarnings("unchecked")
+    public static <T> T cast(Object obj) {
+        return (T) obj;
+    }
 
+    public static void sleep(long ms) {
+        try {
+            Clock.sleep(ms);
+        } catch (InterruptedException e) {
+            throw rte(e);
+        }
+    }
 
     public interface ResourceFilter {
         boolean accept(String root, String resourceName);
@@ -1171,11 +1177,6 @@ public class Common {
         public int hashCode() {
             return originalPath.hashCode();
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T cast(Object obj) {
-        return (T) obj;
     }
 
 

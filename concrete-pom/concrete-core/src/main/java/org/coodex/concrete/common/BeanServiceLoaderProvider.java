@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.util.ReflectHelper;
 import org.coodex.util.Singleton;
 
 import java.util.HashMap;
@@ -39,7 +38,7 @@ public class BeanServiceLoaderProvider /*extends ServiceLoaderImpl<BeanProvider>
 //    private static final ServiceLoader<BeanProvider> SPI_INSTANCE = new ServiceLoaderImpl<BeanProvider>() {
 //    };//new BeanServiceLoaderProvider();
 
-    private static Singleton<BeanProvider> beanProviderSingleton = new Singleton<>(
+    private static Singleton<BeanProvider> beanProviderSingleton = Singleton.with(
             () -> {
                 ServiceLoader<BeanProvider> serviceLoader = ServiceLoader.load(BeanProvider.class);
                 Iterator<BeanProvider> iterable = serviceLoader.iterator();
@@ -55,7 +54,7 @@ public class BeanServiceLoaderProvider /*extends ServiceLoaderImpl<BeanProvider>
                     }
                 };
             }
-    ) ;
+    );
 
     public static BeanProvider getBeanProvider() {
 //        return SPI_INSTANCE.getInstance();

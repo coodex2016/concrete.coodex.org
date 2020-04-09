@@ -26,7 +26,7 @@ import java.util.List;
 public abstract class AbstractRelationStrategy implements RelationStrategy {
 
     //    private String[] strategies = Singleton<;
-    private Singleton<String[]> strategies = new Singleton<>(() -> {
+    private Singleton<String[]> strategies = Singleton.with(() -> {
         Class<?> c = AbstractRelationStrategy.this.getClass();
         List<String> list = new ArrayList<>();
         for (Method method : c.getMethods()) {

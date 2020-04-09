@@ -22,8 +22,6 @@ import org.coodex.concrete.common.BeanServiceLoaderProvider;
 import org.coodex.concrete.core.token.AbstractToken;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Enumeration;
@@ -31,15 +29,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import static org.coodex.util.Common.cast;
+
 /**
  * Created by davidoff shen on 2016-09-05.
  */
+@SuppressWarnings("unused")
 class LocalToken /*implements Token*/ extends AbstractToken {
 
-    private final static Logger log = LoggerFactory.getLogger(LocalToken.class);
+//    private final static Logger log = LoggerFactory.getLogger(LocalToken.class);
 
 
-    private Map<String, Object> attributes = new HashMap<String, Object>();
+    private Map<String, Object> attributes = new HashMap<>();
     //    private Account currentAccount = null;
     private Serializable currentAccountId = null;
     private boolean accountCredible = false;
@@ -85,16 +86,15 @@ class LocalToken /*implements Token*/ extends AbstractToken {
 
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Account currentAccount() {
-
-        return currentAccountId == null ? null :
-                BeanServiceLoaderProvider.getBeanProvider().getBean(AccountFactory.class).getAccountByID(currentAccountId);
-//        return currentAccount;
+    public Account<?> currentAccount() {
+        if (currentAccountId == null)
+            return null;
+        AccountFactory<?> accountFactory = BeanServiceLoaderProvider.getBeanProvider().getBean(AccountFactory.class);
+        return accountFactory.getAccountByID(cast(currentAccountId));
     }
 
     @Override
-    public void setAccount(Account account) {
+    public void setAccount(Account<?> account) {
         currentAccountId = account.getId();
 //        currentAccount = account;
     }
@@ -127,8 +127,7 @@ class LocalToken /*implements Token*/ extends AbstractToken {
 
     @Override
     public <T> T getAttribute(String key, Class<T> tClass) {
-        //noinspection unchecked
-        return (T) attributes.get(key);
+        return cast(attributes.get(key));
     }
 
     @Override

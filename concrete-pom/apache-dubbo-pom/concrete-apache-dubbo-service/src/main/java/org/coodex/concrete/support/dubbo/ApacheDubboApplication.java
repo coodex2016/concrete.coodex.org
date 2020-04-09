@@ -29,7 +29,7 @@ import java.util.Set;
 
 public class ApacheDubboApplication extends AbstractDubboApplication {
 
-    private static Singleton<RegistryConfig> simpleRegistry = new Singleton<>(() -> {
+    private static Singleton<RegistryConfig> simpleRegistry = Singleton.with(() -> {
         // SimpleRegistryService
         ServiceConfig<RegistryService> config = new ServiceConfig<>();
         config.setApplication(DubboConfigCaching.getApplicationConfig("simple-registry"));

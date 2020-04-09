@@ -298,8 +298,7 @@ public class ConcreteHelper {
         // 注册
         foreachClass((clazz) -> {
             if (AbstractErrorCodes.class.isAssignableFrom(clazz)) {
-                //noinspection unchecked
-                ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) clazz);
+                ErrorMessageFacade.register(Common.cast(clazz));
             }
             processor.process(clazz);
 
@@ -384,8 +383,7 @@ public class ConcreteHelper {
     }
 
 
-    @SuppressWarnings("rawtypes")
-    public static int getPriority(AbstractUnit unit) {
+    public static int getPriority(AbstractUnit<?,?> unit) {
         return getPriority(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
     }
 
@@ -486,6 +484,10 @@ public class ConcreteHelper {
             concreteException = new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }
         return concreteException;
+    }
+
+    public static ConcreteException getException(String message){
+        return new ConcreteException(ErrorCodes.UNKNOWN_ERROR, message);
     }
 
 

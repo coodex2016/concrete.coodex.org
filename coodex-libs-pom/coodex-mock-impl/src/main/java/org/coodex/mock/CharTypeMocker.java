@@ -30,7 +30,7 @@ public class CharTypeMocker extends AbstractTypeMocker<Mock.Char> {
             String.class
     };
 
-    private static Singleton<CharTypeMocker> instance = new Singleton<>(CharTypeMocker::new);
+    private static Singleton<CharTypeMocker> instance = Singleton.with(CharTypeMocker::new);
 
 //    public CharTypeMocker() {
 //        instance = this;

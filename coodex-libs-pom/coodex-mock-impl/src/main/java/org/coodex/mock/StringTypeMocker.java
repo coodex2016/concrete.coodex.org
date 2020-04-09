@@ -44,7 +44,7 @@ public class StringTypeMocker extends AbstractTypeMocker<Mock.String> {
             String.class
     };
 
-    private static Singleton<StringTypeMocker> instance = new Singleton<>(StringTypeMocker::new);
+    private static Singleton<StringTypeMocker> instance = Singleton.with(StringTypeMocker::new);
 
 //    public StringTypeMocker() {
 //        instance = this;

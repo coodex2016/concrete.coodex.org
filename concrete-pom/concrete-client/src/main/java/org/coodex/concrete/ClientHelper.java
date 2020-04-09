@@ -42,49 +42,54 @@ import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
 
 public class ClientHelper {
 
-    private static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE_SINGLETON = new Singleton<>(
-            () -> ConcreteHelper.getScheduler("rx-client")
-    );
+    private static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE_SINGLETON
+            = Singleton.with(() -> ConcreteHelper.getScheduler("rx-client"));
     @SuppressWarnings("rawtypes")
-    private static final LazySelectableServiceLoader<Class, CompletableFutureBridge> BRIDGE_LOADER =
-            new LazySelectableServiceLoader<Class, CompletableFutureBridge>() {
-            };
+    private static final SelectableServiceLoader<Class, CompletableFutureBridge> BRIDGE_LOADER
+            = new LazySelectableServiceLoader<Class, CompletableFutureBridge>() {
+    };
     //            new Singleton<>(() -> new SelectableServiceLoader<Class, CompletableFutureBridge>() {
 //            });
-    private static Singleton<InstanceBuilder> instanceBuilder =
-            new Singleton<>(() -> new ServiceLoaderImpl<InstanceBuilder>(new JavaProxyInstanceBuilder()) {
-            }.get());
+//    private static Singleton<InstanceBuilder> instanceBuilder =
+//            Singleton.with(() -> new ServiceLoaderImpl<InstanceBuilder>(new JavaProxyInstanceBuilder()) {
+//            }.get());
+    private static ServiceLoader<InstanceBuilder> instanceBuilder
+            = new LazyServiceLoader<InstanceBuilder>(new JavaProxyInstanceBuilder()) {
+    };
     //            new Singleton<>(()->new SelectableServiceLoader<Destination, InvokerFactory>() {
 //            });
-    private static LazySelectableServiceLoader<Destination, InvokerFactory> invokerFactoryProviders =
+    private static SelectableServiceLoader<Destination, InvokerFactory> invokerFactoryProviders =
             new LazySelectableServiceLoader<Destination, InvokerFactory>() {
             };
-    private static LazySelectableServiceLoader<String, SSLContextFactory> sslContextFactoryAcceptableServiceLoader =
+    private static SelectableServiceLoader<String, SSLContextFactory> sslContextFactoryAcceptableServiceLoader =
             new LazySelectableServiceLoader<String, SSLContextFactory>() {
             };
 
     //            = new Singleton<>(() -> new SelectableServiceLoader<String, SSLContextFactory>() {
 //    });
-    private static LazyServiceLoader<ConcreteInterceptor> interceptorServiceLoader =
+    private static ServiceLoader<ConcreteInterceptor> interceptorServiceLoader =
             new LazyServiceLoader<ConcreteInterceptor>() {
             };
     //            new Singleton<>(
 //            () -> new ServiceLoaderImpl<ConcreteInterceptor>() {
 //            }
 //    );
-    private static Singleton<SyncInterceptorChain> syncInterceptorChain = new Singleton<>(
+    private static Singleton<SyncInterceptorChain> syncInterceptorChain
+            = Singleton.with(
             () -> {
                 SyncInterceptorChain instance = new SyncInterceptorChain();
                 buildChain(instance);
                 return instance;
             }
     );
-    private static Singleton<AsyncInterceptorChain> asyncInterceptorChain =
-            new Singleton<>(() -> {
+    private static Singleton<AsyncInterceptorChain> asyncInterceptorChain
+            = Singleton.with(
+            () -> {
                 AsyncInterceptorChain instance = new AsyncInterceptorChain();
                 buildChain(instance);
                 return instance;
-            });
+            }
+    );
     private static SelectableFactoryLoader<String, Destination> destinationFactorySelectableServiceLoader
             = new SelectableFactoryLoaderImpl<String, Destination>() {
     };
@@ -145,15 +150,15 @@ public class ClientHelper {
         }
     }
 
-    @Deprecated
-    public static SSLContext getSSLContext(Destination destination) {
-        String ssl = getString(destination.getIdentify(), "ssl");
-        try {
-            return sslContextFactoryAcceptableServiceLoader.select(ssl).getSSLContext(ssl);
-        } catch (Throwable th) {
-            throw ConcreteHelper.getException(th);
-        }
-    }
+//    @Deprecated
+//    public static SSLContext getSSLContext(Destination destination) {
+//        String ssl = getString(destination.getIdentify(), "ssl");
+//        try {
+//            return sslContextFactoryAcceptableServiceLoader.select(ssl).getSSLContext(ssl);
+//        } catch (Throwable th) {
+//            throw ConcreteHelper.getException(th);
+//        }
+//    }
 
 //    private static ServiceLoader<ConcreteInterceptor> getInterceptorServiceLoader() {
 //        return interceptorServiceLoader.get();

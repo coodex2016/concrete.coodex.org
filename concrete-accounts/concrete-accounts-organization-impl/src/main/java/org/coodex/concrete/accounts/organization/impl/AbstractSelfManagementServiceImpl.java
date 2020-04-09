@@ -29,22 +29,20 @@ import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.copier.TwoWayCopier;
-import org.coodex.util.Common;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.coodex.concrete.accounts.AccountsCommon.checkAuthCode;
 import static org.coodex.concrete.accounts.AccountsCommon.getAuthenticatorDesc;
 import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
 import static org.coodex.concrete.common.OrganizationErrorCodes.NOT_ORGANIZATION_ACCOUNT;
+import static org.coodex.util.Common.cast;
 
 /**
  * Created by davidoff shen on 2017-05-18.
  */
+@SuppressWarnings("CdiInjectionPointsInspection")
 public abstract class AbstractSelfManagementServiceImpl<
         I extends Institution, D extends Department,
         J extends Position, P extends Person,
@@ -75,32 +73,31 @@ public abstract class AbstractSelfManagementServiceImpl<
 
     //    @Override
     protected PE getCurrentAccountEntity() {
-        Account<ClassifiableAccountID> currentAccount = token.currentAccount();
+        Account<ClassifiableAccountID> currentAccount = cast(token.currentAccount());
         IF.is(currentAccount.getId().getCategory() != AccountConstants.TYPE_ORGANIZATION, NOT_ORGANIZATION_ACCOUNT);
+        // ???
         return personAccountRepo.findById(currentAccount.getId().getId()).orElse(null);
     }
 
     @Override
     public List<StrID<I>> getMyInstitutions() {
-        Set<String> institutionIdSet = new HashSet<String>();
-        List<StrID<I>> institutions = new ArrayList<StrID<I>>();
+        Set<String> institutionIdSet = new HashSet<>();
+        List<StrID<I>> institutions = new ArrayList<>();
         PE personEntity = getCurrentAccountEntity();
         for (JE position : personEntity.getPositions()) {
-            IE institutionEntity = null;
+            IE institutionEntity;
             OrganizationEntity organizationEntity = position.getBelongTo();
             while (organizationEntity instanceof AbstractDepartmentEntity) {
                 organizationEntity = organizationEntity.getHigherLevel();
                 if (organizationEntity == null) break;
             }
-            //noinspection unchecked
-            institutionEntity = (IE) organizationEntity;
+            institutionEntity = cast(organizationEntity);
             while (institutionEntity != null) {
                 if (!institutionIdSet.contains(institutionEntity.getId())) {
                     institutionIdSet.add(institutionEntity.getId());
-                    institutions.add(new StrID<I>(institutionEntity.getId(), institutionCopier.copyB2A(institutionEntity)));
+                    institutions.add(new StrID<>(institutionEntity.getId(), institutionCopier.copyB2A(institutionEntity)));
                 }
-                //noinspection unchecked
-                institutionEntity = (IE) institutionEntity.getHigherLevel();
+                institutionEntity = cast(institutionEntity.getHigherLevel());
             }
         }
         return institutions;
@@ -108,17 +105,16 @@ public abstract class AbstractSelfManagementServiceImpl<
 
     @Override
     public List<StrID<D>> getMyDepartments() {
-        Set<String> departmentIdSet = new HashSet<String>();
-        List<StrID<D>> departments = new ArrayList<StrID<D>>();
+        Set<String> departmentIdSet = new HashSet<>();
+        List<StrID<D>> departments = new ArrayList<>();
         PE personEntity = getCurrentAccountEntity();
         for (JE position : personEntity.getPositions()) {
             OrganizationEntity organizationEntity = position.getBelongTo();
             while (organizationEntity instanceof AbstractDepartmentEntity) {
-                //noinspection unchecked
-                DE departmentEntity = (DE) organizationEntity;
+                DE departmentEntity = cast(organizationEntity);
                 if (!departmentIdSet.contains(departmentEntity.getId())) {
                     departmentIdSet.add(departmentEntity.getId());
-                    departments.add(new StrID<D>(departmentEntity.getId(), departmentCopier.copyB2A(departmentEntity)));
+                    departments.add(new StrID<>(departmentEntity.getId(), departmentCopier.copyB2A(departmentEntity)));
                 }
                 organizationEntity = departmentEntity.getHigherLevel();
             }
@@ -128,11 +124,11 @@ public abstract class AbstractSelfManagementServiceImpl<
 
     @Override
     public List<StrID<J>> getMyPositions() {
-        List<StrID<J>> positions = new ArrayList<StrID<J>>();
+        List<StrID<J>> positions = new ArrayList<>();
         PE personEntity = getCurrentAccountEntity();
 
         for (JE position : personEntity.getPositions()) {
-            positions.add(new StrID<J>(position.getId(), positionCopier.copyB2A(position)));
+            positions.add(new StrID<>(position.getId(), positionCopier.copyB2A(position)));
         }
 
         return positions;
@@ -163,7 +159,7 @@ public abstract class AbstractSelfManagementServiceImpl<
     @Override
     public void updateCellPhone(String cellPhone, String authCode) {
         PE personEntity = checkAuthCode(authCode, getCurrentAccountEntity());
-        if (!Common.isSameStr(cellPhone, personEntity.getCellphone())) {
+        if (!Objects.equals(cellPhone, personEntity.getCellphone())) {
             if (cellPhone != null) {
                 IF.is(personAccountRepo.countByCellphoneAndTenant(cellPhone, getTenant()) != 0, OrganizationErrorCodes.CELL_PHONE_EXISTS);
             }
@@ -176,7 +172,7 @@ public abstract class AbstractSelfManagementServiceImpl<
     @Override
     public void updateEmail(String email, String authCode) {
         PE personEntity = checkAuthCode(authCode, getCurrentAccountEntity());
-        if (!Common.isSameStr(email, personEntity.getEmail())) {
+        if (!Objects.equals(email, personEntity.getEmail())) {
             if (email != null) {
                 IF.is(personAccountRepo.countByEmailAndTenant(email, getTenant()) != 0, OrganizationErrorCodes.EMAIL_EXISTS);
             }

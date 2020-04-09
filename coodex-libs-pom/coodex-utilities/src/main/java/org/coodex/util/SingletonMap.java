@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class SingletonMap<K, V> {
 
     private static final Singleton<ScheduledExecutorService> DEFAULT_SCHEDULED_EXECUTOR_SERVICE
-            = new Singleton<>(() -> ExecutorsHelper.newSingleThreadScheduledExecutor("singletonMap-DEFAULT"));
+            = Singleton.with(() -> ExecutorsHelper.newSingleThreadScheduledExecutor("singletonMap-DEFAULT"));
 
     private final static Logger log = LoggerFactory.getLogger(org.coodex.util.SingletonMap.class);
     private final Map<K, Value<K, V>> map = new HashMap<>();

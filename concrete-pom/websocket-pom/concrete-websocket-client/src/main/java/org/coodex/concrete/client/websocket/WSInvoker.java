@@ -21,7 +21,6 @@ import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.AbstractOwnRxInvoker;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.Level;
-import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.websocket.WebSocketHelper;
 import org.coodex.concrete.websocket.WebSocketUnit;
@@ -36,12 +35,10 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 public class WSInvoker extends AbstractOwnRxInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(WSInvoker.class);
-    private static Singleton<WSClientHandle> handle = new Singleton<>(
-            WSClientHandle::new
-    );
+    private static Singleton<WSClientHandle> handle = Singleton.with(WSClientHandle::new);
     private final Level level;
     private final WebsocketDestination destination;
-    private JSONSerializer serializer = JSONSerializerFactory.getInstance();
+//    private JSONSerializer serializer = JSONSerializerFactory.getInstance();
 
     WSInvoker(Destination destination) {
         super(destination);
@@ -67,7 +64,7 @@ public class WSInvoker extends AbstractOwnRxInvoker {
     }
 
     @Override
-    protected void send(RequestPackage<?> requestPackage) throws Throwable {
+    protected void send(RequestPackage<?> requestPackage) {
         handle.get().send(destination, requestPackage);
     }
 

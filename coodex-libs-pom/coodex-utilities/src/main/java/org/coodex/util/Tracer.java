@@ -24,13 +24,14 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.function.Supplier;
+
+import static org.coodex.util.Common.cast;
 
 public class Tracer {
     private final static Logger log = LoggerFactory.getLogger(Tracer.class);
     private static final StackClosureContext<Map<String, Object>> tracer_context = new StackClosureContext<>();
-    private static Singleton<Boolean> TRACE_ENABLED = new Singleton<>(() -> {
+    private static Singleton<Boolean> TRACE_ENABLED = Singleton.with(() -> {
 //            return Common.toBool(System.getProperty("org.coodex.util.Tracer"), false);
         return Config.getValue("org.coodex.util.Tracer", false);
     });
@@ -53,8 +54,7 @@ public class Tracer {
     }
 
     private static Map<String, Long> getStartTimeMap() {
-        //noinspection unchecked
-        return (Map<String, Long>) tracer_context.get().get(START_TIME_KEY);
+        return cast(tracer_context.get().get(START_TIME_KEY));
     }
 
     public static void end(String label) {
@@ -102,7 +102,7 @@ public class Tracer {
 
     public void trace(final Runnable runnable) {
         if (isEnabled()) {
-            trace((Callable<Void>) () -> {
+            trace(() -> {
                 runnable.run();
                 return null;
             });
@@ -111,15 +111,14 @@ public class Tracer {
         }
     }
 
-    public <T> T trace(final Callable<T> callable) {
+    public <T> T trace(final Supplier<T> supplier) {
         if (isEnabled()) {
             long start = Clock.currentTimeMillis();
             Throwable throwable = null;
             Map<String, Object> context = new LinkedHashMap<>();
             try {
                 context.put(START_TIME_KEY, new HashMap<String, Long>());
-                //noinspection unchecked
-                return (T) tracer_context.call(context, callable::call);
+                return cast(tracer_context.call(context, supplier));
             } catch (Throwable th) {
                 throwable = th;
             } finally {
@@ -132,12 +131,12 @@ public class Tracer {
                     log.info(info + "used {} ms.", used);
                 }
             }
-            throw Common.runtimeException(throwable);
+            throw Common.rte(throwable);
         } else {
             try {
-                return callable.call();
+                return supplier.get();
             } catch (Exception e) {
-                throw Common.runtimeException(e);
+                throw Common.rte(e);
             }
         }
     }

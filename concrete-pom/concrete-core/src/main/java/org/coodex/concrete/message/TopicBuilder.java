@@ -24,7 +24,7 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.StringMemberValue;
-import org.coodex.concrete.common.IF;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SelectableServiceLoader;
@@ -35,12 +35,14 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
 import static org.coodex.concrete.message.CourierBuilder.getMessageType;
-import static org.coodex.util.Common.runtimeException;
+import static org.coodex.util.Common.cast;
+import static org.coodex.util.Common.rte;
 
 @SuppressWarnings("rawtypes")
 class TopicBuilder implements Function<TopicKey, AbstractTopic> {
@@ -69,11 +71,9 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
 
     private Class<? extends AbstractTopic> getClass(Type topicType) {
         if (topicType instanceof ParameterizedType) {
-            //noinspection unchecked
-            return (Class<? extends AbstractTopic>) ((ParameterizedType) topicType).getRawType();
+            return cast(((ParameterizedType) topicType).getRawType());
         } else if (topicType instanceof Class && AbstractTopic.class.isAssignableFrom((Class<?>) topicType)) {
-            //noinspection unchecked
-            return (Class<? extends AbstractTopic>) topicType;
+            return cast(topicType);
         } else {
             throw new RuntimeException(topicType + " is NOT SUPPORTED.");
         }
@@ -97,10 +97,11 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
                 }
             }
 
-            //noinspection ConstantConditions
             Class<? extends AbstractTopicPrototype> prototype =
-                    IF.isNull(provider, "No provider for " + topicClass.getName())
+                    Optional.ofNullable(provider)
+                            .orElseThrow(() -> ConcreteHelper.getException("No provider for " + topicClass.getName()))
                             .getPrototype();
+
 
             Courier courier = CourierBuilder.buildCourier(key);
 
@@ -138,22 +139,19 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
             ctConstructor.setBody("{super($$);}");
             ctClass.addConstructor(ctConstructor);
 
-            //noinspection unchecked
-            Class<? extends AbstractTopic> newClass = (Class<? extends AbstractTopic>) (
-                    IS_JAVA_9_AND_LAST.get() ?
-                            ctClass.toClass(TopicBuilder.class) :
-                            ctClass.toClass()
-            );
+            Class<?> newClass = IS_JAVA_9_AND_LAST.get() ?
+                    ctClass.toClass(TopicBuilder.class) :
+                    ctClass.toClass();
             Constructor constructor = newClass.getConstructor(Courier.class);
 
-            AbstractTopic abstractTopic = (AbstractTopic) constructor.newInstance(courier);
+            AbstractTopic abstractTopic = cast(constructor.newInstance(courier));
             log.info("Topic build. {} for {}",
                     abstractTopic.getClass().getName(),
                     key.toString()
             );
             return abstractTopic;
         } catch (Throwable th) {
-            throw runtimeException(th);
+            throw rte(th);
         }
     }
 }

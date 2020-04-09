@@ -27,9 +27,9 @@ import java.util.Set;
 @Aspect
 public class SpringWebMockAspect {
 
-    private Set<Class> excepted;
+    private Set<Class<?>> excepted;
 
-    public void setExcepted(Set<Class> excepted) {
+    public void setExcepted(Set<Class<?>> excepted) {
         this.excepted = excepted;
     }
 

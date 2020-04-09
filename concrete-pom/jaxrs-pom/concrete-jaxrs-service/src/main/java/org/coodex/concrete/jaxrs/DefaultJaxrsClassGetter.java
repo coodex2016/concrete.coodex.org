@@ -18,5 +18,5 @@ package org.coodex.concrete.jaxrs;
 
 public interface DefaultJaxrsClassGetter {
 
-    Class[] getClasses();
+    Class<?>[] getClasses();
 }

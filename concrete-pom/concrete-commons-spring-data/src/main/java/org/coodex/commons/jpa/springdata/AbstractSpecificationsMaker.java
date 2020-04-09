@@ -24,6 +24,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.lang.reflect.Method;
 
 import static org.coodex.commons.jpa.springdata.SpecCommon.wrapper;
+import static org.coodex.util.Common.cast;
 
 public abstract class AbstractSpecificationsMaker<C, T> implements SpecificationsMaker<C, T> {
 
@@ -54,8 +55,7 @@ public abstract class AbstractSpecificationsMaker<C, T> implements Specification
             Method method = IF.isNull(makerFunction, "SpecificationsMaker function not exists: " + name);
             if (method != null) {
                 method.setAccessible(true);
-                //noinspection unchecked
-                return (Specification<T>) method.invoke(this, condition);
+                return cast(method.invoke(this, condition));
             } else {
                 return null;
             }

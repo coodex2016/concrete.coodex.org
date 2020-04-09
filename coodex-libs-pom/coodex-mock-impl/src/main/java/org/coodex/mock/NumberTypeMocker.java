@@ -27,6 +27,7 @@ import java.util.Random;
 
 import static org.coodex.mock.Mock.Number.DEFAULT_DIGITS;
 import static org.coodex.mock.Mock.Number.DEFAULT_RANGE;
+import static org.coodex.util.Common.cast;
 
 /**
  * 按照{@link Mock.Number}约定的一个模拟器实现
@@ -50,7 +51,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
     private static char[] LEFT_BRACKETS_INCLUDE = "[".toCharArray();
     private static char[] RIGHT_BRACKETS_INCLUDE = "]".toCharArray();
 
-    private static Singleton<NumberTypeMocker> instance = new Singleton<>(NumberTypeMocker::new);
+    private static Singleton<NumberTypeMocker> instance = Singleton.with(NumberTypeMocker::new);
 
 //    public NumberTypeMocker() {
 //        instance = this;
@@ -137,23 +138,17 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
         String min = left.substring(1);
         String max = right.substring(0, right.length() - 1);
         if (Byte.class.equals(c) || byte.class.equals(c)) {
-            //noinspection unchecked
-            return (Range<T>) new ByteRange(includeMin, min, max, includeMax);
+            return cast(new ByteRange(includeMin, min, max, includeMax));
         } else if (Short.class.equals(c) || short.class.equals(c)) {
-            //noinspection unchecked
-            return (Range<T>) new ShortRange(includeMin, min, max, includeMax);
+            return cast(new ShortRange(includeMin, min, max, includeMax));
         } else if (Integer.class.equals(c) || int.class.equals(c)) {
-            //noinspection unchecked
-            return (Range<T>) new IntegerRange(includeMin, min, max, includeMax);
+            return cast(new IntegerRange(includeMin, min, max, includeMax));
         } else if (Long.class.equals(c) || long.class.equals(c)) {
-            //noinspection unchecked
-            return (Range<T>) new LongRange(includeMin, min, max, includeMax);
+            return cast(new LongRange(includeMin, min, max, includeMax));
         } else if (Float.class.equals(c) || float.class.equals(c)) {
-            //noinspection unchecked
-            return (Range<T>) new FloatRange(includeMin, min, max, includeMax);
+            return cast(new FloatRange(includeMin, min, max, includeMax));
         } else if (Double.class.equals(c) || double.class.equals(c)) {
-            //noinspection unchecked
-            return (Range<T>) new DoubleRange(includeMin, min, max, includeMax);
+            return cast(new DoubleRange(includeMin, min, max, includeMax));
         } else {
             return null;
         }
@@ -177,23 +172,17 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
     private static <T> Alternative<T> buildSingle(String s, Class<T> c) {
         if (Byte.class.equals(c) || byte.class.equals(c)) {
-            //noinspection unchecked
-            return (Single<T>) new ByteSingle(s);
+            return cast(new ByteSingle(s));
         } else if (Short.class.equals(c) || short.class.equals(c)) {
-            //noinspection unchecked
-            return (Single<T>) new ShortSingle(s);
+            return cast(new ShortSingle(s));
         } else if (Integer.class.equals(c) || int.class.equals(c)) {
-            //noinspection unchecked
-            return (Single<T>) new IntegerSingle(s);
+            return cast(new IntegerSingle(s));
         } else if (Long.class.equals(c) || long.class.equals(c)) {
-            //noinspection unchecked
-            return (Single<T>) new LongSingle(s);
+            return cast(new LongSingle(s));
         } else if (Float.class.equals(c) || float.class.equals(c)) {
-            //noinspection unchecked
-            return (Single<T>) new FloatSingle(s);
+            return cast(new FloatSingle(s));
         } else if (Double.class.equals(c) || double.class.equals(c)) {
-            //noinspection unchecked
-            return (Single<T>) new DoubleSingle(s);
+            return cast(new DoubleSingle(s));
         } else {
             return null;
         }

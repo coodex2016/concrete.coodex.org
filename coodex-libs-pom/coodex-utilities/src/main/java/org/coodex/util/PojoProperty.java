@@ -77,12 +77,11 @@ public class PojoProperty {
         return name;
     }
 
-    @SuppressWarnings("unchecked")
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         if (annotationClass == null) return null;
         for (Annotation annotation : getAnnotations()) {
             if (annotation.annotationType().equals(annotationClass))
-                return (T) annotation;
+                return Common.cast(annotation);
         }
         return null;
 //        T annotation = method == null ? null : method.getAnnotation(annotationClass);
@@ -101,7 +100,7 @@ public class PojoProperty {
 
     public List<Annotation> findAllDecoratedBy(Class<? extends Annotation> decoratedClass) {
         if (decoratedClass == null) return null;
-        List<Annotation> annotationList = new ArrayList<Annotation>();
+        List<Annotation> annotationList = new ArrayList<>();
         for (Annotation annotation : getAnnotations()) {
             if (annotation.annotationType().getAnnotation(decoratedClass) != null) {
 //                return annotation;
@@ -114,7 +113,7 @@ public class PojoProperty {
     public Annotation[] getAnnotations() {
         synchronized (this) {
             if (annotations == null) {
-                List<Annotation> annotationList = new ArrayList<Annotation>();
+                List<Annotation> annotationList = new ArrayList<>();
                 if (method != null) {
                     annotationList.addAll(Arrays.asList(method.getAnnotations()));
                 }

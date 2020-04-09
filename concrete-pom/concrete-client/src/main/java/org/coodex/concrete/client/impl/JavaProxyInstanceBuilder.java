@@ -24,13 +24,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import static org.coodex.concrete.ClientHelper.getInvoker;
+import static org.coodex.util.Common.cast;
 
 public class JavaProxyInstanceBuilder implements InstanceBuilder {
 
     @Override
     public <T> T build(final Destination destination, final Class<T> clazz) {
-        //noinspection unchecked
-        return (T) Proxy.newProxyInstance(
+        return cast(Proxy.newProxyInstance(
                 this.getClass().getClassLoader(),
                 new Class[]{clazz},
                 new InvocationHandler() {
@@ -43,6 +43,6 @@ public class JavaProxyInstanceBuilder implements InstanceBuilder {
 
                         return getInvoker(destination, clazz).invoke(proxy, clazz, method, args);
                     }
-                });
+                }));
     }
 }

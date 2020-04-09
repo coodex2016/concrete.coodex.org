@@ -43,14 +43,13 @@ import static org.coodex.concrete.own.PackageHelper.analysisParameters;
 public abstract class OwnServiceProvider implements Application {
 
     private final static Logger log = LoggerFactory.getLogger(OwnServiceProvider.class);
-    private final Map<String, AbstractUnit> unitMap = new HashMap<>();
+    private final Map<String, AbstractUnit<?, ?>> unitMap = new HashMap<>();
 
     public OwnServiceProvider() {
         registerPackage(AbstractErrorCodes.class.getPackage().getName());
     }
 
-    protected Subjoin getSubjoin(RequestPackage requestPackage) {
-        //noinspection unchecked
+    protected Subjoin getSubjoin(RequestPackage<?> requestPackage) {
         return getSubjoin(requestPackage.getSubjoin());
     }
 
@@ -65,9 +64,9 @@ public abstract class OwnServiceProvider implements Application {
         return Locale.getDefault();
     }
 
-    private void appendUnits(OwnServiceModule module) {
-        for (AbstractUnit unit : module.getUnits()) {
-            unitMap.put(((OwnServiceUnit) unit).getKey(), unit);
+    private void appendUnits(OwnServiceModule<?> module) {
+        for (OwnServiceUnit<?> unit : module.getUnits()) {
+            unitMap.put(unit.getKey(), unit);
         }
     }
 
@@ -91,11 +90,10 @@ public abstract class OwnServiceProvider implements Application {
         registerClasses(classes);
     }
 
-    @SuppressWarnings("unchecked")
     public final void registerClasses(Class<?>... classes) {
         for (final Class<?> clz : classes) {
             if (AbstractErrorCodes.class.isAssignableFrom(clz)) {
-                ErrorMessageFacade.register((Class<? extends AbstractErrorCodes>) clz);
+                ErrorMessageFacade.register(Common.cast(clz));
             } else if (ConcreteHelper.isConcreteService(clz)) {
                 appendUnits(getModuleBuilder().build(clz));
             } else {
@@ -106,9 +104,10 @@ public abstract class OwnServiceProvider implements Application {
 
     protected abstract OwnModuleBuilder getModuleBuilder();
 
-    protected Subjoin getSubjoin(Map<String, String> map){
+    protected Subjoin getSubjoin(Map<String, String> map) {
         return new OwnServiceSubjoin(map).wrap();
-    };
+    }
+
 
     protected abstract ServerSideContext getServerSideContext(RequestPackage<Object> requestPackage,
                                                               String tokenId, Caller caller);
@@ -121,7 +120,7 @@ public abstract class OwnServiceProvider implements Application {
                                  final OwnServiceProvider.TBMNewTokenVisitor newTokenVisitor) {
         IF.isNull(responseVisitor, ErrorCodes.OWN_PROVIDER_NO_RESPONSE_VISITOR, getModuleName());
         //1 找到方法
-        final AbstractUnit unit = IF.isNull(unitMap.get(requestPackage.getServiceId()),
+        final AbstractUnit<?, ?> unit = IF.isNull(unitMap.get(requestPackage.getServiceId()),
                 SERVICE_ID_NOT_EXISTS, requestPackage.getServiceId());
 
         //2 解析数据
@@ -148,21 +147,24 @@ public abstract class OwnServiceProvider implements Application {
                     Object result = runServiceWithContext(
                             context,
                             () -> {
-                                //noinspection unchecked
                                 Object instance = BeanServiceLoaderProvider.getBeanProvider()
-                                        .getBean(unit.getDeclaringModule().getInterfaceClass());
-                                if (objects == null)
-                                    return method.invoke(instance);
-                                else
-                                    return method.invoke(instance, objects);
+                                        .getBean(Common.cast(unit.getDeclaringModule().getInterfaceClass()));
+                                try {
+                                    if (objects == null)
+                                        return method.invoke(instance);
+                                    else
+                                        return method.invoke(instance, objects);
+                                } catch (Throwable t) {
+                                    throw Common.rte(t);
+                                }
                             },
                             unit.getDeclaringModule().getInterfaceClass(),
                             unit.getMethod(),
                             objects);
 
-                    ResponsePackage responsePackage = new ResponsePackage();
+                    ResponsePackage<?> responsePackage = new ResponsePackage<>();
                     final String tokenIdAfterInvoke = context.getTokenId();
-                    if (!Common.isSameStr(tokenId, tokenIdAfterInvoke)
+                    if (!Objects.equals(tokenId, tokenIdAfterInvoke)
                             && !Common.isBlank(tokenIdAfterInvoke)) {
 
                         responsePackage.setConcreteTokenId(tokenIdAfterInvoke);
@@ -180,7 +182,7 @@ public abstract class OwnServiceProvider implements Application {
                             }
 
                             @Override
-                            public void onMessage(ServerSideMessage serverSideMessage) {
+                            public void onMessage(ServerSideMessage<?> serverSideMessage) {
                                 serverSideMessageVisitor.visit(serverSideMessage, tokenIdAfterInvoke);
 //                                sendMessage(serverSideMessage, tokenIdAfterInvoke);
                             }
@@ -190,8 +192,7 @@ public abstract class OwnServiceProvider implements Application {
                     responsePackage.setSubjoin(updatedMap(context.getSubjoin()));
                     responsePackage.setMsgId(requestPackage.getMsgId());
                     responsePackage.setOk(true);
-                    //noinspection unchecked
-                    responsePackage.setContent(result);
+                    responsePackage.setContent(Common.cast(result));
                     responseVisitor.visit(responsePackage);
                 } catch (final Throwable th) {
                     trace.error(th);
@@ -212,7 +213,7 @@ public abstract class OwnServiceProvider implements Application {
     protected abstract String getModuleName();
 
     public interface ResponseVisitor {
-        void visit(ResponsePackage responsePackage);
+        void visit(ResponsePackage<?> responsePackage);
 
         void visit(String json);
     }
@@ -222,7 +223,7 @@ public abstract class OwnServiceProvider implements Application {
     }
 
     public interface ServerSideMessageVisitor {
-        void visit(ServerSideMessage serverSideMessage, String tokenId);
+        void visit(ServerSideMessage<?> serverSideMessage, String tokenId);
     }
 
     public interface TBMNewTokenVisitor {
@@ -230,7 +231,7 @@ public abstract class OwnServiceProvider implements Application {
     }
 
     public interface OwnModuleBuilder {
-        OwnServiceModule build(Class clz);
+        OwnServiceModule<?> build(Class<?> clz);
     }
 
     /**
@@ -241,6 +242,7 @@ public abstract class OwnServiceProvider implements Application {
      * @author Paul Sandoz
      * @author Marek Potociar (marek.potociar at oracle.com)
      */
+    @SuppressWarnings("unused")
     public static class LanguageTag {
 
         String tag;
@@ -386,7 +388,7 @@ public abstract class OwnServiceProvider implements Application {
 
     public abstract static class DefaultResponseVisitor implements ResponseVisitor {
         @Override
-        public void visit(ResponsePackage responsePackage) {
+        public void visit(ResponsePackage<?> responsePackage) {
             visit(JSONSerializerFactory.getInstance().toJson(responsePackage));
         }
     }

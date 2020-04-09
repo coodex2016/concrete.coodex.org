@@ -35,14 +35,14 @@ public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTo
      * 队列1，消息发布时，为消息指定id，进行广播
      */
     private Topic<Id<M>> idWrapper
-            = Topics.<Id<M>, Topic<Id<M>>>get(new GenericTypeHelper.GenericType<Topic<Id<M>>>(getClass()) {
+            = Topics.get(new GenericTypeHelper.GenericType<Topic<Id<M>>>(getClass()) {
     }.getType(), getQueue());
 
     /**
      * 队列2，队列1消息到达后，当前节点判定是否可被已注册的订阅者消费，确认的扔到队列2
      */
     private Topic<TokenConfirm<M>> tokenConfirmTopic
-            = Topics.<TokenConfirm<M>, Topic<TokenConfirm<M>>>get(new GenericTypeHelper.GenericType<Topic<TokenConfirm<M>>>(getClass()) {
+            = Topics.get(new GenericTypeHelper.GenericType<Topic<TokenConfirm<M>>>(getClass()) {
     }.getType(), getQueue());
 
 
@@ -50,7 +50,7 @@ public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTo
      * 队列3，消息被消费后，通知其他节点
      */
     private Topic<ConsumedNotify> consumedNotifyTopic
-            = Topics.<ConsumedNotify, Topic<ConsumedNotify>>get(new GenericTypeHelper.GenericType<Topic<ConsumedNotify>>() {
+            = Topics.get(new GenericTypeHelper.GenericType<Topic<ConsumedNotify>>() {
     }.getType(), getQueue());
 
 
@@ -58,27 +58,12 @@ public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTo
         super(courier);
         // 订阅三个队列中的数据，并作出反应
 
-        idWrapper.subscribe(new Observer<Id<M>>() {
-            @Override
-            public void update(Id<M> message) throws Throwable {
-                // 判定该消息是否在当前主机内被订阅
-                doFilter(message);
-            }
-        });
+        // 判定该消息是否在当前主机内被订阅
+        idWrapper.subscribe(this::doFilter);
 
-        tokenConfirmTopic.subscribe(new Observer<TokenConfirm<M>>() {
-            @Override
-            public void update(TokenConfirm<M> message) throws Throwable {
-                TBMContainer.getInstance().push(message, consumedNotifyTopic);
-            }
-        });
+        tokenConfirmTopic.subscribe(message -> TBMContainer.getInstance().push(message, consumedNotifyTopic));
 
-        consumedNotifyTopic.subscribe(new Observer<ConsumedNotify>() {
-            @Override
-            public void update(ConsumedNotify message) throws Throwable {
-                TBMContainer.getInstance().remove(message);
-            }
-        });
+        consumedNotifyTopic.subscribe(message -> TBMContainer.getInstance().remove(message));
 
 
     }
@@ -91,7 +76,7 @@ public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTo
                 try {
                     if (messageFilter.handle(message.getMessage())) {
                         // todo token失效怎么办？
-                        tokenConfirmTopic.publish(new TokenConfirm<M>(messageFilter.getTokenId(), message));
+                        tokenConfirmTopic.publish(new TokenConfirm<>(messageFilter.getTokenId(), message));
                     }
                 } catch (Throwable th) {
                     log.warn("filter failed: {}", th.getLocalizedMessage(), th);
@@ -111,7 +96,8 @@ public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTo
     @Override
     public Subscription subscribe(Observer<M> observer) {
         if (observer instanceof MessageFilter) {
-            return subscribe((MessageFilter<M>) observer);
+            MessageFilter<M> messageFilter = Common.cast(observer);
+            return subscribe(messageFilter);
         } else {
             throw new RuntimeException("TokenBasedTopic must subscribed by a MessageFilter");
         }
@@ -120,7 +106,7 @@ public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTo
 
     @Override
     public void publish(M message) {
-        idWrapper.publish(new Id<M>(message));
+        idWrapper.publish(new Id<>(message));
     }
 
 
@@ -145,8 +131,8 @@ public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTo
         private String id;
         private String tokenId;
 
-        public ConsumedNotify() {
-        }
+//        public ConsumedNotify() {
+//        }
 
         public ConsumedNotify(String id, String tokenId) {
             this.id = id;
@@ -201,8 +187,8 @@ public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTo
 
     public static class TokenConfirm<M extends Serializable> extends Id<M> {
 
-        public TokenConfirm() {
-        }
+//        public TokenConfirm() {
+//        }
 
         private String tokenId;
 

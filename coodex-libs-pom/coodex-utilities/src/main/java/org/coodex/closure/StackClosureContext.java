@@ -19,76 +19,55 @@ package org.coodex.closure;
 import org.coodex.util.Common;
 
 import java.util.Stack;
+import java.util.function.Supplier;
 
 /**
  * Created by davidoff shen on 2016-09-04.
  */
-public class StackClosureContext<VariantType> extends AbstractClosureContext<Stack<VariantType>> implements ClosureContext<VariantType> {
+public class StackClosureContext<T> extends AbstractClosureContext<Stack<T>> implements ClosureContext<T> {
 
     @Override
-    public VariantType get() {
-        Stack<VariantType> stack = $getVariant();
+    public T get() {
+        Stack<T> stack = getVariant();
         return stack == null ? null : stack.lastElement();
     }
 
-//    @Override
-//    public VariantType get(VariantType defaultValue) {
-//        return get() == null ? defaultValue : get();
-//    }
-//
-//    @Override
-//    @Deprecated
-//    public Object run(VariantType variant, Closure runnable) {
-//        if (runnable == null) return null;
-//
-//        Stack<VariantType> stack = $getVariant();
-//        if (stack == null) {
-//            stack = new Stack<VariantType>();
-//            stack.push(variant);
-//            try {
-//                return closureRun(stack, runnable);
-//            } finally {
-//                stack.clear();
-//            }
-//        } else {
-//            stack.push(variant);
-//            try {
-//                return runnable.run();
-//            } finally {
-//                stack.pop();
-//            }
-//        }
-//    }
-
     @Override
-    public Object call(VariantType var, CallableClosure callable) throws Throwable {
-        if (callable == null) return null;
+    public Object call(T var, Supplier<?> supplier) {
+        if (supplier == null) return null;
 
-        Stack<VariantType> stack = $getVariant();
+        Stack<T> stack = getVariant();
         if (stack == null) {
-            stack = new Stack<VariantType>();
+            stack = new Stack<>();
             stack.push(var);
             try {
-                return closureRun(stack, callable);
+                return get(stack, supplier);
             } finally {
                 stack.clear();
             }
         } else {
             stack.push(var);
             try {
-                return callable.call();
+                return supplier.get();
             } finally {
                 stack.pop();
             }
         }
     }
 
-    @Override
-    public Object useRTE(VariantType var, CallableClosure callableClosure) {
-        try {
-            return call(var, callableClosure);
-        } catch (Throwable throwable) {
-            throw Common.runtimeException(throwable);
-        }
-    }
+//    @Override
+//    @Deprecated
+//    public Object call(T var, CallableClosure callable) throws Throwable {
+//        return call(var, callable == null ? null : callable.toSupplier());
+//    }
+//
+//    @Override
+//    @Deprecated
+//    public Object useRTE(T var, CallableClosure callableClosure) {
+//        try {
+//            return call(var, callableClosure);
+//        } catch (Throwable throwable) {
+//            throw Common.runtimeException(throwable);
+//        }
+//    }
 }
