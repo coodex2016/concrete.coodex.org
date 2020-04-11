@@ -32,9 +32,9 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 public abstract class AbstractRuntimeParameter {
     private final static Logger log = LoggerFactory.getLogger(AbstractRuntimeParameter.class);
     private String[] apiPackages;
-    private Class[] classes;
+    private Class<?>[] classes;
 
-    public AbstractRuntimeParameter(String[] apiPackages, Class[] classes) {
+    public AbstractRuntimeParameter(String[] apiPackages, Class<?>[] classes) {
         this.apiPackages = apiPackages;
         this.classes = classes;
     }
@@ -49,18 +49,18 @@ public abstract class AbstractRuntimeParameter {
                 packages;
     }
 
-    public Class[] getClasses() {
+    public Class<?>[] getClasses() {
         return toRegistered(classes);
     }
 
-    private Class[] toRegistered(Class[] classes) {
+    private Class<?>[] toRegistered(Class<?>[] classes) {
         return (classes == null || classes.length == 0) ?
-                toRegistered().toArray(new Class[0]) :
+                toRegistered().toArray(new Class<?>[0]) :
                 classes;
     }
 
-    private Set<Class> toRegistered() {
-        Set<Class> classes = new HashSet<>();
+    private Set<Class<?>> toRegistered() {
+        Set<Class<?>> classes = new HashSet<>();
         for (String str : Config.getArray(getNamespace() + ".classes", ",", new String[0], "concrete", getNamespace())) {
             try {
                 classes.add(Class.forName(str));

@@ -39,7 +39,7 @@ import static org.coodex.concrete.jaxrs.Predicates.removePredicate;
 /**
  * Created by davidoff shen on 2016-11-30.
  */
-public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
+public class JaxrsUnit extends AbstractUnit<JaxrsParam/*, JaxrsModule*/> {
 
 
     private List<JaxrsParam> pojo;
@@ -87,10 +87,9 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
 //        }
 
         if (pojoCount > pojoLimited) {
-            String builder = "Object parameter count limited " + pojoLimited + " in HttpMethod." +
+            throw new RuntimeException("Object parameter count limited " + pojoLimited + " in HttpMethod." +
                     httpMethod + ", " + pojoCount + " used in " +
-                    getMethod().toGenericString();
-            throw new RuntimeException(builder);
+                    getMethod().toGenericString());
         }
 
 //        if(pojoCount >= 2)
@@ -280,7 +279,7 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
     }
 
     @Override
-    public int compareTo(AbstractUnit o) {
+    public int compareTo(AbstractUnit<JaxrsParam> o) {
         // todo 优化正则表达式
         //noinspection RegExpRedundantEscape
         int v = getName().replaceAll("(\\{)[^{^}]{0,256}(\\})", "")

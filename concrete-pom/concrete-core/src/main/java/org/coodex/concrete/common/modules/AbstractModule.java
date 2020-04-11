@@ -28,11 +28,13 @@ import static org.coodex.concrete.common.ConcreteHelper.isConcreteService;
 /**
  * Created by davidoff shen on 2016-11-30.
  */
-public abstract class AbstractModule<UNIT extends AbstractUnit> implements Annotated, Comparable<AbstractModule> {
+//@SuppressWarnings("rawtypes")
+public abstract class AbstractModule<UNIT extends AbstractUnit<? extends AbstractParam>>
+        implements Annotated, Comparable<AbstractModule<UNIT>> {
 
     private Class<?> interfaceClass;
 
-    private List<UNIT> units = new ArrayList<UNIT>();
+    private List<UNIT> units = new ArrayList<>();
 
     public AbstractModule(Class<?> interfaceClass) {
         //ConcreteService.class.isAssignableFrom(interfaceClass)
@@ -64,9 +66,7 @@ public abstract class AbstractModule<UNIT extends AbstractUnit> implements Annot
 //    public abstract List<Class<?>> getInheritedChain();
 
     /**
-     * 服务模块所在的class
-     *
-     * @return
+     * @return 服务模块所在的class
      */
     public Class<?> getInterfaceClass() {
         return interfaceClass;
@@ -86,34 +86,26 @@ public abstract class AbstractModule<UNIT extends AbstractUnit> implements Annot
     }
 
     /**
-     * 服务模块名称
-     *
-     * @return
+     * @return 服务模块名称
      */
     public abstract String getName();
 
     /**
-     * 文档化的标题
-     *
-     * @return
+     * @return 文档化的标题
      */
     public String getLabel() {
         return getDesc() == null ? getName() : getDesc().name();
     }
 
     /**
-     * 服务模块说明
-     *
-     * @return
+     * @return 服务模块说明
      */
     public String getDescription() {
         return getDesc() == null ? null : getDesc().description();
     }
 
     /**
-     * 所有的服务原子
-     *
-     * @return
+     * @return 所有的服务原子
      */
     public final UNIT[] getUnits() {
         return toArrays(units);

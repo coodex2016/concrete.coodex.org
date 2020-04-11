@@ -18,12 +18,12 @@ package org.coodex.concrete.message;
 
 public class DefaultTopicPrototypeProvider implements TopicPrototypeProvider {
     @Override
-    public Class<? extends AbstractTopicPrototype> getPrototype() {
+    public Class<?> getPrototype() {
         return DefaultTopicPrototype.class;
     }
 
     @Override
-    public boolean accept(Class<? extends AbstractTopic> param) {
+    public boolean accept(Class<?> param) {
         return param != null && Topic.class.isAssignableFrom(param);
     }
 }

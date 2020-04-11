@@ -16,17 +16,22 @@
 
 package org.coodex.concrete.core.token.sharedcache;
 
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.Account;
+import org.coodex.concrete.common.AccountFactory;
+import org.coodex.concrete.common.BeanServiceLoaderProvider;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.core.token.AbstractToken;
-import org.coodex.concurrent.Coalition;
 import org.coodex.concurrent.Debouncer;
 import org.coodex.sharedcache.SharedCacheClient;
 import org.coodex.util.Clock;
+import org.coodex.util.Common;
 
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Vector;
+
+import static org.coodex.util.Common.cast;
 
 /**
  * Created by davidoff shen on 2016-11-23.
@@ -40,12 +45,8 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
     private long maxIdleTime;
     private String cacheKey;
 
-    private Debouncer<Runnable> debouncer = new Debouncer<Runnable>(new Coalition.Callback<Runnable>() {
-        @Override
-        public void call(Runnable runnable) {
-            runnable.run();
-        }
-    },10, ConcreteHelper.getScheduler("sct.debouncer"));
+    private Debouncer<Runnable> debouncer = new Debouncer<>(
+            Runnable::run, 10, ConcreteHelper.getScheduler("sct.debouncer"));
 
     SharedCacheToken(SharedCacheClient client, String tokenId, long maxIdleTime) {
         this.client = client;
@@ -57,12 +58,7 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
     }
 
     private void write() {
-        debouncer.call(new Runnable() {
-            @Override
-            public void run() {
-                client.put(cacheKey, tokenData, maxIdleTime);
-            }
-        });
+        debouncer.call(() -> client.put(cacheKey, tokenData, maxIdleTime));
     }
 
     private synchronized void init() {
@@ -93,13 +89,14 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Account currentAccount() {
-        return tokenData.currentAccountId == null ? null :
-                BeanServiceLoaderProvider.getBeanProvider().getBean(AccountFactory.class).getAccountByID(tokenData.currentAccountId);
+    public Account<?> currentAccount() {
+        if (tokenData.currentAccountId == null)
+            return null;
+        AccountFactory<?> accountFactory = BeanServiceLoaderProvider.getBeanProvider().getBean(AccountFactory.class);
+        return accountFactory.getAccountByID(cast(tokenData.currentAccountId));
     }
 
-    private boolean sameAccount(Account account) {
+    private boolean sameAccount(Account<?> account) {
         if (tokenData.currentAccountId == null && account == null) return true;
         if (tokenData.currentAccountId == null || account == null) return false;
         return tokenData.currentAccountId.equals(account.getId());
@@ -107,7 +104,7 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
     }
 
     @Override
-    public void setAccount(Account account) {
+    public void setAccount(Account<?> account) {
         if (!sameAccount(account)) {
             tokenData.currentAccountId = account == null ? null : account.getId();
             write();
@@ -133,9 +130,8 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> T getAttribute(String key, Class<T> tClass) {
-        return (T) tokenData.map.get(key);
+        return Common.cast(tokenData.map.get(key));
     }
 
     @Override
@@ -186,7 +182,7 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
         boolean valid = true;
         Serializable currentAccountId = null;
         boolean accountCredible = false;
-        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> map = new HashMap<>();
 
         @Override
         public String toString() {

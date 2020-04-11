@@ -161,7 +161,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
     }
 
     @Override
-    protected Object execute(Class clz, Method method, Object[] args) throws Throwable {
+    protected Object execute(Class<?> clz, Method method, Object[] args) throws Throwable {
         JaxrsUnit unit = getUnitFromContext(ConcreteHelper.getContext(method, clz));
         if (isDevModel("jaxrs.client")) {
             return Mocker.mockMethod(

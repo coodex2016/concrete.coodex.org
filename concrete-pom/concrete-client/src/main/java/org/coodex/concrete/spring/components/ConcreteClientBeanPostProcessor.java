@@ -49,6 +49,7 @@ import static org.coodex.concrete.ClientHelper.isConcreteService;
 import static org.coodex.concrete.common.AbstractBeanProvider.CREATE_BY_CONCRETE;
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
 
+@SuppressWarnings("unused")
 @Named
 public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter {
 
@@ -64,7 +65,7 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
     private Map<String, Integer> moduleMap = new HashMap<>();
     private AtomicInteger atomicInteger = new AtomicInteger(1);
 
-    private void scan(java.lang.annotation.Annotation[][] annotations, Class[] parameters) {
+    private void scan(java.lang.annotation.Annotation[][] annotations, Class<?>[] parameters) {
         for (int i = 0; i < annotations.length; i++) {
             if (annotations[i] == null) continue;
             for (java.lang.annotation.Annotation annotation : annotations[i]) {
@@ -85,7 +86,7 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
     }
 
     private void scanAndRegisterClientBean(Class<?> beanClass) {
-        for (Constructor constructor : beanClass.getConstructors()) {
+        for (Constructor<?> constructor : beanClass.getConstructors()) {
             scan(constructor.getParameterAnnotations(), constructor.getParameterTypes());
         }
 
@@ -125,7 +126,7 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
 
     private CtClass[] getParameterTypes(Method method, ClassPool classPool) {
         List<CtClass> list = new ArrayList<>();
-        for (Class c : method.getParameterTypes()) {
+        for (Class<?> c : method.getParameterTypes()) {
             list.add(classPool.getOrNull(c.getName()));
         }
         return list.toArray(new CtClass[0]);
@@ -170,7 +171,7 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
 
             // 2,增加接口实现
             for (Method method : concreteService.getMethods()) {
-                Class returnType = method.getReturnType();
+                Class<?> returnType = method.getReturnType();
                 ctMethod = new CtMethod(
                         classPool.getOrNull(returnType.getName()),
                         method.getName(),
@@ -189,7 +190,7 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
                 ctClass.addMethod(ctMethod);
             }
 
-            Class generated = IS_JAVA_9_AND_LAST.get() ?
+            Class<?> generated = IS_JAVA_9_AND_LAST.get() ?
                     ctClass.toClass(concreteService) :
                     ctClass.toClass();
 

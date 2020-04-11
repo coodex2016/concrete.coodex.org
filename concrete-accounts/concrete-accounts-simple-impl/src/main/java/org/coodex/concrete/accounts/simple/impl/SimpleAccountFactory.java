@@ -27,7 +27,6 @@ import static org.coodex.concrete.accounts.AccountConstants.TYPE_SIMPLE;
  */
 public class SimpleAccountFactory extends ClassifiableAccountFactory {
     @Override
-    @SuppressWarnings("unchecked")
     public Account<ClassifiableAccountID> getAccountByID(ClassifiableAccountID id) {
         return new SimpleAccount(id);
     }

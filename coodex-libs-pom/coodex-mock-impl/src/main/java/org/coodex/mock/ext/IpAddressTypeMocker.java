@@ -27,8 +27,8 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 
 public class IpAddressTypeMocker extends AbstractTypeMocker<IpAddress> {
     @Override
-    protected Class[] getSupportedClasses() {
-        return new Class[]{
+    protected Class<?>[] getSupportedClasses() {
+        return new Class<?>[]{
                 String.class,
                 int[].class, Integer[].class,
                 byte[].class, Byte[].class
@@ -40,7 +40,7 @@ public class IpAddressTypeMocker extends AbstractTypeMocker<IpAddress> {
         return annotation != null;
     }
 
-    private Object to(Class c, int[] ip) {
+    private Object to(Class<?> c, int[] ip) {
         switch (Common.findInArray(c, getSupportedClasses())) {
 //            case 0: //String
 //                char s = ip.length >= 6 ? ':' : '.';
@@ -66,7 +66,7 @@ public class IpAddressTypeMocker extends AbstractTypeMocker<IpAddress> {
         return null;
     }
 
-    private Object toArray(int[] ip, Class c, boolean toByte) {
+    private Object toArray(int[] ip, Class<?> c, boolean toByte) {
         Object result = Array.newInstance(c, ip.length);
         for (int i = 0; i < ip.length; i++) {
             byte b = (byte) ip[i];
@@ -81,7 +81,7 @@ public class IpAddressTypeMocker extends AbstractTypeMocker<IpAddress> {
 
     @Override
     public Object mock(IpAddress mockAnnotation, Type targetType) {
-        Class clazz = typeToClass(targetType);
+        Class<?> clazz = typeToClass(targetType);
         Random random = new Random();
         int size = mockAnnotation.type().getSize();
         int[] ip = new int[size];

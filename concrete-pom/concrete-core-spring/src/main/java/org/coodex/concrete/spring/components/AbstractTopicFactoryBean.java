@@ -17,11 +17,13 @@
 package org.coodex.concrete.spring.components;
 
 import org.coodex.concrete.message.Topics;
+import org.coodex.util.Common;
 
 import java.lang.reflect.Type;
 
 import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 
+@SuppressWarnings("unused")
 public abstract class AbstractTopicFactoryBean<T> /*implements FactoryBean<T>*/ {
 
     private Type topicType = null;
@@ -36,8 +38,7 @@ public abstract class AbstractTopicFactoryBean<T> /*implements FactoryBean<T>*/ 
     }
 
     public T getActualTopic(String queueName) {
-        //noinspection unchecked
-        return Topics.get(getType(), queueName);
+        return Common.cast(Topics.get(getType(), queueName));
     }
 
     private String getQueueName() {

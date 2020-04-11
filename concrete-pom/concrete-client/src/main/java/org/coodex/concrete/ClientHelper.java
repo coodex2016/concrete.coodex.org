@@ -35,6 +35,7 @@ import org.coodex.ssl.SSLContextFactory;
 import org.coodex.util.*;
 
 import javax.net.ssl.SSLContext;
+import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -44,9 +45,8 @@ public class ClientHelper {
 
     private static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE_SINGLETON
             = Singleton.with(() -> ConcreteHelper.getScheduler("rx-client"));
-    @SuppressWarnings("rawtypes")
-    private static final SelectableServiceLoader<Class, CompletableFutureBridge> BRIDGE_LOADER
-            = new LazySelectableServiceLoader<Class, CompletableFutureBridge>() {
+    private static final SelectableServiceLoader<Class<?>, CompletableFutureBridge> BRIDGE_LOADER
+            = new LazySelectableServiceLoader<Class<?>, CompletableFutureBridge>() {
     };
     //            new Singleton<>(() -> new SelectableServiceLoader<Class, CompletableFutureBridge>() {
 //            });
@@ -109,12 +109,10 @@ public class ClientHelper {
 //        return invokerFactoryProviders.get();
 //    }
 
-    @SuppressWarnings("unchecked")
     public static boolean isReactiveExtension(Class<?> clz) {
         try {
-            Class<? extends java.lang.annotation.Annotation> rx =
-                    (Class<? extends java.lang.annotation.Annotation>)
-                            Class.forName("org.coodex.concrete.rx.ReactiveExtensionFor");
+            Class<? extends Annotation> rx =
+                    Common.cast(Class.forName("org.coodex.concrete.rx.ReactiveExtensionFor"));
             return clz.getAnnotation(rx) != null;
         } catch (Throwable th) {
             return false;

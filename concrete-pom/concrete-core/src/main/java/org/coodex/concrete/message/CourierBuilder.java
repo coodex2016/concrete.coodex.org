@@ -49,15 +49,15 @@ import static org.coodex.util.GenericTypeHelper.solveFromType;
  * extends Prototype<MessageType>
  * implements Courier<MessageType>{}
  */
-@SuppressWarnings("rawtypes")
+//@SuppressWarnings("rawtypes")
 class CourierBuilder
-        implements Function<TopicKey, Courier> {
+        implements Function<TopicKey, Courier<?>> {
 
 
     private final static Logger log = LoggerFactory.getLogger(CourierBuilder.class);
 
-    private static SingletonMap<TopicKey, Courier> couriers
-            = SingletonMap.<TopicKey, Courier>builder().function(new CourierBuilder()).build();
+    private static SingletonMap<TopicKey, Courier<?>> couriers
+            = SingletonMap.<TopicKey, Courier<?>>builder().function(new CourierBuilder()).build();
 
     private static LazySelectableServiceLoader<String, CourierPrototypeProvider> providers =
             new LazySelectableServiceLoader<String, CourierPrototypeProvider>() {
@@ -81,7 +81,7 @@ class CourierBuilder
         return solveFromType(AbstractTopic.class.getTypeParameters()[0], topicType);
     }
 
-    private Class<? extends CourierPrototype> getLocalCourierPrototype(String queue, String destination) {
+    private Class<?> getLocalCourierPrototype(String queue, String destination) {
         if (destination != null && queue != null) {
             log.warn("CourierPrototype not found for queue[{}]: {}", queue, destination);
         }
@@ -97,7 +97,7 @@ class CourierBuilder
             CourierPrototypeProvider provider = null;
             if (!Common.isBlank(destination))
                 provider = providers.select(destination);
-            Class<? extends CourierPrototype> prototype =
+            Class<?> prototype =
                     provider == null ?
                             getLocalCourierPrototype(key.queue, destination) :
                             provider.getPrototype();

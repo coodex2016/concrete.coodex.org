@@ -24,7 +24,7 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE})
 public @interface MessageConsumer {
 
-    Class<? extends AbstractTopic> topicType() default Topic.class;
+    Class<?> topicType() default Topic.class;
 
     String queue() default "";
 }

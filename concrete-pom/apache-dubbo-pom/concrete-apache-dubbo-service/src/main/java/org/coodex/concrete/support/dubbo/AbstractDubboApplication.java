@@ -86,13 +86,12 @@ public abstract class AbstractDubboApplication implements Application {
 
     protected abstract String getVersion();
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private void registerConcreteService(Class<?> clz) {
         // 惰性加载，确保在运行期拿到实现实例
         final Singleton<Object> serviceImpl = Singleton.with(() -> BeanServiceLoaderProvider.getBeanProvider().getBean(clz));
 
         // serviceConfig
-        ServiceConfig serviceConfig = new ServiceConfig();
+        ServiceConfig<?> serviceConfig = new ServiceConfig<>();
         serviceConfig.setApplication(getApplicationConfig(applicationName));
         serviceConfig.setRegistries(getRegistries());
         serviceConfig.setProtocols(getProtocols());
@@ -100,56 +99,58 @@ public abstract class AbstractDubboApplication implements Application {
         serviceConfig.setVersion(getServiceVersion(version.get()));
 
         // 通过java动态代理设置实现
-        serviceConfig.setRef(Proxy.newProxyInstance(clz.getClassLoader(), new Class<?>[]{clz}, (proxy, method, args) -> {
-            RpcContext context = RpcContext.getContext();
-            // 使用rpc上下文的attachments构建subjoin
-            Subjoin subjoin = new ApacheDubboSubjoin(context.getAttachments()).wrap();
-            // caller,使用上下文中提供的远端地址及attachments中的locale
-            ApacheDubboCaller caller = new ApacheDubboCaller(context);
-            String tokenId = subjoin.get(TOKEN_KEY);
-            // apm
-            Trace trace = APM.build(subjoin)
-                    .tag("remote", caller.getAddress())
-                    .tag("agent", caller.getClientProvider())
-                    .start(String.format("apache-dubbo: %s.%s", method.getDeclaringClass().getName(), method.getName()));
+        serviceConfig.setRef(Common.cast(
+                Proxy.newProxyInstance(clz.getClassLoader(), new Class<?>[]{clz}, (proxy, method, args) -> {
+                    RpcContext context = RpcContext.getContext();
+                    // 使用rpc上下文的attachments构建subjoin
+                    Subjoin subjoin = new ApacheDubboSubjoin(context.getAttachments()).wrap();
+                    // caller,使用上下文中提供的远端地址及attachments中的locale
+                    ApacheDubboCaller caller = new ApacheDubboCaller(context);
+                    String tokenId = subjoin.get(TOKEN_KEY);
+                    // apm
+                    Trace trace = APM.build(subjoin)
+                            .tag("remote", caller.getAddress())
+                            .tag("agent", caller.getClientProvider())
+                            .start(String.format("apache-dubbo: %s.%s", method.getDeclaringClass().getName(), method.getName()));
 
-            try {
-                ServerSideContext serverSideContext = new ApacheDubboServerSideServiceContext(
-                        new ApacheDubboCaller(context),
-                        subjoin,
-                        getLocale(subjoin.get(LOCALE_KEY)),
-                        tokenId);
-                Object result = ConcreteContext.runServiceWithContext(
-                        serverSideContext,
-                        () -> {
-                            try {
-                                return (args == null || args.length == 0) ?
-                                        method.invoke(serviceImpl.get()) :
-                                        method.invoke(serviceImpl.get(), args);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                throw ConcreteHelper.getException(e);
+                    try {
+                        ServerSideContext serverSideContext = new ApacheDubboServerSideServiceContext(
+                                new ApacheDubboCaller(context),
+                                subjoin,
+                                getLocale(subjoin.get(LOCALE_KEY)),
+                                tokenId);
+                        Object result = ConcreteContext.runServiceWithContext(
+                                serverSideContext,
+                                () -> {
+                                    try {
+                                        return (args == null || args.length == 0) ?
+                                                method.invoke(serviceImpl.get()) :
+                                                method.invoke(serviceImpl.get(), args);
+                                    } catch (IllegalAccessException | InvocationTargetException e) {
+                                        throw ConcreteHelper.getException(e);
+                                    }
+                                },
+                                clz, method, args);
+
+                        try {
+                            String newTokenId = serverSideContext.getTokenId();
+                            if (!Common.isBlank(newTokenId) && !Objects.equals(newTokenId, tokenId)) {
+                                subjoin.add(Token.CONCRETE_TOKEN_ID_KEY, newTokenId);
                             }
-                        },
-                        clz, method, args);
-
-                try {
-                    String newTokenId = serverSideContext.getTokenId();
-                    if (!Common.isBlank(newTokenId) && !Objects.equals(newTokenId, tokenId)) {
-                        subjoin.add(Token.CONCRETE_TOKEN_ID_KEY, newTokenId);
+                        } catch (Throwable th) {
+                            log.warn("token error?? {}", th.getLocalizedMessage(), th);
+                        }
+                        context.setAttachments(ConcreteHelper.updatedMap(subjoin));
+                        return result;
+                    } catch (Throwable th) {
+                        context.setAttachments(ConcreteHelper.updatedMap(subjoin));
+                        trace.error(th);
+                        throw th;
+                    } finally {
+                        trace.finish();
                     }
-                } catch (Throwable th) {
-                    log.warn("token error?? {}", th.getLocalizedMessage(), th);
-                }
-                context.setAttachments(ConcreteHelper.updatedMap(subjoin));
-                return result;
-            } catch (Throwable th) {
-                context.setAttachments(ConcreteHelper.updatedMap(subjoin));
-                trace.error(th);
-                throw th;
-            } finally {
-                trace.finish();
-            }
-        }));
+                })
+        ));
 
         serviceConfig.export();
     }

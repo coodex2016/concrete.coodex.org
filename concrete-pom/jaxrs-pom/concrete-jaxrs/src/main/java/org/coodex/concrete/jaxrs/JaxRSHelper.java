@@ -23,8 +23,6 @@ import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.TypeHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.StringTokenizer;
@@ -33,15 +31,16 @@ import java.util.StringTokenizer;
 /**
  * Created by davidoff shen on 2016-11-30.
  */
+@SuppressWarnings("unused")
 public class JaxRSHelper {
 
     public static final String HEADER_ERROR_OCCURRED = "CONCRETE-ERROR-OCCURRED";
     public static final String KEY_CLIENT_PROVIDER = "X-CLIENT-PROVIDER";
-    private final static Logger log = LoggerFactory.getLogger(JaxRSHelper.class);
+//    private final static Logger log = LoggerFactory.getLogger(JaxRSHelper.class);
 
 
-//    private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<>();
-
+    //    private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<>();
+    private static final JaxRSModuleMaker JAX_RS_MODULE_MAKER = new JaxRSModuleMaker();
 
     /**
      * 0.2.4-SNAPSHOT以前版本，基础类型参数默认使用path传递，之后，默认使用body传递，除非明确定义了path变量
@@ -94,18 +93,7 @@ public class JaxRSHelper {
         return camelCaseByPath(s, false);
     }
 
-    public static String camelCaseByPath(String s, boolean firstCharUpperCase) {
-        StringTokenizer st = new StringTokenizer(s, "/");
-        StringBuilder builder = new StringBuilder();
-        while (st.hasMoreElements()) {
-            String node = st.nextToken();
-            if (node.length() == 0) continue;
-            builder.append('/').append(Common.camelCase(node, firstCharUpperCase, ".-_ "));
-        }
-        return builder.toString();
-    }
-
-    @SuppressWarnings("unchecked")
+//    @SuppressWarnings("unchecked")
 //    public static final synchronized Module getModule(final Class<?> type, String... packages) {
 //        Module module = MODULE_CACHE.get(type);
 //        if (module == null) {
@@ -156,8 +144,18 @@ public class JaxRSHelper {
 //        return set;
 //    }
 
-    private static final JaxRSModuleMaker JAX_RS_MODULE_MAKER = new JaxRSModuleMaker();
-    public static final JaxrsUnit getUnitFrom(Class clz, Method method) {
+    public static String camelCaseByPath(String s, boolean firstCharUpperCase) {
+        StringTokenizer st = new StringTokenizer(s, "/");
+        StringBuilder builder = new StringBuilder();
+        while (st.hasMoreElements()) {
+            String node = st.nextToken();
+            if (node.length() == 0) continue;
+            builder.append('/').append(Common.camelCase(node, firstCharUpperCase, ".-_ "));
+        }
+        return builder.toString();
+    }
+
+    public static JaxrsUnit getUnitFrom(Class<?> clz, Method method) {
         JaxrsModule module = JAX_RS_MODULE_MAKER.make(clz);//getModule(clz);
         int count = method.getParameterTypes().length;// == null ? 0 : params.length;
         for (JaxrsUnit unit : module.getUnits()) {
@@ -169,7 +167,7 @@ public class JaxRSHelper {
         return null;
     }
 
-    public static final JaxrsUnit getUnitFromContext(DefinitionContext context/*, Object[] params*/) {
+    public static JaxrsUnit getUnitFromContext(DefinitionContext context/*, Object[] params*/) {
 //        Module module = getModule(context.getDeclaringClass());
 //        Method method = context.getDeclaringMethod();
 //        int count = method.getParameterTypes().length;// == null ? 0 : params.length;

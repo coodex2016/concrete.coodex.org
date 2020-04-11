@@ -25,6 +25,7 @@ import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
 
@@ -36,8 +37,8 @@ import static org.coodex.concrete.core.intercept.InterceptOrders.PRODUCTION_CHEC
 public class ProductionValidationInterceptor extends AbstractSyncInterceptor {
 
     private Token token = TokenWrapper.getInstance();
-    private LazySelectableServiceLoader<Account, ProductionRepository> productionRepositorySelectableServiceLoader =
-            new LazySelectableServiceLoader<Account, ProductionRepository>() {
+    private LazySelectableServiceLoader<Account<? extends Serializable>, ProductionRepository> productionRepositorySelectableServiceLoader =
+            new LazySelectableServiceLoader<Account<? extends Serializable>, ProductionRepository>() {
             };
 
     @Override
@@ -53,7 +54,7 @@ public class ProductionValidationInterceptor extends AbstractSyncInterceptor {
 
     @Override
     public Object around(DefinitionContext context, MethodInvocation joinPoint) throws Throwable {
-        Account account = token.currentAccount();
+        Account<? extends Serializable> account = token.currentAccount();
         if (account != null) {
             productionCheck(context, account);
         }
@@ -95,7 +96,7 @@ public class ProductionValidationInterceptor extends AbstractSyncInterceptor {
         return result;
     }
 
-    private void productionCheck(DefinitionContext context, Account account) {
+    private void productionCheck(DefinitionContext context, Account<? extends Serializable> account) {
         ProductionRepository productionRepository = productionRepositorySelectableServiceLoader.select(account);
         if (productionRepository == null) return;
 

@@ -22,11 +22,12 @@ import java.util.List;
 /**
  * Created by davidoff shen on 2017-04-11.
  */
+@SuppressWarnings("unused")
 public class TSModule extends TSClass {
 
     private String belong;
-    private List<TSMethod> methods = new ArrayList<TSMethod>();
-    public TSModule(Class c) {
+    private List<TSMethod> methods = new ArrayList<>();
+    public TSModule(Class<?> c) {
         super(CLASS_TYPE_MODULE, c);
     }
 

@@ -16,6 +16,8 @@
 
 package org.coodex.commons.jpa.criteria;
 
+import org.coodex.util.Common;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -152,7 +154,6 @@ public class Operators {
     /**
      * Created by davidoff shen on 2017-03-17.
      */
-    @SuppressWarnings("unchecked")
     abstract static class AbstractOperator implements Operator {
 
         protected abstract <ATTR> void check(ATTR[] attributes);
@@ -160,8 +161,7 @@ public class Operators {
         protected abstract <ATTR> Predicate buildPredicate(Path<ATTR> attrPath, CriteriaBuilder cb, ATTR[] attributes);
 
         <ATTR> Class<ATTR> getAttributeType(Path<ATTR> attrPath) {
-            //noinspection ConstantConditions
-            return (Class<ATTR>) solveFromInstance(Path.class.getTypeParameters()[0], attrPath);
+            return Common.cast(solveFromInstance(Path.class.getTypeParameters()[0], attrPath));
         }
 
         <ATTR> Predicate unsupported(Path<ATTR> attrPath) {
@@ -321,7 +321,7 @@ public class Operators {
     /**
      * Created by davidoff shen on 2017-03-17.
      */
-    @SuppressWarnings("unchecked")
+
     public static class LessOperator extends SingleParamOperator {
         @Override
         public Logical getLogical() {
@@ -329,12 +329,13 @@ public class Operators {
         }
 
         @Override
+        @SuppressWarnings({"unchecked", "rawtypes"})
         protected <ATTR> Predicate buildPredicate(Path<ATTR> attrPath, CriteriaBuilder cb, ATTR[] attributes) {
 //            if (attributes[0] instanceof Number) {
 //                return cb.lt((Path<Number>) attrPath, (Number) attributes[0]);
 //            } else
             if (attributes[0] instanceof Comparable) {
-                return cb.lessThan((Path<? extends Comparable>) attrPath, (Comparable) attributes[0]);
+                return cb.lessThan(Common.cast(attrPath), (Comparable) attributes[0]);
             } else {
                 return unsupported(attrPath);
             }
@@ -352,7 +353,7 @@ public class Operators {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "rawtypes"})
         protected <ATTR> Predicate buildPredicate(Path<ATTR> attrPath, CriteriaBuilder cb, ATTR[] attributes) {
 //            if (attributes[0] instanceof Number) {
 //                return cb.le((Path<Number>) attrPath, (Number) attributes[0]);
@@ -410,7 +411,7 @@ public class Operators {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "rawtypes"})
         protected <ATTR> Predicate buildPredicate(Path<ATTR> attrPath, CriteriaBuilder cb, ATTR[] attributes) {
             if (attributes[0] instanceof Comparable) {
                 return cb.between((Path<? extends Comparable>) attrPath, (Comparable) attributes[0], (Comparable) attributes[1]);
@@ -430,7 +431,7 @@ public class Operators {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "rawtypes"})
         protected <ATTR> Predicate buildPredicate(Path<ATTR> attrPath, CriteriaBuilder cb, ATTR[] attributes) {
 //            if (attributes[0] instanceof Number) {
 //                return cb.gt((Path<Number>) attrPath, (Number) attributes[0]);
@@ -453,7 +454,7 @@ public class Operators {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "rawtypes"})
         protected <ATTR> Predicate buildPredicate(Path<ATTR> attrPath, CriteriaBuilder cb, ATTR[] attributes) {
 //            if (attributes[0] instanceof Number) {
 //                return cb.ge((Path<Number>) attrPath, (Number) attributes[0]);

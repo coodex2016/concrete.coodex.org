@@ -76,7 +76,7 @@ public class AccountsCommon {
     }
 
     public static String getEncodedPassword(String pwd) {
-        return PASSWORD_GENERATORS.select(ORGANIZATION_PREFIX).encode(null);
+        return PASSWORD_GENERATORS.select(ORGANIZATION_PREFIX).encode(pwd);
     }
 
     public static String getApplicationName() {
@@ -110,12 +110,10 @@ public class AccountsCommon {
 
 
     /**
-     * 通用业务单元：检查可登录对象的授权码
-     *
-     * @param authCode
-     * @param entity
-     * @param <E>
-     * @return
+     * @param authCode authCode
+     * @param entity   entity
+     * @param <E>      <E>
+     * @return 通用业务单元：检查可登录对象的授权码
      */
     public static <E extends CanLoginEntity> E checkAuthCode(String authCode, E entity) {
         IF.isNull(entity.getAuthCodeKeyActiveTime(), ACCOUNT_INACTIVATED);
@@ -126,11 +124,11 @@ public class AccountsCommon {
     /**
      * 通用业务单元：更新可登录对象的密码
      *
-     * @param entity
-     * @param password
-     * @param authCode
-     * @param repo
-     * @param <E>
+     * @param entity   entity
+     * @param password password
+     * @param authCode authCode
+     * @param repo     repo
+     * @param <E>      <E>
      */
     public static <E extends CanLoginEntity> void updatePassword(E entity, String password, String authCode, CrudRepository<E, String> repo) {
         checkAuthCode(authCode, entity);
@@ -140,13 +138,10 @@ public class AccountsCommon {
     }
 
     /**
-     * 通用业务单元：获得授权码绑定描述信息
-     *
-     * @param entity
-     * @param authCode
-     * @return
+     * @param entity   entity
+     * @param authCode authCode
+     * @return 通用业务单元：获得授权码绑定描述信息
      */
-    @SuppressWarnings("unchecked")
     public static String getAuthenticatorDesc(CanLoginEntity entity, String authCode) {
         if (entity.getAuthCodeKey() != null && entity.getAuthCodeKeyActiveTime() != null) {
             IF.not(TOTPAuthenticator.authenticate(authCode, entity.getAuthCodeKey()), AUTHORIZE_FAILED);
@@ -155,17 +150,17 @@ public class AccountsCommon {
         Token token = TokenWrapper.getInstance();
         token.setAttribute("accounts.temp.authKey." + entity.getId(), authKey);
         token.setAttribute("accounts.temp.authKey.validation." + entity.getId(),
-                Long.valueOf(Clock.currentTimeMillis() + 10 * 60 * 1000l));
+                Clock.currentTimeMillis() + 10 * 60 * 1000L);
         return TOTPAuthenticator.build(authKey, AccountsCommon.getApplicationName(), entity.getName());
     }
 
     /**
      * 通用业务单元：绑定授权码密钥
      *
-     * @param entity
-     * @param authCode
-     * @param repo
-     * @param <E>
+     * @param entity   entity
+     * @param authCode authCode
+     * @param repo     repo
+     * @param <E>      <E>
      */
     public static <E extends CanLoginEntity> void bindAuthKey(E entity, String authCode, CrudRepository<E, String> repo) {
         Token token = TokenWrapper.getInstance();
@@ -189,8 +184,8 @@ public class AccountsCommon {
     /**
      * 通用业务单元：验证密码
      *
-     * @param password
-     * @param personEntity
+     * @param password     password
+     * @param personEntity personEntity
      */
     public static void checkPassword(String password, CanLoginEntity personEntity) {
         IF.not(
@@ -201,9 +196,9 @@ public class AccountsCommon {
     /**
      * 通用业务单元：重置密码
      *
-     * @param entity
-     * @param repo
-     * @param <E>
+     * @param entity entity
+     * @param repo   repo
+     * @param <E>    <E>
      */
     public static <E extends CanLoginEntity> void resetPassword(E entity, CrudRepository<E, String> repo) {
         entity.setPassword(AccountsCommon.PASSWORD_GENERATORS.select(Constants.ORGANIZATION_PREFIX).encode(null));
@@ -214,9 +209,9 @@ public class AccountsCommon {
     /**
      * 通用业务单元：重置授权码密钥
      *
-     * @param entity
-     * @param repo
-     * @param <E>
+     * @param entity entity
+     * @param repo   repo
+     * @param <E>    <E>
      */
     public static <E extends CanLoginEntity> void resetAuthCode(E entity, CrudRepository<E, String> repo) {
         entity.setAuthCodeKey(null);

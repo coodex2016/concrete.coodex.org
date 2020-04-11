@@ -43,7 +43,7 @@ import static org.coodex.concrete.own.PackageHelper.analysisParameters;
 public abstract class OwnServiceProvider implements Application {
 
     private final static Logger log = LoggerFactory.getLogger(OwnServiceProvider.class);
-    private final Map<String, AbstractUnit<?, ?>> unitMap = new HashMap<>();
+    private final Map<String, AbstractUnit<?>> unitMap = new HashMap<>();
 
     public OwnServiceProvider() {
         registerPackage(AbstractErrorCodes.class.getPackage().getName());
@@ -65,7 +65,7 @@ public abstract class OwnServiceProvider implements Application {
     }
 
     private void appendUnits(OwnServiceModule<?> module) {
-        for (OwnServiceUnit<?> unit : module.getUnits()) {
+        for (OwnServiceUnit unit : module.getUnits()) {
             unitMap.put(unit.getKey(), unit);
         }
     }
@@ -120,7 +120,7 @@ public abstract class OwnServiceProvider implements Application {
                                  final OwnServiceProvider.TBMNewTokenVisitor newTokenVisitor) {
         IF.isNull(responseVisitor, ErrorCodes.OWN_PROVIDER_NO_RESPONSE_VISITOR, getModuleName());
         //1 找到方法
-        final AbstractUnit<?, ?> unit = IF.isNull(unitMap.get(requestPackage.getServiceId()),
+        final AbstractUnit<?> unit = IF.isNull(unitMap.get(requestPackage.getServiceId()),
                 SERVICE_ID_NOT_EXISTS, requestPackage.getServiceId());
 
         //2 解析数据

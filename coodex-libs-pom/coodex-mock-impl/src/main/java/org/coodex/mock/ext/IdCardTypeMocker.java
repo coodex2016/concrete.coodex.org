@@ -28,7 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.List;
 public class IdCardTypeMocker extends AbstractTypeMocker<IdCard> {
 
     private final static Logger log = LoggerFactory.getLogger(IdCardTypeMocker.class);
-
+    private final List<String> administrative_divisions = new ArrayList<>();
 
     public IdCardTypeMocker() {
         try {
@@ -47,9 +47,21 @@ public class IdCardTypeMocker extends AbstractTypeMocker<IdCard> {
         }
     }
 
+    public static char getVerifyChar(String idCardNumber) {
+        char[] pszSrc = idCardNumber.toCharArray();
+        int iS = 0;
+        int[] iW = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2};
+        char[] szVerCode = new char[]{'1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'};
+        for (int i = 0; i < 17; i++) {
+            iS += (pszSrc[i] - '0') * iW[i];
+        }
+        int iY = iS % 11;
+        return szVerCode[iY];
+    }
+
     @Override
-    protected Class[] getSupportedClasses() {
-        return new Class[]{String.class};
+    protected Class<?>[] getSupportedClasses() {
+        return new Class<?>[]{String.class};
     }
 
     @Override
@@ -73,20 +85,6 @@ public class IdCardTypeMocker extends AbstractTypeMocker<IdCard> {
         String idCard = builder.toString();
 
         return size == 15 ? idCard : idCard + getVerifyChar(idCard);
-    }
-
-    private final List<String> administrative_divisions = new ArrayList<String>();
-
-    public static char getVerifyChar(String idCardNumber) {
-        char pszSrc[] = idCardNumber.toCharArray();
-        int iS = 0;
-        int iW[] = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2};
-        char szVerCode[] = new char[]{'1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'};
-        for (int i = 0; i < 17; i++) {
-            iS += (pszSrc[i] - '0') * iW[i];
-        }
-        int iY = iS % 11;
-        return szVerCode[iY];
     }
 
     private String birthDay(IdCard mock) {
@@ -121,7 +119,7 @@ public class IdCardTypeMocker extends AbstractTypeMocker<IdCard> {
     }
 
     private List<String> filter(String[] divisions) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (String division : administrative_divisions) {
             boolean ok = true;
             if (divisions != null && divisions.length > 0) {
@@ -155,16 +153,13 @@ public class IdCardTypeMocker extends AbstractTypeMocker<IdCard> {
     private void loadDivisions() throws IOException {
         URL url = Common.getResource("administrativeDivisions.txt", IdCardTypeMocker.class.getClassLoader());
         InputStream is = url.openStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-        try {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.length() > 8 && line.charAt(0) == ' ') {
                     administrative_divisions.add(line.trim().substring(0, 6));
                 }
             }
-        }finally {
-            reader.close();
         }
     }
 }

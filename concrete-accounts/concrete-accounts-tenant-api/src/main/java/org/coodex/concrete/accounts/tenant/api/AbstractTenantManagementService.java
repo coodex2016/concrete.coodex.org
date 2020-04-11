@@ -34,6 +34,7 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.SYSTEM_MANAGER
  * <p>
  * Created by davidoff shen on 2017-05-25.
  */
+@SuppressWarnings("unused")
 @ConcreteService(value = "tenants", nonspecific = true)
 @AccessAllow(roles = {SYSTEM_MANAGER})
 @Safely
@@ -69,8 +70,8 @@ public interface AbstractTenantManagementService<T extends Tenant> {
     void layUp(String tenant);
 
     @Description(name = "恢复使用", description = "在恢复的时间基础上增加上余量")
-    @ConcreteService("{tenant}/desterilize")
-    void desterilize(String tenant);
+    @ConcreteService("{tenant}/restore")
+    void restore(String tenant);
 
     @ConcreteService("{tenant}/password")
     @Description(name = "重置指定租户管理员登录密码")

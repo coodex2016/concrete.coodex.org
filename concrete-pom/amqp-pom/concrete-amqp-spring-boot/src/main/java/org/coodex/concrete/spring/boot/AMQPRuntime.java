@@ -34,7 +34,7 @@ public class AMQPRuntime extends AbstractRuntimeParameter {
 
     public AMQPRuntime(AMQPConnectionConfig config,
                        String[] servicePackages,
-                       Class[] classes,
+                       Class<?>[] classes,
                        String exchangeName, String queueName, long ttl) {
         super(servicePackages, classes);
         this.config = config;

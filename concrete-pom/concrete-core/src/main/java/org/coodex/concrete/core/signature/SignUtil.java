@@ -38,6 +38,7 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 /**
  * Created by davidoff shen on 2017-04-21.
  */
+@SuppressWarnings("unused")
 public class SignUtil {
 
     public static final String KEY_FIELD_ALGORITHM = "algorithm";
@@ -115,8 +116,8 @@ public class SignUtil {
     }
 
     public static Map<String, Object> beanToMap(Object bean) throws InvocationTargetException, IllegalAccessException {
-        Class c = bean.getClass();
-        Map<String, Object> objectMap = new HashMap<String, Object>();
+        Class<?> c = bean.getClass();
+        Map<String, Object> objectMap = new HashMap<>();
         for (Method method : c.getMethods()) {
             String property = methodToProperty(method);
             if (property != null) {
@@ -130,12 +131,12 @@ public class SignUtil {
     }
 
     public static Map<String, Object> buildContent(DefinitionContext context, Object[] args) {
-        AbstractUnit unit = AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());
+        AbstractUnit<?> unit = AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());
         AbstractParam[] params = unit.getParameters();
         if (params == null) return new HashMap<>();
         // 1个参数的情况
         if (params.length == 1) {
-            Class c = params[0].getType();
+            Class<?> c = params[0].getType();
             // 非集合、数组、基础类型
             if (!Collection.class.isAssignableFrom(c) && !c.isArray() && !TypeHelper.isPrimitive(c)) {
                 try {

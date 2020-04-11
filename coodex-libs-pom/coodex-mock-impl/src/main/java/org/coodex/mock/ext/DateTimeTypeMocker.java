@@ -20,6 +20,7 @@ import org.coodex.mock.AbstractTypeMocker;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
+import org.coodex.util.Singleton;
 
 import java.lang.reflect.Type;
 import java.text.DateFormat;
@@ -31,11 +32,13 @@ import java.util.Date;
  */
 public class DateTimeTypeMocker extends AbstractTypeMocker<DateTime> {
 
+    private static Singleton<Class<?>[]> singleton = Singleton.with(() -> new Class<?>[]{
+            Calendar.class, Date.class, String.class
+    });
+
     @Override
-    protected Class[] getSupportedClasses() {
-        return new Class[]{
-                Calendar.class, Date.class, String.class
-        };
+    protected Class<?>[] getSupportedClasses() {
+        return singleton.get();
     }
 
     @Override
@@ -45,7 +48,7 @@ public class DateTimeTypeMocker extends AbstractTypeMocker<DateTime> {
 
     @Override
     public Object mock(DateTime mockAnnotation, Type targetType) {
-        Class clazz = GenericTypeHelper.typeToClass(targetType);
+        Class<?> clazz = GenericTypeHelper.typeToClass(targetType);
         try {
             DateFormat format = Common.getSafetyDateFormat(mockAnnotation.format());//new SimpleDateFormat(mockAnnotation.format());
 

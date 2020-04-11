@@ -89,10 +89,10 @@ public class FullNameTypeMocker extends AbstractTypeMocker<FullName> {
             "司徒", "司空", "亓官", "司寇", "子车", "颛孙", "端木", "巫马",
             "公西", "漆雕", "壤驷", "公良", "夹谷", "宰父", "微生", "羊舌"
     };
-    private static Class[] SUPPORTED = new Class[]{String.class};
+    private static Class<?>[] SUPPORTED = new Class<?>[]{String.class};
 
     @Override
-    protected Class[] getSupportedClasses() {
+    protected Class<?>[] getSupportedClasses() {
         return SUPPORTED;
     }
 

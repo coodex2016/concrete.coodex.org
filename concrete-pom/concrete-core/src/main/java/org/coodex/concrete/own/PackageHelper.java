@@ -20,6 +20,7 @@ import org.coodex.concrete.common.JSONSerializer;
 import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.common.modules.AbstractParam;
 import org.coodex.concrete.common.modules.AbstractUnit;
+import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
 
 import java.lang.reflect.Type;
@@ -36,15 +37,15 @@ import static org.coodex.util.TypeHelper.isPrimitive;
 
 public class PackageHelper {
 
-    private static ThreadLocal<Class> context = new ThreadLocal<>();
+    private static ThreadLocal<Class<?>> context = new ThreadLocal<>();
+
     private static Type paramType(AbstractParam param) {
         return isPrimitive(param.getType()) ? param.getType() :
                 toReference(param.getGenericType(), context.get());
     }
 
-    @SuppressWarnings("unchecked")
-    public static RequestPackage buildRequest(String msgId, OwnServiceUnit unit, Object[] args) {
-        RequestPackage requestPackage = new RequestPackage();
+    public static RequestPackage<?> buildRequest(String msgId, OwnServiceUnit unit, Object[] args) {
+        RequestPackage<?> requestPackage = new RequestPackage<>();
         requestPackage.setMsgId(msgId);
         requestPackage.setServiceId(unit.getKey());
 
@@ -53,21 +54,21 @@ public class PackageHelper {
             case 0:
                 break;
             case 1:
-                requestPackage.setContent(args[0]);
+                requestPackage.setContent(Common.cast(args[0]));
                 break;
             default:
                 Map<String, Object> toSend = new HashMap<>();
                 for (int i = 0; i < parameters.length; i++) {
                     toSend.put(parameters[i].getName(), args[i]);
                 }
-                requestPackage.setContent(toSend);
+                requestPackage.setContent(Common.cast(toSend));
                 break;
         }
         return requestPackage;
     }
 
 
-    static Object[] analysisParameters(String json, AbstractUnit unit) {
+    static Object[] analysisParameters(String json, AbstractUnit<?> unit) {
 //        if (content == null) return null;
         AbstractParam[] abstractParams = unit.getParameters();
         if (abstractParams.length == 0) return null;

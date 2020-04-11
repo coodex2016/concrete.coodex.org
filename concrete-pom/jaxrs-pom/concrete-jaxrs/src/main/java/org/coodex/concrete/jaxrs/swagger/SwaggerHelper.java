@@ -47,12 +47,13 @@ import java.util.*;
 import static org.coodex.util.GenericTypeHelper.solveFromType;
 import static org.coodex.util.GenericTypeHelper.toReference;
 
+@SuppressWarnings("unused")
 public class SwaggerHelper {
 
-    private static ThreadLocal<Map<String, Schema>> definitions = new ThreadLocal<>();
+    private static ThreadLocal<Map<String, Schema<?>>> definitions = new ThreadLocal<>();
     private static ThreadLocal<Set<String>> readyForSchema = new ThreadLocal<>();
 
-    public static OpenAPI toOpenAPI(String url, List<Class> classes) {
+    public static OpenAPI toOpenAPI(String url, List<Class<?>> classes) {
         readyForSchema.remove();
         OpenAPI openAPI = new OpenAPI()
                 .info(new Info()
@@ -74,7 +75,7 @@ public class SwaggerHelper {
         Set<Tag> tags = new LinkedHashSet<>();
         definitions.set(new LinkedHashMap<>());
         try {
-            for (Class clz : classes) {
+            for (Class<?> clz : classes) {
                 JaxrsModule module = new JaxrsModule(clz);
                 tags.add(new Tag().name(module.getLabel()).description(module.getDescription()));
                 for (JaxrsUnit unit : module.getUnits()) {
@@ -85,8 +86,8 @@ public class SwaggerHelper {
             }
             openAPI.tags(new ArrayList<>(tags));
             Components components = new Components();
-            Map<String, Schema> defined = definitions.get();
-            for (Map.Entry<String, Schema> entry : defined.entrySet()) {
+            Map<String, Schema<?>> defined = definitions.get();
+            for (Map.Entry<String, Schema<?>> entry : defined.entrySet()) {
                 components.addSchemas(entry.getKey(), entry.getValue());
             }
 
@@ -108,7 +109,7 @@ public class SwaggerHelper {
         operation.setSummary(unit.getLabel());
         operation.setDescription(unit.getDescription());
         operation.addTagsItem(unit.getDeclaringModule().getLabel());
-        if(unit.getAccessAllow() != null){
+        if (unit.getAccessAllow() != null) {
             Parameter parameter = new Parameter()
                     .name("concrete-token-id")
                     .in("header")
@@ -150,7 +151,7 @@ public class SwaggerHelper {
                         ));
             } else {
                 Map<String, Object> mocked = new HashMap<>();
-                Schema objectSchema = new Schema();
+                Schema<?> objectSchema = new Schema<>();
 
                 for (JaxrsParam param : unit.getPojo()) {
                     objectSchema.addProperties(param.getName(),
@@ -173,7 +174,7 @@ public class SwaggerHelper {
                 new ApiResponse().content(
                         new Content().addMediaType("application/json",
                                 new MediaType().schema(
-                                        schema(toReference(unit.getGenericReturnType(),unit.getDeclaringModule().getInterfaceClass()))
+                                        schema(toReference(unit.getGenericReturnType(), unit.getDeclaringModule().getInterfaceClass()))
                                 ).example(
                                         Mocker.mockMethod(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass())
                                 )))).addApiResponse("204", new ApiResponse())
@@ -199,11 +200,12 @@ public class SwaggerHelper {
     }
 
 
-    private static Schema schema(Type type) {
+    @SuppressWarnings("StatementWithEmptyBody")
+    private static Schema<?> schema(Type type) {
         if (type instanceof Class) {
-            return classSchema((Class) type);
+            return classSchema((Class<?>) type);
         } else if (type instanceof ParameterizedType) {
-            Class c = (Class) ((ParameterizedType) type).getRawType();
+            Class<?> c = (Class<?>) ((ParameterizedType) type).getRawType();
             if (Collection.class.isAssignableFrom(c)) {
                 Type t = solveFromType(Collection.class.getTypeParameters()[0], type);
                 if (byte.class.equals(t)) {
@@ -223,11 +225,11 @@ public class SwaggerHelper {
         } else {
             // ??
         }
-        return new Schema();
+        return new Schema<>();
 
     }
 
-    private static Schema classSchema(Class c) {
+    private static Schema<?> classSchema(Class<?> c) {
         if (byte[].class.equals(c)) {
             return new ByteArraySchema();
         } else if (c.isArray()) {
@@ -252,8 +254,8 @@ public class SwaggerHelper {
         }
     }
 
-    private static Schema pojoSchema(Type t) {
-        Map<String, Schema> defined = definitions.get();
+    private static Schema<?> pojoSchema(Type t) {
+        Map<String, Schema<?>> defined = definitions.get();
         String name = t.toString().replace(' ', '_');
         if (!defined.containsKey(name)) {
             Set<String> set = readyForSchema.get();
@@ -265,10 +267,10 @@ public class SwaggerHelper {
             try {
                 if (!set.contains(name)) {
                     set.add(name);
-                    Schema objectSchema = new Schema();
+                    Schema<?> objectSchema = new Schema<>();
                     PojoInfo pojoInfo = new PojoInfo(t);
                     for (PojoProperty property : pojoInfo.getProperties()) {
-                        Schema schema = schema(property.getType());
+                        Schema<?> schema = schema(property.getType());
                         Description description = property.getAnnotation(Description.class);
                         if (description != null) {
                             schema.title(description.name()).description(description.description());
@@ -277,7 +279,7 @@ public class SwaggerHelper {
                     }
                     defined.put(name, objectSchema);
                 } else {
-                    return new Schema().title("cycle ref").description(name);
+                    return new Schema<>().title("cycle ref").description(name);
                 }
             } finally {
                 if (remove)
@@ -285,15 +287,15 @@ public class SwaggerHelper {
             }
 
         }
-        return new Schema().$ref("#/components/schemas/" + name);
+        return new Schema<>().$ref("#/components/schemas/" + name);
     }
 
 
-    public static String toJson(String url, List<Class> classes) {
+    public static String toJson(String url, List<Class<?>> classes) {
         return Json.pretty(toOpenAPI(url, classes));
     }
 
-    public static String toYaml(String url, List<Class> classes) {
+    public static String toYaml(String url, List<Class<?>> classes) {
         return Yaml.pretty(toOpenAPI(url, classes));
     }
 

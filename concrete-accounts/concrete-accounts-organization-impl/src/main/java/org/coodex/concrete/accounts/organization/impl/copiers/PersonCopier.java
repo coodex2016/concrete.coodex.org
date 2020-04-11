@@ -27,6 +27,7 @@ import static org.coodex.util.Common.strToDate;
 /**
  * Created by davidoff shen on 2017-05-11.
  */
+@SuppressWarnings("rawtypes")
 public abstract class PersonCopier<T extends Person, E extends AbstractPersonAccountEntity>
         extends PojoCopier<T, E> {
 
@@ -36,15 +37,12 @@ public abstract class PersonCopier<T extends Person, E extends AbstractPersonAcc
         try {
             e.setBirthDay(DATE_FORMATTER_SERVICE_LOADER.get().getDateFormat()
                     .format(strToDate(s, "yyyyMMdd")));
-        } catch (Throwable th) {
+        } catch (Throwable ignored) {
         }
     }
 
     private void setSex(E e, char ch) {
-        try {
-            e.setSex((ch - '0') % 2 == 0 ? 2 : 1);
-        } catch (Throwable th) {
-        }
+        e.setSex((ch - '0') % 2 == 0 ? 2 : 1);
     }
 
     @Override

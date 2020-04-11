@@ -24,8 +24,8 @@ import static org.coodex.util.Common.randomChar;
 
 public class MobilePhoneNumTypeMocker extends AbstractTypeMocker<MobilePhoneNum> {
     @Override
-    protected Class[] getSupportedClasses() {
-        return new Class[]{String.class};
+    protected Class<?>[] getSupportedClasses() {
+        return new Class<?>[]{String.class};
     }
 
     @Override

@@ -42,6 +42,7 @@ import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
 /**
  * Created by davidoff shen on 2017-05-18.
  */
+@SuppressWarnings({"CdiInjectionPointsInspection", "unused"})
 public abstract class AbstractLoginServiceImpl
         <JE extends AbstractPositionEntity, PE extends AbstractPersonAccountEntity<JE>>
         implements AbstractLoginService {
@@ -55,7 +56,7 @@ public abstract class AbstractLoginServiceImpl
     protected Token token = TokenWrapper.getInstance();
 
     @Inject
-    protected AbstractOrganizationAccountFactory abstractOrganizationAccountFactory;
+    protected AbstractOrganizationAccountFactory<JE, PE> abstractOrganizationAccountFactory;
 
     @Inject
     protected AbstractAdministratorFactory administratorFactory;
@@ -107,7 +108,7 @@ public abstract class AbstractLoginServiceImpl
     /**
      * 可扩展
      *
-     * @param loginCacheEntryEntity
+     * @param loginCacheEntryEntity loginCacheEntryEntity
      */
     protected void setValidation(LoginCacheEntryEntity loginCacheEntryEntity) {
         if (AccountsCommon.getBool("validation.defer", false)) {
@@ -118,7 +119,7 @@ public abstract class AbstractLoginServiceImpl
     /**
      * 可扩展，需保证每次均唯一
      *
-     * @return
+     * @return newCredential
      */
     protected String newCredential() {
         return Common.getUUIDStr();
@@ -127,7 +128,7 @@ public abstract class AbstractLoginServiceImpl
     /**
      * 可扩展
      *
-     * @return
+     * @return getValidationFromNow
      */
     protected Calendar getValidationFromNow() {
         Calendar calendar = Clock.now();
@@ -155,9 +156,11 @@ public abstract class AbstractLoginServiceImpl
     /**
      * 其他登录方式，实现者自行重载
      *
-     * @param account
-     * @return
+     * @param account account
+     * @param tenant  tenant
+     * @return accountEntity
      */
+
     protected PE getAccountEntityBy(String account, String tenant) {
         return null;
     }
@@ -181,8 +184,8 @@ public abstract class AbstractLoginServiceImpl
     /**
      * 实现者可重载，增加更完善的校验，例如：全数字，前两位、三位，区域等
      *
-     * @param account
-     * @return
+     * @param account account
+     * @return isCellPhone
      */
     protected boolean isCellPhone(String account) {
         return account.length() == 11 && !hasAtChar(account);
@@ -191,8 +194,8 @@ public abstract class AbstractLoginServiceImpl
     /**
      * 实现者可重载，增加更完善的校验，例如：15位是否全数字、18位校验码、生日有效性校验、行政区划有效性校验等
      *
-     * @param account
-     * @return
+     * @param account account
+     * @return isIdCard
      */
     protected boolean isIdCard(String account) {
         return (account.length() == 15 || account.length() == 18) && !hasAtChar(account);
@@ -202,8 +205,8 @@ public abstract class AbstractLoginServiceImpl
     /**
      * 实现者可重载，增加更完善的校验
      *
-     * @param account
-     * @return
+     * @param account account
+     * @return isEmail
      */
     protected boolean isEmail(String account) {
         return hasAtChar(account);
@@ -217,10 +220,10 @@ public abstract class AbstractLoginServiceImpl
     @Override
     public void loginWith(String credential) {
         LoginCacheEntryEntity loginCacheEntryEntity =
-                IF.isNull(
-                        loginCacheEntryRepo.findFirstByCredential(credential), NONE_THIS_CREDENTIAL);
-        PE personEntity = IF.isNull(
-                personAccountRepo.findById(loginCacheEntryEntity.getAccountId()).orElse(null), NONE_THIS_ACCOUNT);
+                IF.isNull(loginCacheEntryRepo.findFirstByCredential(credential), NONE_THIS_CREDENTIAL);
+
+        PE personEntity = personAccountRepo.findById(loginCacheEntryEntity.getAccountId())
+                .orElseThrow(() -> new ConcreteException(NONE_THIS_ACCOUNT));
         tenantRPCServiceClient.checkTenant(personEntity.getTenant());
         token.setAccount(
                 abstractOrganizationAccountFactory.getAccountByID(
@@ -232,10 +235,9 @@ public abstract class AbstractLoginServiceImpl
     @Override
     public String identification(String authCode) {
         // TODO: 丑陋
-        PE personEntity = IF.isNull(
-                personAccountRepo.findById(((ClassifiableAccountID) (token.currentAccount().getId())).getId()).orElse(null),
-                NONE_THIS_ACCOUNT);
-        String credential = null;
+        PE personEntity = personAccountRepo.findById(((ClassifiableAccountID) (token.currentAccount().getId())).getId())
+                .orElseThrow(() -> new ConcreteException(NONE_THIS_ACCOUNT));
+        String credential;
         if (isCredible(authCode, personEntity)) {
             credential = updateLoginCacheEntry(personEntity);
             token.setAccountCredible(true);

@@ -184,7 +184,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     }
 
     private static void setArgument(DefinitionContext context, MethodInvocation joinPoint, String parameterName, Object value) {
-        AbstractUnit unit = AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());//getServiceContext().getCurrentUnit();
+        AbstractUnit<?> unit = AModule.getUnit(context.getDeclaringClass(), context.getDeclaringMethod());//getServiceContext().getCurrentUnit();
         for (AbstractParam param : unit.getParameters()) {
             if (param.getName().equals(parameterName)) {
                 joinPoint.getArguments()[param.getIndex()] = value;

@@ -30,7 +30,6 @@ public abstract class AbstractAdministratorFactory extends ClassifiableAccountFa
     private Token token = TokenWrapper.getInstance();
 
     @Override
-    @SuppressWarnings("unchecked")
     public Account<ClassifiableAccountID> getAccountByID(ClassifiableAccountID id) {
         if (id == null) return null;
         return getAdministrator(id.getId());

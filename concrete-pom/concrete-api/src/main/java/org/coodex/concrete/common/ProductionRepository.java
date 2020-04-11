@@ -18,10 +18,11 @@ package org.coodex.concrete.common;
 
 import org.coodex.util.SelectableService;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface ProductionRepository extends SelectableService<Account> {
+public interface ProductionRepository extends SelectableService<Account<? extends Serializable>> {
 
-    List<Production> getProductionsBy(Account account, String[] modules);
+    List<Production> getProductionsBy(Account<?> account, String[] modules);
 
 }

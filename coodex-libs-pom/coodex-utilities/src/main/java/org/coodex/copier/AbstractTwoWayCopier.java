@@ -16,25 +16,34 @@
 
 package org.coodex.copier;
 
+import org.coodex.util.Common;
+
 import java.util.Collection;
 
 /**
  * Created by davidoff shen on 2017-05-11.
  */
-@SuppressWarnings("unchecked")
+
 public abstract class AbstractTwoWayCopier<A, B>
-        extends AbstractCopierCommon<A, B>
+        extends AbstractCopierCommon
         implements TwoWayCopier<A, B> {
 
     @Override
     protected Object copy(Object o, Index srcIndex) {
-        return Index.A.getIndex() == srcIndex.getIndex() ?
-                copyA2B((A) o) : copyB2A((B) o);
+        if (Index.A.getIndex() == srcIndex.getIndex()) {
+            A a = Common.cast(o);
+            return copyA2B(a);
+        } else {
+            B b = Common.cast(o);
+            return copyB2A(b);
+        }
+//        return Index.A.getIndex() == srcIndex.getIndex() ?
+//                copyA2B((A) o) : copyB2A((B) o);
     }
 
     @Override
     public A newA() {
-        return (A) newObject(Index.A);
+        return Common.cast(newObject(Index.A));
     }
 
     @Override
@@ -44,7 +53,7 @@ public abstract class AbstractTwoWayCopier<A, B>
 
     @Override
     public A initA(A o) {
-        return (A) init(o, Index.A);
+        return Common.cast(init(o, Index.A));
     }
 
     @Override
@@ -69,7 +78,7 @@ public abstract class AbstractTwoWayCopier<A, B>
 
     @Override
     public B newB() {
-        return (B) newObject(Index.B);
+        return Common.cast(newObject(Index.B));
     }
 
     @Override
@@ -79,7 +88,7 @@ public abstract class AbstractTwoWayCopier<A, B>
 
     @Override
     public B initB(B o) {
-        return (B) init(o, Index.B);
+        return Common.cast(init(o, Index.B));
     }
 
     @Override

@@ -16,14 +16,13 @@
 
 package org.coodex.concrete.couriers.rabbitmq;
 
-import org.coodex.concrete.message.CourierPrototype;
 import org.coodex.concrete.message.CourierPrototypeProvider;
 
 import static org.coodex.concrete.couriers.rabbitmq.RabbitMQCourierPrototype.PREFIX_RABBITMQ;
 
 public class RabbitMQCourierPrototypeProvider implements CourierPrototypeProvider {
     @Override
-    public Class<? extends CourierPrototype> getPrototype() {
+    public Class<?> getPrototype() {
         return RabbitMQCourierPrototype.class;
     }
 

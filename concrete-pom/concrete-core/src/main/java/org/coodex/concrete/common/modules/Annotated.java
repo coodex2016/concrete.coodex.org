@@ -23,18 +23,14 @@ import java.lang.annotation.Annotation;
  */
 public interface Annotated {
     /**
-     * 获取某个注解
-     *
-     * @param annotationClass
-     * @param <T>
-     * @return
+     * @param annotationClass annotationClass
+     * @param <T>             <T>
+     * @return 获取某个注解
      */
     <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass);
 
     /**
-     * 获取全部注解
-     *
-     * @return
+     * @return 获取全部注解
      */
     Annotation[] getAnnotations();
 }

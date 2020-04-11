@@ -32,8 +32,8 @@ import java.util.List;
 public abstract class AbstractModelInstance<C extends TimeBasedChargeable> implements BillingModel.Instance<C> {
     private final static Logger log = LoggerFactory.getLogger(AbstractModelInstance.class);
 
-    @SuppressWarnings("rawtypes")
-    private static final Comparator<BillingModel.Fragment> FRAGMENT_COMPARATOR = Comparator.comparing(o -> o.getPeriod().getStart());
+
+    private static final Comparator<BillingModel.Fragment<?>> FRAGMENT_COMPARATOR = Comparator.comparing(o -> o.getPeriod().getStart());
 
     private final LazySelectableServiceLoader<AlgorithmProfile, AlgorithmFactory<C, AlgorithmProfile>>
             algorithmFactorySelectableServiceLoader = new LazySelectableServiceLoader<AlgorithmProfile, AlgorithmFactory<C, AlgorithmProfile>>() {

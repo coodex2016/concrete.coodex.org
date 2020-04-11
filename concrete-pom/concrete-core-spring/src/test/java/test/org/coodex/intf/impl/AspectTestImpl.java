@@ -32,7 +32,6 @@ import java.text.MessageFormat;
  */
 public class AspectTestImpl implements AspectTest {
 
-    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
 
         try {

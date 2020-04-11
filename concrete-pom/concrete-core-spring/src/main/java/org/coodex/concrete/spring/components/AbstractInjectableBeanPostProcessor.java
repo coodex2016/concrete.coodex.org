@@ -23,6 +23,7 @@ import javassist.CtMethod;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.SignatureAttribute;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
+import org.coodex.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -56,13 +57,13 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
 //    private BeanDefinitionRegistry beanDefinitionRegistry;
     @Inject
     private DefaultListableBeanFactory defaultListableBeanFactory;
-    @SuppressWarnings("unchecked")
-    private Class<? extends Annotation>[] injectableAnnotations = new Class[]{Autowired.class, Inject.class};
+    private Class<?>[] injectableAnnotations = new Class<?>[]{Autowired.class, Inject.class};
     private Map<InjectInfoKey, Class<?>> injectedCache = new HashMap<>();
 
     protected boolean isInjectable(Field field) {
-        for (Class<? extends Annotation> clz : injectableAnnotations) {
-            if (field.getAnnotation(clz) != null) return true;
+        for (Class<?> clz : injectableAnnotations) {
+            Class<? extends Annotation> annotationClass = Common.cast(clz);
+            if (field.getAnnotation(annotationClass) != null) return true;
         }
         return false;
     }
@@ -106,6 +107,7 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
 
     //    @Deprecated
 //    protected abstract Object getBeanInstanceWithFieldSet(Class<?> beanClass, Field injectField);
+    @SuppressWarnings("SameParameterValue")
     protected void buildMethods(
             ClassPool classPool, CtClass ctClass,
             Class<?> proxyClass, Type injectType,

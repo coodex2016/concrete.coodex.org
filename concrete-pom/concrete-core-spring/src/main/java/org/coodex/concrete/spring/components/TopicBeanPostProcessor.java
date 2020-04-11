@@ -33,8 +33,6 @@ import javax.inject.Named;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.*;
 import static org.coodex.util.GenericTypeHelper.toReference;
@@ -44,11 +42,10 @@ import static org.coodex.util.GenericTypeHelper.toReference;
 public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<TopicBeanPostProcessor.InjectTopicKey> {
 
     private final static Logger log = LoggerFactory.getLogger(TopicBeanPostProcessor.class);
-    private Set<TopicKey> injected = new HashSet<>();
+//    private Set<TopicKey> injected = new HashSet<>();
 
-    @SuppressWarnings("rawtypes")
     private boolean isTopic(Field field) {
-        Class c = field.getType();
+        Class<?> c = field.getType();
         return c.isInterface() && AbstractTopic.class.isAssignableFrom(c);
     }
 
@@ -157,7 +154,7 @@ public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<
 //
 //    }
 
-    @SuppressWarnings("rawtypes")
+//    @SuppressWarnings("rawtypes")
     private Class<?> getBeanClass(Type topicType, String queueName, String className,
                                   ParameterizedType pt, Class<?> contextClass) throws CannotCompileException {
 //        Class topicClass = (Class) pt.getRawType();
@@ -166,7 +163,7 @@ public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<
 
         CtClass ctClass = classPool.makeClass(className);
         ctClass.setInterfaces(new CtClass[]{
-                classPool.getOrNull(((Class) (pt.getRawType())).getName())
+                classPool.getOrNull(((Class<?>) (pt.getRawType())).getName())
         });
         ClassFile classFile = ctClass.getClassFile();
         classFile.setVersionToJava5();
@@ -176,7 +173,7 @@ public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<
                 null,
                 null,
                 new SignatureAttribute.ClassType[]{
-                        classType(((Class) (pt.getRawType())).getName(), pt.getActualTypeArguments()[0]),
+                        classType(((Class<?>) (pt.getRawType())).getName(), pt.getActualTypeArguments()[0]),
                 }).encode();
         ctClass.setGenericSignature(sig);
 

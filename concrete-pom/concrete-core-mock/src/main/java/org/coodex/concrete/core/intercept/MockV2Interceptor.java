@@ -28,24 +28,26 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import static org.coodex.concrete.core.intercept.InterceptOrders.MOCK;
 
+@SuppressWarnings("unused")
 @ServerSide
 public class MockV2Interceptor extends AbstractSyncInterceptor {
     private final static Logger log = LoggerFactory.getLogger(MockV2Interceptor.class);
 
-    private Set<Class> exceptedClasses = new HashSet<>();
+    private Set<Class<?>> exceptedClasses = new HashSet<>();
     private Set<Pattern> patterns = new HashSet<>();
 
     public MockV2Interceptor() throws IOException {
         this(new HashSet<>());
     }
 
-    public MockV2Interceptor(Set<Class> exceptedClasses) throws IOException {
+    public MockV2Interceptor(Set<Class<?>> exceptedClasses) throws IOException {
         setExceptedClasses(exceptedClasses);
         loadExcepted();
     }
@@ -55,7 +57,7 @@ public class MockV2Interceptor extends AbstractSyncInterceptor {
         if (excepted == null) return;
 
 
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(excepted.openStream(), "UTF-8"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(excepted.openStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 line = line.trim();
@@ -83,11 +85,11 @@ public class MockV2Interceptor extends AbstractSyncInterceptor {
         return true;
     }
 
-    public Set<Class> getExceptedClasses() {
+    public Set<Class<?>> getExceptedClasses() {
         return exceptedClasses;
     }
 
-    public void setExceptedClasses(Set<Class> exceptedClasses) {
+    public void setExceptedClasses(Set<Class<?>> exceptedClasses) {
         if (exceptedClasses != null && exceptedClasses.size() > 0)
             this.exceptedClasses = new HashSet<>(exceptedClasses);
     }

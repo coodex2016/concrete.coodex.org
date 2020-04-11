@@ -42,9 +42,9 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
     private final static Logger log = LoggerFactory.getLogger(ErrorMessageFacade.class);
 
 
-    private final static Set<Class<? extends AbstractErrorCodes>> REGISTERED = new HashSet<Class<? extends AbstractErrorCodes>>();
+    private final static Set<Class<? extends AbstractErrorCodes>> REGISTERED = new HashSet<>();
 
-    private final static Map<Integer, Field> errorCodes = new HashMap<Integer, Field>();
+    private final static Map<Integer, Field> errorCodes = new HashMap<>();
 
 
     private ErrorMessageFacade() {
@@ -83,7 +83,7 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
         REGISTERED.add(clz);
     }
 
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
     public static void register(Class<? extends AbstractErrorCodes>... classes) {
         for (Class<? extends AbstractErrorCodes> clz : classes)
             registerClass(clz);
@@ -109,9 +109,7 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
             if(getServiceContext() instanceof ServerSideContext) {
                 log.debug("errorCode [{}] has not register.", code);
             }
-//            return null;
         } else {
-
             errorMsg = f.getAnnotation(ErrorMsg.class);
             formatterValue = errorMsg == null ? f.getDeclaringClass().getAnnotation(ErrorMsg.class) : errorMsg;
         }
@@ -120,7 +118,7 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
         AbstractErrorCodes.Namespace namespace = f == null ? null : f.getDeclaringClass().getAnnotation(AbstractErrorCodes.Namespace.class);
 
         String errorMessageNamespace = namespace == null ? "message" : namespace.value();
-        errorMessageNamespace = Common.isBlank(errorMessageNamespace) ? f.getDeclaringClass().getName() : errorMessageNamespace;
+        errorMessageNamespace = Common.isBlank(errorMessageNamespace) && f != null ? f.getDeclaringClass().getName() : errorMessageNamespace;
 
         String msgTemp = (errorMsg == null || Common.isBlank(errorMsg.value().trim())) ?
                 "{" + (formatter.getNamespace() == null ? "" : (formatter.getNamespace() + ".")) + errorMessageNamespace + "." + code + "}" : errorMsg.value();
@@ -136,18 +134,19 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
         return (pattern != null) ? (format ? formatter.format(pattern, objects) : pattern) : null;
     }
 
+    @SuppressWarnings("unused")
     private static Object[] actualObjects(Object[] objects) {
         if (objects == null || objects.length == 0) return objects;
         Object[] objectArray = new Object[objects.length];
         for (int i = 0; i < objects.length; i++) {
-            objectArray[i] = objects[i] instanceof Supplier ? ((Supplier) objects[i]).get() : objects[i];
+            objectArray[i] = objects[i] instanceof Supplier ? ((Supplier<?>) objects[i]).get() : objects[i];
         }
         return objectArray;
     }
 
 
     public static List<ErrorDefinition> getAllErrorInfo() {
-        final List<ErrorDefinition> errorDefinitions = new ArrayList<ErrorDefinition>();
+        final List<ErrorDefinition> errorDefinitions = new ArrayList<>();
         for (Integer i : allRegisteredErrorCodes()) {
             errorDefinitions.add(new ErrorDefinition(i));
         }

@@ -29,10 +29,10 @@ import java.util.*;
 import static org.coodex.concrete.common.ConcreteHelper.isConcreteService;
 import static org.coodex.util.GenericTypeHelper.solveFromType;
 
-public abstract class AbstractAngularRender<U extends AbstractUnit> extends AbstractRender {
+public abstract class AbstractAngularRender<U extends AbstractUnit<?>> extends AbstractRender {
 
-    protected static final ThreadLocal<Map<String, Map<Class, TSClass>>> CLASSES = new ThreadLocal<Map<String, Map<Class, TSClass>>>();
-    private static final Class[] NUMBERS = new Class[]{
+    protected static final ThreadLocal<Map<String, Map<Class<?>, TSClass>>> CLASSES = new ThreadLocal<>();
+    private static final Class<?>[] NUMBERS = new Class<?>[]{
             byte.class, int.class, short.class, long.class, float.class, double.class
     };
 
@@ -50,7 +50,7 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
 
     protected abstract String getModuleType();
 
-    private Map<String, Map<Class, TSClass>> getClasses() {
+    private Map<String, Map<Class<?>, TSClass>> getClasses() {
         return CLASSES.get();
     }
 
@@ -73,11 +73,11 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
 
         for (String key : getClasses().keySet()) {
             packages.add(key);
-            Map<Class, TSClass> map = getClasses().get(key);
+            Map<Class<?>, TSClass> map = getClasses().get(key);
             Map<String, Object> toWrite = new HashMap<>();
             toWrite.put("contextPath", getContextPath(key));
-            Set<Class> classSet = new HashSet<>();
-            for (Class clz : map.keySet()) {
+            Set<Class<?>> classSet = new HashSet<>();
+            for (Class<?> clz : map.keySet()) {
                 //ConcreteService.class.isAssignableFrom(clz)
                 if (isConcreteService(clz)) {
                     toWrite.put("includeServices", Boolean.TRUE);
@@ -90,7 +90,7 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
             }
 
             Map<String, TSImport> imports = new HashMap<>();
-            for (Class clz : classSet) {
+            for (Class<?> clz : classSet) {
                 String packageName = getPackageKey(clz);
                 if (key.equals(packageName)) continue;
                 TSImport importSet = imports.get(packageName);
@@ -116,16 +116,16 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
         writeTo(contextPath + "Concrete" + getModuleType() + "Module.ts", "concrete.ftl", toWrite);
     }
 
-    private String getPackageKey(Class clz) {
+    private String getPackageKey(Class<?> clz) {
         return clz.getPackage().getName().replace('.', '/');
     }
 
-    private Collection<TSClass> sort(Map<Class, TSClass> classes) {
+    private Collection<TSClass> sort(Map<Class<?>, TSClass> classes) {
         List<TSClass> ordered = new ArrayList<>();
-        Map<Class, TSClass> cache = new HashMap<>(classes);
+        Map<Class<?>, TSClass> cache = new HashMap<>(classes);
         while (cache.keySet().size() > 0) {
-            Class[] keys = cache.keySet().toArray(new Class[0]);
-            for (Class key : keys) {
+            Class<?>[] keys = cache.keySet().toArray(new Class<?>[0]);
+            for (Class<?> key : keys) {
                 TSClass tsClass = cache.get(key);
                 if (noDep(tsClass, cache)) {
                     cache.remove(key);
@@ -136,11 +136,11 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
         return ordered;
     }
 
-    private boolean noDep(TSClass tsClass, Map<Class, TSClass> cache) {
+    private boolean noDep(TSClass tsClass, Map<Class<?>, TSClass> cache) {
         if (tsClass instanceof TSPojo) {
             return cache.get(((TSPojo) tsClass).getSuperType()) == null;
         }
-        for (Class clz : tsClass.getImports()) {
+        for (Class<?> clz : tsClass.getImports()) {
             if (cache.get(clz) != null) return false;
         }
         return true;
@@ -148,7 +148,7 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
 
     protected void process(String moduleName, AbstractModule<U> module) {
         Class<?> clz = module.getInterfaceClass();
-        Map<Class, TSClass> moduleMap = getTSClassMap(clz);
+        Map<Class<?>, TSClass> moduleMap = getTSClassMap(clz);
 //        if (moduleMap == null) return;
         TSModule tsModule = new TSModule(clz);
         tsModule.setBelong(moduleName);
@@ -186,8 +186,8 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
         return fieldList;
     }
 
-    private Map<Class, TSClass> getTSClassMap(Class<?> clz) {
-        Map<String, Map<Class, TSClass>> classes = getClasses();
+    private Map<Class<?>, TSClass> getTSClassMap(Class<?> clz) {
+        Map<String, Map<Class<?>, TSClass>> classes = getClasses();
         String packageName = clz.getPackage().getName().replace('.', '/');
 //        Map<Class, TSClass> moduleMap = classes.get(packageName);
 //        if (moduleMap == null) {
@@ -198,29 +198,29 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
         return classes.computeIfAbsent(packageName, k -> new HashMap<>());
     }
 
-    private String getClassType(Type type, TSClass clz, Class contextClass) {
+    private String getClassType(Type type, TSClass clz, Class<?> contextClass) {
         if (type instanceof Class) {
-            Class c = (Class) type;
+            Class<?> c = (Class<?>) type;
             if (c.isArray()) {
                 return getClassType(c.getComponentType(), clz, contextClass) + "[]";
             } else
-                return getClassType((Class) type, clz);
+                return getClassType(c, clz);
         } else if (type instanceof ParameterizedType) {
             return getParameterizedType(clz, (ParameterizedType) type, contextClass);
         } else if (type instanceof GenericArrayType) {
             return getClassType(((GenericArrayType) type).getGenericComponentType(), clz, contextClass) + "[]";
         } else if (type instanceof TypeVariable) {
             if (contextClass != null) {
-                return getClassType(solveFromType((TypeVariable) type, contextClass), clz, null);
+                return getClassType(solveFromType((TypeVariable<?>) type, contextClass), clz, null);
             } else
-                return ((TypeVariable) type).getName();
+                return ((TypeVariable<?>) type).getName();
         } else {
             throw new RuntimeException("unknown type: " + type);
         }
     }
 
-    private String getParameterizedType(TSClass clz, ParameterizedType pt, Class contextClass) {
-        Class rawType = (Class) pt.getRawType();
+    private String getParameterizedType(TSClass clz, ParameterizedType pt, Class<?> contextClass) {
+        Class<?> rawType = (Class<?>) pt.getRawType();
         if (Collection.class.isAssignableFrom(rawType)) {
             return getClassType(pt.getActualTypeArguments()[0], clz, contextClass) + "[]";
         } else if (Map.class.isAssignableFrom(rawType)) {
@@ -242,7 +242,7 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
         }
     }
 
-    private String getClassType(Class c, TSClass clz) {
+    private String getClassType(Class<?> c, TSClass clz) {
         if (void.class.equals(c) || Void.class.equals(c)) {
             return "void";
         } else if (boolean.class.equals(c) || Boolean.class.equals(c)) {
@@ -263,9 +263,9 @@ public abstract class AbstractAngularRender<U extends AbstractUnit> extends Abst
         }
     }
 
-    private TSPojo getTSPojo(Class c) {
+    private TSPojo getTSPojo(Class<?> c) {
         // 处理过的不管
-        Map<Class, TSClass> map = getTSClassMap(c);
+        Map<Class<?>, TSClass> map = getTSClassMap(c);
         if (map.containsKey(c))
             return (TSPojo) map.get(c);
 

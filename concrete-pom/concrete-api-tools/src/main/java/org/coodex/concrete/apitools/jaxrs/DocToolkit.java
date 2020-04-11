@@ -35,6 +35,7 @@ import static org.coodex.util.GenericTypeHelper.solveFromType;
 /**
  * Created by davidoff shen on 2016-12-04.
  */
+@SuppressWarnings("unused")
 public abstract class DocToolkit {
 
     private AbstractRender render;
@@ -97,9 +98,9 @@ public abstract class DocToolkit {
             return builder.toString();
         } else if (t instanceof TypeVariable) {
             if (contextClass != null) {
-                return formatTypeStr(solveFromType((TypeVariable) t, contextClass));
+                return formatTypeStr(solveFromType((TypeVariable<?>) t, contextClass));
             } else {
-                TypeVariable typeVariable = (TypeVariable) t;
+                TypeVariable<?> typeVariable = (TypeVariable<?>) t;
                 StringBuilder builder = new StringBuilder();
                 builder.append(typeVariable.getName());
                 if (!Object.class.equals(typeVariable.getBounds()[0])) {
@@ -111,8 +112,8 @@ public abstract class DocToolkit {
 
             return formatTypeStr(((GenericArrayType) t).getGenericComponentType(), contextClass) + "[]";
         } else if (t instanceof Class) {
-            if (((Class) t).isArray()) {
-                return formatTypeStr(((Class) t).getComponentType(), contextClass) + "[]";
+            if (((Class<?>) t).isArray()) {
+                return formatTypeStr(((Class<?>) t).getComponentType(), contextClass) + "[]";
             } else {
                 return getClassLabel((Class<?>) t);
             }

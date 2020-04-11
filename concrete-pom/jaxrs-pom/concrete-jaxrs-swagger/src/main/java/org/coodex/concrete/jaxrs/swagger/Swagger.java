@@ -100,8 +100,8 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
     @Override
     public Class<?>[] getClasses() {
         return Common.toBool(ConcreteHelper.getString("swagger", null, "swagger"), true) ?
-                new Class[]{Swagger.class} :
-                new Class[0];
+                new Class<?>[]{Swagger.class} :
+                new Class<?>[0];
     }
 
     @Override

@@ -29,8 +29,8 @@ public class EMailTypeMocker extends AbstractTypeMocker<EMail> {
     private final String chars = "abcdefghijklmnopqrstuvwxyz0123456789";
 
     @Override
-    protected Class[] getSupportedClasses() {
-        return new Class[]{String.class};
+    protected Class<?>[] getSupportedClasses() {
+        return new Class<?>[]{String.class};
     }
 
     @Override

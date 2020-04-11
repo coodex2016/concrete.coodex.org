@@ -18,6 +18,7 @@ package org.coodex.concrete.apitools;
 
 import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.common.modules.ModuleMaker;
+import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
 
 import java.util.*;
@@ -31,7 +32,7 @@ public class APIHelper {
             new LazySelectableServiceLoader<String, ModuleMaker<?>>() {
             };
 
-    private static ModuleMaker getInstance(String desc) {
+    private static ModuleMaker<?> getInstance(String desc) {
 //        if (MODULE_MAKERS.getAllInstances().size() == 0)
 //            throw new RuntimeException("No service provider for " + ModuleMaker.class.getName());
 //
@@ -40,30 +41,30 @@ public class APIHelper {
 //                return moduleMaker;
 //            }
 //        }
-        ModuleMaker moduleMaker = MODULE_MAKERS.select(desc);
+        ModuleMaker<?> moduleMaker = MODULE_MAKERS.select(desc);
         if (moduleMaker == null)
             throw new RuntimeException("No module maker supported '" + desc + "' ");
         else
             return moduleMaker;
     }
 
-    @SuppressWarnings("unchecked")
-    public final static <MODULE extends AbstractModule> List<MODULE> loadModules(
+
+    public static <MODULE extends AbstractModule<?>> List<MODULE> loadModules(
             String desc, String... packages) {
 
-        return loadModules(getInstance(desc), packages);
+        ModuleMaker<MODULE> maker = Common.cast(getInstance(desc));
+        return loadModules(maker, packages);
     }
 
-    @SuppressWarnings("unchecked")
-    private static <MODULE extends AbstractModule> List<MODULE> loadModules(
+    private static <MODULE extends AbstractModule<?>> List<MODULE> loadModules(
             final ModuleMaker<MODULE> maker, String... packages) {
 
-        final Map<Class, MODULE> moduleMap = new HashMap<>();
+        final Map<Class<?>, MODULE> moduleMap = new HashMap<>();
         foreachClassInPackages((serviceClass) -> {
             if (isConcreteService(serviceClass)) {
                 MODULE module = maker.make(serviceClass);
 
-                Class key = module.getInterfaceClass();//.getName();
+                Class<?> key = module.getInterfaceClass();//.getName();
                 MODULE exists = moduleMap.get(key);
 
                 if (exists != null) {
@@ -77,7 +78,7 @@ public class APIHelper {
             }
         }, packages);
 
-        List<MODULE> moduleList = new ArrayList<MODULE>(moduleMap.values());
+        List<MODULE> moduleList = new ArrayList<>(moduleMap.values());
         Collections.sort(moduleList);
 
         return moduleList;

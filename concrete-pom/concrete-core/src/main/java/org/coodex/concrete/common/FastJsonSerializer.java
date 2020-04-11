@@ -16,6 +16,8 @@
 
 package org.coodex.concrete.common;
 
+import org.coodex.util.Common;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,23 +26,22 @@ import java.lang.reflect.Type;
 /**
  * Created by davidoff shen on 2016-12-07.
  */
-@SuppressWarnings("unchecked")
 public class FastJsonSerializer extends AbstractJsonSerializer {
 
-    private Class jsonClass = null;
+    private Class<?> jsonClass = null;
 
     private Method toJSONString = null;
 
     private Method parseObject = null;
 
-    private Class feature = null;
+    private Class<?> feature = null;
 
     private Object ignoreNotMatch = null;
 
-    public static void main(String[] args) {
-        System.out.println(JSONSerializerFactory.getInstance().toJson("ok"));
-        System.out.println(JSONSerializerFactory.getInstance().<String>parse("ok", String.class));
-    }
+//    public static void main(String[] args) {
+//        System.out.println(JSONSerializerFactory.getInstance().toJson("ok"));
+//        System.out.println(JSONSerializerFactory.getInstance().<String>parse("ok", String.class));
+//    }
 
     private synchronized void init() throws ClassNotFoundException, NoSuchMethodException {
         if (jsonClass == null) {
@@ -72,7 +73,7 @@ public class FastJsonSerializer extends AbstractJsonSerializer {
     @Override
     public <T> T parse(String json, Type t) {
         try {
-            return String.class.equals(t) ? (T) json : (T) $parse(json, t);
+            return String.class.equals(t) ? Common.cast(json) : Common.cast($parse(json, t));
             //JSON.parseObject(json, t, Feature.IgnoreNotMatch);
         } catch (Throwable th) {
             throw th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th);

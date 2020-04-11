@@ -146,12 +146,12 @@ public class TestUtils {
         return get(KEY_TIMESTAMP, Clock::getCalendar);
     }
 
-    @SuppressWarnings({"unchecked", "SameParameterValue"})
     private static <T> T _get(String key) {
         Map<String, Object> objectMap = CONTEXT.get();
-        return objectMap == null ? null : (T) objectMap.get(key);
+        return objectMap == null ? null : Common.cast(objectMap.get(key));
     }
 
+    @SuppressWarnings("unused")
     public static <T> T get(String key, Class<T> tClass) {
         return _get(key);
     }
@@ -166,8 +166,8 @@ public class TestUtils {
         if (objectMap == null) {
             return supplier.get();
         } else {
-            @SuppressWarnings("unchecked")
-            T o = (T) objectMap.get(key);
+
+            T o = Common.cast(objectMap.get(key));
             if (o == null) {
                 o = supplier.get();
                 objectMap.put(key, o);
@@ -177,6 +177,7 @@ public class TestUtils {
     }
 
 
+    @SuppressWarnings("unused")
     public interface Time {
 
         Time hours(int hours);

@@ -383,7 +383,7 @@ public class ConcreteHelper {
     }
 
 
-    public static int getPriority(AbstractUnit<?,?> unit) {
+    public static int getPriority(AbstractUnit<?> unit) {
         return getPriority(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
     }
 

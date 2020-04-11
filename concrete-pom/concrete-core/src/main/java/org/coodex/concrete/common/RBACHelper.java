@@ -23,6 +23,7 @@ import org.coodex.util.Common;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("unused")
 public class RBACHelper {
 
     public static void rbac(String[] acl) {
@@ -37,17 +38,17 @@ public class RBACHelper {
         rbac(getCurrentAccount(), acl, domain, safely);
     }
 
-    public static void rbac(Account account, String[] acl) {
+    public static void rbac(Account<?> account, String[] acl) {
         rbac(account, acl, true);
     }
 
-    public static void rbac(Account account, String[] acl, boolean safely) {
+    public static void rbac(Account<?> account, String[] acl, boolean safely) {
         rbac(account, acl, null, safely);
     }
 
-    public static void rbac(Account account, String[] acl, String domain, boolean safely) {
+    public static void rbac(Account<?> account, String[] acl, String domain, boolean safely) {
         if (acl != null) {
-            Account currentAccount = getCurrentAccount();
+            Account<?> currentAccount = getCurrentAccount();
             Token token = TokenWrapper.getInstance();
             //用户未登录
             IF.isNull(currentAccount, ErrorCodes.NONE_ACCOUNT, token);
@@ -57,17 +58,18 @@ public class RBACHelper {
                 //用户不可信
                 IF.not(token.isAccountCredible(), ErrorCodes.UNTRUSTED_ACCOUNT);
             }
-            Set<String> mathings = matching(account, acl, domain);
-            IF.is(mathings.size() == 0, ErrorCodes.NO_AUTHORIZATION);
+            Set<String> matching = matching(account, acl, domain);
+            IF.is(matching.size() == 0, ErrorCodes.NO_AUTHORIZATION);
         }
     }
+
 
     public static Set<String> matching(String[] roles, String domain) {
         return matching(getCurrentAccount(), roles, domain);
     }
 
 
-    public static Set<String> matching(Account account, String[] roles, String domain) {
+    public static Set<String> matching(Account<?> account, String[] roles, String domain) {
         if (roles == null) throw new NullPointerException("roles MUST be NOT NULL.");
 
         Set<String> accountDomainRoles = getAccountDomainRoles(domain, account);
@@ -80,15 +82,15 @@ public class RBACHelper {
     }
 
 
-    private static Account getCurrentAccount() {
+    private static Account<?> getCurrentAccount() {
         return TokenWrapper.getInstance().currentAccount();
     }
 
-    private static Set<String> getAccountDomainRoles(String domain, Account account) {
+    private static Set<String> getAccountDomainRoles(String domain, Account<?> account) {
         if (account == null) throw new RuntimeException("account MUST be NOT NULL.");
 
-        Set<String> accountDomainRoles = new HashSet<String>();
-        @SuppressWarnings("unchecked")
+        Set<String> accountDomainRoles = new HashSet<>();
+
         Set<String> accountRoles = account.getRoles();
         if (accountRoles != null) {
             if (Common.isBlank(domain)) {

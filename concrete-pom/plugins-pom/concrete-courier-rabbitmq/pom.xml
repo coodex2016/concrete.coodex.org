@@ -35,7 +35,7 @@
         </dependency>
 
         <dependency>
-            <groupId>${project.parent.groupId}</groupId>
+            <groupId>org.coodex.concrete.amqp</groupId>
             <artifactId>concrete-amqp</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

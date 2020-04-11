@@ -71,7 +71,7 @@ public abstract class AbstractJavassistClassGenerator implements ClassGenerator 
 //            e.printStackTrace();
 //        }
 
-        Class clz = IS_JAVA_9_AND_LAST.get() ?
+        Class<?> clz = IS_JAVA_9_AND_LAST.get() ?
                 context.getNewClass().toClass(module.getInterfaceClass()) :
                 context.getNewClass().toClass();
         log.info("Jaxrs impl class created: {}, {}", clz.getName(), context.getServiceClass().getName());

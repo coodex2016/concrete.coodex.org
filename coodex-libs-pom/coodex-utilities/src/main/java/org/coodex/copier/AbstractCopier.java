@@ -17,6 +17,8 @@
 package org.coodex.copier;
 
 
+import org.coodex.util.Common;
+
 import java.util.Collection;
 
 /**
@@ -25,13 +27,12 @@ import java.util.Collection;
  * Created by davidoff shen on 2017-03-17.
  */
 public abstract class AbstractCopier<SRC, TARGET>
-        extends AbstractCopierCommon<SRC, TARGET>
+        extends AbstractCopierCommon
         implements Copier<SRC, TARGET> {
 
     //    private Class targetClass;
-    @SuppressWarnings("unchecked")
     public TARGET newTargetObject() {
-        return (TARGET) newObject(Index.B);
+        return Common.cast(newObject(Index.B));
 //        synchronized (this) {
 //            if (targetClass == null) {
 //                targetClass = getClass(1);
@@ -47,9 +48,8 @@ public abstract class AbstractCopier<SRC, TARGET>
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public TARGET initTargetObject(TARGET target) {
-        return (TARGET) init(target, Index.B);
+        return Common.cast(init(target, Index.B));
     }
 
     @Override
@@ -57,18 +57,14 @@ public abstract class AbstractCopier<SRC, TARGET>
         return initTargetObject(null);
     }
 
-//    protected TARGET init(TARGET target) {
-//        return target;
-//    }
-
     public TARGET copy(SRC src) {
         return copy(src, initTargetObject());
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected Object copy(Object o, Index srcIndex) {
-        return copy((SRC) o);
+        SRC src = Common.cast(o);
+        return copy(src);
     }
 
     @Override

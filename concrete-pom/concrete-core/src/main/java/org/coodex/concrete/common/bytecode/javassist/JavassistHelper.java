@@ -23,6 +23,7 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
+import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
@@ -143,9 +144,8 @@ public class JavassistHelper {
                     ((Class<?>) ((ParameterizedType) t).getRawType()).getName(),
                     args.toArray(new SignatureAttribute.TypeArgument[0]));
         } else if (t instanceof TypeVariable) {
-            @SuppressWarnings("unchecked")
-            Type ttt = find(contextClass,
-                    (TypeVariable<Class<?>>) t);
+            TypeVariable<Class<?>> x = Common.cast(t);
+            Type ttt = find(contextClass, x);
             if (ttt == null) {
                 log.warn("WARN!! UnsupportedType: {}", t);
                 return null;

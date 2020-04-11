@@ -52,6 +52,7 @@ public class CountFacadeProvider implements CountFacade {
 //            = ExecutorsHelper.newScheduledThreadPool(ConcreteHelper.getProfile().getInt("counter.thread.pool.size", 10));
 
     // 为啥这么干???
+    @SuppressWarnings("unused")
     public static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE = Singleton.with(
             () -> ExecutorsHelper.newScheduledThreadPool(
                     Config.getValue("counter.thread.pool.size", 10, "counter"),
@@ -141,7 +142,7 @@ public class CountFacadeProvider implements CountFacade {
                 (IS_JAVA_9_AND_LAST.get() ?
                         newClass.toClass(CounterChain.class) :
                         newClass.toClass())
-                        .getConstructor(new Class[0])
+                        .getConstructor(new Class<?>[0])
                         .newInstance()
         );
         log.info("CounterChain created: {}, {}", counterChain.getClass().getName(), clz.getName());

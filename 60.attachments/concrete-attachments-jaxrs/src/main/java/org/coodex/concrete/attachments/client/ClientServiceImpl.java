@@ -55,7 +55,6 @@ public class ClientServiceImpl implements ClientService {
         allow(token, attachmentIds);
     }
 
-    @SuppressWarnings("unchecked")
     private static void allow(Token token, Set<String> attachmentIds) {
         HashMap<String, Long> attachments;
         synchronized (ClientServiceImpl.class) {

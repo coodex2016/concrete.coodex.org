@@ -20,7 +20,7 @@ import org.coodex.util.SelectableService;
 
 import java.util.concurrent.CompletableFuture;
 
-public interface CompletableFutureBridge extends SelectableService<Class> {
+public interface CompletableFutureBridge extends SelectableService<Class<?>> {
 
-    Object bridging(CompletableFuture completableFuture);
+    Object bridging(CompletableFuture<?> completableFuture);
 }

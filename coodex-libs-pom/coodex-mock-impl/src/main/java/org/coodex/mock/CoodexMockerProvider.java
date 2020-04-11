@@ -396,7 +396,7 @@ public class CoodexMockerProvider implements MockerProvider {
                         Object instance;
                         if (pojoInfo.getRowType().isInterface()) {
                             instance = Proxy.newProxyInstance(this.getClass().getClassLoader(),
-                                    new Class[]{pojoInfo.getRowType()},
+                                    new Class<?>[]{pojoInfo.getRowType()},
                                     mockInvocationHandler);
                         } else {
                             Enhancer enhancer = new Enhancer();
@@ -640,7 +640,7 @@ public class CoodexMockerProvider implements MockerProvider {
     }
 
     private Object getProxyObject(final Object instance, Class<?> interfaceClass) {
-        return Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{interfaceClass},
+        return Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[]{interfaceClass},
                 (proxy, method, args) -> {
                     Method targetMethod = instance.getClass().getMethod(method.getName(), method.getParameterTypes());
                     targetMethod.setAccessible(true);

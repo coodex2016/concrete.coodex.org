@@ -19,6 +19,7 @@ package org.coodex.concrete.jsonserializer.jsonb;
 import org.coodex.concrete.common.AbstractJsonSerializer;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
+import org.coodex.util.Singleton;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
@@ -28,21 +29,19 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 public class JsonbSerializer extends AbstractJsonSerializer {
 
-    private Jsonb jsonbInstnace = null;
+    private Singleton<Jsonb> jsonbSingleton = Singleton.with(() -> {
+        String providerName = Config.get("jsonb.provider", getAppSet());
+        return Common.isBlank(providerName) ? JsonbBuilder.create() : JsonbBuilder.newBuilder(providerName).build();
+    });
 
-    private synchronized Jsonb getInstance() {
-        if (jsonbInstnace == null) {
-            String providerName = Config.get("jsonb.provider", getAppSet());
-            jsonbInstnace = Common.isBlank(providerName) ? JsonbBuilder.create() : JsonbBuilder.newBuilder(providerName).build();
-        }
-        return jsonbInstnace;
+    private Jsonb getInstance() {
+        return jsonbSingleton.get();
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> T parse(String json, Type t) {
         try {
-            return String.class.equals(t) ? (T) json : getInstance().fromJson(json, t);
+            return String.class.equals(t) ? Common.cast(json) : getInstance().fromJson(json, t);
         } catch (Throwable th) {
             throw th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th);
         }

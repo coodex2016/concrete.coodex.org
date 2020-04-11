@@ -19,8 +19,8 @@ package org.coodex.concrete.message;
 import org.coodex.util.SelectableService;
 
 public interface TopicPrototypeProvider
-        extends SelectableService<Class<? extends AbstractTopic>> {
+        extends SelectableService<Class<?>> {
 
-    Class<? extends AbstractTopicPrototype> getPrototype();
+    Class<?> getPrototype();
 
 }

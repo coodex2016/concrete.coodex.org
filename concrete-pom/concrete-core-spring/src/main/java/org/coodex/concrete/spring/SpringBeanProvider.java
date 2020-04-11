@@ -110,7 +110,7 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
     }
 
     protected Class<?>[] collectionBeanTypes() {
-        return new Class[]{
+        return new Class<?>[]{
                 ConcreteInterceptor.class
         };
     }

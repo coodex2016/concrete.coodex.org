@@ -29,7 +29,7 @@ public class RxToSyncInvoker implements Invoker {
     }
 
     @Override
-    public Object invoke(Object instance, Class clz, Method method, Object... args) throws Throwable {
+    public Object invoke(Object instance, Class<?> clz, Method method, Object... args) throws Throwable {
         return rxInvoker.invokeAsync(instance, clz, method, args).get();
     }
 }

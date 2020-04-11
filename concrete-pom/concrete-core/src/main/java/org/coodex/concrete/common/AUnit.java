@@ -21,7 +21,7 @@ import org.coodex.concrete.common.modules.AbstractUnit;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class AUnit extends AbstractUnit<AParam, AModule> {
+public class AUnit extends AbstractUnit<AParam> {
     public AUnit(Method method, AModule module) {
         super(method, module);
     }
@@ -52,7 +52,7 @@ public class AUnit extends AbstractUnit<AParam, AModule> {
     }
 
     @Override
-    public int compareTo(AbstractUnit o) {
+    public int compareTo(AbstractUnit<AParam> o) {
         return 0;
     }
 }

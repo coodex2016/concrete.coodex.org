@@ -18,12 +18,12 @@ package org.coodex.concrete.message;
 
 public class TokenBasedTopicPrototypeProvider implements TopicPrototypeProvider {
     @Override
-    public Class<? extends AbstractTopicPrototype> getPrototype() {
+    public Class<?> getPrototype() {
         return TokenBasedTopicPrototype.class;
     }
 
     @Override
-    public boolean accept(Class<? extends AbstractTopic> param) {
+    public boolean accept(Class<?> param) {
         return param != null && param.equals(TokenBasedTopic.class);
     }
 }

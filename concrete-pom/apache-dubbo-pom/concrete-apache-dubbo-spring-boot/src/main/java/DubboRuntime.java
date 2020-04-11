@@ -17,12 +17,13 @@
 import org.coodex.concrete.spring.AbstractRuntimeParameter;
 import org.springframework.core.annotation.AnnotationAttributes;
 
+@SuppressWarnings("unused")
 public class DubboRuntime extends AbstractRuntimeParameter {
     public DubboRuntime() {
         this(null, null);
     }
 
-    public DubboRuntime(String[] apiPackages, Class[] classes) {
+    public DubboRuntime(String[] apiPackages, Class<?>[] classes) {
         super(apiPackages, classes);
     }
 

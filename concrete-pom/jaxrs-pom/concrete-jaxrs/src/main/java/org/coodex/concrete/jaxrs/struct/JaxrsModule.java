@@ -109,6 +109,7 @@ public class JaxrsModule extends AbstractModule<JaxrsUnit> {
     private void checkUnit(JaxrsUnit unit) {
         String fullResource = getName() + unit.getName();
 //        Matcher m = Pattern.compile("(\\{)[^{^}]*(\\})").matcher(fullResource);
+        //noinspection RegExpRedundantEscape
         Matcher m = Pattern.compile("(\\{)[^{^}]{0,256}(\\})").matcher(fullResource);
         while (m.find()) {
             String param = m.group();
@@ -185,7 +186,7 @@ public class JaxrsModule extends AbstractModule<JaxrsUnit> {
 
     @Override
     protected JaxrsUnit buildUnit(Method method) {
-        if (serviceAtoms == null) serviceAtoms = new HashMap<String, Method>();
+        if (serviceAtoms == null) serviceAtoms = new HashMap<>();
         JaxrsUnit unit = new JaxrsUnit(method, this);
         String serviceKey = Predicates.getHttpMethod(unit) + "$" + unit.getName();
         Method exists = serviceAtoms.get(serviceKey);
@@ -203,7 +204,7 @@ public class JaxrsModule extends AbstractModule<JaxrsUnit> {
     }
 
     @Override
-    public int compareTo(AbstractModule o) {
+    public int compareTo(AbstractModule<JaxrsUnit> o) {
         return getName().compareTo(o.getName());
     }
 }

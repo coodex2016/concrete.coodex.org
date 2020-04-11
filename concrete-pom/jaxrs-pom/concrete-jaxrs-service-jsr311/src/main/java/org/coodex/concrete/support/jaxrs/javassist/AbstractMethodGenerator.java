@@ -49,16 +49,17 @@ import static org.coodex.concrete.support.jaxrs.javassist.CGContext.CLASS_POOL;
  * Jaxrs的方法构件对象
  * Created by davidoff shen on 2016-11-27.
  */
+@SuppressWarnings("unused")
 public abstract class AbstractMethodGenerator {
 
-    private final static Logger log = LoggerFactory.getLogger(AbstractMethodGenerator.class);
+//    private final static Logger log = LoggerFactory.getLogger(AbstractMethodGenerator.class);
 
     private static final AtomicInteger REF = new AtomicInteger(0);
-    private static final Class<?>[] PRIMITIVE_CLASSES = new Class[]{
+    private static final Class<?>[] PRIMITIVE_CLASSES = new Class<?>[]{
             boolean.class, byte.class, char.class, short.class, int.class,
             long.class, float.class, double.class
     };
-    private static final Class<?>[] PRIMITIVE_BOX_CLASSES = new Class[]{
+    private static final Class<?>[] PRIMITIVE_BOX_CLASSES = new Class<?>[]{
             Boolean.class, Byte.class, Character.class, Short.class, Integer.class,
             Long.class, Float.class, Double.class
     };
@@ -86,9 +87,9 @@ public abstract class AbstractMethodGenerator {
     /**
      * @return 获取javassist的参数类型
      */
-    protected abstract CtClass[] getParameterTypes(Class pojoClass);
+    protected abstract CtClass[] getParameterTypes(Class<?> pojoClass);
 
-    protected final CtClass[] getParameterTypesWith(Class pojoClass, CtClass... addingCtClass) {
+    protected final CtClass[] getParameterTypesWith(Class<?> pojoClass, CtClass... addingCtClass) {
         int additionParamCount = addingCtClass == null ? 0 : addingCtClass.length;
         JaxrsParam[] params = getUnit().getParameters();
         JaxrsParam[] pojoParam = getUnit().getPojo();
@@ -108,9 +109,7 @@ public abstract class AbstractMethodGenerator {
             index++;
         }
         if (additionParamCount > 0) {
-            for (int i = 0; i < addingCtClass.length; i++) {
-                parameters[i] = addingCtClass[i];
-            }
+            System.arraycopy(addingCtClass, 0, parameters, 0, addingCtClass.length);
         }
         return parameters;
     }
@@ -118,14 +117,14 @@ public abstract class AbstractMethodGenerator {
     /**
      * @return 获取参数签名类型
      */
-    protected abstract SignatureAttribute.Type[] getSignatureTypes(Class pojoClass);
+    protected abstract SignatureAttribute.Type[] getSignatureTypes(Class<?> pojoClass);
 
     protected int actualParamCount() {
         return getUnit().getParameters().length -
                 (getUnit().getPojoCount() == 0 ? 0 : (getUnit().getPojoCount() - 1));
     }
 
-    private Class pojoClass() throws CannotCompileException {
+    private Class<?> pojoClass() throws CannotCompileException {
         if (getUnit().getPojoCount() > 1)
             return createPojoClass(
                     getUnit().getPojo(),
@@ -143,7 +142,7 @@ public abstract class AbstractMethodGenerator {
 //        return getSignatureTypesWith(pojoClass);
 //    }
 
-    protected final SignatureAttribute.Type[] getSignatureTypesWith(Class pojoClass, SignatureAttribute.Type... addingTypes) {
+    protected final SignatureAttribute.Type[] getSignatureTypesWith(Class<?> pojoClass, SignatureAttribute.Type... addingTypes) {
         int additionParamCount = addingTypes == null ? 0 : addingTypes.length;
         JaxrsParam[] params = getUnit().getParameters();
         JaxrsParam[] pojoParam = getUnit().getPojo();
@@ -174,7 +173,7 @@ public abstract class AbstractMethodGenerator {
 //        return "{return ($r)mockResult(\"" + getUnit().getFunctionName() + "\");}";
 //    }
 
-    private Class createPojoClass(JaxrsParam[] pojoParams, String className) throws CannotCompileException {
+    private Class<?> createPojoClass(JaxrsParam[] pojoParams, String className) throws CannotCompileException {
         CtClass ctClass = CLASS_POOL.makeClass(className);
 
         for (JaxrsParam param : pojoParams) {
@@ -200,7 +199,7 @@ public abstract class AbstractMethodGenerator {
     /**
      * @return 获取方法源码
      */
-    protected abstract String getMethodBody(Class pojoClass);
+    protected abstract String getMethodBody(Class<?> pojoClass);
 
 //    protected CtClass getReturnTypeForDemo() {
 //        return CLASS_POOL.getOrNull(unit.getReturnType().getName());
@@ -275,7 +274,7 @@ public abstract class AbstractMethodGenerator {
 
     final CtMethod generateMethod(String methodName) throws CannotCompileException {
 //        boolean isDevModel = isDevModel("jaxrs");
-        Class pojoClass = pojoClass();
+        Class<?> pojoClass = pojoClass();
         // 方法名、参数及签名
         CtMethod spiMethod = new CtMethod(
                 /*isDevModel ? getReturnTypeForDemo() : */getReturnType(),
@@ -331,7 +330,7 @@ public abstract class AbstractMethodGenerator {
     }
 
 
-    protected String getParamListSrc(Class pojoClass, int startIndex) {
+    protected String getParamListSrc(Class<?> pojoClass, int startIndex) {
         StringBuilder buffer = new StringBuilder();
         JaxrsParam[] params = unit.getParameters();
         JaxrsParam[] pojoParams = unit.getPojo();
@@ -346,7 +345,7 @@ public abstract class AbstractMethodGenerator {
                 }
                 buffer.append(box(params[i].getType(), "$" + (pojoIndex + startIndex) + "." + params[i].getName()));
 
-                if(!first) continue;
+                if (!first) continue;
 //                continue;
             } else {
                 buffer.append(box(params[i].getType(), index + startIndex));
@@ -364,7 +363,7 @@ public abstract class AbstractMethodGenerator {
         return pathParam1 == null ?
                 /* ((CGContext.isPrimitive(parameter.getType()) && !JaxRSHelper.isBigString(parameter)) ?
                         parameter.getName() : null) */
-                ((TypeHelper.isPrimitive(parameter.getType()) && !JaxRSHelper.postPrimitive(parameter)) ? parameter.getName() : null):
+                ((TypeHelper.isPrimitive(parameter.getType()) && !JaxRSHelper.postPrimitive(parameter)) ? parameter.getName() : null) :
                 pathParam1.value();
     }
 

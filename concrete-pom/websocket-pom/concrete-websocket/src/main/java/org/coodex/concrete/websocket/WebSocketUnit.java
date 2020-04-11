@@ -20,7 +20,8 @@ import org.coodex.concrete.own.OwnServiceUnit;
 
 import java.lang.reflect.Method;
 
-public class WebSocketUnit extends OwnServiceUnit<WebSocketModule> /*extends AbstractUnit<AbstractParam, WebSocketModule> */ {
+public class WebSocketUnit extends OwnServiceUnit/*<WebSocketModule>*/
+        /*extends AbstractUnit<AbstractParam, WebSocketModule> */ {
     public WebSocketUnit(Method method, WebSocketModule module) {
         super(method, module);
     }

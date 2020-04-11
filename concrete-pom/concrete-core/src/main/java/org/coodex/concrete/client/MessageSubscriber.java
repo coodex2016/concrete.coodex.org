@@ -25,12 +25,13 @@ import java.util.Map;
 
 import static org.coodex.util.GenericTypeHelper.toReference;
 
+@SuppressWarnings("unused")
 public class MessageSubscriber {
 
     private final static Logger log = LoggerFactory.getLogger(MessageSubscriber.class);
 
 
-    private static final Map<String, MessageListener<?>> listeners = new HashMap<String, MessageListener<?>>();
+    private static final Map<String, MessageListener<?>> listeners = new HashMap<>();
 
     public static <T> void subscribe(String subject, MessageListener<T> listener) {
         synchronized (listeners) {
@@ -44,10 +45,9 @@ public class MessageSubscriber {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static void next(String subject, String jsonMessage) {
         synchronized (listeners) {
-            MessageListener listener = listeners.get(subject);
+            MessageListener<?> listener = listeners.get(subject);
             if (listener == null) {
                 log.warn("No message listener found for: {}", subject);
                 return;

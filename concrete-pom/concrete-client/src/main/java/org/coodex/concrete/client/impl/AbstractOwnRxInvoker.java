@@ -68,7 +68,6 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
 
     // TODO 重构
-    @SuppressWarnings("unchecked")
     static void processMessage(final String message) {
 
         ResponsePackage<Object> responsePackage = parse(message);
@@ -105,7 +104,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
                                             completableFutureCallBack.getContext().getDeclaringMethod().getGenericReturnType(),
                                             completableFutureCallBack.getContext().getDeclaringClass()));
 //                    if (result != null) {
-                    completableFutureCallBack.getCompletableFuture().complete(result);
+                    completableFutureCallBack.getCompletableFuture().complete(Common.cast(result));
 //                    }
 //                    completed = true;
                 }
@@ -136,7 +135,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
     protected abstract ClientSideContext getContext();
 
-    protected abstract OwnServiceUnit<?> findUnit(DefinitionContext context);
+    protected abstract OwnServiceUnit findUnit(DefinitionContext context);
 
     protected abstract Level getLoggingLevel();
 
@@ -144,7 +143,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
     protected CompletableFuture<?> futureInvoke(DefinitionContext runtimeContext, Object[] args) {
         CompletableFuture<?> completableFuture = new CompletableFuture<>();
         ClientHelper.getRxClientScheduler().execute(() -> {
-            final OwnServiceUnit<?> unit = findUnit(runtimeContext);
+            final OwnServiceUnit unit = findUnit(runtimeContext);
             // build request
             String msgId = Common.getUUIDStr();
             final RequestPackage<?> requestPackage = buildRequest(msgId, unit, args);
@@ -256,13 +255,12 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     private static class CompletableFutureCallBack extends BaseCallBack {
-        private final CompletableFuture completableFuture;
+        private final CompletableFuture<?> completableFuture;
 
 
         private CompletableFutureCallBack(
-                CompletableFuture completableFuture,
+                CompletableFuture<?> completableFuture,
                 DefinitionContext context,
                 Logger logger,
                 Level loggingLevel,
@@ -273,7 +271,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
             this.completableFuture = completableFuture;
         }
 
-        public CompletableFuture getCompletableFuture() {
+        public CompletableFuture<?> getCompletableFuture() {
             return completableFuture;
         }
     }

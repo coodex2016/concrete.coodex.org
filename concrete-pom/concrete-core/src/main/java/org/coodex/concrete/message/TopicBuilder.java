@@ -51,8 +51,8 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
 
     private static final TopicPrototypeProvider defaultTopicPrototypeProvider = new DefaultTopicPrototypeProvider();
 
-    private static SelectableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> topicPrototypeProviderLoader =
-            new LazySelectableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider) {
+    private static SelectableServiceLoader<Class<?>, TopicPrototypeProvider> topicPrototypeProviderLoader =
+            new LazySelectableServiceLoader<Class<?>, TopicPrototypeProvider>(defaultTopicPrototypeProvider) {
             };
     //            new Singleton<>(
 //                    () -> new SelectableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider){}
@@ -97,7 +97,7 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
                 }
             }
 
-            Class<? extends AbstractTopicPrototype> prototype =
+            Class<?> prototype =
                     Optional.ofNullable(provider)
                             .orElseThrow(() -> ConcreteHelper.getException("No provider for " + topicClass.getName()))
                             .getPrototype();

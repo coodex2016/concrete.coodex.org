@@ -47,6 +47,7 @@ import static org.springframework.data.domain.PageRequest.of;
 /**
  * Created by davidoff shen on 2017-05-26.
  */
+@SuppressWarnings("CdiInjectionPointsInspection")
 public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E extends AbstractTenantEntity> implements AbstractTenantManagementService<T> {
 
     @Inject
@@ -74,7 +75,7 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
         tenantInfo.setAccountName(tenant);
         E tenantEntity = tenantRepo.save(copier.copyA2B(tenantInfo));
         putLoggingData("new", tenantEntity);
-        return new StrID<T>(tenantEntity.getId(), copier.copyB2A(tenantEntity, tenantInfo));
+        return new StrID<>(tenantEntity.getId(), copier.copyB2A(tenantEntity, tenantInfo));
     }
 
     @Override
@@ -93,22 +94,22 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
         return PageHelper.copy(page, copier.b2aCopier());
     }
 
-    protected Pageable toPageable(PageRequest request) {
+    protected Pageable toPageable(PageRequest<?> request) {
         return of(request.getNum().intValue() - 1, request.getPageSize());
     }
 
 
     protected List<Specification<E>> getListSpecifications(TenantQuery query) {
-        List<Specification<E>> specificationList = new ArrayList<Specification<E>>();
+        List<Specification<E>> specificationList = new ArrayList<>();
         if (query != null) {
             if (query.isUsing() != null)
-                specificationList.add(SpecCommon.<E, Boolean>equals("using", query.isUsing()));
+                specificationList.add(SpecCommon.equals("using", query.isUsing()));
 
             if (!Common.isBlank(query.getAccountNameLike()))
-                specificationList.add(SpecCommon.<E>like("accountName", query.getAccountNameLike()));
+                specificationList.add(SpecCommon.like("accountName", query.getAccountNameLike()));
 
             if (!Common.isBlank(query.getNameLike()))
-                specificationList.add(SpecCommon.<E>like("name", query.getNameLike()));
+                specificationList.add(SpecCommon.like("name", query.getNameLike()));
 
         }
         return specificationList;
@@ -193,13 +194,13 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
     }
 
     @Override
-    public void desterilize(String tenant) {
+    public void restore(String tenant) {
         E tenantEntity = getTenantEntity(tenant);
         long now = Clock.currentTimeMillis();
         IF.is(tenantEntity.isUsing(), AccountsErrorCodes.TENANT_IN_USING);
         Calendar validation = Clock.now();
         validation.setTimeInMillis(now + tenantEntity.getSurplus());
-        tenantEntity.setSurplus(0l);
+        tenantEntity.setSurplus(0L);
         tenantEntity.setValidation(validation);
         tenantEntity.setUsing(true);
         putLoggingData("tenant", tenantRepo.save(tenantEntity));

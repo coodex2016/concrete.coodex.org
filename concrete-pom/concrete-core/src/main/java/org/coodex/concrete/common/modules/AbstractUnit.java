@@ -30,15 +30,17 @@ import java.util.List;
 /**
  * Created by davidoff shen on 2016-11-30.
  */
-public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends AbstractModule> implements Annotated, Comparable<AbstractUnit> {
+//@SuppressWarnings({"rawtypes"})
+public abstract class AbstractUnit<PARAM extends AbstractParam/*, MODULE extends AbstractModule*/>
+        implements Annotated, Comparable<AbstractUnit<PARAM>> {
 
     private final boolean deprecated;
     private Method method;
-    private MODULE declaringModule;
+    private AbstractModule<?> declaringModule;
     private DefinitionContext context;
-    private List<PARAM> params = new ArrayList<PARAM>();
+    private List<PARAM> params = new ArrayList<>();
 
-    public AbstractUnit(Method method, MODULE module) {
+    public AbstractUnit(Method method, AbstractModule<?> module) {
         this.method = method;
         this.declaringModule = module;
         this.deprecated = method.getAnnotation(Deprecated.class) != null;
@@ -52,7 +54,7 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
     protected void afterInit() {
     }
 
-    public MODULE getDeclaringModule() {
+    public AbstractModule<?> getDeclaringModule() {
         return declaringModule;
     }
 
@@ -65,9 +67,7 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
     }
 
     /**
-     * 服务名称
-     *
-     * @return
+     * @return 服务名称
      */
     public abstract String getName();
 
@@ -75,27 +75,21 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
     protected abstract PARAM buildParam(Method method, int index);
 
     /**
-     * 文档化的名称
-     *
-     * @return
+     * @return 文档化的名称
      */
     public String getLabel() {
         return getDesc() == null ? getName() : getDesc().name();
     }
 
     /**
-     * 服务说明
-     *
-     * @return
+     * @return 服务说明
      */
     public String getDescription() {
         return getDesc() == null ? null : getDesc().description();
     }
 
     /**
-     * 调用方法名
-     *
-     * @return
+     * @return 调用方法名
      */
     public String getFunctionName() {
         return method.getName();
@@ -103,66 +97,54 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
 
 
     /**
-     * 调用方式
-     *
-     * @return
+     * @return 调用方式
      */
     public abstract String getInvokeType();
 
 
     /**
-     * 返回值类型
-     *
-     * @return
+     * @return 返回值类型
      */
     public Class<?> getReturnType() {
         return method.getReturnType();
     }
 
     /**
-     * 返回值泛型类型
-     *
-     * @return
+     * @return 返回值泛型类型
      */
     public Type getGenericReturnType() {
         return method.getGenericReturnType();
     }
 
     /**
-     * access control list
-     *
-     * @return
+     * @return access control list
      */
     public AccessAllow getAccessAllow() {
         return getContext().getAnnotation(AccessAllow.class);
     }
 
     /**
-     * 获取签名信息
-     *
-     * @return
+     * @return 获取签名信息
      */
+    @SuppressWarnings("unused")
     public Signable getSignable() {
         return getContext().getAnnotation(Signable.class);
     }
 
     /**
-     * 获取某个注解
-     *
-     * @param annotationClass
-     * @param <T>
-     * @return
+     * @param annotationClass annotationClass
+     * @param <T>             <T>
+     * @return 获取某个注解
      */
     @Override
     public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
         return method.getAnnotation(annotationClass);
     }
 
-    @SuppressWarnings("unchecked")
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         T annotation = getDeclaredAnnotation(annotationClass);
         return annotation == null ?
-                (T) declaringModule.getAnnotation(annotationClass) :
+                ((Annotated) declaringModule).getDeclaredAnnotation(annotationClass) :
                 annotation;
     }
 
@@ -172,9 +154,7 @@ public abstract class AbstractUnit<PARAM extends AbstractParam, MODULE extends A
     }
 
     /**
-     * 方法参数
-     *
-     * @return
+     * @return 方法参数
      */
     public final PARAM[] getParameters() {
         return toArrays(params);

@@ -21,7 +21,7 @@ import org.coodex.util.SelectableService;
 /**
  * Created by davidoff shen on 2016-11-30.
  */
-public interface ModuleMaker<MODULE extends AbstractModule> extends SelectableService<String> {
+public interface ModuleMaker<MODULE extends AbstractModule<?>> extends SelectableService<String> {
 
 //    boolean isAccept(String desc);
 

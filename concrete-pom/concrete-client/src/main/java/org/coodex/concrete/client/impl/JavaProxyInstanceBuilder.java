@@ -32,7 +32,7 @@ public class JavaProxyInstanceBuilder implements InstanceBuilder {
     public <T> T build(final Destination destination, final Class<T> clazz) {
         return cast(Proxy.newProxyInstance(
                 this.getClass().getClassLoader(),
-                new Class[]{clazz},
+                new Class<?>[]{clazz},
                 new InvocationHandler() {
 
                     @Override

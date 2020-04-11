@@ -52,7 +52,6 @@ public abstract class AbstractTenantAccountFactory extends ClassifiableAccountFa
     protected abstract TenantAccount newAccount(String key);
 
     @Override
-    @SuppressWarnings({"unchecked", "unsafe"})
     public Account<ClassifiableAccountID> getAccountByID(ClassifiableAccountID id) {
         return IF.isNull(accountSingletonMap.get(id.getId()), NONE_THIS_ACCOUNT);
     }

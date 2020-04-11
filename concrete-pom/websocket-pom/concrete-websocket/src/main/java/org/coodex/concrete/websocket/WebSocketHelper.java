@@ -25,10 +25,9 @@ import java.util.Arrays;
 
 public class WebSocketHelper {
 
-    private static SingletonMap<Class, WebSocketModule> modules = SingletonMap.<Class, WebSocketModule>builder().function(WebSocketModule::new).build();
+    private static SingletonMap<Class<?>, WebSocketModule> modules = SingletonMap.<Class<?>, WebSocketModule>builder().function(WebSocketModule::new).build();
 
 
-    @SuppressWarnings("unchecked")
     public static WebSocketUnit findUnit(DefinitionContext context) {
         WebSocketModule module = IF.isNull(modules.get(context.getDeclaringClass()),
                 context.getDeclaringClass() + "is not a concrete service.");

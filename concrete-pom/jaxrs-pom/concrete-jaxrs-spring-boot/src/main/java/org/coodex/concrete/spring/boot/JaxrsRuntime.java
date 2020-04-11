@@ -19,7 +19,6 @@ package org.coodex.concrete.spring.boot;
 import org.coodex.concrete.spring.AbstractRuntimeParameter;
 import org.coodex.concrete.support.jsr339.ConcreteJSR339Application;
 import org.coodex.config.Config;
-import org.coodex.util.Common;
 import org.springframework.core.annotation.AnnotationAttributes;
 
 public class JaxrsRuntime extends AbstractRuntimeParameter {
@@ -33,7 +32,7 @@ public class JaxrsRuntime extends AbstractRuntimeParameter {
     }
 
     public JaxrsRuntime(String[] apiPackages, String[] urlMappings,
-                        Class[] classes, Class<? extends ConcreteJSR339Application> applicationClass) {
+                        Class<?>[] classes, Class<? extends ConcreteJSR339Application> applicationClass) {
         super(apiPackages, classes);
         this.urlMappings = urlMappings;
         this.applicationClass = applicationClass;
@@ -41,7 +40,7 @@ public class JaxrsRuntime extends AbstractRuntimeParameter {
 
 
     public String[] getUrlMappings() {
-        String[] thisUrlMappings = null;
+        String[] thisUrlMappings;
         if (urlMappings == null || urlMappings.length == 0) {
             thisUrlMappings = Config.getArray("servletMapping", ",", new String[0]);
         } else {

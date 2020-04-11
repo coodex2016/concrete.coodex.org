@@ -32,12 +32,12 @@ import static org.springframework.data.domain.PageRequest.of;
  */
 public class PageHelper {
 
-    public static Pageable getPageable(PageRequest pageRequest) {
+    public static Pageable getPageable(PageRequest<?> pageRequest) {
         return getPageable(pageRequest, null);
     }
 
 
-    public static Pageable getPageable(PageRequest pageRequest, Sort sort) {
+    public static Pageable getPageable(PageRequest<?> pageRequest, Sort sort) {
         int pageNo = pageRequest.getNum() != null && pageRequest.getNum() > 0 ? pageRequest.getNum().intValue() - 1 : 0;
         return of(pageNo, pageRequest.getPageSize(), sort);
     }

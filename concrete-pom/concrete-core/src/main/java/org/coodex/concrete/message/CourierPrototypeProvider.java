@@ -21,5 +21,5 @@ import org.coodex.util.SelectableService;
 public interface CourierPrototypeProvider
         extends SelectableService<String> {
 
-    Class<? extends CourierPrototype> getPrototype();
+    Class<?> getPrototype();
 }

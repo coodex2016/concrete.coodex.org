@@ -18,22 +18,30 @@ package org.coodex.concrete.support.websocket;
 
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.message.ServerSideMessage;
-import org.coodex.concrete.own.*;
+import org.coodex.concrete.own.OwnServiceProvider;
+import org.coodex.concrete.own.RequestPackage;
+import org.coodex.concrete.own.ResponsePackage;
 import org.coodex.concrete.websocket.ConcreteWebSocketEndPoint;
-import org.coodex.concrete.websocket.*;
+import org.coodex.concrete.websocket.InvalidRequest;
+import org.coodex.concrete.websocket.Subjects;
+import org.coodex.concrete.websocket.WebSocketModule;
 import org.coodex.config.Config;
-import org.coodex.util.*;
+import org.coodex.util.Common;
+import org.coodex.util.GenericTypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.websocket.OnMessage;
 import javax.websocket.Session;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.coodex.concrete.common.ConcreteHelper.*;
+import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
+import static org.coodex.concrete.common.ConcreteHelper.getScheduler;
 import static org.coodex.concrete.support.websocket.CallerHackConfigurator.WEB_SOCKET_CALLER_INFO;
 import static org.coodex.concrete.websocket.Constants.*;
 
@@ -52,8 +60,8 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 //        return getSubjoin(requestPackage.getSubjoin());
 //    }
 
-    protected OwnServiceProvider.OwnModuleBuilder getModuleBuilder() {
-        return OWN_MODULE_BUILDER;
+    WebSocketServerHandle() {
+        registerPackage(ErrorCodes.class.getPackage().getName());
     }
 
 
@@ -61,10 +69,6 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 //    public WebSocketServerHandle(String endPoint) {
 //        registerPackage(ErrorCodes.class.getPackage().getName());
 //    }
-
-    WebSocketServerHandle() {
-        registerPackage(ErrorCodes.class.getPackage().getName());
-    }
 
     private static void $sendText(final String text, final Session session, AtomicInteger retry) {
         final AtomicInteger toRetry = retry == null ? new AtomicInteger(0) : retry;
@@ -96,9 +100,8 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
         }
     }
 
-    @SuppressWarnings("unchecked")
     private static <T> ResponsePackage<T> buildPackage(ServerSideMessage<T> message) {
-        ResponsePackage responsePackage = new ResponsePackage();
+        ResponsePackage<T> responsePackage = new ResponsePackage<>();
         Map<String, String> subjoin = new HashMap<>();
         subjoin.put(BROADCAST, "true");
         subjoin.put(HOST_ID, message.getHost());
@@ -107,6 +110,10 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
         responsePackage.setContent(message.getBody());
         responsePackage.setMsgId(message.getId());
         return responsePackage;
+    }
+
+    protected OwnServiceProvider.OwnModuleBuilder getModuleBuilder() {
+        return OWN_MODULE_BUILDER;
     }
 
     @Override
@@ -186,14 +193,14 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
         sendText(JSONSerializerFactory.getInstance().toJson(responsePackage), session);
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> ResponsePackage buildPackage(String subject, T content, Map<String, String> subjoin) {
+    @SuppressWarnings("SameParameterValue")
+    private <T> ResponsePackage<T> buildPackage(String subject, T content, Map<String, String> subjoin) {
 
         if (subjoin == null) subjoin = new HashMap<>();
         subjoin.put(BROADCAST, "true");
         subjoin.put(HOST_ID, getHostId());
         subjoin.put(SUBJECT, subject);
-        ResponsePackage responsePackage = new ResponsePackage();
+        ResponsePackage<T> responsePackage = new ResponsePackage<>();
         responsePackage.setSubjoin(new HashMap<>(subjoin));
         if (content != null) {
             responsePackage.setContent(content);
@@ -270,7 +277,6 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
                 tokenId, getSubjoin(requestPackage.getSubjoin()),
                 caller, null /* TODO 从subjoin或者session里获取Locale */);
     }
-
 
 
     @Override

@@ -89,9 +89,8 @@ public class RBACInterceptor extends AbstractInterceptor {
     /**
      * 基于角色验证当前账户是否有授权
      *
-     * @param acl
+     * @param acl acl
      */
-    @SuppressWarnings("unchecked")
     public void rbac(String[] acl, String domain, boolean safely) {
         RBACHelper.rbac(acl, domain, safely);
 //        if (acl != null) {//需要判定权限

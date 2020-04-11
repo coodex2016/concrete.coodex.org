@@ -57,7 +57,7 @@ public class AngularWebSocketCodeRender extends AbstractAngularRender<WebSocketU
         String contextPath = Common.isBlank(moduleName) ? "@concrete/" : (getModuleName(moduleName) + "/");
 
         // 按包归类
-        CLASSES.set(new HashMap<String, Map<Class, TSClass>>());
+        CLASSES.set(new HashMap<>());
         try {
             for (WebSocketModule module : modules) {
                 process(moduleName, module);

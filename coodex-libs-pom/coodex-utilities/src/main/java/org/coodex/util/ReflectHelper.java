@@ -380,22 +380,20 @@ public class ReflectHelper {
         throw new RuntimeException("method not found in all objects: " + method.getName());
     }
 
-    @SuppressWarnings("rawtypes")
-    public static Class[] getAllInterfaces(Class clz) {
+    public static Class<?>[] getAllInterfaces(Class<?> clz) {
         Collection<Class<?>> coll = new HashSet<>();
         addInterfaceTo(clz, coll);
-        return coll.toArray(new Class[0]);
+        return coll.toArray(new Class<?>[0]);
     }
 
-    @SuppressWarnings("rawtypes")
-    private static void addInterfaceTo(Class clz, Collection<Class<?>> coll) {
+    private static void addInterfaceTo(Class<?> clz, Collection<Class<?>> coll) {
         if (clz == null) return;
         if (coll.contains(clz)) return;
         if (clz.isInterface()) {
             coll.add(clz);
         }
         addInterfaceTo(clz.getSuperclass(), coll);
-        for (Class c : clz.getInterfaces()) {
+        for (Class<?> c : clz.getInterfaces()) {
             addInterfaceTo(c, coll);
         }
     }
@@ -566,13 +564,12 @@ public class ReflectHelper {
         }
 
 
-        @SuppressWarnings("unchecked")
         public <T> T getAnnotation(Class<T> annotationClass) {
             if (annotationClass == null) throw new IllegalArgumentException("annotationClass is NULL.");
             if (annotations == null) return null;
             for (Annotation annotation : annotations) {
                 if (annotationClass.isAssignableFrom(annotation.getClass()))
-                    return (T) annotation;
+                    return Common.cast(annotation);
             }
             return null;
         }

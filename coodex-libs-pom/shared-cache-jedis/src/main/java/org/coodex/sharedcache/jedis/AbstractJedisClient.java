@@ -17,6 +17,7 @@
 package org.coodex.sharedcache.jedis;
 
 import org.coodex.sharedcache.SharedCacheClient;
+import org.coodex.util.Common;
 
 import java.io.*;
 
@@ -40,7 +41,6 @@ public abstract class AbstractJedisClient implements SharedCacheClient {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends Serializable> T get(String key) {
         assertKey(key);
         JedisAdaptor commands = getCommand();
@@ -49,11 +49,11 @@ public abstract class AbstractJedisClient implements SharedCacheClient {
             if (buff == null) return null;
 
             ByteArrayInputStream bis = new ByteArrayInputStream(buff);
-            ObjectInputStream ois = null;
+            ObjectInputStream ois;
             try {
                 ois = new ObjectInputStream(bis);
                 try {
-                    return (T) ois.readObject();
+                    return Common.cast(ois.readObject());
                 } finally {
                     ois.close();
                 }
@@ -81,16 +81,13 @@ public abstract class AbstractJedisClient implements SharedCacheClient {
         JedisAdaptor commands = getCommand();
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
-            try {
+            try (ObjectOutputStream oos = new ObjectOutputStream(bos)) {
                 oos.writeObject(value);
                 byte[] keyBuf = key.getBytes();
                 commands.set(keyBuf, bos.toByteArray());
-                if (max_cached_time > 0) {
-                    commands.pexpire(keyBuf, max_cached_time);
-                }
-            } finally {
-                oos.close();
+//                if (max_cached_time > 0) {
+                commands.pexpire(keyBuf, max_cached_time);
+//                }
             }
         } catch (Throwable e) {
             throw new RuntimeException(e);

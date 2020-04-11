@@ -24,6 +24,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 /**
  * Created by davidoff shen on 2017-05-08.
  */
+@SuppressWarnings("rawtypes")
 @NoRepositoryBean
 public interface AbstractPersonAccountRepo<P extends AbstractPersonAccountEntity>
         extends CrudRepository<P, String>, JpaSpecificationExecutor<P> {

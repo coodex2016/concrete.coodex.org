@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.couriers.jms;
 
-import org.coodex.concrete.message.CourierPrototype;
 import org.coodex.concrete.message.CourierPrototypeProvider;
 
 public class JMSCourierPrototypeProvider implements CourierPrototypeProvider {
@@ -24,7 +23,7 @@ public class JMSCourierPrototypeProvider implements CourierPrototypeProvider {
     public static final String JMS_PREFIX = "jms::";
 
     @Override
-    public Class<? extends CourierPrototype> getPrototype() {
+    public Class<?> getPrototype() {
         return JMSCourierPrototype.class;
     }
 

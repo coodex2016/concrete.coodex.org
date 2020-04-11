@@ -36,7 +36,7 @@
         </dependency>
 
         <dependency>
-            <groupId>${project.parent.groupId}</groupId>
+            <groupId>org.coodex.concrete.jaxrs</groupId>
             <artifactId>concrete-jaxrs</artifactId>
             <version>${project.parent.version}</version>
             <scope>provided</scope>

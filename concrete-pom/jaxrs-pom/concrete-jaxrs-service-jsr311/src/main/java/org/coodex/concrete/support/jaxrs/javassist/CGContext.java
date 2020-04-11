@@ -27,7 +27,6 @@ import javassist.bytecode.annotation.IntegerMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 import org.coodex.concrete.jaxrs.CreatedByConcrete;
 import org.coodex.util.Common;
-import org.coodex.util.TypeHelper;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -42,7 +41,7 @@ import static org.coodex.concrete.common.ConcreteContext.KEY_TOKEN;
 public class CGContext {
 
     public static final ClassPool CLASS_POOL = ClassPool.getDefault();
-//    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
+    //    private static final Class[] PRIMITIVE_CLASSES = new Class[]{
 //            String.class,
 //            Boolean.class,
 //            Character.class,
@@ -86,11 +85,11 @@ public class CGContext {
         constPool = getClassFile().getConstPool();
     }
 
-    @Deprecated
-    public static boolean isPrimitive(Class c) {
-//        return Common.inArray(c, PRIMITIVE_CLASSES);
-        return TypeHelper.isPrimitive(c);
-    }
+//    @Deprecated
+//    public static boolean isPrimitive(Class<?> c) {
+////        return Common.inArray(c, PRIMITIVE_CLASSES);
+//        return TypeHelper.isPrimitive(c);
+//    }
 
     public Class<?> getServiceClass() {
         return serviceClass;
@@ -141,7 +140,7 @@ public class CGContext {
     private StringMemberValue[] getContentTypes(String... contentTypes) {
         if (contentTypes == null || contentTypes.length == 0)
             contentTypes = new String[]{MediaType.APPLICATION_JSON};
-        List<StringMemberValue> values = new ArrayList<StringMemberValue>();
+        List<StringMemberValue> values = new ArrayList<>();
         for (String contentType : contentTypes) {
             values.add(new StringMemberValue(contentType, constPool));
         }
@@ -164,7 +163,7 @@ public class CGContext {
         return anno;
     }
 
-    public Annotation createInfo(Class[] parameterTypes) {
+    public Annotation createInfo(Class<?>[] parameterTypes) {
         Annotation annotation = new Annotation(CreatedByConcrete.class.getName(), constPool);
 
         ArrayMemberValue memberValue = new ArrayMemberValue(constPool);

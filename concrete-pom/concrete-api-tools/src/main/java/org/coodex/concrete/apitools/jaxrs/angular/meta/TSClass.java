@@ -25,6 +25,7 @@ import java.util.Set;
 /**
  * Created by davidoff shen on 2017-04-11.
  */
+@SuppressWarnings("unused")
 public abstract class TSClass {
     protected static final int CLASS_TYPE_MODULE = 0;
     protected static final int CLASS_TYPE_POJO = 1;
@@ -32,14 +33,14 @@ public abstract class TSClass {
     private final int classType;
     private final String packageName;
     private final String className;
-    private List<String> genericParams = new ArrayList<String>();
-    private Set<Class> imports = new HashSet<Class>();
+    private List<String> genericParams = new ArrayList<>();
+    private Set<Class<?>> imports = new HashSet<>();
 
-    public TSClass(int classType, Class clz) {
+    public TSClass(int classType, Class<?> clz) {
         this.classType = classType;
         this.packageName = clz.getPackage().getName();
         this.className = clz.getSimpleName();
-        for (TypeVariable t : clz.getTypeParameters()) {
+        for (TypeVariable<?> t : clz.getTypeParameters()) {
             genericParams.add(t.getName());
         }
     }
@@ -48,11 +49,11 @@ public abstract class TSClass {
         return packageName;
     }
 
-    public Set<Class> getImports() {
+    public Set<Class<?>> getImports() {
         return imports;
     }
 
-    public void setImports(Set<Class> imports) {
+    public void setImports(Set<Class<?>> imports) {
         this.imports = imports;
     }
 

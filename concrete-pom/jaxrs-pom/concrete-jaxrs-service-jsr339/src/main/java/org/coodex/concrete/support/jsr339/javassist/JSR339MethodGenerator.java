@@ -24,8 +24,6 @@ import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.concrete.support.jaxrs.javassist.AbstractMethodGenerator;
 import org.coodex.concrete.support.jaxrs.javassist.CGContext;
 import org.coodex.concrete.support.jsr339.JSR339Common;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
@@ -36,7 +34,7 @@ import javax.ws.rs.core.MediaType;
  */
 public class JSR339MethodGenerator extends AbstractMethodGenerator {
 
-    private final static Logger log = LoggerFactory.getLogger(JSR339MethodGenerator.class);
+//    private final static Logger log = LoggerFactory.getLogger(JSR339MethodGenerator.class);
 
 
     public JSR339MethodGenerator(CGContext context, JaxrsUnit unit) {
@@ -44,7 +42,7 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
     }
 
     @Override
-    protected CtClass[] getParameterTypes(Class pojoClass) {
+    protected CtClass[] getParameterTypes(Class<?> pojoClass) {
         // 参数1：@Suspended AsyncResponse
         // 参数2: @CookieParam String tokenId
         return getParameterTypesWith(
@@ -64,7 +62,7 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
     }
 
     @Override
-    protected SignatureAttribute.Type[] getSignatureTypes(Class pojoClass) {
+    protected SignatureAttribute.Type[] getSignatureTypes(Class<?> pojoClass) {
         // 参数1：@Suspended AsyncResponse
         // 参数2: @CookieParam String tokenId
         return getSignatureTypesWith(
@@ -83,7 +81,7 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
     }
 
     @Override
-    protected String getMethodBody(Class pojoClass) {
+    protected String getMethodBody(Class<?> pojoClass) {
         String paramListSrc = getParamListSrc(pojoClass, 3);
         return "{execute(\"" + getUnit().getFunctionName() + "\", $1, $2"
                 + (paramListSrc.length() == 0 ? ", null" : (", new java.lang.Object[]{" + paramListSrc + "}")) + "); return null;}";

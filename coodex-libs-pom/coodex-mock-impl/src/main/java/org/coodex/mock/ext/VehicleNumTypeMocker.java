@@ -24,12 +24,10 @@ import java.lang.reflect.Type;
 import static org.coodex.util.Common.randomChar;
 
 public class VehicleNumTypeMocker extends AbstractTypeMocker<VehicleNum> {
-    private final String alphabets = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-    private final String numbers = "0123456789";
 
     @Override
-    protected Class[] getSupportedClasses() {
-        return new Class[]{String.class};
+    protected Class<?>[] getSupportedClasses() {
+        return new Class<?>[]{String.class};
     }
 
     @Override
@@ -50,11 +48,13 @@ public class VehicleNumTypeMocker extends AbstractTypeMocker<VehicleNum> {
         builder.append(randomChar(codeRange));
 
 
-        int alhpabetCount = 0;
+        int alphabetCount = 0;
+        String alphabets = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        String numbers = "0123456789";
         for (int i = 1; i < 5; i++) {
-            if (alhpabetCount < 2 && Math.random() < 0.1) {
+            if (alphabetCount < 2 && Math.random() < 0.1) {
                 builder.append(randomChar(alphabets));
-                alhpabetCount++;
+                alphabetCount++;
             } else {
                 builder.append(randomChar(numbers));
             }

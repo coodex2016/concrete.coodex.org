@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class AccountFactoryAggregationFilter extends AbstractConflictSolution {
     @Override
-    public boolean accept(Class param) {
+    public boolean accept(Class<?> param) {
         return AccountFactory.class.isAssignableFrom(param);
     }
 

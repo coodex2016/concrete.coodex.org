@@ -20,9 +20,7 @@ import org.coodex.config.Config;
 import org.coodex.util.Common;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
@@ -30,13 +28,14 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
  * 基于Bean的名字过滤出唯一的实现
  * Created by davidoff shen on 2016-11-01.
  */
+@SuppressWarnings("unused")
 public class BeanNameFilter extends AbstractConflictSolution /*implements ConflictSolution*/ {
 
 //    private static final Profile_Deprecated profile = ConcreteHelper.getProfile();
 
 
     @Override
-    public boolean accept(Class clazz) {
+    public boolean accept(Class<?> clazz) {
         return true;
     }
 
@@ -46,7 +45,7 @@ public class BeanNameFilter extends AbstractConflictSolution /*implements Confli
         String prefix = Config.get(BeanNameFilter.class.getCanonicalName() + ".prefix", getAppSet());
         if (Common.isBlank(prefix)) return beans;
 
-        Map<String, T> map = new HashMap<String, T>();
+        Map<String, T> map = new HashMap<>();
         for (String str : beans.keySet()) {
             if (str != null && str.startsWith(prefix))
                 map.put(str, beans.get(str));

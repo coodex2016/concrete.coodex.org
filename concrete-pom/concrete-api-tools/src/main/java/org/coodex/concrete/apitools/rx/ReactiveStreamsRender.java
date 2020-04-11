@@ -21,7 +21,6 @@ import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
-import org.coodex.util.TypeHelper;
 
 import java.io.IOException;
 import java.lang.reflect.GenericArrayType;
@@ -56,8 +55,8 @@ public class ReactiveStreamsRender extends AbstractRender {
         List<JaxrsModule> modules = loadModules(JaxRSModuleMaker.JAX_RS_PREV + ".loader", packages);
 
         for (JaxrsModule module : modules) {
-            Map<String, Object> toWrite = new HashMap<String, Object>();
-            Set<String> imports = new HashSet<String>();
+            Map<String, Object> toWrite = new HashMap<>();
+            Set<String> imports = new HashSet<>();
             toWrite.put("imports", imports);
             Class<?> clazz = module.getInterfaceClass();
             imports.add(clazz.getName());
@@ -70,7 +69,7 @@ public class ReactiveStreamsRender extends AbstractRender {
             toWrite.put("concreteClassName", clazz.getSimpleName());
             toWrite.put("rxClassName", rxClassName);
 
-            Set<MethodInfo> methods = new HashSet<MethodInfo>();
+            Set<MethodInfo> methods = new HashSet<>();
             toWrite.put("methods", methods);
 
             for (JaxrsUnit unit : module.getUnits()) {
@@ -84,11 +83,11 @@ public class ReactiveStreamsRender extends AbstractRender {
 
     private void addTo(Set<String> imports, String className) {
         try {
-            Class c = Class.forName(className);
+            Class<?> c = Class.forName(className);
             if (!c.isPrimitive() && !c.getPackage().getName().equals("java.lang")) {
                 imports.add(className);
             }
-        } catch (Throwable th) {
+        } catch (Throwable ignored) {
 
         }
     }
@@ -96,12 +95,12 @@ public class ReactiveStreamsRender extends AbstractRender {
     private String typeToStr(Type t, Type context, Set<String> imports, boolean autoBox) {
         t = toReference(t, context);
         if (t instanceof Class) {
-            return classToStr((Class) t, imports, autoBox);
+            return classToStr((Class<?>) t, imports, autoBox);
         } else if (t instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) t;
             StringBuilder builder = new StringBuilder();
 
-            builder.append(classToStr((Class) pt.getRawType(), imports, false));
+            builder.append(classToStr((Class<?>) pt.getRawType(), imports, false));
             Type[] parameters = pt.getActualTypeArguments();
             builder.append("<");
             for (int i = 0, len = parameters.length; i < len; i++) {
@@ -117,7 +116,7 @@ public class ReactiveStreamsRender extends AbstractRender {
             throw new RuntimeException("unknown TYPE: " + t);
     }
 
-    private String classToStr(Class c, Set<String> imports, boolean autoBox) {
+    private String classToStr(Class<?> c, Set<String> imports, boolean autoBox) {
         if (c.isArray()) {
             return classToStr(c.getComponentType(), imports, false) + "[]";
         } else {
@@ -133,7 +132,7 @@ public class ReactiveStreamsRender extends AbstractRender {
         }
     }
 
-    private String autoBox(Class c) {
+    private String autoBox(Class<?> c) {
         if (byte.class.equals(c)) {
             return Byte.class.getSimpleName();
         } else if (short.class.equals(c)) {
@@ -158,7 +157,7 @@ public class ReactiveStreamsRender extends AbstractRender {
     private MethodInfo unitToMethod(JaxrsUnit unit, Set<String> imports) {
         MethodInfo methodInfo = new MethodInfo();
         methodInfo.setName(unit.getFunctionName());
-        Class context = unit.getDeclaringModule().getInterfaceClass();
+        Class<?> context = unit.getDeclaringModule().getInterfaceClass();
         methodInfo.setReturnType(typeToStr(unit.getGenericReturnType(), context, imports, true));
         for (JaxrsParam param : unit.getParameters()) {
             ParamInfo paramInfo = new ParamInfo();
@@ -169,10 +168,11 @@ public class ReactiveStreamsRender extends AbstractRender {
         return methodInfo;
     }
 
+    @SuppressWarnings("unused")
     public static class MethodInfo {
         private String name;
         private String returnType;
-        private List<ParamInfo> params = new ArrayList<ParamInfo>();
+        private List<ParamInfo> params = new ArrayList<>();
 
         public String getName() {
             return name;

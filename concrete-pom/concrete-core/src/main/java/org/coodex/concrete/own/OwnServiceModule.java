@@ -31,7 +31,7 @@ public abstract class OwnServiceModule<T extends OwnServiceUnit> extends Abstrac
 
 
     @Override
-    public int compareTo(AbstractModule o) {
+    public int compareTo(AbstractModule<T> o) {
         return getName().compareTo(o.getName());
     }
 }

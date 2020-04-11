@@ -18,6 +18,7 @@ package org.coodex.concrete.own;
 
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
+import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.common.modules.AbstractParam;
 import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.util.Common;
@@ -25,10 +26,12 @@ import org.coodex.util.Common;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public abstract class OwnServiceUnit<M extends OwnServiceModule> extends AbstractUnit<AbstractParam, M> {
-    private String key = null;
+//@SuppressWarnings("rawtypes")
+public abstract class OwnServiceUnit/*<M extends OwnServiceModule>*/
+        extends AbstractUnit<AbstractParam> {
+    private String key;
 
-    public OwnServiceUnit(Method method, M module) {
+    public OwnServiceUnit(Method method, AbstractModule<?> module) {
         super(method, module);
         key = Common.sha1(String.format("%s:%s(%d)", // TODO "%s:%s(%s)",
                 getDeclaringModule().getInterfaceClass().getName(),
@@ -69,7 +72,7 @@ public abstract class OwnServiceUnit<M extends OwnServiceModule> extends Abstrac
     }
 
     @Override
-    public int compareTo(AbstractUnit o) {
+    public int compareTo(AbstractUnit<AbstractParam> o) {
         return getName().compareTo(o.getName());
     }
 }

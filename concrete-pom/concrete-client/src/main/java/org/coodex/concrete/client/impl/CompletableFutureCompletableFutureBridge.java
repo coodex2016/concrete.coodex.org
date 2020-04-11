@@ -22,12 +22,12 @@ import java.util.concurrent.CompletableFuture;
 
 public class CompletableFutureCompletableFutureBridge implements CompletableFutureBridge {
     @Override
-    public Object bridging(CompletableFuture completableFuture) {
+    public Object bridging(CompletableFuture<?> completableFuture) {
         return completableFuture;
     }
 
     @Override
-    public boolean accept(Class param) {
+    public boolean accept(Class<?> param) {
         return param != null && param.equals(CompletableFuture.class);
     }
 }

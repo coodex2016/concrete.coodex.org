@@ -22,13 +22,13 @@ import org.coodex.concrete.api.rx.CompletableFutureBridge;
 import java.util.concurrent.CompletableFuture;
 
 public class CompletableFutureObservableBridge implements CompletableFutureBridge {
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    //    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Object bridging(CompletableFuture completableFuture) {
+    public Object bridging(CompletableFuture<?> completableFuture) {
         return Observable.create(subscriber ->
                 completableFuture.whenComplete((result, error) -> {
                     if (error != null) {
-                        subscriber.onError((Throwable) error);
+                        subscriber.onError(error);
                     } else {
                         // todo result == null?
                         subscriber.onNext(result);
@@ -38,7 +38,7 @@ public class CompletableFutureObservableBridge implements CompletableFutureBridg
     }
 
     @Override
-    public boolean accept(Class param) {
+    public boolean accept(Class<?> param) {
         return Observable.class.equals(param);
     }
 }

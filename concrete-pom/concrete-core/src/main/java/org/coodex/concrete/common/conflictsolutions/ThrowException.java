@@ -31,7 +31,7 @@ public class ThrowException implements ConflictSolution {
     private final static Logger log = LoggerFactory.getLogger(ThrowException.class);
 
     @Override
-    public boolean accept(Class clazz) {
+    public boolean accept(Class<?> clazz) {
         return false;
     }
 

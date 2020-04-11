@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Created by davidoff shen on 2016-11-01.
  */
-public interface ConflictSolution extends SelectableService<Class> {
+public interface ConflictSolution extends SelectableService<Class<?>> {
 
 //    boolean accepted(Class<?> clazz);
 

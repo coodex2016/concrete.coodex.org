@@ -31,7 +31,7 @@ public class AMQPModule extends OwnServiceModule<AMQPUnit> {
 
         return amqpUnits == null || amqpUnits.size() == 0 ?
                 new AMQPUnit[0] :
-                amqpUnits.toArray(new AMQPUnit[amqpUnits.size()]);
+                amqpUnits.toArray(new AMQPUnit[0]);
     }
 
     @Override

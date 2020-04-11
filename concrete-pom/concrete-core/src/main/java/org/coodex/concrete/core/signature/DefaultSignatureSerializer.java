@@ -39,7 +39,7 @@ public class DefaultSignatureSerializer implements SignatureSerializer {
 
     private final static Logger log = LoggerFactory.getLogger(DefaultSignatureSerializer.class);
 
-    private static final Class[] PRIMITIVE_CLASS = new Class[]{
+    private static final Class<?>[] PRIMITIVE_CLASS = new Class<?>[]{
             String.class,
             Boolean.class,
             Character.class,
@@ -78,20 +78,20 @@ public class DefaultSignatureSerializer implements SignatureSerializer {
             return toSign(values).getBytes();
     }
 
-    @SuppressWarnings("unchecked")
     private String joint(String key, Object o, boolean first) {
         if (o == null)
             return null;
 
         Class<?> c = o.getClass();
-        String s = null;
+        String s;
         // 数组、List、Set，Set需要排序
         if (c.isArray()) {
             s = jointArray(key, Arrays.asList((Object[]) o));
         } else if (List.class.isAssignableFrom(c)) {
-            s = jointArray(key, (List<Object>) o);
+            List<Object> list = Common.cast(o);
+            s = jointArray(key, list);
         } else if (Set.class.isAssignableFrom(c)) {
-            Object[] objects = ((Set) o).toArray();
+            Object[] objects = ((Set<?>) o).toArray();
             Arrays.sort(objects);
             s = jointArray(key, Arrays.asList(objects));
         }

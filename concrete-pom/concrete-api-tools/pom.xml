@@ -32,13 +32,14 @@
     <dependencies>
 
         <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-support-jaxrs</artifactId>
+            <groupId>org.coodex.concrete.jaxrs</groupId>
+            <artifactId>concrete-jaxrs-service</artifactId>
             <version>${project.parent.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>${project.parent.groupId}</groupId>
+            <groupId>org.coodex.concrete.websocket</groupId>
             <artifactId>concrete-websocket</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

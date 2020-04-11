@@ -20,7 +20,7 @@ import org.coodex.concrete.own.OwnServiceUnit;
 
 import java.lang.reflect.Method;
 
-public class AMQPUnit extends OwnServiceUnit<AMQPModule> {
+public class AMQPUnit extends OwnServiceUnit/*<AMQPModule>*/ {
     public AMQPUnit(Method method, AMQPModule module) {
         super(method, module);
     }

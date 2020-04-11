@@ -17,6 +17,7 @@
 package org.coodex.concrete.spring.components;
 
 import org.coodex.concrete.message.*;
+import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,24 +32,24 @@ public class MessageObserverBeanPostProcessor extends InstantiationAwareBeanPost
 
     private final static Logger log = LoggerFactory.getLogger(MessageObserverBeanPostProcessor.class);
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    //    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof Observer) {
-            Observer observer = (Observer) bean;
-            getTopic(observer, beanName).subscribe(observer);
+            Observer<?> observer = Common.cast(bean);
+            getTopic(observer, beanName).subscribe(Common.cast(observer));
         }
         return super.postProcessAfterInitialization(bean, beanName);
     }
 
-    @SuppressWarnings("rawtypes")
-    private AbstractTopic getTopic(Observer observer, String beanName) {
+
+    private AbstractTopic<?> getTopic(Observer<?> observer, String beanName) {
         MessageConsumer messageConsumer = observer.getClass().getAnnotation(MessageConsumer.class);
-        Type topicType = null;
-        String queue = null;
+        Type topicType;
+        String queue;
         final Type messageType = GenericTypeHelper.solveFromInstance(Observer.class.getTypeParameters()[0], observer);
 
-        Class<? extends AbstractTopic> topicClass = messageConsumer == null ? Topic.class :
+        Class<?> topicClass = messageConsumer == null ? Topic.class :
                 messageConsumer.topicType();
         queue = messageConsumer == null ? null : messageConsumer.queue();
 

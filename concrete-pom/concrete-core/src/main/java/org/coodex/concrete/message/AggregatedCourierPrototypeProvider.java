@@ -24,7 +24,7 @@ public class AggregatedCourierPrototypeProvider implements CourierPrototypeProvi
     static final Pattern AGGREGATED_PATTERN = Pattern.compile("^\\s*(?i)Aggregated\\s*\\(([\\s,\\w]+)\\)\\s*$");
 
     @Override
-    public Class<? extends CourierPrototype> getPrototype() {
+    public Class<?> getPrototype() {
         return AggregatedCourierPrototype.class;
     }
 

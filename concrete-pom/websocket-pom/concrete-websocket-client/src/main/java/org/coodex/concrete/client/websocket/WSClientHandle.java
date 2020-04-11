@@ -54,11 +54,13 @@ public class WSClientHandle {
         Session session = sessionMap.get(destination);
         if (session == null || !session.isOpen()) {
             Object lock = locks.get(destination);
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (lock) {
                 session = sessionMap.get(destination);
                 if (session == null || !session.isOpen()) {
                     // build session
                     WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+                    //noinspection StatementWithEmptyBody
                     if (destination.isSsl()) {
                         // TODO how to support wss used self-signed ?
                     }
@@ -82,7 +84,7 @@ public class WSClientHandle {
     }
 
     @OnMessage
-    public void onMessage(String message, Session session) throws IOException {
+    public void onMessage(String message, @SuppressWarnings("unused") Session session) {
         OwnRXMessageListener.getInstance().onMessage(message);
 //        // parse to ResponsePackage
 //        ResponsePackage<Object> responsePackage = serializer.parse(message,
@@ -104,25 +106,12 @@ public class WSClientHandle {
 //        }
     }
 
-    void send(final WebsocketDestination destination, final RequestPackage requestPackage) {
+    void send(final WebsocketDestination destination, final RequestPackage<?> requestPackage) {
         try {
             Session session = getSession(destination);
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (session) {
-//                callbackMap.put(requestPackage.getMsgId(), callback, new TimeLimitedMap.TimeoutCallback() {
-//                    @Override
-//                    public void timeout() {
-//                        callback.onError(new TimeoutException("request timeout: "
-//                                + requestPackage.getServiceId() + " "
-//                                + destination.toString()));
-//                    }
-//                });
-
-//                try {
                 session.getBasicRemote().sendText(serializer.toJson(requestPackage));
-//                } catch (Throwable th) {
-//                    if (callbackMap.getAndRemove(requestPackage.getMsgId()) != null)
-//                        callback.onError(ConcreteHelper.getException(th));
-//                }
             }
         } catch (Throwable th) {
             throw ConcreteHelper.getException(th);

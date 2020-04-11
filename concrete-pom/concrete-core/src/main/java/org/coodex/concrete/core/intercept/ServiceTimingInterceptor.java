@@ -68,7 +68,7 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
 
         // 加载实例
         try {
-            Class clz = Class.forName(className);
+            Class<?> clz = Class.forName(className);
             Object o = clz.newInstance();
             for (Field f : ReflectHelper.getAllDeclaredFields(clz)) {
                 f.setAccessible(true);
