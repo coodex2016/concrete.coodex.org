@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright (c) 2020 coodex.org (jujus.shen@126.com)
   ~
@@ -19,50 +18,22 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>concrete.pom</artifactId>
-        <groupId>org.coodex</groupId>
+        <artifactId>concrete-pom</artifactId>
+        <groupId>org.coodex.concrete</groupId>
         <version>0.5.0-SNAPSHOT</version>
+        <!--        <relativePath>../pom.xml</relativePath>-->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.coodex.concrete</groupId>
-    <artifactId>concrete-pom</artifactId>
+    <artifactId>concrete-websocket-pom</artifactId>
+    <groupId>org.coodex.concrete.websocket</groupId>
     <packaging>pom</packaging>
 
-    <dependencyManagement>
-
-    </dependencyManagement>
-
     <modules>
-        <module>concrete-api</module>
-
-        <module>concrete-core</module>
-        <module>concrete-core-spring</module>
-        <module>concrete-core-mock</module>
-
-        <module>concrete-commons-spring-data</module>
-
-        <module>concrete-test</module>
-
-        <module>concrete-api-tools</module>
-        <module>concrete-client</module>
-        <module>concrete-rx-builder</module>
-
-        <module>amqp-pom</module>
-
-        <module>apache-dubbo-pom</module>
-
-        <module>jaxrs-pom</module>
-
-        <module>websocket-pom</module>
-
-        <module>plugins-pom</module>
-
-<!--        <module>s2/concrete-s2-api</module>-->
-<!--        <module>s2/concrete-s2-impl</module>-->
-
-        <module>../concrete-accounts</module>
-
+        <module>concrete-websocket</module>
+        <module>concrete-websocket-client</module>
+        <module>concrete-websocket-service</module>
+        <module>concrete-websocket-bom</module>
     </modules>
 
 

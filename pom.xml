@@ -23,7 +23,7 @@
     <description>concrete service definition spec.</description>
     <url>https://concrete.coodex.org</url>
     <groupId>org.coodex</groupId>
-    <artifactId>concrete.pom</artifactId>
+    <artifactId>concrete-pom</artifactId>
     <version>0.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -53,22 +53,34 @@
     </developers>
 
     <modules>
+		 <module>concrete-accounts</module>
+        
+		<module>concrete-api</module>
 
-        <!--        <module>01.spec/concrete-fsm</module>-->
-        <!--        <module>10.core/concrete-fsm-impl</module>-->
+        <module>concrete-core</module>
+        <module>concrete-core-spring</module>
+        <module>concrete-core-mock</module>
 
-        <!--        <module>20.service.support/concrete-support-jaxrs-saas-reverse-proxy</module>-->
+        <module>concrete-commons-spring-data</module>
 
-        <!--        <module>60.attachments/concrete-attachments</module>-->
-        <!--        <module>60.attachments/concrete-attachments-jaxrs</module>-->
-        <!--        <module>60.attachments/concrete-attachments-repo-fastdfs</module>-->
+        <module>concrete-test</module>
 
-        <!--        <module>concrete-bom</module>-->
+        <module>concrete-api-tools</module>
+        <module>concrete-client</module>
+        <module>concrete-rx-builder</module>
 
-        <module>coodex-libs-pom</module>
-        <module>concrete-pom</module>
+        <module>concrete-amqp-pom</module>
+
+        <module>concrete-apache-dubbo-pom</module>
+
+        <module>concrete-jaxrs-pom</module>
+
+        <module>concrete-websocket-pom</module>
+
+        <module>plugins-pom</module>
+
+        
         <module>concrete-bom</module>
-
     </modules>
 
 
@@ -77,7 +89,9 @@
         <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <default.version>RELEASE</default.version>
+        <coodex.libs.version>${project.version}</coodex.libs.version>
+
+        <!--        <default.version>RELEASE</default.version>-->
 
         <!-- api -->
         <bean.validation.version>2.0.1.Final</bean.validation.version>
@@ -111,7 +125,7 @@
 
         <brave.version>5.6.5</brave.version>
 
-        <thrift.version>${default.version}</thrift.version>
+        <!--        <thrift.version>${default.version}</thrift.version>-->
 
         <hibernate.version>5.3.10.Final</hibernate.version>
         <hibernate.validator.version>6.0.16.Final</hibernate.validator.version>
@@ -285,6 +299,14 @@
         <dependencies>
 
             <dependency>
+                <groupId>org.coodex</groupId>
+                <artifactId>coodex-bom</artifactId>
+                <version>${coodex.libs.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+            <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>1.18.12</version>
@@ -323,11 +345,11 @@
 
 
             <!-- slf4j -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.slf4j</groupId>-->
+<!--                <artifactId>slf4j-api</artifactId>-->
+<!--                <version>${slf4j.version}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -335,13 +357,13 @@
                 <version>${slf4j.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-bom</artifactId>
-                <version>${log4j2.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.apache.logging.log4j</groupId>-->
+<!--                <artifactId>log4j-bom</artifactId>-->
+<!--                <version>${log4j2.version}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>com.alibaba</groupId>

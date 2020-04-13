@@ -19,51 +19,37 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>concrete.pom</artifactId>
-        <groupId>org.coodex</groupId>
+        <artifactId>concrete-apache-dubbo-pom</artifactId>
+        <groupId>org.coodex.concrete.dubbo</groupId>
         <version>0.5.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.coodex.concrete</groupId>
-    <artifactId>concrete-pom</artifactId>
+    <artifactId>concrete-apache-dubbo-bom</artifactId>
     <packaging>pom</packaging>
 
     <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-apache-dubbo-client</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
 
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-apache-dubbo-service</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-apache-dubbo-spring-boot</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+        </dependencies>
     </dependencyManagement>
-
-    <modules>
-        <module>concrete-api</module>
-
-        <module>concrete-core</module>
-        <module>concrete-core-spring</module>
-        <module>concrete-core-mock</module>
-
-        <module>concrete-commons-spring-data</module>
-
-        <module>concrete-test</module>
-
-        <module>concrete-api-tools</module>
-        <module>concrete-client</module>
-        <module>concrete-rx-builder</module>
-
-        <module>amqp-pom</module>
-
-        <module>apache-dubbo-pom</module>
-
-        <module>jaxrs-pom</module>
-
-        <module>websocket-pom</module>
-
-        <module>plugins-pom</module>
-
-<!--        <module>s2/concrete-s2-api</module>-->
-<!--        <module>s2/concrete-s2-impl</module>-->
-
-        <module>../concrete-accounts</module>
-
-    </modules>
 
 
 </project>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+  ~ Copyright (c) 2019 coodex.org (jujus.shen@126.com)
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,53 +19,37 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>concrete-accounts</artifactId>
-        <groupId>org.coodex.concrete</groupId>
+        <artifactId>concrete-jaxrs-pom</artifactId>
+        <groupId>org.coodex.concrete.jaxrs</groupId>
         <version>0.5.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>concrete-accounts-common-tools</artifactId>
+    <artifactId>concrete-jaxrs-swagger</artifactId>
+
     <dependencies>
-
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-jpa</artifactId>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.coodex.concrete.jaxrs</groupId>
-            <artifactId>concrete-jaxrs-client</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>provided</scope>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-core</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.coodex</groupId>
             <artifactId>coodex-mock-impl</artifactId>
-            <scope>provided</scope>
-        </dependency>
+       </dependency>
 
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-core</artifactId>
+            <artifactId>concrete-jaxrs-service</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-accounts-common</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-
     </dependencies>
+
 
 </project>
