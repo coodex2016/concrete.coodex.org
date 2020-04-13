@@ -38,6 +38,4 @@ public interface ServiceLoader<T> {
     T get();
 
     T getDefault();
-
-
 }

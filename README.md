@@ -28,6 +28,11 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2020-04-13
+
+- coodex-utilities: 增加IDGenerator，分布式字符串ID生成器的Facade；增加UUID和SnowFlake的实现;
+- bug fixed: SPI中使用Supplier作为默认值的提供者时会重复创建实例的问题
+
 ## 2020-03-27
 
 - SPI机制优化,强化了泛型匹配,强化了基于java.util.ServiceLoader的加载器

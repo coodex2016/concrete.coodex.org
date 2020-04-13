@@ -16,16 +16,17 @@
 
 package org.coodex.util;
 
-import java.util.List;
-import java.util.Map;
+import org.coodex.id.IDGenerator;
 
-public interface SelectableServiceLoader<Param_Type, T extends SelectableService<Param_Type>> /*extends ServiceLoader<T>*/ {
+import java.util.StringJoiner;
 
-    List<T> selectAll(Param_Type param);
+public class IDG_Test {
 
-    T select(Param_Type param);
-
-    Map<String, T> getAll();
-
-//    T getDefault();
+    public static void main(String[] args) {
+        StringJoiner joiner = new StringJoiner(", ");
+        for (int i = 0; i < 1000; i++) {
+            joiner.add(IDGenerator.genId());
+        }
+        System.out.println(joiner.toString());
+    }
 }

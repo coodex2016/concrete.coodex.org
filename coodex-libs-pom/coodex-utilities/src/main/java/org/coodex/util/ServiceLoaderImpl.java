@@ -40,7 +40,7 @@ import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 
     private final static Logger log = LoggerFactory.getLogger(ServiceLoaderImpl.class);
-    private Singleton<Instances> instances = Singleton.with(
+    private final Singleton<Instances> instances = Singleton.with(
             () -> {
                 Instances instances = new Instances();
                 instances.instancesMap = new HashMap<>();
@@ -65,14 +65,20 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
                 return instances;
             }
     );
-
-    private T defaultProvider;
-    private Singleton<Map<String, T>> allInstanceSingleton = Singleton.with(() -> {
+    private final Singleton<Map<String, T>> allInstanceSingleton = Singleton.with(() -> {
         Map<String, T> map = new HashMap<>();
         for (Map.Entry<String, Object> entry : instances.get().unmodifiedMap.entrySet()) {
             map.put(entry.getKey(), cast(entry.getValue()));
         }
         return map;
+    });
+
+    private T defaultProvider;
+    private final Singleton<T> defaultProviderSingleton = Singleton.with(() -> {
+        if (defaultProvider == null) {
+            defaultProvider = getDefaultInstance();
+        }
+        return defaultProvider;
     });
 
     public ServiceLoaderImpl() {
@@ -100,11 +106,15 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 //    }
 
     @Override
-    public T getDefault() {
-        if (defaultProvider == null) {
+    public final T getDefault() {
+        return defaultProviderSingleton.get();
+    }
+
+    protected T getDefaultInstance() {
+        if (getDefault() == null) {
             throw new RuntimeException("no provider found for: " + getServiceType().getTypeName());
         } else {
-            return defaultProvider;
+            return getDefault();
         }
     }
 
@@ -125,8 +135,9 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
 
         switch (copy.size()) {
             case 0:
-                if (defaultProvider != null && providerClass.isAssignableFrom(defaultProvider.getClass())) {
-                    return defaultProvider;
+                T defaultProviderValue = getDefault();
+                if (defaultProviderValue != null && providerClass.isAssignableFrom(defaultProviderValue.getClass())) {
+                    return defaultProviderValue;
                 } else {
                     return null;
                 }
@@ -169,7 +180,7 @@ public abstract class ServiceLoaderImpl<T> implements ServiceLoader<T> {
     @Override
     public T get() {
         if (instances.get().instancesMap.size() == 0)
-            return getDefault();
+            return defaultProviderSingleton.get();
         else if (instances.get().instancesMap.size() == 1)
             return cast(instances.get().instancesMap.values().toArray()[0]);
         else

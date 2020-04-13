@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package org.coodex.util;
+package org.coodex.id;
 
-import java.util.List;
-import java.util.Map;
-
-public interface SelectableServiceLoader<Param_Type, T extends SelectableService<Param_Type>> /*extends ServiceLoader<T>*/ {
-
-    List<T> selectAll(Param_Type param);
-
-    T select(Param_Type param);
-
-    Map<String, T> getAll();
-
-//    T getDefault();
+public interface IDGeneratorService {
+    /**
+     * @return 生成一个id
+     */
+    String generateId();
 }

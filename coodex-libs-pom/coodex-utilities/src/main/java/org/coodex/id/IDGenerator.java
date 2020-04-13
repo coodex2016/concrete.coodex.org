@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.coodex.util;
+package org.coodex.id;
 
-import java.util.List;
-import java.util.Map;
+import org.coodex.util.LazyServiceLoader;
+import org.coodex.util.ServiceLoader;
 
-public interface SelectableServiceLoader<Param_Type, T extends SelectableService<Param_Type>> /*extends ServiceLoader<T>*/ {
+public class IDGenerator {
 
-    List<T> selectAll(Param_Type param);
+    private static final ServiceLoader<IDGeneratorService> ID_GENERATOR_SERVICE_SERVICE_LOADER
+            = new LazyServiceLoader<IDGeneratorService>(SnowflakeIdGeneratorService::new) {
+    };
 
-    T select(Param_Type param);
-
-    Map<String, T> getAll();
-
-//    T getDefault();
+    public static String genId() {
+        return ID_GENERATOR_SERVICE_SERVICE_LOADER.get().generateId();
+    }
 }

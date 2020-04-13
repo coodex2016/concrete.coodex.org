@@ -32,16 +32,17 @@ import java.util.concurrent.TimeUnit;
  *     org.coodex.util.Clock.magnification
  * </pre>
  */
+@SuppressWarnings("unused")
 public final class Clock {
 
     public static final String KEY_MAGNIFICATION = Clock.class.getName() + ".magnification";
-    private static Singleton<ClockAgent> agentSingleton = Singleton.with(() -> {
+    private static final Singleton<ClockAgent> agentSingleton = Singleton.with(() -> {
         if (getMagnification() == 1.0f) {
             return new SystemClockAgent();
         } else {
             return new ServiceLoaderImpl<ClockAgent>() {
                 @Override
-                public ClockAgent getDefault() {
+                protected ClockAgent getDefaultInstance() {
                     return new DefaultClockAgent();
                 }
             }.get();

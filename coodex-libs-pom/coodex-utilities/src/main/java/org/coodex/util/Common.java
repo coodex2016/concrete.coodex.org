@@ -42,6 +42,7 @@ import static java.lang.Long.parseLong;
 /**
  * @author davidoff
  */
+@SuppressWarnings("unused")
 public class Common {
 
     public static final String PATH_SEPARATOR = System.getProperty("path.separator");
@@ -66,9 +67,9 @@ public class Common {
 
     private final static String DEFAULT_DELIM = ".-_ /\\";
 
-    private static ThreadLocal<SingletonMap<String, DateFormat>> threadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<SingletonMap<String, DateFormat>> threadLocal = new ThreadLocal<>();
 
-    private static SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue> converterServiceLoader
+    private static final SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue> converterServiceLoader
             = new LazySelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>() {
     };
 
@@ -952,6 +953,19 @@ public class Common {
         return dateToCalendar(strToDate(str, format));
     }
 
+    public static byte[] long2Bytes(long data) {
+        return new byte[]{
+                (byte) ((data >> 56) & 0xff),
+                (byte) ((data >> 48) & 0xff),
+                (byte) ((data >> 40) & 0xff),
+                (byte) ((data >> 32) & 0xff),
+                (byte) ((data >> 24) & 0xff),
+                (byte) ((data >> 16) & 0xff),
+                (byte) ((data >> 8) & 0xff),
+                (byte) ((data) & 0xff),
+        };
+    }
+
     public static String longToDateStr(long l) {
         return longToDateStr(l, DEFAULT_DATETIME_FORMAT);
     }
@@ -1146,9 +1160,9 @@ public class Common {
     }
 
     private static class PathPattern {
-        private Pattern pattern;
-        private String path;
-        private String originalPath;
+        private final Pattern pattern;
+        private final String path;
+        private final String originalPath;
 
         public PathPattern(String path) {
             this.originalPath = path;

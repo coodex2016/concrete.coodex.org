@@ -19,9 +19,6 @@ package org.coodex.util;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import static org.coodex.util.GenericTypeHelper.solveFromInstance;
-import static org.coodex.util.GenericTypeHelper.typeToClass;
-
 public abstract class LazyServiceLoader<T> /*extends Singleton<ServiceLoader<T>>*/ implements ServiceLoader<T> {
     private final Singleton<ServiceLoader<T>> singleton;
 
@@ -64,9 +61,8 @@ public abstract class LazyServiceLoader<T> /*extends Singleton<ServiceLoader<T>>
             protected Object $getInstance() {
                 return LazyServiceLoader.this;
             }
-
             @Override
-            public T getDefault() {
+            protected T getDefaultInstance() {
                 return builder.get();
             }
         });

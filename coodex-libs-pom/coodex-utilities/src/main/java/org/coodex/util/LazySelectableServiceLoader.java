@@ -87,10 +87,10 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
     }
 
 
-    @Override
-    public T getDefault() {
-        return singleton.get().getDefault();
-    }
+//    @Override
+//    public T getDefault() {
+//        return singleton.get().getDefault();
+//    }
 
 
 //    protected Type getParameterType() {

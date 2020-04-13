@@ -35,6 +35,7 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 /**
  * Created by davidoff shen on 2017-03-09.
  */
+@SuppressWarnings("unused")
 public abstract class SelectableServiceLoaderImpl<Param_Type, T extends SelectableService<Param_Type>>
         implements SelectableServiceLoader<Param_Type, T>, ServiceLoader<T> {
 
@@ -124,7 +125,7 @@ public abstract class SelectableServiceLoaderImpl<Param_Type, T extends Selectab
                     }
                     this.serviceLoaderFacade = new ServiceLoaderImpl<T>() {
                         @Override
-                        public T getDefault() {
+                        protected T getDefaultInstance() {
                             return defaultService == null ? super.getDefault() : defaultService;
                         }
 
@@ -197,8 +198,6 @@ public abstract class SelectableServiceLoaderImpl<Param_Type, T extends Selectab
         try {
             T instance = getServiceLoaderFacade().getDefault();
             if (accept(instance, param))
-                return instance;
-            if (instance.accept(param))
                 return instance;
         } catch (Throwable ignored) {
         }
