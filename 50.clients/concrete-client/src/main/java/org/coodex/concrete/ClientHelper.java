@@ -18,10 +18,7 @@ package org.coodex.concrete;
 
 import org.coodex.concrete.api.rx.CompletableFutureBridge;
 import org.coodex.concrete.api.rx.ReactiveExtensionFor;
-import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.client.InstanceBuilder;
-import org.coodex.concrete.client.Invoker;
-import org.coodex.concrete.client.InvokerFactory;
+import org.coodex.concrete.client.*;
 import org.coodex.concrete.client.impl.JavaProxyInstanceBuilder;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.IF;
@@ -85,8 +82,8 @@ public class ClientHelper {
                 buildChain(instance);
                 return instance;
             });
-    private static SelectableFactoryLoader<String, Destination> destinationFactorySelectableServiceLoader
-            = new SelectableFactoryLoaderImpl<String, Destination>() {
+    private static SelectableFactoryLoader<String, Destination, DestinationFactory<Destination,String>> destinationFactorySelectableServiceLoader
+            = new SelectableFactoryLoaderImpl<String, Destination, DestinationFactory<Destination,String>>() {
     };
 
     private ClientHelper() {

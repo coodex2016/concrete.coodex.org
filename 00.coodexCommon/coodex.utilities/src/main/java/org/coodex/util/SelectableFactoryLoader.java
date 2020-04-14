@@ -16,7 +16,8 @@
 
 package org.coodex.util;
 
-public interface SelectableFactoryLoader<PARAM, PROD> extends SelectableServiceLoader<PARAM, SelectableFactory<PROD, PARAM>> {
+public interface SelectableFactoryLoader<PARAM, PROD, F extends SelectableFactory<PROD,PARAM>>
+        extends SelectableServiceLoader<PARAM, F> {
 
     PROD build(PARAM param);
 }

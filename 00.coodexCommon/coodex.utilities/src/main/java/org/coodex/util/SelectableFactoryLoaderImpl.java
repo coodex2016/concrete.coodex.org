@@ -16,14 +16,14 @@
 
 package org.coodex.util;
 
-public abstract class SelectableFactoryLoaderImpl<PARAM, PROD>
-        extends SelectableServiceLoaderImpl<PARAM, SelectableFactory<PROD, PARAM>>
-        implements SelectableFactoryLoader<PARAM, PROD> {
+public abstract class SelectableFactoryLoaderImpl<PARAM, PROD, F extends SelectableFactory<PROD, PARAM>>
+        extends SelectableServiceLoaderImpl<PARAM, F>
+        implements SelectableFactoryLoader<PARAM, PROD, F> {
 
     public SelectableFactoryLoaderImpl() {
     }
 
-    public SelectableFactoryLoaderImpl(SelectableFactory<PROD, PARAM> defaultService) {
+    public SelectableFactoryLoaderImpl(F defaultService) {
         super(defaultService);
     }
 
