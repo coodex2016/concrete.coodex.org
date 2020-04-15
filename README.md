@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2020-04-15
+
+- 0.4.1：SPI缺陷修复，影响部分:concrete-client
+
 ## 2020-03-08
 
 - 发布0.4.0，0.4.x分支仅用于缺陷修复，不再增加新能力
