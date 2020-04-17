@@ -22,6 +22,7 @@ import org.coodex.concrete.client.InstanceBuilder;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Map;
 
 import static org.coodex.concrete.ClientHelper.getInvoker;
 import static org.coodex.util.Common.cast;
@@ -39,8 +40,6 @@ public class JavaProxyInstanceBuilder implements InstanceBuilder {
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                         if (method.getDeclaringClass().equals(Object.class))
                             return method.invoke(this, args);
-
-
                         return getInvoker(destination, clazz).invoke(proxy, clazz, method, args);
                     }
                 }));

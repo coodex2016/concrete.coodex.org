@@ -18,6 +18,7 @@ package org.coodex.concrete.common;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
@@ -27,7 +28,7 @@ import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
  */
 public class SubjoinWrapper implements Subjoin {
 
-    private static Subjoin instance = new SubjoinWrapper();
+    private static final Subjoin instance = new SubjoinWrapper();
 
 
     public static Subjoin getInstance() {
@@ -104,6 +105,13 @@ public class SubjoinWrapper implements Subjoin {
     }
 
     public static class DefaultSubjoin extends AbstractSubjoin {
+        public DefaultSubjoin() {
+        }
+
+        public DefaultSubjoin(Map<String, String> map) {
+            super(map);
+        }
+
         @Override
         protected Collection<String> skipKeys() {
             return null;

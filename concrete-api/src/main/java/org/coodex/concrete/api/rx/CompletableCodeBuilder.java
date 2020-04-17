@@ -31,8 +31,4 @@ public class CompletableCodeBuilder implements RxCodeBuilder {
         return TYPE_NAME;
     }
 
-//    @Override
-//    public boolean accept(String param) {
-//        return TYPE_NAME.equals(param);
-//    }
 }

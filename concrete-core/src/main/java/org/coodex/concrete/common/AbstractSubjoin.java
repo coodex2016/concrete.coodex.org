@@ -23,8 +23,8 @@ import java.util.*;
 
 public abstract class AbstractSubjoin implements Subjoin {
 
-    private Map<String, List<String>> stringMap = new HashMap<>();
-    private Set<Warning> warnings = new HashSet<>();
+    private final Map<String, List<String>> stringMap = new HashMap<>();
+    private final Set<Warning> warnings = new HashSet<>();
 
     protected AbstractSubjoin() {
         this(null);

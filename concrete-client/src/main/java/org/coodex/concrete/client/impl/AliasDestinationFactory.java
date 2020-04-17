@@ -27,7 +27,7 @@ import java.util.Stack;
 public class AliasDestinationFactory extends AbstractDestinationFactory<Destination> {
 
     public static final String ALIAS_PROTOCOLS = "alias:";
-    private static ThreadLocal<Stack<String>> stackThreadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<Stack<String>> stackThreadLocal = new ThreadLocal<>();
 
     @Override
     public Destination build(String module) {

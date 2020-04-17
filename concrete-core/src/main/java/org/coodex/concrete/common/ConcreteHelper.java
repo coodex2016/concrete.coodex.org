@@ -83,7 +83,7 @@ public class ConcreteHelper {
 //        }
 //    });
 
-    private static SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
+    private static final SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
             = SingletonMap.<String, ScheduledExecutorService>builder()
             .function(new Function<String, ScheduledExecutorService>() {
                 @Override
@@ -100,7 +100,7 @@ public class ConcreteHelper {
                 }
             }).build();
 
-    private static SingletonMap<String, ExecutorService> executorServiceMap
+    private static final SingletonMap<String, ExecutorService> executorServiceMap
             = SingletonMap.<String, ExecutorService>builder()
             .function(new Function<String, ExecutorService>() {
 

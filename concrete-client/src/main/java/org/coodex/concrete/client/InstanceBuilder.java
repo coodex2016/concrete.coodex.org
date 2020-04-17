@@ -19,4 +19,5 @@ package org.coodex.concrete.client;
 public interface InstanceBuilder {
 
     <T> T build(Destination destination, Class<T> clazz);
+
 }

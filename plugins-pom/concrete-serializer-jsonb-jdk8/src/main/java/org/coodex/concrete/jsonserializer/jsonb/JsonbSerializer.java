@@ -29,7 +29,7 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 public class JsonbSerializer extends AbstractJsonSerializer {
 
-    private Singleton<Jsonb> jsonbSingleton = Singleton.with(() -> {
+    private final Singleton<Jsonb> jsonbSingleton = Singleton.with(() -> {
         String providerName = Config.get("jsonb.provider", getAppSet());
         return Common.isBlank(providerName) ? JsonbBuilder.create() : JsonbBuilder.newBuilder(providerName).build();
     });

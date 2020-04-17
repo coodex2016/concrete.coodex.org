@@ -18,33 +18,70 @@ package org.coodex.concrete;
 
 
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.IF;
+import org.coodex.util.Common;
 
-import static org.coodex.concrete.ClientHelper.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
+import java.util.Map;
+
+import static org.coodex.concrete.ClientHelper.getDestination;
+import static org.coodex.concrete.ClientHelper.getInstanceBuilder;
+import static org.coodex.concrete.client.ClientSideContext.SUBJOIN_CONTEXT;
 
 
 public class Client {
-
     public static <T> T getInstance(Class<T> concreteServiceClass) {
         return getInstance(concreteServiceClass, (String) null);
     }
 
     public static <T> T getInstance(Class<T> concreteServiceClass, Destination destination) {
-//        boolean sync = ConcreteHelper.isConcreteService(concreteServiceClass);
-//        IF.not(sync || isReactiveExtension(concreteServiceClass),
-//                concreteServiceClass + "is NOT ConcreteService.");
-//        destination.setAsync(!sync);
         return getInstanceBuilder().build(destination, concreteServiceClass);
     }
 
     public static <T> T getInstance(Class<T> concreteServiceClass, String module) {
-
         return getInstance(concreteServiceClass, getDestination(module));
-//        Destination destination = getDestination(module);
-//        destination.setAsync(!sync);
-//
-//        return getInstanceBuilder().build(destination, concreteServiceClass);
     }
+
+    public static <T> Builder<T> newBuilder(Class<T> concreteServiceClass) {
+        return new Builder<>(getInstance(concreteServiceClass), concreteServiceClass);
+    }
+
+    public static <T> Builder<T> newBuilder(Class<T> concreteServiceClass, Destination destination) {
+        return new Builder<>(getInstance(concreteServiceClass, destination), concreteServiceClass);
+    }
+
+    public static <T> Builder<T> newBuilder(Class<T> concreteServiceClass, String module) {
+        return new Builder<>(getInstance(concreteServiceClass, module), concreteServiceClass);
+    }
+
+    public static class Builder<T> {
+        private final T instance;
+        private final Class<T> concreteServiceClass;
+
+        private Builder(T instance, Class<T> concreteServiceClass) {
+            this.instance = instance;
+            this.concreteServiceClass = concreteServiceClass;
+        }
+
+        public T withSubjoin(Map<String, String> subjoin) {
+            if (subjoin != null) {
+                return Common.cast(Proxy.newProxyInstance(
+                        this.getClass().getClassLoader(),
+                        new Class<?>[]{concreteServiceClass},
+                        (proxy, method, args) -> SUBJOIN_CONTEXT.call(subjoin, () -> {
+                            try {
+                                return args == null || args.length == 0 ?
+                                        method.invoke(instance) :
+                                        method.invoke(instance, args);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                throw Common.rte(e);
+                            }
+                        }))
+                );
+            } else
+                return instance;
+        }
+    }
+
 
 }

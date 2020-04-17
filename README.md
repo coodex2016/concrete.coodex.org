@@ -32,6 +32,19 @@ public interface SomeService {
 
 [coodex-libraries](https://github.com/coodex2016/coodex-libraries)
 
+## 2020-04-17
+
+- concrete-client缺陷修复，LocalDestinationFactory的选择判定有误
+- `org.coodex.concrete.Client`提供`newBuilder`接口，可以传递附加信息，使用方法
+
+```java
+  Client.Builder<SomeService> someServiceBuilder = Client.newBuilder(SomeService.class);
+  // ......
+  Map<String, String> subjoin = new HashMap<>();
+  // 设置需要传递的附加信息
+  someServiceBuilder.withSubjoin(subjoin).someMethod();
+```
+
 ## 2020-04-13
 
 - coodex-utilities: 增加IDGenerator，分布式字符串ID生成器的Facade；增加UUID和SnowFlake的实现;

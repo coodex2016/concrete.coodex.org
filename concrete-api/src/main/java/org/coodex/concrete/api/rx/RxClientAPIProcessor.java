@@ -65,18 +65,10 @@ public class RxClientAPIProcessor extends AbstractProcessor {
             Double.class.getName()
     };
 
-    private static Set<Name> processedClasses = new HashSet<>();
+    private static final Set<Name> processedClasses = new HashSet<>();
 
-    //    private Singleton<AcceptableServiceLoader<String, RxCodeBuilder>> rxCodeBuilderLoaderSingleton =
-//            new Singleton<>(() -> new AcceptableServiceLoader<String, RxCodeBuilder>() {
-//            });
-//    private static Singleton<ServiceLoader<RxCodeBuilder>> serviceLoaderSingleton = new Singleton<>(new Singleton.Builder<ServiceLoader<RxCodeBuilder>>() {
-//        @Override
-//        public ServiceLoader<RxCodeBuilder> build() {
-//            return ServiceLoader.load(RxCodeBuilder.class);
-//        }
-//    });
-    private static SingletonMap<String, RxCodeBuilder> builderSingletonMap = SingletonMap.<String, RxCodeBuilder>builder()
+
+    private static final SingletonMap<String, RxCodeBuilder> builderSingletonMap = SingletonMap.<String, RxCodeBuilder>builder()
             .function(key -> {
                 try {
                     Class<?> clazz = Class.forName(key);
@@ -85,20 +77,7 @@ public class RxClientAPIProcessor extends AbstractProcessor {
                     return null;
                 }
             }).build();
-//    private static Class<?>[] mirrorClasses = new Class[]{
-//            ArrayType.class,
-//            DeclaredType.class,
-//            ErrorType.class,
-//            ExecutableType.class,
-//            IntersectionType.class,
-//            NoType.class,
-//            NullType.class,
-//            PrimitiveType.class,
-//            ReferenceType.class,
-//            TypeVariable.class,
-//            UnionType.class,
-//            WildcardType.class
-//    };
+
 
     private static String autoBox(PrimitiveType type) {
         return AUTO_BOXED_TYPES[Common.findInArray(type.toString(), PRIMITIVE_TYPES)];
@@ -147,33 +126,7 @@ public class RxClientAPIProcessor extends AbstractProcessor {
 
     private static RxCodeBuilder getRxCodeBuilder(String rxType) {
         return builderSingletonMap.get(rxType);
-//        final Set<RxCodeBuilder> rxCodeBuilders = new HashSet<>();
-//        serviceLoaderSingleton.get().forEach((builder) -> {
-//            if (builder.accept(rxType)) {
-//                rxCodeBuilders.add(builder);
-//            }
-//        });
-//        return rxCodeBuilders.size() > 0 ? rxCodeBuilders.iterator().next() : null;
     }
-
-//    private static String getNames(AnnotatedConstruct construct, Class<?>[] elementClasses) {
-//        StringBuilder builder = new StringBuilder();
-//        boolean blank = true;
-//        for (Class<?> e : elementClasses) {
-//            if (e.isAssignableFrom(construct.getClass())) {
-//                if (!blank) {
-//                    builder.append(", ");
-//                }
-//                builder.append(e.getSimpleName());
-//                blank = false;
-//            }
-//        }
-//        return builder.toString();
-//    }
-
-//    private static String getMirrorType(TypeMirror typeMirror) {
-//        return getNames(typeMirror, mirrorClasses);
-//    }
 
     private static Set<String> getBuilders() {
         Set<String> result = new HashSet<>();
@@ -218,10 +171,6 @@ public class RxClientAPIProcessor extends AbstractProcessor {
 
             PackageElement packageElement = elementsUtil.getPackageOf(serviceType);
 
-//            for (String rxType : serviceAnnotation.reactiveBuilder()) {
-//            String[] rxBuilders = serviceAnnotation.reactiveBuilder();
-//            for (int x = -1; x < rxBuilders.length; x++) {
-//                String rxType = x == -1 ? CompletableCodeBuilder.class.getName() : rxBuilders[x];
             for (String rxType : getBuilders()) {
                 RxCodeBuilder builder = getRxCodeBuilder(rxType);
                 if (builder == null) {
@@ -234,7 +183,7 @@ public class RxClientAPIProcessor extends AbstractProcessor {
                 // build type
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
                         "build " + rxType + " interface.");
-//                buildRxCode(serviceType, builder);
+
                 final StringBuilder codeBuilder = new StringBuilder();
                 String packageName = packageElement.isUnnamed() ? null : packageElement.toString();
 

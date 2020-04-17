@@ -65,6 +65,7 @@ public abstract class AbstractInvoker implements Invoker {
         this.destination = destination;
     }
 
+
     public abstract ServiceContext buildContext(/*final Class concreteClass, final Method method*/DefinitionContext context);
 
 
@@ -76,6 +77,5 @@ public abstract class AbstractInvoker implements Invoker {
     protected Destination getDestination() {
         return destination;
     }
-
 
 }

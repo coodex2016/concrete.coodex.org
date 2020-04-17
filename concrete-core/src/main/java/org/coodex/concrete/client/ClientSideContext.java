@@ -16,16 +16,19 @@
 
 package org.coodex.concrete.client;
 
+import org.coodex.closure.StackClosureContext;
 import org.coodex.concrete.common.*;
 
 import java.util.Locale;
+import java.util.Map;
 
 public abstract class ClientSideContext implements ServiceContext {
+    public static final StackClosureContext<Map<String, String>> SUBJOIN_CONTEXT = new StackClosureContext<>();
 
-    private String tokenId;
-    private Subjoin subjoin = new SubjoinWrapper.DefaultSubjoin();
-    private Locale locale;
-    private Destination destination;
+    private final String tokenId;
+    private final Locale locale;
+    private final Destination destination;
+    private Subjoin subjoin = new SubjoinWrapper.DefaultSubjoin(SUBJOIN_CONTEXT.get());
     private DefinitionContext definitionContext;
 
     public ClientSideContext(Destination destination, DefinitionContext definitionContext) {
@@ -69,7 +72,7 @@ public abstract class ClientSideContext implements ServiceContext {
         return locale;
     }
 
-    public void responseSubjoin(Subjoin subjoin){
+    public void responseSubjoin(Subjoin subjoin) {
         this.subjoin = subjoin;
     }
 }

@@ -40,6 +40,7 @@ import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
 
 public class ClientHelper {
 
+
     private static final Singleton<ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE_SINGLETON
             = Singleton.with(() -> ConcreteHelper.getScheduler("rx-client"));
     private static final SelectableServiceLoader<Class<?>, CompletableFutureBridge> BRIDGE_LOADER
@@ -61,7 +62,6 @@ public class ClientHelper {
     private static final SelectableServiceLoader<String, SSLContextFactory> sslContextFactoryAcceptableServiceLoader =
             new LazySelectableServiceLoader<String, SSLContextFactory>() {
             };
-
     //            = new Singleton<>(() -> new SelectableServiceLoader<String, SSLContextFactory>() {
 //    });
     private static final ServiceLoader<ConcreteInterceptor> interceptorServiceLoader =

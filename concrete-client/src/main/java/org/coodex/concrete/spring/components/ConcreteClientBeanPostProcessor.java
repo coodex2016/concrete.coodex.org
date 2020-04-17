@@ -56,14 +56,11 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
     private final static Logger log = LoggerFactory.getLogger(ConcreteClientBeanPostProcessor.class);
 
     private final static String GET_INSTANCE = "__getConcreteServiceInstance";
-
+    private final Set<String> registered = new HashSet<>();
+    private final Map<String, Integer> moduleMap = new HashMap<>();
+    private final AtomicInteger atomicInteger = new AtomicInteger(1);
     @Inject
     private DefaultListableBeanFactory defaultListableBeanFactory;
-
-
-    private Set<String> registered = new HashSet<>();
-    private Map<String, Integer> moduleMap = new HashMap<>();
-    private AtomicInteger atomicInteger = new AtomicInteger(1);
 
     private void scan(java.lang.annotation.Annotation[][] annotations, Class<?>[] parameters) {
         for (int i = 0; i < annotations.length; i++) {
