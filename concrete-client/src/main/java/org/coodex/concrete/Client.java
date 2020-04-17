@@ -23,6 +23,7 @@ import org.coodex.util.Common;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static org.coodex.concrete.ClientHelper.getDestination;
 import static org.coodex.concrete.ClientHelper.getInstanceBuilder;
@@ -65,21 +66,33 @@ public class Client {
 
         public T withSubjoin(Map<String, String> subjoin) {
             if (subjoin != null) {
-                return Common.cast(Proxy.newProxyInstance(
-                        this.getClass().getClassLoader(),
-                        new Class<?>[]{concreteServiceClass},
-                        (proxy, method, args) -> SUBJOIN_CONTEXT.call(subjoin, () -> {
-                            try {
-                                return args == null || args.length == 0 ?
-                                        method.invoke(instance) :
-                                        method.invoke(instance, args);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                throw Common.rte(e);
-                            }
-                        }))
-                );
+                return wrapInstance(() -> subjoin);
             } else
                 return instance;
+        }
+
+        private T wrapInstance(Supplier<Map<String, String>> subjoinSupplier) {
+            return Common.cast(Proxy.newProxyInstance(
+                    this.getClass().getClassLoader(),
+                    new Class<?>[]{concreteServiceClass},
+                    (proxy, method, args) -> SUBJOIN_CONTEXT.call(subjoinSupplier.get(), () -> {
+                        try {
+                            return args == null || args.length == 0 ?
+                                    method.invoke(instance) :
+                                    method.invoke(instance, args);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            throw Common.rte(e);
+                        }
+                    }))
+            );
+        }
+
+        public T withSubjoin(Supplier<Map<String, String>> subjoinSupplier) {
+            if (subjoinSupplier != null) {
+                return wrapInstance(subjoinSupplier);
+            } else {
+                return instance;
+            }
         }
     }
 
