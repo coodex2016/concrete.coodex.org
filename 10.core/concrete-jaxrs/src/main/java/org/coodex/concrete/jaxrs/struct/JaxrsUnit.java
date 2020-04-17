@@ -171,7 +171,7 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam, JaxrsModule> {
     }
 
     private String getUnitDeclaredName() {
-        List<Class> inheritedChain = ConcreteHelper.inheritedChain(
+        List<Class<?>> inheritedChain = ConcreteHelper.inheritedChain(
                 getMethod().getDeclaringClass(), getDeclaringModule().getInterfaceClass());
         if (inheritedChain == null)
             inheritedChain = Collections.emptyList();

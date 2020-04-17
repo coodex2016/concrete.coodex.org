@@ -27,7 +27,7 @@ import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
 
 public abstract class AbstractDestinationFactory<T extends Destination> implements DestinationFactory<T, String> {
 
-    private static SingletonMap<String, String> moduleLocationMap = new StringKeySingletonMap<>(
+    private static final SingletonMap<String, String> moduleLocationMap = new StringKeySingletonMap<>(
             module -> ConcreteHelper.getString(TAG_CLIENT, module, KEY_LOCATION));
 
     protected String getLocation(String module) {

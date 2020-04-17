@@ -18,6 +18,7 @@ package org.coodex.concrete.client.impl;
 
 import org.coodex.concrete.client.AbstractDestinationFactory;
 import org.coodex.concrete.client.Destination;
+import org.coodex.util.Common;
 
 public class LocalDestinationFactory extends AbstractDestinationFactory<LocalDestination> {
 
@@ -30,6 +31,7 @@ public class LocalDestinationFactory extends AbstractDestinationFactory<LocalDes
 
     @Override
     public boolean accept(String param) {
-        return DESC_LOCAL.equalsIgnoreCase(param);
+        String location = getLocation(param);
+        return Common.isBlank(location) || DESC_LOCAL.equalsIgnoreCase(location);
     }
 }

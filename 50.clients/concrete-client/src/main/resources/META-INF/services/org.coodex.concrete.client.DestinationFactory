@@ -15,4 +15,4 @@
 #
 
 org.coodex.concrete.client.impl.LocalDestinationFactory
-org.coodex.concrete.client.impl.AliasDesitinationFactory
+org.coodex.concrete.client.impl.AliasDestinationFactory

@@ -23,16 +23,16 @@ import org.coodex.util.Common;
 
 import java.util.Stack;
 
-public class AliasDesitinationFactory extends AbstractDestinationFactory<Destination> {
+public class AliasDestinationFactory extends AbstractDestinationFactory<Destination> {
 
     public static final String ALIAS_PROTOCOLS = "alias:";
-    private static ThreadLocal<Stack<String>> stackThreadLocal = new ThreadLocal<Stack<String>>();
+    private static final ThreadLocal<Stack<String>> stackThreadLocal = new ThreadLocal<>();
 
     @Override
     public Destination build(String module) {
         Stack<String> stack = stackThreadLocal.get();
         if (stack == null) {
-            stack = new Stack<String>();
+            stack = new Stack<>();
             stackThreadLocal.set(stack);
         }
         if (stack.contains(module)) {
