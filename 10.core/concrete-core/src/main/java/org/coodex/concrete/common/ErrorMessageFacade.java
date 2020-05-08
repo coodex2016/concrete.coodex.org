@@ -109,7 +109,6 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
             if(getServiceContext() instanceof ServerSideContext) {
                 log.debug("errorCode [{}] has not register.", code);
             }
-//            return null;
         } else {
 
             errorMsg = f.getAnnotation(ErrorMsg.class);
@@ -120,10 +119,13 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
         AbstractErrorCodes.Namespace namespace = f == null ? null : f.getDeclaringClass().getAnnotation(AbstractErrorCodes.Namespace.class);
 
         String errorMessageNamespace = namespace == null ? "message" : namespace.value();
-        errorMessageNamespace = Common.isBlank(errorMessageNamespace) ? f.getDeclaringClass().getName() : errorMessageNamespace;
+        errorMessageNamespace = Common.isBlank(errorMessageNamespace) ?
+                f.getDeclaringClass().getName() :
+                errorMessageNamespace;
 
         String msgTemp = (errorMsg == null || Common.isBlank(errorMsg.value().trim())) ?
-                "{" + (formatter.getNamespace() == null ? "" : (formatter.getNamespace() + ".")) + errorMessageNamespace + "." + code + "}" : errorMsg.value();
+                "{" + (formatter.getNamespace() == null ? "" : (formatter.getNamespace() + ".")) + errorMessageNamespace + "." + code + "}" :
+                errorMsg.value();
 
 //        String pattern = msgTemp;
 //        if (msgTemp.startsWith("{") && msgTemp.endsWith("}")) {

@@ -25,6 +25,8 @@ ftl:
     1101: "${o1} overdue."
     1102: "${o1} will expire on ${o2}."
     1103: "not include this feature."
+    1200: "response visitor not exist：${o1}"
+    1201: "service id not exist: ${o1}"
     1300: "Deprecated: ${o1}"
     99998: "Client Error."
     99999: "UNKNOWN ERROR: ${o1}."

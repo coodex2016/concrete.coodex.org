@@ -26,6 +26,10 @@ public interface SomeService {
 
 看[书](https://concrete.coodex.org)，多练
 
+## 2020-05-06
+
+- 缺陷修复：concrete-formatter-freemarker中，消息格式化的错误
+
 ## 2020-04-17
 
 - 0.4.2: concrete-client缺陷修复，LocalDestinationFactory的选择判定有误

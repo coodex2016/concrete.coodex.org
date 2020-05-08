@@ -24,6 +24,8 @@ message:
   1101: "{0} overdue."
   1102: "{0} will expire on {1}."
   1103: "not include this feature."
+  1200: "response visitor not exist：{0}"
+  1201: "service id not exist: {0}"
   1300: "Deprecated: {0}"
   99998: "Client Error."
   99999: "UNKNOWN ERROR: {0}."

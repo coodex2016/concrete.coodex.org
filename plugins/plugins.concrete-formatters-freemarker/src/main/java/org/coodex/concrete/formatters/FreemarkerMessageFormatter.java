@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.formatters;
 
-import org.coodex.concrete.common.LogFormatter;
 import org.coodex.concrete.common.MessageFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +46,7 @@ public class FreemarkerMessageFormatter extends AbstractFreemarkerFormatter impl
             values.put("o" + i, objects[i - 1]);
         }
         try {
-            return format(pattern, values);
+            return super.formatMsg(pattern, values);
         } catch (Throwable th) {
             log.warn("illegal argument :{}. {}", pattern, th.getLocalizedMessage());
             return pattern;
