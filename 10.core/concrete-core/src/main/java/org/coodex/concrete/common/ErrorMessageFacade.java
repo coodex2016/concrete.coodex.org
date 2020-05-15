@@ -135,7 +135,7 @@ public class ErrorMessageFacade extends AbstractMessageFacade {
 //        }
         String pattern = I18N.translate(msgTemp);
 
-        return (pattern != null) ? (format ? formatter.format(pattern, objects) : pattern) : null;
+        return (pattern != null) ? (format ? formatter.format(pattern, actualObjects(objects)) : pattern) : null;
     }
 
     private static Object[] actualObjects(Object[] objects) {
