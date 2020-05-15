@@ -16,12 +16,16 @@
 
 package org.coodex.concrete.common;
 
+import org.coodex.concrete.api.ErrorCode;
+
 /**
  * Created by davidoff shen on 2017-04-28.
  */
-public class AccountsErrorCodes extends AbstractErrorCodes {
+@ErrorCode
+public class AccountsErrorCodes /*extends AbstractErrorCodes*/ {
 
     protected static final int ACCOUNT_BASE = 10000;
+
     public static final int NONE_THIS_ACCOUNT = ACCOUNT_BASE + 1;
     public static final int LOGIN_FAILED = ACCOUNT_BASE + 2;
     public static final int NONE_THIS_CREDENTIAL = ACCOUNT_BASE + 3;

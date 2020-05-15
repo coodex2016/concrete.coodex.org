@@ -19,8 +19,8 @@ package org.coodex.concrete.apitools;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class API {
     private static final ServiceLoader<ConcreteAPIRender> RENDERS =
-            new ServiceLoaderImpl<ConcreteAPIRender>() {
+            new LazyServiceLoader<ConcreteAPIRender>() {
             };
     private static final String TAG_API_GENERATOR = "api_gen";
 
@@ -63,6 +63,7 @@ public class API {
         if (RENDERS.getAll().size() == 0)
             throw new RuntimeException("NONE render found.");
         for (ConcreteAPIRender render : RENDERS.getAll().values()) {
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (render) {
                 if (render.isAccept(desc)) {
                     render.setRoot(path);

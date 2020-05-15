@@ -30,16 +30,12 @@ import java.lang.annotation.*;
 public @interface Description {
 
     /**
-     * 描述对象供文档化的名称
-     *
-     * @return
+     * @return 描述对象供文档化的名称
      */
     String name();
 
     /**
-     * 描述对象供文档化的详细说明<s>，如果以".MD"结尾，则使用markdown文件</s>
-     *
-     * @return
+     * @return 描述对象供文档化的详细说明<s>，如果以".MD"结尾，则使用markdown文件</s>
      */
     String description() default "";
 }

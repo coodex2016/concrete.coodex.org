@@ -19,9 +19,9 @@ package org.coodex.concrete.core.token.sharedcache;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.config.Config;
+import org.coodex.id.IDGenerator;
 import org.coodex.sharedcache.SharedCacheClient;
 import org.coodex.sharedcache.SharedCacheClientManager;
-import org.coodex.util.Common;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.concrete.common.ConcreteHelper.getTokenMaxIdleInMinute;
@@ -56,6 +56,6 @@ public class SharedCacheTokenManager implements TokenManager {
 
     @Override
     public Token newToken() {
-        return $getToken(Common.getUUIDStr());
+        return $getToken(IDGenerator.newId());
     }
 }

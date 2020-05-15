@@ -16,13 +16,13 @@
 
 package org.coodex.concrete.common;
 
-import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
  * Created by davidoff shen on 2016-08-29.
  */
+@SuppressWarnings("unused")
 public class IF {
 
     /**
@@ -129,15 +129,18 @@ public class IF {
 //        return isNull(o, ConcreteHelper.getException(new RuntimeException(message)));
     }
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public static <T> T isNull(Optional<T> o, int code, Object... objects) throws ConcreteException {
         return o.orElseThrow(() -> new ConcreteException(code, objects));
 //        return isNull(o, new ConcreteException(code, objects));
     }
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public static <T> T isNull(Optional<T> o, ConcreteException exp) throws ConcreteException {
         return o.orElseThrow(() -> exp);
     }
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public static <T> T isNull(Optional<T> o, String message) throws ConcreteException {
         return o.orElseThrow(() -> ConcreteHelper.getException(new RuntimeException(message)));
 //        return isNull(o, ConcreteHelper.getException(new RuntimeException(message)));
@@ -153,15 +156,15 @@ public class IF {
      */
     public static void notNull(Object o, int code, Object... objects) throws ConcreteException {
 //        notNull(o, new ConcreteException(code, objects));
-        is((o instanceof Supplier ? ((Supplier) o).get() : o) != null, code, objects);
+        is((o instanceof Supplier ? ((Supplier<?>) o).get() : o) != null, code, objects);
     }
 
     public static void notNull(Object o, ConcreteException ex) throws ConcreteException {
-        is((o instanceof Supplier ? ((Supplier) o).get() : o) != null, ex);
+        is((o instanceof Supplier ? ((Supplier<?>) o).get() : o) != null, ex);
     }
 
     public static void notNull(Object o, String message) throws ConcreteException {
-        is((o instanceof Supplier ? ((Supplier) o).get() : o) != null, message);
+        is((o instanceof Supplier ? ((Supplier<?>) o).get() : o) != null, message);
     }
 
 }

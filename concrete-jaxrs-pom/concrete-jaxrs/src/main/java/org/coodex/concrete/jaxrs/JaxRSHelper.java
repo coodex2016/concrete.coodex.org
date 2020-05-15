@@ -22,10 +22,11 @@ import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
-import org.coodex.util.TypeHelper;
 
 import java.lang.reflect.Method;
 import java.util.StringTokenizer;
+
+import static org.coodex.concrete.common.ConcreteHelper.isPrimitive;
 
 
 /**
@@ -190,7 +191,7 @@ public class JaxRSHelper {
         JaxrsParam toSubmit = null;
         for (int i = 0; i < unit.getParameters().length; i++) {
             JaxrsParam param = unit.getParameters()[i];
-            if (!TypeHelper.isPrimitive(param.getType()) || JaxRSHelper.postPrimitive(param)) {
+            if (!isPrimitive(param.getType()) || JaxRSHelper.postPrimitive(param)) {
                 toSubmit = param;
                 break;
             }

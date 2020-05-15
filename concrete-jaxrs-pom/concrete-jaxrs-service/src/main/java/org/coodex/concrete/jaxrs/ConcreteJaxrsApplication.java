@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.common.AbstractErrorCodes;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.ErrorMessageFacade;
@@ -197,10 +196,9 @@ public abstract class ConcreteJaxrsApplication
     }
 
     private void registerClass(Class<?> clz) {
+        ErrorMessageFacade.register(clz);
         if (ConcreteHelper.isConcreteService(clz)) {
             registerConcreteService(clz);
-        } else if (AbstractErrorCodes.class.isAssignableFrom(clz)) {
-            ErrorMessageFacade.register(cast(clz));
         } else {
             if (ConcreteExceptionMapper.class.isAssignableFrom(clz)) {
                 exceptionMapperRegistered = true;

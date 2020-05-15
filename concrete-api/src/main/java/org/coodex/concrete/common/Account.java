@@ -25,23 +25,17 @@ import java.util.Set;
  */
 public interface Account<ID extends Serializable> {
     /**
-     * 帐号ID
-     *
-     * @return
+     * @return 帐号ID
      */
     ID getId();
 
     /**
-     * 帐号所拥有的角色
-     *
-     * @return
+     * @return 帐号所拥有的角色
      */
     Set<String> getRoles();
 
     /**
-     * 是否有效
-     *
-     * @return
+     * @return 是否有效
      */
     boolean isValid();
 

@@ -34,7 +34,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import static org.coodex.concrete.accounts.AccountsCommon.getTenant;
-import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
 import static org.coodex.concrete.common.OrganizationErrorCodes.PERSON_NOT_EXISTS;
 import static org.coodex.concrete.common.OrganizationErrorCodes.POSITION_NOT_EXISTS;
 
@@ -65,7 +64,7 @@ public abstract class AbstractPersonManagementServiceImpl
         E personEntity = personCopier.copyA2B(person);
         personEntity.setPositions(getPositionsWithPermissionCheck(positions));
         person = personCopier.copyB2A(personAccountRepo.save(personEntity), person);
-        putLoggingData("new", person);
+//        putLoggingData("new", person);
         return new StrID<>(personEntity.getId(), person);
     }
 
@@ -73,7 +72,7 @@ public abstract class AbstractPersonManagementServiceImpl
         Set<J> positionEntities = new HashSet<>();
         for (String positionId : positions) {
             J positionEntity = getPositionRepo().findById(positionId)
-                    .orElseThrow(()->new ConcreteException( POSITION_NOT_EXISTS));
+                    .orElseThrow(() -> new ConcreteException(POSITION_NOT_EXISTS));
             checkManagementPermission(positionEntity.getBelong());
             positionEntities.add(positionEntity);
         }
@@ -98,9 +97,10 @@ public abstract class AbstractPersonManagementServiceImpl
         if (!Objects.equals(person.getEmail(), personEntity.getEmail()) && person.getEmail() != null) {
             IF.is(personAccountRepo.countByEmailAndTenant(person.getEmail(), getTenant()) != 0, OrganizationErrorCodes.EMAIL_EXISTS);
         }
-        E old = deepCopy(personEntity);
-        putLoggingData("old", deepCopy(old));
-        putLoggingData("new", personAccountRepo.save(personCopier.copyA2B(person, personEntity)));
+//        E old = deepCopy(personEntity);
+        personAccountRepo.save(personCopier.copyA2B(person, personEntity));
+//        putLoggingData("old", deepCopy(old));
+//        putLoggingData("new", personAccountRepo.save(personCopier.copyA2B(person, personEntity)));
     }
 
     protected E getPersonEntityWithPermissionCheck(String id) {
@@ -115,9 +115,10 @@ public abstract class AbstractPersonManagementServiceImpl
     public void updatePositions(String id, String[] positions) {
 
         E personEntity = getPersonEntityWithPermissionCheck(id);
-        putLoggingData("old", deepCopy(personEntity));
+//        putLoggingData("old", deepCopy(personEntity));
         personEntity.setPositions(getPositionsWithPermissionCheck(positions));
-        putLoggingData("new", personAccountRepo.save(personEntity));
+        personAccountRepo.save(personEntity);
+//        putLoggingData("new", personAccountRepo.save(personEntity));
     }
 
     @Override
@@ -128,10 +129,10 @@ public abstract class AbstractPersonManagementServiceImpl
     @Override
     public void delete(String id) {
         E personEntity = getPersonEntityWithPermissionCheck(id);
-        E old = deepCopy(personEntity);
+//        E old = deepCopy(personEntity);
         personEntity.setPositions(null);
         personAccountRepo.delete(personAccountRepo.save(personEntity));
-        putLoggingData("deleted", old);
+//        putLoggingData("deleted", old);
     }
 
     @Override

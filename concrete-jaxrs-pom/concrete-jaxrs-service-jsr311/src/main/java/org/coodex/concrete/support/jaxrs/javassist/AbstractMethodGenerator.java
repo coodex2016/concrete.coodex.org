@@ -29,14 +29,12 @@ import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.util.Common;
-import org.coodex.util.TypeHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.PathParam;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.coodex.concrete.common.ConcreteHelper.isPrimitive;
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
 import static org.coodex.concrete.support.jaxrs.javassist.CGContext.CLASS_POOL;
 
@@ -322,7 +320,7 @@ public abstract class AbstractMethodGenerator {
     }
 
     private String box(Class<?> c, String param) {
-        int i = Common.findInArray(c, PRIMITIVE_CLASSES);
+        int i = Common.indexOf(PRIMITIVE_CLASSES, c);
         if (i >= 0)
             return PRIMITIVE_BOX_CLASSES[i].getName() + ".valueOf(" + param + ")";
         else
@@ -363,7 +361,7 @@ public abstract class AbstractMethodGenerator {
         return pathParam1 == null ?
                 /* ((CGContext.isPrimitive(parameter.getType()) && !JaxRSHelper.isBigString(parameter)) ?
                         parameter.getName() : null) */
-                ((TypeHelper.isPrimitive(parameter.getType()) && !JaxRSHelper.postPrimitive(parameter)) ? parameter.getName() : null) :
+                ((isPrimitive(parameter.getType()) && !JaxRSHelper.postPrimitive(parameter)) ? parameter.getName() : null) :
                 pathParam1.value();
     }
 

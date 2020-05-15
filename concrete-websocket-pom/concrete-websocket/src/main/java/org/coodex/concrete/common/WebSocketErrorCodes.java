@@ -16,7 +16,12 @@
 
 package org.coodex.concrete.common;
 
-public class WebSocketErrorCodes extends AbstractErrorCodes {
+import org.coodex.concrete.api.ErrorCode;
+
+import static org.coodex.concrete.common.ErrorCodeConstants.WEB_SOCKET_ERROR_CODE;
+
+@ErrorCode
+public class WebSocketErrorCodes /*extends AbstractErrorCodes*/ {
 
     protected final static int LOWER_BOUND = WEB_SOCKET_ERROR_CODE;
 

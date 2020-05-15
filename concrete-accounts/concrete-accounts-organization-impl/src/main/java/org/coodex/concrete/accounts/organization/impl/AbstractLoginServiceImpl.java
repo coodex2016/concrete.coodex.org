@@ -27,6 +27,7 @@ import org.coodex.concrete.accounts.organization.repositories.AbstractPersonAcco
 import org.coodex.concrete.accounts.organization.repositories.LoginCacheEntryRepo;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.token.TokenWrapper;
+import org.coodex.id.IDGenerator;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
 
@@ -37,7 +38,6 @@ import static org.coodex.concrete.accounts.AccountConstants.TYPE_ORGANIZATION;
 import static org.coodex.concrete.accounts.AccountsCommon.checkPassword;
 import static org.coodex.concrete.accounts.AccountsCommon.isCredible;
 import static org.coodex.concrete.common.AccountsErrorCodes.*;
-import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
 
 /**
  * Created by davidoff shen on 2017-05-18.
@@ -80,7 +80,7 @@ public abstract class AbstractLoginServiceImpl
                     abstractOrganizationAccountFactory.getAccountByID(
                             new ClassifiableAccountID(TYPE_ORGANIZATION, personEntity.getId())));
 
-            putLoggingData("loginUser", personEntity);
+//            putLoggingData("loginUser", personEntity);
             return updateLoginCacheEntry(personEntity);
         }
     }
@@ -122,7 +122,7 @@ public abstract class AbstractLoginServiceImpl
      * @return newCredential
      */
     protected String newCredential() {
-        return Common.getUUIDStr();
+        return IDGenerator.newId();
     }
 
     /**
@@ -229,7 +229,7 @@ public abstract class AbstractLoginServiceImpl
                 abstractOrganizationAccountFactory.getAccountByID(
                         new ClassifiableAccountID(TYPE_ORGANIZATION, personEntity.getId())));
         token.setAccountCredible(false);
-        putLoggingData("loginUser", personEntity);
+//        putLoggingData("loginUser", personEntity);
     }
 
     @Override

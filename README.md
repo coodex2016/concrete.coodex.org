@@ -10,7 +10,6 @@
 
 > Concrete是一种基于Java的服务定义规范
 
-
 ```java
 @ConcreteService
 public interface SomeService {
@@ -20,6 +19,7 @@ public interface SomeService {
     
 }
 ```
+
 ## 干哈滴？
 
 > 致力于让研发者将精力尽可能多的投入到需求分析、业务逻辑和用户体验上
@@ -31,6 +31,23 @@ public interface SomeService {
 ## 其他项目
 
 [coodex-libraries](https://github.com/coodex2016/coodex-libraries)
+
+## 2020-05-15
+
+- 废弃OperationLog机制，对于开发者并没有足够的优势
+
+## 2020-05-13
+
+- 根据`coodex-libraries`的更新，重构ErrorCodes部分，调整如下：
+  - 使用`org.coodex.util.Renderer`渲染错误信息
+  - 增加`@ErrorCode`注解，用来声明一个class是用来进行错误码定义的，其value可以指定message template在I18N下的命名空间，关于在此类中定义的错误码：
+    - 错误码必须是public的
+    - 错误码必须是final的
+    - 错误码必须是int类型
+  - 增加`@ErrorCode.Key`注解，用来定义错误码I18N下的键
+  - 增加`@ErrorCode.Template`注解，用来指定明确的template，如此值非空，则直接使用此模板
+  - 废弃`org.coodex.concrete.common.AbstractErrorCodes`
+  - 删除`@ErrorMsg`
 
 ## 2020-04-17
 

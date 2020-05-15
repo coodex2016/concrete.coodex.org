@@ -130,7 +130,7 @@ public class CGContext {
 //                break;
 //            }
 //        }
-        int index = Common.findInArray(httpMethod, HTTP_METHODS);
+        int index = Common.indexOf(HTTP_METHODS, httpMethod);
         if (index >= 0)
             return new Annotation(JAXRS_METHOD_CLASS[index].getName(), constPool);
         else

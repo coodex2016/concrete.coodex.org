@@ -26,8 +26,6 @@ import org.coodex.concrete.accounts.organization.reference.data.entities.Departm
 import org.coodex.concrete.accounts.organization.reference.data.entities.InstitutionEntity;
 import org.coodex.concrete.accounts.organization.reference.data.entities.PersonEntity;
 import org.coodex.concrete.accounts.organization.reference.data.entities.PositionEntity;
-import org.coodex.concrete.api.LogAtomic;
-import org.coodex.concrete.api.OperationLog;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -37,8 +35,8 @@ import javax.transaction.Transactional;
  */
 @Named
 @Transactional
-@LogAtomic
-@OperationLog
+//@LogAtomic
+//@OperationLog
 public class InformationServiceImpl extends AbstractInformationServiceImpl
         <Institution, Department, Position, Person,
                 InstitutionEntity, DepartmentEntity, PositionEntity, PersonEntity>

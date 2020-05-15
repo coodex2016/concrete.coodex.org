@@ -21,6 +21,7 @@ import java.util.Map;
 /**
  * Created by davidoff shen on 2017-05-08.
  */
+@Deprecated
 public interface LogFormatter {
 
     String format(String pattern, Map<String, Object> values);

@@ -18,8 +18,8 @@ package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.common.IronPen;
 import org.coodex.concrete.common.IronPenFactory;
-import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
+import org.coodex.util.UUIDHelper;
 
 /**
  * Created by davidoff shen on 2017-04-21.
@@ -27,7 +27,7 @@ import org.coodex.util.SingletonMap;
 public class HmacPenFactory implements IronPenFactory {
     private static final SingletonMap<String, HmacPen> HMAC_PEN_SINGLETON_MAP = SingletonMap.<String, HmacPen>builder()
             .function(HmacPen::new)
-            .nullKey("null_" + Common.getUUIDStr()).build();
+            .nullKey("null_" + UUIDHelper.getUUIDString()).build();
 
     @Override
     public IronPen getIronPen(String paperName) {

@@ -36,7 +36,7 @@
         <module>concrete-courier-jms-activemq</module>
         <module>concrete-courier-rabbitmq</module>
 
-        <module>concrete-formatters-freemarker</module>
+<!--        <module>concrete-formatters-freemarker</module>-->
 
         <module>concrete-rx-observable</module>
 

@@ -17,11 +17,14 @@
 package org.coodex.concrete.common;
 
 
+import org.coodex.concrete.api.ErrorCode;
+
 import static org.coodex.concrete.common.AccountsErrorCodes.ACCOUNT_BASE;
 
 /**
  * Created by davidoff shen on 2017-05-03.
  */
-public class GlobalAccountsErrorCodes extends AbstractErrorCodes {
+@ErrorCode
+public class GlobalAccountsErrorCodes /*extends AbstractErrorCodes*/ {
     protected static final int BASE = ACCOUNT_BASE;
 }

@@ -22,7 +22,7 @@ import freemarker.template.TemplateException;
 import org.coodex.util.Common;
 
 import java.io.*;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,8 +63,8 @@ public abstract class AbstractRender implements ConcreteAPIRender {
     public boolean isAccept(String desc) {
         this.desc = desc;
         String renderName = getRenderName();
-        renderName = renderName == null ? null : renderName.toLowerCase();
-        return desc != null && desc.toLowerCase().startsWith(renderName);
+        if (renderName == null) return false;
+        return desc != null && desc.toLowerCase().startsWith(renderName.toLowerCase());
     }
 
     private Template getTemplate(String templateName) throws IOException {
@@ -76,7 +76,7 @@ public abstract class AbstractRender implements ConcreteAPIRender {
     }
 
     public void writeTo(String filePath, String templateName, String pojoKey, Object value, Object toolKit) throws IOException {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put(pojoKey, value);
         if (toolKit != null) {
             map.put("tool", toolKit);
@@ -85,11 +85,11 @@ public abstract class AbstractRender implements ConcreteAPIRender {
     }
 
     protected Map<String, Object> merge(Map<String, Object> map) {
-        if (ext == null || ext.size() ==0) {
+        if (ext == null || ext.size() == 0) {
             return map;
         } else {
-            Map<String,Object> result = new HashMap<String, Object>();
-            if(map != null){
+            Map<String, Object> result = new HashMap<>();
+            if (map != null) {
                 result.putAll(map);
             }
             result.putAll(ext);
@@ -99,17 +99,15 @@ public abstract class AbstractRender implements ConcreteAPIRender {
 
     public void writeTo(String filePath, String templateName, Map<String, Object> map) throws IOException {
         Template template = getTemplate(templateName);
-        File target = Common.getNewFile(rootToWrite + FS + filePath);
-        OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(target), Charset.forName("UTF-8"));
-        try {
+        File target = Common.newFile(rootToWrite + FS + filePath);
+        try (OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)) {
             template.process(merge(map), outputStream);
         } catch (TemplateException e) {
             throw new IOException(e.getLocalizedMessage(), e);
-        } finally {
-            outputStream.close();
         }
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean exists(String file) {
         return new File(rootToWrite + FS + file).exists();
     }
@@ -121,12 +119,9 @@ public abstract class AbstractRender implements ConcreteAPIRender {
             throw new IOException("not found: " + getTemplatePath() + resourceName);
         }
         try {
-            File target = Common.getNewFile(rootToWrite + FS + path);
-            OutputStream targetStream = new FileOutputStream(target);
-            try {
+            File target = Common.newFile(rootToWrite + FS + path);
+            try (OutputStream targetStream = new FileOutputStream(target)) {
                 Common.copyStream(inputStream, targetStream);
-            } finally {
-                targetStream.close();
             }
         } finally {
             inputStream.close();

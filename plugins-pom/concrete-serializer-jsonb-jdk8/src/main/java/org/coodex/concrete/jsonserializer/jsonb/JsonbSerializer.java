@@ -43,7 +43,7 @@ public class JsonbSerializer extends AbstractJsonSerializer {
         try {
             return String.class.equals(t) ? Common.cast(json) : getInstance().fromJson(json, t);
         } catch (Throwable th) {
-            throw th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th);
+            throw Common.rte(th);
         }
     }
 

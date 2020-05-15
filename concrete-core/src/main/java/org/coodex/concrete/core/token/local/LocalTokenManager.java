@@ -19,7 +19,7 @@ package org.coodex.concrete.core.token.local;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenManager;
-import org.coodex.util.Common;
+import org.coodex.id.IDGenerator;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +39,7 @@ import static org.coodex.concrete.common.ConcreteHelper.getTokenMaxIdleInMinute;
  */
 public class LocalTokenManager implements TokenManager {
 
-    static final Map<String, TokenWithFuture> TOKENS = new ConcurrentHashMap<String, TokenWithFuture>();
+    static final Map<String, TokenWithFuture> TOKENS = new ConcurrentHashMap<>();
 
 //    private static final ScheduledExecutorService EXECUTOR = ExecutorsHelper.newSingleThreadScheduledExecutor();
 
@@ -71,7 +71,7 @@ public class LocalTokenManager implements TokenManager {
 
     @Override
     public Token newToken() {
-        return buildToken(Common.getUUIDStr(), true);
+        return buildToken(IDGenerator.newId(), true);
     }
 
     private static class TokenWithFuture {
@@ -92,12 +92,7 @@ public class LocalTokenManager implements TokenManager {
                 maxIdleTime = DEFAULT_MAX_IDLE * 60 * 1000;
             }
 
-            Runnable future = new Runnable() {
-                @Override
-                public void run() {
-                    token.invalidate();
-                }
-            };
+            Runnable future = () -> token.invalidate();
 
             ScheduledExecutorService scheduler = ConcreteHelper.getScheduler("localTokenManager");
 

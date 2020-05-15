@@ -59,7 +59,7 @@ public class ConcreteSpringConfiguration {
             put("rbac", RBACInterceptor.class);
             put("limiting", LimitingInterceptor.class);
             put("signature", SignatureInterceptor.class);
-            put("log", OperationLogInterceptor.class);
+//            put("log", OperationLogInterceptor.class);
             put("timing", ServiceTimingInterceptor.class);
             put("beanValidation", BeanValidationInterceptor.class);
         }};

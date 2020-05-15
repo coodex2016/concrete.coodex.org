@@ -16,18 +16,18 @@
 
 package org.coodex.concrete.common;
 
+import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
 
 /**
  * Created by davidoff shen on 2017-05-25.
  */
 public class TenantBuilderWrapper implements TenantBuilder {
 
-    private static final TenantBuilder defaultTenantBuilder = () -> null;
+//    private static final TenantBuilder defaultTenantBuilder = () -> null;
 
     private static final ServiceLoader<TenantBuilder> tenantBuilderConcreteServiceLoader
-            = new ServiceLoaderImpl<TenantBuilder>(defaultTenantBuilder) {
+            = new LazyServiceLoader<TenantBuilder>((TenantBuilder) () -> null) {
     };
 
     private static final TenantBuilder tenantBuilder = new TenantBuilderWrapper();

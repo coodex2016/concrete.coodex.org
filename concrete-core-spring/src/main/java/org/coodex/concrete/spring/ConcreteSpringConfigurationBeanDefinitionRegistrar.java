@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.spring;
 
-import org.coodex.util.Common;
+import org.coodex.util.UUIDHelper;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -25,11 +25,12 @@ import org.springframework.core.type.AnnotationMetadata;
 public class ConcreteSpringConfigurationBeanDefinitionRegistrar
         implements ImportBeanDefinitionRegistrar {
 
-    public static final String CONFIGURATION_BEAN_NAME = Common.getUUIDStr();
+    public static final String CONFIGURATION_BEAN_NAME = UUIDHelper.getUUIDString();
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         if (!registry.containsBeanDefinition(CONFIGURATION_BEAN_NAME)) {
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (registry) {
                 if (!registry.containsBeanDefinition(CONFIGURATION_BEAN_NAME)) {
                     RootBeanDefinition beanDefinition = new RootBeanDefinition(ConcreteSpringConfiguration.class);

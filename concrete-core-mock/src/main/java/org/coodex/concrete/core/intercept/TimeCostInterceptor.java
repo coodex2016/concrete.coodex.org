@@ -22,8 +22,8 @@ import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
+import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ import java.util.Map;
 @ServerSide
 public class TimeCostInterceptor extends AbstractSyncInterceptor {
     private final static Logger log = LoggerFactory.getLogger(TimeCostInterceptor.class);
-    private static ServiceLoader<ConcreteInterceptor> loader = new ServiceLoaderImpl<ConcreteInterceptor>() {
+    private static final ServiceLoader<ConcreteInterceptor> loader = new LazyServiceLoader<ConcreteInterceptor>() {
 
         @Override
         protected ConcreteInterceptor conflict(Class<? extends ConcreteInterceptor> providerClass, Map<String, Object> map) {

@@ -46,7 +46,7 @@ public abstract class OwnServiceProvider implements Application {
     private final Map<String, AbstractUnit<?>> unitMap = new HashMap<>();
 
     public OwnServiceProvider() {
-        registerPackage(AbstractErrorCodes.class.getPackage().getName());
+        registerPackage(ErrorCodeConstants.class.getPackage().getName());
     }
 
     protected Subjoin getSubjoin(RequestPackage<?> requestPackage) {
@@ -92,9 +92,8 @@ public abstract class OwnServiceProvider implements Application {
 
     public final void registerClasses(Class<?>... classes) {
         for (final Class<?> clz : classes) {
-            if (AbstractErrorCodes.class.isAssignableFrom(clz)) {
-                ErrorMessageFacade.register(Common.cast(clz));
-            } else if (ConcreteHelper.isConcreteService(clz)) {
+            ErrorMessageFacade.register(clz);
+            if (ConcreteHelper.isConcreteService(clz)) {
                 appendUnits(getModuleBuilder().build(clz));
             } else {
                 throw new RuntimeException("cannot register class:" + clz.getName());
@@ -131,7 +130,7 @@ public abstract class OwnServiceProvider implements Application {
         final String tokenId = requestPackage.getConcreteTokenId();
 
         ConcreteHelper.getExecutor().execute(new PriorityRunnable(ConcreteHelper.getPriority(unit), new Runnable() {
-            private Method method = unit.getMethod();
+            private final Method method = unit.getMethod();
 
             @Override
             public void run() {

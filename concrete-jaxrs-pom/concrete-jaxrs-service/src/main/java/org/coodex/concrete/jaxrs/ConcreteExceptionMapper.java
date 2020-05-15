@@ -20,8 +20,8 @@ import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.common.ThrowableMapperFacade;
+import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,15 +41,13 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
 
 
     private final static Logger log = LoggerFactory.getLogger(ConcreteExceptionMapper.class);
-    private final static ServiceLoader<ErrorCodeMapper> CODE_MAPPER_SERVICE_LOADER = new ServiceLoaderImpl<ErrorCodeMapper>(new DefaultErrorCodeMapper()) {
+    private final static ServiceLoader<ErrorCodeMapper> CODE_MAPPER_SERVICE_LOADER = new LazyServiceLoader<ErrorCodeMapper>(new DefaultErrorCodeMapper()) {
     };
 
 
     /**
-     * 根据错误号返回响应的响应状态，4xx为客户端问题，5xx为服务端问题，也可由项目自行重载
-     *
-     * @param errorCode
-     * @return
+     * @param errorCode errorCode
+     * @return 根据错误号返回响应的响应状态，4xx为客户端问题，5xx为服务端问题，也可由项目自行重载
      */
     protected Response.Status getStatus(int errorCode) {
         return CODE_MAPPER_SERVICE_LOADER.get().toStatus(errorCode);
@@ -84,7 +82,7 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
             }
             if (th != null) {
                 log.warn("exception occurred: {}", th.getLocalizedMessage(), th);
-            } else {
+            } else if (exception != null) {
                 log.warn("exception occurred: {}", exception.getLocalizedMessage());
             }
         }

@@ -21,7 +21,6 @@ import org.coodex.concrete.apitools.jaxrs.DocToolkit;
 import org.coodex.concrete.apitools.jaxrs.POJOPropertyInfo;
 import org.coodex.util.PojoInfo;
 import org.coodex.util.PojoProperty;
-import org.coodex.util.TypeHelper;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -29,12 +28,15 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+import static org.coodex.concrete.common.ConcreteHelper.isPrimitive;
+
 
 /**
  * Created by davidoff shen on 2016-12-04.
  */
+@SuppressWarnings("unused")
 public class ServiceDocToolkit extends DocToolkit {
-    private Set<String> pojoTypes = new HashSet<String>();
+    private final Set<String> pojoTypes = new HashSet<>();
 
     public ServiceDocToolkit(AbstractRender render) {
         super(render);
@@ -42,15 +44,13 @@ public class ServiceDocToolkit extends DocToolkit {
 
     @Override
     protected String getClassLabel(Class<?> clz) throws IOException {
-        if (TypeHelper.isPrimitive(clz) || clz.getPackage().getName().startsWith("java"))
+        if (isPrimitive(clz) || clz.getPackage().getName().startsWith("java"))
             return clz.getSimpleName();
         else {
             buildPojo(clz);
-            StringBuilder builder = new StringBuilder("[");
-            builder.append(clz.getSimpleName()).append("](../pojos/")
-                    .append(canonicalName(clz.getName()))
-                    .append(".md)");
-            return builder.toString();
+            return "[" + clz.getSimpleName() + "](../pojos/" +
+                    canonicalName(clz.getName()) +
+                    ".md)";
         }
     }
 
@@ -59,7 +59,7 @@ public class ServiceDocToolkit extends DocToolkit {
         if (!pojoTypes.contains(name)) {
             pojoTypes.add(name);
 
-            List<POJOPropertyInfo> pojoPropertyInfos = new ArrayList<POJOPropertyInfo>();
+            List<POJOPropertyInfo> pojoPropertyInfos = new ArrayList<>();
             PojoInfo pojoInfo = new PojoInfo(clz);
 
             for (PojoProperty pojoProperty : pojoInfo.getProperties()) {
@@ -78,7 +78,7 @@ public class ServiceDocToolkit extends DocToolkit {
 
 
 //            pojoTypes.add(canonicalName(clz.getName()));
-            Map<String, Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<>();
             map.put("properties", pojoPropertyInfos);
             map.put("type", clz.getName());
             map.put("tool", this);

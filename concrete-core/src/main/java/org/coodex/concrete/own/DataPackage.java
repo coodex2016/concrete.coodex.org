@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.own;
 
-import org.coodex.util.Common;
+import org.coodex.id.IDGenerator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +24,8 @@ import java.util.Map;
 public class DataPackage<T> {
 
     private T content;
-    private Map<String, String> subjoin = new HashMap<String, String>();
-    private String msgId = Common.getUUIDStr();
+    private Map<String, String> subjoin = new HashMap<>();
+    private String msgId = IDGenerator.newId();
     private String concreteTokenId;
 
     public T getContent() {

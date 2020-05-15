@@ -23,7 +23,7 @@ import org.coodex.config.Config;
 import org.coodex.count.*;
 import org.coodex.util.Clock;
 import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
+import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,10 +62,10 @@ public class CountFacadeProvider implements CountFacade {
 
     private final static Logger log = LoggerFactory.getLogger(CountFacadeProvider.class);
     private final static AtomicInteger atomicInteger = new AtomicInteger(0);
-    private final static ServiceLoader<Counter<Countable>> counterProvider = new ServiceLoaderImpl<Counter<Countable>>() {
+    private final static ServiceLoader<Counter<Countable>> counterProvider = new LazyServiceLoader<Counter<Countable>>() {
     };
 
-    private Singleton<Map<Class<?>, CounterChain<Countable>>> chainMapSingleton
+    private final Singleton<Map<Class<?>, CounterChain<Countable>>> chainMapSingleton
             = Singleton.with(
             () -> {
                 Map<Class<?>, CounterChain<Countable>> chainMap = new HashMap<>();

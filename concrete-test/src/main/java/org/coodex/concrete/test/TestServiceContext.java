@@ -20,6 +20,7 @@ import org.coodex.concrete.common.AbstractContainerContext;
 import org.coodex.concrete.common.Caller;
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.common.Token;
+import org.coodex.id.IDGenerator;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
 
@@ -29,7 +30,7 @@ import static org.coodex.concrete.core.token.TokenWrapper.newToken;
 public class TestServiceContext extends AbstractContainerContext implements org.coodex.concrete.common.TestServiceContext {
 
 
-    private static SingletonMap<String, Token> tokens = SingletonMap.<String, Token>builder().function(key -> newToken()).build();
+    private static final SingletonMap<String, Token> tokens = SingletonMap.<String, Token>builder().function(key -> newToken()).build();
 
     public TestServiceContext(String tokenId, Subjoin subjoin) {
         super(new TestCaller(), getTestToken(tokenId), subjoin, null);
@@ -45,7 +46,7 @@ public class TestServiceContext extends AbstractContainerContext implements org.
 
     private static Token getTestToken(String tokenId) {
         return tokens.get(Common.isBlank(tokenId) ?
-                Common.getUUIDStr() :
+                IDGenerator.newId() :
                 tokenId);
     }
 

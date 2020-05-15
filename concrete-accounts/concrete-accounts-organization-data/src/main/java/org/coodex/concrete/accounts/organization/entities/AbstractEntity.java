@@ -16,8 +16,8 @@
 
 package org.coodex.concrete.accounts.organization.entities;
 
+import org.coodex.id.IDGenerator;
 import org.coodex.util.Clock;
-import org.coodex.util.Common;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -29,10 +29,10 @@ import java.util.Calendar;
 @MappedSuperclass
 public abstract class AbstractEntity implements Serializable {
 
-    public static final Integer DEFAULT_ORDER = Integer.valueOf(0);
+    public static final Integer DEFAULT_ORDER = 0;
 
     @Id
-    private String id = Common.getUUIDStr();
+    private String id = IDGenerator.newId();
 
     private String tenant;
 

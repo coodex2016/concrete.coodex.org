@@ -17,12 +17,12 @@
 package org.coodex.concrete.common;
 
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.ErrorCode;
 import org.coodex.concrete.api.Priority;
 import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
-import org.coodex.util.ReflectHelper;
 import org.coodex.util.SingletonMap;
 
 import java.lang.reflect.Method;
@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
@@ -54,35 +55,27 @@ public class ConcreteHelper {
     private static final Integer DEFAULT_CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2;
     private static final Integer DEFAULT_MAX_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 4;
 
-//    private static final ClassNameFilter CONCRETE_SERVICE_INTERFACE_FILTER = new ConcreteClassFilter() {
-//        @Override
-//        protected boolean accept(Class<?> clazz) {
-////            return clazz != null
-////                    && clazz.isInterface() //是接口
-//////                    && ConcreteService.class.isAssignableFrom(clazz) //是ConcreteService
-////                    && clazz.getAnnotation(ConcreteService.class) != null //定义了MicroService;
-////                    && clazz.getAnnotation(Abstract.class) == null //非抽象
-////                    ;
-//            return isConcreteService(clazz);
-//        }
-//    };
-
-
-//    private final static ServiceLoader<ModuleMaker> MODULE_MAKERS = new ConcreteServiceLoader<ModuleMaker>() {
-//
-//    };
-    //    private static ExecutorService executorService;
-//    private static Singleton<ExecutorService> executorService = new Singleton<ExecutorService>(new Singleton.Builder<ExecutorService>() {
-//        @Override
-//        public ExecutorService build() {
-//            return ExecutorsHelper.newPriorityThreadPool(
-//                    getProfile().getInt("service.executor.corePoolSize", 0),
-//                    getProfile().getInt("service.executor.maximumPoolSize", Integer.MAX_VALUE),
-//                    getProfile().getInt("service.executor.keepAliveTime", 60)
-//            );
-//        }
-//    });
-
+    private static final Class<?>[] PRIMITIVE_CLASSES = new Class<?>[]{
+            String.class,
+            Boolean.class,
+            Character.class,
+            Byte.class,
+            Short.class,
+            Integer.class,
+            Long.class,
+            Float.class,
+            Double.class,
+            Void.class,
+            boolean.class,
+            char.class,
+            byte.class,
+            short.class,
+            int.class,
+            long.class,
+            float.class,
+            double.class,
+            void.class,
+    };
     private static final SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
             = SingletonMap.<String, ScheduledExecutorService>builder()
             .function(new Function<String, ScheduledExecutorService>() {
@@ -99,7 +92,6 @@ public class ConcreteHelper {
                     }
                 }
             }).build();
-
     private static final SingletonMap<String, ExecutorService> executorServiceMap
             = SingletonMap.<String, ExecutorService>builder()
             .function(new Function<String, ExecutorService>() {
@@ -120,6 +112,10 @@ public class ConcreteHelper {
                     }
                 }
             }).build();
+
+    public static boolean isPrimitive(Class<?> c) {
+        return Common.inArray(c, PRIMITIVE_CLASSES);
+    }
 
     public static Integer getTokenMaxIdleInMinute() {
         return Config.getValue("token.maxIdleTime", 60, getAppSet());
@@ -261,7 +257,7 @@ public class ConcreteHelper {
 //    }
 
 
-    public static void foreachClassInPackages(ReflectHelper.Processor processor, String... packages) {
+    public static void foreachClassInPackages(Consumer<Class<?>> processor, String... packages) {
         String[] packageParrterns = packages;
         if (packageParrterns == null || packageParrterns.length == 0) {
             packageParrterns = getApiPackages();
@@ -269,79 +265,18 @@ public class ConcreteHelper {
         if (packageParrterns == null) {
             packageParrterns = new String[0];
         }
-//        final String[] finalParrterns = packageParrterns;
-//
-//        packages = toPackages(packageParrterns);
-//        // 排序
-//        for (int i = 0, l = packages.length; i < l; i++) {
-//            for (int j = i + 1; j < l; j++) {
-//                String p1 = packages[i];
-//                String p2 = packages[j];
-//                if (p1.length() > p2.length()) {
-//                    packages[i] = p2;
-//                    packages[j] = p1;
-//                }
-//            }
-//        }
-//        // 合并
-//        List<String> forSearch = new ArrayList<>();
-//
-//        packageCycle:
-//        for (String pkg : packages) {
-//            for (String searchPath : forSearch) {
-//                if (Common.isBlank(searchPath) || pkg.equals(searchPath) || pkg.startsWith(searchPath + ".")) {
-//                    continue packageCycle;
-//                }
-//            }
-//            forSearch.add(pkg);
-//        }
+
         // 注册
         foreachClass((clazz) -> {
-            if (AbstractErrorCodes.class.isAssignableFrom(clazz)) {
-                ErrorMessageFacade.register(Common.cast(clazz));
-            }
-            processor.process(clazz);
-
-        }, new ConcreteClassFilter() {
-            @Override
-            protected boolean accept(Class<?> clazz) {
-                return //isMatch(clazz, finalParrterns) &&
-                        (ConcreteHelper.isConcreteService(clazz) ||
-                                AbstractErrorCodes.class.isAssignableFrom(clazz));
-            }
-        }, packageParrterns);
-    }
-
-//    private static String[] toPackages(String[] patterns) {
-//        String[] result = new String[patterns.length];
-//        for (int i = 0, l = patterns.length; i < l; i++) {
-//            result[i] = toPackage(patterns[i]);
-//        }
-//        return result;
-//    }
-
-//    private static String toPackage(String parttern) {
-//        int i = parttern.indexOf('*');
-//        return Common.trim(i > 0 ? parttern.substring(0, i) : parttern, '.');
-//    }
-
-//    private static boolean isMatch(Class<?> clazz, String... packagePartterns) {
-//        String className = clazz.getName();
-//        for (String s : packagePartterns) {
-//            if (s.indexOf('*') > 0) {
-//                if (Pattern.compile("^" +
-//                        s.replaceAll("\\.", "\\\\.")
-//                                .replaceAll("\\*\\*", ".+")
-//                                .replaceAll("\\*", "[\\\\w]+")).matcher(className).find())
-//                    return true;
-//            } else {
-//                if (className.startsWith(s))
-//                    return true;
+//            if (AbstractErrorCodes.class.isAssignableFrom(clazz)) {
+                    ErrorMessageFacade.register(clazz);
 //            }
-//        }
-//        return false;
-//    }
+                    processor.accept(clazz);
 
+                }, (ConcreteClassFilter) clazz -> ConcreteHelper.isConcreteService(clazz) ||
+                        clazz.getAnnotation(ErrorCode.class) != null,
+                packageParrterns);
+    }
 
     public static boolean isAbstract(Class<?> clz) {
         ConcreteService service = clz.getAnnotation(ConcreteService.class);
@@ -361,18 +296,6 @@ public class ConcreteHelper {
                 !isAbstract(clz);
 //                clz.getAnnotation(Abstract.class) == null;
     }
-
-
-//    public static <MODULE extends AbstractModule> MODULE loadModule(
-//            String desc, Class<?> serviceClass) {
-//        return (MODULE) loadModule(getInstance(desc), serviceClass);
-//    }
-
-//    public static <MODULE extends AbstractModule> MODULE loadModule(
-//            ModuleMaker<MODULE> moduleMaker, Class<?> serviceClass) {
-//
-//        return moduleMaker.make(serviceClass);
-//    }
 
 
     public static int getPriority(Method method, Class<?> clz) {
@@ -486,7 +409,7 @@ public class ConcreteHelper {
         return concreteException;
     }
 
-    public static ConcreteException getException(String message){
+    public static ConcreteException getException(String message) {
         return new ConcreteException(ErrorCodes.UNKNOWN_ERROR, message);
     }
 
@@ -531,10 +454,6 @@ public class ConcreteHelper {
     public static String[] getApiPackages() {
         return Config.getArray("api.packages", ",", new String[0], "concrete", getAppSet());
     }
-
-//    public static String[] getRemoteApiPackages() {
-//        return Config.getArray("remoteapi.packages", ",", new String[0], "concrete", getAppSet());
-//    }
 
     public static String getAppSet() {
 //        return getProfile().getString("concrete.appSet");

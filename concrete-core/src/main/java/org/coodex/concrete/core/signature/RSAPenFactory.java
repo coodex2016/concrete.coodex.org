@@ -18,8 +18,8 @@ package org.coodex.concrete.core.signature;
 
 import org.coodex.concrete.common.IronPen;
 import org.coodex.concrete.common.IronPenFactory;
-import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
+import org.coodex.util.UUIDHelper;
 
 /**
  * Created by davidoff shen on 2017-04-24.
@@ -27,7 +27,7 @@ import org.coodex.util.SingletonMap;
 public class RSAPenFactory implements IronPenFactory {
     private static final SingletonMap<String, RSAPen> RSA_PEN_SINGLETON_MAP = SingletonMap.<String, RSAPen>builder()
             .function(RSAPen::new)
-            .nullKey("null_" + Common.getUUIDStr()).build();
+            .nullKey("null_" + UUIDHelper.getUUIDString()).build();
 
     @Override
     public IronPen getIronPen(String paperName) {

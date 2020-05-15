@@ -19,6 +19,7 @@ package org.coodex.concrete.client;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
+import org.coodex.util.UUIDHelper;
 
 import static org.coodex.concrete.client.Destination.DEFAULT_REQUEST_TIMEOUT;
 import static org.coodex.concrete.common.ConcreteHelper.KEY_LOCATION;
@@ -28,7 +29,7 @@ public abstract class AbstractDestinationFactory<T extends Destination> implemen
 
     private static final SingletonMap<String, String> moduleLocationMap = SingletonMap.<String, String>builder()
             .function(module -> ConcreteHelper.getString(TAG_CLIENT, module, KEY_LOCATION))
-            .nullKey("null_" + Common.getUUIDStr()).build();
+            .nullKey("null_" + UUIDHelper.getUUIDString()).build();
 
     protected String getLocation(String module) {
         return moduleLocationMap.get(module);

@@ -30,9 +30,10 @@ import org.coodex.concrete.own.MapSubjoin;
 import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;
-import org.coodex.concurrent.TimeLimitedMap;
+import org.coodex.id.IDGenerator;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
+import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,12 @@ import static org.coodex.concrete.own.PackageHelper.buildRequest;
 public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractOwnRxInvoker.class);
-    private static TimeLimitedMap<String, CompletableFutureCallBack> callbackMap = new TimeLimitedMap<>();
+//    private static TimeLimitedMap<String, CompletableFutureCallBack> callbackMap = new TimeLimitedMap<>();
+
+    private static final SingletonMap<String, CompletableFutureCallBack> CALL_BACK_MAP
+            = SingletonMap.<String, CompletableFutureCallBack>builder()
+            .maxAge(10000L) // 10秒
+            .build();
 
     public AbstractOwnRxInvoker(Destination destination) {
         super(destination);
@@ -72,8 +78,8 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
         ResponsePackage<Object> responsePackage = parse(message);
         if (responsePackage == null) return;
-
-        CompletableFutureCallBack completableFutureCallBack = callbackMap.getAndRemove(responsePackage.getMsgId());
+        CompletableFutureCallBack completableFutureCallBack = CALL_BACK_MAP.get(responsePackage.getMsgId(), () -> null);
+//        CompletableFutureCallBack completableFutureCallBack = callbackMap.getAndRemove(responsePackage.getMsgId());
         if (completableFutureCallBack == null) {
             log.debug("drop message: {}", message);
             return;
@@ -145,20 +151,33 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
         ClientHelper.getRxClientScheduler().execute(() -> {
             final OwnServiceUnit unit = findUnit(runtimeContext);
             // build request
-            String msgId = Common.getUUIDStr();
+            String msgId = IDGenerator.newId();
             final RequestPackage<?> requestPackage = buildRequest(msgId, unit, args);
 
-            CompletableFutureCallBack observableCallBack = new CompletableFutureCallBack(
-                    completableFuture,
-                    runtimeContext,
-                    getLogger(),
-                    getLoggingLevel(),
-                    getDestination(),
-                    getContext()
+            CALL_BACK_MAP.get(
+                    msgId,
+                    () -> new CompletableFutureCallBack(
+                            completableFuture,
+                            runtimeContext,
+                            getLogger(),
+                            getLoggingLevel(),
+                            getDestination(),
+                            getContext()
+                    ),
+                    getDestination().getTimeout(),
+                    (k, v) -> completableFuture.completeExceptionally(new TimeoutException())
             );
-
-            callbackMap.put(msgId, observableCallBack, getDestination().getTimeout(),
-                    () -> completableFuture.completeExceptionally(new TimeoutException()));
+//            CompletableFutureCallBack observableCallBack = new CompletableFutureCallBack(
+//                    completableFuture,
+//                    runtimeContext,
+//                    getLogger(),
+//                    getLoggingLevel(),
+//                    getDestination(),
+//                    getContext()
+//            );
+//
+//            callbackMap.put(msgId, observableCallBack, getDestination().getTimeout(),
+//                    () -> completableFuture.completeExceptionally(new TimeoutException()));
 
             try {
                 requestPackage.setConcreteTokenId(
@@ -167,7 +186,8 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
                 );
                 send(requestPackage);
             } catch (Throwable th) {
-                callbackMap.getAndRemove(msgId);
+//                callbackMap.getAndRemove(msgId);
+                CALL_BACK_MAP.remove(msgId);
                 completableFuture.completeExceptionally(th);
             }
         });

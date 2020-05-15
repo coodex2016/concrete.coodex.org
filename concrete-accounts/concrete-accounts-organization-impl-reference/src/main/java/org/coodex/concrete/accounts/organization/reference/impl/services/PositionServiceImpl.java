@@ -21,8 +21,6 @@ import org.coodex.concrete.accounts.organization.pojo.Position;
 import org.coodex.concrete.accounts.organization.reference.api.PositionService;
 import org.coodex.concrete.accounts.organization.reference.data.entities.PersonEntity;
 import org.coodex.concrete.accounts.organization.reference.data.entities.PositionEntity;
-import org.coodex.concrete.api.LogAtomic;
-import org.coodex.concrete.api.OperationLog;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -32,8 +30,8 @@ import javax.transaction.Transactional;
  */
 @Named
 @Transactional
-@LogAtomic
-@OperationLog
+//@LogAtomic
+//@OperationLog
 public class PositionServiceImpl
         extends AbstractPositionManagementServiceImpl<Position, PositionEntity, PersonEntity>
         implements PositionService {

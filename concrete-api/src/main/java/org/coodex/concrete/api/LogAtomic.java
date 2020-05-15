@@ -20,17 +20,21 @@ import java.lang.annotation.*;
 
 /**
  * Created by davidoff shen on 2017-05-08.
+ * <p>
+ * 2020-05-15调整定义
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Overlay(definition = false)
+@Deprecated
 public @interface LogAtomic {
 
-    String category() default "";
+    String category() default ""; // 默认为serviceClassName
 
-    String subClass() default "";
+    String subClass() default ""; // 默认未methodName
 
+    @Deprecated
     String message() default "";
 
     LoggingType loggingType() default LoggingType.DATA;

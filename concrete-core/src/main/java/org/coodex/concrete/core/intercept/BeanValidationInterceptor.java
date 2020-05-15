@@ -26,7 +26,7 @@ import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.config.Config;
 import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
+import org.coodex.util.LazyServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ public class BeanValidationInterceptor extends AbstractInterceptor {
     };
 
     private final static ServiceLoader<ViolationsFormatter> VIOLATIONS_FORMATTER_SPI =
-            new ServiceLoaderImpl<ViolationsFormatter>(DEFAULT_FORMMATER) {
+            new LazyServiceLoader<ViolationsFormatter>(DEFAULT_FORMMATER) {
             };
 
 

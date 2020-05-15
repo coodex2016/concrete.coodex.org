@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
+import static org.coodex.concrete.common.ConcreteHelper.isPrimitive;
 
 //import static org.coodex.concrete.common.ConcreteHelper.getProfile;
 
@@ -52,7 +53,7 @@ public class SignUtil {
     };
     private static final SignatureSerializer DEFAULT_SERIALIZER = new DefaultSignatureSerializer();
     private static final ServiceLoader<SignatureSerializer> SIGNATURE_SERIALIZER_CONCRETE_SPI_FACADE
-            = new ServiceLoaderImpl<SignatureSerializer>(DEFAULT_SERIALIZER) {
+            = new LazyServiceLoader<SignatureSerializer>(DEFAULT_SERIALIZER) {
     };
     private static final NoiseValidator defaultValidator = new NoiseValidator() {
         @Override
@@ -138,7 +139,7 @@ public class SignUtil {
         if (params.length == 1) {
             Class<?> c = params[0].getType();
             // 非集合、数组、基础类型
-            if (!Collection.class.isAssignableFrom(c) && !c.isArray() && !TypeHelper.isPrimitive(c)) {
+            if (!Collection.class.isAssignableFrom(c) && !c.isArray() && !isPrimitive(c)) {
                 try {
                     return beanToMap(args[0]);
                 } catch (Throwable th) {

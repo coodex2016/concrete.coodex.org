@@ -29,9 +29,7 @@ import java.lang.annotation.*;
 public @interface Domain {
 
     /**
-     * 定义了Domain后，说明该模块下单元所需权限为<I>Domain</I>.<I>role</I>
-     *
-     * @return
+     * @return 定义了Domain后，说明该模块下单元所需权限为<I>Domain</I>.<I>role</I>
      */
     String value() default "";
 }

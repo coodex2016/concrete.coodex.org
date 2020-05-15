@@ -20,8 +20,8 @@ import org.coodex.concrete.common.Account;
 import org.coodex.concrete.common.AccountFactory;
 import org.coodex.concrete.common.BeanServiceLoaderProvider;
 import org.coodex.concrete.core.token.AbstractToken;
+import org.coodex.id.IDGenerator;
 import org.coodex.util.Clock;
-import org.coodex.util.Common;
 
 import java.io.Serializable;
 import java.util.Enumeration;
@@ -40,15 +40,14 @@ class LocalToken /*implements Token*/ extends AbstractToken {
 //    private final static Logger log = LoggerFactory.getLogger(LocalToken.class);
 
 
-    private Map<String, Object> attributes = new HashMap<>();
+    private final Map<String, Object> attributes = new HashMap<>();
+    private final long created = Clock.currentTimeMillis();
     //    private Account currentAccount = null;
     private Serializable currentAccountId = null;
     private boolean accountCredible = false;
-
     private boolean valid = true;
     private long lastActive;
-    private String sessionId = Common.getUUIDStr();
-    private long created = Clock.currentTimeMillis();
+    private String sessionId = IDGenerator.newId();
 
     public LocalToken(String sessionId) {
         if (sessionId != null)

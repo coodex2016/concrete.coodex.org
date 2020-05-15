@@ -26,7 +26,6 @@ import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.mock.Mocker;
 import org.coodex.util.Common;
-import org.coodex.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +49,7 @@ import java.util.StringTokenizer;
 import static org.coodex.concrete.ClientHelper.getJSONSerializer;
 import static org.coodex.concrete.ClientHelper.getSSLContext;
 import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
+import static org.coodex.concrete.common.ConcreteHelper.isPrimitive;
 import static org.coodex.concrete.common.Subjoin.KEY_WARNINGS;
 import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
@@ -68,23 +68,6 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         client = destination.isSsl() ?
                 clientBuilder.hostnameVerifier((s, sslSession) -> true).sslContext(getSSLContext(destination.getSsl())).build() :
                 clientBuilder.build();
-    }
-
-
-    private Invocation.Builder buildHeaders(Invocation.Builder builder/*, StringBuilder str*/, Subjoin subjoin, String tokenId) {
-        JaxRSClientContext context = getContext();
-        builder = builder.acceptLanguage(context.getLocale());
-        if (subjoin != null || !Common.isBlank(tokenId)) {
-            if (subjoin != null) {
-                for (String key : subjoin.keySet()) {
-                    builder = builder.header(key, subjoin.get(key));
-                }
-            }
-            if (!Common.isBlank(tokenId)) {
-                builder = builder.header(CONCRETE_TOKEN_ID_KEY, tokenId);
-            }
-        }
-        return builder;
     }
 
     private static JaxRSClientException throwException(boolean errorOccurred, int code, String body, JaxrsUnit unit, String url) {
@@ -131,6 +114,22 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         return toSubmit;
     }
 
+    private Invocation.Builder buildHeaders(Invocation.Builder builder/*, StringBuilder str*/, Subjoin subjoin, String tokenId) {
+        JaxRSClientContext context = getContext();
+        builder = builder.acceptLanguage(context.getLocale());
+        if (subjoin != null || !Common.isBlank(tokenId)) {
+            if (subjoin != null) {
+                for (String key : subjoin.keySet()) {
+                    builder = builder.header(key, subjoin.get(key));
+                }
+            }
+            if (!Common.isBlank(tokenId)) {
+                builder = builder.header(CONCRETE_TOKEN_ID_KEY, tokenId);
+            }
+        }
+        return builder;
+    }
+
     private String getEncodingCharset() {
         String charset = ((JaxRSDestination) getDestination()).getCharset();
         if (charset == null) charset = "utf-8";
@@ -156,7 +155,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 
     private String toStr(Object o) {
         if (o == null) return null;
-        if (TypeHelper.isPrimitive(o.getClass())) return o.toString();
+        if (isPrimitive(o.getClass())) return o.toString();
         return getJSONSerializer().toJson(o);
     }
 

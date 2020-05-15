@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.core.intercept;
-
-import org.coodex.concrete.common.Token;
-import org.coodex.concrete.common.TokenEventListener;
-
-/**
- * Created by davidoff shen on 2017-05-20.
- */
-public class OperatorTokenEventListener implements TokenEventListener {
-    @Override
-    public boolean accept(Token.Event param) {
-        return Token.Event.INVALIDATED.equals(param);
-    }
-
-    @Override
-    public void before(Token token) {
-        OperationLogInterceptor.OPERATOR.set(token.currentAccount());
-    }
-
-    @Override
-    public void after(Token token) {
-    }
-}
+//package org.coodex.concrete.core.intercept;
+//
+//import org.coodex.concrete.common.Token;
+//import org.coodex.concrete.common.TokenEventListener;
+//
+///**
+// * Created by davidoff shen on 2017-05-20.
+// */
+//public class OperatorTokenEventListener implements TokenEventListener {
+//    @Override
+//    public boolean accept(Token.Event param) {
+//        return Token.Event.INVALIDATED.equals(param);
+//    }
+//
+//    @Override
+//    public void before(Token token) {
+//        OperationLogInterceptor.OPERATOR.set(token.currentAccount());
+//    }
+//
+//    @Override
+//    public void after(Token token) {
+//    }
+//}

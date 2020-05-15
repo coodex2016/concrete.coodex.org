@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.core.signature;
 
-import org.apache.commons.codec.binary.Base64;
 import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.util.Common;
@@ -27,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import static org.coodex.concrete.common.ErrorCodes.SIGNATURE_KEY_LOAD_FAILED;
@@ -62,7 +62,7 @@ public class RSA_KeyStoreDefaultImpl implements RSA_KeyStore {
             }
         }
 
-        return s == null ? null : Base64.decodeBase64(s);
+        return s == null ? null : Base64.getDecoder().decode(s);
     }
 
     private static String loadFromInputStream(InputStream is) throws IOException {

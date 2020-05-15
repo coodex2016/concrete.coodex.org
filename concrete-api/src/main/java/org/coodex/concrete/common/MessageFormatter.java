@@ -18,7 +18,10 @@ package org.coodex.concrete.common;
 
 /**
  * Created by davidoff shen on 2016-09-04.
+ *
+ * @deprecated 2020-05-06，使用 {@link org.coodex.util.Renderer}替代
  */
+@Deprecated
 public interface MessageFormatter {
 
     String format(String pattern, Object... objects);

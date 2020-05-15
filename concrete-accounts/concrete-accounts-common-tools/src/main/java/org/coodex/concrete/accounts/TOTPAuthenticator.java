@@ -19,15 +19,14 @@ package org.coodex.concrete.accounts;
 import org.apache.commons.codec.binary.Base32;
 import org.coodex.config.Config;
 import org.coodex.util.Clock;
-import org.coodex.util.Common;
 import org.coodex.util.DigestHelper;
+import org.coodex.util.UUIDHelper;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
@@ -53,7 +52,7 @@ public class TOTPAuthenticator {
 
     public static String generateAuthKey() {
         return new Base32().encodeAsString(
-                new SecureRandom(Common.getUUIDStr().getBytes())
+                new SecureRandom(UUIDHelper.getUUIDBytes())
                         .generateSeed(20));
     }
 
@@ -61,7 +60,7 @@ public class TOTPAuthenticator {
         try {
             if (authCode == null || authKey == null) return false;
 
-            return check_code(authKey, Long.valueOf(authCode),
+            return check_code(authKey, Long.parseLong(authCode),
                     Clock.currentTimeMillis()
                             / TimeUnit.SECONDS.toMillis(30));
         } catch (RuntimeException e) {

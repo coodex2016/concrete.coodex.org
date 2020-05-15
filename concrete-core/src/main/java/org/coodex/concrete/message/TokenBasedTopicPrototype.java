@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.message;
 
+import org.coodex.id.IDGenerator;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
 import org.slf4j.Logger;
@@ -34,14 +35,14 @@ public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTo
     /**
      * 队列1，消息发布时，为消息指定id，进行广播
      */
-    private Topic<Id<M>> idWrapper
+    private final Topic<Id<M>> idWrapper
             = Topics.get(new GenericTypeHelper.GenericType<Topic<Id<M>>>(getClass()) {
     }.getType(), getQueue());
 
     /**
      * 队列2，队列1消息到达后，当前节点判定是否可被已注册的订阅者消费，确认的扔到队列2
      */
-    private Topic<TokenConfirm<M>> tokenConfirmTopic
+    private final Topic<TokenConfirm<M>> tokenConfirmTopic
             = Topics.get(new GenericTypeHelper.GenericType<Topic<TokenConfirm<M>>>(getClass()) {
     }.getType(), getQueue());
 
@@ -49,7 +50,7 @@ public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTo
     /**
      * 队列3，消息被消费后，通知其他节点
      */
-    private Topic<ConsumedNotify> consumedNotifyTopic
+    private final Topic<ConsumedNotify> consumedNotifyTopic
             = Topics.get(new GenericTypeHelper.GenericType<Topic<ConsumedNotify>>() {
     }.getType(), getQueue());
 
@@ -164,7 +165,7 @@ public class TokenBasedTopicPrototype<M extends Serializable> extends AbstractTo
         }
 
         public Id(M message) {
-            this.id = Common.getUUIDStr();
+            this.id = IDGenerator.newId();
             this.message = message;
         }
 

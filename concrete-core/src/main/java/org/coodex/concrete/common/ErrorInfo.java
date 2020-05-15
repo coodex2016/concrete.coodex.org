@@ -20,7 +20,7 @@ package org.coodex.concrete.common;
  * Created by davidoff shen on 2016-12-07.
  */
 public class ErrorInfo {
-    private int code = AbstractErrorCodes.OK;
+    private int code = ErrorCodeConstants.OK;
     private String msg = "";
 
     public ErrorInfo() {

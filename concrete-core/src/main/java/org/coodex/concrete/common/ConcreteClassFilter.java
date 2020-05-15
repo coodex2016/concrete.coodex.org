@@ -16,21 +16,21 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.util.ClassNameFilter;
+import java.util.function.Function;
 
 /**
  * Created by davidoff shen on 2017-05-13.
  */
-public abstract class ConcreteClassFilter implements ClassNameFilter {
+public interface ConcreteClassFilter extends Function<String, Boolean> {
 
     @Override
-    public boolean accept(String className) {
+    default Boolean apply(String className) {
         try {
-            return className == null ? false : accept(Class.forName(className));
+            return className != null && accept(Class.forName(className));
         } catch (ClassNotFoundException e) {
             throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, e.getLocalizedMessage(), e);
         }
     }
 
-    protected abstract boolean accept(Class<?> clazz);
+    boolean accept(Class<?> clazz);
 }

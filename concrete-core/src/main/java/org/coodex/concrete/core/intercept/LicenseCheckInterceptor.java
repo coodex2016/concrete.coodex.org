@@ -20,8 +20,8 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.License;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
+import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
 
 import static org.coodex.concrete.common.ErrorCodes.ABOUT_LICENSE;
 import static org.coodex.concrete.core.intercept.InterceptOrders.LICENSE_CHECK;
@@ -32,9 +32,9 @@ import static org.coodex.concrete.core.intercept.InterceptOrders.LICENSE_CHECK;
 @ServerSide
 public class LicenseCheckInterceptor extends AbstractSyncInterceptor {
 
-    private ServiceLoader<License> licenseServiceLoader = new ServiceLoaderImpl<License>(() -> null) {
+    private final ServiceLoader<License> licenseServiceLoader = new LazyServiceLoader<License>((License) () -> null) {
     };
-    private Subjoin subjoin = SubjoinWrapper.getInstance();
+    private final Subjoin subjoin = SubjoinWrapper.getInstance();
 
     @Override
     protected boolean accept_(DefinitionContext context) {

@@ -24,16 +24,12 @@ import org.coodex.concrete.core.intercept.ConcreteMethodInvocation;
 import org.coodex.concrete.core.intercept.InterceptorChain;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
 import org.coodex.util.Common;
+import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
 import org.coodex.util.Singleton;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -42,14 +38,16 @@ import java.util.function.Supplier;
 public final class ConcreteContext {
 
     public static final String KEY_TOKEN = Token.CONCRETE_TOKEN_ID_KEY;
+    @SuppressWarnings("unused")
     public static final String KEY_LOCALE = "CONCRETE-LOCALE";
-    public static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<>();
+    //    @Deprecated
+//    public static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<>();
     private static final ClosureContext<ServiceContext> CONTEXT = new StackClosureContext<>();
 
-    private static Singleton<SyncInterceptorChain> interceptorChainSingleton = Singleton.with(
+    private static final Singleton<SyncInterceptorChain> interceptorChainSingleton = Singleton.with(
             () -> {
                 SyncInterceptorChain syncInterceptorChain = new SyncInterceptorChain();
-                ServiceLoader<ConcreteInterceptor> serviceLoader = new ServiceLoaderImpl<ConcreteInterceptor>() {
+                ServiceLoader<ConcreteInterceptor> serviceLoader = new LazyServiceLoader<ConcreteInterceptor>() {
                 };
                 for (ConcreteInterceptor interceptor : serviceLoader.getAll().values()) {
                     if (interceptor instanceof InterceptorChain) continue;
@@ -58,90 +56,92 @@ public final class ConcreteContext {
                 return syncInterceptorChain;
             }
     );
-    private static Map<String, Object> emptyLogging = new Map<String, Object>() {
-        @Override
-        public int size() {
-            return 0;
-        }
+//    @Deprecated
+//    private static final Map<String, Object> EMPTY_LOGGING_MAP = new Map<String, Object>() {
+//        @Override
+//        public int size() {
+//            return 0;
+//        }
+//
+//        @Override
+//        public boolean isEmpty() {
+//            return true;
+//        }
+//
+//        @Override
+//        public boolean containsKey(Object key) {
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean containsValue(Object value) {
+//            return false;
+//        }
+//
+//        @Override
+//        public Object get(Object key) {
+//            return null;
+//        }
+//
+//        @Override
+//        public Object put(String key, Object value) {
+//            return null;
+//        }
+//
+//        @Override
+//        public Object remove(Object key) {
+//            return null;
+//        }
+//
+//        @Override
+//        public void putAll(Map<? extends String, ?> m) {
+//        }
+//
+//        @Override
+//        public void clear() {
+//        }
+//
+//        @Override
+//        public Set<String> keySet() {
+//            return new HashSet<>();
+//        }
+//
+//        @Override
+//        public Collection<Object> values() {
+//            return new HashSet<>();
+//        }
+//
+//        @Override
+//        public Set<Entry<String, Object>> entrySet() {
+//            return new HashSet<>();
+//        }
+//    };
 
-        @Override
-        public boolean isEmpty() {
-            return true;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public Object get(Object key) {
-            return null;
-        }
-
-        @Override
-        public Object put(String key, Object value) {
-            return null;
-        }
-
-        @Override
-        public Object remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(Map<? extends String, ?> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @Override
-        public Set<String> keySet() {
-            return new HashSet<>();
-        }
-
-        @Override
-        public Collection<Object> values() {
-            return new HashSet<>();
-        }
-
-        @Override
-        public Set<Entry<String, Object>> entrySet() {
-            return new HashSet<>();
-        }
-    };
-
-    public static final ServiceContext getServiceContext() {
+    public static ServiceContext getServiceContext() {
         return CONTEXT.get();
     }
 
-    /**
-     * 放入记录日志所需的数据
-     *
-     * @param key   key
-     * @param value value
-     */
-    public static void putLoggingData(String key, Object value) {
-        getLogging().put(key, value);
-    }
-
-    public static Map<String, Object> getLoggingData() {
-        return getLogging();
-    }
-
-    private static Map<String, Object> getLogging() {
-        Map<String, Object> logging = LOGGING.get();
-        return logging == null ? emptyLogging : logging;
-    }
+//    /**
+//     * 放入记录日志所需的数据
+//     *
+//     * @param key   key
+//     * @param value value
+//     */
+//    @Deprecated
+//    public static void putLoggingData(String key, Object value) {
+//        getLogging().put(key, value);
+//    }
+//
+//    @Deprecated
+//    public static Map<String, Object> getLoggingData() {
+//        return getLogging();
+//    }
+//
+//    @Deprecated
+//    private static Map<String, Object> getLogging() {
+//        Map<String, Object> logging = LOGGING.get();
+//        return logging == null ? EMPTY_LOGGING_MAP : logging;
+//    }
 
 
 //    /**
@@ -198,7 +198,7 @@ public final class ConcreteContext {
                         }
 
                         @Override
-                        public Object proceed() throws Throwable {
+                        public Object proceed() {
                             return supplier.get();
                         }
 

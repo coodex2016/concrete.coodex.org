@@ -20,6 +20,7 @@ import org.coodex.concrete.api.LimitingStrategy;
 import org.coodex.concrete.api.limiting.TokenBucket;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.config.Config;
+import org.coodex.id.IDGenerator;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
@@ -31,7 +32,7 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 public class TokenBucketLimiting implements LimitingStrategy {
     private final static Logger log = LoggerFactory.getLogger(TokenBucketLimiting.class);
 
-    private static String DEFAULT_BUCKET = Common.getUUIDStr();
+    private static final String DEFAULT_BUCKET = IDGenerator.newId();
 
     private static final SingletonMap<String, Bucket> BUCKET_SINGLETON_MAP
             = SingletonMap.<String, Bucket>builder()

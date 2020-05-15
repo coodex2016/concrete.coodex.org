@@ -20,7 +20,6 @@ import org.coodex.concrete.accounts.organization.api.AbstractInstitutionManageme
 import org.coodex.concrete.accounts.organization.entities.AbstractInstitutionEntity;
 import org.coodex.concrete.accounts.organization.entities.AbstractPersonAccountEntity;
 import org.coodex.concrete.accounts.organization.entities.AbstractPositionEntity;
-import org.coodex.concrete.accounts.organization.entities.OrganizationEntity;
 import org.coodex.concrete.accounts.organization.pojo.Institution;
 import org.coodex.concrete.accounts.organization.repositories.AbstractInstitutionRepo;
 import org.coodex.concrete.api.pojo.StrID;
@@ -29,13 +28,14 @@ import org.coodex.copier.TwoWayCopier;
 import org.coodex.util.Common;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
-import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
 import static org.coodex.concrete.common.OrganizationErrorCodes.NONE_THIS_INSTITUTION;
 
 /**
  * Created by davidoff shen on 2017-05-08.
  */
+@SuppressWarnings("CdiInjectionPointsInspection")
 public abstract class AbstractInstitutionManagementServiceImpl
         <I extends Institution, E extends AbstractInstitutionEntity,
                 J extends AbstractPositionEntity, P extends AbstractPersonAccountEntity<J>>
@@ -61,8 +61,8 @@ public abstract class AbstractInstitutionManagementServiceImpl
         E institutionEntity = institutionCopier.copyA2B(institution);
         institutionEntity.setHigherLevel(Common.isBlank(higherLevel) ? null : checkBelongToExists(higherLevel));
 
-        putLoggingData("new", institutionEntity);
-        return new StrID<I>(institutionEntity.getId(),
+//        putLoggingData("new", institutionEntity);
+        return new StrID<>(institutionEntity.getId(),
                 institutionCopier.copyB2A(institutionRepo.save(institutionEntity), institution));
     }
 
@@ -77,8 +77,9 @@ public abstract class AbstractInstitutionManagementServiceImpl
         E institutionEntity = getInstitutionEntity(id);
         // 重名检查
         checkDuplication(institutionEntity.getHigherLevelId(), institution.getName(), id);
-        putLoggingData("old", deepCopy(institutionEntity));
-        putLoggingData("new", institutionRepo.save(institutionCopier.copyA2B(institution, institutionEntity)));
+        institutionRepo.save(institutionCopier.copyA2B(institution, institutionEntity));
+//        putLoggingData("old", deepCopy(institutionEntity));
+//        putLoggingData("new", institutionRepo.save(institutionCopier.copyA2B(institution, institutionEntity)));
     }
 
     private E getInstitutionEntityNullSafe(String id) {
@@ -96,16 +97,16 @@ public abstract class AbstractInstitutionManagementServiceImpl
         E institutionEntity = getInstitutionEntity(id);
         checkManagementPermission(institutionEntity.getHigherLevelId());
 
-        if (!Common.sameString(higherLevel, institutionEntity.getHigherLevelId())) {
+        if (!Objects.equals(higherLevel, institutionEntity.getHigherLevelId())) {
             circleCheck(higherLevelEntity, id);
 
-            OrganizationEntity originalEntity = institutionEntity.getHigherLevel();
+//            OrganizationEntity originalEntity = institutionEntity.getHigherLevel();
 
             institutionEntity.setHigherLevel(Common.isBlank(higherLevel) ? null : checkBelongToExists(higherLevel));
             institutionRepo.save(institutionEntity);
 
-            putLoggingData("original", originalEntity);
-            putLoggingData("target", higherLevelEntity);
+//            putLoggingData("original", originalEntity);
+//            putLoggingData("target", higherLevelEntity);
         }
     }
 
@@ -119,7 +120,8 @@ public abstract class AbstractInstitutionManagementServiceImpl
     @Override
     public void delete(String id) {
         checkManagementPermission(id);
-        putLoggingData("deleted", deleteOrganization(getInstitutionEntity(id)));
+        deleteOrganization(getInstitutionEntity(id));
+//        putLoggingData("deleted", deleteOrganization(getInstitutionEntity(id)));
     }
 
 }

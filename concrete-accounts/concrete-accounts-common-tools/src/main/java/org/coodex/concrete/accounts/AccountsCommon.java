@@ -24,15 +24,14 @@ import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.config.Config;
 import org.coodex.util.Clock;
 import org.coodex.util.LazySelectableServiceLoader;
+import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
-import org.coodex.util.ServiceLoaderImpl;
 import org.springframework.data.repository.CrudRepository;
 
 import java.text.DateFormat;
 
 import static org.coodex.concrete.accounts.Constants.ORGANIZATION_PREFIX;
 import static org.coodex.concrete.common.AccountsErrorCodes.*;
-import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.util.Common.*;
 
@@ -56,7 +55,7 @@ public class AccountsCommon {
         }
     };
 
-    public static final ServiceLoader<DateFormatter> DATE_FORMATTER_SERVICE_LOADER = new ServiceLoaderImpl<DateFormatter>(DEFAULT_DATE_FORMATTER) {
+    public static final ServiceLoader<DateFormatter> DATE_FORMATTER_SERVICE_LOADER = new LazyServiceLoader<DateFormatter>(DEFAULT_DATE_FORMATTER) {
     };
 //    public static final Profile_Deprecated SETTINGS = Profile_Deprecated.getProfile("concrete_accounts.properties");
 //    public static final RecursivelyProfile RECURSIVELY_SETTING =
@@ -133,7 +132,7 @@ public class AccountsCommon {
     public static <E extends CanLoginEntity> void updatePassword(E entity, String password, String authCode, CrudRepository<E, String> repo) {
         checkAuthCode(authCode, entity);
         entity.setPassword(AccountsCommon.getEncodedPassword(password));
-        putLoggingData("changePwd", "");
+//        putLoggingData("changePwd", "");
         repo.save(entity);
     }
 
@@ -175,7 +174,7 @@ public class AccountsCommon {
         entity.setAuthCodeKey(authKey);
         entity.setAuthCodeKeyActiveTime(Clock.now());
 
-        putLoggingData("bind", authKey);
+//        putLoggingData("bind", authKey);
 
         repo.save(entity);
         token.setAccountCredible(true);
@@ -203,7 +202,7 @@ public class AccountsCommon {
     public static <E extends CanLoginEntity> void resetPassword(E entity, CrudRepository<E, String> repo) {
         entity.setPassword(AccountsCommon.PASSWORD_GENERATORS.select(Constants.ORGANIZATION_PREFIX).encode(null));
         repo.save(entity);
-        putLoggingData("pwd", "reset to default");
+//        putLoggingData("pwd", "reset to default");
     }
 
     /**
@@ -217,7 +216,7 @@ public class AccountsCommon {
         entity.setAuthCodeKey(null);
         entity.setAuthCodeKeyActiveTime(null);
         repo.save(entity);
-        putLoggingData("authCode", "reset");
+//        putLoggingData("authCode", "reset");
     }
 
     public static boolean isCredible(String authCode, CanLoginEntity entity) {

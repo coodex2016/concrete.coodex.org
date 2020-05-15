@@ -31,8 +31,6 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.Set;
 
-import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
-
 /**
  * Created by davidoff shen on 2017-05-10.
  */
@@ -44,6 +42,7 @@ public abstract class AbstractPositionManagementServiceImpl
         extends AbstractManagementService<E, P>
         implements AbstractPositionManagementService<J> {
 
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     protected TwoWayCopier<J, E> positionCopier;
 
@@ -53,8 +52,8 @@ public abstract class AbstractPositionManagementServiceImpl
         E positionEntity = positionCopier.copyA2B(position);
         positionEntity.setBelongTo(checkBelongToExists(belong));
 
-        putLoggingData("new", positionEntity);
-        return new StrID<J>(positionEntity.getId(),
+//        putLoggingData("new", positionEntity);
+        return new StrID<>(positionEntity.getId(),
                 positionCopier.copyB2A(getPositionRepo().save(positionEntity), position));
     }
 
@@ -72,8 +71,9 @@ public abstract class AbstractPositionManagementServiceImpl
     public void update(String id, J position) {
         E positionEntity = getPositionWithPermissionCheck(id);
 //        checkManagementPermission(positionEntity.getBelong());
-        putLoggingData("old", deepCopy(positionEntity));
-        putLoggingData("new", getPositionRepo().save(positionCopier.copyA2B(position, positionEntity)));
+        getPositionRepo().save(positionCopier.copyA2B(position, positionEntity));
+//        putLoggingData("old", deepCopy(positionEntity));
+//        putLoggingData("new", getPositionRepo().save(positionCopier.copyA2B(position, positionEntity)));
     }
 
     @Override
@@ -83,8 +83,8 @@ public abstract class AbstractPositionManagementServiceImpl
         checkManagementPermission(belong);
         OrganizationEntity organizationEntity = checkBelongToExists(belong);
         if (!positionEntity.getBelongTo().getId().equals(belong)) {
-            putLoggingData("target", organizationEntity);
-            putLoggingData("original", positionEntity.getBelongTo());
+//            putLoggingData("target", organizationEntity);
+//            putLoggingData("original", positionEntity.getBelongTo());
 
             positionEntity.setBelongTo(organizationEntity);
             getPositionRepo().save(positionEntity);
@@ -100,7 +100,8 @@ public abstract class AbstractPositionManagementServiceImpl
 
     @Override
     public void delete(String id) {
-        putLoggingData("deleted", deletePosition(getPositionWithPermissionCheck(id)));
+        deletePosition(getPositionWithPermissionCheck(id));
+//        putLoggingData("deleted", deletePosition(getPositionWithPermissionCheck(id)));
     }
 
     @Override

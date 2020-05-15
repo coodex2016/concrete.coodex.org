@@ -36,7 +36,6 @@ import java.util.*;
 
 import static org.coodex.concrete.accounts.AccountsCommon.getTenant;
 import static org.coodex.concrete.accounts.organization.entities.AbstractEntity.DEFAULT_ORDER;
-import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
 import static org.coodex.concrete.common.OrganizationErrorCodes.POSITION_CANNOT_DELETE;
 
 /**
@@ -48,6 +47,7 @@ public abstract class AbstractManagementService<
         P extends AbstractPersonAccountEntity<J>>
         extends AbstractOrgService<J, P> {
 
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private AbstractPositionRepo<J> positionRepo;
 
@@ -69,18 +69,18 @@ public abstract class AbstractManagementService<
 
         if (order == null) order = DEFAULT_ORDER;
         if (entity.getDisplayOrder().intValue() != order.intValue()) {
-            putLoggingData("object", entity);
-            putLoggingData("original", entity.getDisplayOrder());
+//            putLoggingData("object", entity);
+//            putLoggingData("original", entity.getDisplayOrder());
             entity.setDisplayOrder(order);
             repo.save(entity);
-            putLoggingData("target", order);
+//            putLoggingData("target", order);
         }
     }
 
 
     protected J deletePosition(J positionEntity) {
         IF.is(personAccountRepo.count(
-                SpecCommon.<P, J>memberOf("positions", positionEntity)) > 0,
+                SpecCommon.memberOf("positions", positionEntity)) > 0,
                 POSITION_CANNOT_DELETE);
         positionRepo.delete(positionEntity);
         return positionEntity;
@@ -89,7 +89,7 @@ public abstract class AbstractManagementService<
 
     protected Collection<AbstractEntity> deleteOrganization(OrganizationEntity entity) {
 
-        List<AbstractEntity> deletedEntities = new ArrayList<AbstractEntity>();
+        List<AbstractEntity> deletedEntities = new ArrayList<>();
 
         //删除所有职位
         for (J position : positionRepo.findByBelong(entity.getId())) {
@@ -109,14 +109,15 @@ public abstract class AbstractManagementService<
     protected <E extends AuthorizableEntity, R extends CrudRepository<E, String>> void grantTo(E entity, R repo, String[] roles) {
         Set<String> original = Common.join(entity.getRoles());
         Set<String> target = roles == null || roles.length == 0 ?
-                new HashSet<String>() : new HashSet<String>(Arrays.asList(roles));
+                new HashSet<>() : new HashSet<>(Arrays.asList(roles));
         if (Common.difference(target, original).size() > 0 ||
                 Common.difference(original, target).size() > 0) {
 
             entity.setRoles(target);
-            putLoggingData("object", repo.save(entity));
-            putLoggingData("original", original);
-            putLoggingData("target", target);
+            repo.save(entity);
+//            putLoggingData("object", repo.save(entity));
+//            putLoggingData("original", original);
+//            putLoggingData("target", target);
         }
 
     }

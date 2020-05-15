@@ -17,6 +17,7 @@
 package org.coodex.concrete.common;
 
 import org.coodex.util.Common;
+import org.coodex.util.Singleton;
 
 /**
  * ConcreteException， Concrete异常.
@@ -25,14 +26,15 @@ import org.coodex.util.Common;
  */
 public class ConcreteException extends RuntimeException {
 
-    private int code;
-    private String message;
-    private Object[] o;
+    private final int code;
+    private final Object[] o;
+    private final Singleton<String> message = Singleton.with(this::buildMessage);
 
     /**
      * 根据系统的异常代码构建
      *
-     * @param code
+     * @param code    错误号
+     * @param objects 渲染参数
      */
     public ConcreteException(int code, Object... objects) {
         this.code = code;
@@ -44,8 +46,6 @@ public class ConcreteException extends RuntimeException {
                     throw (ConcreteException) this.o[o.length - 1];
             }
         }
-
-        this.message = buildMessage();
     }
 
     private String buildMessage() {
@@ -56,7 +56,7 @@ public class ConcreteException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return message;
+        return message.get();
     }
 
     public int getCode() {

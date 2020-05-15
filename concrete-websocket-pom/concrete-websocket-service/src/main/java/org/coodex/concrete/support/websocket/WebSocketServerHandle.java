@@ -26,8 +26,9 @@ import org.coodex.concrete.websocket.InvalidRequest;
 import org.coodex.concrete.websocket.Subjects;
 import org.coodex.concrete.websocket.WebSocketModule;
 import org.coodex.config.Config;
-import org.coodex.util.Common;
+import org.coodex.id.IDGenerator;
 import org.coodex.util.GenericTypeHelper;
+import org.coodex.util.UUIDHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,7 +120,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
     @Override
     public void onOpen(Session peer) {
         if (!peers.containsKey(peer)) {
-            peers.put(peer, Common.getUUIDStr()/* session id*/);
+            peers.put(peer, IDGenerator.newId());
         }
         peer.setMaxIdleTimeout(0);
 
@@ -307,7 +308,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 
     private String getHostId() {
         // TODO
-        return Config.getValue("websocket.hostId", Common.getUUIDStr(), getAppSet());
+        return Config.getValue("websocket.hostId", UUIDHelper.getUUIDString(), getAppSet());
     }
 
 

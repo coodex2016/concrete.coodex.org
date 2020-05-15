@@ -80,7 +80,7 @@ public class RxClientAPIProcessor extends AbstractProcessor {
 
 
     private static String autoBox(PrimitiveType type) {
-        return AUTO_BOXED_TYPES[Common.findInArray(type.toString(), PRIMITIVE_TYPES)];
+        return AUTO_BOXED_TYPES[Common.indexOf(PRIMITIVE_TYPES, type.toString())];
     }
 
     private static String getActualType(TypeMirror typeMirror, TypeElement context, Types typesUtil, boolean autoBoxed) {

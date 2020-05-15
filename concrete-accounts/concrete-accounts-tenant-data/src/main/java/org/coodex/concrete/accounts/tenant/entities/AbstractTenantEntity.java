@@ -17,8 +17,8 @@
 package org.coodex.concrete.accounts.tenant.entities;
 
 import org.coodex.concrete.accounts.CanLoginEntity;
+import org.coodex.id.IDGenerator;
 import org.coodex.util.Clock;
-import org.coodex.util.Common;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -30,8 +30,9 @@ import java.util.Calendar;
 @MappedSuperclass
 public class AbstractTenantEntity implements Serializable, CanLoginEntity {
 
+    @SuppressWarnings("FieldMayBeFinal")
     @Id
-    private String id = Common.getUUIDStr();
+    private String id = IDGenerator.newId();
 
     @Column(nullable = false, updatable = false, unique = true)
     private String accountName;

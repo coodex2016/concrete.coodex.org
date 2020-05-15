@@ -16,10 +16,16 @@
 
 package org.coodex.concrete.common;
 
+import java.io.Serializable;
+
 /**
  * Created by davidoff shen on 2017-05-08.
  */
+@Deprecated
 public interface OperationLogger {
 
+    @Deprecated
     void log(String accountId, String accountName, String category, String subClass, String message);
+
+//    void success(Account<? extends Serializable> operator,)
 }

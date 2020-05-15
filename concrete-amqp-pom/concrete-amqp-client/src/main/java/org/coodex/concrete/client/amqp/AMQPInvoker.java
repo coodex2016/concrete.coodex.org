@@ -31,7 +31,7 @@ import org.coodex.concrete.core.Level;
 import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.config.Config;
-import org.coodex.util.Common;
+import org.coodex.id.IDGenerator;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
 //    private static Map<String, AMQPFacade> facadeMap = new HashMap<String, AMQPFacade>();
 
     private final static Logger log = LoggerFactory.getLogger(AMQPInvoker.class);
-    private static SingletonMap<AMQPDestination, Facade> facadeSingletonMap = SingletonMap.<AMQPDestination, Facade>builder().function(
+    private static final SingletonMap<AMQPDestination, Facade> facadeSingletonMap = SingletonMap.<AMQPDestination, Facade>builder().function(
             key -> {
                 try {
                     return new Facade(getConnection(key), key.getExchangeName());
@@ -138,7 +138,7 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
     private static class Facade {
         private final Channel channel;
         private final String exchangeName;
-        private final String clientId = Common.getUUIDStr();
+        private final String clientId = IDGenerator.newId();
 
         Facade(final Connection connection, String exchangeName) throws IOException {
             this.exchangeName = getExchangeName(exchangeName);

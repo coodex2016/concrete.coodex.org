@@ -25,6 +25,7 @@ import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concrete.message.AbstractTopic;
 import org.coodex.concrete.message.Queue;
 import org.coodex.concrete.message.TopicKey;
+import org.coodex.id.IDGenerator;
 import org.coodex.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,7 @@ public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<
 
     @Override
     protected String newBeanName() {
-        return "topic_" + Common.getUUIDStr();
+        return "topic_" + IDGenerator.newId();
     }
 
     private String getQueueName(Field field) {

@@ -17,11 +17,17 @@
 package org.coodex.concrete.common;
 
 
+import org.coodex.concrete.api.ErrorCode;
+
+import static org.coodex.concrete.common.ErrorCodeConstants.CONCRETE_CORE;
+import static org.coodex.concrete.common.ErrorCodeConstants.CUSTOM_LOWER_BOUND;
+
 /**
  * concrete 系统用到的错误号定义
  * Created by davidoff shen on 2016-09-01.
  */
-public final class ErrorCodes extends AbstractErrorCodes {
+@ErrorCode
+public final class ErrorCodes /*extends AbstractErrorCodes*/ {
 
     public static final int UNKNOWN_ERROR = CUSTOM_LOWER_BOUND - 1;
 

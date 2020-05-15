@@ -20,8 +20,6 @@ import org.coodex.concrete.accounts.organization.impl.AbstractLoginServiceImpl;
 import org.coodex.concrete.accounts.organization.reference.api.LoginService;
 import org.coodex.concrete.accounts.organization.reference.data.entities.PersonEntity;
 import org.coodex.concrete.accounts.organization.reference.data.entities.PositionEntity;
-import org.coodex.concrete.api.LogAtomic;
-import org.coodex.concrete.api.OperationLog;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -31,8 +29,8 @@ import javax.transaction.Transactional;
  */
 @Named
 @Transactional
-@LogAtomic
-@OperationLog
+//@LogAtomic
+//@OperationLog
 public class LoginServiceImpl extends AbstractLoginServiceImpl<PositionEntity, PersonEntity>
         implements LoginService {
 }

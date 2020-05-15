@@ -26,18 +26,16 @@ import org.coodex.concrete.accounts.organization.repositories.AbstractDepartment
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.concrete.common.IF;
 import org.coodex.copier.TwoWayCopier;
-import org.coodex.util.Common;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
-import java.util.Optional;
-
-import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
 import static org.coodex.concrete.common.OrganizationErrorCodes.NONE_THIS_DEPARTMENT;
 
 /**
  * Created by davidoff shen on 2017-05-09.
  */
+@SuppressWarnings("CdiInjectionPointsInspection")
 public abstract class AbstractDepartmentManagementServiceImpl
         <D extends Department, E extends AbstractDepartmentEntity,
                 J extends AbstractPositionEntity, P extends AbstractPersonAccountEntity<J>>
@@ -65,8 +63,8 @@ public abstract class AbstractDepartmentManagementServiceImpl
         E departmentEntity = departmentCopier.copyA2B(department);
         departmentEntity.setHigherLevel(checkBelongToExists(higherLevel));
 
-        putLoggingData("new", departmentEntity);
-        return new StrID<D>(departmentEntity.getId(),
+//        putLoggingData("new", departmentEntity);
+        return new StrID<>(departmentEntity.getId(),
                 departmentCopier.copyB2A(departmentRepo.save(departmentEntity), department));
     }
 
@@ -75,8 +73,9 @@ public abstract class AbstractDepartmentManagementServiceImpl
         checkManagementPermission(id);
         E departmentEntity = getDepartmentEntity(id);
         checkDuplication(departmentEntity.getHigherLevelId(), department.getName(), id);
-        putLoggingData("old", deepCopy(departmentEntity));
-        putLoggingData("new", departmentRepo.save(departmentCopier.copyA2B(department, departmentEntity)));
+        departmentRepo.save(departmentCopier.copyA2B(department, departmentEntity));
+//        putLoggingData("old", deepCopy(departmentEntity));
+//        putLoggingData("new", departmentRepo.save(departmentCopier.copyA2B(department, departmentEntity)));
     }
 
     @Override
@@ -87,11 +86,11 @@ public abstract class AbstractDepartmentManagementServiceImpl
         E departmentEntity = getDepartmentEntity(id);
         checkManagementPermission(departmentEntity.getHigherLevelId());
 
-        if (!Common.sameString(higherLevel, departmentEntity.getHigherLevelId())) {
-            putLoggingData("original", departmentEntity.getHigherLevel());
+        if (!Objects.equals(higherLevel, departmentEntity.getHigherLevelId())) {
+//            putLoggingData("original", departmentEntity.getHigherLevel());
             departmentEntity.setHigherLevel(higherLevelEntity);
             departmentRepo.save(departmentEntity);
-            putLoggingData("target", departmentEntity.getHigherLevel());
+//            putLoggingData("target", departmentEntity.getHigherLevel());
         }
     }
 
@@ -104,6 +103,7 @@ public abstract class AbstractDepartmentManagementServiceImpl
     @Override
     public void delete(String id) {
         checkManagementPermission(id);
-        putLoggingData("deleted", deleteOrganization(getDepartmentEntity(id)));
+        deleteOrganization(getDepartmentEntity(id));
+//        putLoggingData("deleted", deleteOrganization(getDepartmentEntity(id)));
     }
 }

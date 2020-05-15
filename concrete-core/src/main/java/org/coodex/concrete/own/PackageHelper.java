@@ -29,15 +29,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.coodex.concrete.common.ConcreteHelper.isPrimitive;
 import static org.coodex.util.GenericTypeHelper.toReference;
-import static org.coodex.util.TypeHelper.isPrimitive;
-
-//import org.coodex.util.GenericType;
-//import org.coodex.util.TypeHelper;
 
 public class PackageHelper {
 
-    private static ThreadLocal<Class<?>> context = new ThreadLocal<>();
+
+    private static final ThreadLocal<Class<?>> context = new ThreadLocal<>();
+
 
     private static Type paramType(AbstractParam param) {
         return isPrimitive(param.getType()) ? param.getType() :

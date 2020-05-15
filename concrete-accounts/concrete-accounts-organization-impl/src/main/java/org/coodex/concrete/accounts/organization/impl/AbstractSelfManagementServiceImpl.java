@@ -35,7 +35,6 @@ import java.util.*;
 
 import static org.coodex.concrete.accounts.AccountsCommon.checkAuthCode;
 import static org.coodex.concrete.accounts.AccountsCommon.getAuthenticatorDesc;
-import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
 import static org.coodex.concrete.common.OrganizationErrorCodes.NOT_ORGANIZATION_ACCOUNT;
 import static org.coodex.util.Common.cast;
 
@@ -164,7 +163,7 @@ public abstract class AbstractSelfManagementServiceImpl<
                 IF.is(personAccountRepo.countByCellphoneAndTenant(cellPhone, getTenant()) != 0, OrganizationErrorCodes.CELL_PHONE_EXISTS);
             }
             personEntity.setCellphone(cellPhone);
-            putLoggingData("cellPhone", cellPhone);
+//            putLoggingData("cellPhone", cellPhone);
             personAccountRepo.save(personEntity);
         }
     }
@@ -177,7 +176,7 @@ public abstract class AbstractSelfManagementServiceImpl<
                 IF.is(personAccountRepo.countByEmailAndTenant(email, getTenant()) != 0, OrganizationErrorCodes.EMAIL_EXISTS);
             }
             personEntity.setEmail(email);
-            putLoggingData("email", email);
+//            putLoggingData("email", email);
             personAccountRepo.save(personEntity);
         }
     }

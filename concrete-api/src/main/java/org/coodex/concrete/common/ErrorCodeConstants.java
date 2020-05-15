@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2020 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,22 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.util.ServiceLoader;
-import org.coodex.util.LazyServiceLoader;
+public class ErrorCodeConstants {
 
-public class JSONSerializerFactory {
+    public static final int OK = 0;
 
-    private static final ServiceLoader<JSONSerializer> jsonSerializerConcreteServiceLoader
-            = new LazyServiceLoader<JSONSerializer>(new FastJsonSerializer()) {
-    };
+    public static final int CUSTOM_LOWER_BOUND = 100000;
 
-    public static JSONSerializer getInstance() {
-        return jsonSerializerConcreteServiceLoader.get();
-    }
+    public static final int CONCRETE_CORE = 1000;
+
+    public static final int ATTACHMENT_ERROR_CODE = CONCRETE_CORE + 1000;
+
+    public static final int REVERSE_PROXY_ERROR_CODE = CONCRETE_CORE + 2000;
+
+    public static final int WEB_SOCKET_ERROR_CODE = CONCRETE_CORE + 3000;
+
+    // 5000-5100 分配给prod
+
+
+    // 10000 - 19999 保留给concrete accounts 模块
 }

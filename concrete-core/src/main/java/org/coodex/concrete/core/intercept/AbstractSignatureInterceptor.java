@@ -17,7 +17,6 @@
 package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.commons.codec.binary.Base64;
 import org.coodex.concrete.api.Signable;
 import org.coodex.concrete.api.pojo.Signature;
 import org.coodex.concrete.client.ClientSideContext;
@@ -36,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,7 +56,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractSignatureInterceptor.class);
 
-    private static final ServiceLoader<ClientKeyIdAndAlgGetter> CLIENT_KEY_ID_GETTER = new ServiceLoaderImpl<ClientKeyIdAndAlgGetter>(
+    private static final ServiceLoader<ClientKeyIdAndAlgGetter> CLIENT_KEY_ID_GETTER = new LazyServiceLoader<ClientKeyIdAndAlgGetter>(
             (paperName, propertyKeyId, destination) -> {
                 String s = Config.get("signature." + propertyKeyId, TAG_CLIENT, destination.getIdentify(), paperName, getAppSet());
                 if (s == null) {
@@ -76,7 +76,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     ) {
     };
 
-    private static final ServiceLoader<Client4Elements> CLIENT_4_ELEMENTS = new ServiceLoaderImpl<Client4Elements>(
+    private static final ServiceLoader<Client4Elements> CLIENT_4_ELEMENTS = new LazyServiceLoader<Client4Elements>(
             (module, key) -> {
                 String s = Config.get(key, TAG_CLIENT, module);
                 if (s == null) {
@@ -95,11 +95,11 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     private static final Supplier<String> SERVER_SIDE_VERIFY_FAILED = () -> I18N.translate("sign.serverSideVerifyFailed");
     private static final Supplier<String> NO_SIGNATURE_FOUND = () -> I18N.translate("sign.noSignatureFound");
 
-//    private int getModel() {
+    //    private int getModel() {
 //        return getServiceContext().getSide() == null ? SIDE_SERVER : getServiceContext().getSide().intValue();
 //    }
     private static final SingletonMap<String, PropertyNameReload> PROPERTY_NAMES = SingletonMap.<String, PropertyNameReload>builder()
-            .function(PropertyNameReload::new).nullKey("null_" + Common.getUUIDStr()).build();
+            .function(PropertyNameReload::new).nullKey("null_" + UUIDHelper.getUUIDString()).build();
 
     private static final Supplier<String> NOISE_MUST_NOT_NULL =
             () -> String.format(I18N.translate("sign.mustNotNull"), getPropertyName(KEY_FIELD_NOISE));
@@ -121,7 +121,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         IronPen ironPen = howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName());
         SignatureSerializer serializer = howToSign.getSerializer();
         IF.not(ironPen.verify(serializer.serialize(content),
-                Base64.decodeBase64(getSignature(content)),
+                Base64.getDecoder().decode(getSignature(content)),
                 algorithm, keyId),
                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED, SERVER_SIDE_VERIFY_FAILED);
 
@@ -205,7 +205,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     private static Object serverSign(Signature signature, String algorithm, String keyId, IronPen ironPen, SignatureSerializer serializer) throws IllegalAccessException {
         signature.setNoise(getNoiseGenerator(keyId).generateNoise());
         signature.setSign(
-                Base64.encodeBase64String(
+                Base64.getEncoder().encodeToString(
                         ironPen.sign(serializer.serialize(signatureToMap(signature)), algorithm, keyId)));
         return signature;
     }
@@ -331,7 +331,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
         byte[] data = howToSign.getSerializer().serialize(content);
 
-        String sign = Base64.encodeBase64String(howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName())
+        String sign = Base64.getEncoder().encodeToString(howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName())
                 .sign(data, algorithm, keyId));
 
         putKeyField(content, KEY_FIELD_SIGN, sign, context, joinPoint);
@@ -377,7 +377,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     private void clientVerify(SignUtil.HowToSign howToSign, @NotNull Signature signature, String algorithm, String keyId) throws IllegalAccessException {
         IF.not(howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName())
                 .verify(howToSign.getSerializer().serialize(signatureToMap(signature)),
-                        Base64.decodeBase64(signature.getSign()),
+                        Base64.getDecoder().decode(signature.getSign()),
                         algorithm, keyId), ErrorCodes.SIGNATURE_VERIFICATION_FAILED, "client side verify failed.");
     }
 

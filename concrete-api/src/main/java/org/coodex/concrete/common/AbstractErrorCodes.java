@@ -16,38 +16,30 @@
 
 package org.coodex.concrete.common;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.coodex.concrete.api.ErrorCode;
 
 /**
  * Created by davidoff shen on 2016-09-04.
  */
+@SuppressWarnings("unused")
+@ErrorCode
+@Deprecated
 public abstract class AbstractErrorCodes {
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    public @interface Namespace {
-        String value() default "";
-    }
 
     public static final int OK = 0;
 
+    protected static final int CUSTOM_LOWER_BOUND = ErrorCodeConstants.CUSTOM_LOWER_BOUND;
 
-    protected static final int CUSTOM_LOWER_BOUND = 100000;
+    protected static final int CONCRETE_CORE = ErrorCodeConstants.CONCRETE_CORE;
 
+    protected static final int ATTACHMENT_ERROR_CODE = ErrorCodeConstants.ATTACHMENT_ERROR_CODE;
 
-    protected static final int CONCRETE_CORE = 1000;
+    protected static final int REVERSE_PROXY_ERROR_CODE = ErrorCodeConstants.REVERSE_PROXY_ERROR_CODE;
 
-    protected static final int ATTACHMENT_ERROR_CODE = CONCRETE_CORE + 1000;
-
-    protected static final int REVERSE_PROXY_ERROR_CODE = CONCRETE_CORE + 2000;
-
-    protected static final int WEB_SOCKET_ERROR_CODE = CONCRETE_CORE + 3000;
+    protected static final int WEB_SOCKET_ERROR_CODE = ErrorCodeConstants.WEB_SOCKET_ERROR_CODE;
 
     // 5000-5100 分配给prod
 
 
-    /// 10000 - 19999 保留给concrete accounts 模块
+    // 10000 - 19999 保留给concrete accounts 模块
 }

@@ -20,8 +20,8 @@ package org.coodex.concrete.common;
  * Created by davidoff shen on 2016-12-01.
  */
 public class ErrorDefinition implements Comparable<ErrorDefinition> {
-    private int errorCode;
-    private String errorMessage;
+    private final Integer errorCode;
+    private final String errorMessage;
 
     public ErrorDefinition(int errorCode) {
         this.errorCode = errorCode;
@@ -32,12 +32,13 @@ public class ErrorDefinition implements Comparable<ErrorDefinition> {
         return errorCode;
     }
 
+    @SuppressWarnings("unused")
     public String getErrorMessage() {
         return errorMessage;
     }
 
     @Override
     public int compareTo(ErrorDefinition o) {
-        return errorCode < o.errorCode ? -1 : 1;
+        return errorCode.compareTo(o.errorCode);
     }
 }

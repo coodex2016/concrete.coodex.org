@@ -22,7 +22,6 @@ import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.Common;
-import org.coodex.util.TypeHelper;
 
 import javax.ws.rs.HttpMethod;
 import java.lang.reflect.Method;
@@ -30,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.coodex.concrete.common.ConcreteHelper.isPrimitive;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.slash;
 import static org.coodex.concrete.jaxrs.Predicates.getHttpMethod;
 import static org.coodex.concrete.jaxrs.Predicates.removePredicate;
@@ -43,7 +43,7 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam/*, JaxrsModule*/> {
 
 
     private List<JaxrsParam> pojo;
-    private String name;
+    private final String name;
     private String declaredName = null;
 
     public JaxrsUnit(Method method, JaxrsModule module) {
@@ -198,7 +198,7 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam/*, JaxrsModule*/> {
 //        //大字符串
 //        if (clz == String.class && isBigString) return null;
 
-        return TypeHelper.isPrimitive(clz) ?
+        return isPrimitive(clz) ?
 //                JaxRSHelper.used024Behavior() ?
                 parameter.getName() :
 //                        null :
@@ -246,7 +246,7 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam/*, JaxrsModule*/> {
 
 //            parameters[i] = new Param(method, i);
 //            Param param = parameters[i];
-        if (!TypeHelper.isPrimitive(param.getType()) ||
+        if (!isPrimitive(param.getType()) ||
                 /*(param.getType() == String.class
                         && param.getDeclaredAnnotation(BigString.class) != null) */
                 isBodyPrimitive(param)) {

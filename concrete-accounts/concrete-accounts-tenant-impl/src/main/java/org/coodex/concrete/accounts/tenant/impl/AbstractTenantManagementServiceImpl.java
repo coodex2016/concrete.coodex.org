@@ -27,7 +27,9 @@ import org.coodex.concrete.accounts.tenant.repositories.AbstractTenantRepo;
 import org.coodex.concrete.api.pojo.PageRequest;
 import org.coodex.concrete.api.pojo.PageResult;
 import org.coodex.concrete.api.pojo.StrID;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.AccountsErrorCodes;
+import org.coodex.concrete.common.ConcreteException;
+import org.coodex.concrete.common.IF;
 import org.coodex.copier.TwoWayCopier;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
@@ -36,12 +38,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.inject.Inject;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static org.coodex.concrete.common.ConcreteContext.putLoggingData;
 import static org.springframework.data.domain.PageRequest.of;
 
 /**
@@ -56,13 +56,13 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
     @Inject
     protected TwoWayCopier<T, E> copier;
 
-    protected <O extends Serializable> O deepCopy(O value) {
-        try {
-            return Common.deepCopy(value);
-        } catch (Throwable th) {
-            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
-        }
-    }
+//    protected <O extends Serializable> O deepCopy(O value) {
+//        try {
+//            return Common.deepCopy(value);
+//        } catch (Throwable th) {
+//            throw new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
+//        }
+//    }
 
 
     protected E getTenantEntity(String tenant) {
@@ -74,15 +74,16 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
         IF.notNull(tenantRepo.findFirstByAccountName(tenant), AccountsErrorCodes.TENANT_ALREADY_EXISTS);
         tenantInfo.setAccountName(tenant);
         E tenantEntity = tenantRepo.save(copier.copyA2B(tenantInfo));
-        putLoggingData("new", tenantEntity);
+//        putLoggingData("new", tenantEntity);
         return new StrID<>(tenantEntity.getId(), copier.copyB2A(tenantEntity, tenantInfo));
     }
 
     @Override
     public void update(String tenant, T tenantInfo) {
         E tenantEntity = getTenantEntity(tenant);
-        putLoggingData("old", deepCopy(tenantEntity));
-        putLoggingData("new", tenantRepo.save(copier.copyA2B(tenantInfo, tenantEntity)));
+        tenantRepo.save(copier.copyA2B(tenantInfo, tenantEntity));
+//        putLoggingData("old", deepCopy(tenantEntity));
+//        putLoggingData("new", tenantRepo.save(copier.copyA2B(tenantInfo, tenantEntity)));
     }
 
     @Override
@@ -138,7 +139,7 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
         }
 
         tenantRepo.delete(tenantEntity);
-        putLoggingData("deleted", tenantEntity);
+//        putLoggingData("deleted", tenantEntity);
     }
 
 
@@ -152,7 +153,8 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
         } else {
             tenantEntity.setSurplus(tenantEntity.getSurplus() + validation.getTimeInMillis() - Clock.currentTimeMillis());
         }
-        putLoggingData("tenant", tenantRepo.save(tenantEntity));
+        tenantRepo.save(tenantEntity);
+//        putLoggingData("tenant", tenantRepo.save(tenantEntity));
     }
 
     protected Calendar getValidation(Calendar validation, int count, int unit) {
@@ -184,13 +186,14 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
         IF.not(tenantEntity.isUsing() && validation != null &&
                         validation.getTimeInMillis() >= now,
                 AccountsErrorCodes.TENANT_UNAVAILABLE);
-        if(validation != null) {
+        if (validation != null) {
             long remainder = validation.getTimeInMillis() - now;
             tenantEntity.setSurplus(remainder);
             tenantEntity.setValidation(null);
         }
         tenantEntity.setUsing(false);
-        putLoggingData("tenant", tenantRepo.save(tenantEntity));
+        tenantRepo.save(tenantEntity);
+//        putLoggingData("tenant", tenantRepo.save(tenantEntity));
     }
 
     @Override
@@ -203,7 +206,8 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
         tenantEntity.setSurplus(0L);
         tenantEntity.setValidation(validation);
         tenantEntity.setUsing(true);
-        putLoggingData("tenant", tenantRepo.save(tenantEntity));
+        tenantRepo.save(tenantEntity);
+//        putLoggingData("tenant", tenantRepo.save(tenantEntity));
     }
 
     @Override
