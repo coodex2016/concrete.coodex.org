@@ -91,16 +91,18 @@ public class DefaultSignatureSerializer implements SignatureSerializer {
         } else if (List.class.isAssignableFrom(c)) {
             s = jointArray(key, (List<Object>) o);
         } else if (Set.class.isAssignableFrom(c)) {
-            Object[] objects = ((Set) o).toArray();
+            Object[] objects = ((Set<?>) o).toArray();
             Arrays.sort(objects);
             s = jointArray(key, Arrays.asList(objects));
+        }
+        // 2020/05/18，map
+        else if (Map.class.isAssignableFrom(c)) {
+            s = jointMap(key, (Map<?, ?>) o);
         }
         // 基本类型，double按照保留6位小数转换
         else if (Common.inArray(c, PRIMITIVE_CLASS)) {
             s = encode(key) + "=" +
-                    encode((double.class.equals(c) || Double.class.equals(c)) ?
-                            String.format("%.6f", o)
-                            : o.toString());
+                    encode(Double.class.equals(c) ? String.format("%.6f", o) : o.toString());
 
         }
         // Pojo
@@ -109,6 +111,21 @@ public class DefaultSignatureSerializer implements SignatureSerializer {
         }
 
         return Common.isBlank(s) ? null : ((first ? "" : "&") + s);
+    }
+
+    private String jointMap(String key, Map<?, ?> object) {
+        String s;
+        Map<String, Object> map = new HashMap<>();
+        object.forEach((key1, value) -> {
+            if (key1 instanceof String) {
+                map.put((String) key1, value);
+            } else {
+                log.info("key {} of {} is not string", key1, key);
+            }
+        });
+        s = toSign(map);
+        s = Common.isBlank(s) ? null : (encode(key) + "=" + encode(s));
+        return s;
     }
 
     private String jointArray(String key, List<Object> list) {
@@ -182,5 +199,6 @@ public class DefaultSignatureSerializer implements SignatureSerializer {
         }
         return builder.toString();
     }
+
 
 }
