@@ -36,8 +36,8 @@ import static org.coodex.concrete.core.intercept.InterceptOrders.PRODUCTION_CHEC
 @ServerSide
 public class ProductionValidationInterceptor extends AbstractSyncInterceptor {
 
-    private Token token = TokenWrapper.getInstance();
-    private LazySelectableServiceLoader<Account<? extends Serializable>, ProductionRepository> productionRepositorySelectableServiceLoader =
+    private final Token token = TokenWrapper.getInstance();
+    private final LazySelectableServiceLoader<Account<? extends Serializable>, ProductionRepository> productionRepositorySelectableServiceLoader =
             new LazySelectableServiceLoader<Account<? extends Serializable>, ProductionRepository>() {
             };
 

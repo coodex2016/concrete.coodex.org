@@ -30,8 +30,8 @@ import java.util.Map;
  * Created by davidoff shen on 2016-12-01.
  */
 public class API {
-    private static final ServiceLoader<ConcreteAPIRender> RENDERS =
-            new LazyServiceLoader<ConcreteAPIRender>() {
+    private static final ServiceLoader<ConcreteAPIRenderer> RENDERS =
+            new LazyServiceLoader<ConcreteAPIRenderer>() {
             };
     private static final String TAG_API_GENERATOR = "api_gen";
 
@@ -62,7 +62,7 @@ public class API {
         }
         if (RENDERS.getAll().size() == 0)
             throw new RuntimeException("NONE render found.");
-        for (ConcreteAPIRender render : RENDERS.getAll().values()) {
+        for (ConcreteAPIRenderer render : RENDERS.getAll().values()) {
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (render) {
                 if (render.isAccept(desc)) {
@@ -92,7 +92,7 @@ public class API {
 
     private static Map<String, Object> toMap(String json) {
         if (json == null)
-            return new HashMap<String, Object>();
+            return new HashMap<>();
         else {
             return JSON.parseObject(json, new TypeReference<Map<String, Object>>() {
             });

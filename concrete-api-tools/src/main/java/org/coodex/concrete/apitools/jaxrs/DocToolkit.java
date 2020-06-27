@@ -18,7 +18,7 @@ package org.coodex.concrete.apitools.jaxrs;
 
 import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.Signable;
-import org.coodex.concrete.apitools.AbstractRender;
+import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.core.signature.SignUtil;
 import org.coodex.util.Common;
 
@@ -38,7 +38,7 @@ import static org.coodex.util.GenericTypeHelper.solveFromType;
 @SuppressWarnings("unused")
 public abstract class DocToolkit {
 
-    private AbstractRender render;
+    private final AbstractRenderer render;
 
 //    public static boolean isPojo(Class<?> type) {
 //        return !(isPrimitive(type) ||
@@ -47,7 +47,7 @@ public abstract class DocToolkit {
 //                Map.class.isAssignableFrom(type));
 //    }
 
-    public DocToolkit(AbstractRender render) {
+    public DocToolkit(AbstractRenderer render) {
         this.render = render;
     }
 
@@ -151,7 +151,7 @@ public abstract class DocToolkit {
 
 //    protected abstract String getTypeName(Class<?> clz, Class<?> contextClass);
 
-    public AbstractRender getRender() {
+    public AbstractRenderer getRender() {
         return render;
     }
 

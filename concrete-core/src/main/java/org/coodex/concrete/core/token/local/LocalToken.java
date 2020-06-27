@@ -34,7 +34,6 @@ import static org.coodex.util.Common.cast;
 /**
  * Created by davidoff shen on 2016-09-05.
  */
-@SuppressWarnings("unused")
 class LocalToken /*implements Token*/ extends AbstractToken {
 
 //    private final static Logger log = LoggerFactory.getLogger(LocalToken.class);
@@ -60,6 +59,7 @@ class LocalToken /*implements Token*/ extends AbstractToken {
         lastActive = Clock.currentTimeMillis();
     }
 
+    @SuppressWarnings("unused")
     public long getLastActive() {
         return lastActive;
     }
@@ -95,7 +95,6 @@ class LocalToken /*implements Token*/ extends AbstractToken {
     @Override
     public void setAccount(Account<?> account) {
         currentAccountId = account.getId();
-//        currentAccount = account;
     }
 
     @Override

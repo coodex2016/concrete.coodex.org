@@ -18,8 +18,8 @@ package org.coodex.concrete.accounts;
 
 import org.coodex.concrete.accounts.organization.reference.api.PersonService;
 import org.coodex.concrete.apitools.API;
-import org.coodex.concrete.apitools.jaxrs.angular.AngularCodeRender;
-import org.coodex.concrete.apitools.jaxrs.service.ServiceDocRender;
+import org.coodex.concrete.apitools.jaxrs.angular.AngularCodeRenderer;
+import org.coodex.concrete.apitools.jaxrs.service.ServiceDocRenderer;
 
 import java.io.IOException;
 
@@ -30,10 +30,10 @@ public class APITools {
 
     public static void main(String[] args) throws IOException {
 
-        API.generate(ServiceDocRender.RENDER_NAME, "/concrete/accounts/restful.doc",
+        API.generate(ServiceDocRenderer.RENDER_NAME, "/concrete/accounts/restful.doc",
                 PersonService.class.getPackage().getName());
 
-        API.generate(AngularCodeRender.RENDER_NAME + ".accounts/organization", "D:\\Projects\\front_ends\\ng2-admin\\src",
+        API.generate(AngularCodeRenderer.RENDER_NAME + ".accounts/organization", "D:\\Projects\\front_ends\\ng2-admin\\src",
                 PersonService.class.getPackage().getName());
     }
 }

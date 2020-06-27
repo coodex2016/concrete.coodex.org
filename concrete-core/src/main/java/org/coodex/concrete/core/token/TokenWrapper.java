@@ -35,7 +35,7 @@ public class TokenWrapper implements Token {
 
 
     private static final Token singletonInstance = new TokenWrapper();
-    private static Singleton<TokenManager> tokenManager =
+    private static final Singleton<TokenManager> tokenManager =
             Singleton.with(() -> {
                 try {
                     return BeanServiceLoaderProvider

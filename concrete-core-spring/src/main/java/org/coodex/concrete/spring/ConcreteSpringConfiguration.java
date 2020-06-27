@@ -48,7 +48,7 @@ public class ConcreteSpringConfiguration {
 //            new Singleton<>(() -> new ServiceLoaderImpl<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
 //            });
 
-    private static LazyServiceLoader<InterceptorLoader> INTERCEPTOR_LOADER =
+    private static final LazyServiceLoader<InterceptorLoader> INTERCEPTOR_LOADER =
             new LazyServiceLoader<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
             };
 //            new Singleton<>(() -> new ServiceLoaderImpl<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {

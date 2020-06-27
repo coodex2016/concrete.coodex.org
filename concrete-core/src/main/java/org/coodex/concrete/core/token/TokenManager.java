@@ -26,27 +26,23 @@ public interface TokenManager {
     long DEFAULT_MAX_IDLE = 60; //默认60分钟
 
     /**
-     * 获取一个已存在的令牌，令牌不存在返回空值
-     *
-     * @param id
-     * @return
+     * @param id id
+     * @return 获取一个已存在的令牌，令牌不存在返回空值
      */
     Token getToken(String id);
 
-    /**
-     * 获取一个令牌，若该id令牌不存在且force为真是，则创建一个
-     *
-     * @param id
-     * @param force
-     * @return
-     */
-    @Deprecated
-    Token getToken(String id, boolean force);
+//    /**
+//     * 获取一个令牌，若该id令牌不存在且force为真是，则创建一个
+//     *
+//     * @param id
+//     * @param force
+//     * @return
+//     */
+//    @Deprecated
+//    Token getToken(String id, boolean force);
 
     /**
-     * 新建一个Token
-     *
-     * @return
+     * @return 新建一个Token
      */
     Token newToken();
 }

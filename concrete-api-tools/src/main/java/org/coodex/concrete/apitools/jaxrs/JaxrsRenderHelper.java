@@ -17,12 +17,14 @@
 package org.coodex.concrete.apitools.jaxrs;
 
 import org.coodex.concrete.common.modules.AbstractModule;
-import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
+
+import java.util.StringJoiner;
 
 public class JaxrsRenderHelper {
 
-    public static String getBody(JaxrsUnit unit){
+    public static String getBody(JaxrsUnit unit) {
         JaxrsParam[] pojoParams = unit.getPojo();
         switch (unit.getPojoCount()) {
             case 1:
@@ -30,13 +32,16 @@ public class JaxrsRenderHelper {
             case 0:
                 return null;
             default:
-                StringBuilder builder = new StringBuilder("{ ");
+                StringJoiner joiner = new StringJoiner(", ");
+//                StringBuilder builder = new StringBuilder("{ ");
                 for (int i = 0; i < pojoParams.length; i++) {
-                    if (i > 0) builder.append(", ");
-                    builder.append(pojoParams[i].getName())/*.append(": ").append(pojoParams[i].getName())*/;
+//                    if (i > 0) builder.append(", ");
+//                    builder.append(pojoParams[i].getName())/*.append(": ").append(pojoParams[i].getName())*/;
+                    joiner.add(pojoParams[i].getName() + ": " + pojoParams[i].getName());
                 }
-                builder.append(" }");
-                return builder.toString();
+//                builder.append(" }");
+//                return builder.toString();
+                return "{ " + joiner.toString() + " }";
         }
     }
 

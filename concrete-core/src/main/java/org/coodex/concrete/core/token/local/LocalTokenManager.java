@@ -41,6 +41,13 @@ public class LocalTokenManager implements TokenManager {
 
     static final Map<String, TokenWithFuture> TOKENS = new ConcurrentHashMap<>();
 
+//    private static final SingletonMap<String, Token> TOKEN_MAP
+//        = SingletonMap.<String,Token>builder()
+//        .maxAge(getTokenMaxIdleInMinute() * 60L * 1000L)
+//        .activeOnGet(true)
+//        .scheduledExecutorService(ConcreteHelper.getScheduler("localTokenManager"))
+////        .deathListener()
+//        .build();
 //    private static final ScheduledExecutorService EXECUTOR = ExecutorsHelper.newSingleThreadScheduledExecutor();
 
     @Override
@@ -48,11 +55,11 @@ public class LocalTokenManager implements TokenManager {
         return buildToken(id, false);
     }
 
-    @Override
-    @Deprecated
-    public Token getToken(final String id, boolean force) {
-        return buildToken(id, false);
-    }
+//    @Override
+//    @Deprecated
+//    public Token getToken(final String id, boolean force) {
+//        return buildToken(id, false);
+//    }
 
     private synchronized Token buildToken(String id, boolean force) {
         if (id == null) throw new NullPointerException("token id could NOT be NULL.");

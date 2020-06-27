@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * Created by davidoff shen on 2016-11-30.
  */
-public interface ConcreteAPIRender {
+public interface ConcreteAPIRenderer {
 
     /**
      * <pre>例如：
@@ -39,8 +39,8 @@ public interface ConcreteAPIRender {
     /**
      * @param packages 检索的包
      */
+//    @Deprecated // todo 使用 classes 替代
     void writeTo(String... packages) throws IOException;
-
 
     void setRoot(String rootPath);
 

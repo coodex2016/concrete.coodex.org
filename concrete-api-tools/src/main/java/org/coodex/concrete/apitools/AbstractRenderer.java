@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * Created by davidoff shen on 2016-12-04.
  */
-public abstract class AbstractRender implements ConcreteAPIRender {
+public abstract class AbstractRenderer implements ConcreteAPIRenderer {
 
     protected static final String FS = Common.FILE_SEPARATOR;
     private Configuration configuration;

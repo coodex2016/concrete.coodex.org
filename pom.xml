@@ -22,7 +22,7 @@
     <name>concrete</name>
     <description>concrete service definition spec.</description>
     <url>https://concrete.coodex.org</url>
-    <groupId>org.coodex</groupId>
+    <groupId>org.coodex.concrete</groupId>
     <artifactId>concrete-pom</artifactId>
     <version>0.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -130,7 +130,7 @@
         <hibernate.version>5.3.10.Final</hibernate.version>
         <hibernate.validator.version>6.0.16.Final</hibernate.validator.version>
 
-        <druid.version>1.1.17</druid.version>
+        <druid.version>1.1.22</druid.version>
 
         <rxjava.vesion>2.2.9</rxjava.vesion>
         <jackson2.version>2.9.8</jackson2.version>

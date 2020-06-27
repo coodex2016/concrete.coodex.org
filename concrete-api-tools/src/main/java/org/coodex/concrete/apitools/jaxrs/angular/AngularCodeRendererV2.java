@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.apitools.jaxrs;
+package org.coodex.concrete.apitools.jaxrs.angular;
 
-import org.coodex.concrete.apitools.AbstractRender;
+import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 
-/**
- * Created by davidoff shen on 2017-04-13.
- */
-public abstract class AbstractMarkdownRender extends AbstractRender {
+public class AngularCodeRendererV2 extends AngularCodeRenderer {
+    public static final String RENDER_NAME =
+            JaxRSModuleMaker.JAX_RS_PREV + ".code.angular.ts.v2";
+    private static final String RESOURCE_PACKAGE = "concrete/templates/jaxrs/angular/code/v2/";
 
+    @Override
+    protected String getTemplatePath() {
+        return RESOURCE_PACKAGE;
+    }
 
-}
-
-class MetaData {
-
+    @Override
+    protected String getRenderName() {
+        return RENDER_NAME;
+    }
 }

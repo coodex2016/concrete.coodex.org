@@ -22,6 +22,7 @@ import org.coodex.config.Config;
 import org.coodex.id.IDGenerator;
 import org.coodex.sharedcache.SharedCacheClient;
 import org.coodex.sharedcache.SharedCacheClientManager;
+import org.coodex.util.UUIDHelper;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 import static org.coodex.concrete.common.ConcreteHelper.getTokenMaxIdleInMinute;
@@ -29,22 +30,23 @@ import static org.coodex.concrete.common.ConcreteHelper.getTokenMaxIdleInMinute;
 /**
  * Created by davidoff shen on 2016-11-23.
  */
+@SuppressWarnings("unused")
 public class SharedCacheTokenManager implements TokenManager {
 
 
     @Override
     public Token getToken(String id) {
-        return $getToken(id);
+        return getTokenById(id);
     }
 
-    @Override
-    @Deprecated
-    public Token getToken(String id, boolean force) {
+//    @Override
+//    @Deprecated
+//    public Token getToken(String id, boolean force) {
+//
+//        return $getToken(id);
+//    }
 
-        return $getToken(id);
-    }
-
-    private Token $getToken(String id) {
+    private Token getTokenById(String id) {
         String tokenCacheType = Config.get("tokenCacheType", getAppSet());
         // ConcreteHelper.getProfile().getString("tokenCacheType");
         SharedCacheClient client = SharedCacheClientManager.getClient(tokenCacheType);
@@ -56,6 +58,6 @@ public class SharedCacheTokenManager implements TokenManager {
 
     @Override
     public Token newToken() {
-        return $getToken(IDGenerator.newId());
+        return getTokenById(UUIDHelper.getUUIDString());
     }
 }

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.apitools.jaxrs.service;
+package org.coodex.concrete.apitools.jaxrs.jquery;
 
-import org.coodex.concrete.apitools.AbstractRender;
+import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
-import org.coodex.concrete.common.ErrorDefinition;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 
@@ -26,30 +25,17 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.coodex.concrete.apitools.APIHelper.loadModules;
-import static org.coodex.concrete.common.ErrorMessageFacade.getAllErrorInfo;
 
 /**
- * Created by davidoff shen on 2016-11-30.
+ * Created by davidoff shen on 2016-12-05.
  */
-public class ServiceDocRender extends AbstractRender {
+public class JQueryDocRenderer extends AbstractRenderer {
 
     public static final String RENDER_NAME =
-            JaxRSModuleMaker.JAX_RS_PREV + ".doc.backend." + "gitbook" + ".v1";
+            JaxRSModuleMaker.JAX_RS_PREV + ".doc.jquery.gitbook.v1";
+    private static final String RESOURCE_PACKAGE = "concrete/templates/jaxrs/jquery/doc/v1/";
 
-    private static final String RESOURCE_PACKAGE = "concrete/templates/jaxrs/services/doc/gitbook/v1/";
-
-    private final DocToolkit toolkit = new ServiceDocToolkit(this);
-
-    @Override
-    protected String getTemplatePath() {
-        return RESOURCE_PACKAGE;
-    }
-
-    @Override
-    protected String getRenderName() {
-        return RENDER_NAME;
-    }
-
+    private DocToolkit toolkit = new JQueryDocToolkit(this);
 
     private void writeSummary(List<JaxrsModule> modules) throws IOException {
         writeTo("SUMMARY.md",
@@ -69,7 +55,11 @@ public class ServiceDocRender extends AbstractRender {
                 "module", module, toolkit);
     }
 
-    public void writeTo(List<JaxrsModule> modules) throws IOException {
+    @Override
+    public void writeTo(String... packages) throws IOException {
+        List<JaxrsModule> modules = loadModules(RENDER_NAME, packages);
+
+
         // book.json
         if (!exists("book.json"))
             copyTo("book.json", "book.json");
@@ -89,22 +79,15 @@ public class ServiceDocRender extends AbstractRender {
 
         // SUMMARY.MD
         writeSummary(modules);
-
-    }
-
-    private void writeErrorInfo(List<ErrorDefinition> errorDefinitions) throws IOException {
-        writeTo("errorInfo.md",
-                "errorInfo.md",
-                "errorInfo", errorDefinitions);
     }
 
     @Override
-    public void writeTo(String... packages) throws IOException {
-        writeTo(loadModules(RENDER_NAME, packages));
+    protected String getTemplatePath() {
+        return RESOURCE_PACKAGE;
+    }
 
-//        List<ErrorDefinition> errors = new ArrayList<ErrorDefinition>();
-
-        // write errorInfo
-        writeErrorInfo(getAllErrorInfo());
+    @Override
+    protected String getRenderName() {
+        return RENDER_NAME;
     }
 }

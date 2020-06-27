@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.apitools.jaxrs.angular;
 
-import org.coodex.concrete.apitools.AbstractAngularRender;
+import org.coodex.concrete.apitools.AbstractAngularRenderer;
 import org.coodex.concrete.apitools.jaxrs.JaxrsRenderHelper;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.modules.AbstractModule;
@@ -36,7 +36,7 @@ import static org.coodex.concrete.apitools.APIHelper.loadModules;
 /**
  * Created by davidoff shen on 2017-04-10.
  */
-public class AngularCodeRender extends AbstractAngularRender<JaxrsUnit> {
+public class AngularCodeRenderer extends AbstractAngularRenderer<JaxrsUnit> {
 
     public static final String RENDER_NAME =
             JaxRSModuleMaker.JAX_RS_PREV + ".code.angular.ts.v1";

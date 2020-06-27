@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.apitools.rx;
 
-import org.coodex.concrete.apitools.AbstractRender;
+import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
@@ -31,7 +31,7 @@ import java.util.*;
 import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.util.GenericTypeHelper.toReference;
 
-public class ReactiveStreamsRender extends AbstractRender {
+public class ReactiveStreamsRenderer extends AbstractRenderer {
 
     public static final String RENDER_NAME = "java.code.RxJava2.v1";
 

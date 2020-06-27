@@ -14,26 +14,30 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.apitools.websocket.jquery;
+package org.coodex.concrete.apitools.jaxrs.jquery;
 
-import org.coodex.concrete.apitools.AbstractRender;
-import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.modules.AbstractParam;
-import org.coodex.concrete.websocket.WebSocketModule;
-import org.coodex.concrete.websocket.WebSocketUnit;
+import org.coodex.concrete.apitools.AbstractRenderer;
+import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
+import org.coodex.concrete.jaxrs.Polling;
+import org.coodex.concrete.jaxrs.struct.JaxrsModule;
+import org.coodex.concrete.jaxrs.struct.JaxrsParam;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.util.Common;
 
 import java.io.IOException;
 import java.util.*;
 
 import static org.coodex.concrete.apitools.APIHelper.loadModules;
-import static org.coodex.concrete.websocket.WebSocketModuleMaker.WEB_SOCKET_SUPPORT;
 
-public class JQueryWebSocketCodeRender extends AbstractRender {
+/**
+ * Created by davidoff shen on 2016-12-04.
+ */
+public class JQueryPromisesCodeRenderer extends AbstractRenderer {
 
     public static final String RENDER_NAME =
-            WEB_SOCKET_SUPPORT + "code.jquery.js.v1";
-    private static final String RESOURCE_PACKAGE = "concrete/templates/websocket/jquery/code/v1/";
+            JaxRSModuleMaker.JAX_RS_PREV + ".code.jquery.js.v1";
+    private static final String RESOURCE_PACKAGE = "concrete/templates/jaxrs/jquery/code/v1/";
+
 
     @Override
     protected String getTemplatePath() {
@@ -45,45 +49,35 @@ public class JQueryWebSocketCodeRender extends AbstractRender {
         return RENDER_NAME;
     }
 
-    private String buildMethod(WebSocketUnit unit) {
+    private String buildMethod(JaxrsUnit unit, JaxrsModule module) {
         StringBuilder builder = new StringBuilder();
         StringBuilder parameters = new StringBuilder();
         builder.append("function (");
-        switch (unit.getParameters().length) {
-            case 0:
-                parameters.append("undefined");
-                break;
-            case 1:
-                builder.append(unit.getParameters()[0].getName());
-                parameters.append(unit.getParameters()[0].getName());
-                break;
-            default:
-                parameters.append("{");
-                for (int i = 0; i < unit.getParameters().length; i++) {
-                    AbstractParam param = unit.getParameters()[i];
-                    if (i > 0) {
-                        builder.append(", ");
-                        parameters.append(", ");
-                    }
-                    String n = param.getName();
-                    builder.append(n);
-                    parameters.append("\"").append(n).append("\": ").append(n);
-                }
-                parameters.append("}");
+        for (int i = 0; i < unit.getParameters().length; i++) {
+            JaxrsParam param = unit.getParameters()[i];
+            if (i > 0) {
+                builder.append(", ");
+                parameters.append(", ");
+            }
+            String n = param.getName();
+            builder.append(n);
+            parameters.append("\"").append(n).append("\": ").append(n);
         }
-
-        builder.append(") {return invoke({\"serviceId\": \"").append(unit.getKey()).append("\",\"param\": ")
-                .append(parameters.toString()).append(" });}");
+        builder.append(") {return invoke({\"path\": \"")
+                .append(module.getName()).append(unit.getName()).append("\",\"param\": {")
+                .append(parameters.toString()).append("},\"method\": \"")
+                .append(unit.getInvokeType()).append("\", \"dataType\": \"")
+                .append(String.class.equals(unit.getReturnType()) ? "text" : "json").append("\" });}");
         return builder.toString();
     }
 
-    private String overload(WebSocketModule module) {
-        Map<String, Set<WebSocketUnit>> methods = new HashMap<String, Set<WebSocketUnit>>();
-        for (WebSocketUnit unit : module.getUnits()) {
+    private String overload(JaxrsModule module) {
+        Map<String, Set<JaxrsUnit>> methods = new HashMap<>();
+        for (JaxrsUnit unit : module.getUnits()) {
             String key = unit.getMethod().getName();
-            Set<WebSocketUnit> units = methods.get(key);
+            Set<JaxrsUnit> units = methods.get(key);
             if (units == null) {
-                units = new HashSet<WebSocketUnit>();
+                units = new HashSet<JaxrsUnit>();
                 methods.put(key, units);
             }
 
@@ -97,18 +91,18 @@ public class JQueryWebSocketCodeRender extends AbstractRender {
             }
             builder.append("\"").append(methodName).append("\": ");
 
-            WebSocketUnit[] units = methods.get(methodName).toArray(new WebSocketUnit[0]);
+            JaxrsUnit[] units = methods.get(methodName).toArray(new JaxrsUnit[0]);
             if (units.length > 1) {
                 // overload
                 builder.append("overload(\"").append(methodName).append("\", {");
                 for (int i = 0; i < units.length; i++) {
                     if (i > 0) builder.append(", ");
                     builder.append("\"").append(units[i].getParameters().length).append("\": ")
-                            .append(buildMethod(units[i]));
+                            .append(buildMethod(units[i], module));
                 }
                 builder.append("})");
             } else {
-                builder.append(buildMethod(units[0]));
+                builder.append(buildMethod(units[0], module));
             }
         }
 
@@ -117,9 +111,12 @@ public class JQueryWebSocketCodeRender extends AbstractRender {
 
     @Override
     public void writeTo(String... packages) throws IOException {
-        List<WebSocketModule> moduleList = loadModules(RENDER_NAME, packages);
+        Set<String> set = new HashSet<String>(Arrays.asList(packages));
+        set.add(Polling.class.getPackage().getName());
+        List<JaxrsModule> moduleList = loadModules(RENDER_NAME, set.toArray(new String[0]));
+
         Set<String> modules = new HashSet<String>();
-        for (WebSocketModule module : moduleList) {
+        for (JaxrsModule module : moduleList) {
             StringBuilder builder = new StringBuilder();
             builder.append("register(\"").append(module.getInterfaceClass().getSimpleName()).append("\", \"")
                     .append(module.getInterfaceClass().getPackage().getName()).append("\", { ")
@@ -132,6 +129,6 @@ public class JQueryWebSocketCodeRender extends AbstractRender {
         String moduleName = getRenderDesc().substring(RENDER_NAME.length());
         moduleName = Common.isBlank(moduleName) ? "concrete" : moduleName.substring(1);
         map.put("moduleName", moduleName);
-        writeTo("jquery-websocket-concrete.js", "jquery-websocket-concrete.js.ftl", map);
+        writeTo("jquery-concrete.js", "jquery-concrete.js.ftl", map);
     }
 }

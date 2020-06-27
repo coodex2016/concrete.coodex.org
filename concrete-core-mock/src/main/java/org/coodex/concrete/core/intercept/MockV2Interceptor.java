@@ -40,8 +40,8 @@ import static org.coodex.concrete.core.intercept.InterceptOrders.MOCK;
 public class MockV2Interceptor extends AbstractSyncInterceptor {
     private final static Logger log = LoggerFactory.getLogger(MockV2Interceptor.class);
 
-    private Set<Class<?>> exceptedClasses = new HashSet<>();
-    private Set<Pattern> patterns = new HashSet<>();
+    private final Set<Class<?>> exceptedClasses = new HashSet<>();
+    private final Set<Pattern> patterns = new HashSet<>();
 
     public MockV2Interceptor() throws IOException {
         this(new HashSet<>());
@@ -91,7 +91,7 @@ public class MockV2Interceptor extends AbstractSyncInterceptor {
 
     public void setExceptedClasses(Set<Class<?>> exceptedClasses) {
         if (exceptedClasses != null && exceptedClasses.size() > 0)
-            this.exceptedClasses = new HashSet<>(exceptedClasses);
+            this.exceptedClasses.addAll(exceptedClasses);
     }
 
     @Override

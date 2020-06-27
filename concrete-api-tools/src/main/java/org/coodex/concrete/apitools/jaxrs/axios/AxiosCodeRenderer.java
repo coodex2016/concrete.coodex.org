@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.apitools.jaxrs.axios;
 
-import org.coodex.concrete.apitools.AbstractRender;
+import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.apitools.jaxrs.JaxrsRenderHelper;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
@@ -35,7 +35,7 @@ import java.util.Map;
 import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.util.Common.cast;
 
-public class AxiosCodeRender extends AbstractRender {
+public class AxiosCodeRenderer extends AbstractRenderer {
 
     public static final String RENDER_NAME =
             JaxRSModuleMaker.JAX_RS_PREV + ".code.axios.js.v1";

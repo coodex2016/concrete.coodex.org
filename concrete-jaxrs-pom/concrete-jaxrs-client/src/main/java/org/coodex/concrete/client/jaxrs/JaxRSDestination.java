@@ -18,6 +18,8 @@ package org.coodex.concrete.client.jaxrs;
 
 import org.coodex.concrete.client.Destination;
 
+import java.util.Objects;
+
 import static org.coodex.concrete.client.jaxrs.JaxRSDestinationFactory.isSSL;
 
 public class JaxRSDestination extends Destination {
@@ -62,9 +64,9 @@ public class JaxRSDestination extends Destination {
 
         JaxRSDestination that = (JaxRSDestination) o;
 
-        if (logLevel != null ? !logLevel.equals(that.logLevel) : that.logLevel != null) return false;
-        if (charset != null ? !charset.equals(that.charset) : that.charset != null) return false;
-        return ssl != null ? ssl.equals(that.ssl) : that.ssl == null;
+        if (!Objects.equals(logLevel, that.logLevel)) return false;
+        if (!Objects.equals(charset, that.charset)) return false;
+        return Objects.equals(ssl, that.ssl);
     }
 
     @Override

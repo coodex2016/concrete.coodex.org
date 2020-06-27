@@ -38,7 +38,7 @@ public abstract class AbstractBeanProvider implements BeanProvider {
             new LazySelectableServiceLoader<Class<?>, ConflictSolution>() {
             };
 
-    private static final ConflictSolution getSolution(Class<?> clz) {
+    private static ConflictSolution getSolution(Class<?> clz) {
 //        // 1 从BeanProvider里找
 //        try {
 //            Map<String, ConflictSolution> map = BeanServiceLoaderProvider.getBeanProvider().getBeansOfType(ConflictSolution.class);
@@ -66,7 +66,7 @@ public abstract class AbstractBeanProvider implements BeanProvider {
             return (ConflictSolution) Class.forName(
                     Config.get(ConflictSolution.class.getCanonicalName(), getAppSet())
             ).newInstance();
-        } catch (Throwable th) {
+        } catch (Throwable ignored) {
         }
 
         return DEFAULT_CONFLICT_SOLUTION;
@@ -77,7 +77,7 @@ public abstract class AbstractBeanProvider implements BeanProvider {
         Map<String, T> instanceMap = getBeansOfType(type);
 
         // remove create by concrete
-        for (String name : new HashSet<String>(instanceMap.keySet())) {
+        for (String name : new HashSet<>(instanceMap.keySet())) {
             if (name.startsWith(CREATE_BY_CONCRETE))
                 instanceMap.remove(name);
         }

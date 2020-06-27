@@ -38,7 +38,7 @@ public class BeanServiceLoaderProvider /*extends ServiceLoaderImpl<BeanProvider>
 //    private static final ServiceLoader<BeanProvider> SPI_INSTANCE = new ServiceLoaderImpl<BeanProvider>() {
 //    };//new BeanServiceLoaderProvider();
 
-    private static Singleton<BeanProvider> beanProviderSingleton = Singleton.with(
+    private static final Singleton<BeanProvider> beanProviderSingleton = Singleton.with(
             () -> {
                 ServiceLoader<BeanProvider> serviceLoader = ServiceLoader.load(BeanProvider.class);
                 Iterator<BeanProvider> iterable = serviceLoader.iterator();

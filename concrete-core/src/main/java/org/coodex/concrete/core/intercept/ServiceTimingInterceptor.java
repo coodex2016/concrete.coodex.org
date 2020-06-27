@@ -120,10 +120,10 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
 
     private static class ServiceTimingCheckerChain implements ServiceTimingChecker {
 
-        private List<ServiceTimingChecker> chain = new ArrayList<ServiceTimingChecker>();
+        private final List<ServiceTimingChecker> chain = new ArrayList<>();
 
         ServiceTimingCheckerChain(ServiceTiming serviceTiming) {
-            Set<String> keys = new HashSet<String>();
+            Set<String> keys = new HashSet<>();
             for (String s : serviceTiming.value()) {
                 // 全天候
                 if (Common.isBlank(s) || Common.isBlank(s.trim())) continue;

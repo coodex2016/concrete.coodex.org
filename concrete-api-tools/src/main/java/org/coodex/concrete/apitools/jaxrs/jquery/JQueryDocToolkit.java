@@ -17,7 +17,7 @@
 package org.coodex.concrete.apitools.jaxrs.jquery;
 
 import com.alibaba.fastjson.JSON;
-import org.coodex.concrete.apitools.AbstractRender;
+import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.apitools.jaxrs.service.ServiceDocToolkit;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
@@ -29,7 +29,7 @@ import org.coodex.util.Common;
  */
 public class JQueryDocToolkit extends ServiceDocToolkit {
 
-    public JQueryDocToolkit(AbstractRender render) {
+    public JQueryDocToolkit(AbstractRenderer render) {
         super(render);
     }
 

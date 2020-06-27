@@ -17,6 +17,7 @@
 package org.coodex.concrete.common;
 
 import org.coodex.util.LazySelectableServiceLoader;
+import org.coodex.util.SelectableServiceLoader;
 
 import static org.coodex.util.Common.cast;
 
@@ -25,7 +26,7 @@ import static org.coodex.util.Common.cast;
  */
 public class AccountFactoryAggregation<ID extends AccountID> implements AccountFactory<ID> {
 
-    private final static LazySelectableServiceLoader<AccountID, SelectableAccountFactory<AccountID>>
+    private final static SelectableServiceLoader<AccountID, SelectableAccountFactory<AccountID>>
             ACCOUNT_FACTORY_LOADER = new LazySelectableServiceLoader<AccountID, SelectableAccountFactory<AccountID>>() {
     };
 

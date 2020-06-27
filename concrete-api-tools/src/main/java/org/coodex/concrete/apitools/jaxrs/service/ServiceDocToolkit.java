@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.apitools.jaxrs.service;
 
-import org.coodex.concrete.apitools.AbstractRender;
+import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
 import org.coodex.concrete.apitools.jaxrs.POJOPropertyInfo;
 import org.coodex.util.PojoInfo;
@@ -38,7 +38,7 @@ import static org.coodex.concrete.common.ConcreteHelper.isPrimitive;
 public class ServiceDocToolkit extends DocToolkit {
     private final Set<String> pojoTypes = new HashSet<>();
 
-    public ServiceDocToolkit(AbstractRender render) {
+    public ServiceDocToolkit(AbstractRenderer render) {
         super(render);
     }
 

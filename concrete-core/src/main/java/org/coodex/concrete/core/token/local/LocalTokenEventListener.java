@@ -37,6 +37,6 @@ public class LocalTokenEventListener implements TokenEventListener {
 
     @Override
     public void after(Token token) {
-        if (TOKENS.containsKey(token.getTokenId())) TOKENS.remove(token.getTokenId());
+        TOKENS.remove(token.getTokenId());
     }
 }

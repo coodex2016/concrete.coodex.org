@@ -33,13 +33,13 @@
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-websocket-client</artifactId>
-                <scope>${project.parent.version}</scope>
+                <version>${project.parent.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-websocket-service</artifactId>
-                <scope>${project.parent.version}</scope>
+                <version>${project.parent.version}</version>
             </dependency>
             
         </dependencies>

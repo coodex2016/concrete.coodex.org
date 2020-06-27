@@ -16,8 +16,7 @@
 
 package org.coodex.concrete.apitools.websocket.angular;
 
-import org.coodex.concrete.apitools.AbstractAngularRender;
-import org.coodex.concrete.apitools.jaxrs.angular.meta.TSClass;
+import org.coodex.concrete.apitools.AbstractAngularRenderer;
 import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.common.modules.AbstractParam;
 import org.coodex.concrete.websocket.WebSocketModule;
@@ -27,12 +26,11 @@ import org.coodex.util.Common;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.concrete.websocket.WebSocketModuleMaker.WEB_SOCKET_SUPPORT;
 
-public class AngularWebSocketCodeRender extends AbstractAngularRender<WebSocketUnit> {
+public class AngularWebSocketCodeRenderer extends AbstractAngularRenderer<WebSocketUnit> {
 
     public static final String RENDER_NAME =
             WEB_SOCKET_SUPPORT + "code.angular.ts.v1";

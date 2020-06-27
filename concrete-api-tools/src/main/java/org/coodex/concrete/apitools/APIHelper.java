@@ -20,6 +20,7 @@ import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.common.modules.ModuleMaker;
 import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
+import org.coodex.util.SelectableServiceLoader;
 
 import java.util.*;
 
@@ -28,7 +29,7 @@ import static org.coodex.concrete.common.ConcreteHelper.isConcreteService;
 
 public class APIHelper {
 
-    private final static LazySelectableServiceLoader<String, ModuleMaker<?>> MODULE_MAKERS =
+    private final static SelectableServiceLoader<String, ModuleMaker<?>> MODULE_MAKERS =
             new LazySelectableServiceLoader<String, ModuleMaker<?>>() {
             };
 
