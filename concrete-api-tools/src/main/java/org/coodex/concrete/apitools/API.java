@@ -52,6 +52,7 @@ public class API {
 //        }
 //
 //        throw new RuntimeException("NONE render for " + desc + " found.");
+
         generate(null, desc, path, packages);
     }
 
@@ -80,8 +81,9 @@ public class API {
     /**
      * 根据api_gen.properties（or api_gen.module.properties）的配置生成所需的内容
      *
-     * @param module
+     * @param module module
      */
+    @SuppressWarnings("unused")
     public static void generateFor(String module, String... packages) throws IOException {
         String desc = ConcreteHelper.getString(TAG_API_GENERATOR, module, "desc");
         String path = ConcreteHelper.getString(TAG_API_GENERATOR, module, "path");
@@ -99,5 +101,6 @@ public class API {
         }
     }
 
+    
 
 }
