@@ -25,17 +25,15 @@ import org.coodex.util.SelectableService;
 public interface PasswordGenerator extends SelectableService<String> {
 
     /**
-     * 创建一个密码
-     *
-     * @return
+     * @return 创建一个密码
      */
     String generate();
 
     /**
      * 对密码进行编码
      *
-     * @param pwd
-     * @return
+     * @param pwd pwd
+     * @return 对密码进行编码
      */
     String encode(String pwd);
 }

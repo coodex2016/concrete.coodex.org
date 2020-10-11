@@ -35,7 +35,7 @@ import java.util.concurrent.Executor;
 public abstract class AbstractJSR339Resource<T> extends AbstractJAXRSResource<T> {
 
     /**
-     * @return
+     * @return excutor
      */
     protected static Executor getExecutor() {
         return ConcreteHelper.getExecutor();

@@ -26,9 +26,7 @@ import java.lang.annotation.*;
 public @interface ConcreteClient {
 
     /**
-     * module description
-     *
-     * @return
+     * @return module description
      */
     String value() default "";
 

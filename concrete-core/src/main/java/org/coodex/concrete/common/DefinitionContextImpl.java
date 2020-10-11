@@ -35,9 +35,7 @@ public class DefinitionContextImpl implements DefinitionContext {
     }
 
     /**
-     * BizModule定义的class
-     *
-     * @return
+     * @return BizModule定义的class
      */
     @Override
     public Class<?> getDeclaringClass() {
@@ -49,9 +47,7 @@ public class DefinitionContextImpl implements DefinitionContext {
     }
 
     /**
-     * 定义了BizUnit的method
-     *
-     * @return
+     * @return 定义了BizUnit的method
      */
     @Override
     public Method getDeclaringMethod() {
@@ -73,9 +69,9 @@ public class DefinitionContextImpl implements DefinitionContext {
 
 
     /**
-     * @param annotationClass
-     * @param <T>
-     * @return
+     * @param annotationClass annotationClass
+     * @param <T> <T>
+     * @return annotation
      */
     @Override
     public final <T extends Annotation> T getDeclaringAnnotation(Class<T> annotationClass) {
@@ -94,9 +90,9 @@ public class DefinitionContextImpl implements DefinitionContext {
      * - moduleClass
      * - method.declaringClass
      *
-     * @param annotationClass
-     * @param <T>
-     * @return
+     * @param annotationClass annotationClass
+     * @param <T>             <T>
+     * @return annotation
      */
     @Override
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {

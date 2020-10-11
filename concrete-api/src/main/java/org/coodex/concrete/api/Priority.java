@@ -30,9 +30,7 @@ import java.lang.annotation.*;
 public @interface Priority {
 
     /**
-     * 指定优先级组名
-     *
-     * @return
+     * @return 指定优先级组名
      */
     int value() default Thread.NORM_PRIORITY;
 }

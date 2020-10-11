@@ -117,8 +117,8 @@ public class Predicates {
      * 可通过jaxrs.predicates.properties重载
      * </pre>
      *
-     * @param unit
-     * @return
+     * @param unit unit
+     * @return http方法
      * @see #PREDICATES
      */
     public static String getHttpMethod(JaxrsUnit unit) {

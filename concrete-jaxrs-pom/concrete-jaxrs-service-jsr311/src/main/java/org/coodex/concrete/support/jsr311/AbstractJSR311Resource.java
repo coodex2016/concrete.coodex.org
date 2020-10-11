@@ -53,9 +53,9 @@ public abstract class AbstractJSR311Resource<T>
      * 已知问题：重载且参数数量相同的无法区分
      * <p>
      *
-     * @param methodName
-     * @param params
-     * @return
+     * @param methodName methodName
+     * @param params     params
+     * @return 调用实际服务
      */
     protected Object __execute(final String methodName, final String tokenId, final Object... params) {
 

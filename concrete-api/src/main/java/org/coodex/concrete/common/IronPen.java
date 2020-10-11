@@ -26,10 +26,10 @@ public interface IronPen {
     /**
      * 签名
      *
-     * @param content
-     * @param algorithm
-     * @param keyId
-     * @return
+     * @param content   content
+     * @param algorithm algorithm
+     * @param keyId     keyId
+     * @return 签名
      */
     byte[] sign(byte[] content, String algorithm, String keyId);
 
@@ -37,11 +37,11 @@ public interface IronPen {
     /**
      * 验签
      *
-     * @param content
-     * @param signature
-     * @param algorithm
-     * @param keyId
-     * @return
+     * @param content   content
+     * @param signature signature
+     * @param algorithm algorithm
+     * @param keyId     keyId
+     * @return 验签是否正确
      */
     boolean verify(byte[] content, byte[] signature, String algorithm, String keyId);
 }

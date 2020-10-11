@@ -31,10 +31,15 @@ public interface SomeService {
 ## 其他项目
 
 [coodex-libraries](https://github.com/coodex2016/coodex-libraries) [点我看文档](https://docs.coodex.org/lib/)
-
+<!--
 ## 2020-06-??
 
 - 【feature】concrete-api-tools: 重命名为concrete-api-renderer，调整为仅定义API文档化渲染的规范，封装通用操作，具体渲染分拆到具体模块完成
+-->
+
+## 2020-10-11
+
+- 根据coodex-libraries的ActiveProfiles机制，增加SpringActiveProfilesProvider，使用spring-boot时，coodex Profile与Spring active profiles机制一致
 
 ## 2020-05-15
 

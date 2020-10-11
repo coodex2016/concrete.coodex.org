@@ -49,8 +49,8 @@ public abstract class AbstractJavassistClassGenerator implements ClassGenerator 
 
 
     /**
-     * @param module
-     * @return
+     * @param module module
+     * @return 实现类
      * @throws CannotCompileException
      */
     public Class<?> generatesImplClass(JaxrsModule module) throws CannotCompileException {

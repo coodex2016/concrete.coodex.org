@@ -36,10 +36,7 @@ public @interface AccessAllow {
     String PREROGATIVE = "*";
 
     /**
-     * 访问业务所需的角色
-     * 如置空，则表明只要是有效用户即可访问
-     *
-     * @return
+     * @return 访问业务所需的角色。如置空，则表明只要是有效用户即可访问
      */
     String[] roles() default {EVERYBODY};
 }

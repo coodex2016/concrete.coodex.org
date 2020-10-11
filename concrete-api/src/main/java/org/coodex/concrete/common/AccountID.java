@@ -24,7 +24,7 @@ import java.io.Serializable;
 public interface AccountID extends Serializable {
 
     /**
-     * @return
+     * @return 序列化成字符串
      */
     String serialize();
 }

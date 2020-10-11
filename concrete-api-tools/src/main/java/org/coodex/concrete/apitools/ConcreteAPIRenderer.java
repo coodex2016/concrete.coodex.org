@@ -32,7 +32,7 @@ public interface ConcreteAPIRenderer {
      *   文档化格式：gitbook, asciidoctor, markdown</pre>
      *
      * @param desc <i>服务提供类型</i>.<i>类型</i>.<i>使用者</i>.<i>文档化格式</i>.<i>版本</i>
-     * @return
+     * @return 是否受理desc
      */
     boolean isAccept(String desc);
 

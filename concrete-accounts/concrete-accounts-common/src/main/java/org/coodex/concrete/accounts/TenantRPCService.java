@@ -33,7 +33,7 @@ public interface TenantRPCService {
      * <p>
      * 如果租户有效期超期，或租户停用中，抛出AccountsErrorCodes.TENANT_UNAVAILABLE
      *
-     * @param tenantAccountName
+     * @param tenantAccountName tenantAccountName
      */
     void checkTenant(String tenantAccountName);
 
@@ -44,10 +44,10 @@ public interface TenantRPCService {
     /**
      * 可信:true
      *
-     * @param tenant
-     * @param password
-     * @param authCode
-     * @return
+     * @param tenant   tenant
+     * @param password password
+     * @param authCode authCode
+     * @return 是否可信
      */
     boolean login(String tenant, String password, String authCode);
 

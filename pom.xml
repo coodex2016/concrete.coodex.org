@@ -53,9 +53,9 @@
     </developers>
 
     <modules>
-		 <module>concrete-accounts</module>
-        
-		<module>concrete-api</module>
+        <module>concrete-accounts</module>
+
+        <module>concrete-api</module>
 
         <module>concrete-core</module>
         <module>concrete-core-spring</module>
@@ -79,7 +79,7 @@
 
         <module>plugins-pom</module>
 
-        
+
         <module>concrete-bom</module>
     </modules>
 
@@ -98,22 +98,16 @@
         <jsr-311.version>1.1.1</jsr-311.version>
         <jsr-339.version>1.0.0.Final</jsr-339.version>
 
-        <!--        <dubbo.version>2.6.6</dubbo.version>-->
         <apache.dubbo.version>2.7.4.1</apache.dubbo.version>
 
         <slf4j.version>1.7.26</slf4j.version>
         <log4j2.version>2.13.0</log4j2.version>
         <aspectj.version>1.9.4</aspectj.version>
 
-        <spring.framework.version>5.1.8.RELEASE</spring.framework.version>
-        <!--        <spring.framework.version>5.2.3.RELEASE</spring.framework.version>-->
-        <spring.data.version>Lovelace-SR9</spring.data.version>
-        <spring.boot.version>2.1.6.RELEASE</spring.boot.version>
-        <!--        <spring.boot.version>2.2.4.RELEASE</spring.boot.version>-->
 
-        <!--        <spring.framework.version>5.2.2.RELEASE</spring.framework.version>-->
-        <!--        <spring.data.version>Moore-SR2</spring.data.version>-->
-        <!--        <spring.boot.version>2.2.2.RELEASE</spring.boot.version>-->
+        <spring.framework.version>5.2.9.RELEASE</spring.framework.version>
+        <spring.data.version>Neumann-RELEASE</spring.data.version>
+        <spring.boot.version>2.3.4.RELEASE</spring.boot.version>
 
         <netty4.version>4.1.43.Final</netty4.version>
         <jersey.version>2.27</jersey.version>
@@ -228,20 +222,20 @@
             </distributionManagement>
         </profile>
 
-        <profile>
-            <id>coodex.release</id>
-            <distributionManagement>
-                <!-- oss -->
-                <snapshotRepository>
-                    <id>coodex.release</id>
-                    <url>${coodex.url.snapshot}</url>
-                </snapshotRepository>
-                <repository>
-                    <id>coodex.release</id>
-                    <url>${coodex.url.release}</url>
-                </repository>
-            </distributionManagement>
-        </profile>
+        <!--        <profile>-->
+        <!--            <id>coodex.release</id>-->
+        <!--            <distributionManagement>-->
+        <!--                &lt;!&ndash; oss &ndash;&gt;-->
+        <!--                <snapshotRepository>-->
+        <!--                    <id>coodex.release</id>-->
+        <!--                    <url>${coodex.url.snapshot}</url>-->
+        <!--                </snapshotRepository>-->
+        <!--                <repository>-->
+        <!--                    <id>coodex.release</id>-->
+        <!--                    <url>${coodex.url.release}</url>-->
+        <!--                </repository>-->
+        <!--            </distributionManagement>-->
+        <!--        </profile>-->
     </profiles>
 
     <build>
@@ -345,11 +339,11 @@
 
 
             <!-- slf4j -->
-<!--            <dependency>-->
-<!--                <groupId>org.slf4j</groupId>-->
-<!--                <artifactId>slf4j-api</artifactId>-->
-<!--                <version>${slf4j.version}</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>org.slf4j</groupId>-->
+            <!--                <artifactId>slf4j-api</artifactId>-->
+            <!--                <version>${slf4j.version}</version>-->
+            <!--            </dependency>-->
 
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -357,13 +351,13 @@
                 <version>${slf4j.version}</version>
             </dependency>
 
-<!--            <dependency>-->
-<!--                <groupId>org.apache.logging.log4j</groupId>-->
-<!--                <artifactId>log4j-bom</artifactId>-->
-<!--                <version>${log4j2.version}</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>org.apache.logging.log4j</groupId>-->
+            <!--                <artifactId>log4j-bom</artifactId>-->
+            <!--                <version>${log4j2.version}</version>-->
+            <!--                <type>pom</type>-->
+            <!--                <scope>import</scope>-->
+            <!--            </dependency>-->
 
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -437,9 +431,15 @@
             </dependency>
 
 
-
-
             <!-- Spring -->
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring.framework.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 
             <dependency>
                 <groupId>org.springframework.data</groupId>
@@ -457,13 +457,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-framework-bom</artifactId>
-                <version>${spring.framework.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+
 
             <!-- https://mvnrepository.com/artifact/aopalliance/aopalliance -->
             <dependency>

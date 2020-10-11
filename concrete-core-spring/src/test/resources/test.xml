@@ -21,13 +21,15 @@
 
     <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
 
+    <bean class="org.coodex.concrete.spring.ConcreteSpringConfiguration"></bean>
+
     <!--<bean id="beanValidationInterceptor" class="BeanValidationInterceptor"></bean>-->
 
 
     <!--<bean class="org.coodex.concrete.impl.aspects.BeanValidationAspect"></bean>-->
     <!--<bean class="org.coodex.concrete.impl.aspects.ServiceTimingAspect"></bean>-->
     <!--<bean class="org.coodex.concrete.impl.aspects.RBAC_Aspect"></bean>-->
-    <bean class="test.org.coodex.intf.impl.AspectTestImpl"></bean>
+<!--    <bean class="test.org.coodex.intf.impl.AspectTestImpl"></bean>-->
 
 <!--    <bean class="org.coodex.concrete.spring.aspects.ConcreteAOPChain">-->
 <!--        <constructor-arg index="0">-->
