@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common;
-
-import org.coodex.util.AbstractServiceLoaderProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-public class ConcreteServiceLoaderProvider extends AbstractServiceLoaderProvider {
-    private final static Logger log = LoggerFactory.getLogger(ConcreteServiceLoaderProvider.class);
-
-    @Override
-    protected Map<String, Object> loadByRowType(Class<?> rowType) {
-        BeanProvider beanProvider = BeanServiceLoaderProvider.getBeanProvider();
-        if (beanProvider != null) {
-            return Collections.unmodifiableMap(beanProvider.getBeansOfType(rowType));
-        } else {
-            log.warn("BeanProvider NOT initialized.", new RuntimeException("BeanProvider NOT initialized."));
-            return new HashMap<>();
-        }
-    }
-
-}
+//package org.coodex.concrete.common;
+//
+//import org.coodex.util.AbstractServiceLoaderProvider;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//
+//import java.util.Collections;
+//import java.util.HashMap;
+//import java.util.Map;
+//
+//public class ConcreteServiceLoaderProvider extends AbstractServiceLoaderProvider {
+//    private final static Logger log = LoggerFactory.getLogger(ConcreteServiceLoaderProvider.class);
+//
+//    @Override
+//    protected Map<String, Object> loadByRowType(Class<?> rowType) {
+//        BeanProvider beanProvider = BeanServiceLoaderProvider.getBeanProvider();
+//        if (beanProvider != null) {
+//            return Collections.unmodifiableMap(beanProvider.getBeansOfType(rowType));
+//        } else {
+//            log.warn("BeanProvider NOT initialized.", new RuntimeException("BeanProvider NOT initialized."));
+//            return new HashMap<>();
+//        }
+//    }
+//
+//}

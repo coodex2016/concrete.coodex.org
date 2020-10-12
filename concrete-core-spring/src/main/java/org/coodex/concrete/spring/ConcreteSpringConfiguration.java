@@ -20,8 +20,10 @@ import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.*;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.config.Config;
+import org.coodex.spring.SpringServiceLoaderProvider;
 import org.coodex.util.ActiveProfilesProvider;
 import org.coodex.util.LazyServiceLoader;
+import org.coodex.util.ServiceLoaderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -74,6 +76,11 @@ public class ConcreteSpringConfiguration {
     @Bean
     public ActiveProfilesProvider springActiveProfilesProvider() {
         return new SpringActiveProfileProvider();
+    }
+
+    @Bean
+    public ServiceLoaderProvider springServiceLoaderProvider(){
+        return new SpringServiceLoaderProvider();
     }
 
     @Bean

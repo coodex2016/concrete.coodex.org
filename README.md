@@ -37,6 +37,10 @@ public interface SomeService {
 - 【feature】concrete-api-tools: 重命名为concrete-api-renderer，调整为仅定义API文档化渲染的规范，封装通用操作，具体渲染分拆到具体模块完成
 -->
 
+## 2020-10-12
+
+- 废弃ConcreteServiceLoaderProvider，改为使用org.coodex.spring.SpringServiceLoaderProvider
+
 ## 2020-10-11
 
 - 根据coodex-libraries的ActiveProfiles机制，增加SpringActiveProfilesProvider，使用spring-boot时，coodex Profile与Spring active profiles机制一致

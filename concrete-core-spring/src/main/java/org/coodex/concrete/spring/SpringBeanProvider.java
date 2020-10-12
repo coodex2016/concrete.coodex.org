@@ -38,11 +38,11 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
     private final static Logger log = LoggerFactory.getLogger(SpringBeanProvider.class);
 
 
-    private static ApplicationContext context = null;
+    private static ApplicationContext CONTEXT = null;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        context = applicationContext;
+        CONTEXT = applicationContext;
     }
 
 ////    @Override
@@ -58,16 +58,16 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
 
     @Override
     public <T> Map<String, T> getBeansOfType(Class<T> type) {
-        if (context == null) {
+        if (CONTEXT == null) {
             log.info("spring bean provider not initialized, {} not load from spring bean provider.", type.getName());
             return new HashMap<>();
         } else {
-            Map<String, T> map = new HashMap<>(context.getBeansOfType(type));
+            Map<String, T> map = new HashMap<>(CONTEXT.getBeansOfType(type));
             for (Class<?> c : collectionBeanTypes()) {
                 if (c.isAssignableFrom(type)) {
                     // 数组
                     Class<?> arrayClass = Array.newInstance(type, 0).getClass();
-                    Map<String, ?> x = context.getBeansOfType(arrayClass);
+                    Map<String, ?> x = CONTEXT.getBeansOfType(arrayClass);
                     if (x != null && x.size() > 0) {
                         int index = 0;
                         for (Map.Entry<String, ?> entry : x.entrySet()) {
@@ -86,7 +86,7 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
 
                     // 集合
                     @SuppressWarnings("rawtypes")
-                    Map<String, Collection> collectionBeans = context.getBeansOfType(Collection.class);
+                    Map<String, Collection> collectionBeans = CONTEXT.getBeansOfType(Collection.class);
                     for (@SuppressWarnings("rawtypes") Map.Entry<String, Collection> entry : collectionBeans.entrySet()) {
                         int index = 0;
                         if (entry.getValue() == null || entry.getValue().size() == 0) continue;
