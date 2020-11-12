@@ -100,13 +100,13 @@
 
         <apache.dubbo.version>2.7.4.1</apache.dubbo.version>
 
-        <slf4j.version>1.7.26</slf4j.version>
+        <slf4j.version>1.7.30</slf4j.version>
         <log4j2.version>2.13.0</log4j2.version>
         <aspectj.version>1.9.4</aspectj.version>
 
 
-        <spring.framework.version>5.2.9.RELEASE</spring.framework.version>
-        <spring.data.version>Neumann-RELEASE</spring.data.version>
+<!--        <spring.framework.version>5.2.9.RELEASE</spring.framework.version>-->
+<!--        <spring.data.version>Neumann-RELEASE</spring.data.version>-->
         <spring.boot.version>2.3.4.RELEASE</spring.boot.version>
 
         <netty4.version>4.1.43.Final</netty4.version>
@@ -266,8 +266,9 @@
 
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <compilerArgs>
                         <arg>-Xlint:unchecked</arg>
@@ -300,11 +301,11 @@
                 <type>pom</type>
             </dependency>
 
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>1.18.12</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.projectlombok</groupId>-->
+<!--                <artifactId>lombok</artifactId>-->
+<!--                <version>1.18.12</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>io.zipkin.brave</groupId>
@@ -314,13 +315,13 @@
                 <scope>import</scope>
             </dependency>
 
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-bom</artifactId>
-                <version>${netty4.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>io.netty</groupId>-->
+<!--                <artifactId>netty-bom</artifactId>-->
+<!--                <version>${netty4.version}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
@@ -345,11 +346,11 @@
             <!--                <version>${slf4j.version}</version>-->
             <!--            </dependency>-->
 
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.slf4j</groupId>-->
+<!--                <artifactId>slf4j-log4j12</artifactId>-->
+<!--                <version>${slf4j.version}</version>-->
+<!--            </dependency>-->
 
             <!--            <dependency>-->
             <!--                <groupId>org.apache.logging.log4j</groupId>-->
@@ -379,12 +380,12 @@
             </dependency>
 
 
-            <!-- JSR 349 Bean Validation 1.1  -->
-            <dependency>
-                <groupId>javax.validation</groupId>
-                <artifactId>validation-api</artifactId>
-                <version>${bean.validation.version}</version>
-            </dependency>
+<!--            &lt;!&ndash; JSR 349 Bean Validation 1.1  &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>javax.validation</groupId>-->
+<!--                <artifactId>validation-api</artifactId>-->
+<!--                <version>${bean.validation.version}</version>-->
+<!--            </dependency>-->
 
             <!-- JSR 311 JAX-RS: The JavaTM API for RESTful Web Services 1.0 -->
             <dependency>
@@ -417,37 +418,21 @@
             </dependency>
 
 
-            <!-- aspectj -->
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjrt</artifactId>
-                <version>${aspectj.version}</version>
-            </dependency>
+<!--            &lt;!&ndash; aspectj &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.aspectj</groupId>-->
+<!--                <artifactId>aspectjrt</artifactId>-->
+<!--                <version>${aspectj.version}</version>-->
+<!--            </dependency>-->
 
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjweaver</artifactId>
-                <version>${aspectj.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.aspectj</groupId>-->
+<!--                <artifactId>aspectjweaver</artifactId>-->
+<!--                <version>${aspectj.version}</version>-->
+<!--            </dependency>-->
 
 
             <!-- Spring -->
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-framework-bom</artifactId>
-                <version>${spring.framework.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-releasetrain</artifactId>
-                <version>${spring.data.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -456,6 +441,24 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+<!--            <dependency>-->
+<!--                <groupId>org.springframework</groupId>-->
+<!--                <artifactId>spring-framework-bom</artifactId>-->
+<!--                <version>${spring.framework.version}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
+
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.data</groupId>-->
+<!--                <artifactId>spring-data-releasetrain</artifactId>-->
+<!--                <version>${spring.data.version}</version>-->
+<!--                <scope>import</scope>-->
+<!--                <type>pom</type>-->
+<!--            </dependency>-->
+
+
 
 
 
@@ -466,46 +469,46 @@
                 <version>1.0</version>
             </dependency>
 
-            <!-- jUnit -->
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-            </dependency>
+<!--            &lt;!&ndash; jUnit &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>junit</groupId>-->
+<!--                <artifactId>junit</artifactId>-->
+<!--                <version>${junit.version}</version>-->
+<!--            </dependency>-->
 
-            <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
-            <dependency>
-                <groupId>org.freemarker</groupId>
-                <artifactId>freemarker</artifactId>
-                <version>${freemarker.version}</version>
-            </dependency>
+<!--            &lt;!&ndash; https://mvnrepository.com/artifact/org.freemarker/freemarker &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.freemarker</groupId>-->
+<!--                <artifactId>freemarker</artifactId>-->
+<!--                <version>${freemarker.version}</version>-->
+<!--            </dependency>-->
 
 
             <!-- providers -->
-            <!-- jersey -->
-            <dependency>
-                <groupId>org.glassfish.jersey</groupId>
-                <artifactId>jersey-bom</artifactId>
-                <version>${jersey.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+<!--            &lt;!&ndash; jersey &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.glassfish.jersey</groupId>-->
+<!--                <artifactId>jersey-bom</artifactId>-->
+<!--                <version>${jersey.version}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
 
-            <!-- jackson2 -->
-            <dependency>
-                <groupId>com.fasterxml.jackson</groupId>
-                <artifactId>jackson-bom</artifactId>
-                <version>${jackson2.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
+<!--            &lt;!&ndash; jackson2 &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>com.fasterxml.jackson</groupId>-->
+<!--                <artifactId>jackson-bom</artifactId>-->
+<!--                <version>${jackson2.version}</version>-->
+<!--                <scope>import</scope>-->
+<!--                <type>pom</type>-->
+<!--            </dependency>-->
 
 
-            <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>1.10</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>commons-codec</groupId>-->
+<!--                <artifactId>commons-codec</artifactId>-->
+<!--                <version>1.10</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>org.java-websocket</groupId>
@@ -520,29 +523,29 @@
                 <version>${javassist.verion}</version>
             </dependency>
 
-            <dependency>
-                <groupId>io.reactivex.rxjava2</groupId>
-                <artifactId>rxjava</artifactId>
-                <version>${rxjava.vesion}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>io.reactivex.rxjava2</groupId>-->
+<!--                <artifactId>rxjava</artifactId>-->
+<!--                <version>${rxjava.vesion}</version>-->
+<!--            </dependency>-->
 
-            <dependency>
-                <groupId>org.apache.activemq</groupId>
-                <artifactId>activemq-client</artifactId>
-                <version>${activemq.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.apache.activemq</groupId>-->
+<!--                <artifactId>activemq-client</artifactId>-->
+<!--                <version>${activemq.version}</version>-->
+<!--            </dependency>-->
 
-            <dependency>
-                <groupId>com.rabbitmq</groupId>
-                <artifactId>amqp-client</artifactId>
-                <version>${rabbitmq.client.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>com.rabbitmq</groupId>-->
+<!--                <artifactId>amqp-client</artifactId>-->
+<!--                <version>${rabbitmq.client.version}</version>-->
+<!--            </dependency>-->
 
-            <dependency>
-                <groupId>org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-                <version>${snakeyaml.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.yaml</groupId>-->
+<!--                <artifactId>snakeyaml</artifactId>-->
+<!--                <version>${snakeyaml.version}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>cglib</groupId>

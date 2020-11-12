@@ -12,6 +12,7 @@ env.yml
 
 *.log
 
+.DS_Store
 **.pdf
 .project
 .classpath
