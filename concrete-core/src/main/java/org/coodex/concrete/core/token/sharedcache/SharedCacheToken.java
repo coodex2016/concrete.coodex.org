@@ -21,7 +21,7 @@ import org.coodex.concrete.common.AccountFactory;
 import org.coodex.concrete.common.BeanServiceLoaderProvider;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.core.token.AbstractToken;
-import org.coodex.concurrent.Debouncer;
+import org.coodex.concurrent.Debounce;
 import org.coodex.sharedcache.SharedCacheClient;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
@@ -40,13 +40,15 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
 
     private static final String PREFIX = SharedCacheToken.class.getCanonicalName();
     private Data tokenData;
-    private SharedCacheClient client;
-    private String tokenId;
-    private long maxIdleTime;
-    private String cacheKey;
+    private final SharedCacheClient client;
+    private final String tokenId;
+    private final long maxIdleTime;
+    private final String cacheKey;
 
-    private Debouncer<Runnable> debouncer = new Debouncer<>(
-            Runnable::run, 10, ConcreteHelper.getScheduler("sct.debouncer"));
+    private final Debounce debounce = Debounce.newBuilder()
+            .idle(10)
+            .scheduledExecutorService(ConcreteHelper.getScheduler("sct.debounce"))
+            .build();
 
     SharedCacheToken(SharedCacheClient client, String tokenId, long maxIdleTime) {
         this.client = client;
@@ -58,7 +60,7 @@ public class SharedCacheToken /*implements Token*/ extends AbstractToken {
     }
 
     private void write() {
-        debouncer.call(() -> client.put(cacheKey, tokenData, maxIdleTime));
+        debounce.run(() -> client.put(cacheKey, tokenData, maxIdleTime));
     }
 
     private synchronized void init() {
