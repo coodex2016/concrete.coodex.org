@@ -1,5 +1,0 @@
-sign:
-  mustNotNull: "%s MUST NOT null."
-  serverSideVerifyFailed: Server side verify failed.
-  noSignatureFound: no signature found.
-  invalidHMACKey: invalid HMAC Key.

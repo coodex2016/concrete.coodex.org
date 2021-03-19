@@ -11,6 +11,7 @@ env.yml
 *.iml
 
 *.log
+**.bak
 
 .DS_Store
 **.pdf
