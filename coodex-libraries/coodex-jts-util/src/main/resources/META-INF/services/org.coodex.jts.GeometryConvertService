@@ -1,0 +1,4 @@
+org.coodex.jts.impl.PointConverter
+org.coodex.jts.impl.LineStringConverter
+org.coodex.jts.impl.PolygonConverter
+org.coodex.jts.impl.GeometryCollectionConverter

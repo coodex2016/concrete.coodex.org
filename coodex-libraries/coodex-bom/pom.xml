@@ -111,6 +111,12 @@
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
+                <artifactId>coodex-jts-util</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
                 <artifactId>coodex-metadata</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
