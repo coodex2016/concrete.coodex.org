@@ -1,0 +1,823 @@
+
+<!DOCTYPE HTML>
+<html lang="zh-hans" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>并发通用库 · Coodex libraries</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="Shen Hainan <jujus.shen@126.com>">
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-back-to-top-button/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-chapter-fold/chapter-fold.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-code/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-donate/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search-pro/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-tbfed-pagefooter/footer.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="org.coodex.closure.html" />
+    
+    
+    <link rel="prev" href="org.coodex.util.clock.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="输入并搜索" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    coodex-utilities
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="org.coodex.util.Common.html">
+            
+                <a href="org.coodex.util.Common.html">
+            
+                    
+                    Common
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="org.coodex.util.Singleton.html">
+            
+                <a href="org.coodex.util.Singleton.html">
+            
+                    
+                    单例
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="org.coodex.util.ResourceScanner.html">
+            
+                <a href="org.coodex.util.ResourceScanner.html">
+            
+                    
+                    资源扫描器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="SPI.html">
+            
+                <a href="SPI.html">
+            
+                    
+                    SPI
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.5" data-path="org.coodex.util.Profile.html">
+            
+                <a href="org.coodex.util.Profile.html">
+            
+                    
+                    Profile
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6" data-path="org.coodex.util.Config.html">
+            
+                <a href="org.coodex.util.Config.html">
+            
+                    
+                    Config
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.7" data-path="org.coodex.util.Renderer.html">
+            
+                <a href="org.coodex.util.Renderer.html">
+            
+                    
+                    Renderer
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.8" data-path="org.coodex.util.I18N.html">
+            
+                <a href="org.coodex.util.I18N.html">
+            
+                    
+                    I18N 国际化
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.9" data-path="org.coodex.util.Retry.html">
+            
+                <a href="org.coodex.util.Retry.html">
+            
+                    
+                    轻量级重试机制
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.10" data-path="org.coodex.util.Tracer.html">
+            
+                <a href="org.coodex.util.Tracer.html">
+            
+                    
+                    Tracer
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.11" data-path="org.coodex.util.CRC.html">
+            
+                <a href="org.coodex.util.CRC.html">
+            
+                    
+                    CRC
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.12" data-path="org.coodex.util.Polygon.html">
+            
+                <a href="org.coodex.util.Polygon.html">
+            
+                    
+                    Polygon 多边形工具
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.13" data-path="org.coodex.util.Section.html">
+            
+                <a href="org.coodex.util.Section.html">
+            
+                    
+                    Section 线段
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.14" data-path="org.coodex.util.clock.html">
+            
+                <a href="org.coodex.util.clock.html">
+            
+                    
+                    天上人间
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2.15" data-path="org.coodex.concurrent.html">
+            
+                <a href="org.coodex.concurrent.html">
+            
+                    
+                    并发通用库
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.16" data-path="org.coodex.closure.html">
+            
+                <a href="org.coodex.closure.html">
+            
+                    
+                    闭包
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../coodex-mock/">
+            
+                <a href="../coodex-mock/">
+            
+                    
+                    数据模拟
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../coodex-billing/">
+            
+                <a href="../coodex-billing/">
+            
+                    
+                    计费框架
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../coodex-junit-enhance/">
+            
+                <a href="../coodex-junit-enhance/">
+            
+                    
+                    junit强化
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            本书使用 GitBook 发布
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >并发通用库</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="&#x5E76;&#x53D1;&#x901A;&#x7528;&#x5E93;">&#x5E76;&#x53D1;&#x901A;&#x7528;&#x5E93;</h1>
+<h2 id="&#x7EBF;&#x7A0B;&#x6C60;&#x52A9;&#x624B;">&#x7EBF;&#x7A0B;&#x6C60;&#x52A9;&#x624B;</h2>
+<p><code>org.coodex.concurrent.ExecutorsHelper</code>&#x7C7B;&#x4F3C;&#x4E8E;<code>java.util.concurrent.Executors</code>&#x7684;&#x4F5C;&#x7528;&#xFF0C;&#x4E0D;&#x540C;&#x7684;&#x662F;&#xFF1A;</p>
+<ol>
+<li>&#x63A5;&#x53E3;&#x63D0;&#x4F9B;&#x4E86;&#x5B9A;&#x4E49;&#x7EBF;&#x7A0B;&#x6C60;&#x540D;&#x79F0;&#x7684;&#x529F;&#x80FD;</li>
+<li>&#x63D0;&#x4F9B;&#x4E86;&#x57FA;&#x4E8E;&#x4EFB;&#x52A1;&#x4F18;&#x5148;&#x7EA7;&#x7684;&#x7EBF;&#x7A0B;&#x6C60;&#xFF0C;&#x5C06;&#x8981;&#x6267;&#x884C;&#x7684;&#x4EFB;&#x52A1;&#x4F1A;&#x6309;&#x7167;&#x4F18;&#x5148;&#x7EA7;&#x9001;&#x5165;&#x7EBF;&#x7A0B;&#x6C60;&#x6267;&#x884C;&#xFF0C;&#x5E76;&#x4E14;&#xFF0C;&#x7EBF;&#x7A0B;&#x4F18;&#x5148;&#x7EA7;&#x4E5F;&#x4F1A;&#x8BBE;&#x7F6E;&#x6210;&#x6309;&#x7167;&#x5E26;&#x4F18;&#x5148;&#x7EA7;&#x4EFB;&#x52A1;&#x7684;&#x4F18;&#x5148;&#x7EA7;&#xFF0C;&#x9AD8;&#x4F18;&#x5148;&#x7EA7;&#x7684;&#x4EFB;&#x52A1;&#x5C06;&#x62FF;&#x5230;&#x66F4;&#x591A;&#x7684;&#x7CFB;&#x7EDF;&#x8D44;&#x6E90;</li>
+<li>&#x6269;&#x5C55;&#x4E86;&#x6709;&#x754C;&#x963B;&#x585E;&#x961F;&#x5217;&#xFF0C;&#x5265;&#x79BB;&#x961F;&#x5217;&#x5927;&#x5C0F;&#x4E0E;&#x7EBF;&#x7A0B;&#x6C60;&#x6700;&#x5927;&#x7EBF;&#x7A0B;&#x6570;&#x6570;&#x7684;&#x8026;&#x5408;&#xFF0C;&#x7EBF;&#x7A0B;&#x6C60;&#x6700;&#x5927;&#x7EBF;&#x7A0B;&#x6570; &#x4F4E;&#x4E8E; &#x4EFB;&#x52A1;&#x6700;&#x5927;&#x503C;&#x65F6;&#x53EF;&#x7528;&#xFF0C;&#x7EBF;&#x7A0B;&#x6EE1;&#x65F6;&#xFF0C;&#x4EFB;&#x52A1;&#x961F;&#x5217;&#x53EF;&#x4EE5;&#x7EE7;&#x7EED;&#x5BB9;&#x7EB3;&#x4E00;&#x5B9A;&#x6570;&#x91CF;&#x7684;&#x4EFB;&#x52A1;&#xFF0C;&#x5C1D;&#x8BD5;&#x5728;&#x7EBF;&#x7A0B;&#x6570;&#x548C;&#x4EFB;&#x52A1;&#x6570;&#x4E4B;&#x95F4;&#x8FBE;&#x5230;&#x4E00;&#x4E2A;&#x5E73;&#x8861;</li>
+<li>TODO: &#x7F16;&#x5199;&#x6587;&#x6863;&#x7684;&#x65F6;&#x5019;&#x60F3;&#x8D77;&#x6765;&#x7684;&#xFF0C;&#x53EF;&#x4EE5;&#x505A;&#x4E00;&#x4E2A;&#x4EE4;&#x724C;&#x6876;&#x7684;&#x6709;&#x754C;&#x961F;&#x5217;&#x6A21;&#x578B;&#xFF0C;&#x53BB;&#x5CF0;&#x503C;</li>
+</ol>
+<h2 id="&#x9632;&#x53CD;&#x8DF3;&#x548C;&#x8FDE;&#x51FB;">&#x9632;&#x53CD;&#x8DF3;&#x548C;&#x8FDE;&#x51FB;</h2>
+<p>&#x524D;&#x7AEF;&#x7528;&#x5F97;&#x6BD4;&#x8F83;&#x591A;&#x7684;&#x6280;&#x672F;&#xFF0C;&#x4E3B;&#x8981;&#x4F5C;&#x7528;&#x662F;&#x51CF;&#x5C11;&#x9891;&#x7E41;&#x53D1;&#x751F;&#x7684;&#x4E8B;&#x4EF6;&#x7684;&#x5904;&#x7406;&#x6B21;&#x6570;&#x3002;</p>
+<p>&#x53EF;&#x4EE5;&#x7528;&#x4E8E;&#x5B9E;&#x65F6;&#x6027;&#x8981;&#x6C42;&#x4E0D;&#x662F;&#x6781;&#x9AD8;&#x7684;&#x7EA7;&#x9891;&#x7E41;&#x6570;&#x636E;&#x5199;&#x5165;&#x573A;&#x666F;&#x3002;</p>
+<pre><code class="lang-java"><span class="hljs-keyword">package</span> org.coodex.concrete.demo.boot;
+
+<span class="hljs-keyword">import</span> org.coodex.concurrent.Coalition;
+<span class="hljs-keyword">import</span> org.coodex.concurrent.Debouncer;
+<span class="hljs-keyword">import</span> org.coodex.concurrent.Throttler;
+<span class="hljs-keyword">import</span> org.coodex.util.Common;
+<span class="hljs-keyword">import</span> org.slf4j.Logger;
+<span class="hljs-keyword">import</span> org.slf4j.LoggerFactory;
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CoalitionDemo</span> </span>{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> Logger log = LoggerFactory.getLogger(CoalitionDemo.class);
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test</span><span class="hljs-params">(Coalition&lt;Integer&gt; coalition)</span> <span class="hljs-keyword">throws</span> InterruptedException </span>{
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">1000</span>; i++) {
+            coalition.call(i);
+            <span class="hljs-comment">// &#x968F;&#x673A;&#x4F11;&#x7720;15&#x6BEB;&#x79D2;&#x4EE5;&#x5185;</span>
+            Thread.sleep(Common.random(<span class="hljs-number">15</span>));
+        }
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> InterruptedException </span>{
+        <span class="hljs-comment">// &#x53EA;&#x6709;&#x7A7A;&#x95F2;15&#x6BEB;&#x79D2;&#x4EE5;&#x540E;&#x624D;&#x505A;&#x4E00;&#x6B21;</span>
+        test(<span class="hljs-keyword">new</span> Debouncer&lt;&gt;(
+                arg -&gt; log.info(<span class="hljs-string">&quot;Debouncer saved: {}&quot;</span>, arg), <span class="hljs-number">15</span>
+        ));
+
+        <span class="hljs-comment">// &#x6700;&#x591A;500&#x6BEB;&#x79D2;&#x6267;&#x884C;&#x4E00;&#x6B21;</span>
+        test(<span class="hljs-keyword">new</span> Throttler&lt;&gt;(
+                arg -&gt; log.info(<span class="hljs-string">&quot;Throttler saved: {}&quot;</span>, arg), <span class="hljs-number">500</span>
+        ));
+    }
+}
+</code></pre>
+<pre><code class="lang-txt">14:34:09.916 [CoalitionPool-2] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Debouncer saved: 45
+14:34:10.069 [CoalitionPool-2] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Debouncer saved: 66
+14:34:10.209 [CoalitionPool-2] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Debouncer saved: 81
+14:34:10.885 [CoalitionPool-1] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Debouncer saved: 173
+14:34:10.905 [CoalitionPool-3] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Debouncer saved: 174
+14:34:11.132 [CoalitionPool-2] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Debouncer saved: 203
+14:34:11.339 [CoalitionPool-1] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Debouncer saved: 227
+14:34:11.358 [CoalitionPool-3] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Debouncer saved: 230
+14:34:11.409 [CoalitionPool-2] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Debouncer saved: 236
+14:34:17.179 [CoalitionPool-2] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Debouncer saved: 999
+</code></pre>
+<pre><code class="lang-txt">14:34:17.334 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 0
+14:34:17.837 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 61
+14:34:18.339 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 118
+14:34:18.843 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 178
+14:34:19.351 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 245
+14:34:19.861 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 317
+14:34:19.861 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 318
+14:34:20.370 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 385
+14:34:20.881 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 453
+14:34:21.382 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 529
+14:34:21.889 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 606
+14:34:22.392 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 675
+14:34:22.899 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 756
+14:34:23.402 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 815
+14:34:23.912 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 885
+14:34:24.416 [main] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 947
+14:34:25.049 [CoalitionPool-3] INFO org.coodex.concrete.demo.boot.CoalitionDemo - Throttler saved: 999
+</code></pre>
+<p>&#x53EF;&#x4EE5;&#x770B;&#x5230;&#xFF0C;&#x539F;&#x672C;&#x9700;&#x8981;&#x6267;&#x884C;2000&#x6B21;&#x7684;&#x573A;&#x666F;&#xFF0C;&#x53EA;&#x8FDB;&#x884C;&#x4E86;20&#x6B21;&#x4E0A;&#x4E0B;</p>
+<h2 id="&#x5E76;&#x884C;&#x4EFB;&#x52A1;">&#x5E76;&#x884C;&#x4EFB;&#x52A1;</h2>
+<p><code>org.coodex.concurrent.Parallel</code> &#x63D0;&#x4F9B;&#x4E86;&#x4E00;&#x4E2A;&#x591A;&#x4EFB;&#x52A1;&#x5E76;&#x884C;&#x5904;&#x7406;&#x529F;&#x80FD;&#xFF0C;&#x4ECE;&#x6839;&#x672C;&#x4E0A;&#x6765;&#x8BB2;&#xFF0C;&#x5176;&#x5B9E;&#x5C31;&#x662F;&#x7B80;&#x5316;&#x4E86;<code>CountDownLatch</code>&#x7684;&#x4F7F;&#x7528;&#x3002;</p>
+<pre><code class="lang-java"><span class="hljs-keyword">package</span> org.coodex.concrete.demo.boot;
+
+<span class="hljs-keyword">import</span> com.alibaba.fastjson.JSON;
+<span class="hljs-keyword">import</span> org.coodex.concurrent.ExecutorsHelper;
+<span class="hljs-keyword">import</span> org.coodex.concurrent.Parallel;
+<span class="hljs-keyword">import</span> org.coodex.util.Clock;
+<span class="hljs-keyword">import</span> org.coodex.util.Common;
+<span class="hljs-keyword">import</span> org.slf4j.Logger;
+<span class="hljs-keyword">import</span> org.slf4j.LoggerFactory;
+
+<span class="hljs-keyword">import</span> java.util.ArrayList;
+<span class="hljs-keyword">import</span> java.util.List;
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ParallelDemo</span> </span>{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> Logger log = LoggerFactory.getLogger(ParallelDemo.class);
+
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+        List&lt;Runnable&gt; runnables = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">20</span>; i++) {
+            <span class="hljs-keyword">int</span> finalI = i;
+            runnables.add(() -&gt; {
+                <span class="hljs-keyword">try</span> {
+                    Clock.sleep(Common.random(<span class="hljs-number">3000</span>));
+                    log.info(<span class="hljs-string">&quot;task {} finished.&quot;</span>, finalI);
+                } <span class="hljs-keyword">catch</span> (InterruptedException ignore) {
+                }
+            });
+        }
+
+        Parallel.Batch batch = <span class="hljs-keyword">new</span> Parallel(
+                <span class="hljs-comment">// 5&#x4E2A;&#x7EBF;&#x7A0B;&#x6765;&#x6267;&#x884C;&#x5E76;&#x884C;&#x4EFB;&#x52A1;</span>
+                ExecutorsHelper.newFixedThreadPool(<span class="hljs-number">5</span>, <span class="hljs-string">&quot;parallel&quot;</span>)
+        ).run(runnables.toArray(<span class="hljs-keyword">new</span> Runnable[<span class="hljs-number">0</span>]));
+        log.info(<span class="hljs-string">&quot;all task finished.&quot;</span>);
+        log.info(<span class="hljs-string">&quot;\n{}&quot;</span>, JSON.toJSONString(batch, <span class="hljs-keyword">true</span>));
+    }
+}
+</code></pre>
+<pre><code class="lang-txt">14:48:34.945 [parallel-3] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 2 finished.
+14:48:35.908 [parallel-5] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 4 finished.
+14:48:37.242 [parallel-2] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 1 finished.
+14:48:37.288 [parallel-4] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 3 finished.
+14:48:37.377 [parallel-1] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 0 finished.
+14:48:37.398 [parallel-3] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 5 finished.
+14:48:37.776 [parallel-3] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 10 finished.
+14:48:38.640 [parallel-5] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 6 finished.
+14:48:38.827 [parallel-4] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 8 finished.
+14:48:39.782 [parallel-4] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 13 finished.
+14:48:39.892 [parallel-4] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 14 finished.
+14:48:39.910 [parallel-1] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 9 finished.
+14:48:39.991 [parallel-2] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 7 finished.
+14:48:40.596 [parallel-5] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 12 finished.
+14:48:40.719 [parallel-3] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 11 finished.
+14:48:41.043 [parallel-2] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 17 finished.
+14:48:41.321 [parallel-3] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 19 finished.
+14:48:41.478 [parallel-5] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 18 finished.
+14:48:42.145 [parallel-4] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 15 finished.
+14:48:42.333 [parallel-1] INFO org.coodex.concrete.demo.boot.ParallelDemo - task 16 finished.
+14:48:42.333 [main] INFO org.coodex.concrete.demo.boot.ParallelDemo - all task finished.
+</code></pre>
+<p>&#x53EF;&#x4EE5;&#x770B;&#x5230;&#xFF0C;main&#x7EBF;&#x7A0B;&#x7B49;&#x5230;&#x6240;&#x6709;&#x4EFB;&#x52A1;&#x6267;&#x884C;&#x5B8C;&#x6210;&#x540E;&#x624D;&#x8F93;&#x51FA;<code>all task finished.</code></p>
+<pre><code class="lang-json">{
+    <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765322333</span>,
+    <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-string">&quot;2c963b1966f941e2870fcdd68fdb74f6&quot;</span>,
+    <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765314391</span>,
+    <span class="hljs-string">&quot;tasks&quot;</span>:[
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765317377</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">1</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765314393</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">2984</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765317242</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">2</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765314393</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">2849</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765314945</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">3</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765314394</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">551</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765317288</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">4</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765314394</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">2894</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765315908</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">5</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765314397</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">1511</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765317398</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">6</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765314945</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">2453</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765318640</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">7</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765315908</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">2732</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765319991</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">8</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765317242</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">2749</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765318827</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">9</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765317288</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">1539</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765319910</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">10</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765317377</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">2533</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765317776</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">11</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765317398</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">378</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765320719</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">12</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765317776</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">2943</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765320596</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">13</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765318640</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">1956</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765319782</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">14</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765318827</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">955</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765319892</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">15</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765319782</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">110</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765322145</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">16</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765319892</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">2253</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765322333</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">17</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765319910</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">2423</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765321043</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">18</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765319991</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">1052</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765321478</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">19</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765320596</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">882</span>
+        },
+        {
+            <span class="hljs-string">&quot;end&quot;</span>:<span class="hljs-number">1565765321321</span>,
+            <span class="hljs-string">&quot;finished&quot;</span>:<span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">20</span>,
+            <span class="hljs-string">&quot;start&quot;</span>:<span class="hljs-number">1565765320719</span>,
+            <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">602</span>
+        }
+    ],
+    <span class="hljs-string">&quot;timeConsuming&quot;</span>:<span class="hljs-number">7942</span>
+}
+</code></pre>
+<p>&#x8FD4;&#x56DE;&#x503C;&#x5BF9;&#x8C61;&#x4E2D;&#xFF0C;&#x4F1A;&#x628A;&#x6BCF;&#x4E2A;&#x4EFB;&#x52A1;&#x7684;&#x4FE1;&#x606F;&#x548C;&#x603B;&#x89C8;&#x8BE6;&#x7EC6;&#x8FD4;&#x56DE;&#x3002;</p>
+<footer class="page-footer"><span class="copyright">&#xA9; coodex.org 2014-2020 all right reserved&#xFF0C;powered by Gitbook</span><span class="footer-modification">File Modify: 
+2019-08-14 14:54:29
+</span></footer>
+<script>console.log("plugin-popup....");document.onclick = function(e){ e.target.tagName === "IMG" && window.open(e.target.src,e.target.src)}</script><style>img{cursor:pointer}</style>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="org.coodex.util.clock.html" class="navigation navigation-prev " aria-label="Previous page: 天上人间">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="org.coodex.closure.html" class="navigation navigation-next " aria-label="Next page: 闭包">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"并发通用库","level":"1.2.15","depth":2,"next":{"title":"闭包","level":"1.2.16","depth":2,"path":"coodex-utilities/org.coodex.closure.md","ref":"coodex-utilities/org.coodex.closure.md","articles":[]},"previous":{"title":"天上人间","level":"1.2.14","depth":2,"path":"coodex-utilities/org.coodex.util.clock.md","ref":"coodex-utilities/org.coodex.util.clock.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","code","donate","github","ga","-lunr","-search","search-pro","tbfed-pagefooter","popup"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"&copy coodex.org 2014-2020","modify_label":"","modify_format":"YYYY-MM-DD HH:mm:ss"},"chapter-fold":{},"github":{"url":"https://github.com/coodex2016/coodex-libraries"},"search-pro":{},"popup":{},"code":{"copyButtons":true},"donate":{"alipay":"/images/donate_alipay.png","alipayText":"支付宝打赏","button":"好哒","title":"<strong><font size='7'>壕</font>，请用<font size='5'>金钱</font>尽情<font size='6'>羞辱</font>我<font size='7'>！</font></strong>","wechat":"/images/donate_wechat.png","wechatText":"微信打赏"},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"back-to-top-button":{},"ga":{"configuration":"auto","token":"UA-124592164-1"},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Shen Hainan <jujus.shen@126.com>","pdf":{"pageNumbers":true,"fontSize":14,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":0,"left":0,"top":0,"bottom":0},"fondFamily":"微软雅黑"},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{"coodex_version":"0.5.0-SNAPSHOT"},"title":"Coodex libraries","language":"zh-hans","gitbook":"*"},"file":{"path":"coodex-utilities/org.coodex.concurrent.md","mtime":"2019-08-14T06:54:29.145Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-10-14T02:25:42.916Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-back-to-top-button/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-chapter-fold/chapter-fold.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-code/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-donate/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-ga/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search-pro/jquery.mark.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search-pro/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

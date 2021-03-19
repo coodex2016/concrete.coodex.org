@@ -1,0 +1,566 @@
+<!--
+  ~ Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>concrete</name>
+    <description>concrete service definition spec.</description>
+    <url>https://concrete.coodex.org</url>
+    <groupId>org.coodex.concrete</groupId>
+    <artifactId>concrete-pom</artifactId>
+    <version>0.5.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <scm>
+        <connection>scm:git:https://github.com/coodex2016/concrete.coodex.org.git</connection>
+        <developerConnection>scm:git:https://github.com/coodex2016/concrete.coodex.org.git</developerConnection>
+        <url>https://github.com/coodex2016/concrete.coodex.org.git</url>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>Apache Licence 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>shenhainan</id>
+            <name>Shen Hainan</name>
+            <url>https://coodex.org</url>
+            <email>jujus.shen@126.com</email>
+            <organization>coodex.org</organization>
+            <organizationUrl>https://coodex.org</organizationUrl>
+        </developer>
+    </developers>
+
+    <modules>
+        <module>concrete-accounts</module>
+
+        <module>concrete-api</module>
+
+        <module>concrete-core</module>
+        <module>concrete-core-spring</module>
+        <module>concrete-core-mock</module>
+
+        <module>concrete-commons-spring-data</module>
+
+        <module>concrete-test</module>
+
+        <module>concrete-api-tools</module>
+        <module>concrete-client</module>
+        <module>concrete-rx-builder</module>
+
+        <module>concrete-amqp-pom</module>
+
+        <module>concrete-apache-dubbo-pom</module>
+
+        <module>concrete-jaxrs-pom</module>
+
+        <module>concrete-websocket-pom</module>
+
+        <module>plugins-pom</module>
+
+
+        <module>concrete-bom</module>
+    </modules>
+
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <coodex.libs.version>${project.version}</coodex.libs.version>
+
+        <!--        <default.version>RELEASE</default.version>-->
+
+        <!-- api -->
+        <bean.validation.version>2.0.1.Final</bean.validation.version>
+        <jsr-311.version>1.1.1</jsr-311.version>
+        <jsr-339.version>1.0.0.Final</jsr-339.version>
+
+        <apache.dubbo.version>2.7.4.1</apache.dubbo.version>
+
+        <slf4j.version>1.7.30</slf4j.version>
+        <log4j2.version>2.13.0</log4j2.version>
+        <aspectj.version>1.9.4</aspectj.version>
+
+
+<!--        <spring.framework.version>5.2.9.RELEASE</spring.framework.version>-->
+<!--        <spring.data.version>Neumann-RELEASE</spring.data.version>-->
+        <spring.boot.version>2.3.4.RELEASE</spring.boot.version>
+
+        <netty4.version>4.1.43.Final</netty4.version>
+        <jersey.version>2.27</jersey.version>
+        <junit.version>4.13</junit.version>
+        <freemarker.version>2.3.28</freemarker.version>
+        <fastjson.version>1.2.58</fastjson.version>
+        <guice.version>4.2.2</guice.version>
+        <javassist.verion>3.25.0-GA</javassist.verion>
+
+        <brave.version>5.6.5</brave.version>
+
+        <!--        <thrift.version>${default.version}</thrift.version>-->
+
+        <hibernate.version>5.3.10.Final</hibernate.version>
+        <hibernate.validator.version>6.0.16.Final</hibernate.validator.version>
+
+        <druid.version>1.1.23</druid.version>
+
+        <rxjava.vesion>2.2.9</rxjava.vesion>
+        <jackson2.version>2.9.8</jackson2.version>
+
+        <activemq.version>5.15.9</activemq.version>
+        <rabbitmq.client.version>5.7.1</rabbitmq.client.version>
+
+        <snakeyaml.version>1.24</snakeyaml.version>
+        <cglib.version>3.2.12</cglib.version>
+
+        <!--        <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>-->
+        <!--        <coodex.shared.cache.version>${project.parent.version}</coodex.shared.cache.version>-->
+
+
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>disable-javadoc-doclint</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <properties>
+                <additionalparam>-Xdoclint:none</additionalparam>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>oss.distribution</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.1.1</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <additionalOptions>-html5</additionalOptions>
+                            <additionalOptions>-Xdoclint:none</additionalOptions>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.7</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>oss</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <distributionManagement>
+                <!-- oss -->
+                <snapshotRepository>
+                    <id>oss</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>oss</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+
+        <!--        <profile>-->
+        <!--            <id>coodex.release</id>-->
+        <!--            <distributionManagement>-->
+        <!--                &lt;!&ndash; oss &ndash;&gt;-->
+        <!--                <snapshotRepository>-->
+        <!--                    <id>coodex.release</id>-->
+        <!--                    <url>${coodex.url.snapshot}</url>-->
+        <!--                </snapshotRepository>-->
+        <!--                <repository>-->
+        <!--                    <id>coodex.release</id>-->
+        <!--                    <url>${coodex.url.release}</url>-->
+        <!--                </repository>-->
+        <!--            </distributionManagement>-->
+        <!--        </profile>-->
+    </profiles>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>3.7.0.1746</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Xlint:unchecked</arg>
+                        <arg>-Xlint:rawtypes</arg>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>org.coodex</groupId>
+                <artifactId>coodex-bom</artifactId>
+                <version>${coodex.libs.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+<!--            <dependency>-->
+<!--                <groupId>org.projectlombok</groupId>-->
+<!--                <artifactId>lombok</artifactId>-->
+<!--                <version>1.18.12</version>-->
+<!--            </dependency>-->
+
+            <dependency>
+                <groupId>io.zipkin.brave</groupId>
+                <artifactId>brave-bom</artifactId>
+                <version>${brave.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+<!--            <dependency>-->
+<!--                <groupId>io.netty</groupId>-->
+<!--                <artifactId>netty-bom</artifactId>-->
+<!--                <version>${netty4.version}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
+
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-bom</artifactId>
+                <version>${apache.dubbo.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>1.9.4</version>
+            </dependency>
+
+
+            <!-- slf4j -->
+            <!--            <dependency>-->
+            <!--                <groupId>org.slf4j</groupId>-->
+            <!--                <artifactId>slf4j-api</artifactId>-->
+            <!--                <version>${slf4j.version}</version>-->
+            <!--            </dependency>-->
+
+<!--            <dependency>-->
+<!--                <groupId>org.slf4j</groupId>-->
+<!--                <artifactId>slf4j-log4j12</artifactId>-->
+<!--                <version>${slf4j.version}</version>-->
+<!--            </dependency>-->
+
+            <!--            <dependency>-->
+            <!--                <groupId>org.apache.logging.log4j</groupId>-->
+            <!--                <artifactId>log4j-bom</artifactId>-->
+            <!--                <version>${log4j2.version}</version>-->
+            <!--                <type>pom</type>-->
+            <!--                <scope>import</scope>-->
+            <!--            </dependency>-->
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305 -->
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>3.0.2</version>
+            </dependency>
+
+
+<!--            &lt;!&ndash; JSR 349 Bean Validation 1.1  &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>javax.validation</groupId>-->
+<!--                <artifactId>validation-api</artifactId>-->
+<!--                <version>${bean.validation.version}</version>-->
+<!--            </dependency>-->
+
+            <!-- JSR 311 JAX-RS: The JavaTM API for RESTful Web Services 1.0 -->
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>jsr311-api</artifactId>
+                <version>${jsr-311.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.jboss.spec.javax.ws.rs/jboss-jaxrs-api_2.0_spec -->
+            <!-- JSR 339 JAX-RS 2.0 -->
+            <!--<dependency>-->
+            <!--<groupId>org.jboss.spec.javax.ws.rs</groupId>-->
+            <!--<artifactId>jboss-jaxrs-api_2.0_spec</artifactId>-->
+            <!--<version>${jsr-339.version}</version>-->
+            <!--</dependency>-->
+
+            <!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>2.1</version>
+            </dependency>
+
+
+            <!-- JSR 330  Dependency Injection for Java -->
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>1</version>
+            </dependency>
+
+
+<!--            &lt;!&ndash; aspectj &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.aspectj</groupId>-->
+<!--                <artifactId>aspectjrt</artifactId>-->
+<!--                <version>${aspectj.version}</version>-->
+<!--            </dependency>-->
+
+<!--            <dependency>-->
+<!--                <groupId>org.aspectj</groupId>-->
+<!--                <artifactId>aspectjweaver</artifactId>-->
+<!--                <version>${aspectj.version}</version>-->
+<!--            </dependency>-->
+
+
+            <!-- Spring -->
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+<!--            <dependency>-->
+<!--                <groupId>org.springframework</groupId>-->
+<!--                <artifactId>spring-framework-bom</artifactId>-->
+<!--                <version>${spring.framework.version}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
+
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.data</groupId>-->
+<!--                <artifactId>spring-data-releasetrain</artifactId>-->
+<!--                <version>${spring.data.version}</version>-->
+<!--                <scope>import</scope>-->
+<!--                <type>pom</type>-->
+<!--            </dependency>-->
+
+
+
+
+
+            <!-- https://mvnrepository.com/artifact/aopalliance/aopalliance -->
+            <dependency>
+                <groupId>aopalliance</groupId>
+                <artifactId>aopalliance</artifactId>
+                <version>1.0</version>
+            </dependency>
+
+<!--            &lt;!&ndash; jUnit &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>junit</groupId>-->
+<!--                <artifactId>junit</artifactId>-->
+<!--                <version>${junit.version}</version>-->
+<!--            </dependency>-->
+
+<!--            &lt;!&ndash; https://mvnrepository.com/artifact/org.freemarker/freemarker &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.freemarker</groupId>-->
+<!--                <artifactId>freemarker</artifactId>-->
+<!--                <version>${freemarker.version}</version>-->
+<!--            </dependency>-->
+
+
+            <!-- providers -->
+<!--            &lt;!&ndash; jersey &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.glassfish.jersey</groupId>-->
+<!--                <artifactId>jersey-bom</artifactId>-->
+<!--                <version>${jersey.version}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
+
+<!--            &lt;!&ndash; jackson2 &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>com.fasterxml.jackson</groupId>-->
+<!--                <artifactId>jackson-bom</artifactId>-->
+<!--                <version>${jackson2.version}</version>-->
+<!--                <scope>import</scope>-->
+<!--                <type>pom</type>-->
+<!--            </dependency>-->
+
+
+<!--            <dependency>-->
+<!--                <groupId>commons-codec</groupId>-->
+<!--                <artifactId>commons-codec</artifactId>-->
+<!--                <version>1.10</version>-->
+<!--            </dependency>-->
+
+            <dependency>
+                <groupId>org.java-websocket</groupId>
+                <artifactId>Java-WebSocket</artifactId>
+                <version>1.5.1</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>${javassist.verion}</version>
+            </dependency>
+
+<!--            <dependency>-->
+<!--                <groupId>io.reactivex.rxjava2</groupId>-->
+<!--                <artifactId>rxjava</artifactId>-->
+<!--                <version>${rxjava.vesion}</version>-->
+<!--            </dependency>-->
+
+<!--            <dependency>-->
+<!--                <groupId>org.apache.activemq</groupId>-->
+<!--                <artifactId>activemq-client</artifactId>-->
+<!--                <version>${activemq.version}</version>-->
+<!--            </dependency>-->
+
+<!--            <dependency>-->
+<!--                <groupId>com.rabbitmq</groupId>-->
+<!--                <artifactId>amqp-client</artifactId>-->
+<!--                <version>${rabbitmq.client.version}</version>-->
+<!--            </dependency>-->
+
+<!--            <dependency>-->
+<!--                <groupId>org.yaml</groupId>-->
+<!--                <artifactId>snakeyaml</artifactId>-->
+<!--                <version>${snakeyaml.version}</version>-->
+<!--            </dependency>-->
+
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>${cglib.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-core</artifactId>
+                <version>2.1.7</version>
+            </dependency>
+
+        </dependencies>
+
+    </dependencyManagement>
+
+</project>

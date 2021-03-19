@@ -1,0 +1,52 @@
+{
+  "title": "Coodex libraries",
+  "author": "Shen Hainan <jujus.shen@126.com>",
+  "language": "zh-hans",
+  "pdf": {
+    "pageNumbers": true,
+    "fontSize": 14,
+    "fondFamily": "微软雅黑",
+    "paperSize": "a4",
+    "margin": {
+      "top": 0,
+      "bottom": 0,
+      "right": 0,
+      "left": 0
+    }
+  },
+  "plugins": [
+    "back-to-top-button",
+    "chapter-fold",
+    "code",
+    "donate",
+    "github",
+    "ga",
+    "-lunr",
+    "-search",
+    "search-pro",
+    "tbfed-pagefooter",
+    "popup"
+  ],
+  "variables": {
+    "coodex_version": "0.5.0-SNAPSHOT"
+  },
+  "pluginsConfig": {
+    "donate": {
+      "wechat": "/images/donate_wechat.png",
+      "alipay": "/images/donate_alipay.png",
+      "button": "好哒",
+      "title": "<strong><font size='7'>壕</font>，请用<font size='5'>金钱</font>尽情<font size='6'>羞辱</font>我<font size='7'>！</font></strong>"
+    },
+    "tbfed-pagefooter": {
+      "copyright":"&copy coodex.org 2014-2020",
+      "modify_label": "",
+      "modify_format": "YYYY-MM-DD HH:mm:ss"
+    },
+    "github": {
+      "url": "https://github.com/coodex2016/coodex-libraries"
+    },
+    "ga":{
+      "token": "UA-124592164-1"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "gitbook": "3.x.x",
+  "title": "[项目]RESTFul API手册",
+  "author": "cocnrete.coodex.org",
+  "plugins": [
+    "mermaid-gb3",
+    "tbfed-pagefooter",
+    "toggle-chapters",
+    "anchors"
+  ],
+  "language": "zh-hans",
+  "pluginsConfig": {
+    "tbfed-pagefooter": {
+      "copyright": "Copyright &copy coodex.org 2017",
+      "modify_label": "修订时间：",
+      "modify_format": "YYYY-MM-DD HH:mm:ss"
+    }
+  }
+}

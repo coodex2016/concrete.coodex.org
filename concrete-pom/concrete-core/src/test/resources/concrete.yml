@@ -1,0 +1,3 @@
+executor:
+  maximumPoolSize: 64
+#  corePoolSize: 4
