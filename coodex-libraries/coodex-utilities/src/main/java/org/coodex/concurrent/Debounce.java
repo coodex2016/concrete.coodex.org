@@ -13,6 +13,18 @@ public class Debounce implements FrequencyReducer {
 
     private ScheduledFuture<?> prevFuture;
 
+    private Debounce(Builder builder) {
+        this.idle = Math.max(0, builder.idle);
+        this.runnable = builder.runnable;
+        this.scheduledExecutorService = builder.scheduledExecutorService == null ?
+                DEFAULT_REDUCER_EXECUTOR_SERVICE_SINGLETON.get() :
+                builder.scheduledExecutorService;
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
     @Override
     public void submit() {
         submit(runnable);
@@ -44,15 +56,27 @@ public class Debounce implements FrequencyReducer {
 
     }
 
-    public static Builder newBuilder(){
-        return new Builder();
+    public void cancel() {
+        if (prevFuture != null) {
+            lock.lock();
+            try {
+                if (prevFuture != null) {
+                    prevFuture.cancel(false);
+                    prevFuture = null;
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
     }
 
     public static class Builder {
         private long idle = 100L;
         private ScheduledExecutorService scheduledExecutorService;
         private Runnable runnable;
-        private Builder(){}
+
+        private Builder() {
+        }
 
         public Builder idle(long idle) {
             this.idle = idle;
@@ -72,13 +96,5 @@ public class Debounce implements FrequencyReducer {
         public Debounce build() {
             return new Debounce(this);
         }
-    }
-
-    private Debounce(Builder builder) {
-        this.idle = Math.max(0, builder.idle);
-        this.runnable = builder.runnable;
-        this.scheduledExecutorService = builder.scheduledExecutorService == null ?
-                DEFAULT_REDUCER_EXECUTOR_SERVICE_SINGLETON.get() :
-                builder.scheduledExecutorService;
     }
 }
