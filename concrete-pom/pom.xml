@@ -24,7 +24,7 @@
     <url>https://concrete.coodex.org</url>
     <groupId>org.coodex.concrete</groupId>
     <artifactId>concrete-pom</artifactId>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.5.0-RC1</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -89,9 +89,7 @@
         <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <coodex.libs.version>${project.version}</coodex.libs.version>
-
-        <!--        <default.version>RELEASE</default.version>-->
+        <coodex.libs.version>0.5.0-SNAPSHOT</coodex.libs.version>
 
         <!-- api -->
         <bean.validation.version>2.0.1.Final</bean.validation.version>
@@ -105,8 +103,6 @@
         <aspectj.version>1.9.4</aspectj.version>
 
 
-        <!--        <spring.framework.version>5.2.9.RELEASE</spring.framework.version>-->
-        <!--        <spring.data.version>Neumann-RELEASE</spring.data.version>-->
         <spring.boot.version>2.4.3</spring.boot.version>
 
         <netty4.version>4.1.60.Final</netty4.version>
@@ -119,10 +115,8 @@
 
         <brave.version>5.6.5</brave.version>
 
-        <!--        <thrift.version>${default.version}</thrift.version>-->
-
-        <hibernate.version>5.3.10.Final</hibernate.version>
-        <hibernate.validator.version>6.0.16.Final</hibernate.validator.version>
+        <hibernate.version>5.4.28.Final</hibernate.version>
+        <hibernate.validator.version>6.1.7.Final</hibernate.validator.version>
 
         <druid.version>1.1.23</druid.version>
 
@@ -132,7 +126,7 @@
         <activemq.version>5.15.9</activemq.version>
         <rabbitmq.client.version>5.7.1</rabbitmq.client.version>
 
-        <snakeyaml.version>1.24</snakeyaml.version>
+        <snakeyaml.version>1.26</snakeyaml.version>
         <cglib.version>3.2.12</cglib.version>
 
         <!--        <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>-->

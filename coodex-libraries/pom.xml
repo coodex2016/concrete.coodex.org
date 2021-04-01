@@ -22,8 +22,11 @@
 
     <groupId>org.coodex</groupId>
     <artifactId>coodex-libraries</artifactId>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.5.0-RC1</version>
     <packaging>pom</packaging>
+    <name>coodex-libraries</name>
+    <description>coodex-libraries</description>
+    <url>https://docs.coodex.org/lib/</url>
 
     <scm>
         <connection>scm:git:https://github.com/coodex2016/coodex-libraries.git</connection>
@@ -62,7 +65,7 @@
         <xmemcached.version>2.4.6</xmemcached.version>
         <lombok.version>1.18.18</lombok.version>
         <jts.version>1.18.1</jts.version>
-        <fastjson.version>1.2.68</fastjson.version>
+        <fastjson.version>1.2.75</fastjson.version>
         <slf4j.version>1.7.30</slf4j.version>
         <log4j2.version>2.13.0</log4j2.version>
         <snakeyaml.version>1.26</snakeyaml.version>
