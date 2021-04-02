@@ -96,7 +96,9 @@ public class Common {
 
     private static String toAbsolutePathUnixLike(String path) {
         String[] pathNodes = path.replace('\\', '/').split("/");
-        if (pathNodes.length > 0 && Common.isBlank(pathNodes[0])) return path;
+        if (pathNodes.length > 0 && Common.isBlank(pathNodes[0])) {
+            return path;
+        }
 
         return getAbsolutePath(pathNodes);
     }
@@ -104,8 +106,21 @@ public class Common {
     private static String toAbsolutePathWindows(String path) {
         String[] pathNodes = path.replace('/', '\\').split("\\\\");
         if (pathNodes.length > 0 && pathNodes[0].indexOf(':') > 0) // "x:"开头表示绝对路径
+        {
             return path;
+        }
         return getAbsolutePath(pathNodes);
+    }
+
+    public static byte[] toBytes(long l, int wide, Endianness endianness) {
+
+        byte[] bytes = new byte[wide];
+        boolean little = Endianness.LITTLE_ENDIAN.equals(endianness);
+        for (int i = 0; i < wide; i++) {
+            bytes[little ? i : (wide - i - 1)] = (byte) l;
+            l = l >>> 8;
+        }
+        return bytes;
     }
 
     private static String getAbsolutePath(String[] pathNodes) {
@@ -260,10 +275,13 @@ public class Common {
     private static long random(long bound1, long bound2, boolean includeMax) {
         long min = Math.min(bound1, bound2);
         long max = Math.max(bound1, bound2);
-        if (min == max) return min;
+        if (min == max) {
+            return min;
+        }
         long step = max - min + (includeMax ? 1L : 0L);
-        if (step > 0)
+        if (step > 0) {
             return min + (long) (Math.random() * step);
+        }
         // 越界情况，按照正负数的权重算一次随机判定落在哪一边
         return Math.random() < (Math.abs(min) * 1d / max) ?
                 random(min, 0, includeMax) :
@@ -273,7 +291,9 @@ public class Common {
 
     public static double random(double min, double max) {
 
-        if (min == max) return min;
+        if (min == max) {
+            return min;
+        }
         double _min = Math.min(min, max);
         double _max = Math.max(min, max);
         return _min + Math.random() * (_max - _min);
@@ -281,12 +301,13 @@ public class Common {
 
     public static <K extends Serializable, V extends Serializable> void copyMap(
             Map<K, V> org, Map<K, V> target) {
-        for (K key : org.keySet())
+        for (K key : org.keySet()) {
             try {
                 target.put(deepCopy(key), deepCopy(org.get(key)));
             } catch (ClassNotFoundException | IOException e) {
                 throw new RuntimeException(e);
             }
+        }
     }
 
     public static boolean isBlank(String s) {
@@ -310,8 +331,9 @@ public class Common {
                 wrote = wrote % bps;
                 long interval = Clock.currentTimeMillis() - start;
                 try {
-                    if (interval < 1000 * n)
+                    if (interval < 1000 * n) {
                         Clock.sleep(interval);
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -324,8 +346,9 @@ public class Common {
                 wrote += cached;
             }
         }
-        if (!flushPerBlock)
+        if (!flushPerBlock) {
             os.flush();
+        }
     }
 
     /**
@@ -461,7 +484,9 @@ public class Common {
         int index = offset;
         int remain = length;
         while (remain > 0) {
-            if (line > 0) builder.append(LINE_SEPARATOR);//非首行则添加行隔符
+            if (line > 0) {
+                builder.append(LINE_SEPARATOR);//非首行则添加行隔符
+            }
             int col = colFunction.apply(line++);// 计算当前行列数
             int encodeCountForThisLine = Math.min(remain, col);//在剩余字节数和当前行列数中算出本行要编码的字节数
             remain -= encodeCountForThisLine;// 预减掉本行编码数
@@ -493,7 +518,9 @@ public class Common {
         int index = offset;
         int remain = length;
         while (remain > 0) {
-            if (line > 0) builder.append(LINE_SEPARATOR);//非首行则添加行隔符
+            if (line > 0) {
+                builder.append(LINE_SEPARATOR);//非首行则添加行隔符
+            }
             int col = colFunction.apply(line++);// 计算当前行列数
             int encodeCountForThisLine = Math.min(remain, col);//在剩余字节数和当前行列数中算出本行要编码的字节数
             remain -= encodeCountForThisLine;// 预减掉本行编码数
@@ -513,11 +540,17 @@ public class Common {
     }
 
     private static int hexCharValue(char c) {
-        if (c >= '0' && c <= '9') return c - '0';
+        if (c >= '0' && c <= '9') {
+            return c - '0';
+        }
 
-        if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+        if (c >= 'a' && c <= 'f') {
+            return c - 'a' + 10;
+        }
 
-        if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+        if (c >= 'A' && c <= 'F') {
+            return c - 'A' + 10;
+        }
 
         return -1;
     }
@@ -599,7 +632,9 @@ public class Common {
     private static <T, C extends Collection<T>> C join(C instance, Collection<? extends T>... collections) {
         if (collections != null && collections.length > 0) {
             for (Collection<? extends T> c : collections) {
-                if (c != null) instance.addAll(c);
+                if (c != null) {
+                    instance.addAll(c);
+                }
             }
         }
         return instance;
@@ -617,14 +652,17 @@ public class Common {
     }
 
     public static String native2AscII(String str) {
-        if (str == null) return null;
+        if (str == null) {
+            return null;
+        }
         char[] charPoints = str.toCharArray();
         StringBuilder strBuf = new StringBuilder();
         for (char ch : charPoints) {
-            if (ch < 256)
+            if (ch < 256) {
                 strBuf.append(ch);
-            else
+            } else {
                 strBuf.append("\\u").append(Integer.toHexString(ch));
+            }
         }
         return strBuf.toString();
     }
@@ -640,8 +678,9 @@ public class Common {
         if (!f.getParentFile().exists()) {
             f.getParentFile().mkdirs();
         }
-        if (f.exists())
+        if (f.exists()) {
             f.delete();
+        }
         f.createNewFile();
         return f;
     }
@@ -693,19 +732,27 @@ public class Common {
     }
 
     public static <T> int indexOf(T[] array, T t) {
-        if (array == null) throw new NullPointerException("indexOf: array must not be NULL.");
+        if (array == null) {
+            throw new NullPointerException("indexOf: array must not be NULL.");
+        }
         for (int i = 0; i < array.length; i++) {
             if (t == null) {
-                if (array[i] == null) return i;
+                if (array[i] == null) {
+                    return i;
+                }
             } else {
-                if (t.equals(array[i])) return i;
+                if (t.equals(array[i])) {
+                    return i;
+                }
             }
         }
         return -1;
     }
 
     public static String concat(Collection<String> list, String split) {
-        if (list == null) return null;
+        if (list == null) {
+            return null;
+        }
         switch (list.size()) {
             case 0:
                 return "";
@@ -731,8 +778,9 @@ public class Common {
 
     public static <T> T to(String str, T value) {
         if (value == null) {
-            if (str == null)
+            if (str == null) {
                 return null;
+            }
             throw new NullPointerException("value is null.");
         }
         Class<?> cls = value.getClass();
@@ -798,31 +846,34 @@ public class Common {
     @SuppressWarnings("unused")
     public static boolean toBool(String str, Supplier<Boolean> v) {
         String s = nullToStr(str);
-        if (s.equals("1") || s.equalsIgnoreCase("T")
-                || s.equalsIgnoreCase("TRUE"))
+        if ("1".equals(s) || "T".equalsIgnoreCase(s)
+                || "TRUE".equalsIgnoreCase(s)) {
             return true;
-        else if (s.equals("0") || s.equalsIgnoreCase("F")
-                || s.equalsIgnoreCase("FALSE"))
+        } else if ("0".equals(s) || "F".equalsIgnoreCase(s)
+                || "FALSE".equalsIgnoreCase(s)) {
             return false;
-        else
+        } else {
             return v.get();
+        }
     }
 
     public static boolean toBool(String str, boolean v) {
         String s = nullToStr(str);
-        if (s.equals("1") || s.equalsIgnoreCase("T")
-                || s.equalsIgnoreCase("TRUE"))
+        if ("1".equals(s) || "T".equalsIgnoreCase(s)
+                || "TRUE".equalsIgnoreCase(s)) {
             return true;
-        else if (s.equals("0") || s.equalsIgnoreCase("F")
-                || s.equalsIgnoreCase("FALSE"))
+        } else if ("0".equals(s) || "F".equalsIgnoreCase(s)
+                || "FALSE".equalsIgnoreCase(s)) {
             return false;
-        else
+        } else {
             return v;
+        }
     }
 
     public static List<String> toArray(String str, String delim, List<String> v) {
-        if (Common.isBlank(str))
+        if (Common.isBlank(str)) {
             return v;
+        }
         StringTokenizer st = new StringTokenizer(str, delim, false);
         List<String> list = new ArrayList<>();
         while (st.hasMoreElements()) {
@@ -847,26 +898,36 @@ public class Common {
 
     private static boolean inArray(char ch, char[] chars) {
         for (char c : chars) {
-            if (c == ch) return true;
+            if (c == ch) {
+                return true;
+            }
         }
         return false;
     }
 
     public static String trim(String str, char... trimChars) {
-        if (Common.isBlank(str) || trimChars == null || trimChars.length == 0) return str;
+        if (Common.isBlank(str) || trimChars == null || trimChars.length == 0) {
+            return str;
+        }
         char[] chars = str.toCharArray();
         int start, end = chars.length;
         for (start = 0; start < end; start++) {
-            if (!inArray(chars[start], trimChars)) break;
+            if (!inArray(chars[start], trimChars)) {
+                break;
+            }
         }
         for (; end > start; end--) {
-            if (!inArray(chars[end - 1], trimChars)) break;
+            if (!inArray(chars[end - 1], trimChars)) {
+                break;
+            }
         }
         return new String(chars, start, end - start);
     }
 
     public static String trim(String str, String toTrim) {
-        if (Common.isBlank(str) || Common.isBlank(toTrim)) return str;
+        if (Common.isBlank(str) || Common.isBlank(toTrim)) {
+            return str;
+        }
         return trim(str, toTrim.toCharArray());
     }
 
@@ -896,7 +957,9 @@ public class Common {
     }
 
     public static char randomChar(String s) {
-        if (Common.isBlank(s)) throw new IllegalArgumentException("range is blank.");
+        if (Common.isBlank(s)) {
+            throw new IllegalArgumentException("range is blank.");
+        }
         return s.charAt(Common.random(s.length()));
     }
 
@@ -910,37 +973,51 @@ public class Common {
 //    }
 
     public static <T> T random(T[] range) {
-        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        if (range == null || range.length == 0) {
+            throw new IllegalArgumentException("range is blank.");
+        }
         return range[random(range.length)];
     }
 
     public static byte random(byte[] range) {
-        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        if (range == null || range.length == 0) {
+            throw new IllegalArgumentException("range is blank.");
+        }
         return range[random(range.length)];
     }
 
     public static short random(short[] range) {
-        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        if (range == null || range.length == 0) {
+            throw new IllegalArgumentException("range is blank.");
+        }
         return range[random(range.length)];
     }
 
     public static int random(int[] range) {
-        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        if (range == null || range.length == 0) {
+            throw new IllegalArgumentException("range is blank.");
+        }
         return range[random(range.length)];
     }
 
     public static long random(long[] range) {
-        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        if (range == null || range.length == 0) {
+            throw new IllegalArgumentException("range is blank.");
+        }
         return range[random(range.length)];
     }
 
     public static float random(float[] range) {
-        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        if (range == null || range.length == 0) {
+            throw new IllegalArgumentException("range is blank.");
+        }
         return range[random(range.length)];
     }
 
     public static double random(double[] range) {
-        if (range == null || range.length == 0) throw new IllegalArgumentException("range is blank.");
+        if (range == null || range.length == 0) {
+            throw new IllegalArgumentException("range is blank.");
+        }
         return range[random(range.length)];
     }
 
@@ -957,7 +1034,9 @@ public class Common {
     }
 
     public static String lowerFirstChar(String string) {
-        if (string == null) return null;
+        if (string == null) {
+            return null;
+        }
         char[] charSeq = string.toCharArray();
         if (charSeq.length > 0 && charSeq[0] >= 'A' && charSeq[0] <= 'Z') {
             charSeq[0] = (char) (charSeq[0] + TO_LOWER);
@@ -967,7 +1046,9 @@ public class Common {
     }
 
     public static String upperFirstChar(String string) {
-        if (string == null) return null;
+        if (string == null) {
+            return null;
+        }
         char[] charSeq = string.toCharArray();
         if (charSeq.length > 0 && charSeq[0] >= 'a' && charSeq[0] <= 'z') {
             charSeq[0] = (char) (charSeq[0] - TO_LOWER);
@@ -993,7 +1074,9 @@ public class Common {
         StringBuilder builder = new StringBuilder();
         while (st.hasMoreElements()) {
             String node = st.nextToken();
-            if (node.length() == 0) continue;
+            if (node.length() == 0) {
+                continue;
+            }
             builder.append(upperFirstChar(node));
         }
         return firstCharUpperCase ?
@@ -1014,16 +1097,22 @@ public class Common {
         int[][] c = new int[lenA + 1][lenB + 1];
         // Record the distance of all begin points of each string
         // 初始化方式与背包问题有点不同
-        for (int i = 0; i < lenA; i++) c[i][lenB] = lenA - i;
-        for (int j = 0; j < lenB; j++) c[lenA][j] = lenB - j;
+        for (int i = 0; i < lenA; i++) {
+            c[i][lenB] = lenA - i;
+        }
+        for (int j = 0; j < lenB; j++) {
+            c[lenA][j] = lenB - j;
+        }
         c[lenA][lenB] = 0;
-        for (int i = lenA - 1; i >= 0; i--)
+        for (int i = lenA - 1; i >= 0; i--) {
             for (int j = lenB - 1; j >= 0; j--) {
-                if (strB.charAt(j) == strA.charAt(i))
+                if (strB.charAt(j) == strA.charAt(i)) {
                     c[i][j] = c[i + 1][j + 1];
-                else
+                } else {
                     c[i][j] = Math.min(Math.min(c[i][j + 1], c[i + 1][j]), c[i + 1][j + 1]) + 1;
+                }
             }
+        }
 
         return c[0][0];
     }
@@ -1034,8 +1123,12 @@ public class Common {
      * @return 两个字符串的相似度
      */
     public static double similarity(String s1, String s2) {
-        if (s1 == null || s2 == null) return 0.0d;
-        if (s1.equals(s2)) return 1.0d;
+        if (s1 == null || s2 == null) {
+            return 0.0d;
+        }
+        if (s1.equals(s2)) {
+            return 1.0d;
+        }
         return 1.0d - calculateStringDistance(s1, s2) / (Math.max(s1.length(), s2.length()) * 1.0d);
     }
 

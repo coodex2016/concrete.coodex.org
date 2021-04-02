@@ -19,20 +19,22 @@ package org.coodex.util;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+
 public class ByteArrayBuildTest {
 
     @Test
-    public void test(){
-        ByteArrayBuilder byteArrayBuilder;
-        byteArrayBuilder = new ByteArrayBuilder(ByteArrayBuilder.Endianness.BIG_ENDIAN).append(0xABCDl);
-        Assert.assertEquals("000000000000ABCD", Common.base16Encode(byteArrayBuilder.build()));
+    public void test() {
+        BytesBuilder byteArrayBuilder;
+        byteArrayBuilder = new BytesBuilder(Endianness.BIG_ENDIAN, StandardCharsets.UTF_8).appendLong(0xABCDl);
+        Assert.assertEquals("000000000000ABCD", Common.base16Encode(byteArrayBuilder.toByteArray()).toUpperCase());
 
-        byteArrayBuilder = new ByteArrayBuilder().append("1234567890").append(CRC.Algorithm.CRC16_MODBUS);
+        byteArrayBuilder = new BytesBuilder().appendString("1234567890").appendCRC(CRC.Algorithm.CRC16_MODBUS);
         Assert.assertEquals(Common.base16Encode("1234567890".getBytes()) + "0AC2",
-                Common.base16Encode(byteArrayBuilder.build()));
+                Common.base16Encode(byteArrayBuilder.toByteArray()).toUpperCase());
 
-        byteArrayBuilder = new ByteArrayBuilder().append((short) 0xABCD);
-        Assert.assertEquals("CDAB", Common.base16Encode(byteArrayBuilder.build()));
+        byteArrayBuilder = new BytesBuilder().appendShort(0xABCD);
+        Assert.assertEquals("CDAB", Common.base16Encode(byteArrayBuilder.toByteArray()).toUpperCase());
 
     }
 }

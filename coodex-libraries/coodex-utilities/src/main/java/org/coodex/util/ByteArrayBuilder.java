@@ -19,6 +19,7 @@ package org.coodex.util;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 
+@Deprecated
 public class ByteArrayBuilder {
     private final ByteArrayOutputStream byteArrayOutputStream
             = new ByteArrayOutputStream();
@@ -49,13 +50,14 @@ public class ByteArrayBuilder {
 
     private byte[] toBytes(long l, int wide, Endianness endianness) {
 
-        byte[] bytes = new byte[wide];
-        boolean little = Endianness.LITTLE_ENDIAN.equals(endianness);
-        for (int i = 0; i < wide; i++) {
-            bytes[little ? i : (wide - i - 1)] = (byte) l;
-            l = l >>> 8;
-        }
-        return bytes;
+//        byte[] bytes = new byte[wide];
+//        boolean little = Endianness.LITTLE_ENDIAN.equals(endianness);
+//        for (int i = 0; i < wide; i++) {
+//            bytes[little ? i : (wide - i - 1)] = (byte) l;
+//            l = l >>> 8;
+//        }
+//        return bytes;
+        return Common.toBytes(l, wide, endianness);
     }
 
     public ByteArrayBuilder append(short word) {
@@ -116,10 +118,6 @@ public class ByteArrayBuilder {
 
     public byte[] build() {
         return byteArrayOutputStream.toByteArray();
-    }
-
-    public enum Endianness {
-        BIG_ENDIAN, LITTLE_ENDIAN
     }
 
 }
