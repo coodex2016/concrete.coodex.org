@@ -36,11 +36,15 @@ public class ConfigurationBaseProfile extends AbstractConfiguration {
 
     @Override
     protected String search(String namespace, List<String> keys) {
-        if (namespace == null) namespace = getDefaultProfile();
+        if (namespace == null) {
+            namespace = getDefaultProfile();
+        }
         Profile profile = Profile.get(PROFILES_ROOT + "/" + namespace /* + ".properties" */);
         for (String k : keys) {
             String x = profile.getString(k);
-            if (x != null) return x;
+            if (x != null) {
+                return x;
+            }
         }
         return null;
     }

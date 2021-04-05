@@ -123,7 +123,6 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
         return allInstanceSingleton.get();
     }
 
-
     @Override
     public T get(Class<? extends T> providerClass) {
         Map<String, Object> copy = new HashMap<>();
@@ -149,7 +148,9 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
 
     protected T conflict(Class<? extends T> providerClass, Map<String, Object> map) {
         T t = get(providerClass.getName());
-        if (t != null) return t;
+        if (t != null) {
+            return t;
+        }
 
         StringBuilder buffer = new StringBuilder(getServiceType().getTypeName());
         buffer.append("[providerClass: ").append(providerClass.getName()).append("]");
@@ -179,12 +180,13 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
 
     @Override
     public T get() {
-        if (instances.get().instancesMap.size() == 0)
+        if (instances.get().instancesMap.size() == 0) {
             return defaultProviderSingleton.get();
-        else if (instances.get().instancesMap.size() == 1)
+        } else if (instances.get().instancesMap.size() == 1) {
             return cast(instances.get().instancesMap.values().toArray()[0]);
-        else
+        } else {
             return conflict();
+        }
     }
 
 

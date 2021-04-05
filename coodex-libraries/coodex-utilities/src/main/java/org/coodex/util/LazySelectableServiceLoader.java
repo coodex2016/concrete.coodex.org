@@ -152,8 +152,9 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
 //        Class tClass = instance.getClass();
         Class<?> paramClass = param == null ? null : param.getClass();
 //        Type t = ;
-        if (paramClass == null)
+        if (paramClass == null) {
             return instance.accept(null);
+        }
 
 
 //         to do 需要考虑泛型数组的问题
@@ -177,13 +178,15 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
     public List<T> selectAll(Param_Type param) {
         List<T> list = new ArrayList<>();
         for (T instance : /*getAll().values()*/ sortedServices.get()) {
-            if (accept(instance, param))
+            if (accept(instance, param)) {
                 list.add(instance);
+            }
         }
         try {
             T instance = getServiceLoaderFacade().getDefault();
-            if (accept(instance, param))
+            if (accept(instance, param)) {
                 list.add(instance);
+            }
         } catch (Throwable ignored) {
         }
         return list;
@@ -192,13 +195,15 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
     @Override
     public T select(Param_Type param) {
         for (T instance : /*getAll().values()*/ sortedServices.get()) {
-            if (accept(instance, param))
+            if (accept(instance, param)) {
                 return instance;
+            }
         }
         try {
             T instance = getServiceLoaderFacade().getDefault();
-            if (accept(instance, param))
+            if (accept(instance, param)) {
                 return instance;
+            }
         } catch (Throwable ignored) {
         }
         log.info("no service instance accept this: {}", param);
@@ -236,5 +241,4 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
     public Map<String, T> getAll() {
         return getServiceLoaderFacade().getAll();
     }
-
 }

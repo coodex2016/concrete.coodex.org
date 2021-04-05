@@ -27,7 +27,9 @@ public abstract class AbstractConfiguration implements Configuration {
     @Override
     public <T> T getValue(String key, Supplier<T> defaultValueSupplier, String... namespace) {
         String strValue = get(key, namespace);
-        if (strValue == null) return defaultValueSupplier.get();
+        if (strValue == null) {
+            return defaultValueSupplier.get();
+        }
         return Common.to(strValue, defaultValueSupplier.get());
     }
 
@@ -87,7 +89,9 @@ public abstract class AbstractConfiguration implements Configuration {
 
 
     protected String search(String key, List<String> namespaces, int deep) {
-        if (deep == -1) return null;
+        if (deep == -1) {
+            return null;
+        }
 
         String namespace = buildNamespace(namespaces, deep);
         List<String> keys = buildKeys(key, namespaces, deep);

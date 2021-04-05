@@ -19,7 +19,11 @@ package org.coodex.config;
 import org.coodex.util.Common;
 import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
+import org.coodex.util.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.function.Supplier;
@@ -29,17 +33,20 @@ import java.util.function.Supplier;
  */
 public class Config {
 
-    public final static AbstractConfiguration BASE_SYSTEM_PROPERTIES = new AbstractConfiguration() {
+    public final static SystemPropertiesConfiguration BASE_SYSTEM_PROPERTIES = new SystemPropertiesConfiguration();
+    private final static Logger log = LoggerFactory.getLogger(Config.class);
+    private static final Singleton<WrappedConfiguration> wrappedConfiguration = Singleton.with(
+            () -> new WrappedConfiguration(new LazyServiceLoader<Configuration>(
+                    () -> new LazyServiceLoader<DefaultConfigurationProvider>(ConfigurationBaseProfile::new) {
+                    }.get().get()) {
+            })
+    );
+//    private static final ServiceLoader<Configuration> configurationServiceLoader =
+//    ;
 
-        @Override
-        protected String search(String namespace, List<String> keys) {
-            Properties properties = System.getProperties();
-            for (String key : keys) {
-                if (properties.containsKey(key)) return System.getProperty(key);
-            }
-            return null;
-        }
-    };
+    public static Configuration getConfig() {
+        return wrappedConfiguration.get();
+    }
 
 //    private static Singleton<Configuration> defaultConfiguration = new Singleton<Configuration>(
 //            new Singleton.Builder<Configuration>() {
@@ -49,35 +56,23 @@ public class Config {
 //                }
 //            }
 //    );
-
-    private static final ServiceLoader<DefaultConfigurationProvider> configurationProviderLazyServiceLoader =
-            new LazyServiceLoader<DefaultConfigurationProvider>(ConfigurationBaseProfile::new) {
-            };
-
-    private static final ServiceLoader<Configuration> configurationServiceLoader =
-            new LazyServiceLoader<Configuration>(() -> configurationProviderLazyServiceLoader.get().get()) {
-
-            };
-
-
-    public static Configuration getConfig() {
-        return configurationServiceLoader.get();
-    }
+//
+//    private static final ServiceLoader<DefaultConfigurationProvider> configurationProviderLazyServiceLoader =
+//            new LazyServiceLoader<DefaultConfigurationProvider>(ConfigurationBaseProfile::new) {
+//            };
 
     public static String get(String key, String... namespaces) {
-        String v = getConfig().get(key, namespaces);
-        return v == null ? BASE_SYSTEM_PROPERTIES.get(key, namespaces) : v;
+        return getConfig().get(key, namespaces);
+//        return v == null ? BASE_SYSTEM_PROPERTIES.get(key, namespaces) : v;
     }
 
-
     public static <T> T getValue(final String key, final T defaultValue, final String... namespace) {
-        return getConfig().getValue(key, () -> BASE_SYSTEM_PROPERTIES.getValue(key, defaultValue, namespace), namespace);
+        return getConfig().getValue(key, defaultValue, namespace);
     }
 
     public static <T> T getValue(final String key, final Supplier<T> defaultValueSupplier, final String... namespace) {
-        return getConfig().getValue(key, () -> BASE_SYSTEM_PROPERTIES.getValue(key, defaultValueSupplier, namespace), namespace);
+        return getConfig().getValue(key, defaultValueSupplier, namespace);
     }
-
 
     public static String[] getArray(String key, String... namespaces) {
         return Common.toArray(get(key, namespaces), ",", (String[]) null);
@@ -89,6 +84,57 @@ public class Config {
 
     public static String[] getArray(String key, String delim, Supplier<String[]> supplier, String... namespaces) {
         return Common.toArray(get(key, namespaces), delim, supplier);
+    }
+
+    public static class SystemPropertiesConfiguration extends AbstractConfiguration {
+        @Override
+        protected String search(String namespace, List<String> keys) {
+            Properties properties = System.getProperties();
+            for (String key : keys) {
+                if (properties.containsKey(key)) {
+                    return System.getProperty(key);
+                }
+            }
+            return null;
+        }
+    }
+
+    private static class WrappedConfiguration extends AbstractConfiguration {
+        private final Singleton<List<Configuration>> configuration;
+
+        private WrappedConfiguration(ServiceLoader<Configuration> configurationServiceLoader) {
+            this.configuration = Singleton.with(() -> {
+                List<Configuration> configurationList = new ArrayList<>(configurationServiceLoader.sorted());
+                Configuration defaultConfiguration = configurationServiceLoader.getDefault();
+                if (defaultConfiguration != null) {
+                    configurationList.add(configurationServiceLoader.getDefault());
+                }
+
+                configurationList.add(BASE_SYSTEM_PROPERTIES);
+                return configurationList;
+            });
+        }
+
+        @Override
+        protected String search(String namespace, List<String> keys) {
+            for (Configuration c : configuration.get()) {
+                for (String key : keys) {
+                    String v = c.get(key, namespace);
+                    if (v != null) {
+                        if (log.isDebugEnabled()) {
+                            if (namespace == null) {
+                                log.debug("load config: {}={} by {}", key, v, c.getClass());
+                            } else {
+                                log.debug("load config: {}.{}={}; by {}", namespace, key, v, c.getClass());
+                            }
+                        }
+                        return v;
+                    }
+                }
+            }
+            return null;
+        }
+
     }
 
 }

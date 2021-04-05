@@ -71,6 +71,8 @@
         <snakeyaml.version>1.26</snakeyaml.version>
         <cglib.version>3.2.12</cglib.version>
         <freemarker.version>2.3.28</freemarker.version>
+
+        <spring.framework.version>5.3.4</spring.framework.version>
     </properties>
 
     <profiles>
@@ -154,31 +156,31 @@
             </distributionManagement>
         </profile>
 
-<!--        <profile>-->
-<!--            <id>coodex.release</id>-->
-<!--            <distributionManagement>-->
-<!--                <snapshotRepository>-->
-<!--                    <id>coodex.release</id>-->
-<!--                    <url>${coodex.url.snapshot}</url>-->
-<!--                </snapshotRepository>-->
-<!--                <repository>-->
-<!--                    <id>coodex.release</id>-->
-<!--                    <url>${coodex.url.release}</url>-->
-<!--                </repository>-->
-<!--            </distributionManagement>-->
-<!--        </profile>-->
+        <!--        <profile>-->
+        <!--            <id>coodex.release</id>-->
+        <!--            <distributionManagement>-->
+        <!--                <snapshotRepository>-->
+        <!--                    <id>coodex.release</id>-->
+        <!--                    <url>${coodex.url.snapshot}</url>-->
+        <!--                </snapshotRepository>-->
+        <!--                <repository>-->
+        <!--                    <id>coodex.release</id>-->
+        <!--                    <url>${coodex.url.release}</url>-->
+        <!--                </repository>-->
+        <!--            </distributionManagement>-->
+        <!--        </profile>-->
     </profiles>
 
     <build>
-<!--        <pluginManagement>-->
-<!--            <plugins>-->
-<!--                <plugin>-->
-<!--                    <groupId>org.sonarsource.scanner.maven</groupId>-->
-<!--                    <artifactId>sonar-maven-plugin</artifactId>-->
-<!--                    <version>3.7.0.1746</version>-->
-<!--                </plugin>-->
-<!--            </plugins>-->
-<!--        </pluginManagement>-->
+        <!--        <pluginManagement>-->
+        <!--            <plugins>-->
+        <!--                <plugin>-->
+        <!--                    <groupId>org.sonarsource.scanner.maven</groupId>-->
+        <!--                    <artifactId>sonar-maven-plugin</artifactId>-->
+        <!--                    <version>3.7.0.1746</version>-->
+        <!--                </plugin>-->
+        <!--            </plugins>-->
+        <!--        </pluginManagement>-->
 
         <plugins>
             <plugin>
@@ -223,6 +225,14 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring.framework.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 
             <dependency>
                 <groupId>org.projectlombok</groupId>
