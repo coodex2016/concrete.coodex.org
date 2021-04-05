@@ -11,12 +11,13 @@
 > Concrete是一种基于Java的服务定义规范
 
 ```java
+
 @ConcreteService
 public interface SomeService {
-    
+
     @AccessAllow
     String someMethod();
-    
+
 }
 ```
 
@@ -37,13 +38,18 @@ public interface SomeService {
 - 【feature】concrete-api-tools: 重命名为concrete-api-renderer，调整为仅定义API文档化渲染的规范，封装通用操作，具体渲染分拆到具体模块完成
 -->
 
+## 2021-04-05
+
+- concrete-core-spring 环境下，Config.get优先从spring上下文中获取配置
+
 ## 2020-10-12
 
 - 废弃ConcreteServiceLoaderProvider，改为使用org.coodex.spring.SpringServiceLoaderProvider
 
 ## 2020-10-11
 
-- 根据coodex-libraries的ActiveProfiles机制，增加SpringActiveProfilesProvider，使用spring-boot时，coodex Profile与Spring active profiles机制一致
+- 根据coodex-libraries的ActiveProfiles机制，增加SpringActiveProfilesProvider，使用spring-boot时，coodex Profile与Spring active
+  profiles机制一致
 
 ## 2020-05-15
 
@@ -52,15 +58,15 @@ public interface SomeService {
 ## 2020-05-13
 
 - 根据`coodex-libraries`的更新，重构ErrorCodes部分，调整如下：
-  - 使用`org.coodex.util.Renderer`渲染错误信息
-  - 增加`@ErrorCode`注解，用来声明一个class是用来进行错误码定义的，其value可以指定message template在I18N下的命名空间，关于在此类中定义的错误码：
-    - 错误码必须是public的
-    - 错误码必须是final的
-    - 错误码必须是int类型
-  - 增加`@ErrorCode.Key`注解，用来定义错误码I18N下的键
-  - 增加`@ErrorCode.Template`注解，用来指定明确的template，如此值非空，则直接使用此模板
-  - 废弃`org.coodex.concrete.common.AbstractErrorCodes`
-  - 删除`@ErrorMsg`
+    - 使用`org.coodex.util.Renderer`渲染错误信息
+    - 增加`@ErrorCode`注解，用来声明一个class是用来进行错误码定义的，其value可以指定message template在I18N下的命名空间，关于在此类中定义的错误码：
+        - 错误码必须是public的
+        - 错误码必须是final的
+        - 错误码必须是int类型
+    - 增加`@ErrorCode.Key`注解，用来定义错误码I18N下的键
+    - 增加`@ErrorCode.Template`注解，用来指定明确的template，如此值非空，则直接使用此模板
+    - 废弃`org.coodex.concrete.common.AbstractErrorCodes`
+    - 删除`@ErrorMsg`
 
 ## 2020-04-17
 
@@ -68,11 +74,11 @@ public interface SomeService {
 - `org.coodex.concrete.Client`提供`newBuilder`接口，可以传递附加信息，使用方法
 
 ```java
-  Client.Builder<SomeService> someServiceBuilder = Client.newBuilder(SomeService.class);
-  // ......
-  Map<String, String> subjoin = new HashMap<>();
-  // 设置需要传递的附加信息
-  someServiceBuilder.withSubjoin(subjoin).someMethod();
+  Client.Builder<SomeService> someServiceBuilder=Client.newBuilder(SomeService.class);
+        // ......
+        Map<String, String> subjoin=new HashMap<>();
+        // 设置需要传递的附加信息
+        someServiceBuilder.withSubjoin(subjoin).someMethod();
 ```
 
 ## 2020-04-13
@@ -96,7 +102,7 @@ public interface SomeService {
 
 - 发布0.4.0，0.4.x分支仅用于缺陷修复，不再增加新能力
 - 开启0.5.x分支，TODO
-  - 放弃对java8以前版本的支持
-  - 重构SPI部分
-  - 项目结构分拆
-  - 其他优化
+    - 放弃对java8以前版本的支持
+    - 重构SPI部分
+    - 项目结构分拆
+    - 其他优化

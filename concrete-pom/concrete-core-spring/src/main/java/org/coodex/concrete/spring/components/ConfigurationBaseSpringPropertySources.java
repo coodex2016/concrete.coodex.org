@@ -17,7 +17,10 @@
 package org.coodex.concrete.spring.components;
 
 import org.coodex.config.AbstractConfiguration;
+import org.coodex.config.Config;
 import org.coodex.util.SPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -29,15 +32,29 @@ import java.util.List;
 @Named
 @SPI.Ordered(0)
 public class ConfigurationBaseSpringPropertySources extends AbstractConfiguration implements ApplicationContextAware {
+    private final static Logger log = LoggerFactory.getLogger(Config.class);
     private Environment springEnvironment;
 
 
     @Override
     protected String search(String namespace, List<String> keys) {
+        String prefix = namespace == null ? "" : (namespace + ".");
+
+        String v = find(keys, "concrete." + prefix);
+        if (v != null) {
+            return v;
+        }
+        return find(keys, prefix);
+    }
+
+    private String find(List<String> keys, String prefix) {
         if (springEnvironment != null) {
             for (String key : keys) {
-                String v = springEnvironment.getProperty(key);
+                String v = springEnvironment.getProperty(prefix + key);
                 if (v != null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("load config: {}{}={} from SpringPropertySources", prefix, key, v);
+                    }
                     return v;
                 }
             }
