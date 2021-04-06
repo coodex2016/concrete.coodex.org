@@ -110,7 +110,7 @@
 
         <netty4.version>4.1.60.Final</netty4.version>
         <jersey.version>2.27</jersey.version>
-        <junit.version>4.13</junit.version>
+        <junit.version>4.13.1</junit.version>
         <freemarker.version>2.3.28</freemarker.version>
         <fastjson.version>1.2.75</fastjson.version>
         <guice.version>4.2.2</guice.version>
