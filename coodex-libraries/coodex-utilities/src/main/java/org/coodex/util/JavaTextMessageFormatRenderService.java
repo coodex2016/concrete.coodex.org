@@ -28,7 +28,9 @@ public class JavaTextMessageFormatRenderService implements RenderService {
 
     @Override
     public String render(String template, Object... objects) {
-        if(objects == null || objects.length == 0) return template;
+        if(objects == null || objects.length == 0) {
+            return template;
+        }
         return MessageFormat.format(template, transfer(objects));
     }
 

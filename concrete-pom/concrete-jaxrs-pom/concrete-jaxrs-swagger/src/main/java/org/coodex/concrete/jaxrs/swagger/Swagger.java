@@ -21,6 +21,7 @@ import org.coodex.concrete.jaxrs.DefaultJaxrsClassGetter;
 import org.coodex.concrete.jaxrs.Polling;
 import org.coodex.concrete.jaxrs.ServiceRegisteredListener;
 import org.coodex.util.Common;
+import org.coodex.util.ResourceScanner;
 import org.coodex.util.Singleton;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Path("")
@@ -47,27 +49,27 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
 
     private final static Logger log = LoggerFactory.getLogger(Swagger.class);
 
-    private static Singleton<Set<Class<?>>> classes = Singleton.with(
+    private static final Singleton<Set<Class<?>>> classes = Singleton.with(
             LinkedHashSet::new
     );
 
-    private static SingletonMap<String, String> swaggerJson = SingletonMap.<String, String>builder()
+    private static final SingletonMap<String, String> swaggerJson = SingletonMap.<String, String>builder()
             .function((key) -> SwaggerHelper.toJson(key, new ArrayList<>(classes.get()))).build();
 
-    private static String[] swagger_files = {
-            "favicon-16x16.png",
-            "favicon-32x32.png",
-            "index.html",
-            "oauth2-redirect.html",
-            "swagger-ui.css",
-            "swagger-ui.js",
-            "swagger-ui-bundle.js",
-            "swagger-ui-standalone-preset.js"
-    };
 
-    private static SingletonMap<String, StaticFileContent> staticFileContents = SingletonMap.<String, StaticFileContent>builder()
+    private static final Singleton<String[]> swaggerFiles = Singleton.with(() -> {
+        List<String> files = new ArrayList<>();
+        final String path = "swagger";
+        ResourceScanner.newBuilder((url, str) -> {
+            files.add(str.substring(path.length() + 1));
+        }).build().scan(path);
+        return files.toArray(new String[0]);
+    });
+
+
+    private static final SingletonMap<String, StaticFileContent> staticFileContents = SingletonMap.<String, StaticFileContent>builder()
             .function(key -> {
-                if (Common.inArray(key, swagger_files)) {
+                if (Common.inArray(key, swaggerFiles.get())) {
                     try {
                         String type = "text/html";
                         if (key.endsWith(".css")) {
@@ -106,7 +108,9 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
 
     @Override
     public void register(Object instance, Class<?> concreteService) {
-        if (Polling.class.equals(concreteService)) return;
+        if (Polling.class.equals(concreteService)) {
+            return;
+        }
         // TODO 如何区分不同的应用
         classes.get().add(concreteService);
     }
@@ -128,11 +132,13 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
     @Path("swagger/{file}")
     @GET
     public Response getStaticFile(@PathParam("file") String file) {
-        if (Common.isBlank(file))
+        if (Common.isBlank(file)) {
             file = "index.html";
+        }
         StaticFileContent fileContent = staticFileContents.get(file);
-        if (fileContent == null)
+        if (fileContent == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        }
         return Response
                 .ok()
                 .type(fileContent.type)
@@ -150,5 +156,6 @@ public class Swagger implements DefaultJaxrsClassGetter, ServiceRegisteredListen
         String type;
         byte[] content;
     }
+
 
 }

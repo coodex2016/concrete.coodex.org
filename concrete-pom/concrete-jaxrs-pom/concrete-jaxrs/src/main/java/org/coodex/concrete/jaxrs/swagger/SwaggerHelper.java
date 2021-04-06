@@ -50,8 +50,8 @@ import static org.coodex.util.GenericTypeHelper.toReference;
 @SuppressWarnings("unused")
 public class SwaggerHelper {
 
-    private static ThreadLocal<Map<String, Schema<?>>> definitions = new ThreadLocal<>();
-    private static ThreadLocal<Set<String>> readyForSchema = new ThreadLocal<>();
+    private static final ThreadLocal<Map<String, Schema<?>>> definitions = new ThreadLocal<>();
+    private static final ThreadLocal<Set<String>> readyForSchema = new ThreadLocal<>();
 
     public static OpenAPI toOpenAPI(String url, List<Class<?>> classes) {
         readyForSchema.remove();
@@ -282,8 +282,9 @@ public class SwaggerHelper {
                     return new Schema<>().title("cycle ref").description(name);
                 }
             } finally {
-                if (remove)
+                if (remove) {
                     set.remove(name);
+                }
             }
 
         }

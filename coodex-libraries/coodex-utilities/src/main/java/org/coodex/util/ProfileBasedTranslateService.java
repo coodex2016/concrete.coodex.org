@@ -34,7 +34,10 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
 
     ProfileBasedTranslateService() {
         ResourceScanner.newBuilder((resource, resourceName) -> mappers.add(
-                new ResourcesMapper(resourceName, resource, Integer.MAX_VALUE - ResourceScanner.getExtraPathIndex())))
+                new ResourcesMapper(
+                        resourceName,
+                        resource,
+                        Integer.MAX_VALUE - (ResourceScanner.isExtraPath() ? ResourceScanner.getExtraPathIndex() : 0))))
                 .filter(resourceName -> {
                     String[] allSupported = Profile.allSupportedFileExt();
                     for (String ext : allSupported) {
@@ -63,7 +66,9 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
     private static int countOfSlash(String resourceName) {
         int count = 0;
         for (char ch : resourceName.toCharArray()) {
-            if (ch == '/') count++;
+            if (ch == '/') {
+                count++;
+            }
         }
         return count;
     }
@@ -74,7 +79,9 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
     }
 
     private boolean in(String key, String name) {
-        if (key.equals(name)) return true;
+        if (key.equals(name)) {
+            return true;
+        }
         return key.startsWith(name + ".");
     }
 
@@ -143,9 +150,13 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
 
 
         boolean accept(Locale locale) {
-            if (language == null) return true;
+            if (language == null) {
+                return true;
+            }
 
-            if (country == null && locale.getLanguage().equals(language)) return true;
+            if (country == null && locale.getLanguage().equals(language)) {
+                return true;
+            }
 
             return locale.getLanguage().equals(language) && locale.getCountry().equals(country);
 
@@ -168,23 +179,45 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
         @Override
         public int compareTo(ResourcesMapper o) {
             int x = isFile.compareTo(o.isFile);
-            if (x != 0) return -x;
+            if (x != 0) {
+                return -x;
+            }
             x = fileOrder - o.fileOrder;
-            if (x != 0) return -x;
+            if (x != 0) {
+                return -x;
+            }
             x = name.length() - o.name.length();
-            if (x != 0) return -x;
+            if (x != 0) {
+                return -x;
+            }
             x = deep - o.deep;
-            if (x != 0) return -x;
+            if (x != 0) {
+                return -x;
+            }
             x = path.compareTo(o.path);
-            if (x != 0) return x;
-            if (language == null && o.language != null) return 1;
-            if (language != null && o.language == null) return -1;
-            if (country == null && o.country != null) return 1;
-            if (country != null && o.country == null) return -1;
+            if (x != 0) {
+                return x;
+            }
+            if (language == null && o.language != null) {
+                return 1;
+            }
+            if (language != null && o.language == null) {
+                return -1;
+            }
+            if (country == null && o.country != null) {
+                return 1;
+            }
+            if (country != null && o.country == null) {
+                return -1;
+            }
             x = Common.indexOf(Profile.allSupportedFileExt(), ext) - Common.indexOf(Profile.allSupportedFileExt(), o.ext);
-            if (x != 0) return x;
+            if (x != 0) {
+                return x;
+            }
             x = ext.compareTo(o.ext);
-            if (x != 0) return -x;
+            if (x != 0) {
+                return -x;
+            }
             return resource.toString().compareTo(o.resource.toString());
         }
     }
@@ -200,12 +233,18 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof CacheKey)) return false;
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof CacheKey)) {
+                return false;
+            }
 
             CacheKey cacheKey = (CacheKey) o;
 
-            if (!Objects.equals(key, cacheKey.key)) return false;
+            if (!Objects.equals(key, cacheKey.key)) {
+                return false;
+            }
             return Objects.equals(locale, cacheKey.locale);
         }
 

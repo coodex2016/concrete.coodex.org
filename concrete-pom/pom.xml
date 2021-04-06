@@ -114,7 +114,7 @@
         <freemarker.version>2.3.28</freemarker.version>
         <fastjson.version>1.2.75</fastjson.version>
         <guice.version>4.2.2</guice.version>
-        <javassist.verion>3.25.0-GA</javassist.verion>
+        <javassist.verion>3.27.0-GA</javassist.verion>
 
         <brave.version>5.6.5</brave.version>
 

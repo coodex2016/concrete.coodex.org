@@ -108,9 +108,13 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
     }
 
     private static String getTemplateStr(Field field, String namespace, int code) {
-        if (field == null) return I18N.translate(namespace + '.' + code);
+        if (field == null) {
+            return namespace + '.' + code;
+        }
         ErrorCode.Template template = field.getAnnotation(ErrorCode.Template.class);
-        if (template != null && !Common.isBlank(template.value())) return template.value();
+        if (template != null && !Common.isBlank(template.value())) {
+            return template.value();
+        }
         ErrorCode.Key key = field.getAnnotation(ErrorCode.Key.class);
         return namespace + '.' +
                 (key == null || Common.isBlank(key.value()) ? String.valueOf(code) : key.value());
@@ -118,7 +122,7 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
 
     private static String getMessageOrPattern(boolean format, int code, Object... objects) {
         Field f = errorCodes.get(code);
-        String template = getTemplateStr(f, getNamespace(f), code);
+        String template = I18N.translate(getTemplateStr(f, getNamespace(f), code));
         return format ? Renderer.render(template, objects) : template;
 
 //        ErrorMsg formatterValue = null;
