@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.spring.boot;
 
-import org.coodex.concrete.spring.ConcreteSpringConfigurationBeanDefinitionRegistrar;
+import org.coodex.concrete.spring.ConcreteSpringConfiguration;
 import org.coodex.concrete.support.jsr339.ConcreteJSR339Application;
 import org.springframework.context.annotation.Import;
 
@@ -25,7 +25,8 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Import({
-        ConcreteSpringConfigurationBeanDefinitionRegistrar.class,
+//        ConcreteSpringConfigurationBeanDefinitionRegistrar.class,
+        ConcreteSpringConfiguration.class,
         ConcreteJAXRSBeanDefinitionRegistrar.class
 })
 @Documented

@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.spring.boot;
 
-import org.coodex.concrete.spring.ConcreteSpringConfigurationBeanDefinitionRegistrar;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -63,7 +62,7 @@ public class ConcreteJAXRSBeanDefinitionRegistrar
                     RootBeanDefinition rootBeanDefinition = new RootBeanDefinition(
                             ConcreteJAXRSServletRegistrationBean.class
                     );
-                    rootBeanDefinition.setDependsOn(ConcreteSpringConfigurationBeanDefinitionRegistrar.CONFIGURATION_BEAN_NAME);
+//                    rootBeanDefinition.setDependsOn(ConcreteSpringConfigurationBeanDefinitionRegistrar.CONFIGURATION_BEAN_NAME);
                     registry.registerBeanDefinition(BEAN_NAME, rootBeanDefinition);
                 }
             }

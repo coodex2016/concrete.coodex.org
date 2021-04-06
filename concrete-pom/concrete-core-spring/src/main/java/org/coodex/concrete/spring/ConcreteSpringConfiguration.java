@@ -75,11 +75,11 @@ public class ConcreteSpringConfiguration {
 
     @Bean
     public ActiveProfilesProvider springActiveProfilesProvider() {
-        return new SpringActiveProfileProvider();
+        return new org.coodex.spring.SpringActiveProfileProvider();
     }
 
     @Bean
-    public ServiceLoaderProvider springServiceLoaderProvider(){
+    public ServiceLoaderProvider springServiceLoaderProvider() {
         return new SpringServiceLoaderProvider();
     }
 

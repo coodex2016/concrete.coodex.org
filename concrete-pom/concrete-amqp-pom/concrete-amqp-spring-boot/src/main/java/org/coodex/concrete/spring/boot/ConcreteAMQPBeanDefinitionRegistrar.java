@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.spring.boot;
 
-import org.coodex.concrete.spring.ConcreteSpringConfigurationBeanDefinitionRegistrar;
 import org.coodex.concrete.support.amqp.AMQPApplication;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -26,7 +25,7 @@ import org.springframework.core.type.AnnotationMetadata;
 
 public class ConcreteAMQPBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
     private static final String BEAN_NAME = "concreteAMQPApplication";
-    private static AMQPRuntime runtime = new AMQPRuntime();
+    private static final AMQPRuntime runtime = new AMQPRuntime();
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
@@ -45,7 +44,7 @@ public class ConcreteAMQPBeanDefinitionRegistrar implements ImportBeanDefinition
                     }
 
                     RootBeanDefinition rootBeanDefinition = new RootBeanDefinition(ConcreteAMQPApplication.class);
-                    rootBeanDefinition.setDependsOn(ConcreteSpringConfigurationBeanDefinitionRegistrar.CONFIGURATION_BEAN_NAME);
+//                    rootBeanDefinition.setDependsOn(ConcreteSpringConfigurationBeanDefinitionRegistrar.CONFIGURATION_BEAN_NAME);
                     registry.registerBeanDefinition(BEAN_NAME, rootBeanDefinition);
                 }
             }

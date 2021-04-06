@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import org.coodex.concrete.spring.ConcreteSpringConfigurationBeanDefinitionRegistrar;
 import org.coodex.concrete.support.dubbo.ApacheDubboApplication;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -44,15 +43,15 @@ public class ConcreteDubboBeanDefinitionRegistrar implements ImportBeanDefinitio
                         runtime.loadFrom(annotationAttributes);
                     }
 
-                    if(runtime.getRegistries() == null || runtime.getRegistries().length == 0){
+                    if (runtime.getRegistries() == null || runtime.getRegistries().length == 0) {
                         // 默认起一个simple注册表服务
 
                         runtime.setRegistries(new String[]{"double"});
 
                     }
 
-                    RootBeanDefinition rootBeanDefinition = new RootBeanDefinition(EnableConcreteApacheDubbo.class);
-                    rootBeanDefinition.setDependsOn(ConcreteSpringConfigurationBeanDefinitionRegistrar.CONFIGURATION_BEAN_NAME);
+                    RootBeanDefinition rootBeanDefinition = new RootBeanDefinition(ConcreteDubboApplication.class);
+//                    rootBeanDefinition.setDependsOn(ConcreteSpringConfigurationBeanDefinitionRegistrar.CONFIGURATION_BEAN_NAME);
                     beanDefinitionRegistry.registerBeanDefinition(BEAN_NAME, rootBeanDefinition);
                 }
             }

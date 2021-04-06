@@ -29,11 +29,12 @@ import javax.annotation.PostConstruct;
 import java.util.Optional;
 
 @SPI.Ordered(0)
+@Deprecated
 public class SpringActiveProfileProvider implements ActiveProfilesProvider, ApplicationContextAware {
     private static ApplicationContext APPLICATION_CONTEXT;
 
     @PostConstruct
-    public void postConstruct(){
+    public void postConstruct() {
         Singleton.resetAll();
         SingletonMap.resetAll();
     }

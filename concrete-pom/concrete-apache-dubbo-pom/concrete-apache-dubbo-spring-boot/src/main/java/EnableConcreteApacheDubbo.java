@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import org.coodex.concrete.spring.ConcreteSpringConfigurationBeanDefinitionRegistrar;
+import org.coodex.concrete.spring.ConcreteSpringConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -25,7 +25,8 @@ import static org.coodex.concrete.dubbo.DubboConfigCaching.DEFAULT_VERSION;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Import({
-        ConcreteSpringConfigurationBeanDefinitionRegistrar.class,
+//        ConcreteSpringConfigurationBeanDefinitionRegistrar.class,
+        ConcreteSpringConfiguration.class,
         ConcreteDubboBeanDefinitionRegistrar.class
 })
 @Documented
