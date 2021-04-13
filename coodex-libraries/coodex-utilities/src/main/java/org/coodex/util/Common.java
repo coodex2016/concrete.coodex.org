@@ -314,6 +314,9 @@ public class Common {
         return s == null || s.trim().length() == 0;
     }
 
+    public static boolean isEmpty(Collection<?> collection){
+        return collection == null || collection.isEmpty();
+    }
     public static void copyStream(InputStream is, OutputStream os) throws IOException {
         copyStream(is, os, 4096, false, Integer.MAX_VALUE);
     }
