@@ -48,7 +48,7 @@ public class SingletonMap<K, V> {
                          K nullKey, boolean activeOnGet,
                          long maxAge,
                          BiConsumer<K, V> deathListener,
-                         Supplier<Map<K, Value< V>>> mapSupplier,
+                         Supplier<Map<K, Value<V>>> mapSupplier,
                          ScheduledExecutorService scheduledExecutorService) {
         this.function = function;
         this.nullKey = nullKey;
@@ -124,7 +124,9 @@ public class SingletonMap<K, V> {
     }
 
     public V get(final K key, Function<K, V> function, long maxAge, BiConsumer<K, V> deathListener) {
-        if (function == null) throw new NullPointerException("function is null.");
+        if (function == null) {
+            throw new NullPointerException("function is null.");
+        }
         if (version != VERSION.get()) {
             synchronized (map) {
                 if (version != VERSION.get()) {
@@ -144,7 +146,7 @@ public class SingletonMap<K, V> {
                         value.debounce = Debounce.newBuilder()
                                 .idle(maxAge)
                                 .scheduledExecutorService(getScheduledExecutorService())
-                                .runnable(()->{
+                                .runnable(() -> {
                                     Value<V> v = map.remove(finalKey);
                                     if (v != null) {
                                         log.debug("{} die.", finalKey);
@@ -203,7 +205,9 @@ public class SingletonMap<K, V> {
     }
 
     public <C extends Collection<V>> C fill(C collection, Collection<K> keys) {
-        if (collection == null) throw new NullPointerException("collection is null.");
+        if (collection == null) {
+            throw new NullPointerException("collection is null.");
+        }
         if (keys != null && keys.size() > 0) {
             for (K key : new LinkedHashSet<>(keys)) {
                 collection.add(get(key));
@@ -218,7 +222,13 @@ public class SingletonMap<K, V> {
             synchronized (map) {
                 if (map.containsKey(finalKey)) {
                     Value<V> value = map.remove(finalKey);
-                    return value == null ? null : value.value;
+                    if (value != null) {
+                        value.debounce.cancel();
+                        return value.value;
+                    } else {
+                        return null;
+                    }
+//                    return value == null ? null : value.value;
                 }
             }
         }
@@ -231,8 +241,14 @@ public class SingletonMap<K, V> {
 
     public void clear() {
         synchronized (map) {
-            if (map.size() > 0)
+            if (map.size() > 0) {
+                map.forEach((key, v) -> {
+                    if (v != null) {
+                        v.debounce.cancel();
+                    }
+                });
                 map.clear();
+            }
         }
     }
 
