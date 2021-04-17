@@ -1,0 +1,29 @@
+{
+  "properties": [
+    {
+      "name": "concrete.swagger.title",
+      "type": "java.lang.String",
+      "description": "concrete service swagger文档标题."
+    },
+    {
+      "name": "concrete.swagger.description",
+      "type": "java.lang.String",
+      "description": "concrete service swagger文档描述"
+    },
+    {
+      "name": "concrete.swagger.version",
+      "type": "java.lang.String",
+      "description": "concrete service swagger文档版本，默认1.0.0"
+    },
+    {
+      "name": "concrete.swagger.contact.name",
+      "type": "java.lang.String",
+      "description": "concrete service swagger文档的联系人名称"
+    },
+    {
+      "name": "concrete.swagger.contact.url",
+      "type": "java.lang.String",
+      "description": "concrete service swagger文档的联系人的链接"
+    }
+  ]
+}

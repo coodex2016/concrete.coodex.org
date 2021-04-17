@@ -94,63 +94,14 @@ public class JaxRSHelper {
         return camelCaseByPath(s, false);
     }
 
-//    @SuppressWarnings("unchecked")
-//    public static final synchronized Module getModule(final Class<?> type, String... packages) {
-//        Module module = MODULE_CACHE.get(type);
-//        if (module == null) {
-//            if (isAbstract(type)) { //抽象的服务定义，则找具体定义
-//                if (packages == null || packages.length == 0) {
-//                    packages = ConcreteHelper.getApiPackages();
-//                }
-//                final Set<Class<?>> serviceType = new HashSet<>();
-//                ReflectHelper.foreachClass((Class<?> serviceClass) -> {
-//                    if (serviceClass.isInterface() &&
-//                            type.isAssignableFrom(serviceClass) &&
-//                            !isAbstract(serviceClass)) {
-//                        serviceType.add(serviceClass);
-//                    }
-//                }, (String className) -> true, packages);
-//
-//                switch (serviceType.size()) {
-//                    case 0:
-//                        throw new ConcreteException(ErrorCodes.MODULE_DEFINITION_NOT_FOUND, type);
-//                    case 1:
-//                        module = new Module(serviceType.iterator().next());
-//                        break;
-//                    default:
-//                        throw new ConcreteException(ErrorCodes.MODULE_DEFINITION_NON_UNIQUENESS, type);
-//                }
-//            } else {
-//                module = new Module(type);
-//            }
-//            MODULE_CACHE.put(type, module);
-//        }
-//        return module;
-//    }
-
-//    @SuppressWarnings("unchecked")
-//    private static final Set<Class<? >> getConcreteServiceClassFrom(
-//            Class<?> clz, Class<?> type) {
-//        Set<Class<?>> set = new HashSet<>();
-//        if (type.isAssignableFrom(clz)) {
-//            if (clz.isInterface() && clz.getAnnotation(Abstract.class) != null)
-//                set.add(clz);
-//            else {
-//                set.addAll(getConcreteServiceClassFrom(clz.getSuperclass(), type));
-//                for (Class<?> interfaceClz : clz.getInterfaces()) {
-//                    set.addAll(getConcreteServiceClassFrom(interfaceClz, type));
-//                }
-//            }
-//        }
-//        return set;
-//    }
-
     public static String camelCaseByPath(String s, boolean firstCharUpperCase) {
         StringTokenizer st = new StringTokenizer(s, "/");
         StringBuilder builder = new StringBuilder();
         while (st.hasMoreElements()) {
             String node = st.nextToken();
-            if (node.length() == 0) continue;
+            if (node.length() == 0) {
+                continue;
+            }
             builder.append('/').append(Common.camelCase(node, firstCharUpperCase, ".-_ "));
         }
         return builder.toString();
@@ -169,22 +120,8 @@ public class JaxRSHelper {
     }
 
     public static JaxrsUnit getUnitFromContext(DefinitionContext context/*, Object[] params*/) {
-//        Module module = getModule(context.getDeclaringClass());
-//        Method method = context.getDeclaringMethod();
-//        int count = method.getParameterTypes().length;// == null ? 0 : params.length;
-//        for (Unit unit : module.getUnits()) {
-//            if (method.getName().equals(unit.getMethod().getName())
-//                    && count == unit.getParameters().length) {
-//                return unit;
-//            }
-//        }
-//        return null;
         return getUnitFrom(context.getDeclaringClass(), context.getDeclaringMethod());
     }
-
-//    public static final Unit getUnitFromContext(DefinitionContext context/*, MethodInvocation invocation*/) {
-//        return getUnitFromContext(context/*, invocation.getArguments()*/);
-//    }
 
 
     public static JaxrsParam getSubmitBody(JaxrsUnit unit) {
@@ -200,43 +137,9 @@ public class JaxRSHelper {
     }
 
     public static String slash(String str) {
-        if (Common.isBlank(str)) return "";
-
+        if (Common.isBlank(str)) {
+            return "";
+        }
         return str.startsWith("/") ? str : ("/" + str);
     }
-
-//    private static String LOGGING_FEATURE_CLASSNAME = "org.glassfish.jersey.logging.LoggingFeature";
-//
-//    public static Object getLoggingComponent(Logger logger) {
-//        try {
-//            Class loggingFeatureClass = Class.forName(LOGGING_FEATURE_CLASSNAME);
-//            Class verbosity = Class.forName(LOGGING_FEATURE_CLASSNAME + "$Verbosity");
-//            Object verbosity_payload_text = verbosity.getEnumConstants()[1];
-//            //noinspection unchecked
-//            Constructor constructor = loggingFeatureClass.getConstructor(
-//                    java.util.logging.Logger.class,
-//                    Level.class,
-//                    verbosity,
-//                    Integer.class);
-//            if (constructor != null) {
-//                return constructor.newInstance(
-//                        java.util.logging.Logger.getLogger(logger.getName()),
-//                        getLevel(logger),
-//                        verbosity_payload_text,
-//                        4096);
-//            }
-//        } catch (Throwable th) {
-//            log.warn("get logging component failed: {}", th.getLocalizedMessage());
-//        }
-//        return null;
-//    }
-//
-//    private static Level getLevel(Logger logger) {
-//        if (logger.isTraceEnabled()) return Level.FINEST;
-//        if (logger.isDebugEnabled()) return Level.FINE;
-//        if (logger.isInfoEnabled()) return Level.CONFIG;
-//        if (logger.isWarnEnabled()) return Level.WARNING;
-//        if (logger.isErrorEnabled()) return Level.SEVERE;
-//        return Level.OFF;
-//    }
 }
