@@ -18,6 +18,7 @@ package org.coodex.concrete.spring.components;
 
 import org.coodex.config.AbstractConfiguration;
 import org.coodex.config.Config;
+import org.coodex.util.Common;
 import org.coodex.util.SPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import org.springframework.core.env.Environment;
 
 import javax.inject.Named;
 import java.util.List;
+import java.util.StringJoiner;
 
 @Named
 @SPI.Ordered(0)
@@ -50,10 +52,26 @@ public class ConfigurationBaseSpringPropertySources extends AbstractConfiguratio
     private String find(List<String> keys, String prefix) {
         if (springEnvironment != null) {
             for (String key : keys) {
-                String v = springEnvironment.getProperty(prefix + key);
-                if (v != null) {
+                if (springEnvironment.containsProperty(prefix + key)) {
+                    String v = springEnvironment.getProperty(prefix + key);
+                    if (v != null) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("load config: {}{}={} from SpringPropertySources", prefix, key, v);
+                        }
+                        return v;
+                    }
+                } else if (springEnvironment.containsProperty(prefix + key + "[0]")) {
+                    // list type
+                    StringJoiner joiner = new StringJoiner(",");
+                    for (int i = 0; springEnvironment.containsProperty(prefix + key + "[" + i + "]"); i++) {
+                        String str = springEnvironment.getProperty(prefix + key + "[" + i + "]");
+                        if (!Common.isBlank(str)) {
+                            joiner.add(str.trim());
+                        }
+                    }
+                    String v = joiner.toString();
                     if (log.isDebugEnabled()) {
-                        log.debug("load config: {}{}={} from SpringPropertySources", prefix, key, v);
+                        log.debug("load config: {}{}={} from SpringPropertySources[list type]", prefix, key, v);
                     }
                     return v;
                 }

@@ -37,7 +37,7 @@ import java.util.Set;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
-@SuppressWarnings({"SpringComponentScan", "SpringFacetCodeInspection"})
+@SuppressWarnings({"SpringComponentScan"})
 @Configuration
 @ComponentScan({
         "org.coodex.concrete.spring.components",

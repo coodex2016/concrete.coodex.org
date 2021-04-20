@@ -49,7 +49,9 @@ public abstract class AbstractConfiguration implements Configuration {
 
 
     protected List<String> toList(String... namespaces) {
-        if (namespaces == null) return null;
+        if (namespaces == null) {
+            return null;
+        }
         List<String> list = new ArrayList<>();
         for (String namespace : namespaces) {
             if (!Common.isBlank(namespace)) {
@@ -103,23 +105,4 @@ public abstract class AbstractConfiguration implements Configuration {
 
     protected abstract String search(String namespace, List<String> keys);
 
-//    @Override
-//    public String[] getArray(String key, List<String> namespace) {
-//        return getArray(key, (String[]) null, namespace);
-//    }
-//
-//    @Override
-//    public String[] getArray(String key, String delim, List<String> namespace) {
-//        return getArray(key, delim, null, namespace);
-//    }
-//
-//    @Override
-//    public String[] getArray(String key, String[] defaultValue, List<String> namespace) {
-//        return getArray(key, ",", defaultValue, namespace);
-//    }
-//
-//    @Override
-//    public String[] getArray(String key, String delim, String[] defaultValue, List<String> namespace) {
-//        return Common.toArray(get(key, namespace), delim, defaultValue);
-//    }
 }

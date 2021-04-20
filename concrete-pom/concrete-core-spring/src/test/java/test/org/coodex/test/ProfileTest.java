@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2021 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package test.org.coodex;
+package test.org.coodex.test;
 
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
 import org.coodex.util.Profile;
@@ -22,7 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
+
+import java.util.List;
 
 @SpringBootApplication
 @Import(ConcreteSpringConfiguration.class)
@@ -47,8 +50,12 @@ public class ProfileTest {
     }
 
     public static void main(String[] args) {
-        System.setProperty("spring.active.profiles", "t1,t2,t3");
-        SpringApplication.run(ProfileTest.class);
-        test1();
+//        System.setProperty("spring.active.profiles", "t1,t2,t3");
+        ApplicationContext context = SpringApplication.run(ProfileTest.class);
+//        test1();
+        System.out.println(context.getEnvironment().getProperty("test.org"));
+        System.out.println(context.getEnvironment().getProperty("test.array"));
+        System.out.println(context.getEnvironment().getProperty("test.array", List.class));
+        System.out.println(context.getEnvironment().containsProperty("test.array[0]"));
     }
 }

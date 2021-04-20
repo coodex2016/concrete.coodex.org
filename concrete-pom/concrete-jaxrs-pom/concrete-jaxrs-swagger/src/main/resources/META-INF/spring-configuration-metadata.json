@@ -16,12 +16,12 @@
       "description": "concrete service swagger文档版本，默认1.0.0"
     },
     {
-      "name": "concrete.swagger.contact.name",
+      "name": "concrete.swagger.contacts.name",
       "type": "java.lang.String",
       "description": "concrete service swagger文档的联系人名称"
     },
     {
-      "name": "concrete.swagger.contact.url",
+      "name": "concrete.swagger.contacts.url",
       "type": "java.lang.String",
       "description": "concrete service swagger文档的联系人的链接"
     }
