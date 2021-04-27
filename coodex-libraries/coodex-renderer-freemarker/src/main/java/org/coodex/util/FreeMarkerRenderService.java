@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 public class FreeMarkerRenderService implements RenderService {
     public static final Pattern PATTERN = Pattern.compile("\\$\\{o[0-9]+([.?!][^]]+)?}");
 
-    private static final Configuration FREEMARKER = new Configuration(Configuration.getVersion());
+    private static final Configuration FREEMARKER = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
 
     private static final StringTemplateLoader TEMPLATE_LOADER = new StringTemplateLoader();
 

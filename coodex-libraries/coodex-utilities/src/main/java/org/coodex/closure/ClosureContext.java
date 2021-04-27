@@ -20,13 +20,24 @@ import java.util.function.Supplier;
 
 /**
  * Created by davidoff shen on 2017-04-20.
+ *
+ * @author davidoff shen
  */
 public interface ClosureContext<T> {
     /**
+     * 获取上下文中的变量值
+     *
      * @return 获取上下文中的变量值
      */
     T get();
 
+    /**
+     * 带着上下文数据执行带返回值的方法
+     *
+     * @param var      上下文数据
+     * @param supplier supplier
+     * @return supplier.get()
+     */
     Object call(T var, Supplier<?> supplier);
 
 }

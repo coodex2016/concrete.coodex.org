@@ -20,11 +20,14 @@ import org.coodex.concrete.api.AccessAllow;
 import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.Signable;
 import org.coodex.concrete.common.DefinitionContext;
+import org.coodex.util.LazyServiceLoader;
+import org.coodex.util.ServiceLoader;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,6 +36,11 @@ import java.util.List;
 //@SuppressWarnings({"rawtypes"})
 public abstract class AbstractUnit<PARAM extends AbstractParam/*, MODULE extends AbstractModule*/>
         implements Annotated, Comparable<AbstractUnit<PARAM>> {
+
+    private static final ServiceLoader<RoleNameMapper> ROLE_NAME_MAPPER = new LazyServiceLoader<RoleNameMapper>(
+            () -> role -> role
+    ) {
+    };
 
     private final boolean deprecated;
     private Method method;
@@ -121,6 +129,14 @@ public abstract class AbstractUnit<PARAM extends AbstractParam/*, MODULE extends
      */
     public AccessAllow getAccessAllow() {
         return getContext().getAnnotation(AccessAllow.class);
+    }
+
+    public String[] getRoles() {
+        AccessAllow accessAllow = getAccessAllow();
+        return accessAllow == null ? new String[0] :
+                Arrays.stream(accessAllow.roles())
+                        .map(role -> ROLE_NAME_MAPPER.get().getRoleName(role))
+                        .toArray(String[]::new);
     }
 
     /**

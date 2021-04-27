@@ -54,8 +54,11 @@ public class ProfileTest {
         ApplicationContext context = SpringApplication.run(ProfileTest.class);
 //        test1();
         System.out.println(context.getEnvironment().getProperty("test.org"));
-        System.out.println(context.getEnvironment().getProperty("test.array"));
-        System.out.println(context.getEnvironment().getProperty("test.array", List.class));
-        System.out.println(context.getEnvironment().containsProperty("test.array[0]"));
+//        System.out.println(context.getEnvironment().getProperty("test.array"));
+//        System.out.println(context.getEnvironment().getProperty("test.array", List.class));
+//        System.out.println(context.getEnvironment().containsProperty("test.array[0]"));
+        for(int i = 0; context.getEnvironment().containsProperty("test.array[" + i + "]");i++){
+            System.out.println(context.getEnvironment().getProperty("test.array[" + i + "]"));
+        }
     }
 }

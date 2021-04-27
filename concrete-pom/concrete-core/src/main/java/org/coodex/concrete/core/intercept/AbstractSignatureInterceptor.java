@@ -67,7 +67,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
                     s = SignUtil.getString(propertyKeyId, paperName, null);
                     if (s != null) {
                         log.warn("get client key id from namespace[{},{}] is deprecated. set in [{}, {}]",
-                                TAG_SIGNATRUE, destination.getIdentify(),
+                                TAG_SIGNATURE, destination.getIdentify(),
                                 TAG_CLIENT, destination.getIdentify());
                     }
                 }
@@ -80,11 +80,11 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
             (module, key) -> {
                 String s = Config.get(key, TAG_CLIENT, module);
                 if (s == null) {
-                    s = Config.get(key, TAG_SIGNATRUE, module);
+                    s = Config.get(key, TAG_SIGNATURE, module);
                     if (s != null) {
                         log.warn("get client signature elements[{}] from [{}, {}] is deprecated. use [{}, {}] plz.",
                                 key,
-                                TAG_SIGNATRUE, module,
+                                TAG_SIGNATURE, module,
                                 TAG_CLIENT, module);
                     }
                 }
@@ -399,9 +399,9 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
 
         private String initLoad(String propertyName) {
             if (Common.isBlank(module)) { // Server端
-                String s = Config.get("signature.property." + propertyName, TAG_SIGNATRUE, getAppSet());
+                String s = Config.get("signature.property." + propertyName, TAG_SIGNATURE, getAppSet());
                 if (s == null) {
-                    s = Config.getValue("property." + propertyName, propertyName, TAG_SIGNATRUE, getAppSet());
+                    s = Config.getValue("property." + propertyName, propertyName, TAG_SIGNATURE, getAppSet());
                     if (!propertyName.equals(s)) {
                         log.warn("property.{} is deprecated. use signature.property.{} plz.", propertyName, propertyName);
                     }

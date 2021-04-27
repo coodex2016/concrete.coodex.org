@@ -26,18 +26,20 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 public class ResourceBundlesTranslateService extends AbstractTranslateService {
 
-    private Set<String> resources = new HashSet<>();
+    private final Set<String> resources = new HashSet<>();
 
     public ResourceBundlesTranslateService() {
         resources.addAll(
                 Arrays.asList(
-                        Config.getArray("i18n.resource", ",", new String[0], getAppSet())
+                        Optional.ofNullable(Config.getArray("i18n.resource", getAppSet()))
+                                .orElseGet(() -> new String[0])
                 )
         );
         // 适配ResourceBundlesMessagePatternLoader
         resources.addAll(
                 Arrays.asList(
-                        Config.getArray("messagePattern.resourceBundles", ",", new String[]{"messagePattern"}, getAppSet())
+                        Optional.ofNullable(Config.getArray("messagePattern.resourceBundles", getAppSet()))
+                                .orElseGet(() -> new String[]{"messagePattern"})
                 )
         );
 

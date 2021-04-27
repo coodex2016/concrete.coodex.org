@@ -18,23 +18,28 @@ package org.coodex.concrete.spring;
 
 import org.coodex.count.Segmentation;
 import org.coodex.util.Clock;
-import org.springframework.scheduling.support.CronSequenceGenerator;
+import org.springframework.scheduling.support.CronExpression;
+
+import java.util.Objects;
 
 /**
- * @see org.springframework.scheduling.support.CronSequenceGenerator
+ * @see org.springframework.scheduling.support.CronExpression
  * Created by davidoff shen on 2017-04-19.
  */
 public class SpecificMomentSegmentation implements Segmentation {
 
-    private final CronSequenceGenerator cronSequenceGenerator;
+    //    private final CronSequenceGenerator cronSequenceGenerator;
+    private final CronExpression cronExpression;
 
     public SpecificMomentSegmentation(String cron) {
-        this.cronSequenceGenerator = new CronSequenceGenerator(cron);
+//        this.cronSequenceGenerator = new CronSequenceGenerator(cron);
+        cronExpression = CronExpression.parse(cron);
     }
 
     @Override
     public long next() {
-        return cronSequenceGenerator.next(Clock.now().getTime()).getTime();
+        return Objects.requireNonNull(cronExpression.next(Clock.now().toInstant())).toEpochMilli();
+//        return cronSequenceGenerator.next(Clock.now().getTime()).getTime();
     }
 
 }

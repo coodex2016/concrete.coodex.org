@@ -21,10 +21,14 @@ import java.util.function.Supplier;
 
 /**
  * Created by davidoff shen on 2016-09-04.
+ *
+ * @author davidoff shen
  */
 public abstract class AbstractClosureContext<T> {
 
-    // 本地线程变量，用于存储上下文变量信息
+    /**
+     * 本地线程变量，用于存储上下文变量信息
+     */
     private final ThreadLocal<T> threadLocal = new ThreadLocal<>();
 
     protected final T getVariant() {
@@ -32,7 +36,9 @@ public abstract class AbstractClosureContext<T> {
     }
 
     protected final Object get(T variant, Supplier<?> supplier) {
-        if (supplier == null) return null;
+        if (supplier == null) {
+            return null;
+        }
         threadLocal.set(variant);
         try {
             return supplier.get();

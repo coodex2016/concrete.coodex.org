@@ -28,6 +28,7 @@ import org.coodex.concrete.core.intercept.AsyncInterceptorChain;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.InterceptorChain;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
+import org.coodex.config.Config;
 import org.coodex.ssl.SSLContextFactory;
 import org.coodex.util.*;
 
@@ -127,7 +128,7 @@ public class ClientHelper {
      * @return value
      */
     public static String getString(String module, String key) {
-        return ConcreteHelper.getString(TAG_CLIENT, module, key);
+        return Config.get(key, TAG_CLIENT, module);
     }
 
     public static Destination getDestination(String module) {

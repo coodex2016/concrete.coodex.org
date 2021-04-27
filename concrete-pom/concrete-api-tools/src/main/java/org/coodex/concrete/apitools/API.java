@@ -19,6 +19,7 @@ package org.coodex.concrete.apitools;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.config.Config;
 import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
 
@@ -85,10 +86,10 @@ public class API {
      */
     @SuppressWarnings("unused")
     public static void generateFor(String module, String... packages) throws IOException {
-        String desc = ConcreteHelper.getString(TAG_API_GENERATOR, module, "desc");
-        String path = ConcreteHelper.getString(TAG_API_GENERATOR, module, "path");
+        String desc = Config.get("desc", TAG_API_GENERATOR, module);
+        String path = Config.get("path", TAG_API_GENERATOR, module);
 
-        generate(toMap(ConcreteHelper.getString(TAG_API_GENERATOR, module, "ext")),
+        generate(toMap(Config.get("ext", TAG_API_GENERATOR, module)),
                 desc, path, packages);
     }
 
@@ -100,8 +101,6 @@ public class API {
             });
         }
     }
-
-
 
 
 }

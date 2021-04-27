@@ -29,41 +29,25 @@ import java.util.Properties;
 import java.util.function.Supplier;
 
 /**
- * 基于System.getProperty实现Configuration，在provider中找不到时，则到系统属性中找
+ * @author davidoff shen
  */
 public class Config {
 
     public final static SystemPropertiesConfiguration BASE_SYSTEM_PROPERTIES = new SystemPropertiesConfiguration();
     private final static Logger log = LoggerFactory.getLogger(Config.class);
-    private static final Singleton<WrappedConfiguration> wrappedConfiguration = Singleton.with(
+    private static final Singleton<WrappedConfiguration> WRAPPED_CONFIGURATION = Singleton.with(
             () -> new WrappedConfiguration(new LazyServiceLoader<Configuration>(
                     () -> new LazyServiceLoader<DefaultConfigurationProvider>(ConfigurationBaseProfile::new) {
                     }.get().get()) {
             })
     );
-//    private static final ServiceLoader<Configuration> configurationServiceLoader =
-//    ;
 
     public static Configuration getConfig() {
-        return wrappedConfiguration.get();
+        return WRAPPED_CONFIGURATION.get();
     }
-
-//    private static Singleton<Configuration> defaultConfiguration = new Singleton<Configuration>(
-//            new Singleton.Builder<Configuration>() {
-//                @Override
-//                public Configuration build() {
-//                    return new ConfigurationBaseProfile();
-//                }
-//            }
-//    );
-//
-//    private static final ServiceLoader<DefaultConfigurationProvider> configurationProviderLazyServiceLoader =
-//            new LazyServiceLoader<DefaultConfigurationProvider>(ConfigurationBaseProfile::new) {
-//            };
 
     public static String get(String key, String... namespaces) {
         return getConfig().get(key, namespaces);
-//        return v == null ? BASE_SYSTEM_PROPERTIES.get(key, namespaces) : v;
     }
 
     public static <T> T getValue(final String key, final T defaultValue, final String... namespace) {
@@ -75,13 +59,24 @@ public class Config {
     }
 
     public static String[] getArray(String key, String... namespaces) {
-        return Common.toArray(get(key, namespaces), ",", (String[]) null);
+        return getArray(key, () -> null, namespaces);
     }
 
+    public static String[] getArray(String key, String[] defaultValue, String... namespaces) {
+        return getArray(key, () -> defaultValue, namespaces);
+    }
+
+    public static String[] getArray(String key, Supplier<String[]> supplier, String... namespaces) {
+//        return getValue(key, supplier, namespaces);
+        return Common.toArray(get(key, namespaces), ",", supplier);
+    }
+
+    @Deprecated
     public static String[] getArray(String key, String delim, String[] defaultValue, String... namespaces) {
         return Common.toArray(get(key, namespaces), delim, defaultValue);
     }
 
+    @Deprecated
     public static String[] getArray(String key, String delim, Supplier<String[]> supplier, String... namespaces) {
         return Common.toArray(get(key, namespaces), delim, supplier);
     }

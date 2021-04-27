@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "concrete.client.jaxrs.charset",
+      "type": "java.lang.String",
+      "description": "jaxrs编码字符集。键可以是concrete.client.[moduleName.].jaxrs.charset"
+    },
+    {
+      "name": "concrete.client.jaxrs.ssl",
+      "type": "java.lang.String",
+      "description": "https客户端的sslContext名称"
+    }
+  ]
+}

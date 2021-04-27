@@ -17,7 +17,7 @@ ${unit.description!""}
 <#if unit.signable??>* **sign:** ${tool.formatSignable(unit.signable)}</#if><#assign paramCount=unit.parameters?size>
 * **path:** ${module.name}${unit.name}
 * **Http Method:** ${unit.invokeType}
-* **acl:** <#if unit.accessAllow??><#list unit.accessAllow.roles() as role>${role} </#list><#else><#if module.domain?? >${module.domain.value()}.ANY<#else>Anonymous</#if></#if>
+* **acl:** <#if unit.accessAllow??><#list unit.roles as role>${role} </#list><#else><#if module.domain?? >${module.domain.value()}.ANY<#else>Anonymous</#if></#if>
 * **return:** ${tool.formatTypeStr(unit.genericReturnType, module.interfaceClass)}
 * **params:** <#if (paramCount > 0)>
 

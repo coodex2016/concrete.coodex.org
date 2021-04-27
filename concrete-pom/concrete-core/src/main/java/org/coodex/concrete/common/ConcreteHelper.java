@@ -44,7 +44,7 @@ public class ConcreteHelper {
     public static final String VERSION = "0.5.0-SNAPSHOT";
 
     public static final String TAG_CLIENT = "client";
-    public static final String KEY_LOCATION = "location";
+    public static final String KEY_DESTINATION = "destination";
 
     public static final String TOKEN_KEY = CONCRETE_TOKEN_ID_KEY;
     public static final String AGENT_KEY = "user-agent";
@@ -121,23 +121,6 @@ public class ConcreteHelper {
         return Config.getValue("token.maxIdleTime", 60, getAppSet());
     }
 
-//    @Deprecated
-//    public static Profile_Deprecated getProfile() {
-//        return getProfile("concrete");
-//    }
-//
-//    @Deprecated
-//    public static Profile_Deprecated getProfile(String tag) {
-//        return getProfile(tag, null);
-//    }
-
-//    @Deprecated
-//    public static Profile_Deprecated getProfile(String tag, String sub) {
-//        return Common.isBlank(sub) ?
-//                getDefaultProfile(tag) :
-//                Profile_Deprecated.getProfile(tag + "." + sub + ".properties");
-//    }
-
     public static Map<String, String> updatedMap(Subjoin subjoin) {
         Map<String, String> map = new ConcurrentHashMap<>();
         if (subjoin != null && subjoin.updatedKeySet().size() > 0) {
@@ -148,52 +131,12 @@ public class ConcreteHelper {
         return map;
     }
 
+    @Deprecated
     public static String getString(String tag, String module, String key) {
-
-//        Profile_Deprecated profile = getProfile(tag, module);
-//        String value = profile.getString(key);
-//        if (value == null && !Common.isBlank(module)) {
-//            profile = getProfile(tag);
-//            value = profile.getString(String.format("%s.%s", module, key));
-//            if (value == null) {
-//                value = profile.getString(key);
-//            }
-//        }
-//        if (value == null) {
-//            profile = getProfile();
-//            if (!Common.isBlank(module)) {
-//                value = profile.getString(String.format("%s.%s.%s", tag, module, key));
-//            }
-//            if (value == null) {
-//                value = profile.getString(String.format("%s.%s", tag, key));
-//            }
-//        }
-//        return value;
-//        String value = null;
-//        if (!Common.isBlank(module)) {
-//            value = Config.get(String.format("%s.%s.%s", tag, module, key), tag, module);
-//            if (value == null) {
-//                value = Config.get(String.format("%s.%s", tag, key), tag, module);
-//            }
-//        }
-
         return Config.get(key, tag, module);
     }
 
     public static ExecutorService getExecutor() {
-//        if (executorService == null) {
-//            synchronized (ConcreteHelper.class) {
-//                if (executorService == null) {
-//                    executorService = ExecutorsHelper.newPriorityThreadPool(
-//                            getProfile().getInt("service.executor.corePoolSize", 0),
-//                            getProfile().getInt("service.executor.maximumPoolSize", Integer.MAX_VALUE),
-//                            getProfile().getInt("service.executor.keepAliveTime", 60)
-//                    );
-//                }
-//            }
-//        }
-//        return executorService;
-//        return executorService.getInstance();
         return getExecutor("service");
     }
 
@@ -209,28 +152,6 @@ public class ConcreteHelper {
         return executorServiceMap.get(executorName);
     }
 
-//    public static Method[] getAllMethod(Class<?> serviceClass) {
-//        Set<Method> methods = new HashSet<Method>();
-//        loadAllMethod(serviceClass, methods, null);
-//        return methods.toArray(new Method[0]);
-//    }
-
-//    private static void loadAllMethod(Class<?> clz, Set<Method> methods, Set<Class> classes) {
-//        if (clz == null) return;
-//        if (methods == null) methods = new HashSet<Method>();
-//        if (classes == null) classes = new HashSet<Class>();
-//
-//        if (classes.contains(clz)) return;
-//        classes.add(clz);
-//
-//        for (Method method : clz.getMethods()) {
-//            if (isConcreteService(method)) {
-//                methods.add(method);
-//            }
-//        }
-//
-//    }
-
     public static String getServiceName(Class<?> clz) {
         if (clz == null /*|| !ConcreteService.class.isAssignableFrom(clz)*/) return null;
         ConcreteService concreteService = clz.getAnnotation(ConcreteService.class);
@@ -242,20 +163,6 @@ public class ConcreteHelper {
                 (concreteService.nonspecific() ? "" : clz.getCanonicalName()) :
                 Common.trim(concreteService.value(), "/\\.");
     }
-
-//    public static String getMethodName(Method method) {
-//        if (method == null) return null;
-//        ConcreteService concreteService = method.getAnnotation(ConcreteService.class);
-//        if (concreteService == null) return method.getName();
-//        if (concreteService.notService()) return null;
-//        return Common.isBlank(concreteService.value()) ? method.getName() : concreteService.value();
-//    }
-
-//    @Deprecated
-//    public static void foreachService(ReflectHelper.Processor processor, String... packages) {
-//        ReflectHelper.foreachClass(processor, CONCRETE_SERVICE_INTERFACE_FILTER, packages);
-//    }
-
 
     public static void foreachClassInPackages(Consumer<Class<?>> processor, String... packages) {
         String[] packageParrterns = packages;
@@ -414,14 +321,8 @@ public class ConcreteHelper {
     }
 
 
-//    public static <T extends Annotation> T getAnnotation(Method method, Class<T> annotationClass) {
-//        T annotation = method.getAnnotation(annotationClass);
-//        return annotation == null ? method.getDeclaringClass().getAnnotation(annotationClass) : annotation;
-//    }
-
     public static List<Class<?>> inheritedChain(Class<?> root, Class<?> sub) {
         if (root == null || root.getAnnotation(ConcreteService.class) == null) return null;
-//        Stack<Class<?>> inheritedChain = new Stack<Class<?>>();
         if (root.equals(sub)) {
             return Collections.emptyList();
         }
@@ -447,12 +348,13 @@ public class ConcreteHelper {
     }
 
     public static String[] getApiPackages(String namespace) {
-        String[] packages = Config.getArray("api.packages", ",", new String[0], "concrete", namespace, getAppSet());
+        String[] packages = Optional.ofNullable(Config.getArray("api.packages", "concrete", namespace, getAppSet()))
+                .orElseGet(() -> new String[0]);
         return (packages.length == 0) ? getApiPackages() : packages;
     }
 
     public static String[] getApiPackages() {
-        return Config.getArray("api.packages", ",", new String[0], "concrete", getAppSet());
+        return Config.getArray("api.packages", new String[0], "concrete", getAppSet());
     }
 
     public static String getAppSet() {

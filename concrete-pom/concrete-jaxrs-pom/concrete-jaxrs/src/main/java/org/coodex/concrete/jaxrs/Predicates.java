@@ -65,14 +65,14 @@ public class Predicates {
      */
     private static final String[] PREDICATES_PUT =
             Config.getArray(
-                    "service.predicates.PUT", ",", PREDICATES_PUT_DEFAULT, TAG_JAXRS_PREDICATES, getAppSet());
+                    "service.predicates.PUT", PREDICATES_PUT_DEFAULT, TAG_JAXRS_PREDICATES, getAppSet());
 
     /**
      * 使用GET方法的谓词
      * service.predicates.GET
      */
     private static final String[] PREDICATES_GET = Config.getArray(
-            "service.predicates.GET", ",", PREDICATES_GET_DEFAULT, TAG_JAXRS_PREDICATES, getAppSet());
+            "service.predicates.GET", PREDICATES_GET_DEFAULT, TAG_JAXRS_PREDICATES, getAppSet());
 
     /**
      * 使用DELETE方法的谓词
@@ -80,7 +80,7 @@ public class Predicates {
      */
     private static final String[] PREDICATES_DELETE =
             Config.getArray(
-                    "service.predicates.DELETE", ",", PREDICATES_DELETE_DEFAULT, TAG_JAXRS_PREDICATES, getAppSet());
+                    "service.predicates.DELETE", PREDICATES_DELETE_DEFAULT, TAG_JAXRS_PREDICATES, getAppSet());
 
     /**
      * 使用POST方法的谓词
@@ -88,7 +88,7 @@ public class Predicates {
      */
     private static final String[] PREDICATES_POST =
             Config.getArray(
-                    "service.predicates.POST", ",", PREDICATES_POST_DEFAULT, TAG_JAXRS_PREDICATES, getAppSet());
+                    "service.predicates.POST", PREDICATES_POST_DEFAULT, TAG_JAXRS_PREDICATES, getAppSet());
 
     /**
      * @see #PREDICATES_PUT

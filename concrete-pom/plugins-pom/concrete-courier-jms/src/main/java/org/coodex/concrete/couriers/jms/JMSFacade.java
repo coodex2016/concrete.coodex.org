@@ -19,6 +19,7 @@ package org.coodex.concrete.couriers.jms;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.message.Serializer;
 import org.coodex.concrete.message.Topics;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SingletonMap;
@@ -61,7 +62,7 @@ class JMSFacade {
     private final MessageListener messageListener;
     private final Type messageType;
     private final Serializer serializer;
-    private ConnectionFactory connectionFactory;
+    private final ConnectionFactory connectionFactory;
     private Connection connection;
     private Session session;
     private Destination destination;
@@ -79,11 +80,9 @@ class JMSFacade {
             }
         };
         this.connectionFactory = connectionFactorySingletonMap.get(driver);
-        this.userName = ConcreteHelper.getString(TAG_QUEUE, name, QUEUE_USERNAME);
-        this.password = ConcreteHelper.getString(TAG_QUEUE, name, QUEUE_PA55W0RD);
-        this.serializer = Topics.getSerializer(
-                ConcreteHelper.getString(TAG_QUEUE, name, SERIALIZER_TYPE)
-        );
+        this.userName = Config.get(QUEUE_USERNAME, TAG_QUEUE, name);
+        this.password = Config.get(QUEUE_PA55W0RD, TAG_QUEUE, name);
+        this.serializer = Topics.getSerializer(Config.get(SERIALIZER_TYPE, TAG_QUEUE, name));
         try {
             connect();
         } catch (JMSException e) {
@@ -107,10 +106,6 @@ class JMSFacade {
             throw new RuntimeException("cannot publish message, because connection is failed.");
         }
     }
-
-//    private Serializable serialize(Object message) throws IOException {
-//        return Common.serialize(message);
-//    }
 
     void setConsumer(boolean isConsumer) throws JMSException {
         if (isConsumer && consumer == null) {

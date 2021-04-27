@@ -21,8 +21,8 @@ import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.SignatureAttribute;
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SingletonMap;
@@ -56,13 +56,13 @@ class CourierBuilder
 
     private final static Logger log = LoggerFactory.getLogger(CourierBuilder.class);
 
-    private static SingletonMap<TopicKey, Courier<?>> couriers
+    private static final SingletonMap<TopicKey, Courier<?>> couriers
             = SingletonMap.<TopicKey, Courier<?>>builder().function(new CourierBuilder()).build();
 
-    private static LazySelectableServiceLoader<String, CourierPrototypeProvider> providers =
+    private static final LazySelectableServiceLoader<String, CourierPrototypeProvider> providers =
             new LazySelectableServiceLoader<String, CourierPrototypeProvider>() {
             };
-    private AtomicLong index = new AtomicLong(0);
+    private final AtomicLong index = new AtomicLong(0);
 
     static <M extends Serializable> Courier<M> buildCourier(TopicKey topicKey) {
         return cast(couriers.get(topicKey));
@@ -72,8 +72,7 @@ class CourierBuilder
         if (queue == null) return null;
 
         // 根据queue获取队列的destination描述
-        // 暂时考虑properties配置
-        return ConcreteHelper.getString(TAG_QUEUE, queue, "destination");
+        return Config.get("destination", TAG_QUEUE, queue);
     }
 
 

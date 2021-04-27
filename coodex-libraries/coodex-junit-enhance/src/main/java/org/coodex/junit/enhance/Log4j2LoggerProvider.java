@@ -79,7 +79,7 @@ public class Log4j2LoggerProvider extends AbstractLoggerProvider {
     private void newLoggerConfig(String loggerName, Configuration configuration) {
 
         Level level = Level.toLevel(
-                Config.getValue("logger." + loggerName + ".level", Config.get("logger.level")),
+                Config.getValue("logger." + loggerName + ".level", () -> Config.get("logger.level")),
                 Level.INFO);
         boolean console = Config.getValue("logger.console", true);
         if (console && configuration.getAppender(CONSOLE_APPENDER_KEY.get()) == null) {

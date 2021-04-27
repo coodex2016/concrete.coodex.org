@@ -21,6 +21,7 @@ import org.coodex.config.Config;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
@@ -124,9 +125,8 @@ public class AdministratorFromProfileFactory extends AbstractAdministratorFactor
         @Override
         public Set<String> getRoles() {
             return new HashSet<>(Arrays.asList(
-                    Config.getArray("roles", ",",
-                            new String[]{AccountManagementRoles.SYSTEM_MANAGER},
-                            TAG_ADMIN, getAppSet())
+                    Optional.ofNullable(Config.getArray("roles", TAG_ADMIN, getAppSet()))
+                            .orElseGet(() -> new String[]{AccountManagementRoles.SYSTEM_MANAGER})
             ));
         }
 

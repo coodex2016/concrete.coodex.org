@@ -24,6 +24,11 @@
       "name": "concrete.swagger.contacts.url",
       "type": "java.lang.String",
       "description": "concrete service swagger文档的联系人的链接"
+    },
+    {
+      "name": "concrete.swagger.enabled",
+      "type": "java.lang.Boolean",
+      "description": "是否开启swagger，默认为true"
     }
   ]
 }

@@ -1,0 +1,39 @@
+{
+  "properties": [
+    {
+      "name": "concrete.client.amqp.host",
+      "type": "java.lang.String",
+      "description": "concrete服务发布的rabbitmq broker的主机地址。键可以是concrete.client.[moduleName.]amqp.host"
+    },
+    {
+      "name": "concrete.client.amqp.port",
+      "type": "java.lang.Integer",
+      "description": "concrete服务发布的rabbitmq broker的主机端口。键可以是concrete.client.[moduleName.]amqp.port"
+    },
+    {
+      "name": "concrete.client.amqp.virtualHost",
+      "type": "java.lang.String",
+      "description": "concrete服务发布的rabbitmq虚拟主机。键可以是concrete.client.[moduleName.]amqp.virtualHost"
+    },
+    {
+      "name": "concrete.client.amqp.username",
+      "type": "java.lang.String",
+      "description": "concrete服务发布的rabbitmq用户名。键可以是concrete.client.[moduleName.]amqp.username"
+    },
+    {
+      "name": "concrete.client.amqp.password",
+      "type": "java.lang.String",
+      "description": "concrete服务发布的rabbitmq密码。键可以是concrete.client.[moduleName.]amqp.password"
+    },
+    {
+      "name": "concrete.client.amqp.exchange",
+      "type": "java.lang.String",
+      "description": "concrete服务发布的rabbitmq交换机名。键可以是concrete.client.[moduleName.]amqp.exchange"
+    },
+    {
+      "name": "concrete.client.amqp.executorName",
+      "type": "java.lang.String",
+      "description": "rabbitmq concrete client的线程池名。键可以是concrete.client.[moduleName.]amqp.executorName"
+    }
+  ]
+}

@@ -223,7 +223,9 @@ public class SingletonMap<K, V> {
                 if (map.containsKey(finalKey)) {
                     Value<V> value = map.remove(finalKey);
                     if (value != null) {
-                        value.debounce.cancel();
+                        if(value.debounce != null) {
+                            value.debounce.cancel();
+                        }
                         return value.value;
                     } else {
                         return null;
@@ -243,7 +245,7 @@ public class SingletonMap<K, V> {
         synchronized (map) {
             if (map.size() > 0) {
                 map.forEach((key, v) -> {
-                    if (v != null) {
+                    if (v != null && v.debounce != null) {
                         v.debounce.cancel();
                     }
                 });

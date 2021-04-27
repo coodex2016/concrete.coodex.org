@@ -18,7 +18,10 @@ package org.coodex.concrete.core.intercept;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.api.ServiceTiming;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.DefinitionContext;
+import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.IF;
+import org.coodex.concrete.common.ServiceTimingChecker;
 import org.coodex.concrete.core.intercept.annotations.Local;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
@@ -45,7 +48,7 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
 
     public static final String NAMESPACE_SERVICE_TIMING = "serviceTiming";
     private final static Logger log = LoggerFactory.getLogger(ServiceTimingInterceptor.class);
-    private final static Map<String, String> DEFAULT_CHECKERS = new HashMap<String, String>(){{
+    private final static Map<String, String> DEFAULT_CHECKERS = new HashMap<String, String>() {{
         put("TIMERANGE", ByTimeRange.class.getName());
         put("WORKDAY", ByWorkDay.class.getName());
     }};
@@ -55,13 +58,13 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
 
         // 确定规则类型
         String type = Config.get(label + ".type", NAMESPACE_SERVICE_TIMING);
-        String className = null;
+//        String className;
         if (Common.isBlank(type)) {
             log.warn("ServiceTiming validation rule not defined. : {} ", label);
             return ALL_ALLOWED_CHECKER;
         }
         type = type.trim();
-        className = DEFAULT_CHECKERS.get(type.toUpperCase());
+        String className = DEFAULT_CHECKERS.get(type.toUpperCase());
         if (className == null) {
             className = type;
         }
@@ -91,10 +94,11 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
     }
 
     private static ServiceTimingChecker getValidator(ServiceTiming serviceTiming) {
-        if (serviceTiming == null || serviceTiming.value().length == 0)
+        if (serviceTiming == null || serviceTiming.value().length == 0) {
             return ALL_ALLOWED_CHECKER;
-        else
+        } else {
             return new ServiceTimingCheckerChain(serviceTiming);
+        }
     }
 
     @Override
@@ -126,11 +130,15 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
             Set<String> keys = new HashSet<>();
             for (String s : serviceTiming.value()) {
                 // 全天候
-                if (Common.isBlank(s) || Common.isBlank(s.trim())) continue;
+                if (Common.isBlank(s) || Common.isBlank(s.trim())) {
+                    continue;
+                }
                 s = s.trim();
 
                 // 已包含
-                if (keys.contains(s)) continue;
+                if (keys.contains(s)) {
+                    continue;
+                }
 
                 keys.add(s);
                 chain.add(loadCheckerInstance(s));
@@ -140,8 +148,9 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
         @Override
         public boolean isAllowed() {
             for (ServiceTimingChecker checker : chain) {
-                if (!checker.isAllowed())
+                if (!checker.isAllowed()) {
                     return false;
+                }
             }
             return true;
         }

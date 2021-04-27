@@ -54,6 +54,12 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
         });
     }
 
+    protected static DefinitionContext getDefinitionContext(Class<?> rxClass, Method method) {
+        final Class<?> targetClass = rxClass.getAnnotation(ReactiveExtensionFor.class).value();
+        final Method targetMethod = findTargetMethod(targetClass, method);
+        return ConcreteHelper.getDefinitionContext(targetClass, targetMethod);
+    }
+
     /**
      * @param instance instance
      * @param clz      clz
@@ -72,13 +78,6 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
         return bridge.bridging(invokeAsync(instance, clz, method, args));
     }
 
-    // TODO 移到AbstractRxInvoker中
-    protected static DefinitionContext getDefinitionContext(Class<?> rxClass, Method method) {
-        final Class<?> targetClass = rxClass.getAnnotation(ReactiveExtensionFor.class).value();
-        final Method targetMethod = findTargetMethod(targetClass, method);
-        return ConcreteHelper.getDefinitionContext(targetClass, targetMethod);
-    }
-
     @Override
     public CompletableFuture<?> invokeAsync(Object instance, Class<?> clz, Method method, Object... args) {
         final DefinitionContext runtimeContext = getDefinitionContext(clz, method);
@@ -89,10 +88,9 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
         trace.start();
         try {
             // 1. before切片
-            ConcreteContext.runWithContext(serviceContext, () -> {
-                ClientHelper.getAsyncInterceptorChain().before(runtimeContext, invocation);
-                return null;
-            });
+            ConcreteContext.runWithContext(serviceContext, () ->
+                    ClientHelper.getAsyncInterceptorChain().before(runtimeContext, invocation)
+            );
         } catch (Throwable th) {
             trace.error(th);
             trace.finish();
@@ -100,7 +98,6 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
         }
 
         // 2. apm
-
         return wrap(serviceContext, invocation, runtimeContext,
                 futureInvoke(runtimeContext, args), trace);
     }

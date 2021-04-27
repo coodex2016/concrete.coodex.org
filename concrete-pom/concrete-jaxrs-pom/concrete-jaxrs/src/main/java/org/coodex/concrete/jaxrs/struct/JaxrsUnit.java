@@ -169,14 +169,16 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam/*, JaxrsModule*/> {
     private String getUnitDeclaredName() {
         List<Class<?>> inheritedChain = ConcreteHelper.inheritedChain(
                 getMethod().getDeclaringClass(), getDeclaringModule().getInterfaceClass());
-        if (inheritedChain == null)
+        if (inheritedChain == null) {
             inheritedChain = Collections.emptyList();
+        }
 
         StringBuilder buffer = new StringBuilder();
         for (Class<?> c : inheritedChain) {
             String serviceName = ConcreteHelper.getServiceName(c);
-            if (!Common.isBlank(serviceName))
+            if (!Common.isBlank(serviceName)) {
                 buffer.append(slash(Common.camelCase(serviceName, true)));
+            }
         }
 
         ConcreteService concreteService = getMethod().getAnnotation(ConcreteService.class);
@@ -191,7 +193,9 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam/*, JaxrsModule*/> {
 //        if (pathParam != null) return pathParam.value();
 //        PathParam pathParam1 = parameter.getDeclaredAnnotation(PathParam.class);
 //        if (pathParam1 != null) return pathParam1.value();
-        if (JaxRSHelper.postPrimitive(parameter)) return null;
+        if (JaxRSHelper.postPrimitive(parameter)) {
+            return null;
+        }
 
         Class<?> clz = parameter.getType();
 //        boolean isBigString = parameter.getDeclaredAnnotation(BigString.class) != null;
@@ -284,8 +288,9 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam/*, JaxrsModule*/> {
         //noinspection RegExpRedundantEscape
         int v = getName().replaceAll("(\\{)[^{^}]{0,256}(\\})", "")
                 .compareTo(o.getName().replaceAll("(\\{)[^{^}]{0,256}(\\})", ""));
-        if (v == 0)
+        if (v == 0) {
             v = getName().compareTo(o.getName());
+        }
         return v == 0 ? getInvokeType().compareTo(o.getInvokeType()) : v;
     }
 

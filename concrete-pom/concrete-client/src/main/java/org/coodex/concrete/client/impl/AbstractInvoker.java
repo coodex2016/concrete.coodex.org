@@ -32,6 +32,14 @@ import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 
 public abstract class AbstractInvoker implements Invoker {
 
+    //    private final static Profile_Deprecated devModeProfile = ConcreteHelper.getProfile("moduleMock");
+    private final Destination destination;
+
+
+    public AbstractInvoker(Destination destination) {
+        this.destination = destination;
+    }
+
     static Method findTargetMethod(Class<?> targetClass, Method method) {
         Method targetMethod = null;
         for (Method m : targetClass.getMethods()) {
@@ -47,21 +55,12 @@ public abstract class AbstractInvoker implements Invoker {
         return targetMethod;
     }
 
-
-    //    private final static Profile_Deprecated devModeProfile = ConcreteHelper.getProfile("moduleMock");
-    private final Destination destination;
-
-    public AbstractInvoker(Destination destination) {
-        this.destination = destination;
-    }
-
-
     public abstract ServiceContext buildContext(/*final Class concreteClass, final Method method*/DefinitionContext context);
 
 
     protected boolean isMock() {
         String key = Common.isBlank(destination.getIdentify()) ? "client" : ("client." + destination.getIdentify());
-        return Config.getValue(key, false, "moduleMock", getAppSet()) || isDevModel(key);
+        return Config.getValue(key + ".mock", false, getAppSet()) || isDevModel(key);
     }
 
     protected Destination getDestination() {

@@ -33,7 +33,7 @@ import org.coodex.util.ReflectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
+import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
@@ -51,7 +51,8 @@ import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_J
 
 @SuppressWarnings("unused")
 @Named
-public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter {
+public class ConcreteClientBeanPostProcessor /* extends InstantiationAwareBeanPostProcessorAdapter */
+        implements SmartInstantiationAwareBeanPostProcessor {
 
     private final static Logger log = LoggerFactory.getLogger(ConcreteClientBeanPostProcessor.class);
 
@@ -64,7 +65,9 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
 
     private void scan(java.lang.annotation.Annotation[][] annotations, Class<?>[] parameters) {
         for (int i = 0; i < annotations.length; i++) {
-            if (annotations[i] == null) continue;
+            if (annotations[i] == null) {
+                continue;
+            }
             for (java.lang.annotation.Annotation annotation : annotations[i]) {
                 if (annotation instanceof ConcreteClient) {
                     register(parameters[i], (ConcreteClient) annotation);
@@ -79,7 +82,7 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
 
         scanAndRegisterClientBean(beanClass);
 
-        return super.postProcessBeforeInstantiation(beanClass, beanName);
+        return true;
     }
 
     private void scanAndRegisterClientBean(Class<?> beanClass) {
@@ -102,7 +105,7 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
     @Override
     public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
         scanAndRegisterClientBean(bean.getClass());
-        return super.postProcessAfterInstantiation(bean, beanName);
+        return true;
     }
 
 
@@ -137,8 +140,9 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
         String className = concreteService.getName();
         String newClassName = className + "$CBC$" + getModuleIndex(concreteClient.value());
 
-
-        if (registered.contains(newClassName)) return;
+        if (registered.contains(newClassName)) {
+            return;
+        }
 
         try {
             CtClass ctClass = classPool.makeClass(newClassName);
@@ -176,8 +180,9 @@ public class ConcreteClientBeanPostProcessor extends InstantiationAwareBeanPostP
                         ctClass
                 );
                 StringBuilder builder = new StringBuilder();
-                if (!void.class.equals(returnType))
+                if (!void.class.equals(returnType)) {
                     builder.append("return ");
+                }
                 builder.append(GET_INSTANCE).append("().").append(method.getName()).append("(");
                 if (method.getParameterTypes().length > 0) {
                     builder.append("$$");

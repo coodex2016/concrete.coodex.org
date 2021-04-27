@@ -167,17 +167,6 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
                     getDestination().getTimeout(),
                     (k, v) -> completableFuture.completeExceptionally(new TimeoutException())
             );
-//            CompletableFutureCallBack observableCallBack = new CompletableFutureCallBack(
-//                    completableFuture,
-//                    runtimeContext,
-//                    getLogger(),
-//                    getLoggingLevel(),
-//                    getDestination(),
-//                    getContext()
-//            );
-//
-//            callbackMap.put(msgId, observableCallBack, getDestination().getTimeout(),
-//                    () -> completableFuture.completeExceptionally(new TimeoutException()));
 
             try {
                 requestPackage.setConcreteTokenId(
@@ -186,7 +175,6 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
                 );
                 send(requestPackage);
             } catch (Throwable th) {
-//                callbackMap.getAndRemove(msgId);
                 CALL_BACK_MAP.remove(msgId);
                 completableFuture.completeExceptionally(th);
             }
@@ -194,43 +182,6 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
         return completableFuture;
     }
 
-
-    //    @Override
-//    protected <T> CompletableFuture<T> invokeRx(DefinitionContext context, Object... args) {
-//        final OwnServiceUnit unit = findUnit(context);
-//        CompletableFuture<T> completableFuture = new CompletableFuture<>();
-////        Future timeoutFuture = getTimeOutScheduler().schedule()
-//        return completableFuture;
-//    }
-
-//    @Override
-//    @Deprecated
-//    protected Observable invoke(final DefinitionContext context, final Object... args) {
-//        final OwnServiceUnit unit = findUnit(context);
-//        //noinspection unchecked
-//        return Observable.create((ObservableOnSubscribe) observableEmitter -> {
-//            // build request
-//            String msgId = Common.getUUIDStr();
-//            final RequestPackage requestPackage = buildRequest(msgId, unit, args);
-//
-//            ObservableCallBack observableCallBack = new ObservableCallBack(observableEmitter,
-//                    context, getLogger(), getLoggingLevel(), getDestination(), getContext());
-//
-//            callbackMap.put(msgId, observableCallBack, getDestination().getTimeout(),
-//                    () -> observableEmitter.onError(new TimeoutException()));
-//
-//            try {
-//                requestPackage.setConcreteTokenId(
-//                        ClientTokenManagement.getTokenId(getDestination(),
-//                                getContext().getTokenId())
-//                );
-//                send(requestPackage);
-//            } catch (Throwable th) {
-//                callbackMap.getAndRemove(msgId);
-//                observableEmitter.onError(th);
-//            }
-//        });
-//    }
 
     protected abstract Logger getLogger();
 

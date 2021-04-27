@@ -16,19 +16,18 @@
 
 package org.coodex.concrete.client;
 
-import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.util.Common;
+import org.coodex.config.Config;
 import org.coodex.util.SingletonMap;
 import org.coodex.util.UUIDHelper;
 
 import static org.coodex.concrete.client.Destination.DEFAULT_REQUEST_TIMEOUT;
-import static org.coodex.concrete.common.ConcreteHelper.KEY_LOCATION;
+import static org.coodex.concrete.common.ConcreteHelper.KEY_DESTINATION;
 import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
 
 public abstract class AbstractDestinationFactory<T extends Destination> implements DestinationFactory<T, String> {
 
     private static final SingletonMap<String, String> moduleLocationMap = SingletonMap.<String, String>builder()
-            .function(module -> ConcreteHelper.getString(TAG_CLIENT, module, KEY_LOCATION))
+            .function(module -> Config.get(KEY_DESTINATION, TAG_CLIENT, module))
             .nullKey("null_" + UUIDHelper.getUUIDString()).build();
 
     protected String getLocation(String module) {
@@ -38,16 +37,9 @@ public abstract class AbstractDestinationFactory<T extends Destination> implemen
     protected T init(T destination, String module/*, boolean defaultAsync*/) {
         destination.setIdentify(module);
         destination.setLocation(getLocation(module));
-        destination.setTokenManagerKey(ConcreteHelper.getString(TAG_CLIENT, module, "tokenManagerKey"));
-        destination.setTokenTransfer(
-                Common.toBool(ConcreteHelper.getString(TAG_CLIENT, module, "tokenTransfer"), false)
-        );
-        destination.setTimeout(
-                Common.toInt(ConcreteHelper.getString(TAG_CLIENT, module, "timeout"), DEFAULT_REQUEST_TIMEOUT)
-        );
-//        destination.setAsync(
-//                Common.toBool(ConcreteHelper.getString(TAG_CLIENT, module, "async"), defaultAsync)
-//        );
+        destination.setTokenManagerKey(Config.get("tokenManagerKey", TAG_CLIENT, module));
+        destination.setTokenTransfer(Config.getValue("tokenTransfer", false, TAG_CLIENT, module));
+        destination.setTimeout(Config.getValue("timeout", DEFAULT_REQUEST_TIMEOUT, TAG_CLIENT, module));
         return destination;
     }
 }

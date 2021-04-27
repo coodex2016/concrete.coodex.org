@@ -52,7 +52,6 @@ public class ConcreteTestRule implements TestRule {
                                 } catch (Throwable throwable) {
                                     throw Common.rte(throwable);
                                 }
-                                return null;
                             });
                 } catch (ConcreteException ce) {
                     throw (ce.getCause() != null && ce.getCode() == ErrorCodes.UNKNOWN_ERROR) ? ce.getCause() : ce;

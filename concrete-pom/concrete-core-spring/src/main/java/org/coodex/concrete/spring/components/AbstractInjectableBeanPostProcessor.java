@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
+import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.Primary;
@@ -46,24 +46,25 @@ import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.toCt
 import static org.coodex.util.Common.rte;
 import static org.coodex.util.GenericTypeHelper.toReference;
 
-public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKey> extends InstantiationAwareBeanPostProcessorAdapter {
+public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKey> implements SmartInstantiationAwareBeanPostProcessor {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractInjectableBeanPostProcessor.class);
-    private static AtomicLong index = new AtomicLong(0);
-
+    private static final AtomicLong index = new AtomicLong(0);
+    private final Class<?>[] injectableAnnotations = new Class<?>[]{Autowired.class, Inject.class};
+    private final Map<InjectInfoKey, Class<?>> injectedCache = new HashMap<>();
     //    @Inject
 //    private ListableBeanFactory listableBeanFactory;
 //    @Inject
 //    private BeanDefinitionRegistry beanDefinitionRegistry;
     @Inject
     private DefaultListableBeanFactory defaultListableBeanFactory;
-    private Class<?>[] injectableAnnotations = new Class<?>[]{Autowired.class, Inject.class};
-    private Map<InjectInfoKey, Class<?>> injectedCache = new HashMap<>();
 
     protected boolean isInjectable(Field field) {
         for (Class<?> clz : injectableAnnotations) {
             Class<? extends Annotation> annotationClass = Common.cast(clz);
-            if (field.getAnnotation(annotationClass) != null) return true;
+            if (field.getAnnotation(annotationClass) != null) {
+                return true;
+            }
         }
         return false;
     }
@@ -79,19 +80,8 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
     @Override
     public final boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
         scan(bean, bean.getClass(), beanName, bean.getClass());
-        return super.postProcessAfterInstantiation(bean, beanName);
+        return true;
     }
-
-
-    //    @Override
-//    public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
-//        scan(null, beanClass, beanName, beanClass);
-//        return super.postProcessBeforeInstantiation(beanClass, beanName);
-//    }
-
-    //    protected abstract boolean isInjected(Class<?> beanClass, Field injectField);
-//
-//    protected abstract InjectInfo getInjectedBean(Class<?> beanClass, Field injectField);
 
     protected abstract boolean accept(Field field);
 
@@ -164,20 +154,24 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
     }
 
     private synchronized void scan(Object bean, Class<?> beanClass, String beanName, Class<?> scanClass) {
-        if (Object.class.equals(scanClass)) return;
+        if (Object.class.equals(scanClass)) {
+            return;
+        }
         for (Field field : scanClass.getDeclaredFields()) {
             if (accept(field)) {
-                if (bean == null)
+                if (bean == null) {
                     log.debug("process {} {}: {} extends {}",
                             toReference(field.getGenericType(), beanClass),
                             field.getName(), beanClass.getName(), scanClass.getName());
+                }
                 K key = getKey(beanClass, field);
                 if (!injectedCache.containsKey(key)) {
                     Class<?> injectClass = getInjectClass(key, beanClass);
                     String newBeanName = newBeanName();
                     BeanDefinition beanDefinition = new RootBeanDefinition(injectClass);
-                    if (injectClass.getAnnotation(Primary.class) != null)
+                    if (injectClass.getAnnotation(Primary.class) != null) {
                         beanDefinition.setPrimary(true);
+                    }
 
                     getDefaultListableBeanFactory().registerBeanDefinition(newBeanName, beanDefinition);
 //                            getBeanFactory().registerSingleton(newBeanName, instance);
@@ -196,7 +190,9 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
                 }
 
 
-                if (bean == null) continue;
+                if (bean == null) {
+                    continue;
+                }
 
                 if (isInjectable(field)) {
                     log.info("{} {} {} injected.", beanName, toReference(field.getGenericType(), beanClass), field.getName());

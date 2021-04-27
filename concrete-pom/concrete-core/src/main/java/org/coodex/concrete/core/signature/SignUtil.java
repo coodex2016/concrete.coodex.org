@@ -46,7 +46,7 @@ public class SignUtil {
     public static final String KEY_FIELD_SIGN = "sign";
     public static final String KEY_FIELD_KEY_ID = "keyId";
     public static final String KEY_FIELD_NOISE = "noise";
-    public static final String TAG_SIGNATRUE = "signature";
+    public static final String TAG_SIGNATURE = "signature";
     //    public static final Profile PROFILE = getProfile(TAG_SIGNATRUE);
     private static final LazySelectableServiceLoader<String, IronPenFactory> IRON_PEN_FACTORY_CONCRETE_SPI_FACADE
             = new LazySelectableServiceLoader<String, IronPenFactory>() {
@@ -187,7 +187,7 @@ public class SignUtil {
         if (serviceContext instanceof ClientSideContext) {
             module = ((ClientSideContext) serviceContext).getDestination().getIdentify();
         }
-        value = getStr(key, paperName, TAG_SIGNATRUE, module, getAppSet());
+        value = getStr(key, paperName, TAG_SIGNATURE, module, getAppSet());
         return value == null ? defaultValue : value;
     }
 

@@ -22,13 +22,14 @@ import org.coodex.util.GenericTypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
+import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
 
 import javax.inject.Named;
 import java.lang.reflect.Type;
 
 @Named
-public class MessageObserverBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter {
+public class MessageObserverBeanPostProcessor /*extends InstantiationAwareBeanPostProcessorAdapter*/
+        implements SmartInstantiationAwareBeanPostProcessor {
 
     private final static Logger log = LoggerFactory.getLogger(MessageObserverBeanPostProcessor.class);
 
@@ -39,7 +40,7 @@ public class MessageObserverBeanPostProcessor extends InstantiationAwareBeanPost
             Observer<?> observer = Common.cast(bean);
             getTopic(observer, beanName).subscribe(Common.cast(observer));
         }
-        return super.postProcessAfterInitialization(bean, beanName);
+        return true;
     }
 
 

@@ -25,6 +25,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
@@ -61,7 +62,8 @@ public abstract class AbstractRuntimeParameter {
 
     private Set<Class<?>> toRegistered() {
         Set<Class<?>> classes = new HashSet<>();
-        for (String str : Config.getArray(getNamespace() + ".classes", ",", new String[0], "concrete", getNamespace())) {
+        for (String str : Optional.ofNullable(Config.getArray(getNamespace() + ".classes", "concrete", getNamespace()))
+                .orElseGet(() -> new String[0])) {
             try {
                 classes.add(Class.forName(str));
             } catch (ClassNotFoundException e) {

@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * TODO 支持持久化
  */
 public class ClientTokenManagement {
-    private static Map<String, String> tokens = new ConcurrentHashMap<String, String>();
+    private static final Map<String, String> tokens = new ConcurrentHashMap<String, String>();
 
     public static void setTokenId(Destination destination, String tokenId) {
         if (!Common.isBlank(tokenId) && !destination.isTokenTransfer()) {

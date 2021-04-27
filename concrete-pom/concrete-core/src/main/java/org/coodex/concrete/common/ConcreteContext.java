@@ -167,6 +167,13 @@ public final class ConcreteContext {
         }
     }
 
+    public static void runWithContext(final ServiceContext context, final Runnable runnable) {
+        runWithContext(context, () -> {
+            runnable.run();
+            return null;
+        });
+    }
+
 
     /**
      * 服务端运行

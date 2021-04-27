@@ -34,7 +34,7 @@ import static org.coodex.concrete.common.ErrorMessageFacade.getAllErrorInfo;
 public class ServiceDocRenderer extends AbstractRenderer {
 
     public static final String RENDER_NAME =
-            JaxRSModuleMaker.JAX_RS_PREV + ".doc.backend." + "gitbook" + ".v1";
+            JaxRSModuleMaker.JAX_RS_PREV + ".doc.backend.gitbook.v1";
 
     private static final String RESOURCE_PACKAGE = "concrete/templates/jaxrs/services/doc/gitbook/v1/";
 

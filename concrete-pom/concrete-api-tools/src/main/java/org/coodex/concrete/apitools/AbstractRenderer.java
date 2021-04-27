@@ -49,7 +49,7 @@ public abstract class AbstractRenderer implements ConcreteAPIRenderer {
 
     private synchronized Configuration getConfiguration() {
         if (configuration == null) {
-            configuration = new Configuration(Configuration.getVersion());
+            configuration = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
             configuration.setClassLoaderForTemplateLoading(this.getClass().getClassLoader(), getTemplatePath());
         }
         return configuration;

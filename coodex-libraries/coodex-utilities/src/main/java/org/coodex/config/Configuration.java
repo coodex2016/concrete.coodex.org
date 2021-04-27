@@ -16,6 +16,8 @@
 
 package org.coodex.config;
 
+import org.coodex.util.Common;
+
 import java.util.function.Supplier;
 
 public interface Configuration {
@@ -40,5 +42,21 @@ public interface Configuration {
     <T> T getValue(String key, T defaultValue, String... namespace);
 
     <T> T getValue(String key, Supplier<T> defaultValueSupplier, String... namespace);
+
+//    default String[] getArray(String key, String... namespaces) {
+//        return Common.toArray(get(key, namespaces), ",", () -> null);
+//    }
+//
+//    default <T> T[] getArray(String key, T[] defaultValue, String... namespace) {
+//        return getArray(key, () -> defaultValue, namespace);
+//    }
+//
+//    default <T> T[] getArray(String key, Supplier<T[]> defaultValue, String... namespace){
+//        String[] v = getArray(key, namespace);
+//        if(v == null){
+//            return defaultValue.get();
+//        }
+//        Common.to
+//    }
 
 }

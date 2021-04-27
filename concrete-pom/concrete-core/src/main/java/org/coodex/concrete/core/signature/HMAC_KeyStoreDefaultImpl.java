@@ -27,7 +27,7 @@ import java.util.List;
 
 import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
-import static org.coodex.concrete.core.signature.SignUtil.TAG_SIGNATRUE;
+import static org.coodex.concrete.core.signature.SignUtil.TAG_SIGNATURE;
 
 public class HMAC_KeyStoreDefaultImpl implements HMAC_KeyStore {
 
@@ -73,7 +73,7 @@ public class HMAC_KeyStoreDefaultImpl implements HMAC_KeyStore {
 
     private static String getHmacKeyStr(String paperName, String keyId, String module) {
         List<String> namespace = new ArrayList<>();
-        namespace.add(module == null ? TAG_SIGNATRUE : TAG_CLIENT);
+        namespace.add(module == null ? TAG_SIGNATURE : TAG_CLIENT);
         if (module != null)
             namespace.add(module);
         namespace.add(getAppSet());

@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "concrete.client.mock",
+      "type": "java.lang.Boolean",
+      "description": "是否模拟客户端调用数据，当此值为真时，concrete client不会发起真实请求。键可以是concrete.client.[moduleName].mock"
+    },
+    {
+      "name": "concrete.rx-client.scheduler.executorSize",
+      "type": "java.lang.Integer",
+      "description": "rx client的scheduler"
+    }
+  ]
+}

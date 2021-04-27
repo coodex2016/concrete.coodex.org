@@ -22,6 +22,8 @@ import java.util.function.Supplier;
 
 /**
  * Created by davidoff shen on 2016-09-04.
+ *
+ * @author davidoff shen
  */
 public class MapClosureContext<K, V> extends StackClosureContext<Map<K, V>> {
 
@@ -35,8 +37,9 @@ public class MapClosureContext<K, V> extends StackClosureContext<Map<K, V>> {
     }
 
     public Object call(K key, V v, Supplier<?> supplier) {
-        if (key == null)
+        if (key == null) {
             throw new RuntimeException("key MUST NOT null." + (v == null ? "" : v.toString()));
+        }
 
         Map<K, V> map = new HashMap<>();
         Map<K, V> current = get();
@@ -47,6 +50,7 @@ public class MapClosureContext<K, V> extends StackClosureContext<Map<K, V>> {
         return super.call(map, supplier);
 
     }
+
 
     @Override
     public Object call(Map<K, V> map, Supplier<?> supplier) {

@@ -19,10 +19,10 @@ package org.coodex.concrete.couriers.rabbitmq;
 import com.rabbitmq.client.*;
 import org.coodex.concrete.amqp.AMQPConnectionConfig;
 import org.coodex.concrete.amqp.AMQPConnectionFacade;
-import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.message.CourierPrototype;
 import org.coodex.concrete.message.Serializer;
 import org.coodex.concrete.message.Topics;
+import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.DigestHelper;
 import org.slf4j.Logger;
@@ -41,25 +41,27 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
     public static final String KEY_VIRTUAL_HOST = "virtualHost";
     public static final String KEY_HOST = "host";
     public static final String KEY_PORT = "port";
+    @SuppressWarnings("unused")
     public static final String KEY_SSL = "ssl";
     public static final String KEY_ROUTING_KEY = "routingKey";
     public static final String KEY_EXCHANGER = "exchanger";
+    @SuppressWarnings("unused")
     public static final String KEY_TTL = "ttl";
     public static final String DEFAULT_EXCHANGER_NAME = "org.coodex.concrete.topics";
 
     private final static Logger log = LoggerFactory.getLogger(RabbitMQCourierPrototype.class);
     private final Serializer serializer;
+    private final Connection connection;
+    private final String routingKey;
     private boolean consumer = false;
     private String consumerStr = null;
-    private Connection connection;
     private String queueName;
     private Channel channel;
-    private String routingKey;
     private String exchangerName;
 
     public RabbitMQCourierPrototype(String queue, String destination, Type topicType) {
         super(queue, destination, topicType);
-        String customRoutingKey = ConcreteHelper.getString(TAG_QUEUE, queue, KEY_ROUTING_KEY);
+        String customRoutingKey = Config.get(KEY_ROUTING_KEY, TAG_QUEUE, queue);
         routingKey = Common.isBlank(customRoutingKey) ? DigestHelper.sha1(
                 String.format("%s@%s", getTopicType().toString(), queue).getBytes(StandardCharsets.UTF_8)
         ) : (customRoutingKey + "@" + queue);
@@ -70,43 +72,14 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
             if (!destination.equalsIgnoreCase(PREFIX_RABBITMQ)) {
                 connectionConfig.setUri(destination.substring(PREFIX_RABBITMQ.length() + 1));
             }
-            connectionConfig.setHost(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_HOST));
-            try {
-                connectionConfig.setPort(Integer.parseInt(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_PORT)));
-            } catch (Throwable ignore) {
-            }
-            connectionConfig.setPassword(ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_PA55W0RD));
-            connectionConfig.setUsername(ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_USERNAME));
-            connectionConfig.setVirtualHost(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_VIRTUAL_HOST));
+            connectionConfig.setHost(Config.get(KEY_HOST, TAG_QUEUE, queue));
+            connectionConfig.setPort(Config.getValue(KEY_PORT, (Integer) null, TAG_QUEUE, queue));
+            connectionConfig.setPassword(Config.get(QUEUE_PA55W0RD, TAG_QUEUE, queue));
+            connectionConfig.setUsername(Config.get(QUEUE_USERNAME, TAG_QUEUE, queue));
+            connectionConfig.setVirtualHost(Config.get(KEY_VIRTUAL_HOST, TAG_QUEUE, queue));
 
-//            ConnectionFactory connectionFactory = new ConnectionFactory();
-//            if (destination.equalsIgnoreCase(PREFIX_RABBITMQ)) {
-//                connectionFactory.setVirtualHost(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_VIRTUAL_HOST));
-//                connectionFactory.setHost(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_HOST));
-//                try {
-//                    connectionFactory.setPort(Integer.parseInt(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_PORT)));
-//                } catch (Throwable th) {
-//                }
-//                if (Common.toBool(ConcreteHelper.getString(TAG_QUEUE, queue, KEY_SSL), false)) {
-//                    connectionFactory.useSslProtocol();
-//                }
-//            } else {
-//                connectionFactory.setUri(destination.substring(PREFIX_RABBITMQ.length() + 1));
-//                if (Common.isBlank(connectionFactory.getVirtualHost())) {
-//                    connectionFactory.setVirtualHost("/");
-//                }
-//            }
-//            // set username and password
-//            String username = ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_USERNAME);
-//            String password = ConcreteHelper.getString(TAG_QUEUE, queue, QUEUE_PA55W0RD);
-//            if (!Common.isBlank(username) || !Common.isBlank(password)) {
-//                connectionFactory.setUsername(username);
-//                connectionFactory.setPassword(password);
-//            }
-            serializer = Topics.getSerializer(
-                    ConcreteHelper.getString(TAG_QUEUE, queue, SERIALIZER_TYPE)
-            );
-            exchangerName = ConcreteHelper.getString(TAG_QUEUE, queue, KEY_EXCHANGER);
+            serializer = Topics.getSerializer(Config.get(SERIALIZER_TYPE, TAG_QUEUE, queue));
+            exchangerName = Config.get(KEY_EXCHANGER, TAG_QUEUE, queue);
             if (Common.isBlank(exchangerName)) {
                 exchangerName = DEFAULT_EXCHANGER_NAME;
             }
@@ -153,15 +126,14 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
 
     @Override
     public synchronized void setConsumer(boolean consumer) {
-
         if (consumer != this.consumer) {
             try {
                 if (consumer) {
                     consumerStr = channel.basicConsume(queueName, true, new DefaultConsumer(channel) {
                         @Override
-                        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
                             try {
-                                getTopic().notify(serializer.<M>deserialize(body, getMessageType()));
+                                getTopic().notify(serializer.deserialize(body, getMessageType()));
                             } catch (Throwable th) {
                                 log.warn("notify error: {}", th.getLocalizedMessage(), th);
                             }
@@ -177,6 +149,7 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
             } catch (IOException e) {
                 log.error(e.getLocalizedMessage(), e);
             }
+            this.consumer = consumer;
         }
     }
 

@@ -42,7 +42,7 @@ public class ZipkinTrace extends AbstractTrace {
 
     private static final String TRACE_ID = "X-APM-TRACE-ID";
     private static final String SPAN_ID = "X-APM-SPAN-ID";
-    private static Singleton<Tracing> tracingSingleton = Singleton.with(
+    private static final Singleton<Tracing> tracingSingleton = Singleton.with(
             () -> {
                 Tracing.Builder builder = Tracing.newBuilder();
                 String url = Config.get("zipkin.location", getAppSet());
@@ -55,13 +55,13 @@ public class ZipkinTrace extends AbstractTrace {
 
 
                 return builder.localServiceName(
-                        Config.getValue("module.name", "concrete", getAppSet())
+                        Config.getValue("zipkin.moduleName", "concrete", getAppSet())
                 ).build();
             }
     );
+    private final Map<String, String> map = new ConcurrentHashMap<>();
     private TraceContext traceContext;
     private String type;
-    private Map<String, String> map = new ConcurrentHashMap<>();
     private Span span = null;
     private CurrentTraceContext.Scope scope = null;
 
@@ -93,16 +93,16 @@ public class ZipkinTrace extends AbstractTrace {
     protected void actualStart(String name) {
         if (traceContext == null) {
             span = getTracer().newTrace();
-//            span = ThreadLocalSpan.create(getTracer()).next();
         } else {
             span = getTracer().newChild(traceContext);
-//            span = getTracer().joinSpan(traceContext);
         }
 
-        if (!Common.isBlank(name))
+        if (!Common.isBlank(name)) {
             span = span.name(name);
-        if (!Common.isBlank(type))
+        }
+        if (!Common.isBlank(type)) {
             span = span.tag("type", type);
+        }
 
 
         if (map.size() > 0) {
@@ -112,7 +112,6 @@ public class ZipkinTrace extends AbstractTrace {
         }
         scope = CurrentTraceContext.Default.create().newScope(span.context());
         span = span.start();
-//        ThreadLocalSpan.create(getTracer()).next();
     }
 
     @Override
@@ -136,13 +135,6 @@ public class ZipkinTrace extends AbstractTrace {
         map.put(name, value);
         return this;
     }
-
-//    @Override
-//    public void appendTo(Trace trace) {
-//        if (trace instanceof ZipkinTrace) {
-//            traceContext = ((ZipkinTrace) trace).traceContext;
-//        }
-//    }
 
     @Override
     public void error(Throwable throwable) {

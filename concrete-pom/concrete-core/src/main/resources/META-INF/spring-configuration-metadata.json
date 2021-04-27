@@ -1,0 +1,159 @@
+{
+  "properties": [
+    {
+      "name": "concrete.scheduler",
+      "type": "java.lang.String",
+      "description": "仅用于提示，实际使用为concrete.[appSet.][name.]scheduler = [aliasTo]，aliasTo说明这个名称的计划任务线程池等同于concrete.[aliasTo.]scheduler.*"
+    },
+    {
+      "name": "concrete.scheduler.executorSize",
+      "type": "java.lang.Integer",
+      "description": "计划任务线程池的核心线程数，默认为1。键可以是concrete.[appSet.][name.]scheduler.executorSize，获取时，使用ConcreteHelper.getScheduler(String)"
+    },
+    {
+      "name": "concrete.service.scheduler.executorSize",
+      "type": "java.lang.Integer",
+      "description": "concrete服务公用的scheduler，使用ConcreteHelper.getScheduler()获取"
+    },
+    {
+      "name": "concrete.executor",
+      "type": "java.lang.String",
+      "description": "仅用于提示，实际使用为concrete.[appSet.][name.]executor = [aliasTo]，aliasTo说明这个名称的线程池等同于concrete.[aliasTo].executor.*"
+    },
+    {
+      "name": "concrete.executor.corePoolSize",
+      "type": "java.lang.Integer",
+      "description": "线程池核心线程数，默认为核心数 x 2。键可以是concrete.[appSet.][name.]executor.corePoolSize"
+    },
+    {
+      "name": "concrete.executor.maximumPoolSize",
+      "type": "java.lang.Integer",
+      "description": "线程池的最大线程数，默认为核心数 x 4。键可以是concrete.[appSet.][name.]executor.maximumPoolSize"
+    },
+    {
+      "name": "concrete.executor.maxQueueSize",
+      "type": "java.lang.Integer",
+      "description": "线程池最大任务数。键可以是concrete.[appSet.][name.]executor.maxQueueSize"
+    },
+    {
+      "name": "concrete.executor.keepAliveTime",
+      "type": "java.lang.Integer",
+      "description": "线程池空闲线程回收时间，单位，秒，默认60。键可以是concrete.[appSet.][name.]executor.keepAliveTime"
+    },
+    {
+      "name": "concrete.service.executor.corePoolSize",
+      "type": "java.lang.Integer",
+      "description": "concrete服务线程池核心线程数，默认为核心数 x 2"
+    },
+    {
+      "name": "concrete.service.executor.maximumPoolSize",
+      "type": "java.lang.Integer",
+      "description": "concrete服务线程池的最大线程数，默认为核心数 x 4"
+    },
+    {
+      "name": "concrete.service.executor.maxQueueSize",
+      "type": "java.lang.Integer",
+      "description": "concrete服务线程池最大任务数"
+    },
+    {
+      "name": "concrete.service.executor.keepAliveTime",
+      "type": "java.lang.Integer",
+      "description": "concrete服务线程池空闲线程回收时间，单位，秒，默认60"
+    },
+    {
+      "name": "concrete.topic.executor.corePoolSize",
+      "type": "java.lang.Integer",
+      "description": "concrete主题发布线程池核心线程数，默认为核心数 x 2"
+    },
+    {
+      "name": "concrete.topic.executor.maximumPoolSize",
+      "type": "java.lang.Integer",
+      "description": "concrete主题发布线程池的最大线程数，默认为核心数 x 4"
+    },
+    {
+      "name": "concrete.topic.executor.maxQueueSize",
+      "type": "java.lang.Integer",
+      "description": "concrete主题发布线程池最大任务数"
+    },
+    {
+      "name": "concrete.topic.executor.keepAliveTime",
+      "type": "java.lang.Integer",
+      "description": "concrete主题发布线程池空闲线程回收时间，单位，秒，默认60"
+    },
+    {
+      "name": "concrete.token.maxIdleTime",
+      "type": "java.lang.Integer",
+      "description": "concrete令牌最大空闲时间，空闲时间大于此设置时，令牌将自动失效，单位，分钟，默认60。键可以是concrete.[appSet.]token.maxIdleTime"
+    },
+    {
+      "name": "concrete.client.tokenManagerKey",
+      "type": "java.lang.String",
+      "description": "客户端令牌管理的key，键可以是concrete.client.[moduleName.]tokenManagerKey"
+    },
+    {
+      "name": "concrete.client.tokenTransfer",
+      "type": "java.lang.Boolean",
+      "description": "是否传递令牌，默认为否。当A系统的客户端运行在B系统的服务端中（B调用A），两个系统使用统一的会话管理时，应设置为true。键可以是concrete.client.[moduleName.]tokenTransfer"
+    },
+    {
+      "name": "concrete.client.timeout",
+      "type": "java.lang.Integer",
+      "description": "请求超时时间，单位，毫秒，默认5秒。键可以是concrete.client.[moduleName.]timeout"
+    },
+    {
+      "name": "concrete.client.destination",
+      "type": "java.lang.String",
+      "description": "调用服务端的目标描述符。键可以是concrete.client.[moduleName.]destination"
+    },
+    {
+      "name": "concrete.queue.default",
+      "type": "java.lang.String",
+      "description": "未指定queue时默认的队列名称。键可以是concrete.[appSet.]queue.default"
+    },
+    {
+      "name": "concrete.signature.property.keyId",
+      "type": "java.lang.String",
+      "description": "指定调用服务时上下文中keyId别名。键可以是concrete.[appSet.]signature.property.keyId"
+    },
+    {
+      "name": "concrete.signature.property.sign",
+      "type": "java.lang.String",
+      "description": "指定调用服务时上下文中sign别名。键可以是concrete.[appSet.]signature.property.sign"
+    },
+    {
+      "name": "concrete.signature.property.algorithm",
+      "type": "java.lang.String",
+      "description": "指定调用服务时上下文中algorithm别名。键可以是concrete.[appSet.]signature.property.algorithm"
+    },
+    {
+      "name": "concrete.signature.property.noise",
+      "type": "java.lang.String",
+      "description": "指定调用服务时上下文中noise别名。键可以是concrete.[appSet.]signature.property.noise"
+    },
+    {
+      "name": "concrete.signature.algorithm",
+      "type": "java.lang.String",
+      "description": "签名算法，默认为@Signable注解的algorithm值，否则SHA256withRSA。键可以是concrete.[paperName.]signature.[]"
+    },
+    {
+      "name": "concrete.client.signature.property.keyId",
+      "type": "java.lang.String",
+      "description": "对应服务指定的keyId别名。键可以是concrete.client.[moduleName.]signature.property.keyId"
+    },
+    {
+      "name": "concrete.client.signature.property.sign",
+      "type": "java.lang.String",
+      "description": "对应服务指定的sign别名。键可以是concrete.client.[moduleName.]signature.property.sign"
+    },
+    {
+      "name": "concrete.client.signature.property.algorithm",
+      "type": "java.lang.String",
+      "description": "对应服务指定的algorithm别名。键可以是concrete.client.[moduleName.]signature.property.algorithm"
+    },
+    {
+      "name": "concrete.client.signature.property.noise",
+      "type": "java.lang.String",
+      "description": "对应服务指定的noise别名。键可以是concrete.client.[moduleName.]signature.property.noise"
+    }
+  ]
+}

@@ -42,7 +42,7 @@ public class JaxrsRuntime extends AbstractRuntimeParameter {
     public String[] getUrlMappings() {
         String[] thisUrlMappings;
         if (urlMappings == null || urlMappings.length == 0) {
-            thisUrlMappings = Config.getArray("servletMapping", ",", new String[0]);
+            thisUrlMappings = Config.getArray("servletMapping", "concrete", getNamespace());
         } else {
             thisUrlMappings = urlMappings;
         }

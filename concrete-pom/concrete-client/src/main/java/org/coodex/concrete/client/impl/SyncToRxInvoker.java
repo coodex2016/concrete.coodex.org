@@ -49,7 +49,6 @@ public class SyncToRxInvoker extends AbstractRxInvoker {
                     } catch (Throwable throwable) {
                         throw Common.rte(throwable);
                     }
-                    return null;
                 });
 
             } catch (Throwable th) {

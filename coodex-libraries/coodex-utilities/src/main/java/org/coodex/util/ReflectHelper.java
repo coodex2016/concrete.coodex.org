@@ -33,7 +33,11 @@ import static org.coodex.util.Common.cast;
 public class ReflectHelper {
 
 
-    public static final Function<Class<?>, Boolean> NOT_NULL = new NotNullDecision();
+    public static final Function<Class<?>, Boolean> NOT_NULL = Objects::nonNull;
+    @SuppressWarnings("unused")
+    public static final Function<Class<?>, Boolean> ALL_OBjECT = c -> c != null && c != Object.class;
+    @SuppressWarnings("unused")
+    public static final Function<Class<?>, Boolean> ALL_OBJECT_EXCEPT_JAVA_SDK = c -> c != null && !c.getName().startsWith("java");
     private static final Logger log = LoggerFactory.getLogger(ReflectHelper.class);
 
     private ReflectHelper() {
@@ -70,40 +74,56 @@ public class ReflectHelper {
         }
     }
 
-//    private static String getMethodParameterName(Method method, int index, String prefix) {
-//        String str = null;
-//        try {
-//            str = getParameterName(method, index);
-//        } catch (Throwable th) {
-////            str = prefix + index;
-//        }
-//        return Common.isBlank(str) ? (prefix + index) : str;
-//    }
+    private static Method getMethod(Class<?> objClass, String methodName) throws NoSuchMethodException {
+        for (Method method : objClass.getDeclaredMethods()) {
+            if (methodName.equals(method.getName())) {
+                return method;
+            }
+        }
+        throw new NoSuchMethodException();
+    }
+
+    private static Object invoke(Object obj, String methodName, Object... args) throws ReflectiveOperationException {
+        Field overrideField = AccessibleObject.class.getDeclaredField("override");
+        overrideField.setAccessible(true);
+        Method targetMethod = getMethod(obj.getClass(), methodName);
+        overrideField.set(targetMethod, true);
+        return targetMethod.invoke(obj, args);
+    }
+
+    /**
+     * 获取lambda表达式实例的方法签名，方法来源：https://zhuanlan.zhihu.com/p/151438084
+     * <p>
+     * 原理，在lambda实例的class(isSynthetic)中找到对应的方法，因为lambda表达式是单一方法的实例，所以能够找到的应该是有且仅有的一个方法
+     *
+     * @param lambda lambda instance
+     * @return lambda表达式实例的方法签名
+     * @throws ReflectiveOperationException exception
+     */
+    @SuppressWarnings("unused")
+    public static Method getLambdaMethod(Object lambda) throws ReflectiveOperationException {
+        Class<?> lambdaClass = lambda.getClass();
+        if (!lambdaClass.isSynthetic()) {
+            throw new IllegalArgumentException("not lambda instance: " + lambdaClass);
+        }
+        Object constantPool = invoke(lambdaClass, "getConstantPool");
+        for (int i = (int) invoke(constantPool, "getSize") - 1; i >= 0; --i) {
+            try {
+                Object member = invoke(constantPool, "getMethodAt", i);
+                if (member instanceof Method && ((Method) member).isSynthetic() && ((Method) member).getDeclaringClass() != Object.class) {
+                    return (Method) member;
+                }
+            } catch (Exception ignored) {
+                // ignored
+            }
+        }
+        throw new NoSuchMethodException();
+    }
 
     public static String getParameterName(Method method, int index) {
         String s = getParameterNameByAnnotation(method.getParameterAnnotations(), index);
         return s == null ? getParameterNameByJava8(method, index) : s;
     }
-
-//    private static String getParameterNameByJava8(Method method, int index) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException {
-//        return getExecutableParameterNameByJava8(method, index);
-////        Method getParameters = Method.class.getMethod("getParameters");
-////        Object[] parameters = (Object[]) getParameters.invoke(method);
-////        if (parameters != null) {
-////            Class<?> methodParameterClass = Class.forName("java.lang.reflect.Parameter");
-////            Method getName = methodParameterClass.getMethod("getName");
-////            return (String) getName.invoke(parameters[index]);
-////        }
-////        return null;
-//    }
-
-//    private static String getConstructorParameterName(Constructor<?> constructor, int index, String prefix) {
-//        try {
-//            return getParameterName(constructor, index);
-//        } catch (Throwable th) {
-//            return prefix + index;
-//        }
-//    }
 
     private static String getParameterNameByAnnotation(Annotation[][] annotations, int index) {
         if (annotations == null || annotations.length < index) return null;
@@ -125,18 +145,6 @@ public class ReflectHelper {
     private static String getParameterNameByJava8(Executable executable, int index) {
         return executable.getParameters()[index].getName();
     }
-
-//    private static String getExecutableParameterNameByJava8(Executable executable, int index) {
-//        return executable.getParameters()[index].getName();
-////        Method getParameters = Method.class.getMethod("getParameters");
-////        Object[] parameters = (Object[]) getParameters.invoke(executable);
-////        if (parameters != null) {
-////            Class<?> methodParameterClass = Class.forName("java.lang.reflect.Parameter");
-////            Method getName = methodParameterClass.getMethod("getName");
-////            return (String) getName.invoke(parameters[index]);
-////        }
-////        return null;
-//    }
 
     public static Field[] getAllDeclaredFields(Class<?> clz) {
         return getAllDeclaredFields(clz, null);
@@ -211,6 +219,7 @@ public class ReflectHelper {
                 .scan(packageToPath(packages));
     }
 
+    @SuppressWarnings("unused")
     public static <T> T throwExceptionObject(Class<T> interfaceClass, final Supplier<Throwable> supplier) {
         return cast(Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[]{interfaceClass},
                 (proxy, method, args) -> {
@@ -218,6 +227,7 @@ public class ReflectHelper {
                 }));
     }
 
+    @SuppressWarnings("unused")
     public static <T> T throwExceptionObject(Class<T> interfaceClass, final Function<Method, Throwable> function) {
         return cast(Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[]{interfaceClass},
                 (proxy, method, args) -> {
@@ -301,7 +311,6 @@ public class ReflectHelper {
 
     private static boolean isMatchForDebug(Type instanceType, Type serviceType) {
         if (Objects.equals(instanceType, serviceType)) return true;
-//        if (serviceType instanceof TypeVariable) return true; // todo bound check.
         Class<?> instanceClass = GenericTypeHelper.typeToClass(instanceType);
         Class<?> serviceClass = GenericTypeHelper.typeToClass(serviceType);
 
@@ -328,6 +337,7 @@ public class ReflectHelper {
      * @param <T>     extends S
      * @return 扩展后的对象
      */
+    @SuppressWarnings("unused")
     public static <S, T extends S> S extendInterface(final T o, final Object... objects) {
         if (o == null) return null;
         if (objects == null || objects.length == 0) return o;
@@ -343,20 +353,6 @@ public class ReflectHelper {
         return cast(Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces.toArray(new Class<?>[0]),
                 (proxy, method, args) -> invoke(method, o, objects, args)));
     }
-
-//    @Deprecated
-//    public interface Processor extends Consumer<Class<?>> {
-//        default void process(Class<?> serviceClass) {
-//            this.accept(serviceClass);
-//        }
-//    }
-//
-//    @Deprecated
-//    public interface ClassDecision extends Function<Class<?>, Boolean> {
-//        default boolean determine(Class<?> clz) {
-//            return this.apply(clz);
-//        }
-//    }
 
     public static class MethodParameter {
 
@@ -414,30 +410,6 @@ public class ReflectHelper {
             }
             return null;
         }
-    }
-
-    private static class NotNullDecision implements Function<Class<?>, Boolean> {
-
-        @Override
-        public Boolean apply(Class<?> clz) {
-            return clz != null;
-        }
-    }
-
-    private static class AllObjectDecision implements Function<Class<?>, Boolean> {
-        @Override
-        public Boolean apply(Class<?> clz) {
-            return clz != null && clz != Object.class;
-        }
-
-    }
-
-    private static class AllObjectExceptJavaSDK implements Function<Class<?>, Boolean> {
-        @Override
-        public Boolean apply(Class<?> clz) {
-            return clz != null && !clz.getPackage().getName().startsWith("java");
-        }
-
     }
 
 }

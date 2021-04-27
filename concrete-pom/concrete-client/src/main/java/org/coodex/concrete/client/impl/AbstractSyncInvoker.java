@@ -26,11 +26,15 @@ import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.mock.Mocker;
 import org.coodex.util.Common;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 
 
 public abstract class AbstractSyncInvoker extends AbstractInvoker {
+
+    private static final Logger log = LoggerFactory.getLogger(AbstractSyncInvoker.class);
 
     public AbstractSyncInvoker(Destination destination) {
         super(destination);
@@ -52,6 +56,9 @@ public abstract class AbstractSyncInvoker extends AbstractInvoker {
                         @Override
                         public Object proceed() throws Throwable {
                             if (isMock()) {
+                                log.warn("invoke[{}] {}.{} in mock mode.",
+                                        getDestination().getLocation(),
+                                        clz.getName(), method.getName());
                                 return Mocker.mockMethod(method, clz);
                             } else {
                                 return execute(clz, method, args);
