@@ -156,6 +156,17 @@
             </distributionManagement>
         </profile>
 
+        <profile>
+            <id>local.release</id>
+            <distributionManagement>
+                <repository>
+                    <id>local.distribution</id>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <url>file:${local.distribution.path}</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+
         <!--        <profile>-->
         <!--            <id>coodex.release</id>-->
         <!--            <distributionManagement>-->
