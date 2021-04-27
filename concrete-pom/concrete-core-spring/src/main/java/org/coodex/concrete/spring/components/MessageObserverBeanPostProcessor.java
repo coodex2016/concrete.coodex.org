@@ -40,7 +40,7 @@ public class MessageObserverBeanPostProcessor /*extends InstantiationAwareBeanPo
             Observer<?> observer = Common.cast(bean);
             getTopic(observer, beanName).subscribe(Common.cast(observer));
         }
-        return true;
+        return bean;
     }
 
 
