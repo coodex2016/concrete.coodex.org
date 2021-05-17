@@ -96,19 +96,19 @@ public class SingletonMap<K, V> {
     }
 
     public V get(final K key) {
-        return get(key, Objects.requireNonNull(function, "function is null"));
+        return get(key, function);
     }
 
     public V get(final K key, long maxAge) {
-        return get(key, Objects.requireNonNull(function, "function is null"), maxAge);
+        return get(key, function, maxAge);
     }
 
     public V get(final K key, BiConsumer<K, V> deathListener) {
-        return get(key, Objects.requireNonNull(function, "function is null"), deathListener);
+        return get(key, function, deathListener);
     }
 
     public V get(final K key, long maxAge, BiConsumer<K, V> deathListener) {
-        return get(key, Objects.requireNonNull(function, "function is null"), maxAge, deathListener);
+        return get(key, function, maxAge, deathListener);
     }
 
     public V get(final K key, Function<K, V> function) {
@@ -124,8 +124,12 @@ public class SingletonMap<K, V> {
     }
 
     public V get(final K key, Function<K, V> function, long maxAge, BiConsumer<K, V> deathListener) {
-        if (function == null) {
-            throw new NullPointerException("function is null.");
+        return getValue(key, ()-> function, maxAge, deathListener);
+    }
+
+    private V getValue(final K key, Supplier<Function<K, V>> functionSupplier, long maxAge, BiConsumer<K, V> deathListener) {
+        if (functionSupplier == null) {
+            throw new NullPointerException("functionSupplier is null.");
         }
         if (version != VERSION.get()) {
             synchronized (map) {
@@ -139,7 +143,7 @@ public class SingletonMap<K, V> {
         if (!map.containsKey(finalKey)) {
             synchronized (map) {
                 if (!map.containsKey(finalKey)) {
-                    V o = function.apply(finalKey);
+                    V o = Objects.requireNonNull(functionSupplier.get(), "function is null").apply(finalKey);
                     Value<V> value = new Value<>();
                     value.value = o;
                     if (maxAge > 0) {
@@ -161,11 +165,6 @@ public class SingletonMap<K, V> {
                                     }
                                 })
                                 .build();
-
-//                                new Debouncer<>(
-//                                        k -> {
-
-//                        , maxAge, getScheduledExecutorService());
                         value.debounce.submit();
                     }
                     map.put(finalKey, value);
@@ -223,7 +222,7 @@ public class SingletonMap<K, V> {
                 if (map.containsKey(finalKey)) {
                     Value<V> value = map.remove(finalKey);
                     if (value != null) {
-                        if(value.debounce != null) {
+                        if (value.debounce != null) {
                             value.debounce.cancel();
                         }
                         return value.value;
