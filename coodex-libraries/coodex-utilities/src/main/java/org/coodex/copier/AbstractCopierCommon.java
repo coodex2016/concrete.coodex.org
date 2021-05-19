@@ -37,9 +37,11 @@ public abstract class AbstractCopierCommon {
     protected Class<?> getClass(Index index) {
         synchronized (this) {
             if (classes[index.getIndex()] == null) {
-                TypeVariable<?> t = AbstractCopierCommon.class.getTypeParameters()[index.getIndex()];
+                TypeVariable<?> t = Copier.class.getTypeParameters()[index.getIndex()];
                 Class<?> clz = typeToClass(solveFromInstance(t, this));
-                if (clz == null) throw new RuntimeException("unknown class: " + t);
+                if (clz == null) {
+                    throw new RuntimeException("unknown class: " + t);
+                }
                 classes[index.getIndex()] = clz;
             }
         }
