@@ -108,10 +108,16 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
             ClassPool classPool = ClassPool.getDefault();
             String className = String.format("%s.Topic$$CBC$$%08X",
                     TopicBuilder.class.getPackage().getName(), index.incrementAndGet());
-            CtClass ctClass = classPool.makeClass(className, classPool.getOrNull(
-                    prototype.getName()
-            ));
-            ctClass.setInterfaces(new CtClass[]{classPool.getOrNull(topicClass.getName())});
+            CtClass ctClass = classPool.makeClass(className,
+                    JavassistHelper.getCtClass(prototype, classPool)
+//                    classPool.getOrNull(
+//                    prototype.getName()
+//            )
+            );
+            ctClass.setInterfaces(new CtClass[]{
+                    JavassistHelper.getCtClass(topicClass, classPool)
+//                    classPool.getOrNull(topicClass.getName())
+            });
             ClassFile classFile = ctClass.getClassFile();
             classFile.setVersionToJava5();
             ConstPool constPool = classFile.getConstPool();
@@ -133,7 +139,10 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
 //                    }).encode());
 
             CtConstructor ctConstructor = new CtConstructor(
-                    new CtClass[]{classPool.getOrNull(Courier.class.getName())},
+                    new CtClass[]{
+                            JavassistHelper.getCtClass(Courier.class, classPool)
+//                            classPool.getOrNull(Courier.class.getName())
+                    },
                     ctClass
             );
             ctConstructor.setBody("{super($$);}");

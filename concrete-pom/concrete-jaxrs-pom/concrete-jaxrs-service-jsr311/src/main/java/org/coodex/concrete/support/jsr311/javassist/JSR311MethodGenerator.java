@@ -40,7 +40,10 @@ public class JSR311MethodGenerator extends AbstractMethodGenerator {
     @Override
     protected CtClass[] getParameterTypes(Class<?> pojoClass) {
         // 增加String tokenId
-        return getParameterTypesWith(pojoClass, CGContext.CLASS_POOL.getOrNull(String.class.getName()));
+        return getParameterTypesWith(pojoClass,
+//                CGContext.CLASS_POOL.getOrNull(String.class.getName())
+                JavassistHelper.getCtClass(String.class, CGContext.CLASS_POOL)
+        );
     }
 
     @Override
@@ -65,7 +68,8 @@ public class JSR311MethodGenerator extends AbstractMethodGenerator {
 
     @Override
     protected CtClass getReturnType() {
-        return CGContext.CLASS_POOL.getOrNull(Response.class.getName());
+//        return CGContext.CLASS_POOL.getOrNull(Response.class.getName());
+        return JavassistHelper.getCtClass(Response.class, CGContext.CLASS_POOL);
     }
 
 

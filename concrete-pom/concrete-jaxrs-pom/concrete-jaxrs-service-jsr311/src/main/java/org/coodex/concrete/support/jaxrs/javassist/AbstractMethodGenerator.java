@@ -96,13 +96,18 @@ public abstract class AbstractMethodGenerator {
         boolean pojoAdded = false;
         for (int i = 0, index = 0; i < params.length; i++) {
             if (pojoClass != null && Common.inArray(params[i], pojoParam)) {
-                if (pojoAdded) continue;
-                parameters[index + additionParamCount] = CLASS_POOL
-                        .getOrNull(pojoClass.getName());
+                if (pojoAdded) {
+                    continue;
+                }
+                parameters[index + additionParamCount] = JavassistHelper.getCtClass(pojoClass, CLASS_POOL);
+//                        CLASS_POOL
+//                        .getOrNull(pojoClass.getName());
                 pojoAdded = true;
             } else {
-                parameters[index + additionParamCount] = CLASS_POOL
-                        .getOrNull(JavassistHelper.getTypeName(params[i].getType()));
+                parameters[index + additionParamCount] =
+                        JavassistHelper.getCtClass(params[i].getType(), CLASS_POOL);
+//                        CLASS_POOL
+//                        .getOrNull(JavassistHelper.getTypeName(params[i].getType()));
             }
             index++;
         }
@@ -175,7 +180,10 @@ public abstract class AbstractMethodGenerator {
         CtClass ctClass = CLASS_POOL.makeClass(className);
 
         for (JaxrsParam param : pojoParams) {
-            CtField field = new CtField(CLASS_POOL.getOrNull(param.getType().getName()), param.getName(), ctClass);
+            CtField field = new CtField(
+//                    CLASS_POOL.getOrNull(param.getType().getName()),
+                    JavassistHelper.getCtClass(param.getType(), CLASS_POOL),
+                    param.getName(), ctClass);
             field.setModifiers(javassist.Modifier.PUBLIC);
             field.setGenericSignature(
                     JavassistHelper.getSignature(

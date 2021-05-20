@@ -18,6 +18,7 @@ package org.coodex.concrete.common.count;
 
 import javassist.*;
 import javassist.bytecode.SignatureAttribute;
+import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.config.Config;
 import org.coodex.count.*;
@@ -119,7 +120,9 @@ public class CountFacadeProvider implements CountFacade {
 //        String className = String.format("CounterChain$%s$%08X", clz.getSimpleName(), atomicInteger.incrementAndGet());
         String className = String.format("%s.CounterChain$%s$%08X", CounterChain.class.getPackage().getName(), clz.getSimpleName(), atomicInteger.incrementAndGet());
         CtClass newClass = classPool.makeClass(className,
-                classPool.getOrNull(CounterChain.class.getName()));
+//                classPool.getOrNull(CounterChain.class.getName())
+                JavassistHelper.getCtClass(CounterChain.class, classPool)
+        );
 
         newClass.getClassFile().setVersionToJava5();
         newClass.setGenericSignature(new SignatureAttribute.ClassSignature(null,

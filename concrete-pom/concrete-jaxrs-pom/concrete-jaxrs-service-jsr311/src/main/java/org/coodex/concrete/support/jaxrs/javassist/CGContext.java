@@ -25,6 +25,7 @@ import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ArrayMemberValue;
 import javassist.bytecode.annotation.IntegerMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
+import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concrete.jaxrs.CreatedByConcrete;
 import org.coodex.util.Common;
 
@@ -80,7 +81,10 @@ public class CGContext {
     public CGContext(Class<?> serviceClass, Class<?> superClass, String newClassName) {
         super();
         this.serviceClass = serviceClass;
-        this.newClass = CLASS_POOL.makeClass(newClassName, CLASS_POOL.getOrNull(superClass.getName()));
+        this.newClass = CLASS_POOL.makeClass(newClassName,
+                JavassistHelper.getCtClass(superClass, CLASS_POOL)
+//                CLASS_POOL.getOrNull(superClass.getName())
+        );
         classFile = newClass.getClassFile();
         constPool = getClassFile().getConstPool();
     }

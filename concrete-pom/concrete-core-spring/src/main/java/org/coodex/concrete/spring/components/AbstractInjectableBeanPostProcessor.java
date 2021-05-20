@@ -107,7 +107,8 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
             boolean voidReturn = method.getReturnType().equals(void.class);
             CtMethod ctMethod = new CtMethod(
                     voidReturn ? CtClass.voidType :
-                            classPool.getOrNull(method.getReturnType().getName()),
+//                            classPool.getOrNull(method.getReturnType().getName()),
+                            JavassistHelper.getCtClass(method.getReturnType(), classPool),
                     method.getName(),
                     toCtClass(method.getParameterTypes(), classPool),
                     ctClass

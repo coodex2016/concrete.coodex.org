@@ -127,7 +127,8 @@ public class ConcreteClientBeanPostProcessor /* extends InstantiationAwareBeanPo
     private CtClass[] getParameterTypes(Method method, ClassPool classPool) {
         List<CtClass> list = new ArrayList<>();
         for (Class<?> c : method.getParameterTypes()) {
-            list.add(classPool.getOrNull(c.getName()));
+//            list.add(classPool.getOrNull(c.getName()));
+            list.add(JavassistHelper.getCtClass(c, classPool));
         }
         return list.toArray(new CtClass[0]);
     }
@@ -148,7 +149,8 @@ public class ConcreteClientBeanPostProcessor /* extends InstantiationAwareBeanPo
             CtClass ctClass = classPool.makeClass(newClassName);
 
             ctClass.setInterfaces(new CtClass[]{
-                    classPool.getOrNull(concreteService.getName())
+//                    classPool.getOrNull(concreteService.getName())
+                    JavassistHelper.getCtClass(concreteService, classPool)
             });
             ClassFile classFile = ctClass.getClassFile();
             ConstPool constPool = classFile.getConstPool();
@@ -159,7 +161,8 @@ public class ConcreteClientBeanPostProcessor /* extends InstantiationAwareBeanPo
 
             // 1，添加方法，私有，__getConcreteServiceInstance
             CtMethod ctMethod = new CtMethod(
-                    classPool.getOrNull(concreteService.getName()),
+//                    classPool.getOrNull(concreteService.getName()),
+                    JavassistHelper.getCtClass(concreteService, classPool),
                     GET_INSTANCE,
                     new CtClass[0],
                     ctClass
@@ -174,7 +177,8 @@ public class ConcreteClientBeanPostProcessor /* extends InstantiationAwareBeanPo
             for (Method method : concreteService.getMethods()) {
                 Class<?> returnType = method.getReturnType();
                 ctMethod = new CtMethod(
-                        classPool.getOrNull(returnType.getName()),
+//                        classPool.getOrNull(returnType.getName()),
+                        JavassistHelper.getCtClass(returnType, classPool),
                         method.getName(),
                         getParameterTypes(method, classPool),
                         ctClass

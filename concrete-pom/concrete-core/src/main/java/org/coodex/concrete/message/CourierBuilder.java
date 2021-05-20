@@ -69,7 +69,9 @@ class CourierBuilder
     }
 
     private static String getDestination(String queue) {
-        if (queue == null) return null;
+        if (queue == null) {
+            return null;
+        }
 
         // 根据queue获取队列的destination描述
         return Config.get("destination", TAG_QUEUE, queue);
@@ -94,8 +96,9 @@ class CourierBuilder
         try {
             String destination = getDestination(key.queue);
             CourierPrototypeProvider provider = null;
-            if (!Common.isBlank(destination))
+            if (!Common.isBlank(destination)) {
                 provider = providers.select(destination);
+            }
             Class<?> prototype =
                     provider == null ?
                             getLocalCourierPrototype(key.queue, destination) :
@@ -106,7 +109,9 @@ class CourierBuilder
 
             ClassPool classPool = ClassPool.getDefault();
             CtClass ctClass = classPool.makeClass(className,
-                    classPool.getOrNull(prototype.getName()));
+//                    classPool.getOrNull(prototype.getName())
+                    JavassistHelper.getCtClass(prototype, classPool)
+            );
             ClassFile classFile = ctClass.getClassFile();
             classFile.setVersionToJava5();
 
@@ -116,12 +121,12 @@ class CourierBuilder
                                     getMessageType(key.topicType)),
                             null).encode());
 
-
             CtConstructor ctConstructor = new CtConstructor(
-                    new CtClass[]{
-                            classPool.getOrNull(String.class.getName()),
-                            classPool.getOrNull(String.class.getName()),
-                            classPool.getOrNull(Type.class.getName())},
+                    JavassistHelper.toCtClass(new Class[]{String.class,String.class,Type.class}, classPool),
+//                    new CtClass[]{
+//                            classPool.getOrNull(String.class.getName()),
+//                            classPool.getOrNull(String.class.getName()),
+//                            classPool.getOrNull(Type.class.getName())},
                     ctClass
             );
             ctConstructor.setBody("{super($$);}");
@@ -133,6 +138,7 @@ class CourierBuilder
             log.info("Courier build. {}, {}", courierClass.getName(), key.toString());
             return courier;
         } catch (Throwable th) {
+            log.error("CourierCreated failed", th);
             throw Common.rte(th);
         }
     }

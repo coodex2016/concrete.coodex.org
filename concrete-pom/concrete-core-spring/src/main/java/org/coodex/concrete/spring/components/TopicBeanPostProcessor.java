@@ -164,7 +164,8 @@ public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<
 
         CtClass ctClass = classPool.makeClass(className);
         ctClass.setInterfaces(new CtClass[]{
-                classPool.getOrNull(((Class<?>) (pt.getRawType())).getName())
+//                classPool.getOrNull(((Class<?>) (pt.getRawType())).getName())
+                JavassistHelper.getCtClass(Common.cast(pt.getRawType()),classPool)
         });
         ClassFile classFile = ctClass.getClassFile();
         classFile.setVersionToJava5();

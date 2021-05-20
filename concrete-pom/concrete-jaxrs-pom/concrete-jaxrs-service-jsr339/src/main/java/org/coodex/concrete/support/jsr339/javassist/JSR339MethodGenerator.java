@@ -20,6 +20,7 @@ import javassist.CtClass;
 import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
+import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.concrete.support.jaxrs.javassist.AbstractMethodGenerator;
 import org.coodex.concrete.support.jaxrs.javassist.CGContext;
@@ -47,8 +48,11 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
         // 参数2: @CookieParam String tokenId
         return getParameterTypesWith(
                 pojoClass,
-                CGContext.CLASS_POOL.getOrNull(AsyncResponse.class.getName()),
-                CGContext.CLASS_POOL.getOrNull(String.class.getName()));
+//                CGContext.CLASS_POOL.getOrNull(AsyncResponse.class.getName()),
+                JavassistHelper.getCtClass(AsyncResponse.class, CGContext.CLASS_POOL),
+//                CGContext.CLASS_POOL.getOrNull(String.class.getName())
+                JavassistHelper.getCtClass(String.class, CGContext.CLASS_POOL)
+        );
 //        Param[] params = getUnit().getParameters();
 //        CtClass[] parameters = new CtClass[params.length + 1];
 //
@@ -94,7 +98,8 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
 
     @Override
     protected CtClass getReturnType() {
-        return CGContext.CLASS_POOL.getOrNull(void.class.getName());
+//        return CGContext.CLASS_POOL.getOrNull(void.class.getName());
+        return JavassistHelper.getCtClass(void.class, CGContext.CLASS_POOL);
     }
 
 

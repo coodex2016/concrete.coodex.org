@@ -130,8 +130,9 @@ public class JavassistHelper {
             } else {
                 if (c.isPrimitive()) {
                     return new SignatureAttribute.BaseType(c.getName());
-                } else
+                } else {
                     return new SignatureAttribute.ClassType(getTypeName(c));
+                }
             }
         } else if (t instanceof ParameterizedType) {
             java.lang.reflect.Type[] types = ((ParameterizedType) t)
@@ -163,8 +164,9 @@ public class JavassistHelper {
         java.lang.reflect.Type[] supers = contextClass.getGenericInterfaces();
         for (java.lang.reflect.Type $ : supers) {
             if ($ instanceof Class) {
-                if (clz.isAssignableFrom((Class<?>) $))
+                if (clz.isAssignableFrom((Class<?>) $)) {
                     return find((Class<?>) $, t);
+                }
             } else if ($ instanceof ParameterizedType) {
                 ParameterizedType pt = (ParameterizedType) $;
                 Class<?> rawType = (Class<?>) pt.getRawType();
@@ -172,8 +174,9 @@ public class JavassistHelper {
                     java.lang.reflect.Type tt = find(rawType, t);
                     if (tt == null) {
                         return pt.getActualTypeArguments()[indexOf(t)];
-                    } else
+                    } else {
                         return tt;
+                    }
                 }
             }
         }
@@ -184,8 +187,9 @@ public class JavassistHelper {
         Type[] params = t.getGenericDeclaration()
                 .getTypeParameters();
         for (int i = 0; i < params.length; i++) {
-            if (params[i] == t)
+            if (params[i] == t) {
                 return i;
+            }
         }
         return -1;
     }
@@ -194,19 +198,31 @@ public class JavassistHelper {
         AnnotationsAttribute attr = new AnnotationsAttribute(cp,
                 AnnotationsAttribute.visibleTag);
         for (Annotation annotation : anno) {
-            if (annotation != null)
+            if (annotation != null) {
                 attr.addAnnotation(annotation);
+            }
         }
         return attr;
     }
 
     public static CtClass[] toCtClass(Class<?>[] classes, ClassPool classPool) {
-        if (classes == null || classes.length == 0) return new CtClass[0];
+        if (classes == null || classes.length == 0) {
+            return new CtClass[0];
+        }
         CtClass[] ctClasses = new CtClass[classes.length];
         for (int i = 0; i < classes.length; i++) {
-            ctClasses[i] = classPool.getOrNull(classes[i].getName());
+            ctClasses[i] = getCtClass(classes[i], classPool);//classPool.getOrNull(classes[i].getName());
         }
         return ctClasses;
+    }
+
+    public static CtClass getCtClass(Class<?> clazz, ClassPool classPool) {
+        CtClass ctClass = classPool.getOrNull(clazz.getName());
+        if (ctClass == null) {
+            classPool.appendClassPath(new LoaderClassPath(clazz.getClassLoader()));
+            ctClass = classPool.getOrNull(clazz.getName());
+        }
+        return ctClass;
     }
 
 
