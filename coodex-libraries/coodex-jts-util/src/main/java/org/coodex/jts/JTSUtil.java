@@ -19,9 +19,7 @@ package org.coodex.jts;
 import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SelectableServiceLoader;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.*;
 
 import java.util.Objects;
 
@@ -98,5 +96,80 @@ public class JTSUtil {
             coordinates[i] = lngLat2Mercator(lngLat[i]);
         }
         return coordinates;
+    }
+
+
+    public static double areaOf(Geometry lngLat) {
+        if (lngLat instanceof MultiPolygon) {
+            return areaOf((MultiPolygon) lngLat);
+        } else if (lngLat instanceof Polygon) {
+            return areaOf((Polygon) lngLat);
+        } else {
+            return 0d;
+        }
+    }
+
+    private static double areaOf(MultiPolygon multiPolygon) {
+        double area = 0d;
+        for (int i = 0, size = multiPolygon.getNumGeometries(); i < size; i++) {
+            area += areaOf(multiPolygon.getGeometryN(i));
+        }
+        return area;
+    }
+
+    private static double areaOf(Polygon polygon) {
+        double area = areaOf(polygon.getExteriorRing());
+        for (int i = 0, holes = polygon.getNumInteriorRing(); i < holes; i++) {
+            area -= areaOf(polygon.getInteriorRingN(i));
+        }
+        return Math.max(0d, area);
+    }
+
+    private static boolean isLngLat(Geometry geometry) {
+        Coordinate c = geometry.getCoordinate();
+        return c == null || isLngLat(c);
+    }
+
+    private static boolean isLngLat(Coordinate coordinate) {
+        return coordinate.getX() < 180d && coordinate.getX() > -180d &&
+                coordinate.getY() < 90d && coordinate.getY() > -90;
+    }
+
+    private static double areaOf(LinearRing lngLatRing) {
+        if (!isLngLat(lngLatRing)) {
+            lngLatRing = mercator2LngLat(lngLatRing);
+        }
+        Coordinate[] coordinates = lngLatRing.getCoordinates();
+        // 找到最小矩阵的左下角点作为原点
+        double x = 180d, y = 180d;
+        for (Coordinate c : coordinates) {
+            x = Math.min(x, c.getX());
+            y = Math.min(y, c.getY());
+        }
+        // 令，任意点(x1,y1)，投影坐标为(d((x1,y),(x,y)), d((x,y1),(x,y)))
+        Coordinate[] newPoints = new Coordinate[coordinates.length];
+        for (int i = 0, l = coordinates.length; i < l; i++) {
+            Coordinate c = coordinates[i];
+            newPoints[i] = new Coordinate(distanceLngLat(x, y, c.getX(), y), distanceLngLat(x, y, x, c.getY()));
+        }
+        return JTSUtil.GEOMETRY_FACTORY.createPolygon(newPoints).getArea();
+    }
+
+    private static double rad(double d) {
+        return d * Math.PI / 180.0d;
+    }
+
+    public static double distanceLngLat(double x1, double y1, double x2, double y2) {
+        double radLat1 = rad(y1);
+        double radLat2 = rad(y2);
+        double a = radLat1 - radLat2;
+        double b = rad(x1) - rad(x2);
+        double s = 2 * Math.asin(
+                Math.sqrt(
+                        Math.pow(Math.sin(a / 2), 2)
+                                + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(b / 2), 2)
+                )
+        );
+        return s * EARTH_RADIUS;
     }
 }
