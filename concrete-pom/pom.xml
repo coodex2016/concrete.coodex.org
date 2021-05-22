@@ -228,33 +228,24 @@
             </distributionManagement>
         </profile>
 
-        <!--        <profile>-->
-        <!--            <id>coodex.release</id>-->
-        <!--            <distributionManagement>-->
-        <!--                &lt;!&ndash; oss &ndash;&gt;-->
-        <!--                <snapshotRepository>-->
-        <!--                    <id>coodex.release</id>-->
-        <!--                    <url>${coodex.url.snapshot}</url>-->
-        <!--                </snapshotRepository>-->
-        <!--                <repository>-->
-        <!--                    <id>coodex.release</id>-->
-        <!--                    <url>${coodex.url.release}</url>-->
-        <!--                </repository>-->
-        <!--            </distributionManagement>-->
-        <!--        </profile>-->
+        <profile>
+            <id>coodex.release</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>coodex.release</id>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <url>${coodex.url.snapshot}</url>
+                </snapshotRepository>
+                <repository>
+                    <id>coodex.release</id>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <url>${coodex.url.release}</url>
+                </repository>
+            </distributionManagement>
+        </profile>
     </profiles>
 
     <build>
-        <!--        <pluginManagement>-->
-        <!--            <plugins>-->
-        <!--                <plugin>-->
-        <!--                    <groupId>org.sonarsource.scanner.maven</groupId>-->
-        <!--                    <artifactId>sonar-maven-plugin</artifactId>-->
-        <!--                    <version>3.8.0.2131</version>-->
-        <!--                </plugin>-->
-        <!--            </plugins>-->
-        <!--        </pluginManagement>-->
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -269,7 +260,6 @@
                     </execution>
                 </executions>
             </plugin>
-
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
