@@ -82,7 +82,7 @@ public class ConcreteClientBeanPostProcessor /* extends InstantiationAwareBeanPo
 
         scanAndRegisterClientBean(beanClass);
 
-        return true;
+        return null;
     }
 
     private void scanAndRegisterClientBean(Class<?> beanClass) {
