@@ -1,0 +1,29 @@
+{
+  "properties": [
+    {
+      "name": "concrete.interceptors.rbac",
+      "type": "java.lang.Boolean",
+      "description": "是否启用rbac切片"
+    },
+    {
+      "name": "concrete.interceptors.limiting",
+      "type": "java.lang.Boolean",
+      "description": "是否启用限流切片"
+    },
+    {
+      "name": "concrete.interceptors.signature",
+      "type": "java.lang.Boolean",
+      "description": "是否启用签名验签切片"
+    },
+    {
+      "name": "concrete.interceptors.timing",
+      "type": "java.lang.Boolean",
+      "description": "是否启用时段限制切片"
+    },
+    {
+      "name": "concrete.interceptors.beanValidation",
+      "type": "java.lang.Boolean",
+      "description": "是否启用beanValidation切片"
+    }
+  ]
+}

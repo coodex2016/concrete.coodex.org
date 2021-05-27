@@ -104,7 +104,7 @@ public class ConcreteSpringConfiguration {
         for (Map.Entry<String, Class<? extends ConcreteInterceptor>> entry :
                 INTERCEPTOR_LOADER.get().getInterceptorSupportedMap().entrySet()) {
 
-            if (Config.getValue("interceptors." + entry.getKey(), false, "concrete", getAppSet())) {
+            if (Config.getValue("interceptors." + entry.getKey(), false, getAppSet())) {
                 try {
                     set.add(entry.getValue().newInstance());
                 } catch (InstantiationException | IllegalAccessException e) {

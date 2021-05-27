@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.lang.management.ManagementFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -44,36 +43,34 @@ import static java.lang.Long.parseLong;
 public class Common {
 
     public static final String PATH_SEPARATOR = System.getProperty("path.separator");
-
     public static final String FILE_SEPARATOR = System.getProperty("file.separator");
-
     public static final String USER_DIR = System.getProperty("user.dir");
-
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
-
     public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
-
     public static final String DEFAULT_DATETIME_FORMAT = DEFAULT_DATE_FORMAT + " " + DEFAULT_TIME_FORMAT;
-
-    public static final Long SYSTEM_START_TIME = ManagementFactory.getRuntimeMXBean().getStartTime();
-
+    public static final Long SYSTEM_START_TIME;// = ManagementFactory.getRuntimeMXBean().getStartTime();
     public static final int PROCESSOR_COUNT = Runtime.getRuntime().availableProcessors();
-
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
     private final static Logger log = LoggerFactory.getLogger(Common.class);
-
     private static final int TO_LOWER = 'a' - 'A';
-
     private final static String DEFAULT_DELIM = ".-_ /\\";
-
-
     private static final ThreadLocal<SingletonMap<String, DateFormat>> threadLocal = new ThreadLocal<>();
-
     private static final SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue> converterServiceLoader
             = new LazySelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>() {
     };
     private static final char[] BASE16_CHAR = "0123456789abcdef".toCharArray();
+
+    static {
+//        SYSTEM_START_TIME
+        long sst = 0;
+        try {
+            Class.forName("java.lang.management.ManagementFactory");
+            sst = java.lang.management.ManagementFactory.getRuntimeMXBean().getStartTime();
+        } catch (Throwable t) {
+
+        }
+        SYSTEM_START_TIME = sst;
+    }
 
     private Common() {
     }
@@ -314,9 +311,10 @@ public class Common {
         return s == null || s.trim().length() == 0;
     }
 
-    public static boolean isEmpty(Collection<?> collection){
+    public static boolean isEmpty(Collection<?> collection) {
         return collection == null || collection.isEmpty();
     }
+
     public static void copyStream(InputStream is, OutputStream os) throws IOException {
         copyStream(is, os, 4096, false, Integer.MAX_VALUE);
     }

@@ -41,7 +41,7 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
     private static ApplicationContext CONTEXT = null;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@SuppressWarnings("NullableProblems") ApplicationContext applicationContext) throws BeansException {
         CONTEXT = applicationContext;
     }
 
@@ -71,7 +71,9 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
                     if (x != null && x.size() > 0) {
                         int index = 0;
                         for (Map.Entry<String, ?> entry : x.entrySet()) {
-                            if (entry.getValue() == null) continue;
+                            if (entry.getValue() == null) {
+                                continue;
+                            }
                             for (int l = 0, len = Array.getLength(entry.getValue()); l < len; l++) {
                                 String key = entry.getKey() + "_array_" + index;
                                 map.put(key, cast(Array.get(entry.getValue(), l)));
@@ -89,9 +91,13 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
                     Map<String, Collection> collectionBeans = CONTEXT.getBeansOfType(Collection.class);
                     for (@SuppressWarnings("rawtypes") Map.Entry<String, Collection> entry : collectionBeans.entrySet()) {
                         int index = 0;
-                        if (entry.getValue() == null || entry.getValue().size() == 0) continue;
+                        if (entry.getValue() == null || entry.getValue().size() == 0) {
+                            continue;
+                        }
                         for (Object o : entry.getValue()) {
-                            if (o == null) continue;
+                            if (o == null) {
+                                continue;
+                            }
                             if (c.isAssignableFrom(o.getClass())) {
                                 String key = entry.getKey() + "_collection_" + index;
                                 map.put(key, cast(o));
