@@ -51,6 +51,7 @@ public final class ConcreteContext {
                 };
                 for (ConcreteInterceptor interceptor : serviceLoader.getAll().values()) {
                     if (interceptor instanceof InterceptorChain) {
+                        syncInterceptorChain.addAll(((InterceptorChain) interceptor).allInterceptors());
                         continue;
                     }
                     syncInterceptorChain.add(interceptor);

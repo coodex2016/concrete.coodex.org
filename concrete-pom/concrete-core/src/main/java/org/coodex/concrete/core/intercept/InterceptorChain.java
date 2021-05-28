@@ -18,10 +18,14 @@ package org.coodex.concrete.core.intercept;
 
 import org.coodex.concrete.core.intercept.annotations.*;
 
+import java.util.Collection;
+
 @ServerSide
 @Local
 @ClientSide
 @Default
 @TestContext
 public interface InterceptorChain {
+
+    Collection<ConcreteInterceptor> allInterceptors();
 }

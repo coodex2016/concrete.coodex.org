@@ -153,6 +153,11 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
         interceptors.clear();
     }
 
+    @Override
+    public Collection<ConcreteInterceptor> allInterceptors() {
+        return interceptors;
+    }
+
     private static class MyComparator implements Comparator<ConcreteInterceptor> {
 
         private final int sign;
@@ -162,9 +167,15 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
         }
 
         public int $compare(ConcreteInterceptor o1, ConcreteInterceptor o2) {
-            if (o1 == o2) return 0;
-            if (o1 == null) return -1;
-            if (o2 == null) return 1;
+            if (o1 == o2) {
+                return 0;
+            }
+            if (o1 == null) {
+                return -1;
+            }
+            if (o2 == null) {
+                return 1;
+            }
             return o1.getOrder() - o2.getOrder();
         }
 

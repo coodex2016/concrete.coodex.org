@@ -163,8 +163,11 @@ public class ClientHelper {
 
     private static void buildChain(Set<ConcreteInterceptor> chain) {
         for (ConcreteInterceptor interceptor : interceptorServiceLoader.getAll().values()) {
-            if (!(interceptor instanceof InterceptorChain))
+            if (interceptor instanceof InterceptorChain) {
+                chain.addAll(((InterceptorChain) interceptor).allInterceptors());
+            } else {
                 chain.add(interceptor);
+            }
         }
     }
 

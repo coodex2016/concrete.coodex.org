@@ -60,11 +60,12 @@ public abstract class AbstractInterceptor implements ConcreteInterceptor {
             return clz.getAnnotation(Local.class) != null;
         } else if (serviceContext instanceof TestServiceContext) {
             return clz.getAnnotation(TestContext.class) != null;
-        } else
+        } else {
             return clz.getAnnotation(Default.class) != null || (
                     clz.getAnnotation(ServerSide.class) == null
                             && clz.getAnnotation(ClientSide.class) == null
                             && clz.getAnnotation(Default.class) == null);
+        }
     }
 
     protected abstract boolean accept_(DefinitionContext context);

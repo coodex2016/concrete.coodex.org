@@ -28,13 +28,19 @@ import java.util.*;
  */
 public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set<ConcreteInterceptor>, InterceptorChain {
 
-    private static Comparator<ConcreteInterceptor> comparator = (o1, o2) -> {
-        if (o1 == o2) return 0;
-        if (o1 == null) return -1;
-        if (o2 == null) return 1;
+    private static final Comparator<ConcreteInterceptor> comparator = (o1, o2) -> {
+        if (o1 == o2) {
+            return 0;
+        }
+        if (o1 == null) {
+            return -1;
+        }
+        if (o2 == null) {
+            return 1;
+        }
         return o1.getOrder() - o2.getOrder();
     };
-    private Set<ConcreteInterceptor> interceptors = new HashSet<>();
+    private final Set<ConcreteInterceptor> interceptors = new HashSet<>();
 
     public SyncInterceptorChain() {
     }
@@ -144,6 +150,11 @@ public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set
     @Override
     public void clear() {
         interceptors.clear();
+    }
+
+    @Override
+    public Collection<ConcreteInterceptor> allInterceptors() {
+        return interceptors;
     }
 
     private static class MethodInvocationChain implements ConcreteMethodInvocation {
