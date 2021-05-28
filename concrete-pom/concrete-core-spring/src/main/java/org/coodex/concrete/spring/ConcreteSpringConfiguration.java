@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.spring;
 
+import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.*;
 import org.coodex.concrete.core.token.TokenWrapper;
@@ -30,10 +31,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
@@ -99,19 +100,51 @@ public class ConcreteSpringConfiguration {
     }
 
     @Bean
-    public Set<ConcreteInterceptor> interceptors() {
-        Set<ConcreteInterceptor> set = new HashSet<>();
+    public ConcreteInterceptor interceptors() {
+        List<ConcreteInterceptor> list = new ArrayList<>();
         for (Map.Entry<String, Class<? extends ConcreteInterceptor>> entry :
                 INTERCEPTOR_LOADER.get().getInterceptorSupportedMap().entrySet()) {
 
             if (Config.getValue("interceptors." + entry.getKey(), false, getAppSet())) {
                 try {
-                    set.add(entry.getValue().newInstance());
+                    list.add(entry.getValue().newInstance());
                 } catch (InstantiationException | IllegalAccessException e) {
                     log.warn("load interceptor {}[{}] failed.", entry.getKey(), entry.getValue().getName());
                 }
             }
         }
-        return set;
+        switch (list.size()) {
+            case 0:
+                return new ConcreteInterceptor() {
+                    @Override
+                    public boolean accept(DefinitionContext context) {
+                        return false;
+                    }
+
+                    @Override
+                    public void before(DefinitionContext context, MethodInvocation joinPoint) {
+
+                    }
+
+                    @Override
+                    public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
+                        return result;
+                    }
+
+                    @Override
+                    public Throwable onError(DefinitionContext context, MethodInvocation joinPoint, Throwable th) {
+                        return th;
+                    }
+
+                    @Override
+                    public int getOrder() {
+                        return 0;
+                    }
+                };
+            case 1:
+                return list.get(0);
+            default:
+                return new AsyncInterceptorChain(list);
+        }
     }
 }

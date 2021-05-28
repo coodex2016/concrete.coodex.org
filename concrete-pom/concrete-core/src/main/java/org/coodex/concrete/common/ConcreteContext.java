@@ -50,7 +50,9 @@ public final class ConcreteContext {
                 ServiceLoader<ConcreteInterceptor> serviceLoader = new LazyServiceLoader<ConcreteInterceptor>() {
                 };
                 for (ConcreteInterceptor interceptor : serviceLoader.getAll().values()) {
-                    if (interceptor instanceof InterceptorChain) continue;
+                    if (interceptor instanceof InterceptorChain) {
+                        continue;
+                    }
                     syncInterceptorChain.add(interceptor);
                 }
                 return syncInterceptorChain;

@@ -50,8 +50,9 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
         ConcreteInterceptor[] interceptors = this.interceptors.toArray(new ConcreteInterceptor[0]);
         Arrays.sort(interceptors, comparatorAsc);
         for (ConcreteInterceptor interceptor : interceptors) {
-            if (interceptor.accept(context))
+            if (interceptor.accept(context)) {
                 interceptor.before(context, joinPoint);
+            }
         }
     }
 
@@ -77,7 +78,9 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
         for (ConcreteInterceptor interceptor : interceptors) {
             if (interceptor.accept(context)) {
                 th = interceptor.onError(context, joinPoint, th);
-                if (th == null) return null;
+                if (th == null) {
+                    return null;
+                }
             }
         }
         return th;

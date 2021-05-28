@@ -55,10 +55,11 @@ public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        if (invocation instanceof ConcreteMethodInvocation)
+        if (invocation instanceof ConcreteMethodInvocation) {
             return super.invoke(new MethodInvocationChain(createQueue(), (ConcreteMethodInvocation) invocation));
-        else
+        } else {
             throw new IllegalArgumentException("Need ConcreteMethodInvocation." + invocation);
+        }
     }
 
     private Queue<ConcreteSyncInterceptor> createQueue() {
@@ -167,8 +168,9 @@ public class SyncInterceptorChain extends AbstractSyncInterceptor implements Set
 
         @Override
         public Object proceed() throws Throwable {
-            if (queue.isEmpty())
+            if (queue.isEmpty()) {
                 return invocation.proceed();
+            }
             ConcreteSyncInterceptor interceptor = queue.poll();
             return interceptor.invoke(new MethodInvocationChain(queue, invocation));
         }
