@@ -65,6 +65,11 @@
             <artifactId>snakeyaml</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.coodex</groupId>
+            <artifactId>coodex-mock-impl</artifactId>
+        </dependency>
+
     </dependencies>
 
 

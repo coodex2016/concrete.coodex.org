@@ -94,9 +94,9 @@ public class API {
     }
 
     private static Map<String, Object> toMap(String json) {
-        if (json == null)
+        if (json == null) {
             return new HashMap<>();
-        else {
+        } else {
             return JSON.parseObject(json, new TypeReference<Map<String, Object>>() {
             });
         }

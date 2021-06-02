@@ -31,6 +31,22 @@ public interface DefinitionContext {
 
     <T extends Annotation> T getDeclaringAnnotation(Class<T> annotationClass);
 
+    /**
+     * 优先级：
+     * annotationClass不可覆盖时：
+     * - method
+     * - method.declaringClass
+     * - moduleClass
+     * <p>
+     * annotationClass可覆盖时:
+     * - method
+     * - moduleClass
+     * - method.declaringClass
+     *
+     * @param annotationClass annotationClass
+     * @param <T>             <T>
+     * @return annotation
+     */
     <T extends Annotation> T getAnnotation(Class<T> annotationClass);
 
 }

@@ -68,8 +68,12 @@ public abstract class DocToolkit {
         StringTokenizer stringTokenizer = new StringTokenizer(name, delim);
         while (stringTokenizer.hasMoreTokens()) {
             String s = stringTokenizer.nextToken();
-            if (Common.isBlank(s)) continue;
-            if (builder.length() > 0) builder.append("_");
+            if (Common.isBlank(s)) {
+                continue;
+            }
+            if (builder.length() > 0) {
+                builder.append("_");
+            }
             builder.append(s);
         }
         return builder.toString();
@@ -89,8 +93,9 @@ public abstract class DocToolkit {
             builder.append(getClassLabel((Class<?>) pt.getRawType())).append('<');
             boolean isFirst = true;
             for (Type type : pt.getActualTypeArguments()) {
-                if (!isFirst)
+                if (!isFirst) {
                     builder.append(", ");
+                }
                 builder.append(formatTypeStr(type, contextClass));
                 isFirst = false;
             }

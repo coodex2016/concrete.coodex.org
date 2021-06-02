@@ -16,9 +16,13 @@
 
 package org.coodex.concrete.apitools.jaxrs.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
 import org.coodex.concrete.apitools.jaxrs.POJOPropertyInfo;
+import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
+import org.coodex.mock.Mocker;
 import org.coodex.util.PojoInfo;
 import org.coodex.util.PojoProperty;
 
@@ -44,9 +48,9 @@ public class ServiceDocToolkit extends DocToolkit {
 
     @Override
     protected String getClassLabel(Class<?> clz) throws IOException {
-        if (isPrimitive(clz) || clz.getPackage().getName().startsWith("java"))
+        if (isPrimitive(clz) || clz.getPackage().getName().startsWith("java")) {
             return clz.getSimpleName();
-        else {
+        } else {
             buildPojo(clz);
             return "[" + clz.getSimpleName() + "](../pojos/" +
                     canonicalName(clz.getName()) +
@@ -66,18 +70,6 @@ public class ServiceDocToolkit extends DocToolkit {
                 pojoPropertyInfos.add(new POJOPropertyInfo(pojoProperty));
             }
 
-//            for (Method method : clz.getMethods()) {
-//                if (isProperty(method))
-//                    pojoPropertyInfos.add(new POJOPropertyInfo(clz, method));
-//            }
-//
-//            for (Field field : ReflectHelper.getAllDeclaredFields(clz)) {
-//                if (isProperty(field))
-//                    pojoPropertyInfos.add(new POJOPropertyInfo(clz, field));
-//            }
-
-
-//            pojoTypes.add(canonicalName(clz.getName()));
             Map<String, Object> map = new HashMap<>();
             map.put("properties", pojoPropertyInfos);
             map.put("type", clz.getName());
@@ -91,43 +83,23 @@ public class ServiceDocToolkit extends DocToolkit {
         return pojoTypes;
     }
 
-//    @Override
-//    protected String getTypeName(Class<?> clz, Class<?> contextClass) {
-//        try {
-//            return isPojo(clz) ? build(clz,contextClass) : clz.getSimpleName();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 
-//    private String build(Class<?> clz, Class<?> contextClass) throws IOException {
-//        if (!pojoTypes.contains(clz)) {
-//            List<POJOPropertyInfo> pojoPropertyInfos = new ArrayList<POJOPropertyInfo>();
-//
-//
-//            for (Method method : clz.getMethods()) {
-//                if (isProperty(method))
-//                    pojoPropertyInfos.add(new POJOPropertyInfo(contextClass, method));
-//            }
-//
-//            for (Field field : ReflectHelper.getAllDeclaredFields(clz)) {
-//                if (isProperty(field))
-//                    pojoPropertyInfos.add(new POJOPropertyInfo(contextClass, field));
-//            }
-//
-//
-//            pojoTypes.add(canonicalName(clz.getName()));
-//            Map<String, Object> map = new HashMap<String, Object>();
-//            map.put("properties", pojoPropertyInfos);
-//            map.put("type", clz.getName());
-//            map.put("tool", this);
-//
-//            getRender().writeTo("pojos/" + canonicalName(clz.getName()) + ".md", "pojo.md", map);
-//        }
-//        StringBuilder builder = new StringBuilder("[");
-//        builder.append(clz.getSimpleName()).append("](../pojos/").append(canonicalName(clz.getName())).append(".md)");
-//        return builder.toString();
-//    }
+    public String mockResult(JaxrsUnit unit) {
+        String result;
+        if (void.class.equals(unit.getReturnType())) {
+            result = "";
+
+        } else if (String.class.equals(unit.getReturnType())) {
+            result = "- **example result**:\n\n```\n" +
+                    Mocker.mockMethod(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass()) +
+                    "\n```\n\n";
+        } else {
+            result = "- **example result**:\n```json\n" +
+                    JSON.toJSONString(Mocker.mockMethod(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass()), SerializerFeature.PrettyFormat) +
+                    "\n```\n\n";
+        }
+        return result;
+    }
 
     private boolean isProperty(Field field) {
         int mod = field.getModifiers();

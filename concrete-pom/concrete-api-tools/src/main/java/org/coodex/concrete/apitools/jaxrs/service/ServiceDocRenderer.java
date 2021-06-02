@@ -71,12 +71,14 @@ public class ServiceDocRenderer extends AbstractRenderer {
 
     public void writeTo(List<JaxrsModule> modules) throws IOException {
         // book.json
-        if (!exists("book.json"))
+        if (!exists("book.json")) {
             copyTo("book.json", "book.json");
+        }
 
         // README.md
-        if (!exists("README.md"))
+        if (!exists("README.md")) {
             copyTo("README.md", "README.md");
+        }
 
 
         // moduleList.md

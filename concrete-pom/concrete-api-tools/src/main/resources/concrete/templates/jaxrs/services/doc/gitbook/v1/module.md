@@ -25,5 +25,7 @@ ${unit.description!""}
 | --------- | -- | ---- | --------------------- | ------------ |<#list unit.parameters as param>
 | ${param.name} | <#if !param.pathParam>${unit.invokeType}</#if> | ${param.label} | ${tool.formatTypeStr(param.genericType, module.interfaceClass)} | ${tool.tableSafe(param.description)} |</#list><#else>NONE</#if>
 
+<#if genResultJson?default(true)><#noescape>${tool.mockResult(unit)}</#noescape></#if>
+
 </#list>
 </#escape>

@@ -63,7 +63,9 @@ public abstract class AbstractRenderer implements ConcreteAPIRenderer {
     public boolean isAccept(String desc) {
         this.desc = desc;
         String renderName = getRenderName();
-        if (renderName == null) return false;
+        if (renderName == null) {
+            return false;
+        }
         return desc != null && desc.toLowerCase().startsWith(renderName.toLowerCase());
     }
 
