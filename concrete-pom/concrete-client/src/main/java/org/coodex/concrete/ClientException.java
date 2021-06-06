@@ -24,15 +24,17 @@ public class ClientException extends ConcreteException {
     protected final int code;
     protected final String msg;
 
-    public ClientException(ErrorInfo errorInfo){
+    public ClientException(ErrorInfo errorInfo) {
         this(errorInfo.getCode(), errorInfo.getMsg());
     }
+
     public ClientException(int code, String msg) {
         super(ErrorCodes.CLIENT_ERROR);
         this.msg = msg;
         this.code = code;
     }
 
+    @Override
     public int getCode() {
         return code;
     }

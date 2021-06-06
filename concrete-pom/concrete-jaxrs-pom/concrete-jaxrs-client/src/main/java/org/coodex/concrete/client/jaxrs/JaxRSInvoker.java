@@ -26,6 +26,8 @@ import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.mock.Mocker;
 import org.coodex.util.Common;
+import org.coodex.util.LazySelectableServiceLoader;
+import org.coodex.util.SelectableServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +47,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
 import static org.coodex.concrete.ClientHelper.getJSONSerializer;
 import static org.coodex.concrete.ClientHelper.getSSLContext;
@@ -60,11 +63,19 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 
     private final static Logger log = LoggerFactory.getLogger(JaxRSInvoker.class);
 
+    private final static SelectableServiceLoader<Throwable, ExceptionMapper> EXCEPTION_MAPPERS =
+            new LazySelectableServiceLoader<Throwable, ExceptionMapper>() {
+            };
+
     private final Client client;
 
     JaxRSInvoker(JaxRSDestination destination) {
         super(destination);
+
         ClientBuilder clientBuilder = ClientBuilder.newBuilder().register(ClientLogger.class);
+        if (destination.getConnectTimeout() != null && destination.getConnectTimeout() > 0) {
+            clientBuilder = clientBuilder.connectTimeout(destination.getConnectTimeout(), TimeUnit.MILLISECONDS);
+        }
         client = destination.isSsl() ?
                 clientBuilder.hostnameVerifier((s, sslSession) -> true).sslContext(getSSLContext(destination.getSsl())).build() :
                 clientBuilder.build();
@@ -132,7 +143,9 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 
     private String getEncodingCharset() {
         String charset = ((JaxRSDestination) getDestination()).getCharset();
-        if (charset == null) charset = "utf-8";
+        if (charset == null) {
+            charset = "utf-8";
+        }
         try {
             return Charset.forName(charset).displayName();
         } catch (UnsupportedCharsetException e) {
@@ -154,8 +167,12 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
     }
 
     private String toStr(Object o) {
-        if (o == null) return null;
-        if (isPrimitive(o.getClass())) return o.toString();
+        if (o == null) {
+            return null;
+        }
+        if (isPrimitive(o.getClass())) {
+            return o.toString();
+        }
         return getJSONSerializer().toJson(o);
     }
 
@@ -218,6 +235,13 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
             } catch (ClientException clientEx) {
                 throw clientEx;
             } catch (Throwable th) {
+                ExceptionMapper mapper = EXCEPTION_MAPPERS.select(th);
+                if (mapper != null) {
+                    ClientException clientException = mapper.mapException(th);
+                    if (clientException != null) {
+                        throw clientException;
+                    }
+                }
                 JaxRSClientException ce = new JaxRSClientException(-1, th.getLocalizedMessage(), path, unit.getInvokeType());
                 ce.initCause(th);
                 throw ce;

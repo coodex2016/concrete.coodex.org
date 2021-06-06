@@ -27,6 +27,7 @@ public class JaxRSDestination extends Destination {
     private String logLevel;
     private String charset;
     private String ssl;
+    private Long connectTimeout;
 
     public boolean isSsl() {
         return isSSL(getLocation());
@@ -56,17 +57,38 @@ public class JaxRSDestination extends Destination {
         this.ssl = ssl;
     }
 
+    public Long getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public void setConnectTimeout(Long connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof JaxRSDestination)) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
 
         JaxRSDestination that = (JaxRSDestination) o;
 
-        if (!Objects.equals(logLevel, that.logLevel)) return false;
-        if (!Objects.equals(charset, that.charset)) return false;
-        return Objects.equals(ssl, that.ssl);
+        if (!Objects.equals(logLevel, that.logLevel)) {
+            return false;
+        }
+        if (!Objects.equals(charset, that.charset)) {
+            return false;
+        }
+        if (!Objects.equals(ssl, that.ssl)) {
+            return false;
+        }
+        return Objects.equals(connectTimeout, that.connectTimeout);
     }
 
     @Override
@@ -75,9 +97,7 @@ public class JaxRSDestination extends Destination {
         result = 31 * result + (logLevel != null ? logLevel.hashCode() : 0);
         result = 31 * result + (charset != null ? charset.hashCode() : 0);
         result = 31 * result + (ssl != null ? ssl.hashCode() : 0);
+        result = 31 * result + (connectTimeout != null ? connectTimeout.hashCode() : 0);
         return result;
     }
-
-
-
 }

@@ -21,6 +21,8 @@ import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SelectableServiceLoader;
 import org.locationtech.jts.geom.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class JTSUtil {
@@ -98,12 +100,55 @@ public class JTSUtil {
         return coordinates;
     }
 
+    /**
+     * 根据阈值裁剪内孔
+     *
+     * @param geometry geometry
+     * @param threshold 阈值，内孔占外边框面积的比例
+     * @return 裁剪后的几何图形
+     */
+    public static <T extends Geometry> T crop(T geometry, double threshold) {
+        if (geometry instanceof MultiPolygon) {
+            Geometry g = null;
+            for (int i = 0, l = geometry.getNumGeometries(); i < l; i++) {
+                if (g != null) {
+                    g = g.union(crop(geometry.getGeometryN(i), threshold));
+                } else {
+                    g = geometry.getGeometryN(i);
+                }
+            }
+            return Common.cast(g);
+        } else if (geometry instanceof Polygon) {
+            Polygon polygon = (Polygon) geometry;
+            if (polygon.getNumInteriorRing() == 0) {
+                return geometry;
+            }
+            double outer = areaOf(polygon.getExteriorRing());
+            List<LinearRing> holes = new ArrayList<>();
+            for (int i = 0, l = polygon.getNumInteriorRing(); i < l; i++) {
+                LinearRing hole = polygon.getInteriorRingN(i);
+                if (areaOf(hole) / outer > threshold) {
+                    holes.add(hole);
+                }
+            }
+            return Common.cast(holes.size() == 0 ? GEOMETRY_FACTORY.createPolygon(polygon.getExteriorRing()) :
+                    GEOMETRY_FACTORY.createPolygon(
+                            polygon.getExteriorRing(),
+                            holes.toArray(new LinearRing[0])
+                    ));
+        } else {
+            return geometry;
+        }
+    }
+
 
     public static double areaOf(Geometry lngLat) {
         if (lngLat instanceof MultiPolygon) {
             return areaOf((MultiPolygon) lngLat);
         } else if (lngLat instanceof Polygon) {
             return areaOf((Polygon) lngLat);
+        } else if (lngLat instanceof LinearRing) {
+            return areaOf((LinearRing) lngLat);
         } else {
             return 0d;
         }
