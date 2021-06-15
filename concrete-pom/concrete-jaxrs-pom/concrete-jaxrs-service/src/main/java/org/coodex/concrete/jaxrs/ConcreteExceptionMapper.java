@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 
@@ -89,7 +90,7 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
 
 
         return Response.status(status)
-                .header("Content-Type", MediaType.APPLICATION_JSON)
+                .header("Content-Type", MediaType.APPLICATION_JSON_TYPE.withCharset(StandardCharsets.UTF_8.displayName()))
                 .header(HEADER_ERROR_OCCURRED, true)
                 .entity(errorInfo)
                 .build();

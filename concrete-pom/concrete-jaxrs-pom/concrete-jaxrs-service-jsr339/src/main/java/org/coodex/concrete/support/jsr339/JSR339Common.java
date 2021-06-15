@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
@@ -33,9 +34,10 @@ public class JSR339Common {
     public static MediaType withCharset(MediaType type) {
         try {
             return type.withCharset(
-                    Charset.forName(
-                            Config.getValue("jsr339.charset", "utf8", getAppSet())
-                    ).displayName()
+//                    Charset.forName(
+//                            Config.getValue("jsr339.charset", "utf8", getAppSet())
+//                    ).displayName()
+                    StandardCharsets.UTF_8.displayName()
             );
         } catch (UnsupportedCharsetException e) {
             log.warn("UnsupportedCharset: {}", e.getCharsetName());

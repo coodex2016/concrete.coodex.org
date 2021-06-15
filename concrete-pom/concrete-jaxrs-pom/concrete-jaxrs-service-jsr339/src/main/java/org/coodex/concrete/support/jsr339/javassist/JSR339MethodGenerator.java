@@ -143,6 +143,7 @@ public class JSR339MethodGenerator extends AbstractMethodGenerator {
 //            }
 //        }
         return new String[]{JSR339Common.withCharset(MediaType.APPLICATION_JSON_TYPE).toString()};
+//        return null;
     }
 
 }

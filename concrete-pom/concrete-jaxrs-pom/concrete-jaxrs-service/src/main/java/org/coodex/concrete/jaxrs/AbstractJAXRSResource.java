@@ -26,6 +26,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.util.*;
@@ -104,8 +105,9 @@ public abstract class AbstractJAXRSResource<T> {
                         break;
                     }
                 }
-                if (found == null)
+                if (found == null) {
                     throw new NullPointerException("no impl found for: " + clz.getName() + "." + methodName);
+                }
                 methodMap.put(methodKey, found);
             }
             return found;
@@ -207,8 +209,8 @@ public abstract class AbstractJAXRSResource<T> {
 
             Map<String, String> map = ConcreteHelper.updatedMap(serviceContext.getSubjoin());
             if (map.size() > 0) {
-                for (String key : map.keySet()) {
-                    builder = builder.header(key, URLEncoder.encode(map.get(key), "UTF-8"));
+                for(Map.Entry<String,String> entry : map.entrySet()) {
+                    builder = builder.header(entry.getKey(), URLEncoder.encode(entry.getValue(), "UTF-8"));
                 }
             }
             return builder.build();
@@ -228,10 +230,13 @@ public abstract class AbstractJAXRSResource<T> {
                 () -> {
                     Object instance = BeanServiceLoaderProvider.getBeanProvider().getBean(getInterfaceClass());
                     try {
-                        if (paramCount == 0)
+                        if (paramCount == 0) {
                             return method.invoke(instance);
-                        else
+                        } else {
                             return method.invoke(instance, params);
+                        }
+                    } catch (InvocationTargetException ite) {
+                        throw Common.rte(ite.getCause());
                     } catch (Throwable th) {
                         throw Common.rte(th);
                     }

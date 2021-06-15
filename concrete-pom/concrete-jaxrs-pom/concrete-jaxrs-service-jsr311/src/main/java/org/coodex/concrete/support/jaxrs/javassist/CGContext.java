@@ -160,6 +160,9 @@ public class CGContext {
     }
 
     public Annotation produces(String... contentTypes) {
+        if (contentTypes == null || contentTypes.length == 0) {
+            return null;
+        }
         Annotation anno = new Annotation(Produces.class.getName(), constPool);
         ArrayMemberValue mv = new ArrayMemberValue(constPool);
         mv.setValue(getContentTypes(contentTypes));

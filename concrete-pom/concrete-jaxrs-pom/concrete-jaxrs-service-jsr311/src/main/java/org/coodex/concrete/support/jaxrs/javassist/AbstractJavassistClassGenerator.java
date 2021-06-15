@@ -53,14 +53,16 @@ public abstract class AbstractJavassistClassGenerator implements ClassGenerator 
      * @return 实现类
      * @throws CannotCompileException
      */
+    @Override
     public Class<?> generatesImplClass(JaxrsModule module) throws CannotCompileException {
 
         CGContext context = initImplClass(module);
         for (JaxrsUnit unit : module.getUnits()) {
             AbstractMethodGenerator methodGenerator = getMethodGenerator(context, unit);
-            if (methodGenerator != null)
+            if (methodGenerator != null) {
                 context.getNewClass().addMethod(methodGenerator.generateMethod(
                         unit.getMethod().getName() + "$" + nextPostfix()));
+            }
         }
 //        CtClass ctClass = context.getNewClass();
 //        try {
