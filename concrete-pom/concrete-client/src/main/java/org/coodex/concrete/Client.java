@@ -67,8 +67,9 @@ public class Client {
         public T withSubjoin(Map<String, String> subjoin) {
             if (subjoin != null) {
                 return wrapInstance(() -> subjoin);
-            } else
+            } else {
                 return instance;
+            }
         }
 
         private T wrapInstance(Supplier<Map<String, String>> subjoinSupplier) {

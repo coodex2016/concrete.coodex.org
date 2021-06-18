@@ -25,9 +25,7 @@ import org.coodex.concrete.jaxrs.logging.ClientLogger;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.mock.Mocker;
-import org.coodex.util.Common;
-import org.coodex.util.LazySelectableServiceLoader;
-import org.coodex.util.SelectableServiceLoader;
+import org.coodex.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +33,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
@@ -61,6 +60,10 @@ import static org.coodex.util.GenericTypeHelper.toReference;
 
 public class JaxRSInvoker extends AbstractSyncInvoker {
 
+    private static final ServiceLoader<ConfigurationProvider> CONFIGURATION_PROVIDER_SERVICE_LOADER
+            = new LazyServiceLoader<ConfigurationProvider>((ConfigurationProvider) () -> null) {
+    };
+
     private final static Logger log = LoggerFactory.getLogger(JaxRSInvoker.class);
 
     private final static SelectableServiceLoader<Throwable, ExceptionMapper> EXCEPTION_MAPPERS =
@@ -71,8 +74,11 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 
     JaxRSInvoker(JaxRSDestination destination) {
         super(destination);
-
         ClientBuilder clientBuilder = ClientBuilder.newBuilder().register(ClientLogger.class);
+        Configuration configuration = CONFIGURATION_PROVIDER_SERVICE_LOADER.get().getConfiguration();
+        if (configuration != null) {
+            clientBuilder = clientBuilder.withConfig(configuration);
+        }
         if (destination.getConnectTimeout() != null && destination.getConnectTimeout() > 0) {
             clientBuilder = clientBuilder.connectTimeout(destination.getConnectTimeout(), TimeUnit.MILLISECONDS);
         }

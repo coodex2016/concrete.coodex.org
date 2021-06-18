@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2020 coodex.org (jujus.shen@126.com)
+  ~ Copyright (c) 2016 - 2021 coodex.org (jujus.shen@126.com)
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -18,27 +19,31 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>concrete-pom</artifactId>
-        <groupId>org.coodex.concrete</groupId>
+        <artifactId>concrete-jaxrs-pom</artifactId>
+        <groupId>org.coodex.concrete.jaxrs</groupId>
         <version>0.5.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>concrete-jaxrs-pom</artifactId>
-    <groupId>org.coodex.concrete.jaxrs</groupId>
-    <packaging>pom</packaging>
+    <artifactId>concrete-jaxrs-client-jersey</artifactId>
 
-    <modules>
-        <module>concrete-jaxrs</module>
-        <module>concrete-jaxrs-bom</module>
-        <module>concrete-jaxrs-client</module>
-        <module>concrete-jaxrs-service</module>
-        <module>concrete-jaxrs-service-jsr311</module>
-        <module>concrete-jaxrs-service-jsr339</module>
-        <module>concrete-jaxrs-spring-boot</module>
-        <module>concrete-jaxrs-swagger</module>
-        <module>concrete-jaxrs-client-jersey</module>
-    </modules>
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>concrete-jaxrs-client</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
