@@ -66,7 +66,7 @@ public class Common {
         try {
             Class.forName("java.lang.management.ManagementFactory");
             sst = java.lang.management.ManagementFactory.getRuntimeMXBean().getStartTime();
-        } catch (Throwable t) {
+        } catch (Throwable ignored) {
 
         }
         SYSTEM_START_TIME = sst;
@@ -80,7 +80,7 @@ public class Common {
     }
 
     public static boolean isWindows() {
-        return PATH_SEPARATOR.equals(";");
+        return ";".equals(PATH_SEPARATOR);
     }
 
     private static String[] userDir() {

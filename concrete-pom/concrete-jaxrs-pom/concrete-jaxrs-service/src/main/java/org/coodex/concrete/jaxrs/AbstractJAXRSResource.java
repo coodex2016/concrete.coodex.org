@@ -26,6 +26,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.util.*;
@@ -228,10 +229,13 @@ public abstract class AbstractJAXRSResource<T> {
                 () -> {
                     Object instance = BeanServiceLoaderProvider.getBeanProvider().getBean(getInterfaceClass());
                     try {
-                        if (paramCount == 0)
+                        if (paramCount == 0) {
                             return method.invoke(instance);
-                        else
+                        } else {
                             return method.invoke(instance, params);
+                        }
+                    } catch (InvocationTargetException invocationTargetException) {
+                        throw Common.rte(invocationTargetException.getCause());
                     } catch (Throwable th) {
                         throw Common.rte(th);
                     }
