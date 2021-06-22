@@ -105,8 +105,9 @@ public abstract class AbstractJAXRSResource<T> {
                         break;
                     }
                 }
-                if (found == null)
+                if (found == null) {
                     throw new NullPointerException("no impl found for: " + clz.getName() + "." + methodName);
+                }
                 methodMap.put(methodKey, found);
             }
             return found;
