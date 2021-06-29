@@ -62,16 +62,18 @@ final class ExecutorWrapper {
 
     static void shutdown() {
         for (ExecutorService service : executors) {
-            if (service != null && !service.isShutdown() && !service.isTerminated())
+            if (service != null && !service.isShutdown() && !service.isTerminated()) {
                 service.shutdown();
+            }
         }
     }
 
     static List<Runnable> shutdownNow() {
         List<Runnable> list = new ArrayList<>();
         for (ExecutorService service : executors) {
-            if (service != null && !service.isTerminated())
+            if (service != null && !service.isTerminated()) {
                 list.addAll(service.shutdownNow());
+            }
         }
         return list;
     }
@@ -81,10 +83,11 @@ final class ExecutorWrapper {
             Object object = method.getDeclaringClass().isAssignableFrom(executorClass) ?
                     impl : origin;
 
-            if (args == null || args.length == 0)
+            if (args == null || args.length == 0) {
                 return method.invoke(object);
-            else
+            } else {
                 return method.invoke(object, args);
+            }
         };
     }
 }

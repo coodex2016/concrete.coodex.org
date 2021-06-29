@@ -6,6 +6,7 @@ let defaultConfiguration = {
     'onError': undefined,
     'pollingTimeout': 10,
     'globalTokenKey': undefined,
+    'storage': undefined,
     'onBroadcast': undefined
 }
 
@@ -66,7 +67,8 @@ concrete.configure({
         console.error(['errorCode: ', code, '; errorMsg: ', msg].join(''))
     },
     'pollingTimeout': 10,
-    'globalTokenKey': undefined,
+    'globalTokenKey': 'concrete-token-id',
+    'storage': sessionStorage,
     'onBroadcast': function (msgId, host, subject, data) {
         console.log(['msgId: ', msgId, '; host: ', host, '; subject: ', subject, '; data: ', data].join(''))
     }
@@ -84,9 +86,13 @@ function getConfigItem (module, key) {
 
 let tokens = {}
 
+function getStorage(module){
+   return getConfigItem(module, 'storage') || sessionStorage;
+}
+
 function getTokenId (module) {
     let globalTokenKey = getConfigItem(module, 'globalTokenKey')
-    return (globalTokenKey ? localStorage.getItem(globalTokenKey) : null) ||
+    return (globalTokenKey ? getStorage(module).getItem(globalTokenKey) : null) ||
         (tokens[module] && tokens[module].localTokenId)
 }
 
@@ -98,7 +104,7 @@ function setTokenId (module, tokenId) {
         tokens[module].localTokenId = tokenId
         let globalTokenKey = getConfigItem(module, 'globalTokenKey')
         if (globalTokenKey) {
-            localStorage.setItem(globalTokenKey, tokenId)
+            getStorage(module).setItem(globalTokenKey, tokenId)
         }
     }
 }

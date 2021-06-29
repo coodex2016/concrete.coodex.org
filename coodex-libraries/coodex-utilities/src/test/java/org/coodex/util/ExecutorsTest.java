@@ -18,6 +18,8 @@ package org.coodex.util;
 
 import org.coodex.concurrent.ExecutorsHelper;
 
+import javax.management.MXBean;
+import java.lang.management.ManagementFactory;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -30,7 +32,7 @@ public class ExecutorsTest {
     public static void main(String[] args) {
         final AtomicInteger integer = new AtomicInteger(0);
         final ExecutorService executorService = ExecutorsHelper.newLinkedThreadPool(
-                8, 20, 30000, "test"
+                8, 20, Integer.MAX_VALUE, "test"
         );
         final Set<String> set = new HashSet<String>();
 //        ExecutorService executorService = ExecutorsHelper.newFixedThreadPool(5,"abab");
@@ -51,6 +53,7 @@ public class ExecutorsTest {
 ////        });
 
         final int MAX = 1000;
+        System.out.println(ManagementFactory.getRuntimeMXBean().getName());
         for (int i = 1; i <= MAX; i ++){
             final int finalI = i;
             executorService.execute(new Runnable() {
