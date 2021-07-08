@@ -30,8 +30,9 @@ public class CompletableFutureObservableBridge implements CompletableFutureBridg
                     if (error != null) {
                         subscriber.onError(error);
                     } else {
-                        // todo result == null?
-                        subscriber.onNext(result);
+                        if (result != null) {
+                            subscriber.onNext(result);
+                        }
                         subscriber.onComplete();
                     }
                 }));
