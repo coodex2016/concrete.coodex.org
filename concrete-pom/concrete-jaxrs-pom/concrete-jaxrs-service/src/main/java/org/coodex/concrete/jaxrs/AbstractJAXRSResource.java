@@ -20,6 +20,8 @@ import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
 import org.coodex.util.Common;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -46,6 +48,7 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 @SuppressWarnings("unused")
 public abstract class AbstractJAXRSResource<T> {
 
+    private static final Logger log = LoggerFactory.getLogger(AbstractJAXRSResource.class);
 
 //    public static final String TOKEN_ID_IN_COOKIE = CONCRETE_TOKEN_ID_KEY;
 
@@ -176,7 +179,12 @@ public abstract class AbstractJAXRSResource<T> {
     }
 
     private Locale getRequestLocal() {
-        List<Locale> locales = httpHeaders.getAcceptableLanguages();
+        List<Locale> locales = null;
+        try {
+            locales = httpHeaders.getAcceptableLanguages();
+        } catch (Throwable th) {
+            log.warn("getAcceptableLanguages failed.", th);
+        }
         return locales == null || locales.size() == 0 ?
                 null : locales.get(0);
     }

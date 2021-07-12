@@ -132,12 +132,12 @@ public class Common {
             return joiner.toString();
         }
         while (i < pathNodes.length) {
-            if (pathNodes[i].equals(".")) {
+            if (".".equals(pathNodes[i])) {
                 i++;
                 continue; // 当前目录
             }
 
-            if (pathNodes[i].equals("..")) { // 上一级目录
+            if ("..".equals(pathNodes[i])) { // 上一级目录
                 userDirNodesIndex = Math.max(0, userDirNodesIndex - 1);
                 i++;
                 continue;
@@ -963,15 +963,6 @@ public class Common {
         }
         return s.charAt(Common.random(s.length()));
     }
-
-//    /**
-//     * https://zh.wikipedia.org/wiki/%E6%B1%89%E5%AD%97%E5%86%85%E7%A0%81%E6%89%A9%E5%B1%95%E8%A7%84%E8%8C%83
-//     *
-//     * @return 一个随机的GBK字符
-//     */
-//    public static char randomGBKChar(){
-//
-//    }
 
     public static <T> T random(T[] range) {
         if (range == null || range.length == 0) {
