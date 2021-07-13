@@ -39,6 +39,8 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
      */
     private final static Logger log = LoggerFactory.getLogger(ErrorMessageFacade.class);
 
+    final static ThreadLocal<Locale> LOCALE_CONTEXT = new ThreadLocal<>();
+
 
     private final static Set<Class<?>> REGISTERED = new HashSet<>();
 
@@ -49,7 +51,9 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
     }
 
     private static void registerClass(Class<?> clz) {
-        if (clz == null || clz.getAnnotation(ErrorCode.class) == null) return;
+        if (clz == null || clz.getAnnotation(ErrorCode.class) == null) {
+            return;
+        }
 
         if (!REGISTERED.contains(clz)) {
             synchronized (errorCodes) {
@@ -59,7 +63,9 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
                         if (!(int.class.equals(f.getType())
                                 && Modifier.isStatic(f.getModifiers())
                                 && Modifier.isFinal(f.getModifiers())
-                                && Modifier.isPublic(f.getModifiers()))) continue;
+                                && Modifier.isPublic(f.getModifiers()))) {
+                            continue;
+                        }
 
                         f.setAccessible(true);
                         try {
@@ -102,7 +108,9 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
     }
 
     private static String getNamespace(Field field) {
-        if (field == null) return ErrorCode.DEFAULT_NAMESPACE;
+        if (field == null) {
+            return ErrorCode.DEFAULT_NAMESPACE;
+        }
         ErrorCode errorCode = field.getDeclaringClass().getAnnotation(ErrorCode.class);
         return errorCode == null || Common.isBlank(errorCode.value()) ? ErrorCode.DEFAULT_NAMESPACE : errorCode.value();
     }
@@ -122,7 +130,7 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
 
     private static String getMessageOrPattern(boolean format, int code, Object... objects) {
         Field f = errorCodes.get(code);
-        String template = I18N.translate(getTemplateStr(f, getNamespace(f), code));
+        String template = I18N.translate(getTemplateStr(f, getNamespace(f), code),LOCALE_CONTEXT.get());
         return format ? Renderer.render(template, objects) : template;
 
 //        ErrorMsg formatterValue = null;

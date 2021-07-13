@@ -19,6 +19,10 @@ package org.coodex.concrete.common;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 
+import java.util.Locale;
+
+import static org.coodex.concrete.common.ErrorMessageFacade.LOCALE_CONTEXT;
+
 /**
  * ConcreteException， Concrete异常.
  * <p>
@@ -28,6 +32,7 @@ public class ConcreteException extends RuntimeException {
 
     private final int code;
     private final Object[] o;
+    private final Locale locale;
     private final Singleton<String> message = Singleton.with(this::buildMessage);
 
     /**
@@ -39,18 +44,25 @@ public class ConcreteException extends RuntimeException {
     public ConcreteException(int code, Object... objects) {
         this.code = code;
         this.o = objects;
+        this.locale = ConcreteLocaleProvider.getLocalDefault();
         if (this.o != null && this.o.length > 0) {
             if (this.o[o.length - 1] instanceof Throwable) {
                 this.initCause((Throwable) this.o[o.length - 1]);
-                if (this.o[o.length - 1] instanceof ConcreteException)
+                if (this.o[o.length - 1] instanceof ConcreteException) {
                     throw (ConcreteException) this.o[o.length - 1];
+                }
             }
         }
     }
 
     private String buildMessage() {
-        String message = ErrorMessageFacade.getMessage(code, o);
-        return Common.isBlank(message) ? String.format("error code: %06d", code) : message;
+        LOCALE_CONTEXT.set(locale);
+        try {
+            String message = ErrorMessageFacade.getMessage(code, o);
+            return Common.isBlank(message) ? String.format("error code: %06d", code) : message;
+        } finally {
+            LOCALE_CONTEXT.remove();
+        }
     }
 
 
