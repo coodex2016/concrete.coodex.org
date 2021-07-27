@@ -60,6 +60,8 @@ public class Common {
     };
     private static final char[] BASE16_CHAR = "0123456789abcdef".toCharArray();
 
+    private static final Singleton<Boolean> COODEX_DEBUG_FLAG = Singleton.with(() -> toBool(System.getProperty("coodex.debug"), false));
+
     static {
 //        SYSTEM_START_TIME
         long sst = 0;
@@ -89,6 +91,10 @@ public class Common {
 
     public static String toAbsolutePath(String path) {
         return isWindows() ? toAbsolutePathWindows(path) : toAbsolutePathUnixLike(path);
+    }
+
+    public static boolean isDebug() {
+        return COODEX_DEBUG_FLAG.get();
     }
 
     private static String toAbsolutePathUnixLike(String path) {

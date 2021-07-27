@@ -17,6 +17,7 @@
 package org.coodex.concurrent.locks;
 
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +90,7 @@ public abstract class AbstractResourceLockProvider implements ResourceLockProvid
                     break;
                 }
             }
-            if (log.isDebugEnabled() && count > 0) {
+            if (Common.isDebug() && log.isDebugEnabled() && count > 0) {
                 builder.append("\n\tafter clean: ").append(locksMap.size()).append(" resource(s).");
                 log.debug(builder.toString());
             }

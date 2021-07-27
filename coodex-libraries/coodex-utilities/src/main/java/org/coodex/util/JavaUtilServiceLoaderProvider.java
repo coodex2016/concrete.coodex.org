@@ -69,7 +69,7 @@ public class JavaUtilServiceLoaderProvider extends AbstractServiceLoaderProvider
         Map<String, Object> objectMap = CACHE_ENABLED ?
                 cache.get(rowType, supplier) :
                 supplier.get();
-        if (log.isDebugEnabled()) {
+        if (Common.isDebug() && log.isDebugEnabled()) {
             if(objectMap.size() > 0) {
                 StringJoiner joiner = new StringJoiner("\n\t");
                 objectMap.forEach((k, v) -> joiner.add(k + ": " + v.toString()));

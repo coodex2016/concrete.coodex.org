@@ -116,7 +116,7 @@ public class Config {
                 for (String key : keys) {
                     String v = c.get(key, namespace);
                     if (v != null) {
-                        if (log.isDebugEnabled()) {
+                        if (Common.isDebug() && log.isDebugEnabled()) {
                             if (namespace == null) {
                                 log.debug("load config: {}={} by {}", key, v, c.getClass());
                             } else {

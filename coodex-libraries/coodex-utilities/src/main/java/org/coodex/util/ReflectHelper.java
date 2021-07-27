@@ -44,14 +44,19 @@ public class ReflectHelper {
     }
 
     public static <T extends Annotation> T getAnnotation(Class<T> annotationClass, AnnotatedElement element, Set<AnnotatedElement> checked) {
-        if (checked.contains(element))
+        if (checked.contains(element)) {
             return null;
+        }
         checked.add(element);
         T t = element.getAnnotation(annotationClass);
-        if (t != null) return t;
+        if (t != null) {
+            return t;
+        }
         for (Annotation annotation : element.getAnnotations()) {
             t = getAnnotation(annotationClass, annotation.annotationType(), checked);
-            if (t != null) return t;
+            if (t != null) {
+                return t;
+            }
         }
         return null;
     }
@@ -60,7 +65,9 @@ public class ReflectHelper {
         Set<AnnotatedElement> checked = new HashSet<>();
         for (AnnotatedElement element : elements) {
             T t = getAnnotation(annotationClass, element, checked);
-            if (t != null) return t;
+            if (t != null) {
+                return t;
+            }
         }
         return null;
     }
@@ -126,7 +133,9 @@ public class ReflectHelper {
     }
 
     private static String getParameterNameByAnnotation(Annotation[][] annotations, int index) {
-        if (annotations == null || annotations.length < index) return null;
+        if (annotations == null || annotations.length < index) {
+            return null;
+        }
 
         for (Annotation annotation : annotations[index]) {
             if (annotation instanceof Parameter) {
@@ -152,8 +161,9 @@ public class ReflectHelper {
 
     public static Field[] getAllDeclaredFields(Class<?> clz,
                                                Function<Class<?>, Boolean> decision) {
-        if (clz == null)
+        if (clz == null) {
             throw new NullPointerException("class is NULL");
+        }
         if (decision == null) {
             decision = NOT_NULL;
         }
@@ -174,8 +184,9 @@ public class ReflectHelper {
     public static Object invoke(Object obj, Method method, Object[] args)
             throws IllegalAccessException, IllegalArgumentException,
             InvocationTargetException, NoSuchMethodException, SecurityException {
-        if (obj == null)
+        if (obj == null) {
             throw new NullPointerException("invoke target object is NULL.");
+        }
 
         if (method.getDeclaringClass().isAssignableFrom(obj.getClass())) {
             return method.invoke(obj, args);
@@ -194,7 +205,9 @@ public class ReflectHelper {
     }
 
     private static String[] packageToPath(String[] packages) {
-        if (packages == null || packages.length == 0) return new String[0];
+        if (packages == null || packages.length == 0) {
+            return new String[0];
+        }
         String[] paths = new String[packages.length];
         int i = 0;
         for (String p : packages) {
@@ -204,7 +217,9 @@ public class ReflectHelper {
     }
 
     public static void foreachClass(final Consumer<Class<?>> processor, final Function<String, Boolean> filter, String... packages) {
-        if (processor == null) return;
+        if (processor == null) {
+            return;
+        }
         ResourceScanner.newBuilder((resource, resourceName) -> {
             String className = resourceToClassName(resourceName);
             try {
@@ -262,12 +277,16 @@ public class ReflectHelper {
     }
 
     private static Object invoke(Method method, Object first, Object[] objects, Object[] args) throws Throwable {
-        if (first == null) throw new NullPointerException();
+        if (first == null) {
+            throw new NullPointerException();
+        }
         if (method.getDeclaringClass().isAssignableFrom(first.getClass())) {
             return args == null || args.length == 0 ? method.invoke(first) : method.invoke(first, args);
         }
         for (Object o : objects) {
-            if (o == null) throw new NullPointerException();
+            if (o == null) {
+                throw new NullPointerException();
+            }
             if (method.getDeclaringClass().isAssignableFrom(o.getClass())) {
                 return args == null || args.length == 0 ? method.invoke(o) : method.invoke(o, args);
             }
@@ -282,8 +301,12 @@ public class ReflectHelper {
     }
 
     private static void addInterfaceTo(Class<?> clz, Collection<Class<?>> coll) {
-        if (clz == null) return;
-        if (coll.contains(clz)) return;
+        if (clz == null) {
+            return;
+        }
+        if (coll.contains(clz)) {
+            return;
+        }
         if (clz.isInterface()) {
             coll.add(clz);
         }
@@ -294,40 +317,48 @@ public class ReflectHelper {
     }
 
     public static boolean isAssignable(Class<?> from, Class<?> to) {
-        if (from.isArray() && to.isArray())
+        if (from.isArray() && to.isArray()) {
             return Objects.equals(from, to);
-        if (from.isArray() || to.isArray())
+        }
+        if (from.isArray() || to.isArray()) {
             return false;
+        }
         return to.isAssignableFrom(from);
     }
 
     public static boolean isMatch(Type instanceType, Type serviceType) {
         boolean match = isMatchForDebug(instanceType, serviceType);
-        if (log.isDebugEnabled()) {
+        if (Common.isDebug() && log.isDebugEnabled()) {
             log.debug("match: {}\ninstance: {}\nservice: {} ", match, instanceType, serviceType);
         }
         return match;
     }
 
     private static boolean isMatchForDebug(Type instanceType, Type serviceType) {
-        if (Objects.equals(instanceType, serviceType)) return true;
+        if (Objects.equals(instanceType, serviceType)) {
+            return true;
+        }
         Class<?> instanceClass = GenericTypeHelper.typeToClass(instanceType);
         Class<?> serviceClass = GenericTypeHelper.typeToClass(serviceType);
 
         // 实例类型与服务类型的class不匹配
-        if (serviceClass != null && instanceClass != null && !isAssignable(instanceClass, serviceClass)) return false;
+        if (serviceClass != null && instanceClass != null && !isAssignable(instanceClass, serviceClass)) {
+            return false;
+        }
 
         if (serviceClass != null && serviceType instanceof ParameterizedType) {
             ParameterizedType parameterizedServiceType = (ParameterizedType) serviceType;
             for (int i = 0; i < parameterizedServiceType.getActualTypeArguments().length; i++) {
                 if (!isMatch(
                         GenericTypeHelper.solveFromType(serviceClass.getTypeParameters()[i], instanceType),
-                        parameterizedServiceType.getActualTypeArguments()[i]))
+                        parameterizedServiceType.getActualTypeArguments()[i])) {
                     return false;
+                }
             }
             return true;
-        } else
+        } else {
             return !(serviceType instanceof GenericArrayType);// 均为泛型数组，则必须完全相同，在第一行已处理
+        }
     }
 
     /**
@@ -339,8 +370,12 @@ public class ReflectHelper {
      */
     @SuppressWarnings("unused")
     public static <S, T extends S> S extendInterface(final T o, final Object... objects) {
-        if (o == null) return null;
-        if (objects == null || objects.length == 0) return o;
+        if (o == null) {
+            return null;
+        }
+        if (objects == null || objects.length == 0) {
+            return o;
+        }
         Set<Class<?>> interfaces = new HashSet<>();
         addInterfaceTo(o.getClass(), interfaces);
         for (Object x : objects) {
@@ -348,7 +383,9 @@ public class ReflectHelper {
                 addInterfaceTo(x.getClass(), interfaces);
             }
         }
-        if (interfaces.size() == 0) return o;
+        if (interfaces.size() == 0) {
+            return o;
+        }
 
         return cast(Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces.toArray(new Class<?>[0]),
                 (proxy, method, args) -> invoke(method, o, objects, args)));
@@ -402,11 +439,16 @@ public class ReflectHelper {
 
 
         public <T> T getAnnotation(Class<T> annotationClass) {
-            if (annotationClass == null) throw new IllegalArgumentException("annotationClass is NULL.");
-            if (annotations == null) return null;
+            if (annotationClass == null) {
+                throw new IllegalArgumentException("annotationClass is NULL.");
+            }
+            if (annotations == null) {
+                return null;
+            }
             for (Annotation annotation : annotations) {
-                if (annotationClass.isAssignableFrom(annotation.getClass()))
+                if (annotationClass.isAssignableFrom(annotation.getClass())) {
                     return Common.cast(annotation);
+                }
             }
             return null;
         }

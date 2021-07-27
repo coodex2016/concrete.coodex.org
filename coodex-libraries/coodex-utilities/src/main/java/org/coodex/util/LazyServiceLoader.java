@@ -51,7 +51,7 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
                 for (ServiceLoaderProvider provider : serviceLoaderProviders) {
                     instances.instancesMap.putAll(provider.load(getServiceType()));
                 }
-                if (log.isDebugEnabled()) {
+                if (Common.isDebug() && log.isDebugEnabled()) {
                     if (instances.instancesMap.size() == 0) {
                         log.debug("no ServiceProvider found for [{}], using default provider.", getServiceType().getTypeName());
 
