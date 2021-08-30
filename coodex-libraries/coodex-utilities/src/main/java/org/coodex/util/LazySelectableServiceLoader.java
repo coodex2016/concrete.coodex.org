@@ -54,7 +54,7 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
     );
 
     private Function<Method, RuntimeException> exceptionFunction = null;
-    private Singleton<List<T>> sortedServices = Singleton.with(this::sorted);
+    private final Singleton<List<T>> sortedServices = Singleton.with(this::sorted);
 
     public LazySelectableServiceLoader() {
         this((T) null);

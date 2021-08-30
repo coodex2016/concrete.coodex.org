@@ -30,6 +30,14 @@ public class ConfigurationBaseProfile extends AbstractConfiguration {
 //        profile.get("key", "a", "b", "c", "d", "e");
 //    }
 
+    public static void main(String[] args) {
+        for(int i= 0; i< 10000; i ++){
+            if((24 * i - 1) % 17 == 0){
+                System.out.println(i);
+            }
+        }
+    }
+
     protected String getDefaultProfile() {
         return DEFAULT_PROFILE;
     }

@@ -36,22 +36,34 @@ public class ExecutorsHelper {
                 new PriorityRunnable(Thread.NORM_PRIORITY, runnable);
     }
 
+    public static ExecutorService newPriorityThreadPool(final int coreSize, int maxSize, int maxWait, String namePrefix, int threadPriority) {
+        return newPriorityThreadPool(coreSize, maxSize, maxWait, 60L, namePrefix, threadPriority);
+    }
+
     public static ExecutorService newPriorityThreadPool(final int coreSize, int maxSize, int maxWait, String namePrefix) {
-        return newPriorityThreadPool(coreSize, maxSize, maxWait, 60L, namePrefix);
+//        return newPriorityThreadPool(coreSize, maxSize, maxWait, 60L, namePrefix);
+        return newPriorityThreadPool(coreSize, maxSize, maxWait, namePrefix, Thread.NORM_PRIORITY);
     }
 
     public static ExecutorService newPriorityThreadPool(final int coreSize, int maxSize, int maxWait, long keepAliveTime, String namePrefix) {
-        final PoolSize poolSize = new PoolSize(coreSize, maxSize).invoke();
-        return newThreadPool(keepAliveTime, namePrefix, poolSize, new CoodexPriorityBlockingQueue(maxWait));
+        return newPriorityThreadPool(coreSize, maxSize, maxWait, keepAliveTime, namePrefix, Thread.NORM_PRIORITY);
     }
 
-    private static ExecutorService newThreadPool(long keepAliveTime, String namePrefix, PoolSize poolSize, CoodexBlockingQueue priorityBlockingQueue) {
+    public static ExecutorService newPriorityThreadPool(final int coreSize, int maxSize, int maxWait, long keepAliveTime, String namePrefix, int threadPriority) {
+        final PoolSize poolSize = new PoolSize(coreSize, maxSize).invoke();
+        return newThreadPool(keepAliveTime, namePrefix, poolSize, new CoodexPriorityBlockingQueue(maxWait), threadPriority);
+    }
+
+    private static ExecutorService newThreadPool(
+            long keepAliveTime, String namePrefix,
+            PoolSize poolSize, CoodexBlockingQueue priorityBlockingQueue,
+            int priority) {
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
                 poolSize.getFinalCoreSize(),
                 poolSize.getFinalMaxSize(),
                 keepAliveTime, TimeUnit.SECONDS,
                 priorityBlockingQueue,
-                new DefaultNamedThreadFactory(namePrefix)
+                new DefaultNamedThreadFactory(namePrefix, priority)
         ) {
             @Override
             public void execute(Runnable command) {
@@ -65,16 +77,29 @@ public class ExecutorsHelper {
     }
 
     public static ExecutorService newLinkedThreadPool(final int coreSize, int maxSize, int maxWait, String namePrefix) {
-        return newLinkedThreadPool(coreSize, maxSize, maxWait, 60L, namePrefix);
+        return newLinkedThreadPool(coreSize, maxSize, maxWait, namePrefix, Thread.NORM_PRIORITY);
+    }
+
+    public static ExecutorService newLinkedThreadPool(final int coreSize, int maxSize, int maxWait, String namePrefix, int threadPriority) {
+        return newLinkedThreadPool(coreSize, maxSize, maxWait, 60L, namePrefix, threadPriority);
     }
 
     public static ExecutorService newLinkedThreadPool(final int coreSize, int maxSize, int maxWait, long keepAliveTime, String namePrefix) {
+        return newLinkedThreadPool(coreSize, maxSize, maxWait, keepAliveTime, namePrefix, Thread.NORM_PRIORITY);
+    }
+
+    public static ExecutorService newLinkedThreadPool(final int coreSize, int maxSize, int maxWait, long keepAliveTime, String namePrefix, int threadPriority) {
         final PoolSize poolSize = new PoolSize(coreSize, maxSize).invoke();
-        return newThreadPool(keepAliveTime, namePrefix, poolSize, new CoodexLinkedBlockingQueue(maxWait));
+        return newThreadPool(keepAliveTime, namePrefix, poolSize, new CoodexLinkedBlockingQueue(maxWait),
+                threadPriority);
     }
 
     public static ExecutorService newFixedThreadPool(int nThreads, String namePrefix) {
-        return newFixedThreadPool(nThreads, new DefaultNamedThreadFactory(namePrefix));
+        return newFixedThreadPool(nThreads, namePrefix, Thread.NORM_PRIORITY);
+    }
+
+    public static ExecutorService newFixedThreadPool(int nThreads, String namePrefix, int priority) {
+        return newFixedThreadPool(nThreads, new DefaultNamedThreadFactory(namePrefix, priority));
     }
 
     public static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) {
@@ -82,7 +107,11 @@ public class ExecutorsHelper {
     }
 
     public static ExecutorService newSingleThreadExecutor(String namePrefix) {
-        return newSingleThreadExecutor(new DefaultNamedThreadFactory(namePrefix));
+        return newSingleThreadExecutor(namePrefix, Thread.NORM_PRIORITY);
+    }
+
+    public static ExecutorService newSingleThreadExecutor(String namePrefix, int priority) {
+        return newSingleThreadExecutor(new DefaultNamedThreadFactory(namePrefix, priority));
     }
 
     public static ExecutorService newSingleThreadExecutor(ThreadFactory threadFactory) {
@@ -90,7 +119,11 @@ public class ExecutorsHelper {
     }
 
     public static ExecutorService newCachedThreadPool(String namePrefix) {
-        return newCachedThreadPool(new DefaultNamedThreadFactory(namePrefix));
+        return newCachedThreadPool(namePrefix, Thread.NORM_PRIORITY);
+    }
+
+    public static ExecutorService newCachedThreadPool(String namePrefix, int priority) {
+        return newCachedThreadPool(new DefaultNamedThreadFactory(namePrefix, priority));
     }
 
     public static ExecutorService newCachedThreadPool(ThreadFactory threadFactory) {
@@ -98,7 +131,11 @@ public class ExecutorsHelper {
     }
 
     public static ScheduledExecutorService newSingleThreadScheduledExecutor(String namePrefix) {
-        return newSingleThreadScheduledExecutor(new DefaultNamedThreadFactory(namePrefix));
+        return newSingleThreadScheduledExecutor(namePrefix, Thread.NORM_PRIORITY);
+    }
+
+    public static ScheduledExecutorService newSingleThreadScheduledExecutor(String namePrefix, int priority) {
+        return newSingleThreadScheduledExecutor(new DefaultNamedThreadFactory(namePrefix, priority));
     }
 
     public static ScheduledExecutorService newSingleThreadScheduledExecutor(ThreadFactory threadFactory) {
@@ -106,7 +143,11 @@ public class ExecutorsHelper {
     }
 
     public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize, String namePrefix) {
-        return newScheduledThreadPool(corePoolSize, new DefaultNamedThreadFactory(namePrefix));
+        return newScheduledThreadPool(corePoolSize, namePrefix, Thread.NORM_PRIORITY);
+    }
+
+    public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize, String namePrefix, int priority) {
+        return newScheduledThreadPool(corePoolSize, new DefaultNamedThreadFactory(namePrefix, priority));
     }
 
     public static ScheduledExecutorService newScheduledThreadPool(
@@ -134,8 +175,15 @@ public class ExecutorsHelper {
         private final ThreadGroup group;
         private final AtomicInteger threadNumber = new AtomicInteger(1);
         private final String namePrefix;
+        private final int priority;
 
+        @Deprecated
         DefaultNamedThreadFactory(String namePrefix) {
+            this(namePrefix, Thread.NORM_PRIORITY);
+        }
+
+        DefaultNamedThreadFactory(String namePrefix, int priority) {
+            this.priority = Math.min(Thread.MAX_PRIORITY, Math.max(Thread.MIN_PRIORITY, priority));
             SecurityManager s = System.getSecurityManager();
             group = (s != null) ? s.getThreadGroup() :
                     Thread.currentThread().getThreadGroup();
@@ -149,8 +197,8 @@ public class ExecutorsHelper {
                     0);
             if (t.isDaemon())
                 t.setDaemon(false);
-            if (t.getPriority() != Thread.NORM_PRIORITY)
-                t.setPriority(Thread.NORM_PRIORITY);
+            if (t.getPriority() != priority)
+                t.setPriority(priority);
             return t;
         }
     }

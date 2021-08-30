@@ -124,7 +124,7 @@ public class SingletonMap<K, V> {
     }
 
     public V get(final K key, Function<K, V> function, long maxAge, BiConsumer<K, V> deathListener) {
-        return getValue(key, ()-> function, maxAge, deathListener);
+        return getValue(key, () -> function, maxAge, deathListener);
     }
 
     private V getValue(final K key, Supplier<Function<K, V>> functionSupplier, long maxAge, BiConsumer<K, V> deathListener) {
@@ -143,7 +143,7 @@ public class SingletonMap<K, V> {
         if (!map.containsKey(finalKey)) {
             synchronized (map) {
                 if (!map.containsKey(finalKey)) {
-                    V o = Objects.requireNonNull(functionSupplier.get(), "function is null").apply(finalKey);
+                    V o = Objects.requireNonNull(functionSupplier.get(), "function is null").apply(key);
                     Value<V> value = new Value<>();
                     value.value = o;
                     if (maxAge > 0) {
