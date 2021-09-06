@@ -221,16 +221,16 @@ public class ReflectHelper {
             return;
         }
         ResourceScanner.newBuilder((resource, resourceName) -> {
-            String className = resourceToClassName(resourceName);
-            try {
-                processor.accept(Class.forName(className));
-            } catch (ClassNotFoundException e) {
-                log.warn("load class fail. {}, {}", className, e.getLocalizedMessage());
-            }
-        }).filter(resourceName -> {
-            String className = resourceToClassName(resourceName);
-            return className != null && filter.apply(className);
-        }).build()
+                    String className = resourceToClassName(resourceName);
+                    try {
+                        processor.accept(Class.forName(className));
+                    } catch (ClassNotFoundException e) {
+                        log.warn("load class fail. {}, {}", className, e.getLocalizedMessage());
+                    }
+                }).filter(resourceName -> {
+                    String className = resourceToClassName(resourceName);
+                    return className != null && filter.apply(className);
+                }).build()
                 .scan(packageToPath(packages));
     }
 

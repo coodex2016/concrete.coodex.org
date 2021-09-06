@@ -44,17 +44,13 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
                     + method.getDeclaringClass().getName()
                     + "." + method.getName());
     private static final Logger log = LoggerFactory.getLogger(LazySelectableServiceLoader.class);
-
-
+    private final Singleton<List<T>> sortedServices = Singleton.with(this::sorted);
     private ServiceLoader<T> serviceLoaderFacade;
     private Supplier<T> defaultServiceSupplier;
-
     private final Singleton<T> defaultServiceSingleton = Singleton.with(() ->
             defaultServiceSupplier == null ? null : defaultServiceSupplier.get()
     );
-
     private Function<Method, RuntimeException> exceptionFunction = null;
-    private final Singleton<List<T>> sortedServices = Singleton.with(this::sorted);
 
     public LazySelectableServiceLoader() {
         this((T) null);
@@ -125,11 +121,12 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
                                 }
                         ));
                     }
+                    T finalDefaultService = defaultService;
                     this.serviceLoaderFacade = new LazyServiceLoader<T>() {
                         @Override
                         protected T getDefaultInstance() {
-                            T defaultService = defaultServiceSingleton.get();
-                            return defaultService == null ? super.getDefault() : defaultService;
+//                            T defaultService = defaultServiceSingleton.get();
+                            return finalDefaultService;// == null ? super.getDefault() : finalDefaultService;
                         }
 
                         @Override

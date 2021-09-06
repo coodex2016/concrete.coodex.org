@@ -75,12 +75,6 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
     });
 
     private Supplier<T> defaultProviderSupplier;
-    private final Singleton<T> defaultProviderSingleton = Singleton.with(() -> {
-        if (defaultProviderSupplier == null) {
-            defaultProviderSupplier = this::getDefaultInstance;
-        }
-        return defaultProviderSupplier.get();
-    });
 
     public LazyServiceLoader() {
         this((T) null);
@@ -88,7 +82,12 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
 
     public LazyServiceLoader(T defaultProvider) {
         this(defaultProvider == null ? null : () -> defaultProvider);
-    }
+    }    private final Singleton<T> defaultProviderSingleton = Singleton.with(() -> {
+        if (defaultProviderSupplier == null) {
+            defaultProviderSupplier = this::getDefaultInstance;
+        }
+        return defaultProviderSupplier.get();
+    });
 
     public LazyServiceLoader(Supplier<T> defaultProviderSupplier) {
         this.defaultProviderSupplier = defaultProviderSupplier;
@@ -189,9 +188,12 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
         }
     }
 
-
     private static class Instances {
         Map<String, Object> instancesMap = null;
         Map<String, Object> unmodifiedMap = null;
     }
+
+
+
+
 }
