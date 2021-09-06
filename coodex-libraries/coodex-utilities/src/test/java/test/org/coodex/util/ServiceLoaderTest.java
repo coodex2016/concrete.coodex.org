@@ -17,11 +17,16 @@
 package test.org.coodex.util;
 
 import org.coodex.util.LazySelectableServiceLoader;
+import org.coodex.util.LazyServiceLoader;
 
 public class ServiceLoaderTest {
 
     private final static LazySelectableServiceLoader<Object, DemoService<Object>> demoServices =
             new LazySelectableServiceLoader<Object, DemoService<Object>>(/*(DemoService<Object>) param -> true*/) {
+            };
+
+    private final static LazyServiceLoader<DemoService<Object>> demoServices2 =
+            new LazyServiceLoader<DemoService<Object>>(param -> true) {
             };
 
     public static void main(String[] args) {
@@ -35,6 +40,8 @@ public class ServiceLoaderTest {
         x = System.currentTimeMillis();
         for (int i = 0; i < 10000; i++) {
 //            demoServices.select(null);
+            demoServices2.get();
+
         }
         System.out.println(System.currentTimeMillis() - x);
     }
