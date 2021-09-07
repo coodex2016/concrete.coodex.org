@@ -184,7 +184,7 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
         }
         try {
             T instance = getServiceLoaderFacade().getDefault();
-            if (instance == null && accept(instance, param)) {
+            if (accept(instance, param)) {
                 list.add(instance);
             }
         } catch (Throwable ignored) {
@@ -201,7 +201,7 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
         }
         try {
             T instance = getServiceLoaderFacade().getDefault();
-            if (instance != null && accept(instance, param)) {
+            if (accept(instance, param)) {
                 return instance;
             }
         } catch (Throwable ignored) {
