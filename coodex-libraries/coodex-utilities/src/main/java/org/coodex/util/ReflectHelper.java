@@ -73,8 +73,12 @@ public class ReflectHelper {
     }
 
     public static String getParameterName(Object executable, int index, String prefix) {
-        if (executable instanceof Executable) {
-            String parameterName = getParameterName((Executable) executable, index);
+//        if (executable instanceof Executable) {
+        if (executable instanceof Method) {
+            String parameterName = getParameterName((Method) executable, index);
+            return parameterName == null ? (prefix + index) : parameterName;
+        } else if (executable instanceof Constructor) {
+            String parameterName = getParameterName((Constructor) executable, index);
             return parameterName == null ? (prefix + index) : parameterName;
         } else {
             throw new IllegalArgumentException("none Executable object: " + executable);
@@ -145,14 +149,36 @@ public class ReflectHelper {
         return null;
     }
 
-    public static String getParameterName(Executable executable, int index) {
+//    public static String getParameterName(Method executable, int index) {
+//        String s = getParameterNameByAnnotation(executable.getParameterAnnotations(), index);
+//
+//        return s == null ? getParameterNameByJava8(executable, index) : s;
+//    }
+
+    public static String getParameterName(Constructor executable, int index) {
         String s = getParameterNameByAnnotation(executable.getParameterAnnotations(), index);
 
         return s == null ? getParameterNameByJava8(executable, index) : s;
     }
 
-    private static String getParameterNameByJava8(Executable executable, int index) {
-        return executable.getParameters()[index].getName();
+//    private static String getParameterNameByJava8(Executable executable, int index) {
+//        return executable.getParameters()[index].getName();
+//    }
+
+    private static String getParameterNameByJava8(Method executable, int index) {
+        try {
+            return executable.getParameters()[index].getName();
+        }catch (Throwable th){
+            return "arg" + index;
+        }
+    }
+
+    private static String getParameterNameByJava8(Constructor executable, int index) {
+        try {
+            return executable.getParameters()[index].getName();
+        }catch(Throwable th){
+            return "arg" + index;
+        }
     }
 
     public static Field[] getAllDeclaredFields(Class<?> clz) {
