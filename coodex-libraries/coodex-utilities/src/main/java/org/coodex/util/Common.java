@@ -495,6 +495,9 @@ public class Common {
                 builder.append(LINE_SEPARATOR);//非首行则添加行隔符
             }
             int col = colFunction.apply(line++);// 计算当前行列数
+            if (col <= 0) {
+                col = Integer.MAX_VALUE;
+            }
             int encodeCountForThisLine = Math.min(remain, col);//在剩余字节数和当前行列数中算出本行要编码的字节数
             remain -= encodeCountForThisLine;// 预减掉本行编码数
             boolean firstByte = true;

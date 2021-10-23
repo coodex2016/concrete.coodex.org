@@ -30,15 +30,16 @@ public class ServiceLoaderTest {
             };
 
     public static void main(String[] args) {
+        System.out.println('\0');
         long x = System.currentTimeMillis();
         long count = 0;
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 100000; i++) {
             count += demoServices.selectAll(null).size();
 //            demoServices.getDefault();
         }
         System.out.println(count + " / " + (System.currentTimeMillis() - x));
         x = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 100000; i++) {
 //            demoServices.select(null);
             demoServices2.get();
 
