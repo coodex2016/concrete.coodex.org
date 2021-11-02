@@ -41,7 +41,7 @@ import static org.coodex.util.ReflectHelper.foreachClass;
  */
 public class ConcreteHelper {
 
-    public static final String VERSION = "0.5.0-SNAPSHOT";
+    public static final String VERSION = "0.5.0-RC2";
 
     public static final String TAG_CLIENT = "client";
     public static final String KEY_DESTINATION = "destination";
@@ -76,7 +76,10 @@ public class ConcreteHelper {
             double.class,
             void.class,
     };
-    private static final SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
+
+    public static boolean isPrimitive(Class<?> c) {
+        return Common.inArray(c, PRIMITIVE_CLASSES);
+    }    private static final SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
             = SingletonMap.<String, ScheduledExecutorService>builder()
             .function(new Function<String, ScheduledExecutorService>() {
                 @Override
@@ -92,7 +95,10 @@ public class ConcreteHelper {
                     }
                 }
             }).build();
-    private static final SingletonMap<String, ExecutorService> executorServiceMap
+
+    public static Integer getTokenMaxIdleInMinute() {
+        return Config.getValue("token.maxIdleTime", 60, getAppSet());
+    }    private static final SingletonMap<String, ExecutorService> executorServiceMap
             = SingletonMap.<String, ExecutorService>builder()
             .function(new Function<String, ExecutorService>() {
 
@@ -112,14 +118,6 @@ public class ConcreteHelper {
                     }
                 }
             }).build();
-
-    public static boolean isPrimitive(Class<?> c) {
-        return Common.inArray(c, PRIMITIVE_CLASSES);
-    }
-
-    public static Integer getTokenMaxIdleInMinute() {
-        return Config.getValue("token.maxIdleTime", 60, getAppSet());
-    }
 
     public static Map<String, String> updatedMap(Subjoin subjoin) {
         Map<String, String> map = new ConcurrentHashMap<>();
@@ -204,14 +202,12 @@ public class ConcreteHelper {
 //                clz.getAnnotation(Abstract.class) == null;
     }
 
-
     public static int getPriority(Method method, Class<?> clz) {
         Priority priority = ConcreteHelper.getContext(method, clz).getAnnotation(Priority.class);
         return priority == null ?
                 Thread.NORM_PRIORITY :
                 Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY, priority.value()));
     }
-
 
     public static int getPriority(AbstractUnit<?> unit) {
         return getPriority(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass());
@@ -306,7 +302,6 @@ public class ConcreteHelper {
         return null;
     }
 
-
     ///////////////////////////////////////////////////////
     public static ConcreteException getException(Throwable th) {
         ConcreteException concreteException = findException(th);
@@ -319,7 +314,6 @@ public class ConcreteHelper {
     public static ConcreteException getException(String message) {
         return new ConcreteException(ErrorCodes.UNKNOWN_ERROR, message);
     }
-
 
     public static List<Class<?>> inheritedChain(Class<?> root, Class<?> sub) {
         if (root == null || root.getAnnotation(ConcreteService.class) == null) return null;
@@ -363,7 +357,6 @@ public class ConcreteHelper {
 //        return !Common.isBlank(appSet) ? appSet : Config.get("appSet", "concrete");
     }
 
-
     public static String devModelKey(String module) {
         return "org.coodex.concrete" + (
                 Common.isBlank(module) ? "" : ("." + module)
@@ -373,4 +366,9 @@ public class ConcreteHelper {
     public static boolean isDevModel(String module) {
         return System.getProperty(devModelKey(module)) != null || System.getProperty(devModelKey(null)) != null;
     }
+
+
+
+
+
 }
