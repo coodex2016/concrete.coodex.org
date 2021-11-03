@@ -146,7 +146,7 @@ public class JTSUtil {
     }
 
     public static Geometry intersection2D(Geometry g1, Geometry g2) {
-        return get2DGeometry(g1).intersection(get2DGeometry(g2));
+        return get2DGeometry(get2DGeometry(g1).intersection(get2DGeometry(g2)));
     }
 
     public static Geometry difference2D(Geometry g1, Geometry g2) {
