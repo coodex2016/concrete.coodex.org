@@ -107,38 +107,51 @@ public class JTSUtil {
      * @param threshold 阈值，内孔占外边框面积的比例
      * @return 裁剪后的几何图形
      */
-    public static <T extends Geometry> T crop(T geometry, double threshold) {
+    public static Geometry crop(Geometry geometry, double threshold) {
         if (geometry instanceof MultiPolygon) {
-            Geometry g = null;
-            for (int i = 0, l = geometry.getNumGeometries(); i < l; i++) {
-                if (g != null) {
-                    g = g.union(crop(geometry.getGeometryN(i), threshold));
-                } else {
-                    g = geometry.getGeometryN(i);
-                }
-            }
-            return Common.cast(g);
+            return cropMultiPolygon(geometry, threshold);
         } else if (geometry instanceof Polygon) {
-            Polygon polygon = (Polygon) geometry;
-            if (polygon.getNumInteriorRing() == 0) {
-                return geometry;
-            }
-            double outer = areaOf(polygon.getExteriorRing());
-            List<LinearRing> holes = new ArrayList<>();
-            for (int i = 0, l = polygon.getNumInteriorRing(); i < l; i++) {
-                LinearRing hole = polygon.getInteriorRingN(i);
-                if (areaOf(hole) / outer > threshold) {
-                    holes.add(hole);
-                }
-            }
-            return Common.cast(holes.size() == 0 ? GEOMETRY_FACTORY.createPolygon(polygon.getExteriorRing()) :
-                    GEOMETRY_FACTORY.createPolygon(
-                            polygon.getExteriorRing(),
-                            holes.toArray(new LinearRing[0])
-                    ));
+            return cropPolygon(geometry, threshold);
+        } else if (geometry instanceof GeometryCollection) {
+            return crop(get2DGeometry(geometry), threshold);
         } else {
             return geometry;
         }
+    }
+
+    private static Geometry cropPolygon(Geometry geometry, double threshold) {
+        if (geometry == null || geometry.isEmpty()) {
+            return geometry;
+        }
+        Polygon polygon = (Polygon) geometry;
+        if (polygon.getNumInteriorRing() == 0) {
+            return geometry;
+        }
+        double outer = areaOf(polygon.getExteriorRing());
+        List<LinearRing> holes = new ArrayList<>();
+        for (int i = 0, l = polygon.getNumInteriorRing(); i < l; i++) {
+            LinearRing hole = polygon.getInteriorRingN(i);
+            if (areaOf(hole) / outer > threshold) {
+                holes.add(hole);
+            }
+        }
+        return Common.cast(holes.size() == 0 ? GEOMETRY_FACTORY.createPolygon(polygon.getExteriorRing()) :
+                GEOMETRY_FACTORY.createPolygon(
+                        polygon.getExteriorRing(),
+                        holes.toArray(new LinearRing[0])
+                ));
+    }
+
+    private static Geometry cropMultiPolygon(Geometry geometry, double threshold) {
+        Geometry g = null;
+        for (int i = 0, l = geometry.getNumGeometries(); i < l; i++) {
+            if (g != null) {
+                g = g.union(crop(geometry.getGeometryN(i), threshold));
+            } else {
+                g = geometry.getGeometryN(i);
+            }
+        }
+        return g;
     }
 
     public static Geometry union2D(Geometry g1, Geometry g2) {
