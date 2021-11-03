@@ -103,7 +103,7 @@ public class JTSUtil {
     /**
      * 根据阈值裁剪内孔
      *
-     * @param geometry geometry
+     * @param geometry  geometry
      * @param threshold 阈值，内孔占外边框面积的比例
      * @return 裁剪后的几何图形
      */
@@ -141,6 +141,22 @@ public class JTSUtil {
         }
     }
 
+    public static Geometry union2D(Geometry g1, Geometry g2) {
+        return get2DGeometry(g1).union(get2DGeometry(g2));
+    }
+
+    public static Geometry intersection2D(Geometry g1, Geometry g2) {
+        return get2DGeometry(g1).intersection(get2DGeometry(g2));
+    }
+
+    public static Geometry difference2D(Geometry g1, Geometry g2) {
+        return get2DGeometry(g1).difference(get2DGeometry(g2));
+    }
+
+    public static Geometry symDifference2D(Geometry g1, Geometry g2) {
+        return get2DGeometry(g1).symDifference(get2DGeometry(g2));
+    }
+
 
     public static double areaOf(Geometry lngLat) {
         if (lngLat instanceof MultiPolygon) {
@@ -149,9 +165,27 @@ public class JTSUtil {
             return areaOf((Polygon) lngLat);
         } else if (lngLat instanceof LinearRing) {
             return areaOf((LinearRing) lngLat);
+        } else if (lngLat instanceof GeometryCollection) {
+            return areaOf(get2DGeometry(lngLat));
         } else {
             return 0d;
         }
+    }
+
+    public static Geometry get2DGeometry(Geometry geometry) {
+        if (geometry instanceof Polygon || geometry instanceof MultiPolygon) {
+            return geometry;
+        } else if (geometry instanceof GeometryCollection) {
+            Geometry polygon = null;
+            for (int i = 0, l = geometry.getNumGeometries(); i < l; i++) {
+                Geometry sub = get2DGeometry(geometry.getGeometryN(i));
+                if (sub.getArea() > 0) {
+                    polygon = polygon == null ? sub : polygon.union(sub);
+                }
+            }
+            if (polygon != null) return polygon;
+        }
+        return JTSUtil.GEOMETRY_FACTORY.createEmpty(2);
     }
 
     private static double areaOf(MultiPolygon multiPolygon) {
