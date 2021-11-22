@@ -24,7 +24,7 @@ import static org.coodex.concrete.common.ConcreteHelper.VERSION;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.KEY_CLIENT_PROVIDER;
 
 public class JaxRSClientContext extends ClientSideContext {
-    private static final String CONCRETE_JAXRS_USER_AGENT = "cocnrete-jaxrs-client " + VERSION;
+    private static final String CONCRETE_JAXRS_USER_AGENT = "concrete-jaxrs-client " + VERSION;
 
 //    private static Caller CLIENT_CALLER = new Caller() {
 //        @Override
