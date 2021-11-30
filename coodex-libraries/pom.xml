@@ -64,7 +64,7 @@
         <jedis.version>3.2.0</jedis.version>
         <xmemcached.version>2.4.6</xmemcached.version>
         <lombok.version>1.18.18</lombok.version>
-        <jts.version>1.18.1</jts.version>
+        <jts.version>1.18.2</jts.version>
         <fastjson.version>1.2.75</fastjson.version>
         <slf4j.version>1.7.30</slf4j.version>
         <log4j2.version>2.13.0</log4j2.version>

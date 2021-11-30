@@ -103,7 +103,7 @@
         <aspectj.version>1.9.4</aspectj.version>
 
 
-        <spring.boot.version>2.4.3</spring.boot.version>
+        <spring.boot.version>2.4.13</spring.boot.version>
         <!--        <spring.framework.version>5.3.4</spring.framework.version>-->
         <!--        <spring.data.version>2020.0.5</spring.data.version>-->
         <!--        <spring.data.jpa.version>2.4.5</spring.data.jpa.version>-->
@@ -123,7 +123,7 @@
 
         <druid.version>1.1.23</druid.version>
 
-        <rxjava.vesion>2.2.9</rxjava.vesion>
+        <rxjava.vesion>2.2.21</rxjava.vesion>
         <jackson2.version>2.9.8</jackson2.version>
 
         <activemq.version>5.15.9</activemq.version>
