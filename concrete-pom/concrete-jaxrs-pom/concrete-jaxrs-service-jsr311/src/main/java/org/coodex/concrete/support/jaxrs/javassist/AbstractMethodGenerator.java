@@ -128,7 +128,8 @@ public abstract class AbstractMethodGenerator {
     }
 
     private Class<?> pojoClass() throws CannotCompileException {
-        if (getUnit().getPojoCount() > 1)
+//        if (getUnit().getPojoCount() > 1)
+        if (getUnit().getPojoCount() != 0)
             return createPojoClass(
                     getUnit().getPojo(),
                     String.format("%s.POJO$%s$%s$%08X",

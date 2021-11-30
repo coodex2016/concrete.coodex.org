@@ -4,7 +4,9 @@ import {argumentsError, execute, overload} from '../concrete'
 const module = '${moduleName}'
 
 const ${serviceName} = {
-<#list methods as method>    '${method.name}': <#if method.overloads?size == 1><#assign overload=method.overloads[0]>function (<#list overload.params as param>${param}<#if param_has_next>, </#if></#list>) {
+<#list methods as method>
+${method.jsdoc}
+    '${method.name}': <#if method.overloads?size == 1><#assign overload=method.overloads[0]>function (<#list overload.params as param>${param}<#if param_has_next>, </#if></#list>) {
         return execute(module, `${overload.url}`, '${overload.resultType}', '${overload.httpMethod}'<#if overload.body??>, ${overload.body}</#if>);
     }<#else>overload(module, {
         <#list method.overloads as overload>'${overload.params?size}': function (<#list overload.params as param>${param}<#if param_has_next>, </#if></#list>) {

@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.coodex.concrete</groupId>
         <artifactId>concrete-pom</artifactId>
-        <version>0.5.0-RC3</version>
+        <version>0.5.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -223,6 +223,12 @@
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-rx-observable</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-rx-rxjava3</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 

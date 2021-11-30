@@ -21,7 +21,7 @@ let setPollingState = function (module, state) {
 let _polling = function (module) {
     let onBroadcast = getConfigItem(module, 'onBroadcast')
     let pollingTimeout = getConfigItem(module, 'pollingTimeout')
-    execute(module, `/Concrete/polling<#if style>/${r'${pollingTimeout}'}</#if>`, 'json', <#if style>'get'<#else>'post', pollingTimeout</#if>).then((value) => {
+    execute(module, `/Concrete/polling`, 'json', 'post', pollingTimeout).then((value) => {
         if (typeof onBroadcast === 'function' && value.length > 0) {
             for (let i = 0; i < value.length; i++) {
                 try {

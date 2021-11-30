@@ -42,8 +42,8 @@ import static org.coodex.concrete.jaxrs.Predicates.removePredicate;
 public class JaxrsUnit extends AbstractUnit<JaxrsParam/*, JaxrsModule*/> {
 
 
-    private List<JaxrsParam> pojo;
     private final String name;
+    private List<JaxrsParam> pojo;
     private String declaredName = null;
 
     public JaxrsUnit(Method method, JaxrsModule module) {
@@ -60,7 +60,7 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam/*, JaxrsModule*/> {
     }
 
     private void validation() {
-        int pojoCount = _getPojo().size();
+        int pojoCount = getPojoCount();
 //        for (Param param : parameters) {
 //            if (!isPrimitive(param.getType()) ||
 //                    (param.getType() == String.class && param.getDeclaredAnnotation(BigString.class) != null))
@@ -116,54 +116,7 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam/*, JaxrsModule*/> {
     }
 
     private String getNameOnInit() {
-        if (JaxRSHelper.used024Behavior()) {
-
-//            List<Class> inheritedChain = ConcreteHelper.inheritedChain(
-//                    getMethod().getDeclaringClass(), getDeclaringModule().getInterfaceClass());
-//            if (inheritedChain == null)
-//                inheritedChain = Arrays.asList();
-//
-//            StringBuffer buffer = new StringBuffer();
-//            for (Class c : inheritedChain) {
-//                String serviceName = ConcreteHelper.getServiceName(c);
-//                if (!Common.isBlank(serviceName))
-//                    buffer.append(slash(Common.camelCase(serviceName, true)));
-//            }
-//
-//            ConcreteService microService = getMethod().getAnnotation(ConcreteService.class);
-//            buffer.append(slash(microService == null ? removePredicate(getMethod().getName()) : microService.value()));
-//
-//            String toTest = slash(getDeclaringModule().getName())
-//                    + buffer.toString();
-//
-//            for (Param parameter : getParameters()) {
-//                String pathParamValue = getPathParam(parameter);
-//                if (pathParamValue != null) {
-//                    String restfulNode = "{" + pathParamValue + "}";
-//
-//                    if (toTest == null || toTest.indexOf(restfulNode) < 0) {
-//                        buffer.append(slash(restfulNode));
-//                    }
-//                }
-//            }
-//            return buffer.toString();
-            StringBuilder unitName = new StringBuilder(getDeclaredName());
-            String toTest = slash(getDeclaringModule().getName()) + getDeclaredName();
-
-            for (JaxrsParam parameter : getParameters()) {
-                String pathParamValue = getPathParam(parameter);
-                if (pathParamValue != null) {
-                    String restfulNode = "{" + pathParamValue + "}";
-
-                    if (!toTest.contains(restfulNode)) {
-                        unitName.append(slash(restfulNode));
-                    }
-                }
-            }
-            return unitName.toString();
-        } else {
-            return getDeclaredName();
-        }
+        return getDeclaredName();
     }
 
     private String getUnitDeclaredName() {

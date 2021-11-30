@@ -19,7 +19,6 @@ package org.coodex.concrete.apitools.jaxrs.axios;
 import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.apitools.jaxrs.JaxrsRenderHelper;
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
@@ -58,7 +57,7 @@ public class AxiosCodeRenderer extends AbstractRenderer {
         List<JaxrsModule> moduleList = loadModules(RENDER_NAME, packages);
         Map<String, Object> versionAndStyle = new HashMap<>();
         versionAndStyle.put("version", ConcreteHelper.VERSION);
-        versionAndStyle.put("style", JaxRSHelper.used024Behavior());
+//        versionAndStyle.put("style", JaxRSHelper.used024Behavior());
 
         writeTo("jaxrs/concrete.js", "concrete.ftl", versionAndStyle);
         for (JaxrsModule module : moduleList) {
@@ -66,32 +65,35 @@ public class AxiosCodeRenderer extends AbstractRenderer {
             param.put("moduleName", moduleName);
             param.put("serviceName", module.getInterfaceClass().getSimpleName());
 
-            Map<String,Map<String,Object>> methods = new HashMap<>();
+            Map<String, Map<String, Object>> methods = new HashMap<>();
 
-            for(JaxrsUnit unit : module.getUnits()){
+            for (JaxrsUnit unit : module.getUnits()) {
                 String methodName = unit.getMethod().getName();
                 Map<String, Object> method = methods.get(methodName);
-                if(method == null){
+                if (method == null) {
                     method = new HashMap<>();
                     method.put("name", methodName);
-                    methods.put(methodName,method);
+                    methods.put(methodName, method);
                 }
+
+                method.put("jsdoc", JaxrsRenderHelper.getDoc(unit));
+
                 List<Map<String, Object>> overloads = cast(method.get("overloads"));
-                if(overloads == null){
+                if (overloads == null) {
                     overloads = new ArrayList<>();
                     method.put("overloads", overloads);
                 }
                 Map<String, Object> overload = new HashMap<>();
                 overloads.add(overload);
                 List<String> params = new ArrayList<>();
-                for(JaxrsParam p: unit.getParameters()){
+                for (JaxrsParam p : unit.getParameters()) {
                     params.add(p.getName());
                 }
                 overload.put("paramCount", unit.getParameters().length);
                 overload.put("params", params);
                 overload.put("body", JaxrsRenderHelper.getBody(unit));
                 overload.put("url", JaxrsRenderHelper.getMethodPath(module, unit));
-                overload.put("resultType",String.class.equals(unit.getReturnType()) ? "text" : "json");
+                overload.put("resultType", String.class.equals(unit.getReturnType()) ? "text" : "json");
                 overload.put("httpMethod", unit.getInvokeType());
 
 

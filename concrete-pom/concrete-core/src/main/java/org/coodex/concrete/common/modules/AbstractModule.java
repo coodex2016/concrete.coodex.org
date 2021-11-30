@@ -30,7 +30,7 @@ import static org.coodex.concrete.common.ConcreteHelper.isConcreteService;
  */
 //@SuppressWarnings("rawtypes")
 public abstract class AbstractModule<UNIT extends AbstractUnit<? extends AbstractParam>>
-        implements Annotated, Comparable<AbstractModule<UNIT>> {
+        implements Annotated, Comparable<AbstractModule<UNIT>>, Documentable {
 
     private Class<?> interfaceClass;
 
@@ -93,6 +93,7 @@ public abstract class AbstractModule<UNIT extends AbstractUnit<? extends Abstrac
     /**
      * @return 文档化的标题
      */
+    @Override
     public String getLabel() {
         return getDesc() == null ? getName() : getDesc().name();
     }
@@ -100,6 +101,7 @@ public abstract class AbstractModule<UNIT extends AbstractUnit<? extends Abstrac
     /**
      * @return 服务模块说明
      */
+    @Override
     public String getDescription() {
         return getDesc() == null ? null : getDesc().description();
     }

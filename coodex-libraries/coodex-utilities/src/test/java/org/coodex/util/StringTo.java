@@ -16,6 +16,8 @@
 
 package org.coodex.util;
 
+import java.util.Observable;
+
 public class StringTo {
 
     public static void main(String[] args) {
@@ -23,5 +25,6 @@ public class StringTo {
         System.out.println(Common.to("1",3l));
         System.out.println(Common.to("1",true));
         System.out.println(Common.to("1","1"));
+        Observable observable;
     }
 }

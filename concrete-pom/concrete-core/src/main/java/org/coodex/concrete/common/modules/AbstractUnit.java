@@ -35,7 +35,7 @@ import java.util.List;
  */
 //@SuppressWarnings({"rawtypes"})
 public abstract class AbstractUnit<PARAM extends AbstractParam/*, MODULE extends AbstractModule*/>
-        implements Annotated, Comparable<AbstractUnit<PARAM>> {
+        implements Annotated, Comparable<AbstractUnit<PARAM>>, Documentable {
 
     private static final ServiceLoader<RoleNameMapper> ROLE_NAME_MAPPER = new LazyServiceLoader<RoleNameMapper>(
             () -> role -> role
@@ -85,6 +85,7 @@ public abstract class AbstractUnit<PARAM extends AbstractParam/*, MODULE extends
     /**
      * @return 文档化的名称
      */
+    @Override
     public String getLabel() {
         return getDesc() == null ? getName() : getDesc().name();
     }
@@ -92,6 +93,7 @@ public abstract class AbstractUnit<PARAM extends AbstractParam/*, MODULE extends
     /**
      * @return 服务说明
      */
+    @Override
     public String getDescription() {
         return getDesc() == null ? null : getDesc().description();
     }

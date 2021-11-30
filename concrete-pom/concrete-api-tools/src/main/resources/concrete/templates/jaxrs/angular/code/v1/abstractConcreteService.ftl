@@ -112,7 +112,7 @@ export class Broadcast extends AbstractConcreteService {
     }
 
     private polling(timeOut: number): Observable<any> {
-        return this.http.request(<#if style>this.$$getServiceRoot() + `/Concrete/polling/${timeOut}`, this.defaultRequestOptions('GET')<#else>this.$$getServiceRoot() + `/Concrete/polling`, this.defaultRequestOptions('POST').merge(new RequestOptions({ body: timeOut }))</#if>)
+        return this.http.request(this.$$getServiceRoot() + `/Concrete/polling`, this.defaultRequestOptions('POST').merge(new RequestOptions({ body: timeOut })))
             .map(this.extractData)
             .catch(this.handleError);
     }

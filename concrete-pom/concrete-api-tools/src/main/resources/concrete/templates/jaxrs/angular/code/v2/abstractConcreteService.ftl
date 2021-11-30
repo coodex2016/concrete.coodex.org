@@ -156,7 +156,7 @@ export class Broadcast extends AbstractConcreteService {
     }
 
     private polling(timeOut: number): Observable<any> {
-        return this.http.request(<#if style>'GET', Broadcast.$$getServiceRoot() + `/Concrete/polling/${timeOut}`, Broadcast.defaultRequestOptions()<#else>'POST', Broadcast.$$getServiceRoot() + `/Concrete/polling`, Broadcast.defaultRequestOptions(timeOut)</#if>)
+        return this.http.request('POST', Broadcast.$$getServiceRoot() + `/Concrete/polling`, Broadcast.defaultRequestOptions(timeOut))
             <#if rxjsVersion?default(6) lt 6>.map(Broadcast.extractData)
             .catch(Broadcast.handleError);<#else>.pipe(map(Broadcast.extractData), catchError(Broadcast.handleError));</#if>
     }

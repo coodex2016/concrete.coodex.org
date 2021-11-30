@@ -20,7 +20,7 @@
     <parent>
         <artifactId>concrete-pom</artifactId>
         <groupId>org.coodex.concrete</groupId>
-        <version>0.5.0-RC3</version>
+        <version>0.5.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -42,6 +42,7 @@
 
         <module>concrete-serializer-jackson2</module>
         <module>concrete-serializer-jsonb-jdk8</module>
+        <module>concrete-rx-rxjava3</module>
     </modules>
 
 

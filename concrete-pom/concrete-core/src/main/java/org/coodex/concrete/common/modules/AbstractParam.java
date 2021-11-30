@@ -32,7 +32,7 @@ import static org.coodex.util.Common.cast;
 /**
  * Created by davidoff shen on 2016-11-30.
  */
-public abstract class AbstractParam implements Annotated {
+public abstract class AbstractParam implements Annotated, Documentable {
 
     private final ReflectHelper.MethodParameter parameter;
     private final Description description;
@@ -43,11 +43,13 @@ public abstract class AbstractParam implements Annotated {
     }
 
 
+    @Override
     public String getLabel() {
         return description == null ? "" : description.name();
 //        return Common.isBlank(s) ? "　" : s;
     }
 
+    @Override
     public String getDescription() {
         return description == null ? "" : description.description();
 //        return Common.isBlank(s) ? "　" : s;

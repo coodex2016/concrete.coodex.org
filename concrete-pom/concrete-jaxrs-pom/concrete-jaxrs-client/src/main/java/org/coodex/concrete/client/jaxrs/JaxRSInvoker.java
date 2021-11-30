@@ -114,18 +114,15 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         Object toSubmit = null;
         JaxrsParam[] pojoParams = unit.getPojo();
         if (args != null) {
-            switch (pojoParams.length) {
-                case 0:
-                    break;
-                case 1:
-                    toSubmit = args[pojoParams[0].getIndex()];
-                    break;
-                default:
-                    Map<String, Object> body = new HashMap<>();
-                    for (JaxrsParam param : pojoParams) {
-                        body.put(param.getName(), args[param.getIndex()]);
-                    }
-                    toSubmit = body;
+            if (pojoParams.length != 0) {//                case 1:
+//                    toSubmit = args[pojoParams[0].getIndex()];
+//                    break;
+//            } else {
+                Map<String, Object> body = new HashMap<>();
+                for (JaxrsParam param : pojoParams) {
+                    body.put(param.getName(), args[param.getIndex()]);
+                }
+                toSubmit = body;
             }
         }
         return toSubmit;

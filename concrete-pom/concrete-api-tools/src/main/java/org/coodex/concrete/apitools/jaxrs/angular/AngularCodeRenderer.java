@@ -61,7 +61,7 @@ public class AngularCodeRenderer extends AbstractAngularRenderer<JaxrsUnit> {
             if (!exists(contextPath + "AbstractConcreteService.ts")) {
                 Map<String, Object> versionAndStyle = new HashMap<>();
                 versionAndStyle.put("version", ConcreteHelper.VERSION);
-                versionAndStyle.put("style", JaxRSHelper.used024Behavior());
+//                versionAndStyle.put("style", JaxRSHelper.used024Behavior());
 
                 writeTo(contextPath + "AbstractConcreteService.ts",
                         "abstractConcreteService.ftl",

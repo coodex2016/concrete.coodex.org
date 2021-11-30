@@ -43,18 +43,18 @@ public class JaxRSHelper {
     //    private final static Map<Class<?>, Module> MODULE_CACHE = new HashMap<>();
     private static final JaxRSModuleMaker JAX_RS_MODULE_MAKER = new JaxRSModuleMaker();
 
-    /**
-     * 0.2.4-SNAPSHOT以前版本，基础类型参数默认使用path传递，之后，默认使用body传递，除非明确定义了path变量
-     *
-     * @return 是否使用旧版本的默认传参行为
-     */
-    public static boolean used024Behavior() {
-        String style = System.getProperty("jaxrs.style.before.024");
-        if (style == null) {
-            style = Config.get("jaxrs.style.before.024");
-        }
-        return Common.toBool(style, false);
-    }
+//    /**
+//     * 0.2.4-SNAPSHOT以前版本，基础类型参数默认使用path传递，之后，默认使用body传递，除非明确定义了path变量
+//     *
+//     * @return 是否使用旧版本的默认传参行为
+//     */
+//    public static boolean used024Behavior() {
+//        String style = System.getProperty("jaxrs.style.before.024");
+//        if (style == null) {
+//            style = Config.get("jaxrs.style.before.024");
+//        }
+//        return Common.toBool(style, false);
+//    }
 
     public static boolean postPrimitive(JaxrsParam param) {
         return !param.isPathParam();
