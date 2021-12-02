@@ -194,6 +194,18 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam/*, JaxrsModule*/> {
     }
 
     @Override
+    protected void afterInit() {
+        if (getPojoCount() > 0) {
+            if (getPojoCount() == 1 && !isPrimitive(getPojo()[0].getType())) {
+                return;
+            }
+            for (JaxrsParam param : getPojo()) {
+                param.setAssembled(true);
+            }
+        }
+    }
+
+    @Override
     protected JaxrsParam buildParam(Method method, int index) {
 //        String toTest = getDeclaredName();
 //        int paramCount = method.getParameterTypes().length;
@@ -253,5 +265,9 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam/*, JaxrsModule*/> {
 
     public JaxrsParam[] getPojo() {
         return _getPojo().toArray(new JaxrsParam[0]);
+    }
+
+    public boolean isAssembledPojo() {
+        return pojo != null && pojo.stream().anyMatch(JaxrsParam::isAssembled);
     }
 }

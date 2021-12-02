@@ -30,6 +30,8 @@ public class JaxrsParam extends AbstractParam {
     //    private final Description description;
     private boolean pathParam = true;
 
+    private boolean assembled = false;
+
     public JaxrsParam(Method method, int index) {
         super(method, index);
     }
@@ -40,5 +42,13 @@ public class JaxrsParam extends AbstractParam {
 
     public void setPathParam(boolean pathParam) {
         this.pathParam = pathParam;
+    }
+
+    public boolean isAssembled() {
+        return assembled;
+    }
+
+    public void setAssembled(boolean assembled) {
+        this.assembled = assembled;
     }
 }

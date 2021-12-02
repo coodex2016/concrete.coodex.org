@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "concrete.client.jaxrs.charset",
+      "type": "java.lang.String",
+      "description": "jaxrs编码字符集。键可以是concrete.client.[moduleName.]jaxrs.charset"
+    },
+    {
+      "name": "concrete.client.jaxrs.ssl",
+      "type": "java.lang.String",
+      "description": "https客户端的sslContext名称。键可以是concrete.client.[moduleName.]jaxrs.ssl"
+    },
+    {
+      "name": "concrete.client.jaxrs.connectTimeout",
+      "type": "java.lang.Long",
+      "description": "jaxrs客户端连接超时时间。键可以是concrete.client.[moduleName.]jaxrs。connectTimeout"
+    }
+  ]
+}

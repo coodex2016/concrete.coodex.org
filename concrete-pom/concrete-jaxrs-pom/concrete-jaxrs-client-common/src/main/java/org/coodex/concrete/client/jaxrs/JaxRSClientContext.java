@@ -16,10 +16,18 @@
 
 package org.coodex.concrete.client.jaxrs;
 
-import org.coodex.concrete.ClientException;
-import org.coodex.util.SelectableService;
+import org.coodex.concrete.client.ClientSideContext;
+import org.coodex.concrete.client.Destination;
+import org.coodex.concrete.common.DefinitionContext;
 
-public interface ExceptionMapper extends SelectableService<Throwable> {
+import static org.coodex.concrete.common.ConcreteHelper.VERSION;
+import static org.coodex.concrete.jaxrs.JaxRSHelper.KEY_CLIENT_PROVIDER;
 
-    ClientException mapException(Throwable th);
+public class JaxRSClientContext extends ClientSideContext {
+
+    public JaxRSClientContext(Destination destination, DefinitionContext context, String agent) {
+        super(destination, context);
+        getSubjoin().add(KEY_CLIENT_PROVIDER, agent + " " + VERSION);
+    }
+
 }

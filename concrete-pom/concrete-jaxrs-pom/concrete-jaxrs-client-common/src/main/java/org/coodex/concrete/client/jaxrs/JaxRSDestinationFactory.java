@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2021 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,9 @@ public class JaxRSDestinationFactory extends AbstractDestinationFactory<JaxRSDes
         destination.setLogLevel(ClientHelper.getString(module, "jaxrs.logLevel"));
         destination.setSsl(ClientHelper.getString(module, "jaxrs.ssl"));
         destination.setCharset(ClientHelper.getString(module, "jaxrs.charset"));
-//        destination.setAsync(
-//                Common.toBool(ConcreteHelper.getString(TAG_CLIENT, module, "async"), true)
-//        );
+        destination.setConnectTimeout(Common.toLong(
+                ClientHelper.getString(module,"jaxrs.connectTimeout"), 2000L
+        ));
         return destination;
     }
 

@@ -140,30 +140,30 @@ public class SwaggerHelper {
             RequestBody body = new RequestBody();
             Content content = new Content();
             MediaType mediaType = new MediaType();
-//            if (unit.getPojoCount() == 1) {
-//                JaxrsParam param = unit.getPojo()[0];
-//                mediaType.schema(
-//                        schema(toReference(param.getGenericType(), unit.getDeclaringModule().getInterfaceClass()))
-//                                .title(param.getLabel()).description(param.getDescription())
-//                )
-//                        .addExamples("default", new Example().value(
-//                                Mocker.mockParameter(unit.getMethod(), param.getIndex(), unit.getDeclaringModule().getInterfaceClass())
-//                        ));
-//            } else {
-            Map<String, Object> mocked = new HashMap<>();
-            Schema<?> objectSchema = new Schema<>();
+            if (!unit.isAssembledPojo() && unit.getPojoCount() > 0) {
+                JaxrsParam param = unit.getPojo()[0];
+                mediaType.schema(
+                                schema(toReference(param.getGenericType(), unit.getDeclaringModule().getInterfaceClass()))
+                                        .title(param.getLabel()).description(param.getDescription())
+                        )
+                        .addExamples("default", new Example().value(
+                                Mocker.mockParameter(unit.getMethod(), param.getIndex(), unit.getDeclaringModule().getInterfaceClass())
+                        ));
+            } else {
+                Map<String, Object> mocked = new HashMap<>();
+                Schema<?> objectSchema = new Schema<>();
 
-            for (JaxrsParam param : unit.getPojo()) {
-                objectSchema.addProperties(param.getName(),
-                        schema(toReference(param.getGenericType(), unit.getDeclaringModule().getInterfaceClass()))
-                                .title(param.getLabel()).description(param.getDescription())
-                );
-                mocked.put(param.getName(), Mocker.mockParameter(unit.getMethod(), param.getIndex(), unit.getDeclaringModule().getInterfaceClass()));
+                for (JaxrsParam param : unit.getPojo()) {
+                    objectSchema.addProperties(param.getName(),
+                            schema(toReference(param.getGenericType(), unit.getDeclaringModule().getInterfaceClass()))
+                                    .title(param.getLabel()).description(param.getDescription())
+                    );
+                    mocked.put(param.getName(), Mocker.mockParameter(unit.getMethod(), param.getIndex(), unit.getDeclaringModule().getInterfaceClass()));
+                }
+                objectSchema.example(mocked);
+                mediaType.schema(objectSchema).addExamples("default",
+                        new Example().value(mocked));
             }
-            objectSchema.example(mocked);
-            mediaType.schema(objectSchema).addExamples("default",
-                    new Example().value(mocked));
-//            }
             content.addMediaType("application/json", mediaType);
             body.content(content);
             operation.requestBody(body);

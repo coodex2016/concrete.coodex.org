@@ -38,6 +38,8 @@
         <module>concrete-jaxrs-spring-boot</module>
         <module>concrete-jaxrs-swagger</module>
         <module>concrete-jaxrs-client-jersey</module>
+        <module>concrete-jaxrs-client-spring-cloud</module>
+        <module>concrete-jaxrs-client-common</module>
     </modules>
 
 

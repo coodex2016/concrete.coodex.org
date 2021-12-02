@@ -63,7 +63,7 @@
         <junit.version>4.13.1</junit.version>
         <jedis.version>3.2.0</jedis.version>
         <xmemcached.version>2.4.6</xmemcached.version>
-        <lombok.version>1.18.18</lombok.version>
+        <lombok.version>1.18.20</lombok.version>
         <jts.version>1.18.2</jts.version>
         <fastjson.version>1.2.75</fastjson.version>
         <slf4j.version>1.7.30</slf4j.version>
@@ -72,7 +72,7 @@
         <cglib.version>3.2.12</cglib.version>
         <freemarker.version>2.3.28</freemarker.version>
 
-        <spring.framework.version>5.3.4</spring.framework.version>
+        <spring.framework.version>5.3.13</spring.framework.version>
     </properties>
 
     <profiles>

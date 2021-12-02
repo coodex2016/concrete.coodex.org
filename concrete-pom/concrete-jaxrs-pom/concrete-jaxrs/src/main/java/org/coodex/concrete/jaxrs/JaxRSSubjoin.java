@@ -17,9 +17,11 @@
 package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.common.AbstractChangeableSubjoin;
+import org.coodex.util.Common;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -38,8 +40,32 @@ public class JaxRSSubjoin extends AbstractChangeableSubjoin {
         loadFromHeader(httpHeaders.getRequestHeaders());
     }
 
-    public JaxRSSubjoin(MultivaluedMap<String, Object> multivaluedMap){
+    public JaxRSSubjoin(MultivaluedMap<String, ? extends Object> multivaluedMap) {
         loadFromHeader(multivaluedMap);
+    }
+
+    private static void appendStringTo(List<String> builder, Object obj) {
+        if (obj instanceof String) {
+            builder.add((String) obj);
+        } else if (obj instanceof Collection) {
+            Collection<?> collection = (Collection<?>) obj;
+            collection.forEach(el -> appendStringTo(builder, el));
+        } else if (obj != null) {
+            if (obj.getClass().isArray()) {
+                Object[] array = Common.cast(obj);
+                for (Object el : array) {
+                    appendStringTo(builder, obj);
+                }
+            } else {
+                builder.add(obj.toString());
+            }
+        }
+    }
+
+    private static List<String> toStringList(List<? extends Object> list) {
+        List<String> result = new ArrayList<>();
+        appendStringTo(result, list);
+        return result;
     }
 
     private void loadFromHeader(MultivaluedMap<String, ? extends Object> multivaluedMap) {
@@ -51,11 +77,6 @@ public class JaxRSSubjoin extends AbstractChangeableSubjoin {
         }
     }
 
-    private static List<String> toStringList(List<? extends Object> list){
-        return Arrays.asList(list.toArray(new String[0]));
-    }
-
-
     // https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
     // Each header field consists of a name followed by a colon (":") and the field value. Field names are case-insensitive
     //
@@ -66,7 +87,7 @@ public class JaxRSSubjoin extends AbstractChangeableSubjoin {
 
     @Override
     public List<String> getList(String name) {
-        if( name == null) return null;
+        if (name == null) return null;
         List<String> values = super.getList(name);
         return values == null ? super.getList(name.toLowerCase()) : values;
     }

@@ -30,8 +30,10 @@ public class JaxrsRenderHelper {
         JaxrsParam[] pojoParams = unit.getPojo();
         //            case 1:
         //                return pojoParams[0].getName();
-        if (unit.getPojoCount() == 0) {
+        if (pojoParams.length == 0) {
             return null;
+        } else if (pojoParams.length == 1 && !pojoParams[0].isAssembled()) {
+            return pojoParams[0].getName();
         }
         StringJoiner joiner = new StringJoiner(", ");
 //                StringBuilder builder = new StringBuilder("{ ");
@@ -42,7 +44,7 @@ public class JaxrsRenderHelper {
         }
 //                builder.append(" }");
 //                return builder.toString();
-        return "{ " + joiner.toString() + " }";
+        return "{ " + joiner + " }";
     }
 
     private static String getDesc(Documentable documentable) {

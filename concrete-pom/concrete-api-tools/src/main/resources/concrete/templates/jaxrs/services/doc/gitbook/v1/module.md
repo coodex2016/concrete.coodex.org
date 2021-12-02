@@ -14,7 +14,8 @@ ${module.description!""}
 ${unit.description!""}
 
 
-<#if unit.signable??>* **sign:** ${tool.formatSignable(unit.signable)}</#if><#assign paramCount=unit.parameters?size>
+* **method name:** ${unit.method.name}<#if unit.signable??>
+* **sign:** ${tool.formatSignable(unit.signable)}</#if><#assign paramCount=unit.parameters?size>
 * **path:** ${module.name}${unit.name}
 * **Http Method:** ${unit.invokeType}
 * **acl:** <#if unit.accessAllow??><#list unit.roles as role>${role} </#list><#else><#if module.domain?? >${module.domain.value()}.ANY<#else>Anonymous</#if></#if>
@@ -23,7 +24,7 @@ ${unit.description!""}
 
 | ParamName | Method | Label | Type                  | Description |
 | --------- | -- | ---- | --------------------- | ------------ |<#list unit.parameters as param>
-| ${param.name} | <#if !param.pathParam>${unit.invokeType}</#if> | ${param.label} | ${tool.formatTypeStr(param.genericType, module.interfaceClass)} | ${tool.tableSafe(param.description)} |</#list><#else>NONE</#if>
+| <#if !param.assembled >-<#else>${param.name}</#if> | <#if !param.pathParam>${unit.invokeType}</#if> | ${param.label} | ${tool.formatTypeStr(param.genericType, module.interfaceClass)} | ${tool.tableSafe(param.description)} |</#list><#else>NONE</#if>
 
 <#if genResultJson?default(true)><#noescape>${tool.mockResult(unit)}</#noescape></#if>
 

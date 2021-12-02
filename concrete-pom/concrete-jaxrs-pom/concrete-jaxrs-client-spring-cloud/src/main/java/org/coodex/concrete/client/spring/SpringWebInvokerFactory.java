@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2021 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,33 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.client.jaxrs;
+package org.coodex.concrete.client.spring;
 
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.Invoker;
 import org.coodex.concrete.client.InvokerFactory;
 import org.coodex.concrete.client.RxInvoker;
 import org.coodex.concrete.client.impl.SyncToRxInvoker;
+import org.coodex.concrete.client.jaxrs.JaxRSDestination;
+import org.coodex.util.SPI;
 import org.coodex.util.SingletonMap;
 
-public class JaxRSInvokerFactory implements InvokerFactory {
+@SPI.Ordered(10000)
+public class SpringWebInvokerFactory implements InvokerFactory {
 
-    private static final SingletonMap<Destination, JaxRSInvoker> INVOKER_MAP
-            = SingletonMap.<Destination, JaxRSInvoker>builder()
-            .function(key -> new JaxRSInvoker((JaxRSDestination) key)).build();
+    private static final SingletonMap<Destination, SpringWebInvoker> INVOKERS
+            = SingletonMap.<Destination, SpringWebInvoker>builder()
+            .function(SpringWebInvoker::new)
+            .build();
 
     @Override
     public Invoker getSyncInvoker(Destination destination) {
-        return INVOKER_MAP.get(destination);
+        return INVOKERS.get(destination);
     }
 
     @Override
     public RxInvoker getRxInvoker(Destination destination) {
-        return new SyncToRxInvoker(INVOKER_MAP.get(destination));
+        return new SyncToRxInvoker(INVOKERS.get(destination));
     }
 
     @Override
