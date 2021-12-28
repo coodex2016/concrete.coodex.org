@@ -106,6 +106,8 @@ public class SignUtil {
         if (method.getReturnType().equals(void.class) || method.getReturnType().equals(Void.class)) {
             return null;
         }
+        if (method.getDeclaringClass().getName().startsWith("java")) return null;
+
         String methodName = method.getName();
         if (methodName.startsWith("get")) {
             return Common.lowerFirstChar(methodName.substring(3));

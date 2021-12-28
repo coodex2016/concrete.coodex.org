@@ -100,6 +100,9 @@ public class MockerTest {
         public Integer integerValue;
         @Mock.Number("[-2.0f, 2.0f]")
         public Float floatValue;
+
+        @Mock.Number(value = "[1000.0, 2000.0]",digits = 2)
+        public String floatStr;
         public Pojo pojo;
 
         @Mock.Dimension(size = 5)

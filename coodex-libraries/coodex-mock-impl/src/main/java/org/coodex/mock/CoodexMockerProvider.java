@@ -48,11 +48,11 @@ public class CoodexMockerProvider implements MockerProvider {
     /**
      * 用来存放模拟检索泛型变量的上下文
      */
-    private static StackClosureContext<Type> TYPE_CONTEXT = new StackClosureContext<>();
+    private static final StackClosureContext<Type> TYPE_CONTEXT = new StackClosureContext<>();
     /**
      * 单值模拟定义的上下文
      */
-    private static MapClosureContext<String, List<Annotation>> MOCKER_DEFINITION_CONTEXT = new MapClosureContext<String, List<Annotation>>() {
+    private static final MapClosureContext<String, List<Annotation>> MOCKER_DEFINITION_CONTEXT = new MapClosureContext<String, List<Annotation>>() {
         @Override
         public Object call(Map<String, List<Annotation>> map, Supplier<?> supplier) {
             Map<String, List<Annotation>> contextMap = super.get();
@@ -71,44 +71,44 @@ public class CoodexMockerProvider implements MockerProvider {
     /**
      * 序列模拟器定义上下文
      */
-    private static MapClosureContext<String, SequenceMockerFactory<?>> SEQUENCE_MOCKER_CONTEXT = new MapClosureContext<>();
+    private static final MapClosureContext<String, SequenceMockerFactory<?>> SEQUENCE_MOCKER_CONTEXT = new MapClosureContext<>();
     /**
      * 集合运行环境上下文
      */
-    private static StackClosureContext<Map<String, SequenceMocker<?>>> COLLECTION_CONTEXT = new StackClosureContext<>();
+    private static final StackClosureContext<Map<String, SequenceMocker<?>>> COLLECTION_CONTEXT = new StackClosureContext<>();
     /**
      * 集合模拟的维度信息上下文
      */
-    private static StackClosureContext<CollectionDimensions> DIMENSIONS_CONTEXT = new StackClosureContext<>();
+    private static final StackClosureContext<CollectionDimensions> DIMENSIONS_CONTEXT = new StackClosureContext<>();
     /**
      * 第三方类配置信息上下文
      */
-    private static MapClosureContext<Class<?>, TypeAssignation> POJO_ASSIGNATION_CONTEXT = new MapClosureContext<>();
+    private static final MapClosureContext<Class<?>, TypeAssignation> POJO_ASSIGNATION_CONTEXT = new MapClosureContext<>();
     /**
      * pojo深度信息上下文
      */
-    private static PojoDeepStackContext POJO_DEEP_CONTEXT = new PojoDeepStackContext();
+    private static final PojoDeepStackContext POJO_DEEP_CONTEXT = new PojoDeepStackContext();
     /**
      *
      */
-    private static ServiceLoader<SequenceMockerFactory<?>> SEQUENCE_MOCKER_FACTORIES = new LazyServiceLoader<SequenceMockerFactory<?>>() {
+    private static final ServiceLoader<SequenceMockerFactory<?>> SEQUENCE_MOCKER_FACTORIES = new LazyServiceLoader<SequenceMockerFactory<?>>() {
     };
 
-    private static Object INJECT_UNENFORCED = new Object();
-    private static Object STRATEGY_UNENFORCED = new Object();
-    private static Object STRATEGY_RETRY = new Object();
+    private static final Object INJECT_UNENFORCED = new Object();
+    private static final Object STRATEGY_UNENFORCED = new Object();
+    private static final Object STRATEGY_RETRY = new Object();
 
     /**
      * 所有的TypeMocker实例，使用单例缓存
      */
-    private static Singleton<Collection<TypeMocker<Annotation>>> TYPE_MOCKERS = Singleton.with(
+    private static final Singleton<Collection<TypeMocker<Annotation>>> TYPE_MOCKERS = Singleton.with(
             () -> new LazyServiceLoader<TypeMocker<Annotation>>() {
             }.getAll().values()
     );
-    private static Object NOT_COLLECTION = new Object();
-    private static Map<Class<?>, TypeAssignation> GLOBAL_ASSIGNATION = null;
-    private static ServiceLoader<RelationStrategy> RELATION_STRATEGIES = new LazyServiceLoader<RelationStrategy>() {
+    private static final Object NOT_COLLECTION = new Object();
+    private static final ServiceLoader<RelationStrategy> RELATION_STRATEGIES = new LazyServiceLoader<RelationStrategy>() {
     };
+    private static volatile Map<Class<?>, TypeAssignation> GLOBAL_ASSIGNATION = null;
 
     public CoodexMockerProvider() {
         if (GLOBAL_ASSIGNATION == null) {
@@ -360,7 +360,7 @@ public class CoodexMockerProvider implements MockerProvider {
                                     }
 
                                     if (toUse == null) {
-                                        throw new MockException("none RelationStrategy accept [" + relation.strategy() + "]. " + relation.toString());
+                                        throw new MockException("none RelationStrategy accept [" + relation.strategy() + "]. " + relation);
                                     }
                                     if (isAllMocked(relation, mocked, typeAssignation)) {
                                         Object result;
@@ -468,7 +468,7 @@ public class CoodexMockerProvider implements MockerProvider {
                         List<PojoProperty> properties = new ArrayList<>(pojoInfo.getProperties());
                         // 排序，有引用的在后
                         properties.sort(new Comparator<PojoProperty>() {
-                            int[] range = {0, -1, 1, 0};
+                            final int[] range = {0, -1, 1, 0};
 
                             @Override
                             public int compare(PojoProperty o1, PojoProperty o2) {
@@ -585,7 +585,7 @@ public class CoodexMockerProvider implements MockerProvider {
         return null;
     }
 
-    private Map<?,?> buildMapInstance(Class<? extends Map<?,?>> mapClass, int d, Annotation... annotations) {
+    private Map<?, ?> buildMapInstance(Class<? extends Map<?, ?>> mapClass, int d, Annotation... annotations) {
         if (Map.class.equals(mapClass)) {
             return DIMENSIONS_CONTEXT.get().ordered(d) ? new LinkedHashMap<>() : new HashMap<>();
         }
@@ -762,7 +762,7 @@ public class CoodexMockerProvider implements MockerProvider {
             @Override
             public Object get() {
                 if (DIMENSIONS_CONTEXT.get().nullable(d)) return null;
-                Map<?,?> instance = buildMapInstance(mapClass, d, annotations);
+                Map<?, ?> instance = buildMapInstance(mapClass, d, annotations);
                 int size = DIMENSIONS_CONTEXT.get().getSize(d);
                 int retry = size * 3;
                 while (instance.size() < size && retry-- > 0) {
@@ -928,9 +928,9 @@ public class CoodexMockerProvider implements MockerProvider {
     }
 
     private static class CollectionDimensions {
-        private Mock.Dimension[] dimensions;
-        private int[] corrected;
-        private boolean same;
+        private final Mock.Dimension[] dimensions;
+        private final int[] corrected;
+        private final boolean same;
 
         CollectionDimensions(Mock.Dimension[] dimensions, boolean same) {
             this.dimensions = dimensions;

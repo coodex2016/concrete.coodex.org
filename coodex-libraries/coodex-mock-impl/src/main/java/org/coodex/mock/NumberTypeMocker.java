@@ -21,6 +21,7 @@ import org.coodex.util.Singleton;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,22 +37,22 @@ import static org.coodex.util.Common.cast;
  */
 public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
+    private static final char[] IGNORE = " \t\r\n".toCharArray();
+    private static final char[] RANGE_START = "[(".toCharArray();
+    private static final char[] RANGE_END = ")]".toCharArray();
+    private static final char[] DELIMITER = ",".toCharArray();
+    private static final char[] LEFT_BRACKETS_INCLUDE = "[".toCharArray();
+    private static final char[] RIGHT_BRACKETS_INCLUDE = "]".toCharArray();
+    private static final Singleton<NumberTypeMocker> instance = Singleton.with(NumberTypeMocker::new);
     static Class<?>[] SUPPORTED = new Class<?>[]{
             byte.class, Byte.class,
             short.class, Short.class,
             int.class, Integer.class,
             long.class, Long.class,
             float.class, Float.class,
-            double.class, Double.class
+            double.class, Double.class,
+            String.class
     };
-    private static char[] IGNORE = " \t\r\n".toCharArray();
-    private static char[] RANGE_START = "[(".toCharArray();
-    private static char[] RANGE_END = ")]".toCharArray();
-    private static char[] DELIMITER = ",".toCharArray();
-    private static char[] LEFT_BRACKETS_INCLUDE = "[".toCharArray();
-    private static char[] RIGHT_BRACKETS_INCLUDE = "]".toCharArray();
-
-    private static Singleton<NumberTypeMocker> instance = Singleton.with(NumberTypeMocker::new);
 
 //    public NumberTypeMocker() {
 //        instance = this;
@@ -254,15 +255,23 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
     public static Object mock(Type targetType, String range, int digits) {
         Class<?> c = getClassFromType(targetType);
-        int index = Common.indexOf(SUPPORTED, c);
+        if (String.class.equals(c)) {
+            BigDecimal bigDecimal = new BigDecimal(getAlternative(range, Float.class).mock().toString());
+            if (digits <= -1)
+                return bigDecimal.toString();
+            return bigDecimal.setScale(digits, RoundingMode.HALF_UP).toString();
+        } else {
+            int index = Common.indexOf(SUPPORTED, c);
+            return round(index, getAlternative(range, SUPPORTED[index]).mock(), digits);
+        }
 
-        return round(index, getAlternative(range, SUPPORTED[index]).mock(), digits);
     }
 
     private static Object round(int i, Object value, int digits) {
         if (digits == -1) return value;
 
-        final BigDecimal bigDecimal = new BigDecimal(value.toString()).setScale(digits, BigDecimal.ROUND_HALF_UP);
+        final BigDecimal bigDecimal = new BigDecimal(value.toString())
+                .setScale(digits, RoundingMode.HALF_UP);
         switch (i) {
             case 8:// float
             case 9:
@@ -550,7 +559,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
         @Override
         Double parseMin(String min) {
-            if (min.toLowerCase().equals("min")) {
+            if (min.equalsIgnoreCase("min")) {
                 return -Double.MAX_VALUE;
             } else {
                 return Double.parseDouble(min);
@@ -559,7 +568,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
         @Override
         Double parseMax(String max) {
-            if (max.toLowerCase().equals("max")) {
+            if (max.equalsIgnoreCase("max")) {
                 return Double.MAX_VALUE;
             } else {
                 return Double.parseDouble(max);
@@ -844,4 +853,5 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
             return (byte) random;
         }
     }
+
 }

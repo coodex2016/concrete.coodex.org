@@ -446,6 +446,7 @@ public @interface Mock {
          * @return 使用资源文件模拟，一行一个
          */
         java.lang.String txtResource() default "";
+
     }
 
 }
