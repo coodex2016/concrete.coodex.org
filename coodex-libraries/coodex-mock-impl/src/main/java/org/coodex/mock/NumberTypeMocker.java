@@ -54,13 +54,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
             String.class
     };
 
-//    public NumberTypeMocker() {
-//        instance = this;
-//    }
-
     static Object mock(Class<?> c) {
-//        if (instance == null)
-//            instance = new NumberTypeMocker();
         return instance.get().mock(null, null, c);
     }
 
@@ -107,24 +101,6 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
         }
         return list;
     }
-
-//    public static void main(String[] args) {
-//        String[] testStr = {
-//                "[min,0], 15, [100,MAX], max",
-//                "[0,1]",
-//                "(-100, 100)",
-//                "(-100, -5)",
-//                "[-1,1]"};
-//
-//        for (int i = 0; i < 2000; i++)
-//            for (String s : testStr) {
-//                getAlternative(s, Float.class).mock();
-//            }
-//
-//        for (String s : testStr) {
-//            System.out.println(getAlternative(s, short.class).mock());
-//        }
-//    }
 
     private static <T> Range<T> buildRange(String left, String right, Class<T> c) {
         if (!inArray(left.charAt(0), RANGE_START)) {
@@ -241,18 +217,6 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
         }
     }
 
-//    public static <T> T mock(String rangeStr, Class<T> tClass) {
-//        String DEFAULT_RANGE = "[min, max]";
-//        String range = (rangeStr == null || Common.isBlank(rangeStr.trim())) ? DEFAULT_RANGE : rangeStr;
-//        Class c = getClassFromType(tClass);
-//        int index = Common.findInArray(c, SUPPORTED);
-//        if (index < 0) {
-//            throw new MockException(tClass + " not supported.");
-//        }
-//        //noinspection unchecked
-//        return (T) getAlternative(range, SUPPORTED[index]);
-//    }
-
     public static Object mock(Type targetType, String range, int digits) {
         Class<?> c = getClassFromType(targetType);
         if (String.class.equals(c)) {
@@ -313,7 +277,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
     private static class Merge<T> implements Alternative<T> {
 
-        private List<Alternative<T>> alternatives = new ArrayList<>();
+        private final List<Alternative<T>> alternatives = new ArrayList<>();
         private int weight = 0;
 
         void add(Alternative<T> alternative) {
@@ -349,8 +313,8 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
     }
 
     private abstract static class Single<T> implements Alternative<T> {
-        private T value;
-        private String numberStr;
+        private final T value;
+        private final String numberStr;
 
         Single(String valueStr) {
             this.numberStr = valueStr;
@@ -596,7 +560,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
         private Double check(Double v) {
             if (v >= this.max || v < this.min)
-                throw new MockException("mock error: " + v + ". " + this.toString());
+                throw new MockException("mock error: " + v + ". " + this);
             else
                 return v;
         }
@@ -641,7 +605,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
         private Float check(Float v) {
             if (v >= this.max || v < this.min)
-                throw new MockException("mock error: " + v + ". " + this.toString());
+                throw new MockException("mock error: " + v + ". " + this);
             else
                 return v;
         }
@@ -653,7 +617,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
         @Override
         Float parseMin(String min) {
-            if (min.toLowerCase().equals("min")) {
+            if (min.equalsIgnoreCase("min")) {
                 return -Float.MAX_VALUE;
             } else {
                 return Float.parseFloat(min);
@@ -662,7 +626,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
         @Override
         Float parseMax(String max) {
-            if (max.toLowerCase().equals("max")) {
+            if (max.equalsIgnoreCase("max")) {
                 return Float.MAX_VALUE;
             } else {
                 return Float.parseFloat(max);

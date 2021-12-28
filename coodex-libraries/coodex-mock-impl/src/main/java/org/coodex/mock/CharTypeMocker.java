@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.Random;
 
 public class CharTypeMocker extends AbstractTypeMocker<Mock.Char> {
-    static Class<?>[] SUPPORTED_CLASSES = new Class<?>[]{
+    final static Class<?>[] SUPPORTED_CLASSES = new Class<?>[]{
             char.class, Character.class,
             String.class
     };
 
-    private static Singleton<CharTypeMocker> instance = Singleton.with(CharTypeMocker::new);
+    private static final Singleton<CharTypeMocker> instance = Singleton.with(CharTypeMocker::new);
 
 //    public CharTypeMocker() {
 //        instance = this;

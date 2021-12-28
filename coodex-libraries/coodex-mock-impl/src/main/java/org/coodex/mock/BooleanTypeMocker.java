@@ -6,7 +6,7 @@ import org.coodex.util.Singleton;
 import java.lang.reflect.Type;
 
 public class BooleanTypeMocker extends AbstractTypeMocker<Mock.Boolean> {
-    static Class<?>[] SUPPORTED = new Class<?>[]{
+    final static Class<?>[] SUPPORTED = new Class<?>[]{
             boolean.class, Boolean.class,//0,1
             byte.class, Byte.class,//2,3
             short.class, Short.class,//4,5
@@ -16,7 +16,7 @@ public class BooleanTypeMocker extends AbstractTypeMocker<Mock.Boolean> {
             String.class//12
     };
 
-    private static Singleton<BooleanTypeMocker> instance = Singleton.with(BooleanTypeMocker::new);
+    private static final Singleton<BooleanTypeMocker> instance = Singleton.with(BooleanTypeMocker::new);
 
 //    public BooleanTypeMocker() {
 //        instance = this;

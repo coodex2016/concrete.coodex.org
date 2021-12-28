@@ -40,11 +40,11 @@ public class StringTypeMocker extends AbstractTypeMocker<Mock.String> {
 
     private final static Logger log = LoggerFactory.getLogger(StringTypeMocker.class);
 
-    private static Class<?>[] SUPPORTED_CLASSES = new Class<?>[]{
+    private static final Class<?>[] SUPPORTED_CLASSES = new Class<?>[]{
             String.class
     };
 
-    private static Singleton<StringTypeMocker> instance = Singleton.with(StringTypeMocker::new);
+    private static final Singleton<StringTypeMocker> instance = Singleton.with(StringTypeMocker::new);
 
 //    public StringTypeMocker() {
 //        instance = this;

@@ -20,7 +20,6 @@ import org.coodex.mock.AbstractTypeMocker;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
-import org.coodex.util.Singleton;
 
 import java.lang.reflect.Type;
 import java.text.DateFormat;
@@ -32,13 +31,17 @@ import java.util.Date;
  */
 public class DateTimeTypeMocker extends AbstractTypeMocker<DateTime> {
 
-    private static Singleton<Class<?>[]> singleton = Singleton.with(() -> new Class<?>[]{
-            Calendar.class, Date.class, String.class
-    });
+//    private static final Singleton<Class<?>[]> singleton = Singleton.with(() -> new Class<?>[]{
+//            Calendar.class, Date.class, String.class, long.class, Long.class
+//    });
+
+    private static final Class<?>[] SUPPORTED = new Class<?>[]{
+            Calendar.class, Date.class, String.class, long.class, Long.class
+    };
 
     @Override
     protected Class<?>[] getSupportedClasses() {
-        return singleton.get();
+        return SUPPORTED;
     }
 
     @Override
@@ -62,7 +65,9 @@ public class DateTimeTypeMocker extends AbstractTypeMocker<DateTime> {
             }
             long dateTime = (min == max) ? min : (long) (Math.random() * (Math.max(max, min) - Math.min(max, min))) + Math.min(max, min);
 
-            if (Date.class.equals(clazz)) {
+            if (long.class.equals(clazz) || Long.class.equals(clazz)) {
+                return dateTime;
+            } else if (Date.class.equals(clazz)) {
                 return new Date(dateTime);
             } else if (Calendar.class.equals(clazz)) {
                 Calendar calendar = Clock.now();

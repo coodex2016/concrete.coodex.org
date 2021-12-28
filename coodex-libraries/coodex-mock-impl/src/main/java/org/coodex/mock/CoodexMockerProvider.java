@@ -988,8 +988,8 @@ public class CoodexMockerProvider implements MockerProvider {
 
     private static class InjectConfig {
 
-        private String key;
-        private Mock.NotFound notFound;
+        private final String key;
+        private final Mock.NotFound notFound;
 
         InjectConfig(String key, Mock.NotFound notFound) {
             this.key = key;
@@ -1033,8 +1033,8 @@ public class CoodexMockerProvider implements MockerProvider {
     }
 
     private static class TypeAssignation {
-        private Map<String, Annotation[]> properties = new HashMap<>();
-        private Mock.Depth depth;
+        private final Map<String, Annotation[]> properties = new HashMap<>();
+        private final Mock.Depth depth;
 
         TypeAssignation(PojoInfo pojoInfo) {
             depth = pojoInfo.getRowType().getAnnotation(Mock.Depth.class);
