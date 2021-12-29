@@ -45,7 +45,7 @@ public class MockerTest {
         );
 
         A a = Mocker.mock(A.class);
-        a.setName("hello");
+//        a.setName("hello");
         System.out.println(JSON.toJSONString(a));
 
         System.out.println(JSON.toJSONString(Mocker.mock(Pojo3rd.class)));
@@ -88,6 +88,7 @@ public class MockerTest {
     }
 
     public interface A {
+        @Mock.String(minLength = 10, maxLength = 20,emojiProbability = 0.1f)
         String getName();
         void setName(String name);
     }

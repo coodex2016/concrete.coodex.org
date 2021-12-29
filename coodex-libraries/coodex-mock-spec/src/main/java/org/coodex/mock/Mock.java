@@ -83,9 +83,9 @@ public @interface Mock {
 
         /**
          * @return 模拟器的类型。
-         *
+         * <p>
          * 为了降低模拟定义对实现的依赖，应该定义接口。
-         *
+         * <p>
          * 如果是类，MockerProvider应予以警告
          */
         Class<? extends SequenceMockerFactory<?>> factory();
@@ -137,6 +137,7 @@ public @interface Mock {
         int MIN_DEFAULT = 1;
         int SIZE_DEFAULT = 0;
         boolean ORDERED_DEFAULT = true;
+
         /**
          * @return >0 表示固定值，否则按照random(min, max)，默认0
          */
@@ -334,6 +335,7 @@ public @interface Mock {
         int MAX_WEIGHT = 1000;
         java.lang.String DEFAULT_RANGE = "[min, max]";
         int DEFAULT_DIGITS = 2;
+
         /**
          * <pre>
          * 指定模拟范围，不指定则为该类型数据得全域模拟
@@ -391,6 +393,7 @@ public @interface Mock {
     @Mock
     @interface Char {
         java.lang.String DEFAULT_CHAR_RANGE = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
         /**
          * @return 字符编码集范围
          * @see CharCodeSet
@@ -421,6 +424,7 @@ public @interface Mock {
     @interface String {
         int DEFAULT_MIN_LENGTH = 5;
         int DEFAULT_MAX_LENGTH = 10;
+        float DEFAULT_EMOJI_PROBABILITY = 0.0f;
 
         /**
          * @return 最小长度
@@ -431,6 +435,11 @@ public @interface Mock {
          * @return 最大长度
          */
         int maxLength() default DEFAULT_MAX_LENGTH;
+
+        /**
+         * @return emoji字符出现的几率
+         */
+        float emojiProbability() default DEFAULT_EMOJI_PROBABILITY;
 
         /**
          * @return 模拟的charCode范围
