@@ -26,6 +26,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.Set;
@@ -33,12 +34,21 @@ import java.util.Set;
 public class MockerTest {
 
     public static void main(String[] args) {
+
+
+        System.out.println(JSON.toJSONString(Mocker.mock(Pojo3rd.class)));
         System.out.println(
                 JSON.toJSONString(
-                        Mocker.mock(Pojo.class, Pojo.class.getAnnotations()), // <--放到上下文
+                        Mocker.mock(Pojo.class), // <--放到上下文
                         SerializerFeature.PrettyFormat
                 )
         );
+
+        A a = Mocker.mock(A.class);
+        a.setName("hello");
+        System.out.println(JSON.toJSONString(a));
+
+        System.out.println(JSON.toJSONString(Mocker.mock(Pojo3rd.class)));
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -72,10 +82,22 @@ public class MockerTest {
 
         String getVehicleNum();
 
+        @Mock.Number(value = "[-1000, 3000]",digits = 6)
+        BigDecimal getBigDecimal();
+
     }
 
+    public interface A {
+        String getName();
+        void setName(String name);
+    }
 
-    static class PojoAdd{
+//    public static class Pojo3rd {
+//        public String vehicleNum;
+//    }
+
+
+    static class PojoAdd {
         @Mock.Number("[0, 100)")
         public int x1;
         @Mock.Number("[0, 100)")
@@ -88,6 +110,7 @@ public class MockerTest {
     @Mock.Depth(1)
     @Pojo3rdCase2()
     static class Pojo {
+        public A a;
         @Mock.Dimension(size = 20, ordered = true)
         @Mock.Sequence(name = "timestamp", factory = TimestampSequenceFactory.class)
         @Mock.Inject("timestamp")
@@ -101,7 +124,7 @@ public class MockerTest {
         @Mock.Number("[-2.0f, 2.0f]")
         public Float floatValue;
 
-        @Mock.Number(value = "[1000.0, 2000.0]",digits = 2)
+        @Mock.Number(value = "[1000.0, 2000.0]", digits = 2)
         public String floatStr;
         public Pojo pojo;
 
@@ -111,7 +134,7 @@ public class MockerTest {
         @Setting1(map = @Mock.Number("[60,80]"))
         @Mock.Key("testKey")
         @Mock.Value("map")
-        public Map<String, Integer> scores;
+        public Map<String, Float> scores;
         @FullName
         public String name;
         @IdCard
@@ -133,7 +156,7 @@ public class MockerTest {
         @IpAddress
         public Byte[] ipByte;
 
-//        @Mock.Dimension(size = 50)
+        //        @Mock.Dimension(size = 50)
         @Setting1
         @Mock.Inject("testInject")
         public double[][] coordinates;

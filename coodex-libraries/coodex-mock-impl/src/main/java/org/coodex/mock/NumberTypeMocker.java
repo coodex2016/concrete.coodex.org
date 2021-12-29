@@ -51,7 +51,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
             long.class, Long.class,
             float.class, Float.class,
             double.class, Double.class,
-            String.class
+            String.class, BigDecimal.class
     };
 
     static Object mock(Class<?> c) {
@@ -219,7 +219,13 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
     public static Object mock(Type targetType, String range, int digits) {
         Class<?> c = getClassFromType(targetType);
-        if (String.class.equals(c)) {
+        if (BigDecimal.class.equals(c)) {
+            BigDecimal bigDecimal = new BigDecimal(getAlternative(range, Double.class).mock().toString());
+            if (digits <= -1) {
+                return bigDecimal;
+            }
+            return bigDecimal.setScale(digits, RoundingMode.HALF_UP);
+        } else if (String.class.equals(c)) {
             BigDecimal bigDecimal = new BigDecimal(getAlternative(range, Float.class).mock().toString());
             if (digits <= -1)
                 return bigDecimal.toString();

@@ -304,7 +304,7 @@ Mocker.mock(String.class);
 
     ```java
             @Mock.Dimensions(
-                value = {  @Mock.Dimension(size=2), @Mock.Dimension(min=3,max=10)) },
+                value = {  @Mock.Dimension(size=2), @Mock.Dimension(min=3,max=10) },
                 same = true
             )
             String[][][] string3d;
@@ -638,7 +638,7 @@ public @interface FullName {
 
 `coodex-mock`除了定义规范以外，还根据历史经验，`org.coodex.mock.ext`下提供了一些模拟器
 
-- `@DateTime`， 时间戳模拟配置，支持`java.util.Date`/ `java.util.Calendar`/ `String`
+- `@DateTime`， 时间戳模拟配置，支持`java.util.Date`/ `java.util.Calendar`/ `String`/ `long`/ `Long`
 - `@EMail`, 电子邮件模拟配置，支持`String`
 - `@FullName`，中文姓名模拟，支持`String`
 - `@IdCard`，身份证模拟，支持`String`

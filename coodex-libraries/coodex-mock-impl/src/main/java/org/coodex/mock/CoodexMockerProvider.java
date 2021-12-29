@@ -16,7 +16,6 @@
 
 package org.coodex.mock;
 
-import com.alibaba.fastjson.JSON;
 import net.sf.cglib.proxy.Enhancer;
 import org.coodex.closure.MapClosureContext;
 import org.coodex.closure.StackClosureContext;
@@ -262,6 +261,15 @@ public class CoodexMockerProvider implements MockerProvider {
      */
     private Object mockClass(Class<?> c, Annotation... annotations) throws InvocationTargetException, IllegalAccessException {
 
+        List<Annotation> annotationList = new ArrayList<>();
+        Annotation[] classAnnotations = c.getAnnotations();
+        if (classAnnotations.length > 0) {
+            annotationList.addAll(Arrays.asList(classAnnotations));
+        }
+        if (annotations.length > 0) {
+            annotationList.addAll(Arrays.asList(annotations));
+        }
+        annotations = annotationList.toArray(new Annotation[0]);
 
         // Inject
         Object result = mockIfInject(c, InjectConfig.build(getAnnotation(Mock.Inject.class, annotations)), annotations);
@@ -417,14 +425,15 @@ public class CoodexMockerProvider implements MockerProvider {
                                     }
                                 }
                             }
-                            try {
-                                instance = JSON.parseObject(JSON.toJSONString(instance), pojoInfo.getType());
-                            } catch (Throwable th) {
-                                log.warn("convert failed. {}, {}, {}",
-                                        th.getLocalizedMessage(),
-                                        pojoInfo.getType(),
-                                        JSON.toJSONString(instance));
-                            }
+                            /// ??? why???
+//                            try {
+//                                instance = JSON.parseObject(JSON.toJSONString(instance), pojoInfo.getType());
+//                            } catch (Throwable th) {
+//                                log.warn("convert failed. {}, {}, {}",
+//                                        th.getLocalizedMessage(),
+//                                        pojoInfo.getType(),
+//                                        JSON.toJSONString(instance));
+//                            }
                         }
                         return instance;
                     }
@@ -501,7 +510,7 @@ public class CoodexMockerProvider implements MockerProvider {
         };
 
         Map<Class<?>, TypeAssignation> assignations = (POJO_ASSIGNATION_CONTEXT.get() == null) ?
-                GLOBAL_ASSIGNATION : new HashMap<>();
+                new HashMap<>(GLOBAL_ASSIGNATION) : new HashMap<>();
 
         assignations.putAll(getTypeAssignationsFromAnnotations(annotations));
 
@@ -1118,9 +1127,16 @@ public class CoodexMockerProvider implements MockerProvider {
             if (method.getDeclaringClass().equals(Object.class)) {
                 return method.invoke(this, args);
             }
+            if (method.getName().startsWith("set") &&
+                    method.getName().length() > 3 &&
+                    method.getReturnType().equals(void.class) &&
+                    args.length == 1) {
+                this.values.put(Common.lowerFirstChar(method.getName().substring(3)), args[0]);
+                return null;
+            }
             String propertyName = getPropertyName(method);
             if (propertyName == null)
-                throw new MockException("not property getter method." + method.toGenericString());
+                throw new MockException("not property getter/setter method." + method.toGenericString());
             return values.get(propertyName);
         }
     }
