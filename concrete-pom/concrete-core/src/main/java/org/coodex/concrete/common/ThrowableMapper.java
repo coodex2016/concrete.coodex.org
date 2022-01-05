@@ -18,6 +18,7 @@ package org.coodex.concrete.common;
 
 import org.coodex.util.SelectableService;
 
+@Deprecated
 public interface ThrowableMapper extends SelectableService<Throwable> {
 
     ErrorInfo toErrorInfo(Throwable throwable);

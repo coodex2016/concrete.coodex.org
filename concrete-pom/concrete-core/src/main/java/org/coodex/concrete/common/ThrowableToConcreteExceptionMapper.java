@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2022 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 package org.coodex.concrete.common;
 
-@Deprecated
-public abstract class AbstractThrowableMapper implements ThrowableMapper {
+import org.coodex.util.SelectableService;
 
-    @Override
-    public boolean accept(Throwable param) {
-        return param != null && accept(param.getClass());
-    }
-
-    protected abstract boolean accept(Class<? extends Throwable> paramClass);
+public interface ThrowableToConcreteExceptionMapper<T extends Throwable> extends SelectableService<T> {
+    /**
+     * @param throwable 程序中的异常
+     * @return ConcreteException
+     */
+    ConcreteException toConcreteException(T throwable);
 }

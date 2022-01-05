@@ -23,6 +23,8 @@ import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
+import org.coodex.util.LazySelectableServiceLoader;
+import org.coodex.util.SelectableServiceLoader;
 import org.coodex.util.SingletonMap;
 
 import java.lang.reflect.Method;
@@ -55,6 +57,22 @@ public class ConcreteHelper {
     private static final Integer DEFAULT_CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2;
     private static final Integer DEFAULT_MAX_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 4;
 
+    private static final SelectableServiceLoader<Throwable, ThrowableToConcreteExceptionMapper<Throwable>> EXCEPTION_MAPPERS
+            = new LazySelectableServiceLoader<Throwable, ThrowableToConcreteExceptionMapper<Throwable>>(
+            new ThrowableToConcreteExceptionMapper<Throwable>() {
+                @Override
+                public ConcreteException toConcreteException(Throwable throwable) {
+                    return new ConcreteException(ErrorCodes.UNKNOWN_ERROR, throwable.getLocalizedMessage());
+                }
+
+                @Override
+                public boolean accept(Throwable param) {
+                    return true;
+                }
+            }
+    ) {
+    };
+
     private static final Class<?>[] PRIMITIVE_CLASSES = new Class<?>[]{
             String.class,
             Boolean.class,
@@ -79,6 +97,20 @@ public class ConcreteHelper {
 
     public static boolean isPrimitive(Class<?> c) {
         return Common.inArray(c, PRIMITIVE_CLASSES);
+    }
+
+    public static Integer getTokenMaxIdleInMinute() {
+        return Config.getValue("token.maxIdleTime", 60, getAppSet());
+    }
+
+    public static Map<String, String> updatedMap(Subjoin subjoin) {
+        Map<String, String> map = new ConcurrentHashMap<>();
+        if (subjoin != null && subjoin.updatedKeySet().size() > 0) {
+            for (String key : subjoin.updatedKeySet()) {
+                map.put(key, subjoin.get(key));
+            }
+        }
+        return map;
     }    private static final SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
             = SingletonMap.<String, ScheduledExecutorService>builder()
             .function(new Function<String, ScheduledExecutorService>() {
@@ -96,8 +128,17 @@ public class ConcreteHelper {
                 }
             }).build();
 
-    public static Integer getTokenMaxIdleInMinute() {
-        return Config.getValue("token.maxIdleTime", 60, getAppSet());
+    @Deprecated
+    public static String getString(String tag, String module, String key) {
+        return Config.get(key, tag, module);
+    }
+
+    public static ExecutorService getExecutor() {
+        return getExecutor("service");
+    }
+
+    public static ScheduledExecutorService getScheduler() {
+        return getScheduler("service");
     }    private static final SingletonMap<String, ExecutorService> executorServiceMap
             = SingletonMap.<String, ExecutorService>builder()
             .function(new Function<String, ExecutorService>() {
@@ -118,29 +159,6 @@ public class ConcreteHelper {
                     }
                 }
             }).build();
-
-    public static Map<String, String> updatedMap(Subjoin subjoin) {
-        Map<String, String> map = new ConcurrentHashMap<>();
-        if (subjoin != null && subjoin.updatedKeySet().size() > 0) {
-            for (String key : subjoin.updatedKeySet()) {
-                map.put(key, subjoin.get(key));
-            }
-        }
-        return map;
-    }
-
-    @Deprecated
-    public static String getString(String tag, String module, String key) {
-        return Config.get(key, tag, module);
-    }
-
-    public static ExecutorService getExecutor() {
-        return getExecutor("service");
-    }
-
-    public static ScheduledExecutorService getScheduler() {
-        return getScheduler("service");
-    }
 
     public static ScheduledExecutorService getScheduler(String name) {
         return scheduledExecutorMap.get(name);
@@ -306,7 +324,8 @@ public class ConcreteHelper {
     public static ConcreteException getException(Throwable th) {
         ConcreteException concreteException = findException(th);
         if (concreteException == null) {
-            concreteException = new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
+            concreteException = EXCEPTION_MAPPERS.select(th).toConcreteException(th);
+//            concreteException = new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }
         return concreteException;
     }
@@ -366,6 +385,7 @@ public class ConcreteHelper {
     public static boolean isDevModel(String module) {
         return System.getProperty(devModelKey(module)) != null || System.getProperty(devModelKey(null)) != null;
     }
+
 
 
 

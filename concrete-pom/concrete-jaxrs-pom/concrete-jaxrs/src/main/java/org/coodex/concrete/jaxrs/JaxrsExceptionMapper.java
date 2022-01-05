@@ -22,6 +22,7 @@ import org.coodex.concrete.common.ThrowableMapper;
 
 import javax.ws.rs.WebApplicationException;
 
+@Deprecated
 public class JaxrsExceptionMapper implements ThrowableMapper {
 
     @Override

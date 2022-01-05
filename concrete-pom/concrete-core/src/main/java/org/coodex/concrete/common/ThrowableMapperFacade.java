@@ -16,28 +16,28 @@
 
 package org.coodex.concrete.common;
 
-import org.coodex.util.LazySelectableServiceLoader;
-
 public class ThrowableMapperFacade {
 
-    private static LazySelectableServiceLoader<Throwable, ThrowableMapper> mapperLoader
-            = new LazySelectableServiceLoader<Throwable, ThrowableMapper>() {
-    };
+//    @Deprecated
+//    private static LazySelectableServiceLoader<Throwable, ThrowableMapper> mapperLoader
+//            = new LazySelectableServiceLoader<Throwable, ThrowableMapper>() {
+//    };
 
 
     public static ErrorInfo toErrorInfo(Throwable exception) {
 
-        ConcreteException concreteException = ConcreteHelper.findException(exception);
+//        ConcreteException concreteException = ConcreteHelper.findException(exception);
+        ConcreteException concreteException = ConcreteHelper.getException(exception);
 
-        if (concreteException != null) {
-            return new ErrorInfo(concreteException.getCode(), concreteException.getMessage());
-        } else {
-            ThrowableMapper mapper = mapperLoader.select(exception);
-            if (mapper != null) {
-                return mapper.toErrorInfo(exception);
-            } else {
-                return new ErrorInfo(ErrorCodes.UNKNOWN_ERROR, exception.getLocalizedMessage());
-            }
-        }
+//        if (concreteException != null) {
+        return new ErrorInfo(concreteException.getCode(), concreteException.getMessage());
+//        } else {
+//            ThrowableMapper mapper = mapperLoader.select(exception);
+//            if (mapper != null) {
+//                return mapper.toErrorInfo(exception);
+//            } else {
+//                return new ErrorInfo(ErrorCodes.UNKNOWN_ERROR, exception.getLocalizedMessage());
+//            }
+//        }
     }
 }
