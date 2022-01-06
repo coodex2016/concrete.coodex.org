@@ -75,7 +75,7 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
                     th = null;
                 } else {
                     th = exception.getCause();
-                    if (th.getClass().getName().startsWith(InvocationTargetException.class.getPackage().getName())) {
+                    if (th instanceof InvocationTargetException) {
                         th = th.getCause();
                     }
                 }

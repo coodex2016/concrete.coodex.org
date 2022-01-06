@@ -109,20 +109,20 @@ public class SwaggerHelper {
         operation.setSummary(unit.getLabel());
         operation.setDescription(unit.getDescription());
         operation.addTagsItem(unit.getDeclaringModule().getLabel());
-        if (unit.getAccessAllow() != null) {
-            Parameter parameter = new Parameter()
-                    .name("concrete-token-id")
-                    .in("header")
-                    .required(true)
-                    .allowEmptyValue(false)
-                    .description("Concrete Token")
-                    .schema(schema(String.class));
-            operation.addParametersItem(parameter);
-        }
+
+        Parameter parameter = new Parameter()
+                .name("concrete-token-id")
+                .in("header")
+                .required(unit.getAccessAllow() != null)
+                .allowEmptyValue(false)
+                .description("Concrete Token")
+                .schema(schema(String.class));
+        operation.addParametersItem(parameter);
+
 
         for (JaxrsParam param : unit.getParameters()) {
             if (param.isPathParam()) {
-                Parameter parameter = new Parameter();
+                parameter = new Parameter();
                 parameter.name(param.getName())
                         .in(param.isPathParam() ? "path" : "body")
                         .description(param.getDescription())
