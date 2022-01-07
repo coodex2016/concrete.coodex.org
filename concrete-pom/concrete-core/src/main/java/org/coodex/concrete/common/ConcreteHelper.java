@@ -62,7 +62,7 @@ public class ConcreteHelper {
             new ThrowableToConcreteExceptionMapper<Throwable>() {
                 @Override
                 public ConcreteException toConcreteException(Throwable throwable) {
-                    return new ConcreteException(ErrorCodes.UNKNOWN_ERROR, throwable.getLocalizedMessage());
+                    return new ConcreteException(ErrorCodes.UNKNOWN_ERROR, throwable.getLocalizedMessage(), throwable);
                 }
 
                 @Override

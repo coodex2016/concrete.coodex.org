@@ -83,7 +83,7 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
             if (th != null) {
                 log.warn("exception occurred: {}", th.getLocalizedMessage(), th);
             } else if (exception != null) {
-                log.warn("exception occurred: {}", exception.getLocalizedMessage());
+                log.warn("exception occurred: {}", exception.getLocalizedMessage(), exception);
             }
         }
 
