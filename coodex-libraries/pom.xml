@@ -66,11 +66,11 @@
         <lombok.version>1.18.20</lombok.version>
         <jts.version>1.18.2</jts.version>
         <fastjson.version>1.2.75</fastjson.version>
-        <slf4j.version>1.7.30</slf4j.version>
-        <log4j2.version>2.13.0</log4j2.version>
-        <snakeyaml.version>1.26</snakeyaml.version>
+        <slf4j.version>1.7.32</slf4j.version>
+        <log4j2.version>2.17.1</log4j2.version>
+        <snakeyaml.version>1.27</snakeyaml.version>
         <cglib.version>3.2.12</cglib.version>
-        <freemarker.version>2.3.28</freemarker.version>
+        <freemarker.version>2.3.31</freemarker.version>
 
         <spring.framework.version>5.3.13</spring.framework.version>
     </properties>
@@ -232,6 +232,13 @@
                 <version>2.7</version>
             </plugin>
 
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
+
         </plugins>
     </build>
 
@@ -343,6 +350,7 @@
         <module>shared-cache-memcached</module>
         <module>coodex-metadata</module>
         <module>coodex-renderer-freemarker</module>
+        <module>coodex-jaxrs-util</module>
 
     </modules>
 

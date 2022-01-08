@@ -20,7 +20,7 @@ import org.coodex.concrete.client.jaxrs.JaxRSClientContext;
 import org.coodex.concrete.client.jaxrs.JaxRSDestination;
 import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.ServiceContext;
-import org.coodex.concrete.core.Level;
+import org.coodex.logging.Level;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.slf4j.Logger;

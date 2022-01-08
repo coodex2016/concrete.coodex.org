@@ -165,7 +165,7 @@ public class Predicates {
 
     private static String[] paths(String methodName) {
         StringTokenizer st = new StringTokenizer(methodName, "/\\");
-        List<String> cache = new ArrayList<String>();
+        List<String> cache = new ArrayList<>();
         while (st.hasMoreElements()) {
             String s = st.nextToken().trim();
             if (Common.isBlank(s)) continue;

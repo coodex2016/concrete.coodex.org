@@ -16,70 +16,79 @@
 
 package org.coodex.concrete.jaxrs.logging;
 
-import org.coodex.concrete.core.Level;
 import org.coodex.config.Config;
+import org.coodex.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;
-import javax.ws.rs.container.*;
-import java.io.IOException;
-import java.io.OutputStream;
+import javax.ws.rs.container.PreMatching;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 @ConstrainedTo(RuntimeType.SERVER)
 @PreMatching
-public class ServerLogger extends AbstractLogger implements ContainerRequestFilter, ContainerResponseFilter {
+public class ServerLogger extends org.coodex.jaxrs.logging.ServerLogger {
     private final static Logger log = LoggerFactory.getLogger(ServerLogger.class);
 
     public ServerLogger() {
-        super(log, Level.parse(Config.getValue("server","NONE", "jaxrs.logger.level",getAppSet())));
+        this(log);
     }
 
-    @Override
-    public void filter(final ContainerRequestContext context) throws IOException {
-        if (!isEnabled()) {
-            return;
-        }
-        final long id = _id.incrementAndGet();
-        context.setProperty(LOGGING_ID_PROPERTY, id);
-
-        final StringBuilder b = new StringBuilder();
-
-        printRequestLine(b, "Server has received a request", id, context.getMethod(), context.getUriInfo().getRequestUri());
-        printPrefixedHeaders(b, id, REQUEST_PREFIX, context.getHeaders());
-
-        if (context.hasEntity() && printEntity(context.getMediaType())) {
-            context.setEntityStream(
-                    logInboundEntity(b, context.getEntityStream(), getCharset(context.getMediaType())));
-        }
-
-        log(b);
-    }
-
-    @Override
-    public void filter(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext)
-            throws IOException {
-        if (!isEnabled()) {
-            return;
-        }
-        final Object requestId = requestContext.getProperty(LOGGING_ID_PROPERTY);
-        final long id = requestId != null ? (Long) requestId : _id.incrementAndGet();
-
-        final StringBuilder b = new StringBuilder();
-
-        printResponseLine(b, "Server responded with a response", id, responseContext.getStatus());
-        printPrefixedHeaders(b, id, RESPONSE_PREFIX, responseContext.getStringHeaders());
-
-        if (responseContext.hasEntity() && printEntity(responseContext.getMediaType())) {
-            final OutputStream stream = new LoggingStream(b, responseContext.getEntityStream());
-            responseContext.setEntityStream(stream);
-            requestContext.setProperty(ENTITY_LOGGER_PROPERTY, stream);
-            // not calling log(b) here - it will be called by the interceptor
-        } else {
-            log(b);
-        }
+    public ServerLogger(Logger log) {
+        super(log, Level.parse(Config.getValue("server", "NONE", "jaxrs.logger.level", getAppSet())));
     }
 }
+//        extends AbstractLogger implements ContainerRequestFilter, ContainerResponseFilter {
+//    private final static Logger log = LoggerFactory.getLogger(ServerLogger.class);
+//
+//    public ServerLogger() {
+//        super(log, Level.parse(Config.getValue("server","NONE", "jaxrs.logger.level",getAppSet())));
+//    }
+//
+//    @Override
+//    public void filter(final ContainerRequestContext context) throws IOException {
+//        if (!isEnabled()) {
+//            return;
+//        }
+//        final long id = _id.incrementAndGet();
+//        context.setProperty(LOGGING_ID_PROPERTY, id);
+//
+//        final StringBuilder b = new StringBuilder();
+//
+//        printRequestLine(b, "Server has received a request", id, context.getMethod(), context.getUriInfo().getRequestUri());
+//        printPrefixedHeaders(b, id, REQUEST_PREFIX, context.getHeaders());
+//
+//        if (context.hasEntity() && printEntity(context.getMediaType())) {
+//            context.setEntityStream(
+//                    logInboundEntity(b, context.getEntityStream(), getCharset(context.getMediaType())));
+//        }
+//
+//        log(b);
+//    }
+//
+//    @Override
+//    public void filter(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext)
+//            throws IOException {
+//        if (!isEnabled()) {
+//            return;
+//        }
+//        final Object requestId = requestContext.getProperty(LOGGING_ID_PROPERTY);
+//        final long id = requestId != null ? (Long) requestId : _id.incrementAndGet();
+//
+//        final StringBuilder b = new StringBuilder();
+//
+//        printResponseLine(b, "Server responded with a response", id, responseContext.getStatus());
+//        printPrefixedHeaders(b, id, RESPONSE_PREFIX, responseContext.getStringHeaders());
+//
+//        if (responseContext.hasEntity() && printEntity(responseContext.getMediaType())) {
+//            final OutputStream stream = new LoggingStream(b, responseContext.getEntityStream());
+//            responseContext.setEntityStream(stream);
+//            requestContext.setProperty(ENTITY_LOGGER_PROPERTY, stream);
+//            // not calling log(b) here - it will be called by the interceptor
+//        } else {
+//            log(b);
+//        }
+//    }
+//}

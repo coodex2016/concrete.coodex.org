@@ -98,8 +98,8 @@
 
         <apache.dubbo.version>2.7.4.1</apache.dubbo.version>
 
-        <slf4j.version>1.7.30</slf4j.version>
-        <log4j2.version>2.13.0</log4j2.version>
+<!--        <slf4j.version>1.7.30</slf4j.version>-->
+<!--        <log4j2.version>2.13.0</log4j2.version>-->
         <aspectj.version>1.9.4</aspectj.version>
 
         <spring.cloud.version>2020.0.4</spring.cloud.version>

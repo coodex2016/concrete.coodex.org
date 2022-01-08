@@ -20,7 +20,7 @@ import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.AbstractOwnRxInvoker;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.core.Level;
+import org.coodex.logging.Level;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.websocket.WebSocketHelper;
 import org.coodex.concrete.websocket.WebSocketUnit;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2022 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.jaxrs.logging;
+package org.coodex.jaxrs.logging;
 
-import org.coodex.concrete.core.Level;
+import org.coodex.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,20 +41,20 @@ public class AbstractLogger implements WriterInterceptor {
     /**
      * Prefix will be printed before requests
      */
-    static final String REQUEST_PREFIX = "> ";
+    protected static final String REQUEST_PREFIX = "> ";
     /**
      * Prefix will be printed before response
      */
-    static final String RESPONSE_PREFIX = "< ";
+    protected static final String RESPONSE_PREFIX = "< ";
     /**
      * The entity stream property
      */
-    static final String ENTITY_LOGGER_PROPERTY = AbstractLogger.class.getName() + ".entityLogger";
+    protected static final String ENTITY_LOGGER_PROPERTY = AbstractLogger.class.getName() + ".entityLogger";
     /**
      * Logging record id property
      */
-    static final String LOGGING_ID_PROPERTY = AbstractLogger.class.getName() + ".id";
-    final static int MAX_ENTITY_SIZE = 8192;
+    protected static final String LOGGING_ID_PROPERTY = AbstractLogger.class.getName() + ".id";
+    protected final static int MAX_ENTITY_SIZE = 8192;
     private final static Logger logger = LoggerFactory.getLogger(AbstractLogger.class);
     private static final String NOTIFICATION_PREFIX = "* ";
     private static final MediaType TEXT_MEDIA_TYPE = new MediaType("text", "*");
@@ -69,7 +69,7 @@ public class AbstractLogger implements WriterInterceptor {
     }};
     private static final Comparator<Map.Entry<String, List<String>>> COMPARATOR =
             (o1, o2) -> o1.getKey().compareToIgnoreCase(o2.getKey());
-    final AtomicLong _id = new AtomicLong(0);
+    protected final AtomicLong _id = new AtomicLong(0);
     private final Logger log;
     private final Level level;
 
@@ -86,7 +86,7 @@ public class AbstractLogger implements WriterInterceptor {
      * @param mediaType the media type of the entity
      * @return {@code true} if specified {@link MediaType} is considered textual.
      */
-    static boolean isReadable(MediaType mediaType) {
+    protected static boolean isReadable(MediaType mediaType) {
         if (mediaType != null) {
             for (MediaType readableMediaType : READABLE_APP_MEDIA_TYPES) {
                 if (readableMediaType.isCompatible(mediaType)) {
@@ -103,11 +103,11 @@ public class AbstractLogger implements WriterInterceptor {
      * @param mediaType the media type of the payload.
      * @return {@code true} if entity has to be printed.
      */
-    static boolean printEntity(MediaType mediaType) {
+    protected static boolean printEntity(MediaType mediaType) {
         return isReadable(mediaType);
     }
 
-    static Charset getCharset(MediaType m) {
+    protected static Charset getCharset(MediaType m) {
         String name = (m == null) ? null : m.getParameters().get(MediaType.CHARSET_PARAMETER);
         return (name == null) ? StandardCharsets.UTF_8 : Charset.forName(name);
     }
@@ -121,7 +121,7 @@ public class AbstractLogger implements WriterInterceptor {
      *
      * @param b message to log
      */
-    void log(final StringBuilder b) {
+    protected void log(final StringBuilder b) {
         if (level.isEnabled(log)) {
             level.log(log, b.toString());
         }
@@ -132,7 +132,7 @@ public class AbstractLogger implements WriterInterceptor {
         return b;
     }
 
-    void printRequestLine(final StringBuilder b, final String note, final long id, final String method, final URI uri) {
+    protected void printRequestLine(final StringBuilder b, final String note, final long id, final String method, final URI uri) {
         prefixId(b, id).append(NOTIFICATION_PREFIX)
                 .append(note)
                 .append(" on thread ").append(Thread.currentThread().getName())
@@ -141,7 +141,7 @@ public class AbstractLogger implements WriterInterceptor {
                 .append(uri.toASCIIString()).append("\n");
     }
 
-    void printResponseLine(final StringBuilder b, final String note, final long id, final int status) {
+    protected void printResponseLine(final StringBuilder b, final String note, final long id, final int status) {
         prefixId(b, id).append(NOTIFICATION_PREFIX)
                 .append(note)
                 .append(" on thread ").append(Thread.currentThread().getName()).append("\n");
@@ -150,10 +150,10 @@ public class AbstractLogger implements WriterInterceptor {
                 .append("\n");
     }
 
-    void printPrefixedHeaders(final StringBuilder b,
-                              final long id,
-                              final String prefix,
-                              final MultivaluedMap<String, String> headers) {
+    protected void printPrefixedHeaders(final StringBuilder b,
+                                        final long id,
+                                        final String prefix,
+                                        final MultivaluedMap<String, String> headers) {
         for (final Map.Entry<String, List<String>> headerEntry : getSortedHeaders(headers.entrySet())) {
             final List<String> val = headerEntry.getValue();
             final String header = headerEntry.getKey();
@@ -197,7 +197,7 @@ public class AbstractLogger implements WriterInterceptor {
         return sortedHeaders;
     }
 
-    InputStream logInboundEntity(final StringBuilder b, InputStream stream, final Charset charset) throws IOException {
+    protected InputStream logInboundEntity(final StringBuilder b, InputStream stream, final Charset charset) throws IOException {
         if (!stream.markSupported()) {
             stream = new BufferedInputStream(stream);
         }
@@ -226,11 +226,10 @@ public class AbstractLogger implements WriterInterceptor {
     }
 
 
-
     /**
      * Helper class used to log an entity to the output stream up to the specified maximum number of bytes.
      */
-    static class LoggingStream extends FilterOutputStream {
+    protected static class LoggingStream extends FilterOutputStream {
 
         private final StringBuilder b;
         private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -241,13 +240,13 @@ public class AbstractLogger implements WriterInterceptor {
          * @param b     contains the entity to log.
          * @param inner the underlying output stream.
          */
-        LoggingStream(final StringBuilder b, final OutputStream inner) {
+        public LoggingStream(final StringBuilder b, final OutputStream inner) {
             super(inner);
 
             this.b = b;
         }
 
-        StringBuilder getStringBuilder(final Charset charset) {
+        public StringBuilder getStringBuilder(final Charset charset) {
             // write entity to the builder
             final byte[] entity = baos.toByteArray();
 

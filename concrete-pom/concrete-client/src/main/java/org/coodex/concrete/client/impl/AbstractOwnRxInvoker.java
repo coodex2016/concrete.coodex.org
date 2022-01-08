@@ -25,7 +25,7 @@ import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.common.JSONSerializer;
 import org.coodex.concrete.common.JSONSerializerFactory;
-import org.coodex.concrete.core.Level;
+import org.coodex.logging.Level;
 import org.coodex.concrete.own.MapSubjoin;
 import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.concrete.own.RequestPackage;

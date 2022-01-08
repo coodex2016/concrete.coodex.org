@@ -27,7 +27,7 @@ import org.coodex.concrete.common.ConcreteContext;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ServiceContext;
-import org.coodex.concrete.core.Level;
+import org.coodex.logging.Level;
 import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.config.Config;

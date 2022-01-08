@@ -16,27 +16,20 @@
 
 package org.coodex.concrete.jaxrs.logging;
 
-import org.coodex.concrete.core.Level;
 import org.coodex.config.Config;
+import org.coodex.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.ClientResponseContext;
-import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.container.PreMatching;
-import java.io.IOException;
-import java.io.OutputStream;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 @ConstrainedTo(RuntimeType.CLIENT)
 @PreMatching
-public class ClientLogger extends AbstractLogger implements ClientRequestFilter, ClientResponseFilter {
-
+public class ClientLogger extends org.coodex.jaxrs.logging.ClientLogger {
     private final static Logger log = LoggerFactory.getLogger(ClientLogger.class);
 
     public ClientLogger() {
@@ -46,49 +39,61 @@ public class ClientLogger extends AbstractLogger implements ClientRequestFilter,
     public ClientLogger(Logger log) {
         super(log, Level.parse(Config.getValue("client", "DEBUG", "jaxrs.logger.level", getAppSet())));
     }
-
-    @Override
-    public void filter(final ClientRequestContext context) throws IOException {
-        if (!isEnabled()) {
-            return;
-        }
-        final long id = _id.incrementAndGet();
-        context.setProperty(LOGGING_ID_PROPERTY, id);
-
-        final StringBuilder b = new StringBuilder();
-
-        printRequestLine(b, "Sending client request", id, context.getMethod(), context.getUri());
-        printPrefixedHeaders(b, id, REQUEST_PREFIX, context.getStringHeaders());
-
-        if (context.hasEntity() && printEntity(context.getMediaType())) {
-            final OutputStream stream = new LoggingStream(b, context.getEntityStream());
-            context.setEntityStream(stream);
-            context.setProperty(ENTITY_LOGGER_PROPERTY, stream);
-            // not calling log(b) here - it will be called by the interceptor
-        } else {
-            log(b);
-        }
-    }
-
-    @Override
-    public void filter(final ClientRequestContext requestContext, final ClientResponseContext responseContext)
-            throws IOException {
-        if (!isEnabled()) {
-            return;
-        }
-        final Object requestId = requestContext.getProperty(LOGGING_ID_PROPERTY);
-        final long id = requestId != null ? (Long) requestId : _id.incrementAndGet();
-
-        final StringBuilder b = new StringBuilder();
-
-        printResponseLine(b, "Client response received", id, responseContext.getStatus());
-        printPrefixedHeaders(b, id, RESPONSE_PREFIX, responseContext.getHeaders());
-
-        if (responseContext.hasEntity() && printEntity(responseContext.getMediaType())) {
-            responseContext.setEntityStream(logInboundEntity(b, responseContext.getEntityStream(),
-                    getCharset(responseContext.getMediaType())));
-        }
-
-        log(b);
-    }
 }
+//        extends AbstractLogger implements ClientRequestFilter, ClientResponseFilter {
+//
+//    private final static Logger log = LoggerFactory.getLogger(ClientLogger.class);
+//
+//    public ClientLogger() {
+//        this(log);
+//    }
+//
+//    public ClientLogger(Logger log) {
+//        super(log, Level.parse(Config.getValue("client", "DEBUG", "jaxrs.logger.level", getAppSet())));
+//    }
+//
+//    @Override
+//    public void filter(final ClientRequestContext context) throws IOException {
+//        if (!isEnabled()) {
+//            return;
+//        }
+//        final long id = _id.incrementAndGet();
+//        context.setProperty(LOGGING_ID_PROPERTY, id);
+//
+//        final StringBuilder b = new StringBuilder();
+//
+//        printRequestLine(b, "Sending client request", id, context.getMethod(), context.getUri());
+//        printPrefixedHeaders(b, id, REQUEST_PREFIX, context.getStringHeaders());
+//
+//        if (context.hasEntity() && printEntity(context.getMediaType())) {
+//            final OutputStream stream = new LoggingStream(b, context.getEntityStream());
+//            context.setEntityStream(stream);
+//            context.setProperty(ENTITY_LOGGER_PROPERTY, stream);
+//            // not calling log(b) here - it will be called by the interceptor
+//        } else {
+//            log(b);
+//        }
+//    }
+//
+//    @Override
+//    public void filter(final ClientRequestContext requestContext, final ClientResponseContext responseContext)
+//            throws IOException {
+//        if (!isEnabled()) {
+//            return;
+//        }
+//        final Object requestId = requestContext.getProperty(LOGGING_ID_PROPERTY);
+//        final long id = requestId != null ? (Long) requestId : _id.incrementAndGet();
+//
+//        final StringBuilder b = new StringBuilder();
+//
+//        printResponseLine(b, "Client response received", id, responseContext.getStatus());
+//        printPrefixedHeaders(b, id, RESPONSE_PREFIX, responseContext.getHeaders());
+//
+//        if (responseContext.hasEntity() && printEntity(responseContext.getMediaType())) {
+//            responseContext.setEntityStream(logInboundEntity(b, responseContext.getEntityStream(),
+//                    getCharset(responseContext.getMediaType())));
+//        }
+//
+//        log(b);
+//    }
+//}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+  ~ Copyright (c) 2016 - 2022 coodex.org (jujus.shen@126.com)
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,16 +19,20 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>concrete-jaxrs-pom</artifactId>
-        <groupId>org.coodex.concrete.jaxrs</groupId>
+        <artifactId>coodex-libraries</artifactId>
+        <groupId>org.coodex</groupId>
         <version>0.5.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>concrete-jaxrs</artifactId>
+    <artifactId>coodex-jaxrs-util</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
@@ -36,31 +40,11 @@
             <scope>provided</scope>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>io.swagger.core.v3</groupId>-->
-<!--            <artifactId>swagger-core</artifactId>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
-
         <dependency>
-            <groupId>org.coodex</groupId>
-            <artifactId>coodex-mock-impl</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.coodex</groupId>
-            <artifactId>coodex-jaxrs-util</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.coodex.concrete</groupId>
-            <artifactId>concrete-core</artifactId>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>coodex-utilities</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-
-
     </dependencies>
-
 
 </project>

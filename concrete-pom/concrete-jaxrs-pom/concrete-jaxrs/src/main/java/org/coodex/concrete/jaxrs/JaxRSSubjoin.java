@@ -17,10 +17,10 @@
 package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.common.AbstractChangeableSubjoin;
-import org.coodex.util.Common;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,7 +40,7 @@ public class JaxRSSubjoin extends AbstractChangeableSubjoin {
         loadFromHeader(httpHeaders.getRequestHeaders());
     }
 
-    public JaxRSSubjoin(MultivaluedMap<String, ? extends Object> multivaluedMap) {
+    public JaxRSSubjoin(MultivaluedMap<String, ?> multivaluedMap) {
         loadFromHeader(multivaluedMap);
     }
 
@@ -52,23 +52,26 @@ public class JaxRSSubjoin extends AbstractChangeableSubjoin {
             collection.forEach(el -> appendStringTo(builder, el));
         } else if (obj != null) {
             if (obj.getClass().isArray()) {
-                Object[] array = Common.cast(obj);
-                for (Object el : array) {
-                    appendStringTo(builder, obj);
+                for (int i = 0, l = Array.getLength(obj); i < l; i++) {
+                    appendStringTo(builder, Array.get(obj, i));
                 }
+//                Object[] array = Common.cast(obj);
+//                for (Object el : array) {
+//                    appendStringTo(builder, obj);
+//                }
             } else {
                 builder.add(obj.toString());
             }
         }
     }
 
-    private static List<String> toStringList(List<? extends Object> list) {
+    private static List<String> toStringList(List<?> list) {
         List<String> result = new ArrayList<>();
         appendStringTo(result, list);
         return result;
     }
 
-    private void loadFromHeader(MultivaluedMap<String, ? extends Object> multivaluedMap) {
+    private void loadFromHeader(MultivaluedMap<String, ?> multivaluedMap) {
         Collection<String> skipKeys = skipKeys();
         for (String key : multivaluedMap.keySet()) {
             String lowerKey = key.toLowerCase();

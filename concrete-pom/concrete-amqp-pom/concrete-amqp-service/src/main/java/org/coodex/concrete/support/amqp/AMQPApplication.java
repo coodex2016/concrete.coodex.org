@@ -21,7 +21,7 @@ import org.coodex.concrete.amqp.AMQPConnectionConfig;
 import org.coodex.concrete.amqp.AMQPConnectionFacade;
 import org.coodex.concrete.amqp.AMQPModule;
 import org.coodex.concrete.common.*;
-import org.coodex.concrete.core.Level;
+import org.coodex.logging.Level;
 import org.coodex.concrete.own.OwnServiceProvider;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;

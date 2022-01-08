@@ -44,10 +44,10 @@ public abstract class ConcreteJaxrsApplication
 
     private static final JaxRSModuleMaker moduleMaker = new JaxRSModuleMaker();
     private final static Logger log = LoggerFactory.getLogger(ConcreteJaxrsApplication.class);
-    private Set<Class<?>> servicesClasses = new HashSet<>();
-    private Set<Class<?>> jaxrsClasses = new HashSet<>();
-    private Set<Object> singletonInstances = new HashSet<>();
-    private Set<Class<?>> othersClasses = new HashSet<>();
+    private final Set<Class<?>> servicesClasses = new HashSet<>();
+    private final Set<Class<?>> jaxrsClasses = new HashSet<>();
+    private final Set<Object> singletonInstances = new HashSet<>();
+    private final Set<Class<?>> othersClasses = new HashSet<>();
 
     private String name;
 
@@ -55,12 +55,12 @@ public abstract class ConcreteJaxrsApplication
     //    private Configurable<?> configurable = null;
     private boolean exceptionMapperRegistered = false;
 
-    private ServiceLoader<ServiceRegisteredListener> registerNotifyServiceServiceLoader
+    private final ServiceLoader<ServiceRegisteredListener> registerNotifyServiceServiceLoader
             = new LazyServiceLoader<ServiceRegisteredListener>((instance, concreteService) -> {
     }) {
     };
 
-    private ServiceLoader<DefaultJaxrsClassGetter> getterServiceLoader
+    private final ServiceLoader<DefaultJaxrsClassGetter> getterServiceLoader
             = new LazyServiceLoader<DefaultJaxrsClassGetter>() {
     };
 
