@@ -28,6 +28,14 @@ public class JaxRSClientBuilder {
             = new LazyServiceLoader<ToRegisteredProvider>() {
     };
 
+    private static void register(ClientBuilder builder, Object o) {
+        if (o instanceof Class) {
+            builder.register((Class<?>) o);
+        } else {
+            builder.register(o);
+        }
+    }
+
     public static ClientBuilder newClientBuilder() {
         ClientBuilder builder = ClientBuilder.newBuilder();
         TO_REGISTERED_PROVIDER_SERVICE_LOADER.getAll().forEach((k, p) -> {
@@ -35,10 +43,10 @@ public class JaxRSClientBuilder {
             if (o == null) return;
             if (o.getClass().isArray()) {
                 for (int i = 0, l = Array.getLength(o); i < l; i++) {
-                    builder.register(Array.get(o, i));
+                    register(builder, Array.get(o, i));
                 }
             } else {
-                builder.register(o);
+                register(builder, o);
             }
         });
         return builder;
