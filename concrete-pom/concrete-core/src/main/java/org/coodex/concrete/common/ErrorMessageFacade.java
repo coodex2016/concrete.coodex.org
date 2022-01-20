@@ -33,15 +33,12 @@ import java.util.*;
  */
 public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
 
+    final static ThreadLocal<Locale> LOCALE_CONTEXT = new ThreadLocal<>();
     /*
      * 没有MessageFormatter Provider的时候，以此Formatter输出，确保formatter不为空
      * 2016-11-01，修改默认使用JavaTextFormatMessageFormatter
      */
     private final static Logger log = LoggerFactory.getLogger(ErrorMessageFacade.class);
-
-    final static ThreadLocal<Locale> LOCALE_CONTEXT = new ThreadLocal<>();
-
-
     private final static Set<Class<?>> REGISTERED = new HashSet<>();
 
     private final static Map<Integer, Field> errorCodes = new HashMap<>();
@@ -50,9 +47,9 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
     private ErrorMessageFacade() {
     }
 
-    private static void registerClass(Class<?> clz) {
+    private static boolean registerClass(Class<?> clz) {
         if (clz == null || clz.getAnnotation(ErrorCode.class) == null) {
-            return;
+            return false;
         }
 
         if (!REGISTERED.contains(clz)) {
@@ -86,13 +83,19 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
                         }
                     }
                     REGISTERED.add(clz);
+                    log.info("ErrorCode registered: {}", clz.getName());
                 }
             }
         }
+        return true;
     }
 
-    public static void register(Class<?> clz) {
-        registerClass(clz);
+    /**
+     * @param clz clz
+     * @return 是否被ErrorMessage注册
+     */
+    public static boolean register(Class<?> clz) {
+        return registerClass(clz);
     }
 
     public static Set<Integer> allRegisteredErrorCodes() {
@@ -130,7 +133,7 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
 
     private static String getMessageOrPattern(boolean format, int code, Object... objects) {
         Field f = errorCodes.get(code);
-        String template = I18N.translate(getTemplateStr(f, getNamespace(f), code),LOCALE_CONTEXT.get());
+        String template = I18N.translate(getTemplateStr(f, getNamespace(f), code), LOCALE_CONTEXT.get());
         return format ? Renderer.render(template, objects) : template;
 
 //        ErrorMsg formatterValue = null;

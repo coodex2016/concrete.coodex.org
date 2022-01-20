@@ -92,11 +92,12 @@ public abstract class OwnServiceProvider implements Application {
 
     public final void registerClasses(Class<?>... classes) {
         for (final Class<?> clz : classes) {
-            ErrorMessageFacade.register(clz);
+            if (ErrorMessageFacade.register(clz)) return;
             if (ConcreteHelper.isConcreteService(clz)) {
                 appendUnits(getModuleBuilder().build(clz));
             } else {
-                throw new RuntimeException("cannot register class:" + clz.getName());
+                log.warn("could not register class: {}", clz.getName());
+//                throw new RuntimeException("cannot register class:" + clz.getName());
             }
         }
     }

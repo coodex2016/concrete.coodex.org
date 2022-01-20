@@ -111,6 +111,11 @@ public class ConcreteHelper {
             }
         }
         return map;
+    }
+
+    @Deprecated
+    public static String getString(String tag, String module, String key) {
+        return Config.get(key, tag, module);
     }    private static final SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
             = SingletonMap.<String, ScheduledExecutorService>builder()
             .function(new Function<String, ScheduledExecutorService>() {
@@ -128,17 +133,20 @@ public class ConcreteHelper {
                 }
             }).build();
 
-    @Deprecated
-    public static String getString(String tag, String module, String key) {
-        return Config.get(key, tag, module);
-    }
-
     public static ExecutorService getExecutor() {
         return getExecutor("service");
     }
 
     public static ScheduledExecutorService getScheduler() {
         return getScheduler("service");
+    }
+
+    public static ScheduledExecutorService getScheduler(String name) {
+        return scheduledExecutorMap.get(name);
+    }
+
+    public static ExecutorService getExecutor(String executorName) {
+        return executorServiceMap.get(executorName);
     }    private static final SingletonMap<String, ExecutorService> executorServiceMap
             = SingletonMap.<String, ExecutorService>builder()
             .function(new Function<String, ExecutorService>() {
@@ -159,14 +167,6 @@ public class ConcreteHelper {
                     }
                 }
             }).build();
-
-    public static ScheduledExecutorService getScheduler(String name) {
-        return scheduledExecutorMap.get(name);
-    }
-
-    public static ExecutorService getExecutor(String executorName) {
-        return executorServiceMap.get(executorName);
-    }
 
     public static String getServiceName(Class<?> clz) {
         if (clz == null /*|| !ConcreteService.class.isAssignableFrom(clz)*/) return null;

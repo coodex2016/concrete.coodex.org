@@ -122,7 +122,7 @@ class CourierBuilder
                             null).encode());
 
             CtConstructor ctConstructor = new CtConstructor(
-                    JavassistHelper.toCtClass(new Class[]{String.class,String.class,Type.class}, classPool),
+                    JavassistHelper.toCtClass(new Class<?>[]{String.class,String.class,Type.class}, classPool),
 //                    new CtClass[]{
 //                            classPool.getOrNull(String.class.getName()),
 //                            classPool.getOrNull(String.class.getName()),
