@@ -264,4 +264,5 @@ public class JTSUtil {
         );
         return s * EARTH_RADIUS;
     }
+
 }

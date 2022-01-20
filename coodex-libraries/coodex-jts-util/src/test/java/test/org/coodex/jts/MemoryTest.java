@@ -16,24 +16,46 @@
 
 package test.org.coodex.jts;
 
+import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.config.Config;
 import org.coodex.jts.JTSUtil;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
+import org.coodex.util.Singleton;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.IntFunction;
+import java.util.function.Supplier;
+
+import static org.coodex.util.Common.slice;
+import static test.org.coodex.jts.CoordinatesLoader.randomCoordinates;
 
 public class MemoryTest {
+
+    private static final Logger log = LoggerFactory.getLogger(MemoryTest.class);
+    private static final ExecutorService BLOCK_BUILDER_EXECUTORS = ExecutorsHelper.newFixedThreadPool(8, "block-builder");
+
+//    private static Geometry build(Coordinate[] coordinates) {
+//
+//    }
+
     private static TestResult oneCase(int dots) {
-        Coordinate[] coordinates = new Coordinate[dots];
-        for (int i = 0; i < dots; i++) {
-            coordinates[i] = new Coordinate(
-                    Common.random(10000),
-                    Common.random(10000)
-            );
-        }
+        Coordinate[] coordinates = randomCoordinates(dots);
 
         LineString lineString = JTSUtil.GEOMETRY_FACTORY.createLineString(coordinates);
         TestResult result = new TestResult();
@@ -55,24 +77,84 @@ public class MemoryTest {
         return result;
     }
 
-    private static Geometry simplify(Geometry geometry) {
-        double init = 25;
-        double rateLimit = 0.002d;
-        Geometry simplified = null;
-        double areaOfGeo = geometry.getArea();
-        for (; ; ) {
-//         simplified = VWSimplifier.simplify(geometry,init);
-            simplified = DouglasPeuckerSimplifier.simplify(geometry, init);
-            double rate = simplified.getArea() / areaOfGeo;
-            if (rate > 1 - rateLimit && rate < 1 + rateLimit) {
-                break;
-            } else {
-                System.out.println("half " + init);
-                init = init / 2;
+    private static Geometry build(Coordinate[] coordinates, int blockSize) throws InterruptedException {
+        Analyzer analyzer = new Analyzer();
+        try {
+            Collection<Common.ArrayBlockRef> refs = slice(coordinates, blockSize, true, 0.1f);
+
+            CountDownLatch countDownLatch = new CountDownLatch(refs.size());
+            List<Geometry> geometries = new ArrayList<>();
+            for (Common.ArrayBlockRef ref : refs) {
+                BLOCK_BUILDER_EXECUTORS.submit(() -> {
+                    try {
+                        Coordinate[] coors = new Coordinate[ref.getLength()];
+                        System.arraycopy(coordinates, ref.getStartIndex(), coors, 0, ref.getLength());
+                        LineString lineString = analyzer.analyze("buildLineString", () -> JTSUtil.GEOMETRY_FACTORY.createLineString(coors));
+                        geometries.add(analyzer.analyze("lineStringBuffer", () -> JTSUtil.get2DGeometry(lineString.buffer(14, 4, BufferParameters.CAP_FLAT))));
+                    } finally {
+                        countDownLatch.countDown();
+                    }
+                });
             }
 
+            countDownLatch.await();
+            Geometry geometry = null;
+            for (Geometry g : geometries) {
+                if (geometry == null) {
+                    geometry = g;
+                } else {
+                    Geometry finalGeometry = geometry;
+                    geometry = analyzer.analyze("mergePolygon", () -> finalGeometry.union(g));
+                }
+            }
+            return geometry;
+
+//            final Geometry[] result = {null};
+//            forEachBlock(coordinates, blockSize, true, 0.1f, Coordinate[]::new, coors -> {
+//
+////                log.info("build geometry: {} points", coors.length);
+//
+//                LineString lineString = analyzer.analyze("buildLineString", () -> JTSUtil.GEOMETRY_FACTORY.createLineString(coors));
+//
+//                Geometry geometry = analyzer.analyze("lineStringBuffer", () -> JTSUtil.get2DGeometry(lineString.buffer(14, 4, BufferParameters.CAP_FLAT)));
+//
+//                if (result[0] == null) {
+//                    result[0] = analyzer.analyze("simplifyPolygon", () -> simplify(geometry));
+//                } else {
+//
+//                    Geometry finalResult1 = result[0];
+//                    result[0] = analyzer.analyze("mergePolygon", () -> finalResult1.union(geometry));
+//                    Geometry finalResult = result[0];
+//                    result[0] = analyzer.analyze("simplifyPolygon", () -> simplify(
+//                            finalResult
+//                    ));
+//                }
+//            });
+//            return result[0];
+        } finally {
+            analyzer.trace();
         }
-        return simplified;
+    }
+
+    private static Geometry simplify(Geometry geometry) {
+//        double init = 25;
+//        double rateLimit = 0.002d;
+//        Geometry simplified = null;
+//        double areaOfGeo = geometry.getArea();
+//        for (; ; ) {
+////         simplified = VWSimplifier.simplify(geometry,init);
+//            simplified = DouglasPeuckerSimplifier.simplify(geometry, init);
+//            double rate = simplified.getArea() / areaOfGeo;
+//            if (rate > 1 - rateLimit && rate < 1 + rateLimit) {
+//                break;
+//            } else {
+//                System.out.println("half " + init);
+//                init = init / 2;
+//            }
+//
+//        }
+//        return JTSUtil.get2DGeometry(simplified);
+        return geometry;
     }
 
     private static void testCase(int dots, int times) {
@@ -87,7 +169,7 @@ public class MemoryTest {
             simplifiedUsed += result.simplifiedUsed;
             used += result.used;
             if (geometry == null) {
-                geometry = result.geometry;
+                geometry = JTSUtil.get2DGeometry(result.geometry);
             } else {
                 long mergeStart = Clock.currentTimeMillis();
                 System.out.println("union: " + geometry.getCoordinates().length + ", " + result.geometry.getCoordinates().length);
@@ -104,20 +186,61 @@ public class MemoryTest {
                 unionUsed * 1.d);
     }
 
-    public static void main(String[] args) {
-//        int[] dots = new int[]{
-//                30,50,70,90,110,130,150,170,190,210,
-//                230,250,270,290,310,330,350
-//        };
+    private static int getProcessId() {
+        RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+        return Integer.parseInt(runtimeMXBean.getName().split("@")[0]);
+    }
+
+    public static void main(String[] args) throws InterruptedException, IOException {
+//        forEachBlock(CoordinatesLoader.loader(), 1000, true, 0.1f, (i, l) -> {
+//            log.info(String.format("[%d, %d]", i, i + l - 1));
+//        });
+        System.out.println(getProcessId());
 //
-//        Arrays.stream(dots).forEach(dot -> testCase(dot, 15));
-        //预热
-//        for(int i = 0; i < 10; i ++){
-//            testCase(50,15);
-//        }
-//        for (int i = 100; i < 600; i += 25) {
-            testCase(250, 15);
-//        }
+//        System.out.println("waiting for start.....");
+//        Thread.sleep(3000);
+////        int[] dots = new int[]{
+////                30,50,70,90,110,130,150,170,190,210,
+////                230,250,270,290,310,330,350
+////        };
+////
+////        Arrays.stream(dots).forEach(dot -> testCase(dot, 15));
+//        //预热
+////        for(int i = 0; i < 10; i ++){
+////            testCase(50,15);
+////        }
+////        for (int i = 100; i < 600; i += 25) {
+////        testCase(1000, 5);
+////        }
+        ExecutorService executorService = ExecutorsHelper.newFixedThreadPool(8, "build");
+        Analyzer analyzer = new Analyzer();
+        int count = 40;
+        CountDownLatch countDownLatch = new CountDownLatch(count);
+        for (int x = 0; x < count; x++) {
+            executorService.submit(() -> {
+                try {
+                    Geometry geometry = analyzer.analyze("total used",
+                            () -> {
+                                try {
+                                    return build(CoordinatesLoader.loader(),
+                                            600);
+                                } catch (IOException | InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
+                    int pointCount = geometry.getNumPoints();
+                    Geometry finalGeometry = geometry;
+                    geometry = analyzer.analyze("simplify", () -> DouglasPeuckerSimplifier.simplify(finalGeometry, 1));
+                    System.out.printf("%d - %d = %d%n", pointCount, geometry.getNumPoints(), pointCount - geometry.getNumPoints());
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+        while (!countDownLatch.await(5, TimeUnit.SECONDS)) {
+            System.out.println("remain: " + countDownLatch.getCount());
+        }
+        analyzer.trace();
 
 //        Geometry geometry = JTSUtil.GEOMETRY_FACTORY.createMultiPolygon(
 //                new Polygon[]{
@@ -186,10 +309,55 @@ public class MemoryTest {
         return geometry;
     }
 
+
+
     static class TestResult {
         Geometry geometry;
         int simplified;
         long simplifiedUsed;
         long used;
+    }
+}
+
+class Analyzer {
+    private static final Singleton<Boolean> ANALYZER_ENABLED = Singleton.with(() -> Config.getValue("org.coodex.analyze.enabled", false));
+    private final Map<String, Long> datas = new HashMap<>();
+    private final Map<String, Long> times = new HashMap<>();
+
+    public <T> T analyze(String label, Supplier<T> supplier) {
+        if (ANALYZER_ENABLED.get()) {
+            long start = System.currentTimeMillis();
+            try {
+                return supplier.get();
+            } finally {
+                synchronized (this) {
+                    Long used = datas.getOrDefault(label, 0L);
+                    Long invokeTimes = times.getOrDefault(label, 0L);
+                    datas.put(label, System.currentTimeMillis() - start + used);
+                    times.put(label, invokeTimes + 1);
+                }
+            }
+        } else {
+            return supplier.get();
+        }
+    }
+
+    public void analyze(String label, Runnable runnable) {
+        analyze(label, () -> {
+            runnable.run();
+            return null;
+        });
+    }
+
+    public void trace() {
+        if (!ANALYZER_ENABLED.get()) return;
+        StringJoiner joiner = new StringJoiner("\n");
+        datas.forEach((k, v) -> {
+            Long used = v;
+            Long times = this.times.getOrDefault(k, 1L);
+            joiner.add(String.format("%s used %d ms, invoke %d times, avg: %.3fms",
+                    k, used, times, used * 1d / times));
+        });
+        System.out.println(joiner);
     }
 }
