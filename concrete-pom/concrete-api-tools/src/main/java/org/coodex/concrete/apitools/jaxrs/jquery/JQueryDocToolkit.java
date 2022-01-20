@@ -29,7 +29,7 @@ import org.coodex.util.Common;
  */
 public class JQueryDocToolkit extends ServiceDocToolkit {
 
-    public JQueryDocToolkit(AbstractRenderer render) {
+    public JQueryDocToolkit(AbstractRenderer<?> render) {
         super(render);
     }
 

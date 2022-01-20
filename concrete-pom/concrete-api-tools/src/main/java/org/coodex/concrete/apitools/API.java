@@ -19,20 +19,23 @@ package org.coodex.concrete.apitools;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.config.Config;
+import org.coodex.util.Common;
 import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by davidoff shen on 2016-12-01.
  */
 public class API {
-    private static final ServiceLoader<ConcreteAPIRenderer> RENDERS =
-            new LazyServiceLoader<ConcreteAPIRenderer>() {
+    private static final ServiceLoader<ConcreteAPIRenderer<?>> RENDERS =
+            new LazyServiceLoader<ConcreteAPIRenderer<?>>() {
             };
     private static final String TAG_API_GENERATOR = "api_gen";
 
@@ -62,21 +65,37 @@ public class API {
         if (packages == null) {
             packages = ConcreteHelper.getApiPackages();
         }
+        generate(ext, desc, path, APIHelper.loadModules(desc, packages));
+    }
+
+    private static void generate(Map<String, Object> ext,
+                                 String desc,
+                                 String path,
+                                 List<? extends AbstractModule<?>> modules) throws IOException {
         if (RENDERS.getAll().size() == 0)
             throw new RuntimeException("NONE render found.");
-        for (ConcreteAPIRenderer render : RENDERS.getAll().values()) {
+        for (ConcreteAPIRenderer<?> render : RENDERS.getAll().values()) {
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (render) {
                 if (render.isAccept(desc)) {
                     render.setRoot(path);
                     render.setExt(ext);
-                    render.writeTo(packages);
+                    render.render(Common.cast(modules));
+//                    render.writeTo(packages);
                     return;
                 }
             }
         }
-
         throw new RuntimeException("NONE render for " + desc + " found.");
+    }
+
+    //
+    public static void generate(Map<String, Object> ext, String desc, String path, Class<?>... classes) throws IOException {
+        if (classes == null) {
+            generate(ext, desc, path, (String[]) null);
+            return;
+        }
+        generate(ext, desc, path, APIHelper.loadModules(desc, classes));
     }
 
     /**
@@ -91,6 +110,15 @@ public class API {
 
         generate(toMap(Config.get("ext", TAG_API_GENERATOR, module)),
                 desc, path, packages);
+    }
+
+
+    public static void generateFor(String module, Class<?>... classes) throws IOException {
+        String desc = Config.get("desc", TAG_API_GENERATOR, module);
+        String path = Config.get("path", TAG_API_GENERATOR, module);
+
+        generate(toMap(Config.get("ext", TAG_API_GENERATOR, module)),
+                desc, path, classes);
     }
 
     private static Map<String, Object> toMap(String json) {

@@ -29,7 +29,8 @@ import java.util.*;
 import static org.coodex.concrete.common.ConcreteHelper.isConcreteService;
 import static org.coodex.util.GenericTypeHelper.solveFromType;
 
-public abstract class AbstractAngularRenderer<U extends AbstractUnit<?>> extends AbstractRenderer {
+public abstract class AbstractAngularRenderer<M extends AbstractModule<U>, U extends AbstractUnit<?>>
+        extends AbstractRenderer<M> {
 
     protected static final ThreadLocal<Map<String, Map<Class<?>, TSClass>>> CLASSES = new ThreadLocal<>();
     private static final Class<?>[] NUMBERS = new Class<?>[]{

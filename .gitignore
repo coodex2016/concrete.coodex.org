@@ -21,3 +21,4 @@ env.yml
 api_gen.*.properties
 
 dependencies.txt
+coordinateCase.json

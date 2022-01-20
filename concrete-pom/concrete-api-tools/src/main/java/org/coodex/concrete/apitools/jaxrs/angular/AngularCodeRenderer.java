@@ -20,7 +20,6 @@ import org.coodex.concrete.apitools.AbstractAngularRenderer;
 import org.coodex.concrete.apitools.jaxrs.JaxrsRenderHelper;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.modules.AbstractModule;
-import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
@@ -36,24 +35,30 @@ import static org.coodex.concrete.apitools.APIHelper.loadModules;
 /**
  * Created by davidoff shen on 2017-04-10.
  */
-public class AngularCodeRenderer extends AbstractAngularRenderer<JaxrsUnit> {
+public class AngularCodeRenderer extends AbstractAngularRenderer<JaxrsModule, JaxrsUnit> {
 
     public static final String RENDER_NAME =
             JaxRSModuleMaker.JAX_RS_PREV + ".code.angular.ts.v1";
     private static final String RESOURCE_PACKAGE = "concrete/templates/jaxrs/angular/code/v1/";
 
 
+//    @Override
+//    public void writeTo(String... packages) throws IOException {
+//        List<JaxrsModule> jaxrsModules = loadModules(RENDER_NAME, packages);
+//        render(jaxrsModules);
+//    }
+
     @Override
-    public void writeTo(String... packages) throws IOException {
+    public void render(List<JaxrsModule> modules) throws IOException {
         String moduleName = getRenderDesc().substring(RENDER_NAME.length());
         moduleName = Common.isBlank(moduleName) ? null : moduleName.substring(1);
-        List<JaxrsModule> jaxrsModules = loadModules(RENDER_NAME, packages);
+
         String contextPath = Common.isBlank(moduleName) ? "@concrete/" : (getModuleName(moduleName) + "/");
 
         // 按包归类
         CLASSES.set(new HashMap<>());
         try {
-            for (JaxrsModule module : jaxrsModules) {
+            for (JaxrsModule module : modules) {
                 process(moduleName, module);
             }
 
@@ -77,7 +82,6 @@ public class AngularCodeRenderer extends AbstractAngularRenderer<JaxrsUnit> {
             CLASSES.remove();
         }
     }
-
 
     @Override
     protected String getModuleType() {

@@ -15,6 +15,7 @@
 #
 
 org.coodex.concrete.apitools.jaxrs.service.ServiceDocRenderer
+org.coodex.concrete.apitools.jaxrs.service.VuePressDocRenderer
 org.coodex.concrete.apitools.jaxrs.jquery.JQueryPromisesCodeRenderer
 org.coodex.concrete.apitools.jaxrs.jquery.JQueryDocRenderer
 org.coodex.concrete.apitools.jaxrs.axios.AxiosCodeRenderer

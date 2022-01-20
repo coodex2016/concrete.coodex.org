@@ -16,29 +16,31 @@
 
 package org.coodex.concrete.apitools.jaxrs.service;
 
-import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
-import org.coodex.concrete.common.ErrorDefinition;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 
 import java.io.IOException;
 import java.util.List;
 
-import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.concrete.common.ErrorMessageFacade.getAllErrorInfo;
 
 /**
  * Created by davidoff shen on 2016-11-30.
  */
-public class ServiceDocRenderer extends AbstractRenderer {
+public class ServiceDocRenderer extends AbstractServiceDocRenderer {
 
     public static final String RENDER_NAME =
             JaxRSModuleMaker.JAX_RS_PREV + ".doc.backend.gitbook.v1";
 
     private static final String RESOURCE_PACKAGE = "concrete/templates/jaxrs/services/doc/gitbook/v1/";
 
-    private final DocToolkit toolkit = new ServiceDocToolkit(this);
+    private DocToolkit toolkit;
+
+    @Override
+    protected DocToolkit getToolkit() {
+        return toolkit;
+    }
 
     @Override
     protected String getTemplatePath() {
@@ -55,18 +57,6 @@ public class ServiceDocRenderer extends AbstractRenderer {
         writeTo("SUMMARY.md",
                 "SUMMARY.md",
                 "modules", modules, toolkit);
-    }
-
-    private void writeModuleList(List<JaxrsModule> modules) throws IOException {
-        writeTo("moduleList.md",
-                "moduleList.md",
-                "modules", modules, toolkit);
-    }
-
-    private void writeModule(JaxrsModule module) throws IOException {
-        writeTo("modules" + FS + module.getInterfaceClass().getName() + ".md",
-                "module.md",
-                "module", module, toolkit);
     }
 
     public void writeTo(List<JaxrsModule> modules) throws IOException {
@@ -94,19 +84,22 @@ public class ServiceDocRenderer extends AbstractRenderer {
 
     }
 
-    private void writeErrorInfo(List<ErrorDefinition> errorDefinitions) throws IOException {
-        writeTo("errorInfo.md",
-                "errorInfo.md",
-                "errorInfo", errorDefinitions);
-    }
 
     @Override
-    public void writeTo(String... packages) throws IOException {
-        writeTo(loadModules(RENDER_NAME, packages));
-
-//        List<ErrorDefinition> errors = new ArrayList<ErrorDefinition>();
-
-        // write errorInfo
+    public void render(List<JaxrsModule> modules) throws IOException {
+        toolkit = new ServiceDocToolkit(this);
+        writeTo(modules);
         writeErrorInfo(getAllErrorInfo());
     }
+
+//    @Override
+//    public void writeTo(String... packages) throws IOException {
+//        render(loadModules(RENDER_NAME,packages));
+////        writeTo(loadModules(RENDER_NAME, packages));
+////
+//////        List<ErrorDefinition> errors = new ArrayList<ErrorDefinition>();
+////
+////        // write errorInfo
+////        writeErrorInfo(getAllErrorInfo());
+//    }
 }

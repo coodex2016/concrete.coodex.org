@@ -23,6 +23,7 @@ import org.coodex.concrete.apitools.jaxrs.DocToolkit;
 import org.coodex.concrete.apitools.jaxrs.POJOPropertyInfo;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.mock.Mocker;
+import org.coodex.util.Common;
 import org.coodex.util.PojoInfo;
 import org.coodex.util.PojoProperty;
 
@@ -41,9 +42,15 @@ import static org.coodex.concrete.common.ConcreteHelper.isPrimitive;
 @SuppressWarnings("unused")
 public class ServiceDocToolkit extends DocToolkit {
     private final Set<String> pojoTypes = new HashSet<>();
+    private final String writeToPath;
 
-    public ServiceDocToolkit(AbstractRenderer render) {
+    public ServiceDocToolkit(AbstractRenderer<?> render) {
+        this(render, null);
+    }
+
+    public ServiceDocToolkit(AbstractRenderer<?> render, String writeToPath) {
         super(render);
+        this.writeToPath = writeToPath;
     }
 
     @Override
@@ -75,7 +82,9 @@ public class ServiceDocToolkit extends DocToolkit {
             map.put("type", clz.getName());
             map.put("tool", this);
 
-            getRender().writeTo("pojos/" + canonicalName(clz.getName()) + ".md", "pojo.md", map);
+            getRender().writeTo(
+                    (Common.isBlank(this.writeToPath) ? "" : (writeToPath + Common.FILE_SEPARATOR))
+                            + "pojos/" + canonicalName(clz.getName()) + ".md", "pojo.md", map);
         }
     }
 

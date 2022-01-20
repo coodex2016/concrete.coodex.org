@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.apitools;
 
+import org.coodex.concrete.common.ErrorMessageFacade;
 import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.concrete.common.modules.ModuleMaker;
 import org.coodex.util.Common;
@@ -23,6 +24,7 @@ import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SelectableServiceLoader;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import static org.coodex.concrete.common.ConcreteHelper.foreachClassInPackages;
 import static org.coodex.concrete.common.ConcreteHelper.isConcreteService;
@@ -57,13 +59,65 @@ public class APIHelper {
         return loadModules(maker, packages);
     }
 
+    public static <M extends AbstractModule<?>> List<M> loadModules(
+            String desc, Class<?>... classes) {
+        ModuleMaker<M> maker = Common.cast(getInstance(desc));
+        return loadModules(maker, classes);
+    }
+
+    private static <MODULE extends AbstractModule<?>> List<MODULE> loadModules(
+            final ModuleMaker<MODULE> maker, Class<?>... classes) {
+
+//        final Map<Class<?>, MODULE> moduleMap = new HashMap<>();
+        ForEachClassConsumer<MODULE> consumer = new ForEachClassConsumer<>(maker);
+        Arrays.stream(classes).forEach(consumer.classConsumer);
+        return consumer.toList();
+//
+//
+//        List<MODULE> moduleList = new ArrayList<>(consumer.moduleMap.values());
+//        Collections.sort(moduleList);
+//        return moduleList;
+    }
+
     private static <MODULE extends AbstractModule<?>> List<MODULE> loadModules(
             final ModuleMaker<MODULE> maker, String... packages) {
 
-        final Map<Class<?>, MODULE> moduleMap = new HashMap<>();
-        foreachClassInPackages((serviceClass) -> {
+        ForEachClassConsumer<MODULE> consumer = new ForEachClassConsumer<>(maker);
+        foreachClassInPackages(consumer.classConsumer, packages);
+        return consumer.toList();
+//        final Map<Class<?>, MODULE> moduleMap = new HashMap<>();
+//        foreachClassInPackages((serviceClass) -> {
+//            if (isConcreteService(serviceClass)) {
+//                MODULE module = maker.make(serviceClass);
+//
+//                Class<?> key = module.getInterfaceClass();//.getName();
+//                MODULE exists = moduleMap.get(key);
+//
+//                if (exists != null) {
+//                    throw new RuntimeException(
+//                            String.format("Module %s duplicated. %s & %s",
+//                                    key,
+//                                    exists.getInterfaceClass().getName(),
+//                                    module.getInterfaceClass().getName()));
+//                }
+//                moduleMap.put(key, module);
+//            } else {
+//                ErrorMessageFacade.register(serviceClass);
+//            }
+//        }, packages);
+//
+//        List<MODULE> moduleList = new ArrayList<>(moduleMap.values());
+//        Collections.sort(moduleList);
+//
+//        return moduleList;
+    }
+
+    private static class ForEachClassConsumer<MODULE extends AbstractModule<?>> {
+        private final ModuleMaker<MODULE> maker;
+        private final Map<Class<?>, MODULE> moduleMap = new HashMap<>();
+        private final Consumer<Class<?>> classConsumer = (serviceClass) -> {
             if (isConcreteService(serviceClass)) {
-                MODULE module = maker.make(serviceClass);
+                MODULE module = getMaker().make(serviceClass);
 
                 Class<?> key = module.getInterfaceClass();//.getName();
                 MODULE exists = moduleMap.get(key);
@@ -76,12 +130,23 @@ public class APIHelper {
                                     module.getInterfaceClass().getName()));
                 }
                 moduleMap.put(key, module);
+            } else {
+                ErrorMessageFacade.register(serviceClass);
             }
-        }, packages);
+        };
 
-        List<MODULE> moduleList = new ArrayList<>(moduleMap.values());
-        Collections.sort(moduleList);
+        private ForEachClassConsumer(ModuleMaker<MODULE> maker) {
+            this.maker = maker;
+        }
 
-        return moduleList;
+        private ModuleMaker<MODULE> getMaker() {
+            return this.maker;
+        }
+
+        private List<MODULE> toList() {
+            List<MODULE> moduleList = new ArrayList<>(moduleMap.values());
+            Collections.sort(moduleList);
+            return moduleList;
+        }
     }
 }

@@ -31,7 +31,7 @@ import java.util.*;
 import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.util.GenericTypeHelper.toReference;
 
-public class ReactiveStreamsRenderer extends AbstractRenderer {
+public class ReactiveStreamsRenderer extends AbstractRenderer<JaxrsModule> {
 
     public static final String RENDER_NAME = "java.code.RxJava2.v1";
 
@@ -49,11 +49,15 @@ public class ReactiveStreamsRenderer extends AbstractRenderer {
         return RENDER_NAME;
     }
 
-    @Override
-    public void writeTo(String... packages) throws IOException {
-        // TODO 建立rx的modulesLoader
-        List<JaxrsModule> modules = loadModules(JaxRSModuleMaker.JAX_RS_PREV + ".loader", packages);
+//    @Override
+//    public void writeTo(String... packages) throws IOException {
+//        // TODO 建立rx的modulesLoader
+//        List<JaxrsModule> modules = loadModules(JaxRSModuleMaker.JAX_RS_PREV + ".loader", packages);
+//        render(modules);
+//    }
 
+    @Override
+    public void render(List<JaxrsModule> modules) throws IOException {
         for (JaxrsModule module : modules) {
             Map<String, Object> toWrite = new HashMap<>();
             Set<String> imports = new HashSet<>();
@@ -78,7 +82,6 @@ public class ReactiveStreamsRenderer extends AbstractRenderer {
 
             writeTo(outputPath, "rx.java.ftl", toWrite);
         }
-
     }
 
     private void addTo(Set<String> imports, String className) {

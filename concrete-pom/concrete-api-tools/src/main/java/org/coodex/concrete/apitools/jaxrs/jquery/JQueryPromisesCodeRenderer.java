@@ -32,7 +32,7 @@ import static org.coodex.concrete.apitools.APIHelper.loadModules;
 /**
  * Created by davidoff shen on 2016-12-04.
  */
-public class JQueryPromisesCodeRenderer extends AbstractRenderer {
+public class JQueryPromisesCodeRenderer extends AbstractRenderer<JaxrsModule> {
 
     public static final String RENDER_NAME =
             JaxRSModuleMaker.JAX_RS_PREV + ".code.jquery.js.v1";
@@ -75,12 +75,7 @@ public class JQueryPromisesCodeRenderer extends AbstractRenderer {
         Map<String, Set<JaxrsUnit>> methods = new HashMap<>();
         for (JaxrsUnit unit : module.getUnits()) {
             String key = unit.getMethod().getName();
-            Set<JaxrsUnit> units = methods.get(key);
-            if (units == null) {
-                units = new HashSet<JaxrsUnit>();
-                methods.put(key, units);
-            }
-
+            Set<JaxrsUnit> units = methods.computeIfAbsent(key, k -> new HashSet<>());
             units.add(unit);
         }
 
@@ -109,22 +104,26 @@ public class JQueryPromisesCodeRenderer extends AbstractRenderer {
         return builder.toString();
     }
 
-    @Override
-    public void writeTo(String... packages) throws IOException {
-        Set<String> set = new HashSet<String>(Arrays.asList(packages));
-        set.add(Polling.class.getPackage().getName());
-        List<JaxrsModule> moduleList = loadModules(RENDER_NAME, set.toArray(new String[0]));
+//    @Override
+//    public void writeTo(String... packages) throws IOException {
+//        Set<String> set = new HashSet<>(Arrays.asList(packages));
+//        set.add(Polling.class.getPackage().getName());
+//        List<JaxrsModule> moduleList = loadModules(RENDER_NAME, set.toArray(new String[0]));
+//        render(moduleList);
+//    }
 
-        Set<String> modules = new HashSet<String>();
+    @Override
+    public void render(List<JaxrsModule> moduleList) throws IOException {
+
+        Set<String> modules = new HashSet<>();
         for (JaxrsModule module : moduleList) {
-            StringBuilder builder = new StringBuilder();
-            builder.append("register(\"").append(module.getInterfaceClass().getSimpleName()).append("\", \"")
-                    .append(module.getInterfaceClass().getPackage().getName()).append("\", { ")
-                    .append(overload(module))
-                    .append("});");
-            modules.add(builder.toString());
+            String builder = "register(\"" + module.getInterfaceClass().getSimpleName() + "\", \"" +
+                    module.getInterfaceClass().getPackage().getName() + "\", { " +
+                    overload(module) +
+                    "});";
+            modules.add(builder);
         }
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("modules", modules);
         String moduleName = getRenderDesc().substring(RENDER_NAME.length());
         moduleName = Common.isBlank(moduleName) ? "concrete" : moduleName.substring(1);

@@ -30,7 +30,7 @@ import java.util.List;
 import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.concrete.websocket.WebSocketModuleMaker.WEB_SOCKET_SUPPORT;
 
-public class AngularWebSocketCodeRenderer extends AbstractAngularRenderer<WebSocketUnit> {
+public class AngularWebSocketCodeRenderer extends AbstractAngularRenderer<WebSocketModule, WebSocketUnit> {
 
     public static final String RENDER_NAME =
             WEB_SOCKET_SUPPORT + "code.angular.ts.v1";
@@ -47,11 +47,16 @@ public class AngularWebSocketCodeRenderer extends AbstractAngularRenderer<WebSoc
         return RENDER_NAME;
     }
 
+//    @Override
+//    public void writeTo(String... packages) throws IOException {
+//        List<WebSocketModule> modules = loadModules(getRenderName(), packages);
+//    }
+
     @Override
-    public void writeTo(String... packages) throws IOException {
+    public void render(List<WebSocketModule> modules) throws IOException {
         String moduleName = getRenderDesc().substring(getRenderName().length());
         moduleName = Common.isBlank(moduleName) ? null : moduleName.substring(1);
-        List<WebSocketModule> modules = loadModules(getRenderName(), packages);
+
         String contextPath = Common.isBlank(moduleName) ? "@concrete/" : (getModuleName(moduleName) + "/");
 
         // 按包归类
@@ -73,7 +78,6 @@ public class AngularWebSocketCodeRenderer extends AbstractAngularRenderer<WebSoc
             CLASSES.remove();
         }
     }
-
 
     @Override
     protected String getModuleType() {

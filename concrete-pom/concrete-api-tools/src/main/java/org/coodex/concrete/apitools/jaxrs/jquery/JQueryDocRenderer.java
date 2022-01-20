@@ -29,7 +29,7 @@ import static org.coodex.concrete.apitools.APIHelper.loadModules;
 /**
  * Created by davidoff shen on 2016-12-05.
  */
-public class JQueryDocRenderer extends AbstractRenderer {
+public class JQueryDocRenderer extends AbstractRenderer<JaxrsModule> {
 
     public static final String RENDER_NAME =
             JaxRSModuleMaker.JAX_RS_PREV + ".doc.jquery.gitbook.v1";
@@ -55,11 +55,14 @@ public class JQueryDocRenderer extends AbstractRenderer {
                 "module", module, toolkit);
     }
 
+//    @Override
+//    public void writeTo(String... packages) throws IOException {
+//        List<JaxrsModule> modules = loadModules(RENDER_NAME, packages);
+//        render(modules);
+//    }
+
     @Override
-    public void writeTo(String... packages) throws IOException {
-        List<JaxrsModule> modules = loadModules(RENDER_NAME, packages);
-
-
+    public void render(List<JaxrsModule> modules) throws IOException {
         // book.json
         if (!exists("book.json"))
             copyTo("book.json", "book.json");

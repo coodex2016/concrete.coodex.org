@@ -19,6 +19,7 @@ package org.coodex.concrete.apitools;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.util.Common;
 
 import java.io.*;
@@ -29,7 +30,7 @@ import java.util.Map;
 /**
  * Created by davidoff shen on 2016-12-04.
  */
-public abstract class AbstractRenderer implements ConcreteAPIRenderer {
+public abstract class AbstractRenderer<M extends AbstractModule<?>> implements ConcreteAPIRenderer<M> {
 
     protected static final String FS = Common.FILE_SEPARATOR;
     private Configuration configuration;
@@ -71,6 +72,13 @@ public abstract class AbstractRenderer implements ConcreteAPIRenderer {
 
     private Template getTemplate(String templateName) throws IOException {
         return getConfiguration().getTemplate(templateName);
+    }
+
+    public void writeTo(String filePath, String content) throws IOException {
+        File target = Common.newFile(rootToWrite + FS + filePath);
+        try (OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)) {
+            outputStream.write(content);
+        }
     }
 
     public void writeTo(String filePath, String templateName, String pojoKey, Object value) throws IOException {

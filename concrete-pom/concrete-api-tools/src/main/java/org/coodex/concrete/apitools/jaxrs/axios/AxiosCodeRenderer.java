@@ -34,7 +34,7 @@ import java.util.Map;
 import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.util.Common.cast;
 
-public class AxiosCodeRenderer extends AbstractRenderer {
+public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
 
     public static final String RENDER_NAME =
             JaxRSModuleMaker.JAX_RS_PREV + ".code.axios.js.v1";
@@ -50,17 +50,23 @@ public class AxiosCodeRenderer extends AbstractRenderer {
         return RENDER_NAME;
     }
 
+//    @Override
+//    public void writeTo(String... packages) throws IOException {
+//        List<JaxrsModule> moduleList = loadModules(RENDER_NAME, packages);
+//        render(moduleList);
+//    }
+
     @Override
-    public void writeTo(String... packages) throws IOException {
+    public void render(List<JaxrsModule> modules) throws IOException {
         String moduleName = getRenderDesc().substring(RENDER_NAME.length());
         moduleName = Common.isBlank(moduleName) ? "concrete" : moduleName.substring(1);
-        List<JaxrsModule> moduleList = loadModules(RENDER_NAME, packages);
+
         Map<String, Object> versionAndStyle = new HashMap<>();
         versionAndStyle.put("version", ConcreteHelper.VERSION);
 //        versionAndStyle.put("style", JaxRSHelper.used024Behavior());
 
         writeTo("jaxrs/concrete.js", "concrete.ftl", versionAndStyle);
-        for (JaxrsModule module : moduleList) {
+        for (JaxrsModule module : modules) {
             Map<String, Object> param = new HashMap<>();
             param.put("moduleName", moduleName);
             param.put("serviceName", module.getInterfaceClass().getSimpleName());
@@ -104,5 +110,4 @@ public class AxiosCodeRenderer extends AbstractRenderer {
                     "service.ftl", param);
         }
     }
-
 }

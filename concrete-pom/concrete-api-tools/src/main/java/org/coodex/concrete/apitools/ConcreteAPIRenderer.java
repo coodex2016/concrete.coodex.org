@@ -16,13 +16,16 @@
 
 package org.coodex.concrete.apitools;
 
+import org.coodex.concrete.common.modules.AbstractModule;
+
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by davidoff shen on 2016-11-30.
  */
-public interface ConcreteAPIRenderer {
+public interface ConcreteAPIRenderer<M extends AbstractModule<?>> {
 
     /**
      * <pre>例如：
@@ -36,11 +39,14 @@ public interface ConcreteAPIRenderer {
      */
     boolean isAccept(String desc);
 
-    /**
-     * @param packages 检索的包
-     */
-//    @Deprecated // todo 使用 classes 替代
-    void writeTo(String... packages) throws IOException;
+//    /**
+//     * @param packages 检索的包
+//     */
+////    @Deprecated // todo 使用 classes 替代
+//    @Deprecated
+//    void writeTo(String... packages) throws IOException;
+
+    void render(List<M> modules) throws IOException;
 
     void setRoot(String rootPath);
 

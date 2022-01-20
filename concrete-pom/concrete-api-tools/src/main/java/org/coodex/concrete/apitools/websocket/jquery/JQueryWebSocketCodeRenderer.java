@@ -28,7 +28,7 @@ import java.util.*;
 import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.concrete.websocket.WebSocketModuleMaker.WEB_SOCKET_SUPPORT;
 
-public class JQueryWebSocketCodeRenderer extends AbstractRenderer {
+public class JQueryWebSocketCodeRenderer extends AbstractRenderer<WebSocketModule> {
 
     public static final String RENDER_NAME =
             WEB_SOCKET_SUPPORT + "code.jquery.js.v1";
@@ -77,15 +77,10 @@ public class JQueryWebSocketCodeRenderer extends AbstractRenderer {
     }
 
     private String overload(WebSocketModule module) {
-        Map<String, Set<WebSocketUnit>> methods = new HashMap<String, Set<WebSocketUnit>>();
+        Map<String, Set<WebSocketUnit>> methods = new HashMap<>();
         for (WebSocketUnit unit : module.getUnits()) {
             String key = unit.getMethod().getName();
-            Set<WebSocketUnit> units = methods.get(key);
-            if (units == null) {
-                units = new HashSet<WebSocketUnit>();
-                methods.put(key, units);
-            }
-
+            Set<WebSocketUnit> units = methods.computeIfAbsent(key, k -> new HashSet<>());
             units.add(unit);
         }
 
@@ -114,19 +109,23 @@ public class JQueryWebSocketCodeRenderer extends AbstractRenderer {
         return builder.toString();
     }
 
+//    @Override
+//    public void writeTo(String... packages) throws IOException {
+//        List<WebSocketModule> moduleList = loadModules(RENDER_NAME, packages);
+//        render(moduleList);
+//    }
+
     @Override
-    public void writeTo(String... packages) throws IOException {
-        List<WebSocketModule> moduleList = loadModules(RENDER_NAME, packages);
-        Set<String> modules = new HashSet<String>();
+    public void render(List<WebSocketModule> moduleList) throws IOException {
+        Set<String> modules = new HashSet<>();
         for (WebSocketModule module : moduleList) {
-            StringBuilder builder = new StringBuilder();
-            builder.append("register(\"").append(module.getInterfaceClass().getSimpleName()).append("\", \"")
-                    .append(module.getInterfaceClass().getPackage().getName()).append("\", { ")
-                    .append(overload(module))
-                    .append("});");
-            modules.add(builder.toString());
+            String builder = "register(\"" + module.getInterfaceClass().getSimpleName() + "\", \"" +
+                    module.getInterfaceClass().getPackage().getName() + "\", { " +
+                    overload(module) +
+                    "});";
+            modules.add(builder);
         }
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("modules", modules);
         String moduleName = getRenderDesc().substring(RENDER_NAME.length());
         moduleName = Common.isBlank(moduleName) ? "concrete" : moduleName.substring(1);

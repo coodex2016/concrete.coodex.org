@@ -38,7 +38,7 @@ import static org.coodex.util.GenericTypeHelper.solveFromType;
 @SuppressWarnings("unused")
 public abstract class DocToolkit {
 
-    private final AbstractRenderer render;
+    private final AbstractRenderer<?> render;
 
 //    public static boolean isPojo(Class<?> type) {
 //        return !(isPrimitive(type) ||
@@ -47,7 +47,7 @@ public abstract class DocToolkit {
 //                Map.class.isAssignableFrom(type));
 //    }
 
-    public DocToolkit(AbstractRenderer render) {
+    public DocToolkit(AbstractRenderer<?> render) {
         this.render = render;
     }
 
@@ -156,7 +156,7 @@ public abstract class DocToolkit {
 
 //    protected abstract String getTypeName(Class<?> clz, Class<?> contextClass);
 
-    public AbstractRenderer getRender() {
+    public AbstractRenderer<?> getRender() {
         return render;
     }
 
