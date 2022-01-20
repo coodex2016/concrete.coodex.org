@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.coodex.concrete.common.ConcreteHelper.foreachClassInPackages;
-import static org.coodex.util.Common.cast;
 
 @SuppressWarnings("unused")
 public abstract class ConcreteJaxrsApplication
@@ -48,21 +47,17 @@ public abstract class ConcreteJaxrsApplication
     private final Set<Class<?>> jaxrsClasses = new HashSet<>();
     private final Set<Object> singletonInstances = new HashSet<>();
     private final Set<Class<?>> othersClasses = new HashSet<>();
-
-    private String name;
-
-    private Application application = null;
-    //    private Configurable<?> configurable = null;
-    private boolean exceptionMapperRegistered = false;
-
     private final ServiceLoader<ServiceRegisteredListener> registerNotifyServiceServiceLoader
             = new LazyServiceLoader<ServiceRegisteredListener>((instance, concreteService) -> {
     }) {
     };
-
     private final ServiceLoader<DefaultJaxrsClassGetter> getterServiceLoader
             = new LazyServiceLoader<DefaultJaxrsClassGetter>() {
     };
+    private String name;
+    private Application application = null;
+    //    private Configurable<?> configurable = null;
+    private boolean exceptionMapperRegistered = false;
 
     public ConcreteJaxrsApplication() {
         super();
@@ -196,7 +191,7 @@ public abstract class ConcreteJaxrsApplication
     }
 
     private void registerClass(Class<?> clz) {
-        ErrorMessageFacade.register(clz);
+        if (ErrorMessageFacade.register(clz)) return;
         if (ConcreteHelper.isConcreteService(clz)) {
             registerConcreteService(clz);
         } else {
