@@ -78,7 +78,7 @@ public class ReflectHelper {
             String parameterName = getParameterName((Method) executable, index);
             return parameterName == null ? (prefix + index) : parameterName;
         } else if (executable instanceof Constructor) {
-            String parameterName = getParameterName((Constructor) executable, index);
+            String parameterName = getParameterName((Constructor<?>) executable, index);
             return parameterName == null ? (prefix + index) : parameterName;
         } else {
             throw new IllegalArgumentException("none Executable object: " + executable);
@@ -155,7 +155,7 @@ public class ReflectHelper {
 //        return s == null ? getParameterNameByJava8(executable, index) : s;
 //    }
 
-    public static String getParameterName(Constructor executable, int index) {
+    public static String getParameterName(Constructor<?> executable, int index) {
         String s = getParameterNameByAnnotation(executable.getParameterAnnotations(), index);
 
         return s == null ? getParameterNameByJava8(executable, index) : s;
@@ -168,15 +168,15 @@ public class ReflectHelper {
     private static String getParameterNameByJava8(Method executable, int index) {
         try {
             return executable.getParameters()[index].getName();
-        }catch (Throwable th){
+        } catch (Throwable th) {
             return "arg" + index;
         }
     }
 
-    private static String getParameterNameByJava8(Constructor executable, int index) {
+    private static String getParameterNameByJava8(Constructor<?> executable, int index) {
         try {
             return executable.getParameters()[index].getName();
-        }catch(Throwable th){
+        } catch (Throwable th) {
             return "arg" + index;
         }
     }

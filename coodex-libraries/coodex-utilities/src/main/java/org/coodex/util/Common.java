@@ -29,8 +29,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
@@ -1321,25 +1320,65 @@ public class Common {
     }
 
 
-//    @Deprecated
-//    public interface ResourceFilter extends BiFunction<String, String, Boolean> {
-//        boolean accept(String root, String resourceName);
-//
-//        @Override
-//        default Boolean apply(String root, String resourceName) {
-//            return accept(root, resourceName);
-//        }
-//    }
-//
-//    @Deprecated
-//    public interface Processor extends BiConsumer<URL, String> {
-//        void process(URL url, String resourceName);
-//
-//        @Override
-//        default void accept(URL url, String resourceName) {
-//            process(url, resourceName);
-//        }
-//    }
+    /**
+     * 对一个大数组进行分块操作
+     *
+     * @param all        所有的数据
+     * @param blockSize  块大小
+     * @param continuous 是否连续，[0,100),[100, last]为不连续,[0,100][100, last]为连续
+     * @param redundancy 最后一块的冗余比例
+     * @param consumer   每块数据如何处理
+     * @param <T>        元素类型
+     */
+    public static <T> void forEachBlock(T[] all, int blockSize, boolean continuous, float redundancy,
+                                        BiConsumer<Integer, Integer> consumer) {
+        int overlay = (int) (blockSize * (1 + Math.max(0, redundancy)));
+        for (int remain = all.length; remain > 0; ) {
+            int startIndex = all.length - remain;
+            int currentBlockSize = remain < overlay ? remain : Math.min(remain, blockSize);
+            consumer.accept(startIndex, currentBlockSize);
+            remain -= currentBlockSize;
+            if (remain > 0 && continuous) {
+                remain++;
+            }
+        }
+    }
+
+    /**
+     * 对一个大数组进行分块操作
+     *
+     * @param all           所有元素
+     * @param blockSize     块大小
+     * @param continuous    是否连续，[0,100),[100, last]为不连续,[0,100][100, last]为连续
+     * @param redundancy    最后一块的冗余比例
+     * @param arrayProvider 新数组如何创建
+     * @param consumer      数组处理逻辑
+     * @param <T>           T
+     */
+    public static <T> void forEachBlock(T[] all, int blockSize, boolean continuous, float redundancy,
+                                        IntFunction<T[]> arrayProvider, Consumer<T[]> consumer) {
+        forEachBlock(all, blockSize, continuous, redundancy, (i, l) -> {
+            T[] block = arrayProvider.apply(l);
+            System.arraycopy(all, i, block, 0, l);
+            consumer.accept(block);
+        });
+    }
+
+    /**
+     * 将一个大数组分块
+     *
+     * @param all        大数组
+     * @param blockSize  块大小
+     * @param continuous 是否连续，[0,100),[100, last]为不连续,[0,100][100, last]为连续
+     * @param redundancy 最后一块的冗余比例
+     * @param <T>        T
+     * @return 拆分后的数组描述(从哪个下标开始 ， 长度)
+     */
+    public static <T> Collection<ArrayBlockRef> slice(T[] all, int blockSize, boolean continuous, float redundancy) {
+        List<ArrayBlockRef> list = new ArrayList<>();
+        forEachBlock(all, blockSize, continuous, redundancy, (i, l) -> list.add(new ArrayBlockRef(i, l)));
+        return list;
+    }
 
     //    public static void checkNull(Object o, Supplier<String> supplier) {
 //        if (o == null) throw new NullPointerException(supplier == null ? null : supplier.get());
@@ -1422,5 +1461,22 @@ public class Common {
         }
     }
 
+    public static class ArrayBlockRef {
+        private final int startIndex;
+        private final int length;
+
+        public ArrayBlockRef(int startIndex, int length) {
+            this.startIndex = startIndex;
+            this.length = length;
+        }
+
+        public int getStartIndex() {
+            return startIndex;
+        }
+
+        public int getLength() {
+            return length;
+        }
+    }
 
 }
