@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>Section 线段 · Coodex libraries</title>
+        <title>Renderer · Coodex libraries</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -77,10 +77,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="org.coodex.util.clock.html" />
+    <link rel="next" href="org.coodex.util.I18N.html" />
     
     
-    <link rel="prev" href="org.coodex.util.Polygon.html" />
+    <link rel="prev" href="org.coodex.util.Config.html" />
     
 
     </head>
@@ -111,7 +111,7 @@
     
         <li class="chapter " data-level="1.1" data-path="../">
             
-                <a href="../">
+                <a href="..">
             
                     
                     Introduction
@@ -124,7 +124,7 @@
     
         <li class="chapter " data-level="1.2" data-path="./">
             
-                <a href="./">
+                <a href="">
             
                     
                     coodex-utilities
@@ -214,7 +214,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.2.7" data-path="org.coodex.util.Renderer.html">
+        <li class="chapter active" data-level="1.2.7" data-path="org.coodex.util.Renderer.html">
             
                 <a href="org.coodex.util.Renderer.html">
             
@@ -292,7 +292,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.2.13" data-path="org.coodex.util.Section.html">
+        <li class="chapter " data-level="1.2.13" data-path="org.coodex.util.Section.html">
             
                 <a href="org.coodex.util.Section.html">
             
@@ -351,7 +351,7 @@
     
         <li class="chapter " data-level="1.3" data-path="../coodex-mock/">
             
-                <a href="../coodex-mock/">
+                <a href="../coodex-mock">
             
                     
                     数据模拟
@@ -364,7 +364,7 @@
     
         <li class="chapter " data-level="1.4" data-path="../coodex-billing/">
             
-                <a href="../coodex-billing/">
+                <a href="../coodex-billing">
             
                     
                     计费框架
@@ -377,7 +377,7 @@
     
         <li class="chapter " data-level="1.5" data-path="../coodex-junit-enhance/">
             
-                <a href="../coodex-junit-enhance/">
+                <a href="../coodex-junit-enhance">
             
                     
                     junit强化
@@ -418,7 +418,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >Section 线段</a>
+        <a href=".." >Renderer</a>
     </h1>
 </div>
 
@@ -433,65 +433,50 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="section">Section</h1>
-<p>&#x4E00;&#x7EF4;&#x7A7A;&#x95F4;(&#x5FC5;&#x987B;&#x662F;Comarable&#x7684;)&#x4E0A;&#x7684;&#x7EBF;&#x6BB5;&#xFF0C;&#x53EF;&#x4EE5;&#x8FDB;&#x884C;&#x5408;&#x5E76;&#xFF0C;&#x51CF;&#x6CD5;&#xFF0C;&#x4EA4;&#x96C6;&#x7B49;&#x64CD;&#x4F5C;&#x3002;</p>
-<pre><code class="lang-java"><span class="hljs-keyword">import</span> org.coodex.util.Section;
-
-<span class="hljs-keyword">import</span> java.util.Arrays;
-<span class="hljs-keyword">import</span> java.util.Collections;
-<span class="hljs-keyword">import</span> java.util.List;
-<span class="hljs-keyword">import</span> java.util.StringJoiner;
-
-<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">IntSection</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Section</span>&lt;<span class="hljs-title">Integer</span>&gt; </span>{
-    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> Builder&lt;Integer, IntSection&gt; builder = IntSection::<span class="hljs-keyword">new</span>;
-
-    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-title">IntSection</span><span class="hljs-params">(Integer start, Integer end)</span> </span>{
-        <span class="hljs-keyword">super</span>(start, end);
-    }
-
-
-    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">trace</span><span class="hljs-params">(List&lt;IntSection&gt; list)</span> </span>{
-        <span class="hljs-keyword">if</span> (list == <span class="hljs-keyword">null</span> || list.size() == <span class="hljs-number">0</span>) {
-            System.out.println(<span class="hljs-string">&quot;empty&quot;</span>);
-            <span class="hljs-keyword">return</span>;
-        }
-        StringJoiner joiner = <span class="hljs-keyword">new</span> StringJoiner(<span class="hljs-string">&quot;, &quot;</span>);
-        list.forEach(section -&gt; joiner.add(section.toString()));
-        System.out.println(joiner.toString());
-    }
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
-        IntSection section1 = builder.create(<span class="hljs-number">0</span>, <span class="hljs-number">3</span>);<span class="hljs-comment">// &#x521B;&#x5EFA;&#x4E00;&#x4E2A;[0,3]&#x7684;&#x7EBF;&#x6BB5;</span>
-        IntSection section2 = builder.create(<span class="hljs-number">5</span>, <span class="hljs-number">7</span>); <span class="hljs-comment">//&#x521B;&#x5EFA;&#x4E00;&#x4E2A;[5,7]&#x7684;&#x7EBF;&#x6BB5;</span>
-        IntSection section3 = builder.create(<span class="hljs-number">1</span>, <span class="hljs-number">6</span>);<span class="hljs-comment">// &#x521B;&#x5EFA;&#x4E00;&#x4E2A;[1,6]&#x7684;&#x7EBF;&#x6BB5;</span>
-        IntSection section4 = builder.create(-<span class="hljs-number">1</span>, <span class="hljs-number">10</span>);<span class="hljs-comment">//&#x521B;&#x5EFA;[-1.10]&#x7684;&#x7EBF;&#x6BB5;</span>
-
-        <span class="hljs-comment">// &#x5408;&#x5E76;</span>
-        trace(Section.merge(Arrays.asList(section1, section2), builder));
-        trace(Section.merge(Arrays.asList(section1, section2, section3), builder));
-
-        <span class="hljs-comment">// &#x4EA4;&#x96C6;</span>
-        trace(Section.intersect(Collections.singletonList(section1), Collections.singletonList(section2), builder));
-        trace(Section.intersect(Arrays.asList(section1, section2), Collections.singletonList(section3), builder));
-
-        <span class="hljs-comment">// &#x51CF;</span>
-        trace(Section.sub(Collections.singletonList(section4), Arrays.asList(section1, section2), builder));
-    }
-
-    <span class="hljs-meta">@Override</span>
-    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">toString</span><span class="hljs-params">()</span> </span>{
-        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;[&quot;</span> + getStart() + <span class="hljs-string">&quot;, &quot;</span> + getEnd() + <span class="hljs-string">&quot;]&quot;</span>;
-    }
-}
+                                <h1 id="&#x6570;&#x636E;&#x6E32;&#x67D3;&#x5668;">&#x6570;&#x636E;&#x6E32;&#x67D3;&#x5668;</h1>
+<h2 id="&#x63A5;&#x53E3;">&#x63A5;&#x53E3;</h2>
+<pre><code class="lang-java">    <span class="hljs-comment">/**
+     * <span class="hljs-doctag">@param</span> template &#x5F85;&#x6E32;&#x67D3;&#x7684;&#x6A21;&#x677F;
+     * <span class="hljs-doctag">@param</span> objects  &#x6E32;&#x67D3;&#x53C2;&#x6570;&#xFF0C;&#x652F;&#x6301;{<span class="hljs-doctag">@link</span> java.util.function.Supplier}
+     * <span class="hljs-doctag">@return</span> &#x6E32;&#x67D3;&#x540E;&#x7684;&#x5B57;&#x7B26;&#x4E32;
+     */</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">render</span><span class="hljs-params">(String template, Object... objects)</span>
+</span></code></pre>
+<h2 id="&#x6269;&#x5C55;">&#x6269;&#x5C55;</h2>
+<p>&#x5B9E;&#x73B0;<code>org.coodex.util.RenderService</code>&#xFF0C;&#x653E;&#x5230;<a href="SPI.html">SPI</a>&#x4E2D;&#xFF0C;&#x9009;&#x62E9;&#x7B56;&#x7565;&#x4E3A;&#x57FA;&#x4E8E;&#x6A21;&#x677F;&#x7684;&#x9009;&#x62E9;&#xFF0C;&#x5982;SPI&#x4E2D;&#x9488;&#x5BF9;&#x5F53;&#x524D;&#x6A21;&#x677F;&#x65E0;&#x53EF;&#x7528;&#x670D;&#x52A1;&#x65F6;&#xFF0C;&#x5219;&#x539F;&#x6837;&#x8FD4;&#x56DE;&#x6A21;&#x677F;&#x3002;</p>
+<h3 id="&#x5DF2;&#x6709;&#x7684;&#x5B9E;&#x73B0;">&#x5DF2;&#x6709;&#x7684;&#x5B9E;&#x73B0;</h3>
+<ul>
+<li>&#x57FA;&#x4E8E;<code>java.text.MessageFormat</code>&#x7684;&#x5B9E;&#x73B0;&#xFF0C;&#x5F00;&#x7BB1;&#x5373;&#x7528;&#xFF0C;&#x652F;&#x6301;Supplier&#x3002;</li>
+</ul>
+<p>&#x793A;&#x4F8B;&#xFF1A;</p>
+<pre><code class="lang-java">    System.out.println(Renderer.render(
+            <span class="hljs-string">&quot;&#x60A8;&#x597D;&#xFF0C;{0}&#x3002;&#x4ECA;&#x5929;&#x662F;{1,date,yyyy-MM-dd}&#xFF0C;&#x5F53;&#x524D;&#x65F6;&#x95F4;{1,time,HH:mm:ss}&#xFF0C;&#x60A8;&#x7684;&#x670D;&#x52A1;&#x53F7;&#x662F;{2,number,000}&#x3002;&#x795D;&#x60A8;&#x751F;&#x6D3B;&#x6109;&#x5FEB;&#x3002;&quot;</span>,
+            <span class="hljs-string">&quot;Davidoff&quot;</span>, <span class="hljs-keyword">new</span> Date(), <span class="hljs-number">3</span>));
 </code></pre>
-<pre><code class="lang-txt">[0, 3], [5, 7]
-[0, 7]
-empty
-[1, 3], [5, 6]
-[-1, 0], [3, 5], [7, 10]
+<pre><code class="lang-txt">&#x60A8;&#x597D;&#xFF0C;Davidoff&#x3002;&#x4ECA;&#x5929;&#x662F;2020-05-10&#xFF0C;&#x5F53;&#x524D;&#x65F6;&#x95F4;09:27:57&#xFF0C;&#x60A8;&#x7684;&#x670D;&#x52A1;&#x53F7;&#x662F;003&#x3002;&#x795D;&#x60A8;&#x751F;&#x6D3B;&#x6109;&#x5FEB;&#x3002;
+</code></pre>
+<ul>
+<li>&#x57FA;&#x4E8E;<code>freemarker</code>&#x7684;&#x5B9E;&#x73B0;&#xFF0C;&#x6E32;&#x67D3;&#x53D8;&#x91CF;&#x4ECE;o1&#x5F00;&#x59CB;&#x987A;&#x5E8F;&#x547D;&#x540D;&#xFF0C;&#x652F;&#x6301;Supplier&#x3002;</li>
+</ul>
+<pre><code class="lang-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.coodex<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>coodex-renderer-freemarker<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>${coodex.libraries.version}<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span>
+</code></pre>
+<p>&#x4F7F;&#x7528;&#x793A;&#x4F8B;&#xFF1A;</p>
+<pre><code class="lang-java">    System.out.println(Renderer.render(<span class="hljs-string">&quot;&#x73B0;&#x5728;&#x65F6;&#x523B;&#x662F; ${o1}&quot;</span>,Common.now()));
+    Map&lt;String,Object&gt; map = <span class="hljs-keyword">new</span> HashMap&lt;&gt;();
+    map.put(<span class="hljs-string">&quot;test&quot;</span>,<span class="hljs-string">&quot;test&quot;</span>);
+    System.out.println(Renderer.render(<span class="hljs-string">&quot;&#x6D4B;&#x8BD5;&#xFF1A;${o1.test}&quot;</span>, map));
+    System.out.println(Renderer.render(<span class="hljs-string">&quot;&#x6D4B;&#x8BD5;&#xFF1A;${o2!\&quot;xxx\&quot;}&quot;</span>, map));
+</code></pre>
+<pre><code class="lang-txt">&#x73B0;&#x5728;&#x65F6;&#x523B;&#x662F; 2020-05-10 10:45:41
+&#x6D4B;&#x8BD5;&#xFF1A;test
+&#x6D4B;&#x8BD5;&#xFF1A;xxx
 </code></pre>
 <footer class="page-footer"><span class="copyright">&#xA9; coodex.org 2014-2020 all right reserved&#xFF0C;powered by Gitbook</span><span class="footer-modification">File Modify: 
-2020-05-11 12:05:27
+2020-05-10 10:48:14
 </span></footer>
 <script>console.log("plugin-popup....");document.onclick = function(e){ e.target.tagName === "IMG" && window.open(e.target.src,e.target.src)}</script><style>img{cursor:pointer}</style>
                                 
@@ -520,12 +505,12 @@ empty
 
             
                 
-                <a href="org.coodex.util.Polygon.html" class="navigation navigation-prev " aria-label="Previous page: Polygon 多边形工具">
+                <a href="org.coodex.util.Config.html" class="navigation navigation-prev " aria-label="Previous page: Config">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="org.coodex.util.clock.html" class="navigation navigation-next " aria-label="Next page: 天上人间">
+                <a href="org.coodex.util.I18N.html" class="navigation navigation-next " aria-label="Next page: I18N 国际化">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -536,7 +521,7 @@ empty
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Section 线段","level":"1.2.13","depth":2,"next":{"title":"天上人间","level":"1.2.14","depth":2,"path":"coodex-utilities/org.coodex.util.clock.md","ref":"coodex-utilities/org.coodex.util.clock.md","articles":[]},"previous":{"title":"Polygon 多边形工具","level":"1.2.12","depth":2,"path":"coodex-utilities/org.coodex.util.Polygon.md","ref":"coodex-utilities/org.coodex.util.Polygon.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","code","donate","github","ga","-lunr","-search","search-pro","tbfed-pagefooter","popup"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"&copy coodex.org 2014-2020","modify_label":"","modify_format":"YYYY-MM-DD HH:mm:ss"},"chapter-fold":{},"github":{"url":"https://github.com/coodex2016/coodex-libraries"},"search-pro":{},"popup":{},"code":{"copyButtons":true},"donate":{"alipay":"/images/donate_alipay.png","alipayText":"支付宝打赏","button":"好哒","title":"<strong><font size='7'>壕</font>，请用<font size='5'>金钱</font>尽情<font size='6'>羞辱</font>我<font size='7'>！</font></strong>","wechat":"/images/donate_wechat.png","wechatText":"微信打赏"},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"back-to-top-button":{},"ga":{"configuration":"auto","token":"UA-124592164-1"},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Shen Hainan <jujus.shen@126.com>","pdf":{"pageNumbers":true,"fontSize":14,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":0,"left":0,"top":0,"bottom":0},"fondFamily":"微软雅黑"},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{"coodex_version":"0.5.0-SNAPSHOT"},"title":"Coodex libraries","language":"zh-hans","gitbook":"*"},"file":{"path":"coodex-utilities/org.coodex.util.Section.md","mtime":"2020-05-11T04:05:27.520Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-10-14T02:25:42.916Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Renderer","level":"1.2.7","depth":2,"next":{"title":"I18N 国际化","level":"1.2.8","depth":2,"path":"coodex-utilities/org.coodex.util.I18N.md","ref":"coodex-utilities/org.coodex.util.I18N.md","articles":[]},"previous":{"title":"Config","level":"1.2.6","depth":2,"path":"coodex-utilities/org.coodex.util.Config.md","ref":"coodex-utilities/org.coodex.util.Config.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","code","donate","github","ga","-lunr","-search","search-pro","tbfed-pagefooter","popup"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"&copy coodex.org 2014-2020","modify_label":"","modify_format":"YYYY-MM-DD HH:mm:ss"},"chapter-fold":{},"github":{"url":"https://github.com/coodex2016/coodex-libraries"},"search-pro":{},"popup":{},"code":{"copyButtons":true},"donate":{"alipay":"/images/donate_alipay.png","alipayText":"支付宝打赏","button":"好哒","title":"<strong><font size='7'>壕</font>，请用<font size='5'>金钱</font>尽情<font size='6'>羞辱</font>我<font size='7'>！</font></strong>","wechat":"/images/donate_wechat.png","wechatText":"微信打赏"},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"back-to-top-button":{},"ga":{"configuration":"auto","token":"UA-124592164-1"},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Shen Hainan <jujus.shen@126.com>","pdf":{"pageNumbers":true,"fontSize":14,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":0,"left":0,"top":0,"bottom":0},"fondFamily":"微软雅黑"},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{"coodex_version":"0.5.0-SNAPSHOT"},"title":"Coodex libraries","language":"zh-hans","gitbook":"*"},"file":{"path":"coodex-utilities/org.coodex.util.Renderer.md","mtime":"2020-05-10T02:48:14.059Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-10-14T02:25:42.916Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -111,29 +112,86 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
     }
 
     private static String getNamespace(Field field) {
-        if (field == null) {
-            return ErrorCode.DEFAULT_NAMESPACE;
-        }
-        ErrorCode errorCode = field.getDeclaringClass().getAnnotation(ErrorCode.class);
-        return errorCode == null || Common.isBlank(errorCode.value()) ? ErrorCode.DEFAULT_NAMESPACE : errorCode.value();
+        return Optional.ofNullable(field)
+                .map(f -> f.getDeclaringClass().getAnnotation(ErrorCode.class))
+                .map(ec -> Common.isBlank(ec.value()) ? null : ec.value())
+                .orElse(ErrorCode.DEFAULT_NAMESPACE);
+//        if (field == null) {
+//            return ErrorCode.DEFAULT_NAMESPACE;
+//        }
+//        ErrorCode errorCode = field.getDeclaringClass().getAnnotation(ErrorCode.class);
+//        return errorCode == null || Common.isBlank(errorCode.value()) ? ErrorCode.DEFAULT_NAMESPACE : errorCode.value();
     }
 
-    private static String getTemplateStr(Field field, String namespace, int code) {
-        if (field == null) {
-            return namespace + '.' + code;
+    private static String getKey(Field field, String namespace, int code) {
+//        if (field == null) {
+//            return namespace + '.' + code;
+//        }
+//
+//        ErrorCode.Key key = field.getAnnotation(ErrorCode.Key.class);
+//        if (key != null && !Common.isBlank(key.value())) {
+//            return namespace + "." + key.value();
+//        }
+//
+//        ErrorCode.Template template = field.getAnnotation(ErrorCode.Template.class);
+//        if (template != null && !Common.isBlank(template.value())) {
+//            String s = template.value();
+//            if (s.startsWith("{") && s.endsWith("}")) {
+//                return s.substring(1, s.length() - 1);
+//            }
+//        }
+//
+//        return namespace + "." + code;
+        String keyFromTemplate = getKeyFromTemplate(getTemplateStr(field));
+        if (keyFromTemplate != null) return keyFromTemplate;
+
+        return namespace + "." + Optional.ofNullable(field)
+                .map(f -> f.getAnnotation(ErrorCode.Key.class))
+                .map(key -> Common.isBlank(key.value()) ? null : key.value())
+                .orElse(String.valueOf(code));
+
+//        ErrorCode.Key key = field.getAnnotation(ErrorCode.Key.class);
+//        return namespace + '.' +
+//                (key == null || Common.isBlank(key.value()) ? String.valueOf(code) : key.value());
+    }
+
+    private static String getKeyFromTemplate(String template) {
+        return new KeyStat(template).key();
+    }
+
+    private static String getTemplateStr(Field field) {
+        return Optional.ofNullable(field)
+                .map(f -> f.getAnnotation(ErrorCode.Template.class))
+                .map(t -> Common.isBlank(t.value()) ? null : t.value())
+                .orElse(null);
+    }
+
+
+    public static String getKey(int code) {
+        Field f = errorCodes.get(code);
+        return getKey(f, getNamespace(f), code);
+    }
+
+    public static String getTemplate(int code) {
+        Field f = errorCodes.get(code);
+        String template = getTemplateStr(f);
+        if (template == null) {
+            return I18N.translate(getKey(code), LOCALE_CONTEXT.get());
+        } else {
+            return Optional.ofNullable(getKeyFromTemplate(template))
+                    .map(key -> I18N.translate(key, LOCALE_CONTEXT.get()))
+                    .orElse(template);
         }
-        ErrorCode.Template template = field.getAnnotation(ErrorCode.Template.class);
-        if (template != null && !Common.isBlank(template.value())) {
-            return template.value();
-        }
-        ErrorCode.Key key = field.getAnnotation(ErrorCode.Key.class);
-        return namespace + '.' +
-                (key == null || Common.isBlank(key.value()) ? String.valueOf(code) : key.value());
+
     }
 
     private static String getMessageOrPattern(boolean format, int code, Object... objects) {
-        Field f = errorCodes.get(code);
-        String template = I18N.translate(getTemplateStr(f, getNamespace(f), code), LOCALE_CONTEXT.get());
+//        Field f = errorCodes.get(code);
+//        String template = getTemplateStr(f);
+//        if (template == null) {
+//            template = I18N.translate(getKey(code), LOCALE_CONTEXT.get());
+//        }
+        String template = getTemplate(code);
         return format ? Renderer.render(template, objects) : template;
 
 //        ErrorMsg formatterValue = null;
@@ -164,12 +222,94 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
 
 
     public static List<ErrorDefinition> getAllErrorInfo() {
-        final List<ErrorDefinition> errorDefinitions = new ArrayList<>();
-        for (Integer i : allRegisteredErrorCodes()) {
-            errorDefinitions.add(new ErrorDefinition(i));
-        }
-        Collections.sort(errorDefinitions);
-        return errorDefinitions;
+//        final List<ErrorDefinition> errorDefinitions = new ArrayList<>();
+////        for (Integer i : allRegisteredErrorCodes()) {
+////            errorDefinitions.add(new ErrorDefinition(i));
+////        }
+//        Collections.sort(errorDefinitions);
+//        return errorDefinitions;
+        return errorCodes.values().stream().map(ErrorDefinition::new)
+                .sorted()
+                .collect(Collectors.toList());
     }
 
+//    public static void main(String[] args) {
+//        register(ECTest.class);
+//        getAllErrorInfo().forEach(System.out::println);
+//    }
 }
+
+class KeyStat {
+    private boolean dot = false;
+    private boolean hyphen = false;
+    private int dotFound = 0;
+    private StringBuilder builder = null;
+
+    KeyStat(String template) {
+        char[] chars = template.trim().toCharArray();
+        if (chars.length < 5) return;
+        if (chars[0] == '{' && chars[chars.length - 1] == '}') {
+            if (chars[1] >= '0' && chars[1] <= '9') return;
+
+            for (int i = 1; i < chars.length - 1; i++) {
+                if (next(chars[i])) {
+                    builder = (builder == null ? new StringBuilder() : builder).append(chars[i]);
+                } else {
+                    builder = null;
+                    break;
+                }
+            }
+            if (dotFound == 0) builder = null;
+        }
+    }
+
+    public String key() {
+        return builder == null ? null : builder.toString();
+    }
+
+    private Type typeOf(char c) {
+        if (c == '.') return Type.DOT;
+        if (c == '-' || c == '_') return Type.HYPHEN;
+        if (c >= '0' && c <= '9') return Type.ASCII_CHAR;
+        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) return Type.ASCII_CHAR;
+        return Type.OTHER;
+    }
+
+    private boolean next(char c) {
+        switch (typeOf(c)) {
+            case ASCII_CHAR:
+                dot = true;
+                hyphen = true;
+                return true;
+            case DOT:
+                if (!dot) return false;
+                dotFound++;
+                dot = false;
+                hyphen = false;
+                return true;
+            case HYPHEN:
+                if (!hyphen) return false;
+                dot = false;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+
+    enum Type {
+        DOT, ASCII_CHAR, HYPHEN, OTHER
+    }
+}
+
+
+//@ErrorCode("ectest")
+//class ECTest {
+//    @ErrorCode.Key("my-test")
+//    @ErrorCode.Template("the message")
+//    public static final int MY_TEST = 11111;
+//
+//    @ErrorCode.Key("kkkkk")
+//    @ErrorCode.Template("{b.b1-_3.c}")
+//    public static final int MY_TEST2 = 22222;
+//}

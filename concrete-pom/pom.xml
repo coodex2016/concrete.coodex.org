@@ -132,6 +132,8 @@
         <snakeyaml.version>1.26</snakeyaml.version>
         <cglib.version>3.2.12</cglib.version>
 
+        <swagger-core.version>2.1.12</swagger-core.version>
+
         <!--        <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>-->
         <!--        <coodex.shared.cache.version>${project.parent.version}</coodex.shared.cache.version>-->
     </properties>
@@ -562,7 +564,7 @@
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-core</artifactId>
-                <version>2.1.11</version>
+                <version>${swagger-core.version}</version>
             </dependency>
 
         </dependencies>

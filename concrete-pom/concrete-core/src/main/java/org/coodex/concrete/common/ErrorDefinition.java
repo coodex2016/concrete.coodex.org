@@ -16,17 +16,45 @@
 
 package org.coodex.concrete.common;
 
+import java.lang.reflect.Field;
+
 /**
  * Created by davidoff shen on 2016-12-01.
  */
 public class ErrorDefinition implements Comparable<ErrorDefinition> {
     private final Integer errorCode;
     private final String errorMessage;
+    private final String key;
+    private final String fieldName;
+    private final Class<?> declaringClass;
 
-    public ErrorDefinition(int errorCode) {
-        this.errorCode = errorCode;
-        this.errorMessage = ErrorMessageFacade.getMessageTemplate(errorCode);
+    public ErrorDefinition(Field field) {
+        try {
+            this.errorCode = field.getInt(null);
+            this.fieldName = field.getName();
+            this.declaringClass = field.getDeclaringClass();
+            this.key = ErrorMessageFacade.getKey(errorCode);
+            this.errorMessage = ErrorMessageFacade.getTemplate(errorCode);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public Class<?> getDeclaringClass() {
+        return declaringClass;
+    }
+
+    //
+//    @Deprecated
+//    public ErrorDefinition(int errorCode) {
+//        this.errorCode = errorCode;
+//        this.errorMessage = ErrorMessageFacade.getMessageTemplate(errorCode);
+//
+//    }
 
     public int getErrorCode() {
         return errorCode;
@@ -40,5 +68,20 @@ public class ErrorDefinition implements Comparable<ErrorDefinition> {
     @Override
     public int compareTo(ErrorDefinition o) {
         return errorCode.compareTo(o.errorCode);
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    @Override
+    public String toString() {
+        return "ErrorDefinition{" +
+                "errorCode=" + errorCode +
+                ", errorMessage='" + errorMessage + '\'' +
+                ", key='" + key + '\'' +
+                ", fieldName='" + fieldName + '\'' +
+                ", declaringClass=" + declaringClass +
+                '}';
     }
 }

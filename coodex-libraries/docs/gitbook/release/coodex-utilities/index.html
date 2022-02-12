@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>CRC · Coodex libraries</title>
+        <title>coodex-utilities · Coodex libraries</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -77,10 +77,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="org.coodex.util.Polygon.html" />
+    <link rel="next" href="org.coodex.util.Common.html" />
     
     
-    <link rel="prev" href="org.coodex.util.Tracer.html" />
+    <link rel="prev" href=".." />
     
 
     </head>
@@ -111,7 +111,7 @@
     
         <li class="chapter " data-level="1.1" data-path="../">
             
-                <a href="../">
+                <a href="..">
             
                     
                     Introduction
@@ -122,9 +122,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.2" data-path="./">
+        <li class="chapter active" data-level="1.2" data-path="./">
             
-                <a href="./">
+                <a href="">
             
                     
                     coodex-utilities
@@ -266,7 +266,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.2.11" data-path="org.coodex.util.CRC.html">
+        <li class="chapter " data-level="1.2.11" data-path="org.coodex.util.CRC.html">
             
                 <a href="org.coodex.util.CRC.html">
             
@@ -351,7 +351,7 @@
     
         <li class="chapter " data-level="1.3" data-path="../coodex-mock/">
             
-                <a href="../coodex-mock/">
+                <a href="../coodex-mock">
             
                     
                     数据模拟
@@ -364,7 +364,7 @@
     
         <li class="chapter " data-level="1.4" data-path="../coodex-billing/">
             
-                <a href="../coodex-billing/">
+                <a href="../coodex-billing">
             
                     
                     计费框架
@@ -377,7 +377,7 @@
     
         <li class="chapter " data-level="1.5" data-path="../coodex-junit-enhance/">
             
-                <a href="../coodex-junit-enhance/">
+                <a href="../coodex-junit-enhance">
             
                     
                     junit强化
@@ -418,7 +418,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >CRC</a>
+        <a href=".." >coodex-utilities</a>
     </h1>
 </div>
 
@@ -433,70 +433,16 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="crc---cyclic-redundancy-check">CRC - Cyclic redundancy check</h1>
-<p>&#x4E3B;&#x8981;&#x7528;&#x4E8E;&#x5404;&#x79CD;&#x7B97;&#x6CD5;&#x7684;CRC&#x8FD0;&#x7B97;&#x3002;</p>
-<p>coodex crc &#x5B9E;&#x9645;&#x4E0A;&#x662F;&#x57FA;&#x4E8E; <a href="https://github.com/snksoft/java-crc" target="_blank">https://github.com/snksoft/java-crc</a> &#x8FDB;&#x884C;&#x7684;&#x4FEE;&#x6539;&#x548C;&#x8865;&#x5145;</p>
-<p>&#x5404;&#x79CD;&#x7B97;&#x6CD5;&#x53C2;&#x6570;&#x6E90;&#x4E8E; <a href="https://crccalc.com/" target="_blank">https://crccalc.com/</a></p>
-<p>&#x652F;&#x6301;&#x7684;&#x7B97;&#x6CD5;&#x5305;&#x62EC;&#xFF1A;</p>
-<ul>
-<li>CRC-8<ul>
-<li>CRC8(new Parameters(8, 0x07, 0x00, false, false, 0x0))</li>
-<li>CRC8_CDMA2000(new Parameters(8, 0x9b, 0xff, false, false 0x0))</li>
-<li>CRC8_DARC(new Parameters(8, 0X39, 0X00, true, true, 0x0))</li>
-<li>CRC8_DVB_S2(new Parameters(8, 0xd5, 0x00, false, false, 0x0))</li>
-<li>CRC8_EBU(new Parameters(8, 0x1d, 0xff, true, true, 0x0))</li>
-<li>CRC8_I_CODE(new Parameters(8, 0x1d, 0xfd, false, false, 0x0))</li>
-<li>CRC8_ITU(new Parameters(8, 0x07, 0x00, false, false, 0x55))</li>
-<li>CRC8_MAXIM(new Parameters(8, 0X31, 0X00, true, true, 0x00))</li>
-<li>CRC8_ROHC(new Parameters(8, 0x07, 0xff, true, true, 0x00))</li>
-<li>CRC8_WCDMA(new Parameters(8, 0X9B, 0X00, true, true, 0x00))</li>
-</ul>
-</li>
-<li>CRC-16<ul>
-<li>CRC16_CCITT_FALSE(new Parameters(16, 0x1021, 0x00FFFF, false, false, 0x0))</li>
-<li>CRC16_ARC(new Parameters(16, 0x8005, 0x0000, true, true, 0x0))</li>
-<li>CRC16_AUG_CCITT(new Parameters(16, 0x1021, 0x1D0F, false, false, 0x0))</li>
-<li>CRC16_BUYPASS(new Parameters(16, 0x8005, 0x0000, false, false, 0x0))</li>
-<li>CRC16_CDMA2000(new Parameters(16, 0xC867, 0xFFFF, false, false, 0x0))</li>
-<li>CRC16_DDS110(new Parameters(16, 0x8005, 0x800d, false, false, 0x0))</li>
-<li>CRC16_DECT_R(new Parameters(16, 0x0589, 0x0000, false, false, 0x0001))</li>
-<li>CRC16_DECT_X(new Parameters(16, 0x0589, 0x0000, false, false, 0x0))</li>
-<li>CRC16_DNP(new Parameters(16, 0x3d65, 0x0000, true, true, 0xffff))</li>
-<li>CRC16_EN13757(new Parameters(16, 0x3d65, 0x0000, false, false, 0xffff))</li>
-<li>CRC16_GENIBUS(new Parameters(16, 0x1021, 0x00FFFF, false, false, 0xffff))</li>
-<li>CRC16_MAXIM(new Parameters(16, 0x8005, 0x0000, true, true, 0xffff))</li>
-<li>CRC16_MCRF4XX(new Parameters(16, 0x1021, 0x00FFFF, true, true, 0x0))</li>
-<li>CRC16_RIELLO(new Parameters(16, 0x1021, 0x00B2AA, true, true, 0x0))</li>
-<li>CRC16_T10DIF(new Parameters(16, 0x8bb7, 0x0000, false, false, 0x0000))</li>
-<li>CRC16_TELEDISK(new Parameters(16, 0xa097, 0x0000, false, false, 0x0000))</li>
-<li>CRC16_TMS37157(new Parameters(16, 0X1021, 0X89EC, true, true, 0x0000))</li>
-<li>CRC16_USB(new Parameters(16, 0X8005, 0xffff, true, true, 0xffff))</li>
-<li>CRC_A(new Parameters(16, 0x1021, 0xc6c6, true, true, 0x0))</li>
-<li>CRC16_KERMIT(new Parameters(16, 0x1021, 0x0000, true, true, 0x0))</li>
-<li>CRC16_MODBUS(new Parameters(16, 0X8005, 0XFFFF, true, true, 0x0))</li>
-<li>CRC16_X25(new Parameters(16, 0x1021, 0xffff, true, true, 0xffff))</li>
-<li>CRC16_XMODEM(new Parameters(16, 0x1021, 0x0000, false, false, 0x0000))</li>
-</ul>
-</li>
-<li>CRC32<ul>
-<li>CRC32(new Parameters(32, 0x04C11DB7, 0xFFFFFFFF, true, true, 0xFFFFFFFF))</li>
-<li>CRC32_BZIP2(new Parameters(32, 0x04C11DB7, 0xFFFFFFFF, false, false, 0xFFFFFFFF))</li>
-<li>CRC32C(new Parameters(32, 0x1EDC6F41, 0xFFFFFFFF, true, true, 0xFFFFFFFF))</li>
-<li>CRC32D(new Parameters(32, 0xA833982B, 0xFFFFFFFF, true, true, 0xFFFFFFFF))</li>
-<li>CRC32_MPEG2(new Parameters(32, 0x04C11DB7, 0xFFFFFFFF, false, false, 0x00000000))</li>
-<li>CRC32_POSIX(new Parameters(32, 0x04C11DB7, 0x00000000, false, false, 0xFFFFFFFF))</li>
-<li>CRC32Q(new Parameters(32, 0x814141AB, 0x00000000, false, false, 0x00000000))</li>
-<li>CRC32_JAMCRC(new Parameters(32, 0x04C11DB7, 0xFFFFFFFF, true, true, 0x00000000))</li>
-<li>CRC32_XFER(new Parameters(32, 0x000000AF, 0x00000000, false, false, 0x00000000))</li>
-</ul>
-</li>
-</ul>
-<h2 id="usage">usage</h2>
-<pre><code class="lang-java">    <span class="hljs-comment">// content&#x662F;&#x4E00;&#x4E2A;&#x5B57;&#x8282;&#x6570;&#x7EC4;</span>
-    CRC.calculateCRC(CRC.Algorithm.CRC16_XMODEM, content);
+                                <h1 id="coodex-utilities">coodex-utilities</h1>
+<p>maven usage</p>
+<pre><code class="lang-xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.coodex<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>coodex-utilities<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>${coodex.libraries.version}<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span>
 </code></pre>
 <footer class="page-footer"><span class="copyright">&#xA9; coodex.org 2014-2020 all right reserved&#xFF0C;powered by Gitbook</span><span class="footer-modification">File Modify: 
-2020-05-11 08:50:04
+2020-05-10 09:25:03
 </span></footer>
 <script>console.log("plugin-popup....");document.onclick = function(e){ e.target.tagName === "IMG" && window.open(e.target.src,e.target.src)}</script><style>img{cursor:pointer}</style>
                                 
@@ -525,12 +471,12 @@
 
             
                 
-                <a href="org.coodex.util.Tracer.html" class="navigation navigation-prev " aria-label="Previous page: Tracer">
+                <a href=".." class="navigation navigation-prev " aria-label="Previous page: Introduction">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="org.coodex.util.Polygon.html" class="navigation navigation-next " aria-label="Next page: Polygon 多边形工具">
+                <a href="org.coodex.util.Common.html" class="navigation navigation-next " aria-label="Next page: Common">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -541,7 +487,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"CRC","level":"1.2.11","depth":2,"next":{"title":"Polygon 多边形工具","level":"1.2.12","depth":2,"path":"coodex-utilities/org.coodex.util.Polygon.md","ref":"coodex-utilities/org.coodex.util.Polygon.md","articles":[]},"previous":{"title":"Tracer","level":"1.2.10","depth":2,"path":"coodex-utilities/org.coodex.util.Tracer.md","ref":"coodex-utilities/org.coodex.util.Tracer.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","code","donate","github","ga","-lunr","-search","search-pro","tbfed-pagefooter","popup"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"&copy coodex.org 2014-2020","modify_label":"","modify_format":"YYYY-MM-DD HH:mm:ss"},"chapter-fold":{},"github":{"url":"https://github.com/coodex2016/coodex-libraries"},"search-pro":{},"popup":{},"code":{"copyButtons":true},"donate":{"alipay":"/images/donate_alipay.png","alipayText":"支付宝打赏","button":"好哒","title":"<strong><font size='7'>壕</font>，请用<font size='5'>金钱</font>尽情<font size='6'>羞辱</font>我<font size='7'>！</font></strong>","wechat":"/images/donate_wechat.png","wechatText":"微信打赏"},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"back-to-top-button":{},"ga":{"configuration":"auto","token":"UA-124592164-1"},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Shen Hainan <jujus.shen@126.com>","pdf":{"pageNumbers":true,"fontSize":14,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":0,"left":0,"top":0,"bottom":0},"fondFamily":"微软雅黑"},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{"coodex_version":"0.5.0-SNAPSHOT"},"title":"Coodex libraries","language":"zh-hans","gitbook":"*"},"file":{"path":"coodex-utilities/org.coodex.util.CRC.md","mtime":"2020-05-11T00:50:04.808Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-10-14T02:25:42.916Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"coodex-utilities","level":"1.2","depth":1,"next":{"title":"Common","level":"1.2.1","depth":2,"path":"coodex-utilities/org.coodex.util.Common.md","ref":"coodex-utilities/org.coodex.util.Common.md","articles":[]},"previous":{"title":"Introduction","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","code","donate","github","ga","-lunr","-search","search-pro","tbfed-pagefooter","popup"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"&copy coodex.org 2014-2020","modify_label":"","modify_format":"YYYY-MM-DD HH:mm:ss"},"chapter-fold":{},"github":{"url":"https://github.com/coodex2016/coodex-libraries"},"search-pro":{},"popup":{},"code":{"copyButtons":true},"donate":{"alipay":"/images/donate_alipay.png","alipayText":"支付宝打赏","button":"好哒","title":"<strong><font size='7'>壕</font>，请用<font size='5'>金钱</font>尽情<font size='6'>羞辱</font>我<font size='7'>！</font></strong>","wechat":"/images/donate_wechat.png","wechatText":"微信打赏"},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"back-to-top-button":{},"ga":{"configuration":"auto","token":"UA-124592164-1"},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Shen Hainan <jujus.shen@126.com>","pdf":{"pageNumbers":true,"fontSize":14,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":0,"left":0,"top":0,"bottom":0},"fondFamily":"微软雅黑"},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{"coodex_version":"0.5.0-SNAPSHOT"},"title":"Coodex libraries","language":"zh-hans","gitbook":"*"},"file":{"path":"coodex-utilities/README.md","mtime":"2020-05-10T01:25:03.387Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-10-14T02:25:42.916Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

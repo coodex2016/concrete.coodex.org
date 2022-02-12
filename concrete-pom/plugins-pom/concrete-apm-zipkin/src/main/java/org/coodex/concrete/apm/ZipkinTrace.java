@@ -29,6 +29,7 @@ import org.coodex.util.Singleton;
 import zipkin2.codec.SpanBytesEncoder;
 import zipkin2.reporter.AsyncReporter;
 import zipkin2.reporter.Sender;
+import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
 import java.util.Collections;
@@ -48,9 +49,17 @@ public class ZipkinTrace extends AbstractTrace {
                 String url = Config.get("zipkin.location", getAppSet());
                 if (url != null) {
                     Sender sender = OkHttpSender.create(url + "/api/v2/spans");
-                    builder.spanReporter(AsyncReporter.builder(sender)
-                            .closeTimeout(500, TimeUnit.MILLISECONDS)
-                            .build(SpanBytesEncoder.JSON_V2));
+
+//                    builder.spanReporter(AsyncReporter.builder(sender)
+//                            .closeTimeout(500, TimeUnit.MILLISECONDS)
+//                            .build(SpanBytesEncoder.JSON_V2));
+                    builder.addSpanHandler(
+                            AsyncZipkinSpanHandler.create(
+                                    AsyncReporter.builder(sender)
+                                            .closeTimeout(500, TimeUnit.MILLISECONDS)
+                                            .build(SpanBytesEncoder.JSON_V2)
+                            )
+                    );
                 }
 
 

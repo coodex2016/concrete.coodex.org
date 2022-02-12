@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>Profile · Coodex libraries</title>
+        <title>SPI · Coodex libraries</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -77,10 +77,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="org.coodex.util.Config.html" />
+    <link rel="next" href="org.coodex.util.Profile.html" />
     
     
-    <link rel="prev" href="SPI.html" />
+    <link rel="prev" href="org.coodex.util.ResourceScanner.html" />
     
 
     </head>
@@ -111,7 +111,7 @@
     
         <li class="chapter " data-level="1.1" data-path="../">
             
-                <a href="../">
+                <a href="..">
             
                     
                     Introduction
@@ -124,7 +124,7 @@
     
         <li class="chapter " data-level="1.2" data-path="./">
             
-                <a href="./">
+                <a href="">
             
                     
                     coodex-utilities
@@ -175,7 +175,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.2.4" data-path="SPI.html">
+        <li class="chapter active" data-level="1.2.4" data-path="SPI.html">
             
                 <a href="SPI.html">
             
@@ -188,7 +188,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.2.5" data-path="org.coodex.util.Profile.html">
+        <li class="chapter " data-level="1.2.5" data-path="org.coodex.util.Profile.html">
             
                 <a href="org.coodex.util.Profile.html">
             
@@ -351,7 +351,7 @@
     
         <li class="chapter " data-level="1.3" data-path="../coodex-mock/">
             
-                <a href="../coodex-mock/">
+                <a href="../coodex-mock">
             
                     
                     数据模拟
@@ -364,7 +364,7 @@
     
         <li class="chapter " data-level="1.4" data-path="../coodex-billing/">
             
-                <a href="../coodex-billing/">
+                <a href="../coodex-billing">
             
                     
                     计费框架
@@ -377,7 +377,7 @@
     
         <li class="chapter " data-level="1.5" data-path="../coodex-junit-enhance/">
             
-                <a href="../coodex-junit-enhance/">
+                <a href="../coodex-junit-enhance">
             
                     
                     junit强化
@@ -418,7 +418,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >Profile</a>
+        <a href=".." >SPI</a>
     </h1>
 </div>
 
@@ -433,54 +433,65 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="profile">Profile</h1>
-<p>profile&#x662F;&#x4E00;&#x4E2A;key-value&#x7684;&#x6A21;&#x578B;&#x3002;</p>
-<h2 id="&#x4E3B;&#x8981;&#x63A5;&#x53E3;">&#x4E3B;&#x8981;&#x63A5;&#x53E3;</h2>
-<ul>
-<li><p>getInt(String)/ getInt(String, int)</p>
-<p>  &#x4ECE;profile&#x4E2D;&#x83B7;&#x53D6;&#x6307;&#x5B9A;key&#x7684;&#x6574;&#x578B;&#x503C;</p>
-</li>
-<li><p>getBool(String)/ getBool(String, boolean)</p>
-<p>  &#x4ECE;profile&#x4E2D;&#x83B7;&#x53D6;&#x6307;&#x5B9A;key&#x7684;&#x5E03;&#x5C14;&#x503C;</p>
-</li>
-<li><p>getLong(String)/ getLong(String, long)</p>
-<p>  &#x4ECE;profile&#x4E2D;&#x83B7;&#x53D6;&#x6307;&#x5B9A;key&#x7684;&#x957F;&#x6574;&#x578B;&#x503C;</p>
-</li>
-<li><p>getString(String)/ getString(String, String)</p>
-<p>  &#x4ECE;profile&#x4E2D;&#x83B7;&#x53D6;&#x6307;&#x5B9A;key&#x7684;&#x5B57;&#x7B26;&#x4E32;&#x503C;</p>
-</li>
-<li><p>getStrList(String)/ getStrList(String, String)/ getStrList(String, String, String[])</p>
-<p>  &#x4ECE;profile&#x4E2D;&#x83B7;&#x53D6;&#x6307;&#x5B9A;key&#x7684;&#x5B57;&#x7B26;&#x4E32;&#x6570;&#x7EC4;</p>
-</li>
-</ul>
-<h2 id="usage">usage</h2>
-<pre><code class="lang-java">    <span class="hljs-comment">// &#x6839;&#x636E;&#x6307;&#x5B9A;&#x8D44;&#x6E90;&#x540D;&#x83B7;&#x53D6;Profile&#x5B9E;&#x4F8B;&#xFF0C;&#x672A;&#x6307;&#x5B9A;&#x7C7B;&#x578B;&#x65F6;&#xFF0C;&#x5C06;&#x81EA;&#x52A8;&#x68C0;&#x7D22;</span>
-    Profile profile = Profile.get(<span class="hljs-string">&quot;profileName&quot;</span>);
-
-    <span class="hljs-comment">// &#x591A;&#x9879;&#x8D44;&#x6E90;&#x5408;&#x5E76;&#x4E3A;&#x4E00;&#x4E2A;Profile&#xFF0C;&#x53D6;&#x503C;&#x65F6;&#xFF0C;&#x8D8A;&#x9760;&#x524D;&#x7684;&#x4F18;&#x5148;&#x7EA7;&#x8D8A;&#x9AD8;</span>
-    Profile profile = Profile.get(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>);
+                                <h1 id="spi---service-provider-interfaces">SPI - Service Provider Interfaces</h1>
+<p>java 1.6&#x8D77;&#x589E;&#x52A0;&#x4E86;SPI&#x673A;&#x5236;&#xFF0C;&#x5B9A;&#x4E49;&#x597D;&#x4E00;&#x4E2A;Provider Interface&#xFF0C;&#x7136;&#x540E;&#x5728;<code>META-INF/services</code>&#x76EE;&#x5F55;&#x4E0B;&#x5EFA;&#x4E00;&#x4E2A;&#x540C;&#x540D;&#x7684;&#x6587;&#x6863;&#xFF0C;&#x6309;&#x884C;&#x6DFB;&#x52A0;&#x8BE5;&#x63A5;&#x53E3;&#x7684;&#x5B9E;&#x73B0;&#x7C7B;&#xFF0C;&#x5373;&#x53EF;&#x901A;&#x8FC7;ServiceLoader&#x83B7;&#x53D6;&#x6240;&#x6709;&#x7684;Provider&#x5B9E;&#x4F8B;&#xFF0C;&#x662F;OOAD&#x8BBE;&#x8BA1;&#x539F;&#x5219;&#x4E2D;&#x4F9D;&#x8D56;&#x53CD;&#x8F6C;&#x601D;&#x60F3;&#x7684;&#x4F53;&#x73B0;&#xFF0C;&#x8BA9;&#x7CFB;&#x7EDF;&#x53EF;&#x6269;&#x5C55;&#x6027;&#x66F4;&#x597D;&#x3002;</p>
+<p>java&#x539F;&#x751F;&#x7684;SPI&#x673A;&#x5236;&#x53EA;&#x80FD;&#x7531;jvm&#x6839;&#x636E;&#x7C7B;&#x6765;&#x63D0;&#x4F9B;&#x5B9E;&#x4F8B;&#xFF0C;&#x6309;DI&#x7684;&#x7406;&#x5FF5;&#x6765;&#x8BB2;&#xFF0C;&#x6211;&#x4EEC;&#x4E0D;&#x5E94;&#x8BE5;&#x5173;&#x6CE8;&#x6216;&#x8005;&#x9650;&#x5B9A;&#x5B9E;&#x4F8B;&#x7684;&#x63D0;&#x4F9B;&#x65B9;&#x5F0F;&#xFF0C;&#x6240;&#x4EE5;<code>coodex</code>&#x8BBE;&#x8BA1;&#x4E86;&#x4E00;&#x4E2A;&#x65E2;&#x517C;&#x5BB9;java SPI&#x4E14;&#x6269;&#x5C55;&#x6027;&#x66F4;&#x5F3A;&#x7684;SPI&#x673A;&#x5236;&#x3002;</p>
+<h2 id="orgcoodexutilserviceloadert">org.coodex.util.ServiceLoader&lt;T&gt;</h2>
+<h3 id="mapstring-t-getall">Map&lt;String, T&gt; getAll()</h3>
+<p>&#x83B7;&#x53D6;&#x6240;&#x6709;&#x6B64;&#x7C7B;&#x578B;&#x7684;&#x5B9E;&#x4F8B;&#xFF0C;coodex SPI&#x4E3A;&#x5B9E;&#x4F8B;&#x589E;&#x52A0;&#x4E86;&#x4E00;&#x4E2A;&#x540D;&#x79F0;&#x7684;&#x5C5E;&#x6027;&#xFF0C;&#x53C2;&#x8003;&#x4E86;<code>javax.inject</code>&#x89C4;&#x8303;&#x7684;name&#x8BBE;&#x8BA1;&#xFF0C;&#x5728;&#x6269;&#x5C55;&#x548C;&#x670D;&#x52A1;&#x9009;&#x62E9;&#x65F6;&#x53EF;&#x4EE5;&#x66F4;&#x65B9;&#x4FBF;&#x7684;&#x64CD;&#x4F5C;</p>
+<h3 id="t-getclass-extends-t">T get(Class&lt;? extends T&gt;)</h3>
+<p>&#x6839;&#x636E;&#x4E00;&#x4E2A;&#x7C7B;&#x578B;&#x83B7;&#x53D6;&#x670D;&#x52A1;&#x5B9E;&#x4F8B;</p>
+<h3 id="t-getstring">T get(String)</h3>
+<p>&#x6839;&#x636E;&#x540D;&#x79F0;&#x83B7;&#x53D6;&#x670D;&#x52A1;&#x5B9E;&#x4F8B;</p>
+<h3 id="t-get">T get()</h3>
+<p>&#x83B7;&#x53D6;&#x5B9E;&#x4F8B;&#xFF0C;&#x5F53;&#x5B58;&#x5728;&#x591A;&#x4E2A;&#x670D;&#x52A1;&#x5B9E;&#x4F8B;&#x65F6;&#xFF0C;&#x53EF;&#x901A;&#x8FC7;&#x91CD;&#x8F7D;<code>LazyServiceLoader</code>&#x7684;conflict&#x7CFB;&#x5217;&#x65B9;&#x6CD5;&#x6765;&#x89E3;&#x51B3;</p>
+<h3 id="t-getdefault">T getDefault()</h3>
+<p>&#x83B7;&#x53D6;&#x9ED8;&#x8BA4;&#x7684;&#x670D;&#x52A1;&#x5B9E;&#x4F8B;&#x3002;coodex SPI&#x5EFA;&#x8BAE;&#x6BCF;&#x4E2A;Loader&#x90FD;&#x80FD;&#x63D0;&#x4F9B;&#x4E00;&#x4E2A;&#x9ED8;&#x8BA4;&#x7684;&#x670D;&#x52A1;&#x5B9E;&#x4F8B;&#xFF0C;&#x51CF;&#x5C11;&#x4F7F;&#x7528;&#x590D;&#x6742;&#x5EA6;</p>
+<h2 id="orgcoodexutillazyserviceloadert">org.coodex.util.LazyServiceLoader&lt;T&gt;</h2>
+<p>coodex SPI&#x7684;&#x5B9E;&#x73B0;</p>
+<h3 id="usage">usage</h3>
+<p>&#x4F8B;&#x5982;&#xFF0C;&#x6211;&#x4EEC;&#x6709;&#x4E00;&#x4E2A;interface A</p>
+<pre><code class="lang-java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> ServiceLoader&lt;A&gt; A_SERVICE_LOADER = <span class="hljs-keyword">new</span> ServiceLoaderImpl&lt;A&gt;(){};
 </code></pre>
-<p>Profile&#x9ED8;&#x8BA4;&#x652F;&#x6301;.properties&#xFF0C;&#x5982;&#x679C;&#x4F60;&#x7684;&#x5DE5;&#x7A0B;&#x4E2D;&#x5F15;&#x5165;&#x4E86;snakeyaml&#xFF0C;&#x5219;profile&#x652F;&#x6301;.yml|yaml&#x6587;&#x4EF6;</p>
-<p>&#x7C7B;&#x4F3C;&#x4E8E;spring.active.profiles&#xFF0C;&#x652F;&#x6301;&#x591A;&#x73AF;&#x5883;&#x5DEE;&#x5F02;&#x5316;&#x914D;&#x7F6E;&#x3002;</p>
-<pre><code class="lang-txt">-Dcoodex.active.profiles=a1,a2,a3
+<h2 id="&#x6269;&#x5C55;&#x70B9;">&#x6269;&#x5C55;&#x70B9;</h2>
+<h3 id="orgcoodexutilserviceloaderprovider">org.coodex.util.ServiceLoaderProvider</h3>
+<p>coodex SPI&#x673A;&#x5236;&#x76F8;&#x5BF9;java SPI&#x6765;&#x8BB2;&#xFF0C;&#x652F;&#x6301;&#x591A;&#x79CD;ServiceLoader&#xFF0C;&#x9700;&#x8981;&#x589E;&#x52A0;&#x4F60;&#x7684;Loader&#x673A;&#x5236;&#x65F6;&#xFF0C;&#x53EA;&#x9700;&#x8981;&#x5B9E;&#x73B0;&#x4E00;&#x4E2A;ServiceLoaderProvider&#x5373;&#x53EF;</p>
+<p>&#x5DF2;&#x6709;&#x7684;&#x5B9E;&#x73B0;&#x5305;&#x62EC;</p>
+<h4 id="orgcoodexutiljavautilserviceloaderprovider">org.coodex.util.JavaUtilServiceLoaderProvider</h4>
+<p>coodex-utitlies&#x4E2D;&#xFF0C;&#x57FA;&#x4E8E;java.util.ServiceLoader&#x7684;Provider</p>
+<h4 id="orgcoodexutilspringserviceloaderprovider">org.coodex.util.SpringServiceLoaderProvider</h4>
+<p>&#x57FA;&#x4E8E;Spring&#x7684;ServiceLoaderProvider&#xFF0C;&#x4F7F;&#x7528;&#x65F6;&#x653E;&#x5165;JUS&#x548C;spring&#x5BB9;&#x5668;&#x5373;&#x53EF;</p>
+<h2 id="selectableserviceloaderparamtype-t-extends-selectableserviceparamtype">SelectableServiceLoader&lt;Param_Type, T extends SelectableService&lt;Param_Type&gt;&gt;</h2>
+<p>&#x4E00;&#x4E2A;coodex SPI&#x7684;&#x6269;&#x5C55;&#xFF0C;&#x53EF;&#x4EE5;&#x6839;&#x636E;&#x53C2;&#x6570;&#x6765;&#x9009;&#x62E9;&#x4E00;&#x4E2A;&#x80FD;&#x591F;&#x5904;&#x7406;&#x8BE5;&#x53C2;&#x6570;&#x7684;&#x670D;&#x52A1;&#x5B9E;&#x4F8B;</p>
+<p>&#x5047;&#x5B9A;&#x6709;&#x4EE5;&#x4E0B;service</p>
+<pre><code class="lang-java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">NumberSelectableService</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">SelectableService</span>&lt;<span class="hljs-title">Integer</span>&gt;</span>{}
 </code></pre>
-<p>&#x5219; Profile.get(&quot;profileName&quot;) &#x65F6;&#xFF0C;&#x76F8;&#x5F53;&#x4E8E;&#x805A;&#x5408;&#x4E86;&quot;profileName-a1&quot;,&quot;profileName-a2&quot;,&quot;profileName-a3&quot;,&quot;profileName&quot;</p>
-<blockquote>
-<p>&#x7279;&#x522B;&#x7684;&#xFF1A;&#x5728;<code>org.coodex.spring</code>&#x4E2D;&#x6269;&#x5C55;&#x4E86;&#x4E00;&#x4E2A;&#x4E0E;<code>spring.active.profiles</code>&#x4E00;&#x81F4;&#x7684;<code>ActiveProfilesProvider</code>&#xFF0C;&#x4F7F;&#x7528;&#x65F6;&#x5C06;&#x5176;&#x653E;&#x5165;SPI&#x8303;&#x56F4;&#x5373;&#x53EF;&#x4F8B;&#x5982;:</p>
-<p><code>-Dspring.active.profiles=dev</code></p>
-<p>&#x5219;<code>Profile.get(&quot;app&quot;)</code>&#x76F8;&#x5F53;&#x4E8E;&#x805A;&#x5408;&#x4E86;<code>app-dev</code>&#x548C;<code>app</code></p>
-</blockquote>
-<h2 id="&#x66FF;&#x6362;&#x7B26;">&#x66FF;&#x6362;&#x7B26;</h2>
-<p>&#x5F53;&#x67D0;&#x4E2A;&#x952E;&#x503C;&#x5F15;&#x7528;&#x5176;&#x4ED6;&#x8D44;&#x6E90;&#x7684;&#x952E;&#x503C;&#x65F6;&#xFF0C;&#x53EF;&#x4F7F;&#x7528;&#x66FF;&#x6362;&#x7B26;&#xFF0C;&#x683C;&#x5F0F;&#x4E3A;: <code>${refResource:key}</code></p>
-<h2 id="&#x7CFB;&#x7EDF;&#x53D8;&#x91CF;">&#x7CFB;&#x7EDF;&#x53D8;&#x91CF;</h2>
-<ul>
-<li><code>org.coodex.util.Profile.reloadInterval</code>, &#x91CD;&#x8BFB;&#x95F4;&#x9694;&#xFF0C;&#x5355;&#x4F4D;&#x4E3A;&#x79D2;&#xFF0C;&#x9ED8;&#x8BA4;&#x4E0D;&#x91CD;&#x8BFB;</li>
-<li><code>Profile.reloadInterval</code>&#xFF0C;&#x540C;&#x4E0A;&#xFF0C;&#x5373;&#x5C06;&#x4F5C;&#x5E9F;</li>
-</ul>
-<h2 id="&#x6269;&#x5C55;">&#x6269;&#x5C55;</h2>
-<p><code>Profile</code>&#x652F;&#x6301;&#x6269;&#x5C55;&#x4F60;&#x81EA;&#x5DF1;&#x7684;&#x952E;&#x503C;&#x5BF9;&#x683C;&#x5F0F;&#x8D44;&#x6E90;&#xFF0C;&#x5B9E;&#x73B0;&#x4E00;&#x4E2A;<code>org.coodex.util.ProfileProvider</code>&#x653E;&#x5230;SPI&#x5373;&#x53EF;&#x3002;</p>
+<p>&#x5947;&#x6570;&#x662F;&#x4E00;&#x4E2A;&#x670D;&#x52A1;&#x5B9E;&#x4F8B;&#xFF0C;&#x5076;&#x6570;&#x662F;&#x4E00;&#x4E2A;&#x5B9E;&#x4F8B;</p>
+<pre><code class="lang-java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OddNumberSelectableService</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">NumberSelectableService</span></span>{
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">accept</span><span class="hljs-params">(Integer param)</span> </span>{
+        <span class="hljs-keyword">return</span> param != <span class="hljs-keyword">null</span> &amp;&amp; param % <span class="hljs-number">2</span> == <span class="hljs-number">1</span>;
+    }
+}
+</code></pre>
+<pre><code class="lang-java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">EvenNumberSelectableService</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">NumberSelectableService</span></span>{
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">accept</span><span class="hljs-params">(Integer param)</span> </span>{
+        <span class="hljs-keyword">return</span> param != <span class="hljs-keyword">null</span> &amp;&amp; param % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>;
+    }
+}
+</code></pre>
+<p>&#x4F7F;&#x7528;</p>
+<pre><code class="lang-java">    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> SelectableServiceLoader&lt;Integer, NumberSelectableService&gt; NUMBER_SERVICE_LOADER =
+            <span class="hljs-keyword">new</span> LazySelectableServiceLoader&lt;Integer, NumberSelectableService&gt;() {
+            };
+</code></pre>
+<pre><code class="lang-java">        NUMBER_SERVICE_LOADER.select(<span class="hljs-number">0</span>);<span class="hljs-comment">// &#x83B7;&#x53D6;&#x5230;&#x7684;&#x662F;EvenNumberSelectableService&#x7684;&#x5B9E;&#x4F8B;</span>
+        NUMBER_SERVICE_LOADER.select(<span class="hljs-number">1</span>);<span class="hljs-comment">// &#x83B7;&#x53D6;&#x5230;&#x7684;&#x662F;OddNumberSelectableService&#x7684;&#x5B9E;&#x4F8B;</span>
+</code></pre>
+<p>SelectableServiceLoader&#x662F;&#x4E00;&#x79CD;&#x7B56;&#x7565;&#x6A21;&#x5F0F;(<a href="https://zh.wikipedia.org/wiki/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F" target="_blank">wiki</a>, <a href="https://baike.baidu.com/item/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/1212549#4_22" target="_blank">&#x767E;&#x5EA6;</a>)&#x7684;&#x8BBE;&#x8BA1;&#xFF0C;&#x975E;&#x5E38;&#x7406;&#x60F3;&#x7684;&#x9694;&#x79BB;&#x4E86;&#x4E0D;&#x540C;&#x6570;&#x636E;&#x63A7;&#x5236;&#x5B9E;&#x73B0;</p>
 <footer class="page-footer"><span class="copyright">&#xA9; coodex.org 2014-2020 all right reserved&#xFF0C;powered by Gitbook</span><span class="footer-modification">File Modify: 
-2020-10-12 09:01:21
+2020-10-12 17:32:23
 </span></footer>
 <script>console.log("plugin-popup....");document.onclick = function(e){ e.target.tagName === "IMG" && window.open(e.target.src,e.target.src)}</script><style>img{cursor:pointer}</style>
                                 
@@ -509,12 +520,12 @@
 
             
                 
-                <a href="SPI.html" class="navigation navigation-prev " aria-label="Previous page: SPI">
+                <a href="org.coodex.util.ResourceScanner.html" class="navigation navigation-prev " aria-label="Previous page: 资源扫描器">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="org.coodex.util.Config.html" class="navigation navigation-next " aria-label="Next page: Config">
+                <a href="org.coodex.util.Profile.html" class="navigation navigation-next " aria-label="Next page: Profile">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -525,7 +536,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Profile","level":"1.2.5","depth":2,"next":{"title":"Config","level":"1.2.6","depth":2,"path":"coodex-utilities/org.coodex.util.Config.md","ref":"coodex-utilities/org.coodex.util.Config.md","articles":[]},"previous":{"title":"SPI","level":"1.2.4","depth":2,"path":"coodex-utilities/SPI.md","ref":"coodex-utilities/SPI.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","code","donate","github","ga","-lunr","-search","search-pro","tbfed-pagefooter","popup"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"&copy coodex.org 2014-2020","modify_label":"","modify_format":"YYYY-MM-DD HH:mm:ss"},"chapter-fold":{},"github":{"url":"https://github.com/coodex2016/coodex-libraries"},"search-pro":{},"popup":{},"code":{"copyButtons":true},"donate":{"alipay":"/images/donate_alipay.png","alipayText":"支付宝打赏","button":"好哒","title":"<strong><font size='7'>壕</font>，请用<font size='5'>金钱</font>尽情<font size='6'>羞辱</font>我<font size='7'>！</font></strong>","wechat":"/images/donate_wechat.png","wechatText":"微信打赏"},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"back-to-top-button":{},"ga":{"configuration":"auto","token":"UA-124592164-1"},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Shen Hainan <jujus.shen@126.com>","pdf":{"pageNumbers":true,"fontSize":14,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":0,"left":0,"top":0,"bottom":0},"fondFamily":"微软雅黑"},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{"coodex_version":"0.5.0-SNAPSHOT"},"title":"Coodex libraries","language":"zh-hans","gitbook":"*"},"file":{"path":"coodex-utilities/org.coodex.util.Profile.md","mtime":"2020-10-12T01:01:21.518Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-10-14T02:25:42.916Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"SPI","level":"1.2.4","depth":2,"next":{"title":"Profile","level":"1.2.5","depth":2,"path":"coodex-utilities/org.coodex.util.Profile.md","ref":"coodex-utilities/org.coodex.util.Profile.md","articles":[]},"previous":{"title":"资源扫描器","level":"1.2.3","depth":2,"path":"coodex-utilities/org.coodex.util.ResourceScanner.md","ref":"coodex-utilities/org.coodex.util.ResourceScanner.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","code","donate","github","ga","-lunr","-search","search-pro","tbfed-pagefooter","popup"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"&copy coodex.org 2014-2020","modify_label":"","modify_format":"YYYY-MM-DD HH:mm:ss"},"chapter-fold":{},"github":{"url":"https://github.com/coodex2016/coodex-libraries"},"search-pro":{},"popup":{},"code":{"copyButtons":true},"donate":{"alipay":"/images/donate_alipay.png","alipayText":"支付宝打赏","button":"好哒","title":"<strong><font size='7'>壕</font>，请用<font size='5'>金钱</font>尽情<font size='6'>羞辱</font>我<font size='7'>！</font></strong>","wechat":"/images/donate_wechat.png","wechatText":"微信打赏"},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"back-to-top-button":{},"ga":{"configuration":"auto","token":"UA-124592164-1"},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Shen Hainan <jujus.shen@126.com>","pdf":{"pageNumbers":true,"fontSize":14,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":0,"left":0,"top":0,"bottom":0},"fondFamily":"微软雅黑"},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{"coodex_version":"0.5.0-SNAPSHOT"},"title":"Coodex libraries","language":"zh-hans","gitbook":"*"},"file":{"path":"coodex-utilities/SPI.md","mtime":"2020-10-12T09:32:23.052Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-10-14T02:25:42.916Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

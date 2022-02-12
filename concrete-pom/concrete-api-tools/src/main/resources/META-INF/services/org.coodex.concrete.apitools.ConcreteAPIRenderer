@@ -21,6 +21,6 @@ org.coodex.concrete.apitools.jaxrs.jquery.JQueryDocRenderer
 org.coodex.concrete.apitools.jaxrs.axios.AxiosCodeRenderer
 org.coodex.concrete.apitools.jaxrs.angular.AngularCodeRenderer
 org.coodex.concrete.apitools.jaxrs.angular.AngularCodeRendererV2
-org.coodex.concrete.apitools.rx.ReactiveStreamsRenderer
+# org.coodex.concrete.apitools.rx.ReactiveStreamsRenderer
 org.coodex.concrete.apitools.websocket.jquery.JQueryWebSocketCodeRenderer
 org.coodex.concrete.apitools.websocket.angular.AngularWebSocketCodeRenderer

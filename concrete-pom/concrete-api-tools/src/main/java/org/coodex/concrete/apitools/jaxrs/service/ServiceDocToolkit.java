@@ -93,17 +93,21 @@ public class ServiceDocToolkit extends DocToolkit {
     }
 
 
+    private String prevOfMock() {
+        return Common.isBlank(writeToPath) ? "- **example result**:" : "";
+    }
+
     public String mockResult(JaxrsUnit unit) {
         String result;
         if (void.class.equals(unit.getReturnType())) {
             result = "";
 
         } else if (String.class.equals(unit.getReturnType())) {
-            result = "- **example result**:\n\n```\n" +
+            result = prevOfMock() + "\n\n```\n" +
                     Mocker.mockMethod(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass()) +
                     "\n```\n\n";
         } else {
-            result = "- **example result**:\n```json\n" +
+            result = prevOfMock() + "\n```json\n" +
                     JSON.toJSONString(Mocker.mockMethod(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass()), SerializerFeature.PrettyFormat) +
                     "\n```\n\n";
         }

@@ -1,0 +1,13 @@
+{
+  "name": "concrete-api-docs",
+  "version": "0.5.1-SNAPSHOT",
+  "license": "MIT",
+  "scripts": {
+    "serve": "vuepress dev docs",
+    "build": "vuepress build docs -d dist"
+  },
+  "devDependencies": {
+    "@vuepress/plugin-search": "^2.0.0-beta.34",
+    "vuepress": "^2.0.0-beta.34"
+  }
+}

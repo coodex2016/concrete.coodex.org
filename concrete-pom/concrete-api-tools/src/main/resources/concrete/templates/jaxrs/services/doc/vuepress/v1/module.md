@@ -25,7 +25,11 @@ ${unit.description!""}
 | --------- | -- | ---- | --------------------- | ------------ |<#list unit.parameters as param>
 | <#if !param.assembled >-<#else>${param.name}</#if> | <#if !param.pathParam>${unit.invokeType}</#if> | ${param.label} | ${tool.formatTypeStr(param.genericType, module.interfaceClass)} | ${tool.tableSafe(param.description)} |</#list><#else>NONE</#if>
 
-<#if genResultJson?default(true)><#noescape>${tool.mockResult(unit)}</#noescape></#if>
+<#if genResultJson?default(true)>
+::: details 点击查看示意数据
+<#noescape>${tool.mockResult(unit)}</#noescape>
+:::
+</#if>
 
 </#list>
 </#escape>

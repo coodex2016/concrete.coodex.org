@@ -19,6 +19,13 @@ env.yml
 .classpath
 .settings
 api_gen.*.properties
+api_gen.*.yml
 
 dependencies.txt
 coordinateCase.json
+
+
+node_modules/
+.temp
+.cache
+dist/

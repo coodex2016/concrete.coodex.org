@@ -17,7 +17,6 @@
 package org.coodex.concrete.apitools.rx;
 
 import org.coodex.concrete.apitools.AbstractRenderer;
-import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
@@ -28,9 +27,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.util.GenericTypeHelper.toReference;
 
+@Deprecated
 public class ReactiveStreamsRenderer extends AbstractRenderer<JaxrsModule> {
 
     public static final String RENDER_NAME = "java.code.RxJava2.v1";

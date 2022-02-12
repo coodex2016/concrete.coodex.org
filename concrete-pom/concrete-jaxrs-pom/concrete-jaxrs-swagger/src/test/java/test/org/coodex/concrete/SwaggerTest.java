@@ -20,10 +20,10 @@ import org.coodex.util.ResourceScanner;
 
 public class SwaggerTest {
     public static void main(String[] args) {
-        ResourceScanner.newBuilder((url, str)->{
-            System.out.println(url);
-            System.out.println(str);
-        }).build()
+        ResourceScanner.newBuilder((url, str) -> {
+                    System.out.println(url);
+                    System.out.println(str);
+                }).build()
                 .scan("swagger");
     }
 }

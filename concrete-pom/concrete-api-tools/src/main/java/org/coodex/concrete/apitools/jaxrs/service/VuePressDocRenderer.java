@@ -55,22 +55,9 @@ public class VuePressDocRenderer extends AbstractServiceDocRenderer {
     @Override
     public void render(List<JaxrsModule> modules) throws IOException {
 
-        // package.json todo 版本可设置
+        // package.json
         if (!exists("package.json"))
-            writeTo("package.json",
-                    "{\n" +
-                            "  \"name\": \"my-book\",\n" +
-                            "  \"version\": \"1.0.0\",\n" +
-                            "  \"license\": \"MIT\",\n" +
-                            "  \"scripts\": {\n" +
-                            "    \"serve\": \"vuepress dev docs\",\n" +
-                            "    \"build\": \"vuepress build docs\"\n" +
-                            "  },\n" +
-                            "  \"devDependencies\": {\n" +
-                            "    \"@vuepress/plugin-search\": \"^2.0.0-beta.33\",\n" +
-                            "    \"vuepress\": \"^2.0.0-beta.33\"\n" +
-                            "  }\n" +
-                            "}");
+            copyTo("package.json", "package.json");
         // .gitignore
         if (!exists(".gitignore"))
             writeTo(".gitignore",
@@ -79,40 +66,16 @@ public class VuePressDocRenderer extends AbstractServiceDocRenderer {
                             ".cache\n" +
                             "dist");
 
-        // .vuepress/config.js
-        if (!exists("docs/.vuepress/config.js"))
-            writeTo("docs/.vuepress/config.js", "const { defineUserConfig } = require(\"@vuepress/cli\");\n" +
-                    "\n" +
-                    "module.exports = defineUserConfig({\n" +
-                    "    title: \"change me\",\n" +
-                    "    themeConfig: {\n" +
-                    "        sidebar: [\n" +
-                    "            {\n" +
-                    "                text: '项目简介',\n" +
-                    "                link: \"/\"\n" +
-                    "            }, {\n" +
-                    "                text: 'A. 模块清单',\n" +
-//                    "                link: '/modules/',\n" +
-                    "                collapsible: true,\n" +
-                    "                children: require(\"./modules.json\")\n" +
-                    "            }, {\n" +
-                    "                text: 'B. 错误信息',\n" +
-                    "                link: '/errorInfo',\n" +
-                    "            }, {\n" +
-                    "                text: 'C. POJO',\n" +
-                    "                collapsible: true,\n" +
-                    "                children: require(\"./pojos.json\")\n" +
-                    "            }\n" +
-                    "        ],\n" +
-                    "    },\n" +
-                    "    plugins: [['@vuepress/plugin-search'],],\n" +
-                    "});");
+        // .vuepress/config.ts.ftl
+        if (!exists("docs/.vuepress/config.ts"))
+            copyTo("config_ts.ftl", "docs/.vuepress/config.ts");
+
 
         // 宽度
         if (!exists("docs/.vuepress/styles/index.scss"))
             writeTo("docs/.vuepress/styles/index.scss",
                     ":root{\n" +
-                            "    --content-width: 100%;\n" +
+                            "    --content-width: 960px;\n" +
                             "}");
 
         // README.md
@@ -135,7 +98,6 @@ public class VuePressDocRenderer extends AbstractServiceDocRenderer {
                 modules.stream()
                         .map(m -> "/modules/" + m.getInterfaceClass().getName())
                         .collect(Collectors.toList())
-
         ));
 
         writeTo("docs/.vuepress/pojos.json", JSON.toJSONString(

@@ -17,13 +17,13 @@
 package org.coodex.concrete.apitools.jaxrs.service;
 
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
+import org.coodex.concrete.common.ErrorMessageFacade;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 
 import java.io.IOException;
 import java.util.List;
 
-import static org.coodex.concrete.common.ErrorMessageFacade.getAllErrorInfo;
 
 /**
  * Created by davidoff shen on 2016-11-30.
@@ -89,7 +89,7 @@ public class ServiceDocRenderer extends AbstractServiceDocRenderer {
     public void render(List<JaxrsModule> modules) throws IOException {
         toolkit = new ServiceDocToolkit(this);
         writeTo(modules);
-        writeErrorInfo(getAllErrorInfo());
+        writeErrorInfo(ErrorMessageFacade.getAllErrorInfo());
     }
 
 //    @Override
