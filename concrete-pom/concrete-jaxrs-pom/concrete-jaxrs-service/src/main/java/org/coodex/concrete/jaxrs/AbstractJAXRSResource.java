@@ -20,6 +20,7 @@ import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
 import org.coodex.util.Common;
+import org.coodex.util.ExceptionWrapperRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -223,8 +224,9 @@ public abstract class AbstractJAXRSResource<T> {
             }
             return builder.build();
         } catch (Throwable throwable) {
-            trace.error(throwable);
-            throw Common.rte(throwable);
+            RuntimeException runtimeException = Common.rte(throwable);
+            trace.error(runtimeException instanceof ExceptionWrapperRuntimeException ? runtimeException.getCause() : throwable);
+            throw runtimeException;
         } finally {
             trace.finish();
         }
@@ -244,7 +246,7 @@ public abstract class AbstractJAXRSResource<T> {
                             return method.invoke(instance, params);
                         }
                     } catch (InvocationTargetException invocationTargetException) {
-                        throw Common.rte(invocationTargetException.getCause());
+                        throw Common.rte(invocationTargetException.getTargetException());
                     } catch (Throwable th) {
                         throw Common.rte(th);
                     }
@@ -264,6 +266,7 @@ public abstract class AbstractJAXRSResource<T> {
         return builder.header(KEY_TOKEN, tokenId);
     }
 
+    @Deprecated
     public interface RunWithToken {
         Object runWithToken(Token token);
     }

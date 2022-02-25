@@ -17,6 +17,7 @@
 package org.coodex.concrete.spring.components;
 
 import org.coodex.concrete.client.spring.LoggingInterceptor;
+import org.coodex.util.Singleton;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,11 +31,22 @@ import java.util.Collections;
 @Configuration
 public class SpringWebClientConfiguration {
 
+    public static final Singleton<LoggingInterceptor> LOGGING_INTERCEPTOR_SINGLETON = Singleton.with(
+            LoggingInterceptor::new
+    );
+
+    public static RestTemplate getDefaultRestTemplate() {
+        SimpleClientHttpRequestFactory simpleClientHttpRequestFactory = new SimpleClientHttpRequestFactory();
+//        simpleClientHttpRequestFactory.setConnectTimeout(Config.getValue("client.defaultConnectTimeout", 500));
+//        simpleClientHttpRequestFactory.setReadTimeout(Config.getValue("client.defaultReadTimeout", 300));
+        RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(simpleClientHttpRequestFactory));
+        restTemplate.setInterceptors(Collections.singletonList(LOGGING_INTERCEPTOR_SINGLETON.get()));
+        return restTemplate;
+    }
+
     @Bean
     @LoadBalanced
     public RestTemplate getRestTemplate() {
-        RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
-        restTemplate.setInterceptors(Collections.singletonList(new LoggingInterceptor()));
-        return restTemplate;
+        return getDefaultRestTemplate();
     }
 }

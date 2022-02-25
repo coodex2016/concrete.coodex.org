@@ -20,8 +20,10 @@ import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.ErrorCodes;
 import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.common.ThrowableMapperFacade;
+import org.coodex.config.Config;
 import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
+import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +45,9 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
     private final static Logger log = LoggerFactory.getLogger(ConcreteExceptionMapper.class);
     private final static ServiceLoader<ErrorCodeMapper> CODE_MAPPER_SERVICE_LOADER = new LazyServiceLoader<ErrorCodeMapper>(new DefaultErrorCodeMapper()) {
     };
+    private final static Singleton<Boolean> warnOnServerError = Singleton.with(
+            () -> Config.getValue("jaxrs.serverError.trace", true)
+    );
 
 
     /**
@@ -65,10 +70,19 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
 //            errorCode = concreteException.getCode();
 //            exception = concreteException;
 //        }
-        ErrorInfo errorInfo = ThrowableMapperFacade.toErrorInfo(exception);
-        Response.Status status = getStatus(errorInfo.getCode());
 
-        if (status.getFamily() == Response.Status.Family.SERVER_ERROR) {
+        ErrorInfo errorInfo = ThrowableMapperFacade.toErrorInfo(exception);
+        Response.Status /*status = null;
+        if (exception instanceof WebApplicationException) {
+            try {
+                status = Response.Status.fromStatusCode(((WebApplicationException) exception).getResponse().getStatus());
+                errorInfo.setCode(status.getStatusCode());
+            } catch (Throwable ignore) {
+            }
+        }
+        if (status == null)*/ status = getStatus(errorInfo.getCode());
+
+        if (warnOnServerError.get() && status.getFamily() == Response.Status.Family.SERVER_ERROR) {
             Throwable th = exception;
             if (exception instanceof ConcreteException) {
                 if (((ConcreteException) exception).getCode() != ErrorCodes.UNKNOWN_ERROR) {

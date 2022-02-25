@@ -81,8 +81,10 @@ public class Client {
                             return args == null || args.length == 0 ?
                                     method.invoke(instance) :
                                     method.invoke(instance, args);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            throw Common.rte(e);
+                        } catch (InvocationTargetException e) {
+                            throw Common.rte(e.getTargetException());
+                        } catch (Throwable th) {
+                            throw Common.rte(th);
                         }
                     }))
             );

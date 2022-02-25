@@ -43,7 +43,7 @@ public class JavassistHelper {
     public final static Singleton<Boolean> IS_JAVA_9_AND_LAST = Singleton.with(
             () -> {
                 try {
-                    //noinspection JavaReflectionMemberAccess
+                    //noinspection JavaReflectionMemberAccess,ConstantConditions
                     return Class.class.getMethod("getModule") != null;
                 } catch (NoSuchMethodException e) {
                     return false;

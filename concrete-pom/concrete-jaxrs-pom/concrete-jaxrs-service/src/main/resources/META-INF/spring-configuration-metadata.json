@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "concrete.jaxrs.serverError.trace",
+      "type": "java.lang.Boolean",
+      "description": "是否在日志中记录server端异常，默认值为true"
+    }
+  ]
+}

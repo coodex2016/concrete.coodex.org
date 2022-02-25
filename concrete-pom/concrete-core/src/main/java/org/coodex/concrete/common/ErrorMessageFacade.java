@@ -246,6 +246,7 @@ class KeyStat {
     private StringBuilder builder = null;
 
     KeyStat(String template) {
+        if (template == null) return;
         char[] chars = template.trim().toCharArray();
         if (chars.length < 5) return;
         if (chars[0] == '{' && chars[chars.length - 1] == '}') {

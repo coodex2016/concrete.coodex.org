@@ -22,10 +22,7 @@ import org.coodex.concrete.api.Priority;
 import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.config.Config;
-import org.coodex.util.Common;
-import org.coodex.util.LazySelectableServiceLoader;
-import org.coodex.util.SelectableServiceLoader;
-import org.coodex.util.SingletonMap;
+import org.coodex.util.*;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -116,6 +113,10 @@ public class ConcreteHelper {
     @Deprecated
     public static String getString(String tag, String module, String key) {
         return Config.get(key, tag, module);
+    }
+
+    public static ExecutorService getExecutor() {
+        return getExecutor("service");
     }    private static final SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
             = SingletonMap.<String, ScheduledExecutorService>builder()
             .function(new Function<String, ScheduledExecutorService>() {
@@ -133,10 +134,6 @@ public class ConcreteHelper {
                 }
             }).build();
 
-    public static ExecutorService getExecutor() {
-        return getExecutor("service");
-    }
-
     public static ScheduledExecutorService getScheduler() {
         return getScheduler("service");
     }
@@ -147,26 +144,7 @@ public class ConcreteHelper {
 
     public static ExecutorService getExecutor(String executorName) {
         return executorServiceMap.get(executorName);
-    }    private static final SingletonMap<String, ExecutorService> executorServiceMap
-            = SingletonMap.<String, ExecutorService>builder()
-            .function(new Function<String, ExecutorService>() {
-
-                @Override
-                public ExecutorService apply(String key) {
-                    String aliasTo = Config.get("executor", key, getAppSet());
-                    if (Common.isBlank(aliasTo)) {
-                        return ExecutorsHelper.newPriorityThreadPool(
-                                Config.getValue("executor.corePoolSize", DEFAULT_CORE_POOL_SIZE, key, getAppSet()),
-                                Config.getValue("executor.maximumPoolSize", DEFAULT_MAX_POOL_SIZE, key, getAppSet()),
-                                Config.getValue("executor.maxQueueSize", DEFAULT_MAX_QUEUE_SIZE, key, getAppSet()),
-                                Config.getValue("executor.keepAliveTime", 60L, key, getAppSet()),
-                                key + ".executor"
-                        );
-                    } else {
-                        return executorServiceMap.get(aliasTo);
-                    }
-                }
-            }).build();
+    }
 
     public static String getServiceName(Class<?> clz) {
         if (clz == null /*|| !ConcreteService.class.isAssignableFrom(clz)*/) return null;
@@ -199,7 +177,26 @@ public class ConcreteHelper {
                 }, (ConcreteClassFilter) clazz -> ConcreteHelper.isConcreteService(clazz) ||
                         clazz.getAnnotation(ErrorCode.class) != null,
                 packageParrterns);
-    }
+    }    private static final SingletonMap<String, ExecutorService> executorServiceMap
+            = SingletonMap.<String, ExecutorService>builder()
+            .function(new Function<String, ExecutorService>() {
+
+                @Override
+                public ExecutorService apply(String key) {
+                    String aliasTo = Config.get("executor", key, getAppSet());
+                    if (Common.isBlank(aliasTo)) {
+                        return ExecutorsHelper.newPriorityThreadPool(
+                                Config.getValue("executor.corePoolSize", DEFAULT_CORE_POOL_SIZE, key, getAppSet()),
+                                Config.getValue("executor.maximumPoolSize", DEFAULT_MAX_POOL_SIZE, key, getAppSet()),
+                                Config.getValue("executor.maxQueueSize", DEFAULT_MAX_QUEUE_SIZE, key, getAppSet()),
+                                Config.getValue("executor.keepAliveTime", 60L, key, getAppSet()),
+                                key + ".executor"
+                        );
+                    } else {
+                        return executorServiceMap.get(aliasTo);
+                    }
+                }
+            }).build();
 
     public static boolean isAbstract(Class<?> clz) {
         ConcreteService service = clz.getAnnotation(ConcreteService.class);
@@ -324,6 +321,7 @@ public class ConcreteHelper {
     public static ConcreteException getException(Throwable th) {
         ConcreteException concreteException = findException(th);
         if (concreteException == null) {
+            th = th instanceof ExceptionWrapperRuntimeException ? th.getCause() : th;
             concreteException = EXCEPTION_MAPPERS.select(th).toConcreteException(th);
 //            concreteException = new ConcreteException(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage(), th);
         }

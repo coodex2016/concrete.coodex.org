@@ -18,18 +18,19 @@ package org.coodex.concrete.jaxrs;
 
 
 import org.coodex.concrete.common.ErrorInfo;
+import org.coodex.concrete.common.ThrowableMapper;
 
 import javax.ws.rs.WebApplicationException;
 
-@Deprecated
-public class JaxrsExceptionMapper implements org.coodex.concrete.common.ThrowableMapper {
+public class JaxrsExceptionMapper implements ThrowableMapper {
 
     @Override
     public ErrorInfo toErrorInfo(Throwable throwable) {
         WebApplicationException webApplicationException = (WebApplicationException) throwable;
         return new ErrorInfo(
                 webApplicationException.getResponse().getStatus(),
-                webApplicationException.getLocalizedMessage());
+                webApplicationException.getLocalizedMessage()
+        );
     }
 
     @Override

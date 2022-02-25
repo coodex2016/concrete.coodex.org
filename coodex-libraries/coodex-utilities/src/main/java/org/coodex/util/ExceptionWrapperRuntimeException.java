@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2022 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common;
+package org.coodex.util;
 
-import org.coodex.util.SelectableService;
-
-//@Deprecated
-public interface ThrowableMapper extends SelectableService<Throwable> {
-
-    ErrorInfo toErrorInfo(Throwable throwable);
-
+/**
+ * 用于将非RuntimeException转为RuntimeException。使用Wrapper的目的：识别原始异常信息
+ */
+public final class ExceptionWrapperRuntimeException extends RuntimeException {
+    ExceptionWrapperRuntimeException(Throwable cause) {
+        super(cause.getLocalizedMessage(), cause);
+    }
 }

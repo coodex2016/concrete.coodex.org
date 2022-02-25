@@ -16,28 +16,44 @@
 
 package org.coodex.concrete.common;
 
+import org.coodex.util.LazySelectableServiceLoader;
+import org.coodex.util.SelectableServiceLoader;
+
 public class ThrowableMapperFacade {
 
-//    @Deprecated
-//    private static LazySelectableServiceLoader<Throwable, ThrowableMapper> mapperLoader
-//            = new LazySelectableServiceLoader<Throwable, ThrowableMapper>() {
-//    };
+    //    @Deprecated
+    private final static SelectableServiceLoader<Throwable, ThrowableMapper> mapperLoader
+            = new LazySelectableServiceLoader<Throwable, ThrowableMapper>() {
+    };
 
 
     public static ErrorInfo toErrorInfo(Throwable exception) {
+        try {
+            ConcreteException concreteException = ConcreteHelper.findException(exception);
+//        ConcreteException concreteException = ConcreteHelper.getException(exception);
 
-//        ConcreteException concreteException = ConcreteHelper.findException(exception);
-        ConcreteException concreteException = ConcreteHelper.getException(exception);
-
+            try {
+                if (concreteException == null) {
+                    ThrowableMapper mapper = mapperLoader.select(exception);
+                    if (mapper != null) {
+                        return mapper.toErrorInfo(exception);
+                    }
+//                else {
+//                    return new ErrorInfo(ErrorCodes.UNKNOWN_ERROR, exception.getLocalizedMessage());
+//                }
+                }
+            } catch (Throwable ignore) {
+            }
+            if (concreteException == null) {
+                concreteException = ConcreteHelper.getException(exception);
+            }
 //        if (concreteException != null) {
-        return new ErrorInfo(concreteException.getCode(), concreteException.getMessage());
+            return new ErrorInfo(concreteException.getCode(), concreteException.getMessage());
+        } catch (Throwable th) {
+            return new ErrorInfo(ErrorCodes.UNKNOWN_ERROR, th.getLocalizedMessage());
+        }
 //        } else {
-//            ThrowableMapper mapper = mapperLoader.select(exception);
-//            if (mapper != null) {
-//                return mapper.toErrorInfo(exception);
-//            } else {
-//                return new ErrorInfo(ErrorCodes.UNKNOWN_ERROR, exception.getLocalizedMessage());
-//            }
+//
 //        }
     }
 }

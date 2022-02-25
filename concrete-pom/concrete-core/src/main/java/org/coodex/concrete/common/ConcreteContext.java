@@ -23,6 +23,7 @@ import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.ConcreteMethodInvocation;
 import org.coodex.concrete.core.intercept.InterceptorChain;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
+import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.util.Common;
 import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
@@ -201,6 +202,10 @@ public final class ConcreteContext {
             try {
                 return CONTEXT.call(context, () -> {
 //                    RuntimeContext runtimeContext = RuntimeContext.getRuntimeContext(method, interfaceClass);
+//                    // token激活
+//                    if(context.getTokenId() != null){
+//                        TokenWrapper.getToken(context.getTokenId());
+//                    }
                     ServiceMethodInvocation invocation = new ServiceMethodInvocation(method, params) {
                         @Override
                         public Class<?> getInterfaceClass() {

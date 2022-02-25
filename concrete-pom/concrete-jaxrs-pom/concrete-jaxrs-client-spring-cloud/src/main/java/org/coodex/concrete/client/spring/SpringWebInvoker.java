@@ -26,9 +26,10 @@ import org.coodex.concrete.common.*;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.concrete.spring.components.SpringWebClientConfiguration;
+import org.coodex.config.Config;
 import org.coodex.mock.Mocker;
 import org.coodex.util.Common;
-import org.coodex.util.Singleton;
+import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -40,6 +41,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.ws.rs.core.MultivaluedHashMap;
 import java.lang.reflect.Method;
 
+import static org.coodex.concrete.common.ConcreteHelper.TAG_CLIENT;
 import static org.coodex.concrete.common.ConcreteHelper.isDevModel;
 import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.getUnitFromContext;
@@ -48,19 +50,38 @@ public class SpringWebInvoker extends AbstractSyncInvoker {
     private static final Logger log = LoggerFactory.getLogger(SpringWebInvoker.class);
 
 
-    private static final Singleton<RestTemplate> REST_TEMPLATE = Singleton.with(
-            () -> {
-                try {
-                    return BeanServiceLoaderProvider.getBeanProvider().getBean(RestTemplate.class);
-                } catch (Throwable th) {
-                    log.warn("cannot get RestTemplate instance from BeanProvider.", th);
-                    return new SpringWebClientConfiguration().getRestTemplate();
+//    private static final Singleton<RestTemplate> REST_TEMPLATE = Singleton.with(
+//            () -> {
+//
+//            }
+//    );
+
+    private static final SingletonMap<Boolean, RestTemplate> REST_TEMPLATES = SingletonMap
+            .<Boolean, RestTemplate>builder()
+            .function(key -> {
+                if (key) {
+                    try {
+                        return BeanServiceLoaderProvider.getBeanProvider().getBean(RestTemplate.class);
+                    } catch (Throwable th) {
+                        log.warn("cannot get RestTemplate instance from BeanProvider.", th);
+                        return SpringWebClientConfiguration.getDefaultRestTemplate();
+                    }
+                } else {
+                    return SpringWebClientConfiguration.getDefaultRestTemplate();
                 }
-            }
-    );
+            })
+            .build();
+
+
+    private final boolean microService;
 
     SpringWebInvoker(Destination destination) {
         super(destination);
+        if (destination instanceof SpringJaxRSDestination) {
+            microService = ((SpringJaxRSDestination) destination).isMicroService();
+        } else {
+            microService = Config.getValue("microService", false, TAG_CLIENT, destination.getIdentify());
+        }
     }
 
     @Override
@@ -81,7 +102,7 @@ public class SpringWebInvoker extends AbstractSyncInvoker {
                     unit.getDeclaringModule().getInterfaceClass());
         } else {
             JaxRSDestination destination = (JaxRSDestination) getDestination();
-            RestTemplate restTemplate = REST_TEMPLATE.get();
+            RestTemplate restTemplate = REST_TEMPLATES.get(microService);
             String path = JaxRSClientCommon.getPath(unit, args, destination);
             Object body = JaxRSClientCommon.getSubmitObject(unit, args);
             HttpEntity<?> entity = body == null ? new HttpEntity<>(getHttpHeaders()) :

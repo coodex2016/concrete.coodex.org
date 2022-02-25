@@ -1299,7 +1299,7 @@ public class Common {
     }
 
     public static RuntimeException rte(Throwable th) {
-        return th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th.getLocalizedMessage(), th);
+        return th instanceof RuntimeException ? (RuntimeException) th : new ExceptionWrapperRuntimeException(th);
     }
 
     public static Long getSystemStart() {
