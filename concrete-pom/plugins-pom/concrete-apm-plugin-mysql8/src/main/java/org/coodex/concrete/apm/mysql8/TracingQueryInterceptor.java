@@ -30,6 +30,8 @@ import java.util.function.Supplier;
 
 /**
  * 修改自 https://github.com/openzipkin/brave/blob/master/instrumentation/mysql8/src/main/java/brave/mysql8/TracingQueryInterceptor.java
+ *
+ * <code>?queryInterceptors=org.coodex.concrete.apm.mysql8.TracingQueryInterceptor&exceptionInterceptors=org.coodex.concrete.apm.mysql8.TracingExceptionInterceptor</code>
  */
 public class TracingQueryInterceptor implements QueryInterceptor {
     static ThreadLocal<Trace> traceThreadLocal = new ThreadLocal<Trace>();

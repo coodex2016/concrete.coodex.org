@@ -44,6 +44,9 @@ import static org.coodex.concrete.apm.mysql8.TracingQueryInterceptor.traceThread
  *
  * <p>To use it, both TracingQueryInterceptor and TracingExceptionInterceptor must be added by
  * appending <code>?queryInterceptors=brave.mysql8.TracingQueryInterceptor&exceptionInterceptors=brave.mysql8.TracingExceptionInterceptor</code>.
+ *
+ *
+ * <code>?queryInterceptors=org.coodex.concrete.apm.mysql8.TracingQueryInterceptor&exceptionInterceptors=org.coodex.concrete.apm.mysql8.TracingExceptionInterceptor</code>
  */
 public class TracingExceptionInterceptor implements ExceptionInterceptor {
 
