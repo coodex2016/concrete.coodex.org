@@ -154,6 +154,21 @@
       "name": "concrete.client.signature.property.noise",
       "type": "java.lang.String",
       "description": "对应服务指定的noise别名。键可以是concrete.client.[moduleName.]signature.property.noise"
+    },
+    {
+      "name": "concrete.snowflake.machineId",
+      "type": "java.lang.Integer",
+      "description": "雪花id生成器的配置，machineId必须是10位2机制数，前5位位数据中心号，后5位为机器号"
+    },
+    {
+      "name": "concrete.snowflake.dataCenterId",
+      "type": "java.lang.Integer",
+      "description": "雪花id生成器的配置，数据中心号，设置了machineId则不生效"
+    },
+    {
+      "name": "concrete.snowflake.workerId",
+      "type": "java.lang.Integer",
+      "description": "雪花id生成器的配置，机器号，设置了machineId则不生效"
     }
   ]
 }

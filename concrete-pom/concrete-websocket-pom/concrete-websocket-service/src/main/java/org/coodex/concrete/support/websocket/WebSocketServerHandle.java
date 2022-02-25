@@ -308,7 +308,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 
     private String getHostId() {
         // TODO
-        return Config.getValue("websocket.hostId", UUIDHelper.getUUIDString(), getAppSet());
+        return Config.getValue("websocket.hostId", UUIDHelper::getUUIDString, getAppSet());
     }
 
 

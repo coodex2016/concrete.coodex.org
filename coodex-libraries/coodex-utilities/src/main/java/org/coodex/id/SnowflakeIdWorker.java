@@ -17,6 +17,7 @@
 
 package org.coodex.id;
 
+import org.coodex.config.Config;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
@@ -38,8 +39,14 @@ public class SnowflakeIdWorker {
 
     // ==============================Fields===========================================
     private static final Singleton<SnowflakeIdWorker> snowflakeIdWorkerSingleton
-            = Singleton.with(() -> new SnowflakeIdWorker(
-            Profile.get("idWorker").getInt("machineId", 0)));
+            = Singleton.with(
+            () -> new SnowflakeIdWorker(
+                    Config.getValue(
+                            "snowflake.machineId",
+                            () -> Profile.get("idWorker").getInt("machineId", 0)
+                    )
+            )
+    );
     /**
      * 开始时间截 (2020-01-01)
      */
@@ -163,6 +170,10 @@ public class SnowflakeIdWorker {
 
     //==============================Test=============================================
 
+    public static Info parse(long snowflakeId) {
+        return new Info(snowflakeId);
+    }
+
     /**
      * 获得下一个ID (该方法是线程安全的)
      *
@@ -223,4 +234,32 @@ public class SnowflakeIdWorker {
     protected long timeGen() {
         return Clock.currentTimeMillis();
     }
+
+    public static class Info {
+        public final int workerId;
+        public final int dataCenterId;
+        public final int seq;
+        public final long timestamp;
+
+        Info(long id) {
+            seq = (int) (id & 0xFFF);
+            id >>= 12;
+            workerId = (int) (id & 0x1F);
+            id >>= 5;
+            dataCenterId = (int) (id & 0x1F);
+            id >>= 5;
+            timestamp = id & ~(-1L << 41);
+        }
+
+        @Override
+        public String toString() {
+            return "Info{" +
+                    "workerId=" + workerId +
+                    ", dataCenterId=" + dataCenterId +
+                    ", seq=" + seq +
+                    ", timestamp=" + timestamp +
+                    '}';
+        }
+    }
+
 }
