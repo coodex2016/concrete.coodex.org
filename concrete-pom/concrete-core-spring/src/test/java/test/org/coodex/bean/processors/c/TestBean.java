@@ -28,7 +28,7 @@ import java.util.Map;
 public class TestBean {
 
     @Inject
-    private SelectableServiceLoader<String, GenericSelectableService<List<Integer>,String>> genericSelectableServiceSelectableServiceLoader;
+    private SelectableServiceLoader<String, GenericSelectableService<List<Integer>, String>> genericSelectableServiceSelectableServiceLoader;
 
     @Inject
     private ServiceLoader<GenericService<Map<String, Object>>> genericServiceServiceLoader;

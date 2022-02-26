@@ -21,6 +21,7 @@ import org.coodex.concrete.common.AccountIDDeserializer;
 
 /**
  * Created by davidoff shen on 2017-07-17.
+ *
  * @deprecated
  */
 @Deprecated

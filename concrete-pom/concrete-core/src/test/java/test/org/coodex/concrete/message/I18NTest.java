@@ -19,7 +19,7 @@ package test.org.coodex.concrete.message;
 import org.coodex.util.I18N;
 
 public class I18NTest {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         I18N.translate("a.b.c.d");
         I18N.translate("a.b.c.e");
         I18N.translate("a.c.d");

@@ -23,18 +23,18 @@ import org.junit.Test;
 public class ProfileTest {
 
     @Test
-    public void test1(){
-        System.setProperty("coodex.active.profiles","t1,t2,t3");
+    public void test1() {
+        System.setProperty("coodex.active.profiles", "t1,t2,t3");
         Profile p1 = Profile.get("a1");
-        Assert.assertEquals(10,p1.getInt("a1.t0"));
-        Assert.assertEquals(11,p1.getInt("a1.t1"));
-        Assert.assertEquals(12,p1.getInt("a1.t2"));
-        Assert.assertEquals(13,p1.getInt("a1.t3"));
+        Assert.assertEquals(10, p1.getInt("a1.t0"));
+        Assert.assertEquals(11, p1.getInt("a1.t1"));
+        Assert.assertEquals(12, p1.getInt("a1.t2"));
+        Assert.assertEquals(13, p1.getInt("a1.t3"));
         p1 = Profile.get("b1");
-        Assert.assertEquals(333,p1.getInt("b1.t0"));
-        Assert.assertEquals(333,p1.getInt("b1.t1"));
-        Assert.assertEquals(333,p1.getInt("b1.t2"));
-        Assert.assertEquals(333,p1.getInt("b1.t3"));
+        Assert.assertEquals(333, p1.getInt("b1.t0"));
+        Assert.assertEquals(333, p1.getInt("b1.t1"));
+        Assert.assertEquals(333, p1.getInt("b1.t2"));
+        Assert.assertEquals(333, p1.getInt("b1.t3"));
     }
 
     public static void main(String[] args) {

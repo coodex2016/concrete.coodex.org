@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.common.bytecode.javassist;
 
+import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.LoaderClassPath;
@@ -24,7 +25,6 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
 import org.coodex.util.Common;
-import org.coodex.util.Singleton;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,16 +40,16 @@ import java.util.Collection;
  */
 public class JavassistHelper {
 
-    public final static Singleton<Boolean> IS_JAVA_9_AND_LAST = Singleton.with(
-            () -> {
-                try {
-                    //noinspection JavaReflectionMemberAccess,ConstantConditions
-                    return Class.class.getMethod("getModule") != null;
-                } catch (NoSuchMethodException e) {
-                    return false;
-                }
-            }
-    );
+    //    public final static Singleton<Boolean> IS_JAVA_9_AND_LAST = Singleton.with(
+//            () -> {
+//                try {
+//                    //noinspection JavaReflectionMemberAccess,ConstantConditions
+//                    return Class.class.getMethod("getModule") != null;
+//                } catch (NoSuchMethodException e) {
+//                    return false;
+//                }
+//            }
+//    );
     private final static Logger log = LoggerFactory.getLogger(JavassistHelper.class);
 
     //    public static String getGenericSignature(ParameterizedType type){
@@ -223,6 +223,12 @@ public class JavassistHelper {
             ctClass = classPool.getOrNull(clazz.getName());
         }
         return ctClass;
+    }
+
+    public static Class<?> ctClassToClass(CtClass ctClass, Class<?> neighbor) throws CannotCompileException {
+        return Common.isJava9AndLast() ?
+                ctClass.toClass(neighbor) :
+                ctClass.toClass();
     }
 
 

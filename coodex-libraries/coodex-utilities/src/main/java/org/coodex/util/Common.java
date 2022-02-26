@@ -61,6 +61,17 @@ public class Common {
 
     private static final Singleton<Boolean> COODEX_DEBUG_FLAG = Singleton.with(() -> toBool(System.getProperty("coodex.debug"), false));
 
+    private final static Singleton<Boolean> IS_JAVA_9_AND_LAST = Singleton.with(
+            () -> {
+                try {
+                    //noinspection JavaReflectionMemberAccess,ConstantConditions
+                    return Class.class.getMethod("getModule") != null;
+                } catch (NoSuchMethodException e) {
+                    return false;
+                }
+            }
+    );
+
     static {
 //        SYSTEM_START_TIME
         long sst = 0;
@@ -1378,6 +1389,10 @@ public class Common {
         List<ArrayBlockRef> list = new ArrayList<>();
         forEachBlock(all, blockSize, continuous, redundancy, (i, l) -> list.add(new ArrayBlockRef(i, l)));
         return list;
+    }
+
+    public static boolean isJava9AndLast() {
+        return IS_JAVA_9_AND_LAST.get();
     }
 
     //    public static void checkNull(Object o, Supplier<String> supplier) {

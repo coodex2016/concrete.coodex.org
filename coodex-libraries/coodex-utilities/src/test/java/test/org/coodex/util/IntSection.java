@@ -48,7 +48,7 @@ public class IntSection extends Section<Integer> {
 
         // 合并
         trace(Section.merge(Arrays.asList(section1, section2), builder));
-        trace(Section.merge(Arrays.asList(section1, section2,section3), builder));
+        trace(Section.merge(Arrays.asList(section1, section2, section3), builder));
 
 //        trace(Section.intersect(Arrays.asList(section1, section2)));
 

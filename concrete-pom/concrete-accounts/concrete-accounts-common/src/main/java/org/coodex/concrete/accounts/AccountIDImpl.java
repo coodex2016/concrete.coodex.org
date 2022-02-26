@@ -22,6 +22,7 @@ import org.coodex.concrete.common.AccountID;
 /**
  * 使用{@link org.coodex.concrete.common.ClassifiableAccountID}替代
  * Created by davidoff shen on 2017-05-09.
+ *
  * @deprecated 使用{@link org.coodex.concrete.common.ClassifiableAccountID}替代
  */
 @Deprecated

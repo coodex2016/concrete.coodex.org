@@ -23,7 +23,6 @@ import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.ConcreteMethodInvocation;
 import org.coodex.concrete.core.intercept.InterceptorChain;
 import org.coodex.concrete.core.intercept.SyncInterceptorChain;
-import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.util.Common;
 import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;

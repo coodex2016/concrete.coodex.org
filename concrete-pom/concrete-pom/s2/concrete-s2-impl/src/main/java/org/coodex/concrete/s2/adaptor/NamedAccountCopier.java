@@ -29,9 +29,9 @@ public class NamedAccountCopier extends AbstractCopier<Account, AccountInfo> imp
     public AccountInfo copy(Account account, AccountInfo accountInfo) {
         NamedAccount namedAccount = (NamedAccount) account;
         accountInfo.setName(namedAccount.getName());
-        String [] roles = new String[0];
+        String[] roles = new String[0];
         Set<String> accountRoles = namedAccount.getRoles();
-        if(accountRoles != null && accountRoles.size() > 0){
+        if (accountRoles != null && accountRoles.size() > 0) {
             roles = accountRoles.toArray(roles);
         }
         accountInfo.setRoles(roles);

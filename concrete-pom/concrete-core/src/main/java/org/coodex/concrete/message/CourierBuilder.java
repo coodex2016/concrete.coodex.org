@@ -21,7 +21,6 @@ import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.SignatureAttribute;
-import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
@@ -35,7 +34,7 @@ import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
-import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
+import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.*;
 import static org.coodex.concrete.message.Topics.TAG_QUEUE;
 import static org.coodex.util.Common.cast;
 import static org.coodex.util.GenericTypeHelper.solveFromType;
@@ -110,19 +109,19 @@ class CourierBuilder
             ClassPool classPool = ClassPool.getDefault();
             CtClass ctClass = classPool.makeClass(className,
 //                    classPool.getOrNull(prototype.getName())
-                    JavassistHelper.getCtClass(prototype, classPool)
+                    getCtClass(prototype, classPool)
             );
             ClassFile classFile = ctClass.getClassFile();
             classFile.setVersionToJava5();
 
             ctClass.setGenericSignature(
                     new SignatureAttribute.ClassSignature(null,
-                            JavassistHelper.classType(prototype.getName(),
+                            classType(prototype.getName(),
                                     getMessageType(key.topicType)),
                             null).encode());
 
             CtConstructor ctConstructor = new CtConstructor(
-                    JavassistHelper.toCtClass(new Class<?>[]{String.class,String.class,Type.class}, classPool),
+                    toCtClass(new Class<?>[]{String.class, String.class, Type.class}, classPool),
 //                    new CtClass[]{
 //                            classPool.getOrNull(String.class.getName()),
 //                            classPool.getOrNull(String.class.getName()),
@@ -132,7 +131,8 @@ class CourierBuilder
             ctConstructor.setBody("{super($$);}");
             ctClass.addConstructor(ctConstructor);
 
-            Class<?> courierClass = IS_JAVA_9_AND_LAST.get() ? ctClass.toClass(CourierBuilder.class) : ctClass.toClass();
+            Class<?> courierClass = ctClassToClass(ctClass, CourierBuilder.class);
+            //Common.isJava9AndLast() ? ctClass.toClass(CourierBuilder.class) : ctClass.toClass();
             Constructor<?> courierConstructor = courierClass.getConstructor(String.class, String.class, Type.class);
             Courier<?> courier = cast(courierConstructor.newInstance(key.queue, destination, key.topicType));
             log.info("Courier build. {}, {}", courierClass.getName(), key.toString());

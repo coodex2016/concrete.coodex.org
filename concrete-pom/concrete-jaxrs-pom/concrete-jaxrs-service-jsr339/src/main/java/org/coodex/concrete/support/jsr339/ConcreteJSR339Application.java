@@ -34,6 +34,7 @@ public class ConcreteJSR339Application extends ConcreteJaxrsApplication {
     }
 
     private static JSR339ClassGenerator classGenerator = new JSR339ClassGenerator();
+
     @Override
     protected ClassGenerator getClassGenerator() {
         return classGenerator;

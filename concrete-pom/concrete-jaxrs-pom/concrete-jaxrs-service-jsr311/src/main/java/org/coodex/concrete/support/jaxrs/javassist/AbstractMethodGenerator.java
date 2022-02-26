@@ -24,7 +24,6 @@ import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ParameterAnnotationsAttribute;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
-import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
@@ -35,7 +34,7 @@ import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.common.ConcreteHelper.isPrimitive;
-import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
+import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.*;
 import static org.coodex.concrete.support.jaxrs.javassist.CGContext.CLASS_POOL;
 
 //import static org.coodex.concrete.jaxrs.ClassGenerator.FRONTEND_DEV_MODE;
@@ -99,13 +98,13 @@ public abstract class AbstractMethodGenerator {
                 if (pojoAdded) {
                     continue;
                 }
-                parameters[index + additionParamCount] = JavassistHelper.getCtClass(pojoClass, CLASS_POOL);
+                parameters[index + additionParamCount] = getCtClass(pojoClass, CLASS_POOL);
 //                        CLASS_POOL
 //                        .getOrNull(pojoClass.getName());
                 pojoAdded = true;
             } else {
                 parameters[index + additionParamCount] =
-                        JavassistHelper.getCtClass(params[i].getType(), CLASS_POOL);
+                        getCtClass(params[i].getType(), CLASS_POOL);
 //                        CLASS_POOL
 //                        .getOrNull(JavassistHelper.getTypeName(params[i].getType()));
             }
@@ -165,7 +164,7 @@ public abstract class AbstractMethodGenerator {
                 parameters[index + additionParamCount] = pojoType;
                 pojoAdded = true;
             } else {
-                parameters[index + additionParamCount] = JavassistHelper.classType(
+                parameters[index + additionParamCount] = classType(
                         params[i].getGenericType(), getContext().getServiceClass());
             }
             index++;
@@ -186,20 +185,21 @@ public abstract class AbstractMethodGenerator {
         for (JaxrsParam param : pojoParams) {
             CtField field = new CtField(
 //                    CLASS_POOL.getOrNull(param.getType().getName()),
-                    JavassistHelper.getCtClass(param.getType(), CLASS_POOL),
+                    getCtClass(param.getType(), CLASS_POOL),
                     param.getName(), ctClass);
             field.setModifiers(javassist.Modifier.PUBLIC);
             field.setGenericSignature(
-                    JavassistHelper.getSignature(
-                            JavassistHelper.classType(param.getGenericType(), getContext().getServiceClass())
+                    getSignature(
+                            classType(param.getGenericType(), getContext().getServiceClass())
                     )
             );
             ctClass.addField(field);
         }
 //        log.debug("generate class: {} use neighbor {}", className, getContext().getServiceClass().getName());
-        return IS_JAVA_9_AND_LAST.get() ?
-                ctClass.toClass(getContext().getServiceClass()) :
-                ctClass.toClass();
+        return ctClassToClass(ctClass, getContext().getServiceClass());
+//                Common.isJava9AndLast() ?
+//                ctClass.toClass(getContext().getServiceClass()) :
+//                ctClass.toClass();
     }
 
 //    protected final SignatureAttribute.Type getReturnSignatureTypeForDemo() {
@@ -315,7 +315,7 @@ public abstract class AbstractMethodGenerator {
 
         // 增加JSR311定义
         spiMethod.getMethodInfo().addAttribute(
-                JavassistHelper.aggregate(context.getConstPool(),
+                aggregate(context.getConstPool(),
                         context.path(path()),
                         httpMethod(),
                         context.consumes(getContentType()),

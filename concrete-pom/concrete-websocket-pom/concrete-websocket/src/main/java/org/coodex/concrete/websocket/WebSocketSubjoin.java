@@ -17,7 +17,6 @@
 package org.coodex.concrete.websocket;
 
 import org.coodex.concrete.common.AbstractChangeableSubjoin;
-import org.coodex.concrete.common.AbstractSubjoin;
 
 import java.util.Collection;
 import java.util.Map;

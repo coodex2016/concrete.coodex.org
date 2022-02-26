@@ -39,7 +39,7 @@ public class JaxRSDestinationFactory extends AbstractDestinationFactory<JaxRSDes
         destination.setSsl(ClientHelper.getString(module, "jaxrs.ssl"));
         destination.setCharset(ClientHelper.getString(module, "jaxrs.charset"));
         destination.setConnectTimeout(Common.toLong(
-                ClientHelper.getString(module,"jaxrs.connectTimeout"), 2000L
+                ClientHelper.getString(module, "jaxrs.connectTimeout"), 2000L
         ));
         return destination;
     }

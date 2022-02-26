@@ -51,9 +51,9 @@ public class Model01ProfileFactory implements ModelProfileFactory {
             @Override
             public List<FragmentProfile> getFragmentProfiles() {
                 return Arrays.asList(
-                        getFragmentProfile(228,128,88,"02:00","08:00"),
-                        getFragmentProfile(118,68,48,"08:00","18:00"),
-                        getFragmentProfile(448,248,168,"18:00","02:00")
+                        getFragmentProfile(228, 128, 88, "02:00", "08:00"),
+                        getFragmentProfile(118, 68, 48, "08:00", "18:00"),
+                        getFragmentProfile(448, 248, 168, "18:00", "02:00")
                 );
             }
         };

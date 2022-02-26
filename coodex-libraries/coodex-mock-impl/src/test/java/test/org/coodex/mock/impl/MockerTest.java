@@ -82,14 +82,15 @@ public class MockerTest {
 
         String getVehicleNum();
 
-        @Mock.Number(value = "[-1000, 3000]",digits = 6)
+        @Mock.Number(value = "[-1000, 3000]", digits = 6)
         BigDecimal getBigDecimal();
 
     }
 
     public interface A {
-        @Mock.String(minLength = 10, maxLength = 20,emojiProbability = 0.9f)
+        @Mock.String(minLength = 10, maxLength = 20, emojiProbability = 0.9f)
         String getName();
+
         void setName(String name);
     }
 

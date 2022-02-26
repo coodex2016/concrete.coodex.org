@@ -39,7 +39,7 @@ public class ZeroRemainderAdjustment implements Adjustment<Chargeable> {
 
     @Override
     public long adjust(Bill<Chargeable> bill) {
-        return - bill.getAmount() % subtraction;
+        return -bill.getAmount() % subtraction;
     }
 
     @Override

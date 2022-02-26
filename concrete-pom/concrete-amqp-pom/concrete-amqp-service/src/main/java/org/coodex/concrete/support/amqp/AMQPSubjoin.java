@@ -16,10 +16,8 @@
 
 package org.coodex.concrete.support.amqp;
 
-import org.coodex.concrete.amqp.AMQPConstants;
 import org.coodex.concrete.common.AbstractChangeableSubjoin;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 

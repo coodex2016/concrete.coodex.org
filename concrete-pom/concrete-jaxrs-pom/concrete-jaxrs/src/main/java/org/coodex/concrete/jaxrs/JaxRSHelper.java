@@ -20,7 +20,6 @@ import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
-import org.coodex.config.Config;
 import org.coodex.util.Common;
 
 import java.lang.reflect.Method;

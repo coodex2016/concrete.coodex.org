@@ -155,7 +155,7 @@ public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<
 //
 //    }
 
-//    @SuppressWarnings("rawtypes")
+    //    @SuppressWarnings("rawtypes")
     private Class<?> getBeanClass(Type topicType, String queueName, String className,
                                   ParameterizedType pt, Class<?> contextClass) throws CannotCompileException {
 //        Class topicClass = (Class) pt.getRawType();
@@ -165,7 +165,7 @@ public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<
         CtClass ctClass = classPool.makeClass(className);
         ctClass.setInterfaces(new CtClass[]{
 //                classPool.getOrNull(((Class<?>) (pt.getRawType())).getName())
-                JavassistHelper.getCtClass(Common.cast(pt.getRawType()),classPool)
+                JavassistHelper.getCtClass(Common.cast(pt.getRawType()), classPool)
         });
         ClassFile classFile = ctClass.getClassFile();
         classFile.setVersionToJava5();
@@ -212,7 +212,8 @@ public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<
                 "org.coodex.concrete.message.Topics.get(getTopicType(), getQueueName())");
 
         //        return (Class<?>) ctClass.toClass();
-        return IS_JAVA_9_AND_LAST.get() ? ctClass.toClass(TopicBeanPostProcessor.class) : ctClass.toClass();
+        return ctClassToClass(ctClass, TopicBeanPostProcessor.class);
+        //Common.isJava9AndLast() ? ctClass.toClass(TopicBeanPostProcessor.class) : ctClass.toClass();
     }
 
 

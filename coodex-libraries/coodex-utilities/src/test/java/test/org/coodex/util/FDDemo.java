@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class FDDemo {
 
-    public static class CountableRunnable implements Runnable{
+    public static class CountableRunnable implements Runnable {
         private AtomicInteger count = new AtomicInteger(0);
         private final String info;
 
@@ -24,7 +24,7 @@ public class FDDemo {
             count.incrementAndGet();
         }
 
-        public int getCount(){
+        public int getCount() {
             return count.get();
         }
     }
@@ -53,7 +53,7 @@ public class FDDemo {
                 .runnable(throttleRunnable)
                 .build();
 
-        for(int i = 0; i < 1000; i ++){
+        for (int i = 0; i < 1000; i++) {
             throttle.submit(
                     // throttleRunnable
             );

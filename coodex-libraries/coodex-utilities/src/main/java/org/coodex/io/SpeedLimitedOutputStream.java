@@ -30,6 +30,7 @@ public class SpeedLimitedOutputStream extends OutputStream {
     private final int speedLimit;
     private long lastCountTime = 0;
     private int wroteBytesFromLastCountTime = 0;
+
     public SpeedLimitedOutputStream(OutputStream outputStream, int speedLimit) {
         this.outputStream = outputStream;
         this.speedLimit = speedLimit;

@@ -17,7 +17,10 @@
 package org.coodex.concrete.accounts.organization.api;
 
 import org.coodex.concrete.accounts.organization.pojo.Position;
-import org.coodex.concrete.api.*;
+import org.coodex.concrete.api.AccessAllow;
+import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.Description;
+import org.coodex.concrete.api.Safely;
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.util.Parameter;
 

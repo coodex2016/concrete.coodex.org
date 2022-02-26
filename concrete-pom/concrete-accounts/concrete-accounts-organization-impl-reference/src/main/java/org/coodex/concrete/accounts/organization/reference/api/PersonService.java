@@ -18,8 +18,8 @@ package org.coodex.concrete.accounts.organization.reference.api;
 
 import org.coodex.concrete.accounts.organization.api.AbstractPersonManagementService;
 import org.coodex.concrete.accounts.organization.pojo.Person;
-import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.Description;
 
 /**
  * Created by davidoff shen on 2017-05-02.

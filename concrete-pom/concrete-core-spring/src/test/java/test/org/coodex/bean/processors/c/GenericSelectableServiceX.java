@@ -16,7 +16,5 @@
 
 package test.org.coodex.bean.processors.c;
 
-import java.util.List;
-
 public interface GenericSelectableServiceX extends GenericSelectableService<String, String> {
 }

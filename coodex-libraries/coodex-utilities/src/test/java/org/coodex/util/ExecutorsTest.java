@@ -18,7 +18,6 @@ package org.coodex.util;
 
 import org.coodex.concurrent.ExecutorsHelper;
 
-import javax.management.MXBean;
 import java.lang.management.ManagementFactory;
 import java.util.HashSet;
 import java.util.Random;
@@ -54,15 +53,16 @@ public class ExecutorsTest {
 
         final int MAX = 1000;
         System.out.println(ManagementFactory.getRuntimeMXBean().getName());
-        for (int i = 1; i <= MAX; i ++){
+        for (int i = 1; i <= MAX; i++) {
             final int finalI = i;
             executorService.execute(new Runnable() {
                 private boolean con = true;
+
                 @Override
                 public void run() {
                     set.add(Thread.currentThread().getName());
 //                    System.out.println(Thread.currentThread().getName());
-                    if(finalI == MAX){
+                    if (finalI == MAX) {
                         System.out.println(set.size());
                     }
 //                    System.out.println(Thread.currentThread().getName());

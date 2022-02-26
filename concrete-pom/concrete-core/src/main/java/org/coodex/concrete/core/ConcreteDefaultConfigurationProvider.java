@@ -23,7 +23,7 @@ import org.coodex.config.DefaultConfigurationProvider;
 public class ConcreteDefaultConfigurationProvider implements DefaultConfigurationProvider {
     @Override
     public Configuration get() {
-        return new ConfigurationBaseProfile(){
+        return new ConfigurationBaseProfile() {
             @Override
             protected String getDefaultProfile() {
                 return "concrete";

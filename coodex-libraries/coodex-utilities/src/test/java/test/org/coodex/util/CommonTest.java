@@ -18,7 +18,6 @@ package test.org.coodex.util;
 
 import org.coodex.util.Common;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class CommonTest {
@@ -51,16 +50,15 @@ public class CommonTest {
 
         System.out.println(Common.base16Encode(bytes));
 
-        System.out.println(Common.base16Encode(bytes,16/*每行16个字节*/," "/*每行中列于列之间使用空格隔开*/));
+        System.out.println(Common.base16Encode(bytes, 16/*每行16个字节*/, " "/*每行中列于列之间使用空格隔开*/));
 
-        System.out.println(Common.base16Encode(bytes,line->line + 1/*每行显示数量为行数+1,行号从0开始*/," "/*每行中列于列之间使用空格隔开*/));
+        System.out.println(Common.base16Encode(bytes, line -> line + 1/*每行显示数量为行数+1,行号从0开始*/, " "/*每行中列于列之间使用空格隔开*/));
 
-        System.out.println(Common.base16Encode(bytes,16/*从下标为16的元素开始*/,8/*编码8个字节*/));
+        System.out.println(Common.base16Encode(bytes, 16/*从下标为16的元素开始*/, 8/*编码8个字节*/));
 
-        System.out.println(Common.base16Encode(bytes,16/*从下标为16的元素开始*/,8/*编码8个字节*/,4/*每行4列*/," "));
+        System.out.println(Common.base16Encode(bytes, 16/*从下标为16的元素开始*/, 8/*编码8个字节*/, 4/*每行4列*/, " "));
 
-        System.out.println(Common.base16Encode(bytes,16/*从下标为16的元素开始*/,10/*编码10个字节*/, line->line+1, " "));
-
+        System.out.println(Common.base16Encode(bytes, 16/*从下标为16的元素开始*/, 10/*编码10个字节*/, line -> line + 1, " "));
 
 
 //        System.out.println(Common.base16Encode(bytes2));

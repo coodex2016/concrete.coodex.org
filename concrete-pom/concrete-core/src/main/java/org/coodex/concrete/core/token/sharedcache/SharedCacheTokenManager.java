@@ -19,7 +19,6 @@ package org.coodex.concrete.core.token.sharedcache;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenManager;
 import org.coodex.config.Config;
-import org.coodex.id.IDGenerator;
 import org.coodex.sharedcache.SharedCacheClient;
 import org.coodex.sharedcache.SharedCacheClientManager;
 import org.coodex.util.UUIDHelper;

@@ -55,7 +55,7 @@ public class SimpleAccountLoginImpl implements Login {
 
         if (profile.getBool("authCode", true)) {
             IF.is(authCode == null || !TOTPAuthenticator.authenticate(
-                    authCode, simpleAccount.getAuthKey()),
+                            authCode, simpleAccount.getAuthKey()),
                     AccountsErrorCodes.LOGIN_FAILED);
         }
 

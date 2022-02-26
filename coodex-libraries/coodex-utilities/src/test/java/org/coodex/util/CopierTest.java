@@ -20,10 +20,13 @@ import org.coodex.copier.AbstractCopier;
 import org.coodex.copier.Copier;
 
 public class CopierTest {
-    public static class C1{}
-    public static class C2{}
+    public static class C1 {
+    }
 
-    private static Copier<C1,C2> copier = new AbstractCopier<C1, C2>() {
+    public static class C2 {
+    }
+
+    private static Copier<C1, C2> copier = new AbstractCopier<C1, C2>() {
         @Override
         public C2 copy(C1 c1, C2 c2) {
             return c2;

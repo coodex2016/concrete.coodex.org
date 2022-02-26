@@ -23,5 +23,5 @@ import java.io.Serializable;
  */
 public interface AccountFactory<ID extends Serializable> {
 
-     Account<ID> getAccountByID(ID id);
+    Account<ID> getAccountByID(ID id);
 }

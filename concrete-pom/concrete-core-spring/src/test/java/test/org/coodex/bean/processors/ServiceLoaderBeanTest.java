@@ -17,7 +17,6 @@
 package test.org.coodex.bean.processors;
 
 import org.coodex.concrete.spring.ConcreteSpringConfiguration;
-//import org.coodex.util.DefaultService;
 import org.coodex.util.ServiceLoader;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,7 +27,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import test.org.coodex.bean.processors.a.TestIntf;
-import test.org.coodex.bean.processors.a.TestIntfImplWithQualifier;
 
 import javax.inject.Inject;
 

@@ -45,7 +45,7 @@ public class ClassifiableAccountID implements AccountID, Serializable {
         this.id = id;
     }
 
-    public static boolean accept(String idStr){
+    public static boolean accept(String idStr) {
         return idStr != null && ID_PATTERN.matcher(idStr).matches();
     }
 

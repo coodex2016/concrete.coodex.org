@@ -108,9 +108,9 @@ public class KTVConsumption implements TimeBasedChargeable {
                 new DurationRevision("2小时抵扣", 120),
                 new TimeBasedOffAdjustment<KTVConsumption>(0.4f, "6折房间费"),
                 new AmountAdjustment(1500, "1500元代金券"),
-                new ConsumerGoods(10,10,"方便面"),
-                new ConsumerGoods(15,7,"XXX"),
-                new ZeroRemainderAdjustment("抹零",100)
+                new ConsumerGoods(10, 10, "方便面"),
+                new ConsumerGoods(15, 7, "XXX"),
+                new ZeroRemainderAdjustment("抹零", 100)
         );
     }
 

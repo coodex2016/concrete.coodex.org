@@ -24,8 +24,6 @@ import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import java.io.IOException;
 import java.util.List;
 
-import static org.coodex.concrete.apitools.APIHelper.loadModules;
-
 /**
  * Created by davidoff shen on 2016-12-05.
  */

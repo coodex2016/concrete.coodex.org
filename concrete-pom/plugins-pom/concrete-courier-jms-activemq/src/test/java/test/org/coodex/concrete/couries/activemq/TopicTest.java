@@ -16,10 +16,10 @@
 
 package test.org.coodex.concrete.couries.activemq;
 
-import org.coodex.util.GenericTypeHelper;
 import org.coodex.concrete.message.Observer;
 import org.coodex.concrete.message.Topic;
 import org.coodex.concrete.message.Topics;
+import org.coodex.util.GenericTypeHelper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;

@@ -20,7 +20,7 @@ import java.lang.annotation.*;
 
 /**
  * 用于声明一个接口是concrete服务接口
- *
+ * <p>
  * Created by davidoff shen on 2016-08-31.
  */
 @Target({ElementType.TYPE, ElementType.METHOD})

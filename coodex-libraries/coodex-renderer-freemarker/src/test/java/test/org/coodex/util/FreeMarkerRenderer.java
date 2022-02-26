@@ -25,8 +25,8 @@ import java.util.Map;
 public class FreeMarkerRenderer {
     public static void main(String[] args) {
         System.out.println(Renderer.render("现在时刻是 ${o1}", Common.now()));
-        Map<String,Object> map = new HashMap<>();
-        map.put("test","test");
+        Map<String, Object> map = new HashMap<>();
+        map.put("test", "test");
         System.out.println(Renderer.render("测试：${o1.test}", map));
         System.out.println(Renderer.render("测试：${o2!\"xxx\"}", map));
     }

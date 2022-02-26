@@ -74,7 +74,5 @@ public abstract class AbstractToken implements Token {
     }
 
 
-
-
     protected abstract void $renew();
 }

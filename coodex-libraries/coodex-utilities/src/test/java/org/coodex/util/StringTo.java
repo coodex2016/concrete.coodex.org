@@ -21,10 +21,10 @@ import java.util.Observable;
 public class StringTo {
 
     public static void main(String[] args) {
-        System.out.println(Common.to("1",2));
-        System.out.println(Common.to("1",3l));
-        System.out.println(Common.to("1",true));
-        System.out.println(Common.to("1","1"));
+        System.out.println(Common.to("1", 2));
+        System.out.println(Common.to("1", 3l));
+        System.out.println(Common.to("1", true));
+        System.out.println(Common.to("1", "1"));
         Observable observable;
     }
 }

@@ -37,7 +37,7 @@ public interface NumberSelectableService extends SelectableService<Integer> {
     }
 
     @Named
-    class LongOddNumberSelectableService implements SelectableService<Long>{
+    class LongOddNumberSelectableService implements SelectableService<Long> {
         @Override
         public boolean accept(Long param) {
             return true;

@@ -19,7 +19,6 @@ package org.coodex.concrete.apitools.jaxrs.service;
 import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
 import org.coodex.concrete.common.ErrorDefinition;
-import org.coodex.concrete.common.ErrorMessageFacade;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.util.Common;
 

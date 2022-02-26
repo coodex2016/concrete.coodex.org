@@ -16,9 +16,9 @@
 
 package test.org.coodex.concrete.message;
 
-import org.coodex.util.GenericTypeHelper;
 import org.coodex.concrete.message.TokenBasedTopic;
 import org.coodex.concrete.message.Topic;
+import org.coodex.util.GenericTypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +48,10 @@ public class GTTest {
         }
     }
 
-    static class D extends C<String>{}
+    static class D extends C<String> {
+    }
 
-    public static void main(String [] args){
+    public static void main(String[] args) {
         D c = new D();
         c.testA();
         c.testB();

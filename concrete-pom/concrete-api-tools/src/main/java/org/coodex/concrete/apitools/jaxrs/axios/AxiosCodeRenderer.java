@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.util.Common.cast;
 
 public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {

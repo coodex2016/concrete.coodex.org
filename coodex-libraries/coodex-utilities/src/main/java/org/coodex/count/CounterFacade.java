@@ -16,8 +16,8 @@
 
 package org.coodex.count;
 
-import org.coodex.util.ServiceLoader;
 import org.coodex.util.LazyServiceLoader;
+import org.coodex.util.ServiceLoader;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,7 +48,8 @@ public class CounterFacade {
     @SafeVarargs
     public static <T extends Countable> void count(T... value) {
 //        COUNTER_FACTORY.get().count(value);
-        count(Arrays.asList(value));
+        if (value != null && value.length > 0)
+            count(Arrays.asList(value));
     }
 
     /**

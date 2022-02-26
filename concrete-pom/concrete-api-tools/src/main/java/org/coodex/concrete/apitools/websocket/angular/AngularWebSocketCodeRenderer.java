@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.concrete.websocket.WebSocketModuleMaker.WEB_SOCKET_SUPPORT;
 
 public class AngularWebSocketCodeRenderer extends AbstractAngularRenderer<WebSocketModule, WebSocketUnit> {

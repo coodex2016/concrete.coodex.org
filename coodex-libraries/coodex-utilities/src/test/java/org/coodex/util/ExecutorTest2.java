@@ -20,8 +20,7 @@ import org.coodex.concurrent.ExecutorsHelper;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -45,7 +44,7 @@ public class ExecutorTest2 {
 //        }
 //        );
         ExecutorService executorService = ExecutorsHelper.newLinkedThreadPool(
-            2,20,Integer.MAX_VALUE,2L, "test"
+                2, 20, Integer.MAX_VALUE, 2L, "test"
         );
 
         for (int i = 0; i < 5; i++) {

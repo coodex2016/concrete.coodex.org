@@ -70,7 +70,7 @@ public class DefinitionContextImpl implements DefinitionContext {
 
     /**
      * @param annotationClass annotationClass
-     * @param <T> <T>
+     * @param <T>             <T>
      * @return annotation
      */
     @Override

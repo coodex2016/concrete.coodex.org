@@ -54,6 +54,7 @@ public class POJOPropertyInfo {
         type = field.getGenericType();
         this.property = null;
     }
+
     public POJOPropertyInfo(PojoProperty property) {
         this.property = property;
         this.name = property.getName();

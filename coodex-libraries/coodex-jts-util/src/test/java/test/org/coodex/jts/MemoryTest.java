@@ -37,9 +37,6 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 import static org.coodex.util.Common.slice;
@@ -308,7 +305,6 @@ public class MemoryTest {
         }
         return geometry;
     }
-
 
 
     static class TestResult {

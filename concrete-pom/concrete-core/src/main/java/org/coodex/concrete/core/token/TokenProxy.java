@@ -17,7 +17,6 @@
 package org.coodex.concrete.core.token;
 
 import org.coodex.concrete.common.Account;
-import org.coodex.concrete.common.AccountID;
 import org.coodex.concrete.common.Token;
 
 import java.io.Serializable;

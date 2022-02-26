@@ -18,7 +18,6 @@ package org.coodex.concrete.apitools.jaxrs.jquery;
 
 import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
-import org.coodex.concrete.jaxrs.Polling;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
@@ -26,8 +25,6 @@ import org.coodex.util.Common;
 
 import java.io.IOException;
 import java.util.*;
-
-import static org.coodex.concrete.apitools.APIHelper.loadModules;
 
 /**
  * Created by davidoff shen on 2016-12-04.

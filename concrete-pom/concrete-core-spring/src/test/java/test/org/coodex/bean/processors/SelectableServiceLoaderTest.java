@@ -61,8 +61,6 @@ public class SelectableServiceLoaderTest {
     private SelectableServiceLoader<Integer, NumberSelectableService> serviceLoader6;
 
 
-
-
     @Test
     public void test() {
 //        Assert.assertNotNull(serviceLoader1);

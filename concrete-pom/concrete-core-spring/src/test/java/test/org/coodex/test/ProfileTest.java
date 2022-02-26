@@ -25,8 +25,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 
-import java.util.List;
-
 @SpringBootApplication
 @Import(ConcreteSpringConfiguration.class)
 public class ProfileTest {
@@ -57,7 +55,7 @@ public class ProfileTest {
 //        System.out.println(context.getEnvironment().getProperty("test.array"));
 //        System.out.println(context.getEnvironment().getProperty("test.array", List.class));
 //        System.out.println(context.getEnvironment().containsProperty("test.array[0]"));
-        for(int i = 0; context.getEnvironment().containsProperty("test.array[" + i + "]");i++){
+        for (int i = 0; context.getEnvironment().containsProperty("test.array[" + i + "]"); i++) {
             System.out.println(context.getEnvironment().getProperty("test.array[" + i + "]"));
         }
     }

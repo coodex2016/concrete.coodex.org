@@ -16,18 +16,17 @@
 
 package org.coodex.util;
 
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class SimilarityTest {
 
-    enum WeekDate{
+    enum WeekDate {
         MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5),
         SATURDAY(6), SUNDAY(7);
 
         private final int value;
-        WeekDate(int v){
+
+        WeekDate(int v) {
             this.value = v;
         }
 
@@ -44,7 +43,7 @@ public class SimilarityTest {
 
         AtomicInteger i;
 
-       Integer i1 = 1;
+        Integer i1 = 1;
         Integer i2 = 1;
         Integer i3 = 1000;
         Integer i4 = 1000;

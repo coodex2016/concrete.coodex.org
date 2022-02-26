@@ -32,7 +32,7 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 @ConcreteService(value = "institutions", nonspecific = true)
 @AccessAllow(roles = {SYSTEM_MANAGER, TENANT_MANAGER, ORGANIZATION_MANAGER})
 @Safely
-public interface AbstractInstitutionManagementService<I extends Institution>{
+public interface AbstractInstitutionManagementService<I extends Institution> {
     @Description(name = "新建单位", description = "LOGGING: new 新建单位的实体数据")
     StrID<I> save(
             @Parameter("institution")

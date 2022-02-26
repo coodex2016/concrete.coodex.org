@@ -71,14 +71,14 @@ public class ReverseResource<T> extends AbstractJSR339Resource<T> {
                 DeliveryContext.closureRun(deliveryContext,
                         () -> {
 
-                        // todo....
-                        Object client = finalServer == null ?
-                                Client.getInstance(getInterfaceClass()) :
-                                Client.getInstance(getInterfaceClass(), finalServer);
+                            // todo....
+                            Object client = finalServer == null ?
+                                    Client.getInstance(getInterfaceClass()) :
+                                    Client.getInstance(getInterfaceClass(), finalServer);
 
-                        method.invoke(client, params);
-                        return null;
-                });
+                            method.invoke(client, params);
+                            return null;
+                        });
 
             } catch (Throwable th) {
                 asyncResponse.resume(th);

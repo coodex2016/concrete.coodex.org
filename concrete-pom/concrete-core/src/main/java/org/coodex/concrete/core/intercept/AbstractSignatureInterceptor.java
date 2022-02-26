@@ -92,17 +92,15 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
             }
     ) {
     };
-    private static final Supplier<String> SERVER_SIDE_VERIFY_FAILED = () -> I18N.translate("sign.serverSideVerifyFailed");
-    private static final Supplier<String> NO_SIGNATURE_FOUND = () -> I18N.translate("sign.noSignatureFound");
-
     //    private int getModel() {
 //        return getServiceContext().getSide() == null ? SIDE_SERVER : getServiceContext().getSide().intValue();
 //    }
     private static final SingletonMap<String, PropertyNameReload> PROPERTY_NAMES = SingletonMap.<String, PropertyNameReload>builder()
             .function(PropertyNameReload::new).nullKey("null_" + UUIDHelper.getUUIDString()).build();
-
     private static final Supplier<String> NOISE_MUST_NOT_NULL =
             () -> String.format(I18N.translate("sign.mustNotNull"), getPropertyName(KEY_FIELD_NOISE));
+    private static final Supplier<String> SERVER_SIDE_VERIFY_FAILED = () -> I18N.translate("sign.serverSideVerifyFailed");
+    private static final Supplier<String> NO_SIGNATURE_FOUND = () -> I18N.translate("sign.noSignatureFound");
 
     private static void serverSide_Verify(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
         Map<String, Object> content = buildContent(
@@ -121,8 +119,8 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         IronPen ironPen = howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName());
         SignatureSerializer serializer = howToSign.getSerializer();
         IF.not(ironPen.verify(serializer.serialize(content),
-                Base64.getDecoder().decode(getSignature(content)),
-                algorithm, keyId),
+                        Base64.getDecoder().decode(getSignature(content)),
+                        algorithm, keyId),
                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED, SERVER_SIDE_VERIFY_FAILED);
 
     }

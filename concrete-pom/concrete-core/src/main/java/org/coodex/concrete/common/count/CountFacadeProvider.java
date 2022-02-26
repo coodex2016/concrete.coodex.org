@@ -23,8 +23,8 @@ import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.config.Config;
 import org.coodex.count.*;
 import org.coodex.util.Clock;
-import org.coodex.util.ServiceLoader;
 import org.coodex.util.LazyServiceLoader;
+import org.coodex.util.ServiceLoader;
 import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.common.ConcreteHelper.getScheduler;
-import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
+import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.ctClassToClass;
 import static org.coodex.util.Common.cast;
 import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 
@@ -142,9 +142,10 @@ public class CountFacadeProvider implements CountFacade {
         newClass.addConstructor(spiConstructor);
 
         CounterChain<Countable> counterChain = cast(
-                (IS_JAVA_9_AND_LAST.get() ?
-                        newClass.toClass(CounterChain.class) :
-                        newClass.toClass())
+                ctClassToClass(newClass, CounterChain.class)
+//                (Common.isJava9AndLast() ?
+//                        newClass.toClass(CounterChain.class) :
+//                        newClass.toClass())
                         .getConstructor(new Class<?>[0])
                         .newInstance()
         );

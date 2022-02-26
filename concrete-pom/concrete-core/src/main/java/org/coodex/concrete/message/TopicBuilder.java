@@ -25,7 +25,6 @@ import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.StringMemberValue;
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SelectableServiceLoader;
 import org.coodex.util.SingletonMap;
@@ -39,7 +38,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
-import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
+import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.*;
 import static org.coodex.concrete.message.CourierBuilder.getMessageType;
 import static org.coodex.util.Common.cast;
 import static org.coodex.util.Common.rte;
@@ -51,19 +50,17 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
 
     private static final TopicPrototypeProvider defaultTopicPrototypeProvider = new DefaultTopicPrototypeProvider();
 
-    private static SelectableServiceLoader<Class<?>, TopicPrototypeProvider> topicPrototypeProviderLoader =
-            new LazySelectableServiceLoader<Class<?>, TopicPrototypeProvider>(defaultTopicPrototypeProvider) {
-            };
+    private static final SelectableServiceLoader<Class<?>, TopicPrototypeProvider> topicPrototypeProviderLoader = new LazySelectableServiceLoader<Class<?>, TopicPrototypeProvider>(defaultTopicPrototypeProvider) {
+    };
     //            new Singleton<>(
 //                    () -> new SelectableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider){}
 //            );
 //    private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> providers =
 //            new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider){};
 
-    private static SingletonMap<TopicKey, AbstractTopic> topics = SingletonMap.<TopicKey, AbstractTopic>builder()
-            .function(new TopicBuilder()).build();
+    private static final SingletonMap<TopicKey, AbstractTopic> topics = SingletonMap.<TopicKey, AbstractTopic>builder().function(new TopicBuilder()).build();
 
-    private AtomicLong index = new AtomicLong(0);
+    private final AtomicLong index = new AtomicLong(0);
 
     static AbstractTopic buildTopic(TopicKey key) {
         return topics.get(TopicKey.copy(key));
@@ -81,8 +78,7 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
 
     public Annotation queue(ConstPool constPool, String queue) {
         Annotation annotation = new Annotation(Queue.class.getName(), constPool);
-        annotation.addMemberValue("value",
-                new StringMemberValue(queue == null ? "" : queue, constPool));
+        annotation.addMemberValue("value", new StringMemberValue(queue == null ? "" : queue, constPool));
         return annotation;
     }
 
@@ -97,40 +93,28 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
                 }
             }
 
-            Class<?> prototype =
-                    Optional.ofNullable(provider)
-                            .orElseThrow(() -> ConcreteHelper.getException("No provider for " + topicClass.getName()))
-                            .getPrototype();
+            Class<?> prototype = Optional.ofNullable(provider).orElseThrow(() -> ConcreteHelper.getException("No provider for " + topicClass.getName())).getPrototype();
 
 
             Courier courier = CourierBuilder.buildCourier(key);
 
             ClassPool classPool = ClassPool.getDefault();
-            String className = String.format("%s.Topic$$CBC$$%08X",
-                    TopicBuilder.class.getPackage().getName(), index.incrementAndGet());
-            CtClass ctClass = classPool.makeClass(className,
-                    JavassistHelper.getCtClass(prototype, classPool)
+            String className = String.format("%s.Topic$$CBC$$%08X", TopicBuilder.class.getPackage().getName(), index.incrementAndGet());
+            CtClass ctClass = classPool.makeClass(className, getCtClass(prototype, classPool)
 //                    classPool.getOrNull(
 //                    prototype.getName()
 //            )
             );
-            ctClass.setInterfaces(new CtClass[]{
-                    JavassistHelper.getCtClass(topicClass, classPool)
+            ctClass.setInterfaces(new CtClass[]{getCtClass(topicClass, classPool)
 //                    classPool.getOrNull(topicClass.getName())
             });
             ClassFile classFile = ctClass.getClassFile();
             classFile.setVersionToJava5();
             ConstPool constPool = classFile.getConstPool();
             if (key.queue != null) {
-                classFile.addAttribute(JavassistHelper.aggregate(constPool, queue(constPool, key.queue)));
+                classFile.addAttribute(aggregate(constPool, queue(constPool, key.queue)));
             }
-            ctClass.setGenericSignature(
-                    new SignatureAttribute.ClassSignature(
-                            null,
-                            JavassistHelper.classType(prototype.getName(), getMessageType(key.topicType)),
-                            new SignatureAttribute.ClassType[]{
-                                    JavassistHelper.classType(topicClass.getName(), getMessageType(key.topicType))
-                            }).encode());
+            ctClass.setGenericSignature(new SignatureAttribute.ClassSignature(null, classType(prototype.getName(), getMessageType(key.topicType)), new SignatureAttribute.ClassType[]{classType(topicClass.getName(), getMessageType(key.topicType))}).encode());
 
 //            log.debug(new SignatureAttribute.ClassSignature(null,
 //                    JavassistHelper.classType(prototype.getName(), getMessageType(key.topicType)),
@@ -138,26 +122,20 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
 //                            JavassistHelper.classType(topicClass.getName(), getMessageType(key.topicType))
 //                    }).encode());
 
-            CtConstructor ctConstructor = new CtConstructor(
-                    new CtClass[]{
-                            JavassistHelper.getCtClass(Courier.class, classPool)
+            CtConstructor ctConstructor = new CtConstructor(new CtClass[]{getCtClass(Courier.class, classPool)
 //                            classPool.getOrNull(Courier.class.getName())
-                    },
-                    ctClass
-            );
+            }, ctClass);
             ctConstructor.setBody("{super($$);}");
             ctClass.addConstructor(ctConstructor);
 
-            Class<?> newClass = IS_JAVA_9_AND_LAST.get() ?
-                    ctClass.toClass(TopicBuilder.class) :
-                    ctClass.toClass();
+            Class<?> newClass = ctClassToClass(ctClass, TopicBuilder.class);
+//                    Common.isJava9AndLast() ?
+//                    ctClass.toClass(TopicBuilder.class) :
+//                    ctClass.toClass();
             Constructor constructor = newClass.getConstructor(Courier.class);
 
             AbstractTopic abstractTopic = cast(constructor.newInstance(courier));
-            log.info("Topic build. {} for {}",
-                    abstractTopic.getClass().getName(),
-                    key.toString()
-            );
+            log.info("Topic build. {} for {}", abstractTopic.getClass().getName(), key);
             return abstractTopic;
         } catch (Throwable th) {
             throw rte(th);

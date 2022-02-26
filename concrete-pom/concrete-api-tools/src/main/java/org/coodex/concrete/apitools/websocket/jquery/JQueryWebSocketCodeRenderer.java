@@ -25,7 +25,6 @@ import org.coodex.util.Common;
 import java.io.IOException;
 import java.util.*;
 
-import static org.coodex.concrete.apitools.APIHelper.loadModules;
 import static org.coodex.concrete.websocket.WebSocketModuleMaker.WEB_SOCKET_SUPPORT;
 
 public class JQueryWebSocketCodeRenderer extends AbstractRenderer<WebSocketModule> {

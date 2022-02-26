@@ -22,5 +22,5 @@ package org.coodex.mock;
 public interface SequenceMocker<T> {
 
     T next();
-    
+
 }

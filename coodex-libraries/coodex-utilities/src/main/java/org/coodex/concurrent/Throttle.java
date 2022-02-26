@@ -90,7 +90,7 @@ public class Throttle implements FrequencyReducer {
             return this;
         }
 
-        public Throttle build(){
+        public Throttle build() {
             return new Throttle(this);
         }
 

@@ -16,40 +16,42 @@
 
 package org.coodex.id;
 
-import org.coodex.config.Config;
 import org.coodex.util.Base58;
 import org.coodex.util.Common;
-import org.coodex.util.Singleton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.coodex.id.SnowflakeIdWorker.snowflakeIdWorkerSingleton;
 
 public class SnowflakeIdGeneratorService implements IDGeneratorService {
 
-    private static final Logger log = LoggerFactory.getLogger(SnowflakeIdGeneratorService.class);
+//    private static final Logger log = LoggerFactory.getLogger(SnowflakeIdGeneratorService.class);
 
-    private final Singleton<SnowflakeIdWorker> snowflakeIdWorkerSingleton = Singleton.with(
-            () -> {
-                SnowflakeIdWorker snowflakeIdWorker;
-                int machineId = Config.getValue("snowflake.machineId", -1);
+//    private static final Singleton<SnowflakeIdWorker> snowflakeIdWorkerSingleton = Singleton.with(
+//            () -> {
+//                SnowflakeIdWorker snowflakeIdWorker;
+//                int machineId = Config.getValue("snowflake.machineId", -1);
+//
+//                if (machineId != -1) {
+//                    snowflakeIdWorker = new SnowflakeIdWorker(machineId);
+//                } else {
+//                    int workerId = Config.getValue("snowflake.workerId", -1);
+//                    int dataCenterId = Config.getValue("snowflake.dataCenterId", -1);
+//                    if (workerId == -1 && dataCenterId == -1) {
+//                        log.warn("snowflake parameters[machineId, workerId, dataCenterId] not set. use default value.");
+//                        snowflakeIdWorker = new SnowflakeIdWorker(0);
+//                    } else {
+//                        snowflakeIdWorker = new SnowflakeIdWorker(workerId, dataCenterId);
+//                    }
+//                }
+//                return snowflakeIdWorker;
+//            }
+//    );
 
-                if (machineId != -1) {
-                    snowflakeIdWorker = new SnowflakeIdWorker(machineId);
-                } else {
-                    int workerId = Config.getValue("snowflake.workerId", -1);
-                    int dataCenterId = Config.getValue("snowflake.dataCenterId", -1);
-                    if (workerId == -1 && dataCenterId == -1) {
-                        log.warn("snowflake parameters[machineId, workerId, dataCenterId] not set. use default value.");
-                        snowflakeIdWorker = new SnowflakeIdWorker(0);
-                    } else {
-                        snowflakeIdWorker = new SnowflakeIdWorker(workerId, dataCenterId);
-                    }
-                }
-                return snowflakeIdWorker;
-            }
-    );
+    public static long nextId() {
+        return snowflakeIdWorkerSingleton.get().nextId();
+    }
 
     @Override
     public String newId() {
-        return Base58.encode(Common.long2Bytes(snowflakeIdWorkerSingleton.get().nextId()));
+        return Base58.encode(Common.long2Bytes(nextId()));
     }
 }

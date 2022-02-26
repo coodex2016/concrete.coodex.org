@@ -47,7 +47,7 @@ public class FixedHoursSlicerTest {
         return Period.BUILDER.create(s, e);
     }
 
-    private void testO(int hours){
+    private void testO(int hours) {
         FixedHoursSlicerFactory<TimeBasedChargeable> fixedHoursSlicerFactory = new FixedHoursSlicerFactory<TimeBasedChargeable>() {
         };
         FixedHoursSlicerProfile fixedHoursSlicerProfile = new FixedHoursSlicerProfile(hours);

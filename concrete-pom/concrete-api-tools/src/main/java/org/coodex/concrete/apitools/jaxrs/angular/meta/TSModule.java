@@ -27,6 +27,7 @@ public class TSModule extends TSClass {
 
     private String belong;
     private List<TSMethod> methods = new ArrayList<>();
+
     public TSModule(Class<?> c) {
         super(CLASS_TYPE_MODULE, c);
     }

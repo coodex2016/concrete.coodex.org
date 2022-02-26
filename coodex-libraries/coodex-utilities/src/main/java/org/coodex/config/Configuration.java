@@ -16,8 +16,6 @@
 
 package org.coodex.config;
 
-import org.coodex.util.Common;
-
 import java.util.function.Supplier;
 
 public interface Configuration {

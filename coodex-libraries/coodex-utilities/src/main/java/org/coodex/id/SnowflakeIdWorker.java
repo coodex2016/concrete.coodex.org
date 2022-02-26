@@ -22,6 +22,8 @@ import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
 import org.coodex.util.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Twitter_Snowflake<br>
@@ -37,15 +39,40 @@ import org.coodex.util.Singleton;
  */
 public class SnowflakeIdWorker {
 
+    private static final Logger log = LoggerFactory.getLogger(SnowflakeIdWorker.class);
+
+
     // ==============================Fields===========================================
-    private static final Singleton<SnowflakeIdWorker> snowflakeIdWorkerSingleton
+    static final Singleton<SnowflakeIdWorker> snowflakeIdWorkerSingleton
             = Singleton.with(
-            () -> new SnowflakeIdWorker(
-                    Config.getValue(
-                            "snowflake.machineId",
-                            () -> Profile.get("idWorker").getInt("machineId", 0)
-                    )
-            )
+            () -> {
+                SnowflakeIdWorker snowflakeIdWorker;
+                int machineId = Config.getValue("snowflake.machineId", -1);
+
+                if (machineId != -1) {
+                    snowflakeIdWorker = new SnowflakeIdWorker(machineId);
+                } else {
+                    int workerId = Config.getValue("snowflake.workerId", -1);
+                    int dataCenterId = Config.getValue("snowflake.dataCenterId", -1);
+                    if (workerId == -1 && dataCenterId == -1) {
+                        machineId = Profile.get("idWorker").getInt("machineId", -1);
+                        if (machineId == -1) {
+                            log.warn("snowflake parameters[machineId, workerId, dataCenterId] not set. use default value.");
+                            machineId = 0;
+                        }
+                        snowflakeIdWorker = new SnowflakeIdWorker(machineId);
+                    } else {
+                        snowflakeIdWorker = new SnowflakeIdWorker(workerId, dataCenterId);
+                    }
+                }
+                return snowflakeIdWorker;
+            }
+//                    new SnowflakeIdWorker(
+//                    Config.getValue(
+//                            "snowflake.machineId",
+//                            () -> Profile.get("idWorker").getInt("machineId", 0)
+//                    )
+//            )
     );
     /**
      * 开始时间截 (2020-01-01)

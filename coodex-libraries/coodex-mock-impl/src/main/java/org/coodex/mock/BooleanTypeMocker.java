@@ -50,7 +50,7 @@ public class BooleanTypeMocker extends AbstractTypeMocker<Mock.Boolean> {
 
     private Object toType(boolean b, BooleanMockConfig config, Type targetType) {
         Class<?> c = getClassFromType(targetType);
-        int index = Common.indexOf(SUPPORTED,c);
+        int index = Common.indexOf(SUPPORTED, c);
         switch (index) {
             case 0:
             case 1:

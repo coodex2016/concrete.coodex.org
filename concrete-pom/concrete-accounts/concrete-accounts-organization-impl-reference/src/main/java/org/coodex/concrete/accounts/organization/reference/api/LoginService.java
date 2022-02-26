@@ -17,8 +17,8 @@
 package org.coodex.concrete.accounts.organization.reference.api;
 
 import org.coodex.concrete.accounts.organization.api.AbstractLoginService;
-import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.Description;
 
 /**
  * Created by davidoff shen on 2017-05-03.

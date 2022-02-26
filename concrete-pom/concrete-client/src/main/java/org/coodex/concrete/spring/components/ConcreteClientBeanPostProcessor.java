@@ -47,7 +47,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.ClientHelper.isConcreteService;
 import static org.coodex.concrete.common.AbstractBeanProvider.CREATE_BY_CONCRETE;
-import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.IS_JAVA_9_AND_LAST;
+import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.ctClassToClass;
 
 @SuppressWarnings("unused")
 @Named
@@ -196,9 +196,10 @@ public class ConcreteClientBeanPostProcessor /* extends InstantiationAwareBeanPo
                 ctClass.addMethod(ctMethod);
             }
 
-            Class<?> generated = IS_JAVA_9_AND_LAST.get() ?
-                    ctClass.toClass(concreteService) :
-                    ctClass.toClass();
+            Class<?> generated = ctClassToClass(ctClass, concreteService);
+//                    Common.isJava9AndLast() ?
+//                    ctClass.toClass(concreteService) :
+//                    ctClass.toClass();
 
             BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(generated);
             defaultListableBeanFactory.registerBeanDefinition(

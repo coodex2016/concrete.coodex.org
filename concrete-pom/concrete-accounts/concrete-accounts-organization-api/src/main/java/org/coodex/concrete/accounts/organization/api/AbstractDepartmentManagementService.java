@@ -17,7 +17,10 @@
 package org.coodex.concrete.accounts.organization.api;
 
 import org.coodex.concrete.accounts.organization.pojo.Department;
-import org.coodex.concrete.api.*;
+import org.coodex.concrete.api.AccessAllow;
+import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.Description;
+import org.coodex.concrete.api.Safely;
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.util.Parameter;
 
@@ -29,7 +32,7 @@ import static org.coodex.concrete.accounts.AccountManagementRoles.*;
 @ConcreteService(value = "departments", nonspecific = true)
 @AccessAllow(roles = {SYSTEM_MANAGER, TENANT_MANAGER, ORGANIZATION_MANAGER})
 @Safely
-public interface AbstractDepartmentManagementService<D extends Department>  {
+public interface AbstractDepartmentManagementService<D extends Department> {
 
     @Description(name = "新建部门", description = "LOGGING: new 新建的部门实体信息")
     StrID<D> save(

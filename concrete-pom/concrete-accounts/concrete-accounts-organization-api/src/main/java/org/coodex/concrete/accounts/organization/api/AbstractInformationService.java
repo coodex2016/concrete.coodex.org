@@ -35,7 +35,7 @@ public interface AbstractInformationService<
         I extends Institution,
         D extends Department,
         J extends Position,
-        P extends Person>  {
+        P extends Person> {
 
 
     @ConcreteService("all")

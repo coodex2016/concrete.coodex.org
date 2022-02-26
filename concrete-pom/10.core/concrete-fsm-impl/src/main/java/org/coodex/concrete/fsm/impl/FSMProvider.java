@@ -137,7 +137,7 @@ class FSMInvocationHandle implements InvocationHandler {
 
                         }
 
-            });
+                    });
 //            return FSMContextImpl.closureContext.run(new FSMContextImpl.Context(Common.deepCopy(current), (FiniteStateMachine) proxy), new Closure() {
 //
 //

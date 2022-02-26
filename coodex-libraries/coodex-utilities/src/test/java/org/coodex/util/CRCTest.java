@@ -69,10 +69,9 @@ public class CRCTest {
         Assert.assertEquals(0xd321, crc.finalCRC(/*crcValue*/));
 
         crc = new CRC(CRC.Algorithm.CRC16_XMODEM);
-        for(int i = 0; i < content.length; i ++)
+        for (int i = 0; i < content.length; i++)
             crc.update(new byte[]{content[i]});
         Assert.assertEquals(0xd321, crc.finalCRC(/*crcValue*/));
-
 
 
         // CRC32

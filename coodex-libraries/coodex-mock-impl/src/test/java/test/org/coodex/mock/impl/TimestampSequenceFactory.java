@@ -30,8 +30,8 @@ public interface TimestampSequenceFactory extends SequenceMockerFactory<String> 
     @Target({ElementType.FIELD, ElementType.METHOD})
     @interface Interval {
         /**
-         * @see java.util.Calendar
          * @return 单位
+         * @see java.util.Calendar
          */
         int timeUnit() default Calendar.MINUTE;
 

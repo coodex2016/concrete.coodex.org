@@ -38,7 +38,7 @@ public interface TestService {
     @ConcreteService("/{p1}/test3")
     int test3(
             @Description(name = "你", description = "你就是你") Integer p1,
-            @Description(name="我",description = "我就是我") String p2,
+            @Description(name = "我", description = "我就是我") String p2,
             @Description(name = "他", description = "他就是他") List<Integer> p3);
 
     PageResult<A> test4(PageRequest<List<A>> request);

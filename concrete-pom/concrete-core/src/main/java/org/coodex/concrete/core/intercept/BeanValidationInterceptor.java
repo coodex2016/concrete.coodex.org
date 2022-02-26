@@ -25,8 +25,8 @@ import org.coodex.concrete.core.intercept.annotations.Local;
 import org.coodex.concrete.core.intercept.annotations.ServerSide;
 import org.coodex.concrete.core.intercept.annotations.TestContext;
 import org.coodex.config.Config;
-import org.coodex.util.ServiceLoader;
 import org.coodex.util.LazyServiceLoader;
+import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

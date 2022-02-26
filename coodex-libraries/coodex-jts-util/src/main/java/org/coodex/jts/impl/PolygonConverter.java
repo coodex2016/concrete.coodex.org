@@ -16,8 +16,8 @@
 
 package org.coodex.jts.impl;
 
-import org.coodex.jts.JTSUtil;
 import org.coodex.jts.GeometryConvertService;
+import org.coodex.jts.JTSUtil;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 

@@ -22,7 +22,7 @@ import org.coodex.util.PojoProperty;
 public class PojoTestMain {
     public static void main(String[] args) {
         PojoInfo pojoInfo = new PojoInfo(PojoTest.class);
-        for(PojoProperty pojoProperty: pojoInfo.getProperties()){
+        for (PojoProperty pojoProperty : pojoInfo.getProperties()) {
             System.out.println(pojoProperty);
         }
     }

@@ -117,7 +117,9 @@ public class ConcreteHelper {
 
     public static ExecutorService getExecutor() {
         return getExecutor("service");
-    }    private static final SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
+    }
+
+    private static final SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
             = SingletonMap.<String, ScheduledExecutorService>builder()
             .function(new Function<String, ScheduledExecutorService>() {
                 @Override
@@ -177,7 +179,9 @@ public class ConcreteHelper {
                 }, (ConcreteClassFilter) clazz -> ConcreteHelper.isConcreteService(clazz) ||
                         clazz.getAnnotation(ErrorCode.class) != null,
                 packageParrterns);
-    }    private static final SingletonMap<String, ExecutorService> executorServiceMap
+    }
+
+    private static final SingletonMap<String, ExecutorService> executorServiceMap
             = SingletonMap.<String, ExecutorService>builder()
             .function(new Function<String, ExecutorService>() {
 
@@ -383,10 +387,6 @@ public class ConcreteHelper {
     public static boolean isDevModel(String module) {
         return System.getProperty(devModelKey(module)) != null || System.getProperty(devModelKey(null)) != null;
     }
-
-
-
-
 
 
 }

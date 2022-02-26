@@ -70,7 +70,7 @@ public class JavaUtilServiceLoaderProvider extends AbstractServiceLoaderProvider
                 cache.get(rowType, supplier) :
                 supplier.get();
         if (Common.isDebug() && log.isDebugEnabled()) {
-            if(objectMap.size() > 0) {
+            if (objectMap.size() > 0) {
                 StringJoiner joiner = new StringJoiner("\n\t");
                 objectMap.forEach((k, v) -> joiner.add(k + ": " + v.toString()));
                 log.debug("{} JUS instances loaded for: {} instances: \n\t{}", objectMap.size(), rowType, joiner.toString());

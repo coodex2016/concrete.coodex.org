@@ -23,9 +23,10 @@ public class WarningData implements Warning {
     private String message;
     private Map<String, String> data;
 
-    public WarningData(){}
+    public WarningData() {
+    }
 
-    public WarningData(Integer code, Object ... objects) {
+    public WarningData(Integer code, Object... objects) {
         this.code = code;
         this.message = ErrorMessageFacade.getMessage(code, objects);
     }

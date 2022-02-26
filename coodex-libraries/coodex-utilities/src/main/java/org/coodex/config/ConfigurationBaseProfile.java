@@ -31,8 +31,8 @@ public class ConfigurationBaseProfile extends AbstractConfiguration {
 //    }
 
     public static void main(String[] args) {
-        for(int i= 0; i< 10000; i ++){
-            if((24 * i - 1) % 17 == 0){
+        for (int i = 0; i < 10000; i++) {
+            if ((24 * i - 1) % 17 == 0) {
                 System.out.println(i);
             }
         }

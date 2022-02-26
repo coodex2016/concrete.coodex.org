@@ -112,9 +112,9 @@ public class SectionTest {
         list(Section.sub(Arrays.asList(new IntSection(-10, 25)), subtraction, BUILDER), "sub2");
 
         list(Section.sub(Arrays.asList(
-                new IntSection(-10, 25),
-                new IntSection(69, 79),
-                new IntSection(80, 100)
+                        new IntSection(-10, 25),
+                        new IntSection(69, 79),
+                        new IntSection(80, 100)
                 ),
                 subtraction, BUILDER), "sub3");
 

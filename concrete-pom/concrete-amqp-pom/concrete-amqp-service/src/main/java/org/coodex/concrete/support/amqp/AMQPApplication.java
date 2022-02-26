@@ -21,11 +21,11 @@ import org.coodex.concrete.amqp.AMQPConnectionConfig;
 import org.coodex.concrete.amqp.AMQPConnectionFacade;
 import org.coodex.concrete.amqp.AMQPModule;
 import org.coodex.concrete.common.*;
-import org.coodex.logging.Level;
 import org.coodex.concrete.own.OwnServiceProvider;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;
 import org.coodex.config.Config;
+import org.coodex.logging.Level;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
 import org.slf4j.Logger;
@@ -57,11 +57,10 @@ public class AMQPApplication extends OwnServiceProvider {
     }
 
     /**
-     *
-     * @param config 连接信息
+     * @param config       连接信息
      * @param exchangeName 交换机名称，如果为空，则使用默认交换机名
-     * @param queueName 队列名称，如果为空，则使用auto-delete队列，否则为持久化队列
-     * @param ttl 队列消息ttl，为空则不设置
+     * @param queueName    队列名称，如果为空，则使用auto-delete队列，否则为持久化队列
+     * @param ttl          队列消息ttl，为空则不设置
      */
     public AMQPApplication(AMQPConnectionConfig config, String exchangeName, String queueName, Long ttl) {
         this.exchangeName = getExchangeName(exchangeName);
@@ -92,7 +91,7 @@ public class AMQPApplication extends OwnServiceProvider {
     }
 
     private Map<String, Object> getQueueArguments(Long ttl) {
-        if(ttl != null && ttl > 0){
+        if (ttl != null && ttl > 0) {
             Map<String, Object> args = new HashMap<>();
             args.put("x-message-ttl", ttl);
             return args;
@@ -110,9 +109,9 @@ public class AMQPApplication extends OwnServiceProvider {
             channel = connection.createChannel();
             channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC);
             String queue = queueName;
-            if( Common.isBlank(queue) ){
-                queue =channel.queueDeclare().getQueue();
-            }  else {
+            if (Common.isBlank(queue)) {
+                queue = channel.queueDeclare().getQueue();
+            } else {
                 channel.queueDeclare(queue, true, false, false, getQueueArguments(ttl));
             }
             // request data use routingKey: request.clientId

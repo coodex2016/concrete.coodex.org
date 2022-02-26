@@ -22,7 +22,6 @@ import org.coodex.concrete.client.InstanceBuilder;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Map;
 
 import static org.coodex.concrete.ClientHelper.getInvoker;
 import static org.coodex.util.Common.cast;

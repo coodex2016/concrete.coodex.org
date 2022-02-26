@@ -80,7 +80,7 @@ public abstract class AbstractManagementService<
 
     protected J deletePosition(J positionEntity) {
         IF.is(personAccountRepo.count(
-                SpecCommon.memberOf("positions", positionEntity)) > 0,
+                        SpecCommon.memberOf("positions", positionEntity)) > 0,
                 POSITION_CANNOT_DELETE);
         positionRepo.delete(positionEntity);
         return positionEntity;

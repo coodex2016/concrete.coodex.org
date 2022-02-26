@@ -21,8 +21,8 @@ import org.coodex.concrete.accounts.organization.pojo.Department;
 import org.coodex.concrete.accounts.organization.pojo.Institution;
 import org.coodex.concrete.accounts.organization.pojo.Person;
 import org.coodex.concrete.accounts.organization.pojo.Position;
-import org.coodex.concrete.api.Description;
 import org.coodex.concrete.api.ConcreteService;
+import org.coodex.concrete.api.Description;
 
 /**
  * Created by davidoff shen on 2017-05-02.

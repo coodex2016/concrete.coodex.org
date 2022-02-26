@@ -25,7 +25,7 @@ public interface RelationStrategy {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    @interface Strategy{
+    @interface Strategy {
         String value();
     }
 

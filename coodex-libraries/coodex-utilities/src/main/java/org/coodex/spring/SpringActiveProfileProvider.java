@@ -33,7 +33,7 @@ public class SpringActiveProfileProvider implements ActiveProfilesProvider, Appl
     private static ApplicationContext APPLICATION_CONTEXT;
 
     @PostConstruct
-    public void postConstruct(){
+    public void postConstruct() {
         Singleton.resetAll();
         SingletonMap.resetAll();
     }

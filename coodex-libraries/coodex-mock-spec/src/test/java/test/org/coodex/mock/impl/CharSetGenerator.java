@@ -43,10 +43,10 @@ public class CharSetGenerator {
         String[] parts = line.toUpperCase().split("\\\t");
         String range = parts[0];
         // utf-16
-        if(range.startsWith("D800") || range.startsWith("DC00")) return null;
+        if (range.startsWith("D800") || range.startsWith("DC00")) return null;
         int quote = range.indexOf('[');
-        if(quote > 0){
-            range = range.substring(0,quote);
+        if (quote > 0) {
+            range = range.substring(0, quote);
         }
         String[] rangeX = range.split("-");
         StringBuilder builder = new StringBuilder();

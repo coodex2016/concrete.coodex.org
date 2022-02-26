@@ -19,7 +19,6 @@ package org.coodex.commons.jpa.springdata;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.IF;
 import org.springframework.data.jpa.domain.Specification;
-//import org.springframework.data.jpa.domain.Specifications;
 
 import java.lang.reflect.Method;
 

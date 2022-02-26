@@ -35,7 +35,7 @@ public class ExecutorsTest {
                 set.add(Thread.currentThread().getName());
                 try {
                     Thread.sleep(1000);
-                    if(finalI == MAX){
+                    if (finalI == MAX) {
                         System.out.println(set.size());
                     }
                 } catch (InterruptedException e) {
