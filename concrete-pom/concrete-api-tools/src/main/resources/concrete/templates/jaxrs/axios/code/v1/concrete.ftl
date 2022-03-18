@@ -2,12 +2,16 @@
 import * as axios from 'axios'
 
 let defaultConfiguration = {
-    'root': undefined,
-    'onError': undefined,
-    'pollingTimeout': 10,
-    'globalTokenKey': undefined,
-    'storage': undefined,
-    'onBroadcast': undefined
+   'root': '/jaxrs',
+   'onError': function (code, msg) {
+      console.error(['errorCode: ', code, '; errorMsg: ', msg].join(''))
+   },
+   'pollingTimeout': 10,
+   'globalTokenKey': 'concrete-token-id',
+   'storage': sessionStorage,
+   'onBroadcast': function (msgId, host, subject, data) {
+      console.log(['msgId: ', msgId, '; host: ', host, '; subject: ', subject, '; data: ', data].join(''))
+   }
 }
 
 let setPollingState = function (module, state) {
@@ -61,22 +65,12 @@ let concrete = {
     }
 }
 
-concrete.configure({
-    'root': '/jaxrs',
-    'onError': function (code, msg) {
-        console.error(['errorCode: ', code, '; errorMsg: ', msg].join(''))
-    },
-    'pollingTimeout': 10,
-    'globalTokenKey': 'concrete-token-id',
-    'storage': sessionStorage,
-    'onBroadcast': function (msgId, host, subject, data) {
-        console.log(['msgId: ', msgId, '; host: ', host, '; subject: ', subject, '; data: ', data].join(''))
-    }
-})
+concrete.configure({})
 
 export default concrete
 
 function getConfigItem (module, key) {
+    if(!module) module='concrete';
     if (concrete.configuration[module] && concrete.configuration[module][key]) {
         return concrete.configuration[module][key]
     } else {
@@ -90,10 +84,13 @@ function getStorage(module){
    return getConfigItem(module, 'storage') || sessionStorage;
 }
 
-function getTokenId (module) {
-    let globalTokenKey = getConfigItem(module, 'globalTokenKey')
-    return (globalTokenKey ? getStorage(module).getItem(globalTokenKey) : null) ||
-        (tokens[module] && tokens[module].localTokenId)
+export function getTokenId (module) {
+   let globalTokenKey = getConfigItem(module, 'globalTokenKey')
+   return (globalTokenKey ? getStorage(module).getItem(globalTokenKey) : null) || (tokens[module] && tokens[module].localTokenId)
+}
+
+export function saveTokenId(tokenId, module){
+   return setTokenId(module, tokenId);
 }
 
 function setTokenId (module, tokenId) {

@@ -69,7 +69,7 @@
         <slf4j.version>1.7.32</slf4j.version>
         <log4j2.version>2.17.1</log4j2.version>
         <snakeyaml.version>1.27</snakeyaml.version>
-        <cglib.version>3.2.12</cglib.version>
+        <cglib.version>3.3.0</cglib.version>
         <freemarker.version>2.3.31</freemarker.version>
 
         <spring.framework.version>5.3.13</spring.framework.version>
@@ -298,7 +298,7 @@
 
             <dependency>
                 <groupId>cglib</groupId>
-                <artifactId>cglib</artifactId>
+                <artifactId>cglib-nodep</artifactId>
                 <version>${cglib.version}</version>
             </dependency>
 

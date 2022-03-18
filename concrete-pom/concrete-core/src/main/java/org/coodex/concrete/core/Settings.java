@@ -19,6 +19,7 @@ package org.coodex.concrete.core;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public interface Settings {
 
 

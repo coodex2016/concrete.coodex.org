@@ -54,15 +54,18 @@ public class ProductionValidationInterceptor extends AbstractSyncInterceptor {
 
     @Override
     public Object around(DefinitionContext context, MethodInvocation joinPoint) throws Throwable {
+        boolean checked = false;
         Account<? extends Serializable> account = token.currentAccount();
         if (account != null) {
             productionCheck(context, account);
+            checked = true;
         }
         try {
             Object result = super.around(context, joinPoint);
             if (account == null) {
                 account = token.currentAccount();
-                if (account != null) {
+                //noinspection ConstantConditions
+                if (!checked && account != null) {
                     productionCheck(context, account);
                 }
             }
