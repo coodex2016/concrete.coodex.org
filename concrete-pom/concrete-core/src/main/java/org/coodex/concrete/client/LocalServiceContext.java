@@ -36,9 +36,9 @@ public class LocalServiceContext extends AbstractServiceContext implements Conta
         }
     };
 
-    private Token token;
+    private final Token token;
 
-    private Caller caller;
+    private final Caller caller;
 
     public LocalServiceContext() {
 

@@ -24,9 +24,9 @@ import java.util.*;
 public class AsyncInterceptorChain extends AbstractInterceptor implements Set<ConcreteInterceptor>, InterceptorChain {
 
 
-    private static Comparator<ConcreteInterceptor> comparatorAsc = new MyComparator(1);
-    private static Comparator<ConcreteInterceptor> comparatorDesc = new MyComparator(-1);
-    private Set<ConcreteInterceptor> interceptors = new HashSet<>();
+    private static final Comparator<ConcreteInterceptor> comparatorAsc = new MyComparator(1);
+    private static final Comparator<ConcreteInterceptor> comparatorDesc = new MyComparator(-1);
+    private final Set<ConcreteInterceptor> interceptors = new HashSet<>();
 
     public AsyncInterceptorChain() {
     }
