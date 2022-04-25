@@ -60,7 +60,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 
     JaxRSInvoker(JaxRSDestination destination) {
         super(destination);
-        ClientBuilder clientBuilder = ClientBuilder.newBuilder().register(ClientLogger.class);
+        ClientBuilder clientBuilder = ClientBuilder.newBuilder();
         Configuration configuration = CONFIGURATION_PROVIDER_SERVICE_LOADER.get().getConfiguration();
         if (configuration != null) {
             clientBuilder = clientBuilder.withConfig(configuration);
@@ -68,6 +68,8 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         if (destination.getConnectTimeout() != null && destination.getConnectTimeout() > 0) {
             clientBuilder = clientBuilder.connectTimeout(destination.getConnectTimeout(), TimeUnit.MILLISECONDS);
         }
+        clientBuilder = clientBuilder.register(ClientLogger.class)
+                .register(GZIPReaderInterceptor.class);
         client = destination.isSsl() ?
                 clientBuilder.hostnameVerifier((s, sslSession) -> true).sslContext(getSSLContext(destination.getSsl())).build() :
                 clientBuilder.build();
@@ -75,7 +77,8 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 
     private Invocation.Builder buildHeaders(Invocation.Builder builder/*, StringBuilder str*/, Subjoin subjoin, String tokenId) {
         JaxRSClientContext context = JaxRSClientCommon.getContext();
-        builder = builder.acceptLanguage(context.getLocale());
+        builder = builder.acceptEncoding("gzip")
+                .acceptLanguage(context.getLocale());
         if (subjoin != null || !Common.isBlank(tokenId)) {
             if (subjoin != null) {
                 for (String key : subjoin.keySet()) {

@@ -61,7 +61,7 @@ public class ConcreteException extends RuntimeException {
             String message = ErrorMessageFacade.getMessage(code, o);
             return Common.isBlank(message) ? String.format("error code: %06d", code) : message;
         }catch(Throwable throwable){
-            return throwable.getMessage();
+            return throwable.getClass().getName() + ": " + throwable.getMessage();
         } finally {
             LOCALE_CONTEXT.remove();
         }
