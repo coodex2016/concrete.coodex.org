@@ -34,12 +34,14 @@ import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.zip.GZIPInputStream;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
@@ -97,6 +99,13 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
         return Optional.ofNullable(headers.getContentType()).map(MediaType::getCharset).orElse(StandardCharsets.UTF_8);
     }
 
+    private InputStream getBodyInputStream(ClientHttpResponse resp) throws IOException {
+        return resp.getHeaders().entrySet().stream().anyMatch(e -> HttpHeaders.CONTENT_ENCODING.equalsIgnoreCase(e.getKey()) && !Common.isEmpty(e.getValue())
+                && "gzip".equalsIgnoreCase(e.getValue().get(0))) ?
+                new GZIPInputStream(resp.getBody()) :
+                resp.getBody();
+    }
+
     private void traceResponse(ClientHttpResponse response, long id, Level level) throws IOException {
         if (level == null) return;
         StringBuilder builder = new StringBuilder("response: \n");
@@ -112,7 +121,7 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
 
         BufferedReader bufferedReader = new BufferedReader(
                 new InputStreamReader(
-                        response.getBody(),
+                        getBodyInputStream(response),
                         getCharset(response.getHeaders())
                 )
         );
