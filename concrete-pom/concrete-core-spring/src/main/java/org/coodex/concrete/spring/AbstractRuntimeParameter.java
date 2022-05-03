@@ -74,7 +74,7 @@ public abstract class AbstractRuntimeParameter {
     }
 
     protected <T> T get(String key, T defaultValue) {
-        String s = Config.get(getNamespace() + "." + key, "concrete", getNamespace(), getAppSet());
+        String s = Config.get(getNamespace() + "." + key, "concrete", getAppSet());
         return s == null ? defaultValue : Common.to(s, defaultValue);
     }
 

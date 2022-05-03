@@ -1,0 +1,49 @@
+{
+  "properties": [
+    {
+      "name": "concrete.amqp.virtualHost",
+      "type": "java.lang.String",
+      "description": "发布服务的amqp虚拟主机，默认为/"
+    },
+    {
+      "name": "concrete.amqp.location",
+      "type": "java.lang.String",
+      "description": "发布服务的amqp全路径，例如amqp://host:port/virtualHost"
+    },
+    {
+      "name": "concrete.amqp.username",
+      "type": "java.lang.String",
+      "description": "amqp的用户名"
+    },
+    {
+      "name": "concrete.amqp.password",
+      "type": "java.lang.String",
+      "description": "amqp用户的密码"
+    },
+    {
+      "name": "concrete.amqp.executorName",
+      "type": "java.lang.String",
+      "description": "异步执行的executor名称"
+    },
+    {
+      "name": "concrete.amqp.port",
+      "type": "java.lang.Integer",
+      "description": "amqp的端口"
+    },
+    {
+      "name": "concrete.amqp.exchangeName",
+      "type": "java.lang.String",
+      "description": "amqp交换机名"
+    },
+    {
+      "name": "concrete.amqp.queueName",
+      "type": "java.lang.String",
+      "description": "amqp队列名"
+    },
+    {
+      "name": "concrete.amqp.ttl",
+      "type": "java.lang.Integer",
+      "description": "amqp的x-message-ttl"
+    }
+  ]
+}

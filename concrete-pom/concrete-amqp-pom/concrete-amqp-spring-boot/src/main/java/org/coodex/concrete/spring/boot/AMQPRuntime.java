@@ -41,7 +41,6 @@ public class AMQPRuntime extends AbstractRuntimeParameter {
         this.exchangeName = exchangeName;
         this.queueName = queueName;
         this.ttl = ttl;
-        cleanConfig();
     }
 
 
@@ -65,6 +64,7 @@ public class AMQPRuntime extends AbstractRuntimeParameter {
 
 
     public AMQPConnectionConfig getConfig() {
+        cleanConfig();
         return config;
     }
 
@@ -103,6 +103,5 @@ public class AMQPRuntime extends AbstractRuntimeParameter {
         this.exchangeName = annotationAttributes.getString("exchangeName");
         this.queueName = annotationAttributes.getString("queueName");
         this.ttl = annotationAttributes.getNumber("ttl");
-        cleanConfig();
     }
 }
