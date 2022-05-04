@@ -35,11 +35,11 @@ public class SyncToRxInvoker extends AbstractRxInvoker {
     }
 
     @Override
-    protected CompletableFuture<?> futureInvoke(DefinitionContext runtimeContext, Object[] args) {
+    protected CompletableFuture<?> futureInvoke(DefinitionContext runtimeContext, ServiceContext serviceContext, Object[] args) {
         final CompletableFuture<?> completableFuture = new CompletableFuture<>();
         getRxClientScheduler().execute(() -> {
             try {
-                ConcreteContext.runWithContext(buildContext(runtimeContext), () -> {
+                ConcreteContext.runWithContext(/*buildContext(runtimeContext)*/ serviceContext, () -> {
                     try {
                         completableFuture.complete(cast(invoker.execute(
                                 runtimeContext.getDeclaringClass(),

@@ -21,10 +21,7 @@ import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.ClientTokenManagement;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.DefinitionContext;
-import org.coodex.concrete.common.ErrorInfo;
-import org.coodex.concrete.common.JSONSerializer;
-import org.coodex.concrete.common.JSONSerializerFactory;
+import org.coodex.concrete.common.*;
 import org.coodex.concrete.own.MapSubjoin;
 import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.concrete.own.RequestPackage;
@@ -109,6 +106,8 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
                                     GenericTypeHelper.toReference(
                                             completableFutureCallBack.getContext().getDeclaringMethod().getGenericReturnType(),
                                             completableFutureCallBack.getContext().getDeclaringClass()));
+                    // warning
+
 //                    if (result != null) {
                     completableFutureCallBack.getCompletableFuture().complete(Common.cast(result));
 //                    }
@@ -146,32 +145,42 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
     protected abstract Level getLoggingLevel();
 
     @Override
-    protected CompletableFuture<?> futureInvoke(DefinitionContext runtimeContext, Object[] args) {
+    protected CompletableFuture<?> futureInvoke(DefinitionContext runtimeContext, ServiceContext serviceContext, Object[] args) {
+
         CompletableFuture<?> completableFuture = new CompletableFuture<>();
+        if (!(serviceContext instanceof ClientSideContext)) {
+            completableFuture.completeExceptionally(new IllegalStateException("service context is not ClientSideContext:" + serviceContext));
+            return completableFuture;
+        }
+        ClientSideContext clientSideContext = (ClientSideContext) serviceContext;
         ClientHelper.getRxClientScheduler().execute(() -> {
             final OwnServiceUnit unit = findUnit(runtimeContext);
             // build request
             String msgId = IDGenerator.newId();
             final RequestPackage<?> requestPackage = buildRequest(msgId, unit, args);
-
-            CALL_BACK_MAP.get(
-                    msgId,
-                    () -> new CompletableFutureCallBack(
-                            completableFuture,
-                            runtimeContext,
-                            getLogger(),
-                            getLoggingLevel(),
-                            getDestination(),
-                            getContext()
-                    ),
-                    getDestination().getTimeout(),
-                    (k, v) -> completableFuture.completeExceptionally(new TimeoutException())
-            );
+            try {
+                CALL_BACK_MAP.get(
+                        msgId,
+                        () -> new CompletableFutureCallBack(
+                                completableFuture,
+                                runtimeContext,
+                                getLogger(),
+                                getLoggingLevel(),
+                                getDestination(),
+                                clientSideContext
+                        ),
+                        getDestination().getTimeout(),
+                        (k, v) -> completableFuture.completeExceptionally(new TimeoutException())
+                );
+            } catch (Throwable th) {
+                completableFuture.completeExceptionally(th);
+                return;
+            }
 
             try {
                 requestPackage.setConcreteTokenId(
                         ClientTokenManagement.getTokenId(getDestination(),
-                                getContext().getTokenId())
+                                clientSideContext.getTokenId())
                 );
                 send(requestPackage);
             } catch (Throwable th) {

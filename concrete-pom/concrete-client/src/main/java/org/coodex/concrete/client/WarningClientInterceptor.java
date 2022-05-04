@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
 
 import static org.coodex.concrete.core.intercept.InterceptOrders.OTHER;
@@ -71,6 +72,19 @@ public class WarningClientInterceptor extends AbstractSyncInterceptor {
         return OTHER;
     }
 
+    private boolean noneHandlersWarning = false;
+
+    private void warningOnce() {
+        if (!noneHandlersWarning) {
+            synchronized (this) {
+                if (!noneHandlersWarning) {
+                    log.warn("no warning handler found, but warning occurred.");
+                    noneHandlersWarning = true;
+                }
+            }
+        }
+    }
+
     @Override
     public Object after(DefinitionContext context, MethodInvocation joinPoint, Object result) {
         ServiceContext serviceContext = ConcreteContext.getServiceContext();
@@ -81,12 +95,17 @@ public class WarningClientInterceptor extends AbstractSyncInterceptor {
                 List<Warning> warningList = JSONSerializerFactory.getInstance()
                         .parse(warnings, type);
                 if (warningList.size() > 0) {
+                    Collection<WarningHandle> handlers = WARNING_HANDLES.getAll().values();
                     for (Warning warning : warningList) {
-                        for (WarningHandle handle : WARNING_HANDLES.getAll().values()) {
-                            try {
-                                handle.onWarning(clientSideContext.getDestination(), warning);
-                            } catch (Throwable th) {
-                                log.warn(th.getLocalizedMessage(), th);
+                        if (handlers.isEmpty()) {
+                            warningOnce();
+                        } else {
+                            for (WarningHandle handle : handlers) {
+                                try {
+                                    handle.onWarning(clientSideContext.getDestination(), warning);
+                                } catch (Throwable th) {
+                                    log.warn(th.getLocalizedMessage(), th);
+                                }
                             }
                         }
                     }

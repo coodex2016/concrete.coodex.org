@@ -55,7 +55,8 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
     }
 
     protected static DefinitionContext getDefinitionContext(Class<?> rxClass, Method method) {
-        final Class<?> targetClass = rxClass.getAnnotation(ReactiveExtensionFor.class).value();
+        ReactiveExtensionFor reactiveExtensionFor = rxClass.getAnnotation(ReactiveExtensionFor.class);
+        final Class<?> targetClass = reactiveExtensionFor == null ? rxClass : rxClass.getAnnotation(ReactiveExtensionFor.class).value();
         final Method targetMethod = findTargetMethod(targetClass, method);
         return ConcreteHelper.getDefinitionContext(targetClass, targetMethod);
     }
@@ -99,7 +100,7 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
 
         // 2. apm
         return wrap(serviceContext, invocation, runtimeContext,
-                futureInvoke(runtimeContext, args), trace);
+                futureInvoke(runtimeContext, serviceContext, args), trace);
     }
 
     /**
@@ -137,5 +138,5 @@ public abstract class AbstractRxInvoker extends AbstractInvoker implements RxInv
         }, getRxClientScheduler());
     }
 
-    protected abstract CompletableFuture<?> futureInvoke(DefinitionContext runtimeContext, Object[] args);
+    protected abstract CompletableFuture<?> futureInvoke(DefinitionContext runtimeContext, ServiceContext serviceContext, Object[] args);
 }

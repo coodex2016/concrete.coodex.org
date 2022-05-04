@@ -120,6 +120,9 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
         requestPackage.getSubjoin().put(SUBJOIN_KEY_CLIENT_PROVIDER,
                 "concrete-amqp-client-" + ConcreteHelper.VERSION);
         // 2 send
+        if (getLoggingLevel().isEnabled(getLogger())) {
+            getLoggingLevel().log(getLogger(), "message send: " + getSerializer().toJson(requestPackage));
+        }
         facadeSingletonMap.get((AMQPDestination) getDestination())
                 .send(getSerializer().toJson(requestPackage));
     }
@@ -149,7 +152,7 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
             channel.basicConsume(queueName, true, new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
-                    log.info("consumerTag: {}, envelope: {}", consumerTag, envelope.getRoutingKey());
+                    log.debug("consumerTag: {}, envelope: {}", consumerTag, envelope.getRoutingKey());
                     OwnRXMessageListener.getInstance().onMessage(new String(body, StandardCharsets.UTF_8));
                 }
             });

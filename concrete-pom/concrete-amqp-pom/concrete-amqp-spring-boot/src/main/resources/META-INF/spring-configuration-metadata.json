@@ -26,6 +26,11 @@
       "description": "异步执行的executor名称"
     },
     {
+      "name": "concrete.amqp.host",
+      "type": "java.lang.String",
+      "description": "发布服务的amqp主机地址"
+    },
+    {
       "name": "concrete.amqp.port",
       "type": "java.lang.Integer",
       "description": "amqp的端口"
