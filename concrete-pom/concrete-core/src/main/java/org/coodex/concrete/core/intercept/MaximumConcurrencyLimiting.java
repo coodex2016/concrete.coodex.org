@@ -18,6 +18,7 @@ package org.coodex.concrete.core.intercept;
 
 import org.coodex.concrete.api.LimitingStrategy;
 import org.coodex.concrete.api.limiting.MaximumConcurrency;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
@@ -29,7 +30,7 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 public class MaximumConcurrencyLimiting implements LimitingStrategy {
 
-    private static final String TAG_MC = "limiting.maximum.concurrency";
+    private static final String TAG_MC = "limiting.maximum-concurrency";
     private static final SingletonMap<String, ConcurrencyStrategy> STRATEGY_SINGLETON_MAP =
             SingletonMap.<String, ConcurrencyStrategy>builder().function(ConcurrencyStrategy::new).build();
 
@@ -83,8 +84,9 @@ public class MaximumConcurrencyLimiting implements LimitingStrategy {
         }
 
         public long getMaximum() {
+//            ConcreteHelper.getString()
             return Config.getValue("max",
-                    Common.toInt(System.getProperty("limiting.maximum.concurrency.max"), Integer.MAX_VALUE),
+                    Common.toInt(System.getProperty("limiting.maximum-concurrency.max"), Integer.MAX_VALUE),
                     TAG_MC,
                     getAppSet(),
                     strategyName);

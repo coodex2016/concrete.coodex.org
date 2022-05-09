@@ -46,7 +46,7 @@ import java.util.*;
 public class ServiceTimingInterceptor extends AbstractInterceptor {
 
 
-    public static final String NAMESPACE_SERVICE_TIMING = "serviceTiming";
+    public static final String NAMESPACE_SERVICE_TIMING = "service-timing";
     private final static Logger log = LoggerFactory.getLogger(ServiceTimingInterceptor.class);
     private final static Map<String, String> DEFAULT_CHECKERS = new HashMap<String, String>() {{
         put("TIMERANGE", ByTimeRange.class.getName());

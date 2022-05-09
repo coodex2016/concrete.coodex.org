@@ -33,23 +33,24 @@ public class TokenBucketLimiting implements LimitingStrategy {
     private final static Logger log = LoggerFactory.getLogger(TokenBucketLimiting.class);
 
     private static final String DEFAULT_BUCKET = IDGenerator.newId();
+    private static final String TOKEN_BUCKET_NAMESPACE = "limiting.token-bucket";
 
     private static final SingletonMap<String, Bucket> BUCKET_SINGLETON_MAP
             = SingletonMap.<String, Bucket>builder()
             .function(key -> {
                 String[] namespace;
                 if (DEFAULT_BUCKET.equalsIgnoreCase(key)) {
-                    namespace = new String[]{"tokenBucket", getAppSet()};
+                    namespace = new String[]{TOKEN_BUCKET_NAMESPACE, getAppSet()};
                 } else {
-                    namespace = new String[]{"tokenBucket", getAppSet(), key};
+                    namespace = new String[]{TOKEN_BUCKET_NAMESPACE, getAppSet(), key};
                 }
                 int capacity = Math.max(1,
                         Config.getValue("capacity",
-                                Common.toInt(System.getProperty("tokenBucket.capacity"), Integer.MAX_VALUE >> 1),
+                                Common.toInt(System.getProperty(TOKEN_BUCKET_NAMESPACE + ".capacity"), Integer.MAX_VALUE >> 1),
                                 namespace));
                 int flow = Math.max(1,
                         Config.getValue("flow",
-                                Common.toInt(System.getProperty("tokenBucket.flow"), Short.MAX_VALUE),
+                                Common.toInt(System.getProperty(TOKEN_BUCKET_NAMESPACE + ".flow"), Short.MAX_VALUE),
                                 namespace));
                 Bucket bucket = new Bucket(capacity, flow);
                 bucket.name = key;

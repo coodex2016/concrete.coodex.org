@@ -46,6 +46,6 @@ public class DefaultSerializer implements Serializer {
 
     @Override
     public boolean accept(String param) {
-        return false;
+        return true;
     }
 }

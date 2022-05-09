@@ -27,14 +27,15 @@ import javassist.bytecode.annotation.StringMemberValue;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SelectableServiceLoader;
-import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
@@ -58,15 +59,23 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
 //    private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> providers =
 //            new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider){};
 
-    private static final SingletonMap<TopicKey, AbstractTopic> topics = SingletonMap.<TopicKey, AbstractTopic>builder().function(new TopicBuilder()).build();
-
-    private final AtomicLong index = new AtomicLong(0);
+    //    private static final SingletonMap<TopicKey, AbstractTopic> topics = SingletonMap.<TopicKey, AbstractTopic>builder().function(new TopicBuilder()).build();
+    private final static Map<TopicKey, AbstractTopic<?>> topics = new ConcurrentHashMap<>();
+    private final static AtomicLong index = new AtomicLong(0);
 
     static AbstractTopic buildTopic(TopicKey key) {
-        return topics.get(TopicKey.copy(key));
+//        return topics.get(TopicKey.copy(key));
+        if (!topics.containsKey(key)) {
+            synchronized (topics) {
+                if (!topics.containsKey(key)) {
+                    topics.put(key, newInstance(key));
+                }
+            }
+        }
+        return topics.get(key);
     }
 
-    private Class<? extends AbstractTopic> getClass(Type topicType) {
+    private static Class<? extends AbstractTopic> getClass(Type topicType) {
         if (topicType instanceof ParameterizedType) {
             return cast(((ParameterizedType) topicType).getRawType());
         } else if (topicType instanceof Class && AbstractTopic.class.isAssignableFrom((Class<?>) topicType)) {
@@ -76,7 +85,7 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
         }
     }
 
-    public Annotation queue(ConstPool constPool, String queue) {
+    public static Annotation queue(ConstPool constPool, String queue) {
         Annotation annotation = new Annotation(Queue.class.getName(), constPool);
         annotation.addMemberValue("value", new StringMemberValue(queue == null ? "" : queue, constPool));
         return annotation;
@@ -84,6 +93,10 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
 
     @Override
     public AbstractTopic apply(TopicKey key) {
+        return newInstance(key);
+    }
+
+    private static AbstractTopic newInstance(TopicKey key) {
         try {
             Class<? extends AbstractTopic> topicClass = getClass(key.topicType);
             TopicPrototypeProvider provider = topicPrototypeProviderLoader.select(topicClass);
