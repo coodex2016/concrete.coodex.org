@@ -21,7 +21,7 @@
     <parent>
         <artifactId>concrete-websocket-pom</artifactId>
         <groupId>org.coodex.concrete.websocket</groupId>
-        <version>0.5.1-SNAPSHOT</version>
+        <version>0.5.1-RC2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
