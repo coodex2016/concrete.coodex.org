@@ -27,15 +27,14 @@ import javassist.bytecode.annotation.StringMemberValue;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SelectableServiceLoader;
+import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
@@ -59,20 +58,20 @@ class TopicBuilder implements Function<TopicKey, AbstractTopic> {
 //    private static AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider> providers =
 //            new AcceptableServiceLoader<Class<? extends AbstractTopic>, TopicPrototypeProvider>(defaultTopicPrototypeProvider){};
 
-    //    private static final SingletonMap<TopicKey, AbstractTopic> topics = SingletonMap.<TopicKey, AbstractTopic>builder().function(new TopicBuilder()).build();
-    private final static Map<TopicKey, AbstractTopic<?>> topics = new ConcurrentHashMap<>();
+    private static final SingletonMap<TopicKey, AbstractTopic> topics = SingletonMap.<TopicKey, AbstractTopic>builder().function(new TopicBuilder()).build();
+    //    private final static Map<TopicKey, AbstractTopic<?>> topics = new ConcurrentHashMap<>();
     private final static AtomicLong index = new AtomicLong(0);
 
     static AbstractTopic buildTopic(TopicKey key) {
-//        return topics.get(TopicKey.copy(key));
-        if (!topics.containsKey(key)) {
-            synchronized (topics) {
-                if (!topics.containsKey(key)) {
-                    topics.put(key, newInstance(key));
-                }
-            }
-        }
-        return topics.get(key);
+        return topics.get(TopicKey.copy(key));
+//        if (!topics.containsKey(key)) {
+//            synchronized (topics) {
+//                if (!topics.containsKey(key)) {
+//                    topics.put(key, newInstance(key));
+//                }
+//            }
+//        }
+//        return topics.get(key);
     }
 
     private static Class<? extends AbstractTopic> getClass(Type topicType) {

@@ -18,33 +18,29 @@ package org.coodex.spring;
 
 import org.coodex.util.AbstractServiceLoaderProvider;
 import org.coodex.util.SPI;
-import org.coodex.util.Singleton;
-import org.coodex.util.SingletonMap;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 @SPI.Ordered(0)
-public class SpringServiceLoaderProvider extends AbstractServiceLoaderProvider implements ApplicationContextAware {
-    private static ApplicationContext CONTEXT;
+public class SpringServiceLoaderProvider extends AbstractServiceLoaderProvider
+        /*implements ApplicationContextAware*/ {
+//    private static ApplicationContext CONTEXT;
 
     @Override
     protected Map<String, Object> loadByRowType(Class<?> rowType) {
-        return Optional.ofNullable(CONTEXT)
-                .map(applicationContext -> new HashMap<String, Object>(
-                        applicationContext.getBeansOfType(rowType)
+        return Optional.ofNullable(SpringBeanFactoryAware.getListableBeanFactory())
+                .map(beanFactory -> new HashMap<String, Object>(
+                        beanFactory.getBeansOfType(rowType)
                 ))
                 .orElse(new HashMap<>());
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        CONTEXT = applicationContext;
-        Singleton.resetAll();
-        SingletonMap.resetAll();
-    }
+//    @Override
+//    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+//        CONTEXT = applicationContext;
+//        Singleton.resetAll();
+//        SingletonMap.resetAll();
+//    }
 }

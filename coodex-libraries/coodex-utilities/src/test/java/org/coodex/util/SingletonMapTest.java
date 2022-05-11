@@ -39,7 +39,8 @@ public class SingletonMapTest {
         map.get("123");
         map.get("456");
         System.out.println(map.keySet().size());
-        SingletonMap.resetAll();
+        map.reset();
+//        SingletonMap.resetAll();
         map.get("234");
         System.out.println(map.keySet().size());
     }

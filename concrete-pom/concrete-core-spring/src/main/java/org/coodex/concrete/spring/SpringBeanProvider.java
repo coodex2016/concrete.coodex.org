@@ -18,11 +18,10 @@ package org.coodex.concrete.spring;
 
 import org.coodex.concrete.common.AbstractBeanProvider;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
+import org.coodex.spring.SpringBeanFactoryAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.ListableBeanFactory;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -34,16 +33,16 @@ import static org.coodex.util.Common.cast;
 /**
  * Created by davidoff shen on 2016-09-02.
  */
-public class SpringBeanProvider extends AbstractBeanProvider implements ApplicationContextAware {
+public class SpringBeanProvider extends AbstractBeanProvider /*implements ApplicationContextAware*/ {
     private final static Logger log = LoggerFactory.getLogger(SpringBeanProvider.class);
 
 
-    private static ApplicationContext CONTEXT = null;
-
-    @Override
-    public void setApplicationContext(@SuppressWarnings("NullableProblems") ApplicationContext applicationContext) throws BeansException {
-        CONTEXT = applicationContext;
-    }
+//    private static ApplicationContext CONTEXT = null;
+//
+//    @Override
+//    public void setApplicationContext(@SuppressWarnings("NullableProblems") ApplicationContext applicationContext) throws BeansException {
+//        CONTEXT = applicationContext;
+//    }
 
 ////    @Override
 //    @SuppressWarnings("unchecked")
@@ -58,16 +57,17 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
 
     @Override
     public <T> Map<String, T> getBeansOfType(Class<T> type) {
-        if (CONTEXT == null) {
+        ListableBeanFactory beanFactory = SpringBeanFactoryAware.getListableBeanFactory();
+        if (beanFactory == null) {
             log.info("spring bean provider not initialized, {} not load from spring bean provider.", type.getName());
             return new HashMap<>();
         } else {
-            Map<String, T> map = new HashMap<>(CONTEXT.getBeansOfType(type));
+            Map<String, T> map = new HashMap<>(beanFactory.getBeansOfType(type));
             for (Class<?> c : collectionBeanTypes()) {
                 if (c.isAssignableFrom(type)) {
                     // 数组
                     Class<?> arrayClass = Array.newInstance(type, 0).getClass();
-                    Map<String, ?> x = CONTEXT.getBeansOfType(arrayClass);
+                    Map<String, ?> x = beanFactory.getBeansOfType(arrayClass);
                     if (x != null && x.size() > 0) {
                         int index = 0;
                         for (Map.Entry<String, ?> entry : x.entrySet()) {
@@ -88,7 +88,7 @@ public class SpringBeanProvider extends AbstractBeanProvider implements Applicat
 
                     // 集合
                     @SuppressWarnings("rawtypes")
-                    Map<String, Collection> collectionBeans = CONTEXT.getBeansOfType(Collection.class);
+                    Map<String, Collection> collectionBeans = beanFactory.getBeansOfType(Collection.class);
                     for (@SuppressWarnings("rawtypes") Map.Entry<String, Collection> entry : collectionBeans.entrySet()) {
                         int index = 0;
                         if (entry.getValue() == null || entry.getValue().size() == 0) {

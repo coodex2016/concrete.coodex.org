@@ -33,7 +33,7 @@ public class Topics {
     public static final String QUEUE_PA55W0RD = "password";
     public static final String SERIALIZER_TYPE = "serializer";
     private static final Serializer DEFAULT_SERIALIZER = new DefaultSerializer();
-    private static SelectableServiceLoader<String, Serializer> serializerSelectableServiceLoader =
+    private static final SelectableServiceLoader<String, Serializer> serializerSelectableServiceLoader =
             new LazySelectableServiceLoader<String, Serializer>(DEFAULT_SERIALIZER) {
             };
 

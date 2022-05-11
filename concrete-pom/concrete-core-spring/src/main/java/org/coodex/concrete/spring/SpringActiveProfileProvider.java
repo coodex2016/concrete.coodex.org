@@ -14,41 +14,41 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.spring;
-
-import org.coodex.util.ActiveProfilesProvider;
-import org.coodex.util.SPI;
-import org.coodex.util.Singleton;
-import org.coodex.util.SingletonMap;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.env.Environment;
-
-import javax.annotation.PostConstruct;
-import java.util.Optional;
-
-@SPI.Ordered(0)
-@Deprecated
-public class SpringActiveProfileProvider implements ActiveProfilesProvider, ApplicationContextAware {
-    private static ApplicationContext APPLICATION_CONTEXT;
-
-    @PostConstruct
-    public void postConstruct() {
-        Singleton.resetAll();
-        SingletonMap.resetAll();
-    }
-
-    @Override
-    public String[] getActiveProfiles() {
-        return Optional.ofNullable(APPLICATION_CONTEXT)
-                .map(ApplicationContext::getEnvironment)
-                .map(Environment::getActiveProfiles)
-                .orElse(new String[0]);
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        APPLICATION_CONTEXT = applicationContext;
-    }
-}
+//package org.coodex.concrete.spring;
+//
+//import org.coodex.util.ActiveProfilesProvider;
+//import org.coodex.util.SPI;
+//import org.coodex.util.Singleton;
+//import org.coodex.util.SingletonMap;
+//import org.springframework.beans.BeansException;
+//import org.springframework.context.ApplicationContext;
+//import org.springframework.context.ApplicationContextAware;
+//import org.springframework.core.env.Environment;
+//
+//import javax.annotation.PostConstruct;
+//import java.util.Optional;
+//
+//@SPI.Ordered(0)
+//@Deprecated
+//public class SpringActiveProfileProvider implements ActiveProfilesProvider, ApplicationContextAware {
+//    private static ApplicationContext APPLICATION_CONTEXT;
+//
+//    @PostConstruct
+//    public void postConstruct() {
+//        Singleton.resetAll();
+//        SingletonMap.resetAll();
+//    }
+//
+//    @Override
+//    public String[] getActiveProfiles() {
+//        return Optional.ofNullable(APPLICATION_CONTEXT)
+//                .map(ApplicationContext::getEnvironment)
+//                .map(Environment::getActiveProfiles)
+//                .orElse(new String[0]);
+//    }
+//
+//    @Override
+//    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+//        APPLICATION_CONTEXT = applicationContext;
+//    }
+//}

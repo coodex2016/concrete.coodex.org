@@ -21,10 +21,7 @@ import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.*;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.config.Config;
-import org.coodex.spring.SpringServiceLoaderProvider;
-import org.coodex.util.ActiveProfilesProvider;
 import org.coodex.util.LazyServiceLoader;
-import org.coodex.util.ServiceLoaderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -40,10 +37,7 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 @SuppressWarnings({"SpringComponentScan"})
 @Configuration
-@ComponentScan({
-        "org.coodex.concrete.spring.components",
-        "org.coodex.concrete.**.injectable"
-})
+@ComponentScan({"org.coodex.spring", "org.coodex.concrete.spring.components", "org.coodex.concrete.**.injectable"})
 public class ConcreteSpringConfiguration {
 
     private final static Logger log = LoggerFactory.getLogger(ConcreteSpringConfiguration.class);
@@ -52,9 +46,8 @@ public class ConcreteSpringConfiguration {
 //            new Singleton<>(() -> new ServiceLoaderImpl<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
 //            });
 
-    private static final LazyServiceLoader<InterceptorLoader> INTERCEPTOR_LOADER =
-            new LazyServiceLoader<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
-            };
+    private static final LazyServiceLoader<InterceptorLoader> INTERCEPTOR_LOADER = new LazyServiceLoader<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
+    };
 //            new Singleton<>(() -> new ServiceLoaderImpl<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
 //            });
 
@@ -69,20 +62,20 @@ public class ConcreteSpringConfiguration {
         }};
     }
 
-    @Bean
-    public BeanProvider springBeanProvider() {
-        return new SpringBeanProvider();
-    }
+//    @Bean
+//    public BeanProvider springBeanProvider() {
+//        return new SpringBeanProvider();
+//    }
 
-    @Bean
-    public ActiveProfilesProvider springActiveProfilesProvider() {
-        return new org.coodex.spring.SpringActiveProfileProvider();
-    }
+//    @Bean
+//    public ActiveProfilesProvider springActiveProfilesProvider() {
+//        return new org.coodex.spring.SpringActiveProfileProvider();
+//    }
 
-    @Bean
-    public ServiceLoaderProvider springServiceLoaderProvider() {
-        return new SpringServiceLoaderProvider();
-    }
+//    @Bean
+//    public ServiceLoaderProvider springServiceLoaderProvider() {
+//        return new SpringServiceLoaderProvider();
+//    }
 
     @Bean
     public Token tokenWrapper() {
@@ -102,8 +95,7 @@ public class ConcreteSpringConfiguration {
     @Bean
     public ConcreteInterceptor interceptors() {
         List<ConcreteInterceptor> list = new ArrayList<>();
-        for (Map.Entry<String, Class<? extends ConcreteInterceptor>> entry :
-                INTERCEPTOR_LOADER.get().getInterceptorSupportedMap().entrySet()) {
+        for (Map.Entry<String, Class<? extends ConcreteInterceptor>> entry : INTERCEPTOR_LOADER.get().getInterceptorSupportedMap().entrySet()) {
 
             if (Config.getValue("interceptors." + entry.getKey(), false, getAppSet())) {
                 try {

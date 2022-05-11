@@ -18,36 +18,30 @@ package org.coodex.spring;
 
 import org.coodex.util.ActiveProfilesProvider;
 import org.coodex.util.SPI;
-import org.coodex.util.Singleton;
-import org.coodex.util.SingletonMap;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.Environment;
 
-import javax.annotation.PostConstruct;
 import java.util.Optional;
 
 @SPI.Ordered(0)
-public class SpringActiveProfileProvider implements ActiveProfilesProvider, ApplicationContextAware {
-    private static ApplicationContext APPLICATION_CONTEXT;
+public class SpringActiveProfileProvider implements ActiveProfilesProvider {
+//    private static ApplicationContext APPLICATION_CONTEXT;
 
-    @PostConstruct
-    public void postConstruct() {
-        Singleton.resetAll();
-        SingletonMap.resetAll();
-    }
+//    @PostConstruct
+//    public void postConstruct() {
+//        Singleton.resetAll();
+//        SingletonMap.resetAll();
+//    }
 
     @Override
     public String[] getActiveProfiles() {
-        return Optional.ofNullable(APPLICATION_CONTEXT)
-                .map(ApplicationContext::getEnvironment)
+        return Optional.ofNullable(SpringEnvironmentAware.getSpringEnvironment())
+//                .map(ApplicationContext::getEnvironment)
                 .map(Environment::getActiveProfiles)
                 .orElse(new String[0]);
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        APPLICATION_CONTEXT = applicationContext;
-    }
+//    @Override
+//    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+//        APPLICATION_CONTEXT = applicationContext;
+//    }
 }

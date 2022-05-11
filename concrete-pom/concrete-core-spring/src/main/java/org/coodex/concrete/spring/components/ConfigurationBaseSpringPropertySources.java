@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 - 2021 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2022 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,24 +18,21 @@ package org.coodex.concrete.spring.components;
 
 import org.coodex.config.AbstractConfiguration;
 import org.coodex.config.Config;
+import org.coodex.spring.SpringEnvironmentAware;
 import org.coodex.util.Common;
 import org.coodex.util.SPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.Environment;
 
-import javax.inject.Named;
 import java.util.List;
 import java.util.StringJoiner;
 
-@Named
 @SPI.Ordered(0)
-public class ConfigurationBaseSpringPropertySources extends AbstractConfiguration implements ApplicationContextAware {
+public class ConfigurationBaseSpringPropertySources extends AbstractConfiguration
+        /*implements ApplicationContextAware*/ {
     private final static Logger log = LoggerFactory.getLogger(Config.class);
-    private Environment springEnvironment;
+//    private Environment springEnvironment;
 
 
     @Override
@@ -50,6 +47,7 @@ public class ConfigurationBaseSpringPropertySources extends AbstractConfiguratio
     }
 
     private String find(List<String> keys, String prefix) {
+        Environment springEnvironment = SpringEnvironmentAware.getSpringEnvironment();
         if (springEnvironment != null) {
             for (String key : keys) {
                 if (springEnvironment.containsProperty(prefix + key)) {
@@ -76,12 +74,14 @@ public class ConfigurationBaseSpringPropertySources extends AbstractConfiguratio
                     return v;
                 }
             }
+        } else {
+            log.warn("spring environment not injected yet.");
         }
         return null;
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        springEnvironment = applicationContext.getEnvironment();
-    }
+//    @Override
+//    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+//        springEnvironment = applicationContext.getEnvironment();
+//    }
 }
