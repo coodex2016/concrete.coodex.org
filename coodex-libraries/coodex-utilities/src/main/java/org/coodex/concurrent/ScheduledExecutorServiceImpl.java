@@ -34,13 +34,13 @@ class ScheduledExecutorServiceImpl extends ExecutorServiceImpl implements Schedu
     @Override
     public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
         long d = Clock.toMillis(delay, unit);
-        return scheduledExecutorService.schedule(wrapper.wrap(command, delay, unit), d, TimeUnit.MILLISECONDS);
+        return scheduledExecutorService.schedule(wrapper.wrap(wrapRunnable(command), delay, unit), d, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
         long d = Clock.toMillis(delay, unit);
-        return scheduledExecutorService.schedule(wrapper.wrap(callable, delay, unit), d, TimeUnit.MILLISECONDS);
+        return scheduledExecutorService.schedule(wrapper.wrap(wrapCallable(callable), delay, unit), d, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -48,7 +48,7 @@ class ScheduledExecutorServiceImpl extends ExecutorServiceImpl implements Schedu
         long i = Clock.toMillis(initialDelay, unit);
         long p = Clock.toMillis(period, unit);
         return scheduledExecutorService.scheduleAtFixedRate(
-                wrapper.wrap(command, initialDelay, period, unit),
+                wrapper.wrap(wrapRunnable(command), initialDelay, period, unit),
                 i, p, TimeUnit.MILLISECONDS
         );
     }
@@ -58,7 +58,7 @@ class ScheduledExecutorServiceImpl extends ExecutorServiceImpl implements Schedu
         long i = Clock.toMillis(initialDelay, unit);
         long d = Clock.toMillis(delay, unit);
         return scheduledExecutorService.scheduleAtFixedRate(
-                wrapper.wrap(command, initialDelay, delay, unit),
+                wrapper.wrap(wrapRunnable(command), initialDelay, delay, unit),
                 i, d, TimeUnit.MILLISECONDS
         );
     }

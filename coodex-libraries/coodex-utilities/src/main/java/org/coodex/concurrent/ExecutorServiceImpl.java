@@ -18,13 +18,18 @@ package org.coodex.concurrent;
 
 import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 class ExecutorServiceImpl implements ExecutorService {
+
+    private final static Logger log = LoggerFactory.getLogger(ExecutorServiceImpl.class);
 
     private static final ServiceLoader<ExecutableWrapper> executableWrapperLoader =
             new LazyServiceLoader<ExecutableWrapper>(new ExecutableWrapperImpl()) {
@@ -43,6 +48,28 @@ class ExecutorServiceImpl implements ExecutorService {
             list.add(wrapper.wrap(c));
         }
         return list;
+    }
+
+    protected Runnable wrapRunnable(Runnable runnable) {
+        return runnable == null ? null : () -> {
+            try {
+                runnable.run();
+            } catch (Throwable th) {
+                log.warn("Runnable run failed: {}", th.getLocalizedMessage(), th);
+            }
+        };
+    }
+
+    protected <V> Callable<V> wrapCallable(Callable<V> callable) {
+        return callable == null ? null : () -> {
+            try {
+                return callable.call();
+            } catch (Throwable th) {
+                log.warn("Callable call failed: {}", th.getLocalizedMessage(), th);
+                throw th;
+            }
+        };
+
     }
 
 
@@ -73,41 +100,41 @@ class ExecutorServiceImpl implements ExecutorService {
 
     @Override
     public <T> Future<T> submit(Callable<T> task) {
-        return executorService.submit(wrapper.wrap(task));
+        return executorService.submit(wrapper.wrap(wrapCallable(task)));
     }
 
     @Override
     public <T> Future<T> submit(Runnable task, T result) {
-        return executorService.submit(wrapper.wrap(task), result);
+        return executorService.submit(wrapper.wrap(wrapRunnable(task)), result);
     }
 
     @Override
     public Future<?> submit(Runnable task) {
-        return executorService.submit(wrapper.wrap(task));
+        return executorService.submit(wrapper.wrap(wrapRunnable(task)));
     }
 
     @Override
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
-        return executorService.invokeAll(wrap(tasks));
+        return executorService.invokeAll(wrap(tasks.stream().map(this::wrapCallable).collect(Collectors.toList())));
     }
 
     @Override
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
-        return executorService.invokeAll(wrap(tasks), timeout, unit);
+        return executorService.invokeAll(wrap(tasks.stream().map(this::wrapCallable).collect(Collectors.toList())), timeout, unit);
     }
 
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
-        return executorService.invokeAny(wrap(tasks));
+        return executorService.invokeAny(wrap(tasks.stream().map(this::wrapCallable).collect(Collectors.toList())));
     }
 
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        return executorService.invokeAny(wrap(tasks), timeout, unit);
+        return executorService.invokeAny(wrap(tasks.stream().map(this::wrapCallable).collect(Collectors.toList())), timeout, unit);
     }
 
     @Override
     public void execute(Runnable command) {
-        executorService.execute(wrapper.wrap(command));
+        executorService.execute(wrapper.wrap(wrapRunnable(command)));
     }
 }
