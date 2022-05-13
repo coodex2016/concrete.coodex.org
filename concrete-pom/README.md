@@ -38,6 +38,14 @@ public interface SomeService {
 - 【feature】concrete-api-tools: 重命名为concrete-api-renderer，调整为仅定义API文档化渲染的规范，封装通用操作，具体渲染分拆到具体模块完成
 -->
 
+## 2022-05-13
+
+- concrete-api-tools: axios调用端增加cancel能力
+
+## 中间一段时间
+
+- 忘了写文档 ......
+
 ## 2021-04-05
 
 - concrete-core-spring 环境下，Config.get优先从spring上下文中获取配置
