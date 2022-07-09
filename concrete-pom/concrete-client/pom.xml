@@ -21,7 +21,7 @@
     <parent>
         <artifactId>concrete-pom</artifactId>
         <groupId>org.coodex.concrete</groupId>
-        <version>0.5.1-SNAPSHOT</version>
+        <version>0.5.1-RC3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -49,12 +49,18 @@
             <scope>provided</scope>
         </dependency>
 
+<!--        <dependency>-->
+<!--            <groupId>org.springframework</groupId>-->
+<!--            <artifactId>spring-context</artifactId>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
+
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>concrete-core-spring</artifactId>
+            <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>
-
 
         <dependency>
             <groupId>${project.parent.groupId}</groupId>

@@ -33,7 +33,6 @@ import org.coodex.ssl.SSLContextFactory;
 import org.coodex.util.*;
 
 import javax.net.ssl.SSLContext;
-import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -109,13 +108,15 @@ public class ClientHelper {
 //    }
 
     public static boolean isReactiveExtension(Class<?> clz) {
-        try {
-            Class<? extends Annotation> rx =
-                    Common.cast(Class.forName("org.coodex.concrete.rx.ReactiveExtensionFor"));
-            return clz.getAnnotation(rx) != null;
-        } catch (Throwable th) {
-            return false;
-        }
+        ReactiveExtensionFor reactiveExtensionFor = clz.getAnnotation(ReactiveExtensionFor.class);
+        return reactiveExtensionFor != null && ConcreteHelper.isConcreteService(reactiveExtensionFor.value());
+//        try {
+//            Class<? extends Annotation> rx =
+//                    Common.cast(Class.forName("org.coodex.concrete.rx.ReactiveExtensionFor"));
+//            return clz.getAnnotation(rx) != null;
+//        } catch (Throwable th) {
+//            return false;
+//        }
     }
 
     public static boolean isConcreteService(Class<?> clz) {

@@ -27,6 +27,7 @@ import org.coodex.concrete.message.Queue;
 import org.coodex.concrete.message.TopicKey;
 import org.coodex.id.IDGenerator;
 import org.coodex.util.Common;
+import org.coodex.util.GenericTypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,16 +46,18 @@ public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<
     private final static Logger log = LoggerFactory.getLogger(TopicBeanPostProcessor.class);
 //    private Set<TopicKey> injected = new HashSet<>();
 
-    private boolean isTopic(Field field) {
-        Class<?> c = field.getType();
-        return c.isInterface() && AbstractTopic.class.isAssignableFrom(c);
-    }
-
-
-    @Override
-    protected boolean accept(Field field) {
-        return isTopic(field);
-    }
+//    @Deprecated
+//    private boolean isTopic(Field field) {
+//        Class<?> c = field.getType();
+//        return c.isInterface() && AbstractTopic.class.isAssignableFrom(c);
+//    }
+//
+//
+//    @Override
+//    @Deprecated
+//    protected boolean accept(Field field) {
+//        return isTopic(field);
+//    }
 
     @Override
     protected Class<?> getInjectClass(InjectTopicKey key, Class<?> beanClass) {
@@ -78,11 +81,18 @@ public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<
         return "topic_" + IDGenerator.newId();
     }
 
-    private String getQueueName(Field field) {
-        Queue queue = field.getAnnotation(Queue.class);
+//    @Deprecated
+//    private String getQueueName(Field field) {
+//        Queue queue = field.getAnnotation(Queue.class);
+//        return queue == null ? null : queue.value();
+//    }
+
+    private String getQueueName(Annotated annotated) {
+        Queue queue = annotated.getAnnotation(Queue.class);
         return queue == null ? null : queue.value();
     }
 
+    @Deprecated
     private Type getTopicType(Field field, Class<?> beanClass) {
         return toReference(field.getGenericType(), beanClass);
     }
@@ -93,12 +103,24 @@ public class TopicBeanPostProcessor extends AbstractInjectableBeanPostProcessor<
         return true;
     }
 
+//    @Override
+//    @Deprecated
+//    protected InjectTopicKey getKey(Class<?> beanClass, Field field) {
+//        return new InjectTopicKey(getQueueName(field), getTopicType(field, beanClass));
+//    }
+
     @Override
-    protected InjectTopicKey getKey(Class<?> beanClass, Field field) {
-        return new InjectTopicKey(getQueueName(field), getTopicType(field, beanClass));
+    protected boolean accept(Annotated annotated) {
+        Class<?> c = GenericTypeHelper.typeToClass(annotated.getReferenceType());
+        return c != null && c.isInterface() && AbstractTopic.class.isAssignableFrom(c);
     }
 
-//    @SuppressWarnings("rawtypes")
+    @Override
+    protected InjectTopicKey getKey(Annotated annotated) {
+        return new InjectTopicKey(getQueueName(annotated), annotated.getReferenceType());
+    }
+
+    //    @SuppressWarnings("rawtypes")
 //    private void scan(Object bean, Class<?> beanClass, String beanName) {
 //        for (Field field : ReflectHelper.getAllDeclaredFields(beanClass)) {
 //            if (/*isInjectable(field) &&*/ isTopic(field)) {

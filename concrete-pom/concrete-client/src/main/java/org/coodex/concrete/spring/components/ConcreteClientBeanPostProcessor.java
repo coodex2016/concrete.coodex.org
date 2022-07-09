@@ -16,106 +16,159 @@
 
 package org.coodex.concrete.spring.components;
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.Modifier;
+import javassist.*;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.StringMemberValue;
 import org.coodex.concrete.Client;
 import org.coodex.concrete.ConcreteClient;
-import org.coodex.concrete.common.IF;
 import org.coodex.concrete.common.bytecode.javassist.JavassistHelper;
+import org.coodex.id.IDGenerator;
 import org.coodex.util.Common;
-import org.coodex.util.ReflectHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.coodex.util.GenericTypeHelper;
 
-import javax.inject.Inject;
 import javax.inject.Named;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.coodex.concrete.ClientHelper.isConcreteService;
-import static org.coodex.concrete.common.AbstractBeanProvider.CREATE_BY_CONCRETE;
 import static org.coodex.concrete.common.bytecode.javassist.JavassistHelper.ctClassToClass;
 
 @SuppressWarnings("unused")
 @Named
-public class ConcreteClientBeanPostProcessor /* extends InstantiationAwareBeanPostProcessorAdapter */
-        implements SmartInstantiationAwareBeanPostProcessor {
+public class ConcreteClientBeanPostProcessor
+        extends AbstractInjectableBeanPostProcessor<ConcreteClientBeanPostProcessor.ConcreteClientInjectKey> {
+    public static class ConcreteClientInjectKey implements InjectInfoKey {
+        private final ConcreteClient concreteClient;
+        private final Class<?> concreteClass;
 
-    private final static Logger log = LoggerFactory.getLogger(ConcreteClientBeanPostProcessor.class);
+        public ConcreteClientInjectKey(ConcreteClient concreteClient, Class<?> concreteClass) {
+            this.concreteClient = concreteClient;
+            this.concreteClass = concreteClass;
+        }
+
+        public ConcreteClient getConcreteClient() {
+            return concreteClient;
+        }
+
+        public Class<?> getConcreteClass() {
+            return concreteClass;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ConcreteClientInjectKey that = (ConcreteClientInjectKey) o;
+            return Objects.equals(concreteClient, that.concreteClient) && Objects.equals(concreteClass, that.concreteClass);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(concreteClient, concreteClass);
+        }
+    }
+
+//    private final static Logger log = LoggerFactory.getLogger(ConcreteClientBeanPostProcessor.class);
 
     private final static String GET_INSTANCE = "__getConcreteServiceInstance";
-    private final Set<String> registered = new HashSet<>();
-    private final Map<String, Integer> moduleMap = new HashMap<>();
+    //    private final Set<String> registered = new HashSet<>();
+//    private final Map<String, Integer> moduleMap = new HashMap<>();
     private final AtomicInteger atomicInteger = new AtomicInteger(1);
-    @Inject
-    private DefaultListableBeanFactory defaultListableBeanFactory;
+//    @Inject
+//    private DefaultListableBeanFactory defaultListableBeanFactory;
 
-    private void scan(java.lang.annotation.Annotation[][] annotations, Class<?>[] parameters) {
-        for (int i = 0; i < annotations.length; i++) {
-            if (annotations[i] == null) {
-                continue;
-            }
-            for (java.lang.annotation.Annotation annotation : annotations[i]) {
-                if (annotation instanceof ConcreteClient) {
-                    register(parameters[i], (ConcreteClient) annotation);
-                }
-            }
-        }
-    }
-
+//    private void scan(java.lang.annotation.Annotation[][] annotations, Class<?>[] parameters) {
+//        for (int i = 0; i < annotations.length; i++) {
+//            if (annotations[i] == null) {
+//                continue;
+//            }
+//            for (java.lang.annotation.Annotation annotation : annotations[i]) {
+//                if (annotation instanceof ConcreteClient) {
+//                    register(parameters[i], (ConcreteClient) annotation);
+//                }
+//            }
+//        }
+//    }
 
     @Override
-    public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
-
-        scanAndRegisterClientBean(beanClass);
-
-        return null;
+    protected boolean accept(Annotated annotated) {
+        Class<?> c = GenericTypeHelper.typeToClass(annotated.getReferenceType());
+        return c != null && isConcreteService(c)
+                && annotated.getAnnotation(ConcreteClient.class) != null;
     }
 
-    private void scanAndRegisterClientBean(Class<?> beanClass) {
-        for (Constructor<?> constructor : beanClass.getConstructors()) {
-            scan(constructor.getParameterAnnotations(), constructor.getParameterTypes());
-        }
-
-        for (Method method : beanClass.getMethods()) {
-            scan(method.getParameterAnnotations(), method.getParameterTypes());
-        }
-
-        for (Field field : ReflectHelper.getAllDeclaredFields(beanClass)) {
-            ConcreteClient concreteClient = field.getAnnotation(ConcreteClient.class);
-            if (concreteClient != null) {
-                register(field.getType(), concreteClient);
-            }
+    @Override
+    protected Class<?> getInjectClass(ConcreteClientInjectKey key, Class<?> beanClass) {
+        ClassPool classPool = ClassPool.getDefault();
+        String className = key.getConcreteClass().getName();
+        String newClassName = className + "$CBC$" + String.format("%08d", atomicInteger.getAndIncrement());
+        try {
+            return createClass(key.getConcreteClass(), key.getConcreteClient(), classPool, className, newClassName);
+        } catch (CannotCompileException e) {
+            throw Common.rte(e);
         }
     }
 
     @Override
-    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
-        scanAndRegisterClientBean(bean.getClass());
+    protected String newBeanName() {
+        return "concreteClient_" + IDGenerator.newId();
+    }
+
+    @Override
+    protected ConcreteClientInjectKey getKey(Annotated annotated) {
+        return new ConcreteClientInjectKey(annotated.getAnnotation(ConcreteClient.class), GenericTypeHelper.typeToClass(annotated.getReferenceType()));
+    }
+
+    @Override
+    @Deprecated
+    protected boolean injectNoneAnnotation() {
         return true;
     }
 
+    //    @Override
+//    public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
+//
+//        scanAndRegisterClientBean(beanClass);
+//
+//        return null;
+//    }
 
-    private Integer getModuleIndex(String v) {
-        String hash = Common.sha1(v);
-        if (!moduleMap.containsKey(hash)) {
-            moduleMap.put(hash, atomicInteger.getAndIncrement());
-        }
-        return moduleMap.get(hash);
-    }
+//    private void scanAndRegisterClientBean(Class<?> beanClass) {
+//        for (Constructor<?> constructor : beanClass.getConstructors()) {
+//            scan(constructor.getParameterAnnotations(), constructor.getParameterTypes());
+//        }
+//
+//        for (Method method : beanClass.getMethods()) {
+//            scan(method.getParameterAnnotations(), method.getParameterTypes());
+//        }
+//
+//        for (Field field : ReflectHelper.getAllDeclaredFields(beanClass)) {
+//            ConcreteClient concreteClient = field.getAnnotation(ConcreteClient.class);
+//            if (concreteClient != null) {
+//                register(field.getType(), concreteClient);
+//            }
+//        }
+//    }
+
+//    @Override
+//    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+//        scanAndRegisterClientBean(bean.getClass());
+//        return true;
+//    }
+
+
+//    private Integer getModuleIndex(String v) {
+//        String hash = Common.sha1(v);
+//        if (!moduleMap.containsKey(hash)) {
+//            moduleMap.put(hash, atomicInteger.getAndIncrement());
+//        }
+//        return moduleMap.get(hash);
+//    }
 
 
     private Annotation concreteClient(ConcreteClient concreteClient, ConstPool constPool) {
@@ -134,86 +187,91 @@ public class ConcreteClientBeanPostProcessor /* extends InstantiationAwareBeanPo
     }
 
 
-    private synchronized void register(Class<?> concreteService, ConcreteClient concreteClient) {
-        IF.not(isConcreteService(concreteService),
-                concreteService + "is NOT ConcreteService.");
-        ClassPool classPool = ClassPool.getDefault();
-        String className = concreteService.getName();
-        String newClassName = className + "$CBC$" + getModuleIndex(concreteClient.value());
+//    private synchronized void register(Class<?> concreteService, ConcreteClient concreteClient) {
+//
+//
+//        try {
+//            IF.not(isConcreteService(concreteService),
+//                    concreteService + "is NOT ConcreteService.");
+//            ClassPool classPool = ClassPool.getDefault();
+//            String className = concreteService.getName();
+//            String newClassName = className + "$CBC$" + getModuleIndex(concreteClient.value());
+//
+//            if (registered.contains(newClassName)) {
+//                return;
+//            }
+//            Class<?> generated = createClass(concreteService, concreteClient, classPool, className, newClassName);
+////                    Common.isJava9AndLast() ?
+////                    ctClass.toClass(concreteService) :
+////                    ctClass.toClass();
+//
+//            BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(generated);
+//            defaultListableBeanFactory.registerBeanDefinition(
+//                    CREATE_BY_CONCRETE + Common.sha1(newClassName), beanDefinitionBuilder.getBeanDefinition());
+//            registered.add(newClassName);
+//            log.info("ConcreteClient Bean[className: {}, module: {}] registered.",
+//                    newClassName, concreteClient.value()
+//            );
+//
+//        } catch (Throwable throwable) {
+//            throw Common.rte(throwable);
+//        }
+//
+//
+//    }
 
-        if (registered.contains(newClassName)) {
-            return;
-        }
+    private Class<?> createClass(Class<?> concreteService, ConcreteClient concreteClient, ClassPool classPool, String className, String newClassName) throws CannotCompileException {
+        CtClass ctClass = classPool.makeClass(newClassName);
 
-        try {
-            CtClass ctClass = classPool.makeClass(newClassName);
-
-            ctClass.setInterfaces(new CtClass[]{
+        ctClass.setInterfaces(new CtClass[]{
 //                    classPool.getOrNull(concreteService.getName())
-                    JavassistHelper.getCtClass(concreteService, classPool)
-            });
-            ClassFile classFile = ctClass.getClassFile();
-            ConstPool constPool = classFile.getConstPool();
-            classFile.setVersionToJava5();
-            classFile.addAttribute(
-                    JavassistHelper.aggregate(constPool, concreteClient(concreteClient, constPool))
-            );
+                JavassistHelper.getCtClass(concreteService, classPool)
+        });
+        ClassFile classFile = ctClass.getClassFile();
+        ConstPool constPool = classFile.getConstPool();
+        classFile.setVersionToJava5();
+        classFile.addAttribute(
+                JavassistHelper.aggregate(constPool, concreteClient(concreteClient, constPool))
+        );
 
-            // 1，添加方法，私有，__getConcreteServiceInstance
-            CtMethod ctMethod = new CtMethod(
+        // 1，添加方法，私有，__getConcreteServiceInstance
+        CtMethod ctMethod = new CtMethod(
 //                    classPool.getOrNull(concreteService.getName()),
-                    JavassistHelper.getCtClass(concreteService, classPool),
-                    GET_INSTANCE,
-                    new CtClass[0],
+                JavassistHelper.getCtClass(concreteService, classPool),
+                GET_INSTANCE,
+                new CtClass[0],
+                ctClass
+        );
+        ctMethod.setModifiers(Modifier.PRIVATE);
+        String moduleForSrc = Common.isBlank(concreteClient.value()) ? "null" : ("\"" + concreteClient.value() + "\"");
+        ctMethod.setBody("return " + Client.class.getName() + ".getInstance(" +
+                className + ".class, " + moduleForSrc + ");");
+        ctClass.addMethod(ctMethod);
+
+        // 2,增加接口实现
+        for (Method method : concreteService.getMethods()) {
+            Class<?> returnType = method.getReturnType();
+            ctMethod = new CtMethod(
+//                        classPool.getOrNull(returnType.getName()),
+                    JavassistHelper.getCtClass(returnType, classPool),
+                    method.getName(),
+                    getParameterTypes(method, classPool),
                     ctClass
             );
-            ctMethod.setModifiers(Modifier.PRIVATE);
-            String moduleForSrc = Common.isBlank(concreteClient.value()) ? "null" : ("\"" + concreteClient.value() + "\"");
-            ctMethod.setBody("return " + Client.class.getName() + ".getInstance(" +
-                    className + ".class, " + moduleForSrc + ");");
-            ctClass.addMethod(ctMethod);
-
-            // 2,增加接口实现
-            for (Method method : concreteService.getMethods()) {
-                Class<?> returnType = method.getReturnType();
-                ctMethod = new CtMethod(
-//                        classPool.getOrNull(returnType.getName()),
-                        JavassistHelper.getCtClass(returnType, classPool),
-                        method.getName(),
-                        getParameterTypes(method, classPool),
-                        ctClass
-                );
-                StringBuilder builder = new StringBuilder();
-                if (!void.class.equals(returnType)) {
-                    builder.append("return ");
-                }
-                builder.append(GET_INSTANCE).append("().").append(method.getName()).append("(");
-                if (method.getParameterTypes().length > 0) {
-                    builder.append("$$");
-                }
-                builder.append(");");
-                ctMethod.setBody(builder.toString());
-                ctClass.addMethod(ctMethod);
+            StringBuilder builder = new StringBuilder();
+            if (!void.class.equals(returnType)) {
+                builder.append("return ");
             }
-
-            Class<?> generated = ctClassToClass(ctClass, concreteService);
-//                    Common.isJava9AndLast() ?
-//                    ctClass.toClass(concreteService) :
-//                    ctClass.toClass();
-
-            BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(generated);
-            defaultListableBeanFactory.registerBeanDefinition(
-                    CREATE_BY_CONCRETE + Common.sha1(newClassName), beanDefinitionBuilder.getBeanDefinition());
-            registered.add(newClassName);
-            log.info("ConcreteClient Bean[className: {}, module: {}] registered.",
-                    newClassName, concreteClient.value()
-            );
-
-        } catch (Throwable throwable) {
-            throw new RuntimeException(throwable);
+            builder.append(GET_INSTANCE).append("().").append(method.getName()).append("(");
+            if (method.getParameterTypes().length > 0) {
+                builder.append("$$");
+            }
+            builder.append(");");
+            ctMethod.setBody(builder.toString());
+            ctClass.addMethod(ctMethod);
         }
 
-
+        return ctClassToClass(ctClass, concreteService);
     }
 
 
