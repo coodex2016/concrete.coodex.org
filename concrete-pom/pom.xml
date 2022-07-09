@@ -24,7 +24,7 @@
     <url>https://concrete.coodex.org</url>
     <groupId>org.coodex.concrete</groupId>
     <artifactId>concrete-pom</artifactId>
-    <version>0.5.1-RC3</version>
+    <version>0.5.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -96,23 +96,24 @@
         <jsr-311.version>1.1.1</jsr-311.version>
         <jsr-339.version>1.0.0.Final</jsr-339.version>
 
-        <apache.dubbo.version>2.7.4.1</apache.dubbo.version>
+        <apache.dubbo.version>2.7.16</apache.dubbo.version>
 
 <!--        <slf4j.version>1.7.30</slf4j.version>-->
 <!--        <log4j2.version>2.13.0</log4j2.version>-->
         <aspectj.version>1.9.4</aspectj.version>
 
-        <spring.cloud.version>2020.0.4</spring.cloud.version>
-        <spring.boot.version>2.4.13</spring.boot.version>
+        <spring.cloud.version>2021.0.3</spring.cloud.version>
+        <spring.cloud.alibaba.version>2021.0.1.0</spring.cloud.alibaba.version>
+        <spring.boot.version>2.6.9</spring.boot.version>
         <!--        <spring.framework.version>5.3.4</spring.framework.version>-->
         <!--        <spring.data.version>2020.0.5</spring.data.version>-->
         <!--        <spring.data.jpa.version>2.4.5</spring.data.jpa.version>-->
 
         <netty4.version>4.1.60.Final</netty4.version>
-        <jersey.version>2.27</jersey.version>
+        <jersey.version>2.36</jersey.version>
         <junit.version>4.13.1</junit.version>
         <freemarker.version>2.3.28</freemarker.version>
-        <fastjson.version>1.2.75</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <guice.version>4.2.2</guice.version>
         <javassist.verion>3.27.0-GA</javassist.verion>
 
@@ -124,7 +125,7 @@
         <druid.version>1.1.23</druid.version>
 
         <rxjava.vesion>2.2.21</rxjava.vesion>
-        <jackson2.version>2.9.8</jackson2.version>
+        <jackson2.version>2.13.3</jackson2.version>
 
         <activemq.version>5.15.9</activemq.version>
         <rabbitmq.client.version>5.7.1</rabbitmq.client.version>
@@ -291,6 +292,22 @@
                 <version>3.1.2</version>
             </plugin>
 
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>7.1.1</version>
+                <configuration>
+                    <autoUpdate>true</autoUpdate>
+                </configuration>
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>check</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+            </plugin>
+
         </plugins>
     </build>
 
@@ -302,6 +319,14 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring.cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring.cloud.alibaba.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

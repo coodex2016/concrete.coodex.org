@@ -55,9 +55,9 @@ public class VuePressDocRenderer extends AbstractServiceDocRenderer {
     @Override
     public void render(List<JaxrsModule> modules) throws IOException {
 
-        // package.json
-        if (!exists("package.json"))
-            copyTo("package.json", "package.json");
+        // package.json.txt
+        if (!exists("package.json.txt"))
+            copyTo("package.json.txt", "package.json");
         // .gitignore
         if (!exists(".gitignore"))
             writeTo(".gitignore",
