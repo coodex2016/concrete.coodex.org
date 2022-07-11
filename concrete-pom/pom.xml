@@ -24,7 +24,7 @@
     <url>https://concrete.coodex.org</url>
     <groupId>org.coodex.concrete</groupId>
     <artifactId>concrete-pom</artifactId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.5.1-RC4</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -98,8 +98,8 @@
 
         <apache.dubbo.version>2.7.16</apache.dubbo.version>
 
-<!--        <slf4j.version>1.7.30</slf4j.version>-->
-<!--        <log4j2.version>2.13.0</log4j2.version>-->
+        <!--        <slf4j.version>1.7.30</slf4j.version>-->
+        <!--        <log4j2.version>2.13.0</log4j2.version>-->
         <aspectj.version>1.9.4</aspectj.version>
 
         <spring.cloud.version>2021.0.3</spring.cloud.version>
@@ -157,7 +157,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.1.1</version>
+                        <version>3.4.0</version>
                         <executions>
                             <execution>
                                 <phase>package</phase>
@@ -299,13 +299,13 @@
                 <configuration>
                     <autoUpdate>true</autoUpdate>
                 </configuration>
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            <goal>check</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
+                <!--                <executions>-->
+                <!--                    <execution>-->
+                <!--                        <goals>-->
+                <!--                            <goal>check</goal>-->
+                <!--                        </goals>-->
+                <!--                    </execution>-->
+                <!--                </executions>-->
             </plugin>
 
         </plugins>

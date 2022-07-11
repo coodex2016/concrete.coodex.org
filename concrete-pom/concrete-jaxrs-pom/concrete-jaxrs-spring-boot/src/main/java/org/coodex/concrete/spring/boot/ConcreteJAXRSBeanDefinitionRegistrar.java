@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.spring.boot;
 
+import org.coodex.concrete.common.ConcreteHelper;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -32,7 +33,7 @@ public class ConcreteJAXRSBeanDefinitionRegistrar
 
     private static final String BEAN_NAME = "concreteJaxrsServletRegistrationBean";
 
-    private static JaxrsRuntime runtime = new JaxrsRuntime();
+    private static final JaxrsRuntime runtime = new JaxrsRuntime();
 
     static String[] getApiPackages() {
         return runtime.getApiPackages();
@@ -41,6 +42,19 @@ public class ConcreteJAXRSBeanDefinitionRegistrar
     static Class<?>[] getClasses() {
         return runtime.getClasses();
     }
+
+    public ConcreteJAXRSBeanDefinitionRegistrar() {
+        printBanner();
+    }
+
+    public static void printBanner() {
+        ConcreteHelper.printBanner("  _____                      __           _____   _  _____  ____\n" +
+                        " / ___/__  ___  ___________ / /____   __ / / _ | | |/_/ _ \\/ __/\n" +
+                        "/ /__/ _ \\/ _ \\/ __/ __/ -_) __/ -_) / // / __ |_>  </ , _/\\ \\  \n" +
+                        "\\___/\\___/_//_/\\__/_/  \\__/\\__/\\__/  \\___/_/ |_/_/|_/_/|_/___/  \n",
+                "Concrete JAXRS", true);
+    }
+
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
@@ -78,6 +92,10 @@ public class ConcreteJAXRSBeanDefinitionRegistrar
             addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS, runtime.getApplicationClassName());
             setAsyncSupported(true);
         }
+    }
 
+    public static void main(String[] args) {
+        for (int i = 0; i < 10; i++)
+            printBanner();
     }
 }

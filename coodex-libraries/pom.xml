@@ -22,7 +22,7 @@
 
     <groupId>org.coodex</groupId>
     <artifactId>coodex-libraries</artifactId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.5.1-RC4</version>
     <packaging>pom</packaging>
     <name>coodex-libraries</name>
     <description>coodex-libraries</description>
@@ -68,6 +68,7 @@
         <fastjson.version>1.2.83</fastjson.version>
         <slf4j.version>1.7.36</slf4j.version>
         <log4j2.version>2.17.2</log4j2.version>
+        <reload4j.version>1.2.21</reload4j.version>
         <snakeyaml.version>1.29</snakeyaml.version>
         <cglib.version>3.3.0</cglib.version>
         <freemarker.version>2.3.31</freemarker.version>
@@ -93,7 +94,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.1.1</version>
+                        <version>3.4.0</version>
                         <executions>
                             <execution>
                                 <phase>package</phase>
@@ -302,6 +303,13 @@
                 <version>${log4j2.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- reload4j -->
+            <dependency>
+                <groupId>ch.qos.reload4j</groupId>
+                <artifactId>reload4j</artifactId>
+                <version>${reload4j.version}</version>
             </dependency>
 
             <!-- freemarker -->

@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -40,7 +41,7 @@ import static org.coodex.util.ReflectHelper.foreachClass;
  */
 public class ConcreteHelper {
 
-    public static final String VERSION = "0.5.1-SNAPSHOT";
+    public static final String VERSION = "0.5.1-RC4";
 
     public static final String TAG_CLIENT = "client";
     public static final String KEY_DESTINATION = "destination";
@@ -135,6 +136,43 @@ public class ConcreteHelper {
                     }
                 }
             }).build();
+
+    public static void printBanner(String originBanner, String moduleName, boolean randomColor) {
+        if (randomColor) {
+            Random random = new Random();
+            int[] colors = new int[10];
+            for (int i = 0; i < colors.length; i++) {
+                colors[i] = (random.nextFloat() > 0.5 ? 90 : 30) + random.nextInt(8);
+                if(colors[i] == 30) colors[i] = 0;
+            }
+            printBanner(originBanner, moduleName, colors);
+        } else {
+            printBanner(originBanner, moduleName);
+        }
+    }
+
+    public static void printBanner(String originBanner, String moduleName, int... colors) {
+        AtomicInteger atomicInteger = new AtomicInteger();
+        int[] theColors = colors == null || colors.length == 0 ? new int[]{0} : colors;
+        String[] bannerLines = originBanner.split("\n");
+        StringBuilder builder = new StringBuilder("\n");
+        int bannerWidth = bannerLines[0].length() + 1;
+        Arrays.stream(bannerLines).forEach(s -> {
+            builder.append("\033[").append(theColors[atomicInteger.getAndIncrement() % theColors.length]).append("m");
+            builder.append(" ").append(s);
+            builder.append("\033[0m");
+            builder.append("\n");
+        });
+
+        builder.append("\033[32m :: ").append(moduleName).append(" :: \033[0m");
+        int versionLength = VERSION.length();
+        for (int i = moduleName.length() + 8, l = bannerWidth - versionLength - 3; i < l; i++) {
+            builder.append(" ");
+        }
+        builder.append("\033[37m(v").append(VERSION).append(")\033[0m\n");
+        System.out.println(builder);
+    }
+
 
     public static ScheduledExecutorService getScheduler() {
         return getScheduler("service");

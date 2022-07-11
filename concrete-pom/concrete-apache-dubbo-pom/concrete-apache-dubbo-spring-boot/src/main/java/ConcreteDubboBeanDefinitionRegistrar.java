@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.support.dubbo.ApacheDubboApplication;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -24,7 +25,15 @@ import org.springframework.core.type.AnnotationMetadata;
 public class ConcreteDubboBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
 
     private static final String BEAN_NAME = "concreteDubboApplication";
-    private static DubboRuntime runtime = new DubboRuntime();
+    private static final DubboRuntime runtime = new DubboRuntime();
+
+    public ConcreteDubboBeanDefinitionRegistrar() {
+        ConcreteHelper.printBanner("  _____                      __        ___       __   __      \n" +
+                        " / ___/__  ___  ___________ / /____   / _ \\__ __/ /  / /  ___ \n" +
+                        "/ /__/ _ \\/ _ \\/ __/ __/ -_) __/ -_) / // / // / _ \\/ _ \\/ _ \\\n" +
+                        "\\___/\\___/_//_/\\__/_/  \\__/\\__/\\__/ /____/\\_,_/_.__/_.__/\\___/\n",
+                "Concrete Dubbo", true);
+    }
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry beanDefinitionRegistry) {
