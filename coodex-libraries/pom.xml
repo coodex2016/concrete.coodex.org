@@ -221,7 +221,8 @@
                 <version>3.8.1</version>
                 <configuration>
                     <compilerArgs>
-                        <arg>-Xlint</arg>
+                        <arg>-Xlint:-serial</arg>
+                        <arg>-Xlint:-varargs</arg>
                         <arg>-parameters</arg>
                     </compilerArgs>
                     <encoding>UTF-8</encoding>
@@ -248,13 +249,13 @@
                 <configuration>
                     <autoUpdate>true</autoUpdate>
                 </configuration>
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            <goal>check</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
+                <!--                <executions>-->
+                <!--                    <execution>-->
+                <!--                        <goals>-->
+                <!--                            <goal>check</goal>-->
+                <!--                        </goals>-->
+                <!--                    </execution>-->
+                <!--                </executions>-->
             </plugin>
 
             <plugin>

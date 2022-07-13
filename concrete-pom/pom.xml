@@ -273,7 +273,8 @@
                 <version>3.8.1</version>
                 <configuration>
                     <compilerArgs>
-                        <arg>-Xlint</arg>
+                        <arg>-Xlint:-serial</arg>
+                        <arg>-Xlint:-varargs</arg>
                         <arg>-parameters</arg>
                     </compilerArgs>
                     <encoding>UTF-8</encoding>

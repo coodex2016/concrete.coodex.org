@@ -96,11 +96,11 @@
             </dependency>
 
 
-<!--            <dependency>-->
-<!--                <groupId>commons-beanutils</groupId>-->
-<!--                <artifactId>commons-beanutils</artifactId>-->
-<!--                <version>1.9.4</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>commons-beanutils</groupId>-->
+            <!--                <artifactId>commons-beanutils</artifactId>-->
+            <!--                <version>1.9.4</version>-->
+            <!--            </dependency>-->
 
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -144,22 +144,21 @@
             </dependency>
 
 
+            <!--            <dependency>-->
+            <!--                <groupId>org.springframework</groupId>-->
+            <!--                <artifactId>spring-framework-bom</artifactId>-->
+            <!--                <version>${spring.framework.version}</version>-->
+            <!--                <type>pom</type>-->
+            <!--                <scope>import</scope>-->
+            <!--            </dependency>-->
 
-<!--            <dependency>-->
-<!--                <groupId>org.springframework</groupId>-->
-<!--                <artifactId>spring-framework-bom</artifactId>-->
-<!--                <version>${spring.framework.version}</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
-
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.data</groupId>-->
-<!--                <artifactId>spring-data-bom</artifactId>-->
-<!--                <version>${spring.data.version}</version>-->
-<!--                <scope>import</scope>-->
-<!--                <type>pom</type>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>org.springframework.data</groupId>-->
+            <!--                <artifactId>spring-data-bom</artifactId>-->
+            <!--                <version>${spring.data.version}</version>-->
+            <!--                <scope>import</scope>-->
+            <!--                <type>pom</type>-->
+            <!--            </dependency>-->
 
             <!-- https://mvnrepository.com/artifact/aopalliance/aopalliance -->
             <dependency>
@@ -168,11 +167,11 @@
                 <version>1.0</version>
             </dependency>
 
-<!--            <dependency>-->
-<!--                <groupId>org.java-websocket</groupId>-->
-<!--                <artifactId>Java-WebSocket</artifactId>-->
-<!--                <version>1.5.0</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>org.java-websocket</groupId>-->
+            <!--                <artifactId>Java-WebSocket</artifactId>-->
+            <!--                <version>1.5.0</version>-->
+            <!--            </dependency>-->
 
 
             <dependency>
@@ -201,11 +200,11 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
-<!--            <dependency>-->
-<!--                <groupId>${project.parent.groupId}</groupId>-->
-<!--                <artifactId>concrete-fsm</artifactId>-->
-<!--                <version>${project.parent.version}</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>${project.parent.groupId}</groupId>-->
+            <!--                <artifactId>concrete-fsm</artifactId>-->
+            <!--                <version>${project.parent.version}</version>-->
+            <!--            </dependency>-->
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
@@ -219,11 +218,11 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
-<!--            <dependency>-->
-<!--                <groupId>${project.parent.groupId}</groupId>-->
-<!--                <artifactId>concrete-fsm-impl</artifactId>-->
-<!--                <version>${project.parent.version}</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>${project.parent.groupId}</groupId>-->
+            <!--                <artifactId>concrete-fsm-impl</artifactId>-->
+            <!--                <version>${project.parent.version}</version>-->
+            <!--            </dependency>-->
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
@@ -234,18 +233,6 @@
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-rx-builder</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-rx-observable</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-rx-rxjava3</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 
@@ -276,58 +263,19 @@
             </dependency>
 
 
-<!--            <dependency>-->
-<!--                <groupId>${project.parent.groupId}</groupId>-->
-<!--                <artifactId>concrete-formatters-freemarker</artifactId>-->
-<!--                <version>${project.parent.version}</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>${project.parent.groupId}</groupId>-->
+            <!--                <artifactId>concrete-formatters-freemarker</artifactId>-->
+            <!--                <version>${project.parent.version}</version>-->
+            <!--            </dependency>-->
 
+            <!-- concrete plugins -->
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-serializer-jackson2</artifactId>
+                <artifactId>concrete-plugins-bom</artifactId>
                 <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-serializer-jsonb-jdk8</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-courier-jms</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-courier-jms-activemq</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-courier-rabbitmq</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-apm-zipkin</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-apm-plugin-mysql</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.parent.groupId}</groupId>
-                <artifactId>concrete-apm-plugin-mysql8</artifactId>
-                <version>${project.parent.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
 
