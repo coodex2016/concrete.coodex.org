@@ -36,16 +36,16 @@ public class AllTrustedSSLContextFactory implements SSLContextFactory {
 
     @Override
     public SSLContext getSSLContext(String param) throws Throwable {
-        SSLContext context = SSLContext.getInstance("SSL");
+        SSLContext context = SSLContext.getInstance("TLSv1.2");
 
         context.init(null, new TrustManager[]{new X509TrustManager() {
             @Override
-            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) {
+            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) {// NOSONAR
                 // no check!!
             }
 
             @Override
-            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) {
+            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) {// NOSONAR
                 // no check!!
             }
 

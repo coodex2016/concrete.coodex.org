@@ -46,7 +46,7 @@ public abstract class AbstractDubboApplication implements Application {
     private final static Logger log = LoggerFactory.getLogger(AbstractDubboApplication.class);
 
     private final String applicationName;
-    private Singleton<String> version = Singleton.with(this::getVersion);
+    private final Singleton<String> version = Singleton.with(this::getVersion);
 
     public AbstractDubboApplication(String applicationName) {
         this.applicationName = applicationName;

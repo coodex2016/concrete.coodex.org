@@ -139,9 +139,9 @@ public abstract class AbstractInjectableBeanPostProcessor<K extends InjectInfoKe
                     field.setAccessible(true);
                     try {
                         K key = getKey(annotated);
-                        field.set(bean, injectedCache.computeIfAbsent(key, (k) -> getInjectClass(key, beanClass)).newInstance());
+                        field.set(bean, injectedCache.computeIfAbsent(key, (k) -> getInjectClass(key, beanClass)).getDeclaredConstructor().newInstance());
                         log.warn("{} {} {} injected. use @Inject plz.", beanName, toReference(field.getGenericType(), beanClass), field.getName());
-                    } catch (InstantiationException e) {
+                    } catch (InstantiationException | NoSuchMethodException | InvocationTargetException e) {
                         throw rte(e);
                     }
 

@@ -40,9 +40,9 @@ import java.util.Map;
 public class WSClientHandle {
 
     private final static Logger log = LoggerFactory.getLogger(WSClientHandle.class);
-    private Map<Destination, Session> sessionMap = new HashMap<>();
-    private JSONSerializer serializer = JSONSerializerFactory.getInstance();
-    private SingletonMap<WebsocketDestination, Object> locks = SingletonMap.<WebsocketDestination, Object>builder()
+    private final Map<Destination, Session> sessionMap = new HashMap<>();
+    private final JSONSerializer serializer = JSONSerializerFactory.getInstance();
+    private final SingletonMap<WebsocketDestination, Object> locks = SingletonMap.<WebsocketDestination, Object>builder()
             .function(key -> new Object()).build();
 
 
@@ -110,9 +110,11 @@ public class WSClientHandle {
         try {
             Session session = getSession(destination);
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (session) {
+            synchronized (session) {// NOSONAR
                 session.getBasicRemote().sendText(serializer.toJson(requestPackage));
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (Throwable th) {
             throw ConcreteHelper.getException(th);
         }

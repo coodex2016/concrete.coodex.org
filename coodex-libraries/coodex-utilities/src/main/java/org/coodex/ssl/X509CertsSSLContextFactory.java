@@ -50,7 +50,7 @@ public class X509CertsSSLContextFactory implements SSLContextFactory {
     public SSLContext getSSLContext(String param) throws Throwable {
         String certPath = Common.trim(param.substring(CERT_PATH.length()), ',', ' ', ':', ';');
         Set<String> allPath = Common.arrayToSet(Common.toArray(certPath, ";", new String[0]));
-        SSLContext sslContext = SSLContext.getInstance("TLSV1.2");
+        SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
         List<X509TrustManager> trustManagers = new ArrayList<>();
 
 //        KeyStore trusted = KeyStore.getInstance(KeyStore.getDefaultType());

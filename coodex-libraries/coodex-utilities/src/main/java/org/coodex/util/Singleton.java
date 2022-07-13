@@ -24,7 +24,7 @@ public class Singleton<T> {
     private final static AtomicLong VERSION = new AtomicLong(Long.MIN_VALUE);
     private final Supplier<T> supplier;
     private long version = VERSION.get();
-    private volatile T instance = null;
+    private T instance = null;
     private volatile boolean loaded = false;
 
     private Singleton(Supplier<T> supplier) {

@@ -21,6 +21,7 @@ import org.coodex.billing.Bill;
 import org.coodex.billing.Chargeable;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * 消费品
@@ -45,7 +46,7 @@ public class ConsumerGoods implements Adjustment<Chargeable> {
     public long adjust(Bill<Chargeable> bill) {
         return BigDecimal.valueOf(price).multiply(
                 BigDecimal.valueOf(quantity)
-        ).setScale(0, BigDecimal.ROUND_HALF_UP).longValue();
+        ).setScale(0, RoundingMode.HALF_UP).longValue();
     }
 
     @Override

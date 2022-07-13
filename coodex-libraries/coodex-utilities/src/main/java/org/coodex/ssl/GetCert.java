@@ -20,6 +20,7 @@ import org.coodex.util.Common;
 
 import javax.net.ssl.*;
 import java.io.*;
+import java.nio.file.Files;
 import java.security.KeyManagementException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -32,12 +33,11 @@ public final class GetCert {
 //
     public static void saveCertificateFromServer(String host, int port, String storePath) throws NoSuchAlgorithmException, KeyManagementException, IOException, CertificateEncodingException {
 
-        SSLContext context = SSLContext.getInstance("SSL");
+        SSLContext context = SSLContext.getInstance("TLSv1.2");
         SavingTrustManager tm = new SavingTrustManager();
         context.init(null, new TrustManager[]{tm}, new SecureRandom());
         SSLSocketFactory factory = context.getSocketFactory();
-        System.out
-                .println("Opening connection to " + host + ":" + port + "...");
+        System.out.println("Opening connection to " + host + ":" + port + "...");
         SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
         socket.setSoTimeout(10000);
         try {
@@ -55,13 +55,14 @@ public final class GetCert {
         System.out.println();
         System.out.println("Server sent " + tm.chain.length + " certificate(s):");
         System.out.println();
-        MessageDigest sha1 = MessageDigest.getInstance("SHA1");
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        MessageDigest sha1 = MessageDigest.getInstance("SHA1");// NOSONAR
+        MessageDigest md5 = MessageDigest.getInstance("MD5");// NOSONAR
+
         for (int i = 0; i < tm.chain.length; i++) {
             X509Certificate cert = tm.chain[i];
             System.out.println(" " + (i + 1) + " Subject "
-                    + cert.getSubjectDN());
-            System.out.println("   Issuer  " + cert.getIssuerDN());
+                    + cert.getSubjectX500Principal());//.getSubjectDN()
+            System.out.println("   Issuer  " + cert.getIssuerX500Principal());///.getIssuerDN()
             sha1.update(cert.getEncoded());
             System.out.println("   sha1    " + Common.base16Encode(sha1.digest()));
             md5.update(cert.getEncoded());
@@ -90,7 +91,7 @@ public final class GetCert {
             name = host + "." + port + "-" + ++index;
         }
         File x = Common.newFile(storePath + File.separatorChar + name + ".cer");
-        try (OutputStream os = new FileOutputStream(x)) {
+        try (OutputStream os = Files.newOutputStream(x.toPath())) {
             os.write(cert.getEncoded());
             os.flush();
         }
@@ -115,7 +116,7 @@ public final class GetCert {
             throw new UnsupportedOperationException();
         }
 
-        public void checkServerTrusted(X509Certificate[] chain, String authType) {
+        public void checkServerTrusted(X509Certificate[] chain, String authType) {// NOSONAR
             this.chain = chain;
         }
     }

@@ -20,7 +20,7 @@ import java.util.Stack;
 
 public abstract class AbstractTrace implements Trace {
 
-    private static ThreadLocal<Stack<AbstractTrace>> stackThreadLocal = new ThreadLocal<Stack<AbstractTrace>>();
+    private static final ThreadLocal<Stack<AbstractTrace>> stackThreadLocal = new ThreadLocal<Stack<AbstractTrace>>();
 
     @Override
     public final Trace start() {
@@ -31,7 +31,7 @@ public abstract class AbstractTrace implements Trace {
 
     private Stack<AbstractTrace> getStack() {
         if (stackThreadLocal.get() == null) {
-            stackThreadLocal.set(new Stack<AbstractTrace>());
+            stackThreadLocal.set(new Stack<>());
         }
         return stackThreadLocal.get();
     }
@@ -65,6 +65,7 @@ public abstract class AbstractTrace implements Trace {
                 break;
             }
         }
+        stackThreadLocal.remove();
         actualFinish();
     }
 

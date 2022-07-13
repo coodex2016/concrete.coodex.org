@@ -21,8 +21,8 @@ import org.coodex.util.Common;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
-import java.util.Random;
 
+import static org.coodex.util.Common.RANDOM;
 import static org.coodex.util.GenericTypeHelper.typeToClass;
 
 public class IpAddressTypeMocker extends AbstractTypeMocker<IpAddress> {
@@ -82,11 +82,11 @@ public class IpAddressTypeMocker extends AbstractTypeMocker<IpAddress> {
     @Override
     public Object mock(IpAddress mockAnnotation, Type targetType) {
         Class<?> clazz = typeToClass(targetType);
-        Random random = new Random();
+//        Random random = new Random();
         int size = mockAnnotation.type().getSize();
         int[] ip = new int[size];
         for (int i = 0; i < size; i++) {
-            ip[i] = random.nextInt(0x100);
+            ip[i] = RANDOM.nextInt(0x100);
         }
         if (String.class.equals(targetType))
             return mockAnnotation.type().ipToString(ip);

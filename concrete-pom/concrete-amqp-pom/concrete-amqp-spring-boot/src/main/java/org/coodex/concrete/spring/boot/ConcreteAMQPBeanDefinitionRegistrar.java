@@ -39,7 +39,8 @@ public class ConcreteAMQPBeanDefinitionRegistrar implements ImportBeanDefinition
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         if (!registry.containsBeanDefinition(BEAN_NAME)) {
-            synchronized (registry) {
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
+            synchronized (registry) { // NOSONAR
                 if (!registry.containsBeanDefinition(BEAN_NAME)) {
                     AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(
                             importingClassMetadata.getAnnotationAttributes(

@@ -55,6 +55,10 @@
 
     <properties>
         <encoding>UTF-8</encoding>
+
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
         <project.resources.sourceEncoding>${encoding}</project.resources.sourceEncoding>
@@ -217,12 +221,9 @@
                 <version>3.8.1</version>
                 <configuration>
                     <compilerArgs>
-                        <arg>-Xlint:unchecked</arg>
-                        <arg>-Xlint:rawtypes</arg>
+                        <arg>-Xlint</arg>
                         <arg>-parameters</arg>
                     </compilerArgs>
-                    <source>1.8</source>
-                    <target>1.8</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -254,6 +255,12 @@
 <!--                        </goals>-->
 <!--                    </execution>-->
 <!--                </executions>-->
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.1.2184</version>
             </plugin>
 
         </plugins>

@@ -71,6 +71,7 @@ public class ServerLogger extends AbstractLogger implements ContainerRequestFilt
         final StringBuilder b = new StringBuilder();
 
         printResponseLine(b, "Server responded with a response", id, responseContext.getStatus());
+        //noinspection DuplicatedCode
         printPrefixedHeaders(b, id, RESPONSE_PREFIX, responseContext.getStringHeaders());
 
         if (responseContext.hasEntity() && printEntity(responseContext.getMediaType())) {

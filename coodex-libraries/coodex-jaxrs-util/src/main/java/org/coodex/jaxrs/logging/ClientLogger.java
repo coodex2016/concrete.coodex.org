@@ -34,7 +34,7 @@ import java.io.OutputStream;
 @PreMatching
 public class ClientLogger extends AbstractLogger implements ClientRequestFilter, ClientResponseFilter {
 
-    private final static Logger logger = LoggerFactory.getLogger(ClientLogger.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClientLogger.class);
 
     public ClientLogger() {
         this(null, null);
@@ -56,6 +56,7 @@ public class ClientLogger extends AbstractLogger implements ClientRequestFilter,
         final StringBuilder b = new StringBuilder();
 
         printRequestLine(b, "Sending client request", id, context.getMethod(), context.getUri());
+        //noinspection DuplicatedCode
         printPrefixedHeaders(b, id, REQUEST_PREFIX, context.getStringHeaders());
 
         if (context.hasEntity() && printEntity(context.getMediaType())) {

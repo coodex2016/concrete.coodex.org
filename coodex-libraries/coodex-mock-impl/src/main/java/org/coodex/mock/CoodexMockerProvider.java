@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 import static org.coodex.mock.Mock.Depth.DEFAULT_DEPTH;
 import static org.coodex.mock.Mock.Dimension.*;
 import static org.coodex.mock.Mock.Dimensions.SAME_DEFAULT;
+import static org.coodex.util.Common.RANDOM;
 import static org.coodex.util.Common.cast;
 import static org.coodex.util.GenericTypeHelper.*;
 
@@ -41,8 +42,6 @@ import static org.coodex.util.GenericTypeHelper.*;
  * @author Davidoff
  */
 public class CoodexMockerProvider implements MockerProvider {
-
-
     private final static Logger log = LoggerFactory.getLogger(CoodexMockerProvider.class);
     /**
      * 用来存放模拟检索泛型变量的上下文
@@ -107,29 +106,23 @@ public class CoodexMockerProvider implements MockerProvider {
     private static final Object NOT_COLLECTION = new Object();
     private static final ServiceLoader<RelationStrategy> RELATION_STRATEGIES = new LazyServiceLoader<RelationStrategy>() {
     };
-    private static volatile Map<Class<?>, TypeAssignation> GLOBAL_ASSIGNATION = null;
 
-    public CoodexMockerProvider() {
-        if (GLOBAL_ASSIGNATION == null) {
-            synchronized (CoodexMockerProvider.class) {
-                if (GLOBAL_ASSIGNATION == null) {
-                    GLOBAL_ASSIGNATION = new HashMap<>();
-                    ReflectHelper.foreachClass(serviceClass -> GLOBAL_ASSIGNATION.put(
-                            serviceClass.getAnnotation(Mock.Assignation.class).value(),
-                            new TypeAssignation(new PojoInfo(serviceClass))
-                    ), className -> {
-                        try {
-                            Class<?> c = Class.forName(className);
-                            return c.getAnnotation(Mock.Assignation.class) != null;
-                        } catch (Throwable throwable) {
-                            log.debug("class {} load failed. {}", className, throwable.getLocalizedMessage());
-                        }
-                        return false;
-                    }, ASSIGNATIONS_PACKAGE);
-                }
+    private static final Singleton<Map<Class<?>, TypeAssignation>> GLOBAL_ASSIGNATION_SINGLETON = Singleton.with(() -> {
+        Map<Class<?>, TypeAssignation> map = new HashMap<>();
+        ReflectHelper.foreachClass(serviceClass -> map.put(
+                serviceClass.getAnnotation(Mock.Assignation.class).value(),
+                new TypeAssignation(new PojoInfo(serviceClass))
+        ), className -> {
+            try {
+                Class<?> c = Class.forName(className);
+                return c.getAnnotation(Mock.Assignation.class) != null;
+            } catch (Throwable throwable) {
+                log.debug("class {} load failed. {}", className, throwable.getLocalizedMessage());
             }
-        }
-    }
+            return false;
+        }, ASSIGNATIONS_PACKAGE);
+        return map;
+    });
 
     /**
      * 获得所有被指定注解装饰过的注解
@@ -510,7 +503,7 @@ public class CoodexMockerProvider implements MockerProvider {
         };
 
         Map<Class<?>, TypeAssignation> assignations = (POJO_ASSIGNATION_CONTEXT.get() == null) ?
-                new HashMap<>(GLOBAL_ASSIGNATION) : new HashMap<>();
+                new HashMap<>(GLOBAL_ASSIGNATION_SINGLETON.get()) : new HashMap<>();
 
         assignations.putAll(getTypeAssignationsFromAnnotations(annotations));
 
@@ -861,8 +854,9 @@ public class CoodexMockerProvider implements MockerProvider {
         SequenceMockerFactory<?> factory = SEQUENCE_MOCKER_FACTORIES.get(factoryClass);
         if (factory == null && !factoryClass.isInterface()) {
             try {
-                factory = factoryClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                factory = factoryClass.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                     InvocationTargetException e) {
                 throw new MockException(e.getLocalizedMessage(), e);
             }
         }
@@ -959,7 +953,7 @@ public class CoodexMockerProvider implements MockerProvider {
                 min = Math.max(1, Math.min(d.min(), d.max()));
                 size = d.size();
             }
-            return size > 0 ? size : (new Random().nextInt(max - min + 1) + min);
+            return size > 0 ? size : (RANDOM.nextInt(max - min + 1) + min);
         }
 
         int getSize(int dimension) {
@@ -979,7 +973,7 @@ public class CoodexMockerProvider implements MockerProvider {
             if (dimension >= 16)
                 throw new MockException("too many dimensions.");
             if (dimension < dimensions.length) {
-                return Math.random() < dimensions[dimension].nullProbability();
+                return Math.random() < dimensions[dimension].nullProbability();// NOSONAR
             } else {
                 return false;
             }

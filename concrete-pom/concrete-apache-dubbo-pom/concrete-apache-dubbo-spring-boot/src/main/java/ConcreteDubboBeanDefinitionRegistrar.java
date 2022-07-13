@@ -39,7 +39,7 @@ public class ConcreteDubboBeanDefinitionRegistrar implements ImportBeanDefinitio
     public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry beanDefinitionRegistry) {
         if (!beanDefinitionRegistry.containsBeanDefinition(BEAN_NAME)) {
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (beanDefinitionRegistry) {
+            synchronized (beanDefinitionRegistry) {// NOSONAR
                 if (!beanDefinitionRegistry.containsBeanDefinition(BEAN_NAME)) {
                     AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(
                             annotationMetadata.getAnnotationAttributes(

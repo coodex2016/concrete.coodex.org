@@ -53,7 +53,7 @@ public class X509TrustManagerImpl implements X509TrustManager {
         return trustStore;
     }
 
-    public void checkClientTrusted(X509Certificate[] chain, String authType) {
+    public void checkClientTrusted(X509Certificate[] chain, String authType) {// NOSONAR
         // no check!!
     }
 
@@ -94,7 +94,9 @@ public class X509TrustManagerImpl implements X509TrustManager {
         X509Certificate rootCert = this.findRootCert(certificates);
         reorderedChain[position] = rootCert;
 
-        for (X509Certificate cert = rootCert; (cert = this.findSignedCert(cert, certificates)) != null && position > 0; reorderedChain[position] = cert) {
+        for (X509Certificate cert = rootCert;
+             (cert = this.findSignedCert(cert, certificates)) != null && position > 0;
+             reorderedChain[position] = cert) {
             --position;
         }
 
@@ -116,11 +118,11 @@ public class X509TrustManagerImpl implements X509TrustManager {
     }
 
     private X509Certificate findSignedCert(X509Certificate signingCert, List<X509Certificate> certificates) {
+        if (signingCert == null || certificates == null) return null;
         X509Certificate signed = null;
-
         for (X509Certificate cert : certificates) {
-            Principal signingCertSubjectDN = signingCert.getSubjectDN();
-            Principal certIssuerDN = cert.getIssuerDN();
+            Principal signingCertSubjectDN = signingCert.getSubjectX500Principal();
+            Principal certIssuerDN = cert.getIssuerX500Principal();
             if (certIssuerDN.equals(signingCertSubjectDN) && !cert.equals(signingCert)) {
                 signed = cert;
                 break;
@@ -134,8 +136,8 @@ public class X509TrustManagerImpl implements X509TrustManager {
         X509Certificate signer = null;
 
         for (X509Certificate cert : certificates) {
-            Principal certSubjectDN = cert.getSubjectDN();
-            Principal issuerDN = signedCert.getIssuerDN();
+            Principal certSubjectDN = cert.getSubjectX500Principal();//.getSubjectDN();
+            Principal issuerDN = signedCert.getIssuerX500Principal();//.getIssuerDN();
             if (certSubjectDN.equals(issuerDN)) {
                 signer = cert;
                 break;

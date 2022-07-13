@@ -20,6 +20,7 @@ import org.coodex.billing.timebased.Period;
 import org.coodex.billing.timebased.TimeBasedChargeable;
 import org.coodex.billing.timebased.reference.FragmentSlicer;
 import org.coodex.billing.timebased.reference.SlicerFactory;
+import org.coodex.exception.ParseRuntimeException;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class FixedDateSlicerFactory<C extends TimeBasedChargeable> implements Sl
 
                 return periods;
             } catch (ParseException e) {
-                throw new RuntimeException("cannot parse " + profile.getStartTime(), e);
+                throw new ParseRuntimeException("cannot parse " + profile.getStartTime(), e);
             }
         }
     }

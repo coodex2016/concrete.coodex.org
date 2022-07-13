@@ -184,9 +184,8 @@ public class ExecutorsHelper {
 
         DefaultNamedThreadFactory(String namePrefix, int priority) {
             this.priority = Math.min(Thread.MAX_PRIORITY, Math.max(Thread.MIN_PRIORITY, priority));
-            SecurityManager s = System.getSecurityManager();
-            group = (s != null) ? s.getThreadGroup() :
-                    Thread.currentThread().getThreadGroup();
+//            SecurityManager s = System.getSecurityManager();
+            group = Thread.currentThread().getThreadGroup();// (s != null) ? s.getThreadGroup() :
             this.namePrefix = namePrefix == null ? ("coodex-pool-" + poolNumber.getAndIncrement() + "-thread") : namePrefix;
         }
 

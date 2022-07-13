@@ -26,23 +26,22 @@ public class SyncWrapper {
         return call(lock, 0L, callable);
     }
 
-
     public static <V> V call(final Lock lock, long time, Callable<V> callable) throws Exception {
 
         return call(new ResourceLock() {
             @Override
             public void lock() {
-                lock.lock();
+                lock.lock(); // NOSONAR
             }
 
             @Override
             public boolean tryLock() {
-                return lock.tryLock();
+                return lock.tryLock(); // NOSONAR
             }
 
             @Override
             public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
-                return lock.tryLock(time, unit);
+                return lock.tryLock(time, unit); // NOSONAR
             }
 
             @Override

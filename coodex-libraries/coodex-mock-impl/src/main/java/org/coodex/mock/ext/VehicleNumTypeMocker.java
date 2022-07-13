@@ -52,7 +52,7 @@ public class VehicleNumTypeMocker extends AbstractTypeMocker<VehicleNum> {
         String alphabets = "ABCDEFGHJKLMNPQRSTUVWXYZ";
         String numbers = "0123456789";
         for (int i = 1; i < 5; i++) {
-            if (alphabetCount < 2 && Math.random() < 0.1) {
+            if (alphabetCount < 2 && Math.random() < 0.1) {// NOSONAR
                 builder.append(randomChar(alphabets));
                 alphabetCount++;
             } else {

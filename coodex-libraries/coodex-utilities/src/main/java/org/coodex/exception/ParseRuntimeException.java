@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2022 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-package org.coodex.count;
+package org.coodex.exception;
 
-/**
- * Created by davidoff shen on 2017-04-18.
- */
-public interface SegmentedCounter<T extends Countable> extends Counter<T> {
+import java.text.ParseException;
 
-    /**
-     * @return 怎么分段
-     */
-    Segmentation getSegmentation();
+public class ParseRuntimeException extends RuntimeException {
+    public ParseRuntimeException(String message, ParseException cause) {
+        super(message, cause);
+    }
 
-    /**
-     * 切一下，需要线程安全
-     */
-    void slice();
+    public ParseRuntimeException(String message, ParseException cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

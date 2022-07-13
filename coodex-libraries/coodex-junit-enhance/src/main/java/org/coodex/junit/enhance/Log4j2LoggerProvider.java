@@ -69,11 +69,11 @@ public class Log4j2LoggerProvider extends AbstractLoggerProvider {
                                 .build()
                 )
                 .setTarget(ConsoleAppender.Target.SYSTEM_OUT)
-                .withImmediateFlush(true)
+                .setImmediateFlush(true)
                 .setConfiguration(configuration)
                 .build();
         appender.start();
-        configuration.addAppender(appender);
+        configuration.addAppender(appender);// NOSONAR
     }
 
     private void newLoggerConfig(String loggerName, Configuration configuration) {
@@ -85,21 +85,26 @@ public class Log4j2LoggerProvider extends AbstractLoggerProvider {
         if (console && configuration.getAppender(CONSOLE_APPENDER_KEY.get()) == null) {
             buildConsoleAppender(configuration);
         }
-        LoggerConfig loggerConfig = LoggerConfig.createLogger(false, level,
-                loggerName, "true", console ? new AppenderRef[]{
+
+        LoggerConfig loggerConfig = LoggerConfig.newBuilder()
+                .withAdditivity(false)
+                .withLevel(level)
+                .withLoggerName(loggerName)
+                .withRefs(console ? new AppenderRef[]{
                         AppenderRef.createAppenderRef(loggerName, level, null),
                         AppenderRef.createAppenderRef(CONSOLE_APPENDER_KEY.get(), level, null),
                 } : new AppenderRef[]{
                         AppenderRef.createAppenderRef(loggerName, level, null),
-                },
-                null, configuration, null);
+                })
+                .withConfig(configuration)
+                .build();
 
-        loggerConfig.addAppender(configuration.getAppender(loggerName), level, null);
+        loggerConfig.addAppender(configuration.getAppender(loggerName), level, null);// NOSONAR
         if (console) {
-            loggerConfig.addAppender(configuration.getAppender(CONSOLE_APPENDER_KEY.get()), level, null);
+            loggerConfig.addAppender(configuration.getAppender(CONSOLE_APPENDER_KEY.get()), level, null);// NOSONAR
         }
 
-        configuration.addLogger(loggerName, loggerConfig);
+        configuration.addLogger(loggerName, loggerConfig);// NOSONAR
     }
 
     private void newAppender(String loggerName, Configuration configuration) {
@@ -120,7 +125,7 @@ public class Log4j2LoggerProvider extends AbstractLoggerProvider {
                 .withFileName(Config.getValue("logger.path", getDefaultPath()) + loggerName + ".log")
                 .build();
         appender.start();
-        configuration.addAppender(appender);
+        configuration.addAppender(appender);// NOSONAR
     }
 
 

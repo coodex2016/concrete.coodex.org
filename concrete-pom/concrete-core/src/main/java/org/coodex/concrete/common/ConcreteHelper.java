@@ -34,6 +34,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
+import static org.coodex.util.Common.RANDOM;
 import static org.coodex.util.ReflectHelper.foreachClass;
 
 /**
@@ -139,11 +140,10 @@ public class ConcreteHelper {
 
     public static void printBanner(String originBanner, String moduleName, boolean randomColor) {
         if (randomColor) {
-            Random random = new Random();
             int[] colors = new int[10];
             for (int i = 0; i < colors.length; i++) {
-                colors[i] = (random.nextFloat() > 0.5 ? 90 : 30) + random.nextInt(8);
-                if(colors[i] == 30) colors[i] = 0;
+                colors[i] = (RANDOM.nextFloat() > 0.5 ? 90 : 30) + RANDOM.nextInt(8);
+                if (colors[i] == 30) colors[i] = 0;
             }
             printBanner(originBanner, moduleName, colors);
         } else {

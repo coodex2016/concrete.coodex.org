@@ -24,6 +24,9 @@ import java.lang.reflect.Array;
 
 public class JaxRSClientBuilder {
 
+    private JaxRSClientBuilder() {
+    }
+
     private static final ServiceLoader<ToRegisteredProvider> TO_REGISTERED_PROVIDER_SERVICE_LOADER
             = new LazyServiceLoader<ToRegisteredProvider>() {
     };

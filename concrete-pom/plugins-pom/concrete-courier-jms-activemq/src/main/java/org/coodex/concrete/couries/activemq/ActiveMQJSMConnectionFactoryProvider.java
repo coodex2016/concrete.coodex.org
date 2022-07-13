@@ -27,7 +27,8 @@ public class ActiveMQJSMConnectionFactoryProvider implements ConnectionFactoryPr
 
     @Override
     public ConnectionFactory build(String driver) {
-        return new ActiveMQConnectionFactory(driver.substring(PREFIX_ACTIVEMQ.length()));
+        // TODO setTrustedPackages
+        return new ActiveMQConnectionFactory(driver.substring(PREFIX_ACTIVEMQ.length()));// NOSONAR
     }
 
     @Override

@@ -34,6 +34,7 @@ import java.util.Random;
 import static org.coodex.mock.CharTypeMocker.getRange;
 import static org.coodex.mock.Mock.Char.DEFAULT_CHAR_RANGE;
 import static org.coodex.mock.Mock.String.*;
+import static org.coodex.util.Common.RANDOM;
 
 public class StringTypeMocker extends AbstractTypeMocker<Mock.String> {
 
@@ -149,9 +150,9 @@ public class StringTypeMocker extends AbstractTypeMocker<Mock.String> {
         @Override
         public String random() {
             StringBuilder builder = new StringBuilder();
-            int len = new Random().nextInt(max - min + 1) + min;
+            int len = RANDOM.nextInt(max - min + 1) + min;
             for (int i = 0; i <= len; i++) {
-                if (emojiProbability > 0 && Math.random() < emojiProbability) {
+                if (emojiProbability > 0 && Math.random() < emojiProbability) {// NOSONAR
                     builder.append(EmojiMocker.mock());
                 } else {
                     builder.append(Character.toChars(charRange.random()));
@@ -170,8 +171,7 @@ public class StringTypeMocker extends AbstractTypeMocker<Mock.String> {
 
         @Override
         public String random() {
-            Random random = new Random();
-            return list.get(random.nextInt(list.size()));
+            return list.get(RANDOM.nextInt(list.size()));
         }
     }
 
@@ -296,7 +296,7 @@ class EmojiMocker {
     }
 
     private String mockEmojiChar() {
-        return emojiChars.get(new Random().nextInt(emojiChars.size()));
+        return emojiChars.get(RANDOM.nextInt(emojiChars.size()));
     }
 
     @Override

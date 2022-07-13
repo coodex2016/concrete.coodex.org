@@ -65,7 +65,7 @@ public abstract class AbstractTypeMocker<A extends Annotation> implements TypeMo
         if (nullable != null) {
             Class<?> c = getClassFromType(targetType, false);
             if (c == null || !c.isPrimitive()) {
-                if (Math.random() < nullable.probability()) return null;
+                if (Math.random() < nullable.probability()) return null;// NOSONAR
             }
         }
         return mock(mockAnnotation, targetType);

@@ -23,6 +23,8 @@ import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 public class Utils {
+    private Utils() {
+    }
 
     public static Calendar getCal(String timeDesc) throws ParseException {
         Calendar calendar = Common.strToCalendar(timeDesc, "HH:mm");

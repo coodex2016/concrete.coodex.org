@@ -61,9 +61,9 @@ public class CountFacadeProvider implements CountFacade {
             )
     );
 
-    private final static Logger log = LoggerFactory.getLogger(CountFacadeProvider.class);
-    private final static AtomicInteger atomicInteger = new AtomicInteger(0);
-    private final static ServiceLoader<Counter<Countable>> counterProvider = new LazyServiceLoader<Counter<Countable>>() {
+    private static final Logger log = LoggerFactory.getLogger(CountFacadeProvider.class);
+    private static final AtomicInteger atomicInteger = new AtomicInteger(0);
+    private static final ServiceLoader<Counter<Countable>> counterProvider = new LazyServiceLoader<Counter<Countable>>() {
     };
 
     private final Singleton<Map<Class<?>, CounterChain<Countable>>> chainMapSingleton
@@ -104,9 +104,7 @@ public class CountFacadeProvider implements CountFacade {
             if (next > Clock.currentTimeMillis()) {
                 getScheduler("count").schedule(() -> {
                     try {
-                        synchronized (counter) {
-                            counter.slice();
-                        }
+                        counter.slice();
                     } finally {
                         schedule(counter);
                     }

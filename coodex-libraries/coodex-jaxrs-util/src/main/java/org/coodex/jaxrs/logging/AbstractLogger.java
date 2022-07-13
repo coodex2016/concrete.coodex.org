@@ -18,7 +18,6 @@ package org.coodex.jaxrs.logging;
 
 import org.coodex.logging.Level;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -54,19 +53,24 @@ public class AbstractLogger implements WriterInterceptor {
      * Logging record id property
      */
     protected static final String LOGGING_ID_PROPERTY = AbstractLogger.class.getName() + ".id";
-    protected final static int MAX_ENTITY_SIZE = 8192;
-    private final static Logger logger = LoggerFactory.getLogger(AbstractLogger.class);
+    protected static final int MAX_ENTITY_SIZE = 8192;
     private static final String NOTIFICATION_PREFIX = "* ";
     private static final MediaType TEXT_MEDIA_TYPE = new MediaType("text", "*");
-    private static final Set<MediaType> READABLE_APP_MEDIA_TYPES = new HashSet<MediaType>() {{
-        add(TEXT_MEDIA_TYPE);
-        add(MediaType.APPLICATION_ATOM_XML_TYPE);
-        add(MediaType.APPLICATION_FORM_URLENCODED_TYPE);
-        add(MediaType.APPLICATION_JSON_TYPE);
-        add(MediaType.APPLICATION_SVG_XML_TYPE);
-        add(MediaType.APPLICATION_XHTML_XML_TYPE);
-        add(MediaType.APPLICATION_XML_TYPE);
-    }};
+    private static final Set<MediaType> READABLE_APP_MEDIA_TYPES = new HashSet<>();
+
+    static {
+        {
+            READABLE_APP_MEDIA_TYPES.add(TEXT_MEDIA_TYPE);
+            READABLE_APP_MEDIA_TYPES.add(MediaType.APPLICATION_ATOM_XML_TYPE);
+            READABLE_APP_MEDIA_TYPES.add(MediaType.APPLICATION_FORM_URLENCODED_TYPE);
+            READABLE_APP_MEDIA_TYPES.add(MediaType.APPLICATION_JSON_TYPE);
+            READABLE_APP_MEDIA_TYPES.add(MediaType.APPLICATION_SVG_XML_TYPE);
+            READABLE_APP_MEDIA_TYPES.add(MediaType.APPLICATION_XHTML_XML_TYPE);
+            READABLE_APP_MEDIA_TYPES.add(MediaType.APPLICATION_XML_TYPE);
+        }
+
+    }
+
     private static final Comparator<Map.Entry<String, List<String>>> COMPARATOR =
             (o1, o2) -> o1.getKey().compareToIgnoreCase(o2.getKey());
     protected final AtomicLong _id = new AtomicLong(0);
@@ -165,7 +169,7 @@ public class AbstractLogger implements WriterInterceptor {
                     if (!value.equals(decoded)) {
                         value += "[decoded value:" + decoded + "]";
                     }
-                } catch (UnsupportedEncodingException ignore) {
+                } catch (UnsupportedEncodingException ignore) {// NOSONAR
                 }
                 prefixId(b, id).append(prefix).append(header).append(": ").append(value).append("\n");
             } else {
@@ -182,7 +186,7 @@ public class AbstractLogger implements WriterInterceptor {
                         if (!value.equals(decoded)) {
                             value += "[decoded value:" + decoded + "]";
                         }
-                    } catch (UnsupportedEncodingException ignore) {
+                    } catch (UnsupportedEncodingException ignore) {// NOSONAR
                     }
                     sb.append(value);
                 }
@@ -218,10 +222,8 @@ public class AbstractLogger implements WriterInterceptor {
             throws IOException, WebApplicationException {
         final LoggingStream stream = (LoggingStream) writerInterceptorContext.getProperty(ENTITY_LOGGER_PROPERTY);
         writerInterceptorContext.proceed();
-        if (printEntity(writerInterceptorContext.getMediaType())) {
-            if (stream != null) {
-                log(stream.getStringBuilder(getCharset(writerInterceptorContext.getMediaType())));
-            }
+        if (printEntity(writerInterceptorContext.getMediaType()) && stream != null) {
+            log(stream.getStringBuilder(getCharset(writerInterceptorContext.getMediaType())));
         }
     }
 

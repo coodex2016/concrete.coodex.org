@@ -42,7 +42,7 @@ public final class Mocker {
                         if (serviceLoader.hasNext()) {
                             mockerProviderInstance = serviceLoader.next();
                         } else {
-                            mockerProviderInstance = (MockerProvider) Class.forName(DEFAULT_PROVIDER_CLASS).newInstance();
+                            mockerProviderInstance = (MockerProvider) Class.forName(DEFAULT_PROVIDER_CLASS).getDeclaredConstructor().newInstance();
                         }
                     } catch (Throwable throwable) {
                         th = throwable;

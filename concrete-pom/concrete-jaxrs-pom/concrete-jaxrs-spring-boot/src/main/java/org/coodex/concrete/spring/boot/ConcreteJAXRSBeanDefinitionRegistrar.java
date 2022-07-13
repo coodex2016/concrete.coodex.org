@@ -60,7 +60,7 @@ public class ConcreteJAXRSBeanDefinitionRegistrar
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         if (!registry.containsBeanDefinition(BEAN_NAME)) {
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (registry) {
+            synchronized (registry) {// NOSONAR
                 if (!registry.containsBeanDefinition(BEAN_NAME)) {
                     AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(
                             importingClassMetadata.getAnnotationAttributes(

@@ -20,6 +20,7 @@ import org.coodex.billing.timebased.Period;
 import org.coodex.billing.timebased.TimeBasedChargeable;
 import org.coodex.billing.timebased.reference.FragmentSlicer;
 import org.coodex.billing.timebased.reference.SlicerFactory;
+import org.coodex.exception.ParseRuntimeException;
 import org.coodex.util.Section;
 
 import java.text.ParseException;
@@ -75,7 +76,7 @@ public class FragmentSlicerFactory<C extends TimeBasedChargeable> implements Sli
                 }
                 return result;
             } catch (ParseException e) {
-                throw new RuntimeException(e.getLocalizedMessage(), e);
+                throw new ParseRuntimeException(e.getLocalizedMessage(), e);
             }
         }
     }

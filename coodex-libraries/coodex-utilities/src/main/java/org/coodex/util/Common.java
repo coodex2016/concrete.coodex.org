@@ -50,9 +50,12 @@ public class Common {
     public static final Long SYSTEM_START_TIME;// = ManagementFactory.getRuntimeMXBean().getStartTime();
     public static final int PROCESSOR_COUNT = Runtime.getRuntime().availableProcessors();
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    private final static Logger log = LoggerFactory.getLogger(Common.class);
+
+    public static final Random RANDOM = new Random();// NOSONAR
+    private static final Logger log = LoggerFactory.getLogger(Common.class);
     private static final int TO_LOWER = 'a' - 'A';
-    private final static String DEFAULT_DELIM = ".-_ /\\";
+    private static final String DEFAULT_DELIM = ".-_ /\\";
+    @SuppressWarnings("java:S5164")
     private static final ThreadLocal<SingletonMap<String, DateFormat>> threadLocal = new ThreadLocal<>();
     private static final SelectableServiceLoader<Class<?>, StringConvertWithDefaultValue> converterServiceLoader
             = new LazySelectableServiceLoader<Class<?>, StringConvertWithDefaultValue>() {
@@ -61,7 +64,7 @@ public class Common {
 
     private static final Singleton<Boolean> COODEX_DEBUG_FLAG = Singleton.with(() -> toBool(System.getProperty("coodex.debug"), false));
 
-    private final static Singleton<Boolean> IS_JAVA_9_AND_LAST = Singleton.with(
+    private static final Singleton<Boolean> IS_JAVA_9_AND_LAST = Singleton.with(
             () -> {
                 try {
                     //noinspection JavaReflectionMemberAccess,ConstantConditions
@@ -293,10 +296,10 @@ public class Common {
         }
         long step = max - min + (includeMax ? 1L : 0L);
         if (step > 0) {
-            return min + (long) (Math.random() * step);
+            return min + (long) (Math.random() * step);// NOSONAR
         }
         // 越界情况，按照正负数的权重算一次随机判定落在哪一边
-        return Math.random() < (Math.abs(min) * 1d / max) ?
+        return Math.random() < (Math.abs(min) * 1d / max) ?// NOSONAR
                 random(min, 0, includeMax) :
                 random(0, max, includeMax);
 
@@ -309,7 +312,7 @@ public class Common {
         }
         double _min = Math.min(min, max);
         double _max = Math.max(min, max);
-        return _min + Math.random() * (_max - _min);
+        return _min + Math.random() * (_max - _min);// NOSONAR
     }
 
     public static <K extends Serializable, V extends Serializable> void copyMap(
@@ -699,9 +702,9 @@ public class Common {
             f.getParentFile().mkdirs();
         }
         if (f.exists()) {
-            f.delete();
+            f.delete(); // NOSONAR
         }
-        f.createNewFile();
+        f.createNewFile(); // NOSONAR
         return f;
     }
 
@@ -715,7 +718,7 @@ public class Common {
             if (file.exists()) {
                 try {
                     return new URL(filePath);
-                } catch (MalformedURLException ignore) {
+                } catch (MalformedURLException ignore) {// NOSONAR
                 }
             }
         }
@@ -1326,7 +1329,7 @@ public class Common {
         try {
             Clock.sleep(ms);
         } catch (InterruptedException e) {
-            throw rte(e);
+            Thread.currentThread().interrupt();
         }
     }
 

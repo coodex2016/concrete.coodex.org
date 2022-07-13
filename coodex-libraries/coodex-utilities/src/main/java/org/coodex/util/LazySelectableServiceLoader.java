@@ -97,9 +97,11 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
     }
 
     private ServiceLoader<T> getServiceLoaderFacade() {
-        if (serviceLoaderFacade == null) {
+        ServiceLoader<T> localServiceLoader = serviceLoaderFacade;
+        if (localServiceLoader == null) {
             synchronized (this) {
-                if (serviceLoaderFacade == null) {
+                localServiceLoader = serviceLoaderFacade;
+                if (localServiceLoader == null) {
                     // 如果没有指定默认服务，并且指定了异常的函数提供，则代理出一个所有方法
                     T defaultService = defaultServiceSingleton.get();
                     if (defaultService == null && exceptionFunction != null) {
@@ -122,7 +124,7 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
                         ));
                     }
                     T finalDefaultService = defaultService;
-                    this.serviceLoaderFacade = new LazyServiceLoader<T>() {
+                    this.serviceLoaderFacade = localServiceLoader = new LazyServiceLoader<T>() {
                         @Override
                         protected T getDefaultInstance() {
 //                            T defaultService = defaultServiceSingleton.get();
@@ -142,7 +144,7 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
                 }
             }
         }
-        return serviceLoaderFacade;
+        return localServiceLoader;
     }
 
     private boolean accept(T instance, Param_Type param) {

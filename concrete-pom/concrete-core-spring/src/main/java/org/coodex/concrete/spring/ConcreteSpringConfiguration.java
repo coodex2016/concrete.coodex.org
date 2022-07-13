@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,42 +41,21 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 @ComponentScan({"org.coodex.spring", "org.coodex.concrete.spring.components", "org.coodex.concrete.**.injectable"})
 public class ConcreteSpringConfiguration {
 
-    private final static Logger log = LoggerFactory.getLogger(ConcreteSpringConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(ConcreteSpringConfiguration.class);
 
-//    private static Singleton<ServiceLoader<InterceptorLoader>> INTERCEPTOR_LOADER =
-//            new Singleton<>(() -> new ServiceLoaderImpl<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
-//            });
 
     private static final LazyServiceLoader<InterceptorLoader> INTERCEPTOR_LOADER = new LazyServiceLoader<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
     };
-//            new Singleton<>(() -> new ServiceLoaderImpl<InterceptorLoader>(ConcreteSpringConfiguration::getInterceptorSupportedMap) {
-//            });
 
     private static Map<String, Class<? extends ConcreteInterceptor>> getInterceptorSupportedMap() {
-        return new HashMap<String, Class<? extends ConcreteInterceptor>>() {{
-            put("rbac", RBACInterceptor.class);
-            put("limiting", LimitingInterceptor.class);
-            put("signature", SignatureInterceptor.class);
-//            put("log", OperationLogInterceptor.class);
-            put("timing", ServiceTimingInterceptor.class);
-            put("beanValidation", BeanValidationInterceptor.class);
-        }};
+        Map<String, Class<? extends ConcreteInterceptor>> map = new HashMap<>();
+        map.put("rbac", RBACInterceptor.class);
+        map.put("limiting", LimitingInterceptor.class);
+        map.put("signature", SignatureInterceptor.class);
+        map.put("timing", ServiceTimingInterceptor.class);
+        map.put("beanValidation", BeanValidationInterceptor.class);
+        return map;
     }
-
-//    @Bean
-//    public BeanProvider springBeanProvider() {
-//        return new SpringBeanProvider();
-//    }
-
-//    @Bean
-//    public ActiveProfilesProvider springActiveProfilesProvider() {
-//        return new org.coodex.spring.SpringActiveProfileProvider();
-//    }
-
-//    @Bean
-//    public ServiceLoaderProvider springServiceLoaderProvider() {
-//        return new SpringServiceLoaderProvider();
-//    }
 
     @Bean
     public Token tokenWrapper() {
@@ -99,8 +79,9 @@ public class ConcreteSpringConfiguration {
 
             if (Config.getValue("interceptors." + entry.getKey(), false, getAppSet())) {
                 try {
-                    list.add(entry.getValue().newInstance());
-                } catch (InstantiationException | IllegalAccessException e) {
+                    list.add(entry.getValue().getDeclaredConstructor().newInstance());
+                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                         InvocationTargetException e) {
                     log.warn("load interceptor {}[{}] failed.", entry.getKey(), entry.getValue().getName());
                 }
             }

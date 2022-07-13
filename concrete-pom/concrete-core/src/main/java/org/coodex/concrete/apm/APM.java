@@ -77,7 +77,7 @@ public class APM {
             return null;
         }
     };
-    private static LazyServiceLoader<TraceFactory> traceFactoryServiceSingleton =
+    private static final LazyServiceLoader<TraceFactory> traceFactoryServiceSingleton =
             new LazyServiceLoader<TraceFactory>(defaultFactory) {
             };
 

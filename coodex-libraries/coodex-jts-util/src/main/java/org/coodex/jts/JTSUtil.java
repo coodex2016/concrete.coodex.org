@@ -27,6 +27,9 @@ import java.util.Objects;
 
 public class JTSUtil {
 
+    private JTSUtil() {
+    }
+
     public static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
     private static final
     SelectableServiceLoader<Geometry, GeometryConvertService<Geometry>> CONVERT_SERVICE_LOADER

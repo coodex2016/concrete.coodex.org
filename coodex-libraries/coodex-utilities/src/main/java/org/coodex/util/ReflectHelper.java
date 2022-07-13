@@ -124,7 +124,7 @@ public class ReflectHelper {
                 if (member instanceof Method && ((Method) member).isSynthetic() && ((Method) member).getDeclaringClass() != Object.class) {
                     return (Method) member;
                 }
-            } catch (Exception ignored) {
+            } catch (Exception ignored) {// NOSONAR
                 // ignored
             }
         }

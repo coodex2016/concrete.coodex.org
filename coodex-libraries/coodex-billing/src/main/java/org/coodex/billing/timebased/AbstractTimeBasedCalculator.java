@@ -17,6 +17,8 @@
 package org.coodex.billing.timebased;
 
 import org.coodex.billing.*;
+import org.coodex.exception.NoneInstanceException;
+import org.coodex.exception.NoneSupportedException;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.Section;
 import org.coodex.util.SelectableServiceLoader;
@@ -31,7 +33,7 @@ import static org.coodex.util.Common.max;
 
 public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable> implements Calculator<C> {
 
-    private final static Logger log = LoggerFactory.getLogger(AbstractTimeBasedCalculator.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractTimeBasedCalculator.class);
     private static final RevisionToDetail<Revision> DEFAULT_REVISION = new RevisionToDetail<Revision>() {
         @Override
         public Bill.Detail toDetail(Revision revision, Period period, long amount) {
@@ -40,7 +42,7 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
             } else if (revision instanceof Adjustment) {
                 return amount == 0 ? null : new Bill.AdjustDetail(amount, revision.getName(), revision);
             } else {
-                throw new RuntimeException("do not support this revision: " + (revision == null ? null : revision.getClass()));
+                throw new NoneSupportedException("do not support this revision: " + (revision == null ? null : revision.getClass()));
             }
         }
 
@@ -54,34 +56,6 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
             new LazySelectableServiceLoader<Revision, RevisionToDetail<Revision>>(DEFAULT_REVISION) {
             };
 
-    //    private static Singleton<SelectableServiceLoader<Revision, RevisionToDetail<Revision>>> detailCreators =
-//            new Singleton<SelectableServiceLoader<Revision, RevisionToDetail<Revision>>>(
-//                    new Singleton.Builder<SelectableServiceLoader<Revision, RevisionToDetail<Revision>>>() {
-//                        @Override
-//                        public SelectableServiceLoader<Revision, RevisionToDetail<Revision>> build() {
-//                            return new SelectableServiceLoader<Revision, RevisionToDetail<Revision>>(
-//                                    new RevisionToDetail<Revision>() {
-//                                        @Override
-//                                        public Bill.Detail toDetail(Revision revision, Period period, long amount) {
-//                                            if (revision instanceof TimeBasedRevision) {
-//                                                return new TimeBasedDetailImpl(period, amount, revision, revision.getName());
-//                                            } else if (revision instanceof Adjustment) {
-//                                                return amount == 0 ? null : new Bill.AdjustDetail(amount, revision.getName(), revision);
-//                                            } else {
-//                                                throw new RuntimeException("do not support this revision: " + (revision == null ? null : revision.getClass()));
-//                                            }
-//                                        }
-//
-//                                        @Override
-//                                        public boolean accept(Revision param) {
-//                                            return true;
-//                                        }
-//                                    }
-//                            ) {
-//                            };
-//                        }
-//                    }
-//            );
     private final SelectableServiceLoader<String, BillingModel<C>> billingModels = new LazySelectableServiceLoader<String, BillingModel<C>>() {
         @Override
         protected Object getGenericTypeSearchContextObject() {
@@ -183,20 +157,12 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
      * @return 根据参数复制一个新的消费对象，用于多规则场景
      */
     protected abstract C copyChargeable(C chargeable, List<Revision> revisions);
-//    protected C copyChangeable(C chargeable, List<Revision> revisions) {
-//        try {
-//            return deepCopy(chargeable);
-//        } catch (Throwable e) {
-//            throw runtimeException(e);
-//        }
-//    }
-
 
     private Bill<C> calcWithARule(C chargeable) {
         // 提取计费模型
         BillingModel<C> billingModel = billingModels.select(chargeable.getModel());
         if (billingModel == null) {
-            throw new RuntimeException("NONE BillingModel Found for " + chargeable.getModel());
+            throw new NoneInstanceException("NONE BillingModel Found for " + chargeable.getModel());
         }
 
         // 记账

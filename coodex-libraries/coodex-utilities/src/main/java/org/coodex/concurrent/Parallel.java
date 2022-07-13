@@ -63,7 +63,6 @@ public class Parallel {
             try {
                 latch.await();
             } catch (InterruptedException e) {
-                e.printStackTrace();
                 Thread.currentThread().interrupt();
             }
 //            while (!batch.isAllFinished()) {
@@ -102,7 +101,6 @@ public class Parallel {
             try {
                 latch.await();
             } catch (InterruptedException e) {
-                e.printStackTrace();
                 Thread.currentThread().interrupt();
             }
 //            while (!batch.isAllFinished()) {

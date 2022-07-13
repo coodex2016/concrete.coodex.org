@@ -47,11 +47,14 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
 
 
     public static final String NAMESPACE_SERVICE_TIMING = "service-timing";
-    private final static Logger log = LoggerFactory.getLogger(ServiceTimingInterceptor.class);
-    private final static Map<String, String> DEFAULT_CHECKERS = new HashMap<String, String>() {{
-        put("TIMERANGE", ByTimeRange.class.getName());
-        put("WORKDAY", ByWorkDay.class.getName());
-    }};
+    private static final Logger log = LoggerFactory.getLogger(ServiceTimingInterceptor.class);
+    private static final Map<String, String> DEFAULT_CHECKERS = new HashMap<>();
+
+    static {
+        DEFAULT_CHECKERS.put("TIMERANGE", ByTimeRange.class.getName());
+        DEFAULT_CHECKERS.put("WORKDAY", ByWorkDay.class.getName());
+    }
+
     private static final ServiceTimingChecker ALL_ALLOWED_CHECKER = () -> true;
 
     private static ServiceTimingChecker loadCheckerInstance(String label) {
@@ -72,7 +75,7 @@ public class ServiceTimingInterceptor extends AbstractInterceptor {
         // 加载实例
         try {
             Class<?> clz = Class.forName(className);
-            Object o = clz.newInstance();
+            Object o = clz.getDeclaredConstructor().newInstance();
             for (Field f : ReflectHelper.getAllDeclaredFields(clz)) {
                 f.setAccessible(true);
                 if (!Modifier.isStatic(f.getModifiers()) // 非static

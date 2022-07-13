@@ -24,7 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static org.coodex.util.Common.RANDOM;
+
 public class CharTypeMocker extends AbstractTypeMocker<Mock.Char> {
+
     final static Class<?>[] SUPPORTED_CLASSES = new Class<?>[]{
             char.class, Character.class,
             String.class
@@ -102,6 +105,7 @@ public class CharTypeMocker extends AbstractTypeMocker<Mock.Char> {
     }
 
     static class ArrayCharRange implements CharRange {
+
         private final int[] range;
 
         ArrayCharRange(int[] range) {
@@ -114,12 +118,12 @@ public class CharTypeMocker extends AbstractTypeMocker<Mock.Char> {
 
         @Override
         public int random() {
-            return range[new Random().nextInt(range.length)];
+            return range[RANDOM.nextInt(range.length)];
         }
     }
 
     static class CodePointSetCharRange implements CharRange {
-        private List<CharCodeSet> list = new ArrayList<>();
+        private final List<CharCodeSet> list = new ArrayList<>();
 
         CodePointSetCharRange(CharCodeSet[] sets, boolean bmp) {
             for (CharCodeSet set : sets) {
@@ -135,7 +139,7 @@ public class CharTypeMocker extends AbstractTypeMocker<Mock.Char> {
 
         @Override
         public int random() {
-            return randomChar(new Random());
+            return randomChar(RANDOM);
         }
 
         private int randomChar(Random random) {

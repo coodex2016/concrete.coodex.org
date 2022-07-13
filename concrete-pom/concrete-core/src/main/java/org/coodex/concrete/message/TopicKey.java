@@ -58,19 +58,14 @@ public class TopicKey {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null) return false;
-
+        if (o == null || getClass() != o.getClass()) return false;
         TopicKey topicKey = (TopicKey) o;
-
-        if (!Objects.equals(queue, topicKey.queue)) return false;
-        return Objects.equals(topicTypeName, topicKey.topicTypeName);
+        return Objects.equals(queue, topicKey.queue) && Objects.equals(topicType, topicKey.topicType);
     }
 
     @Override
     public int hashCode() {
-        int result = queue != null ? queue.hashCode() : 0;
-        result = 31 * result + (topicTypeName != null ? topicTypeName.hashCode() : 0);
-        return result;
+        return Objects.hash(queue, topicType);
     }
 
     @Override

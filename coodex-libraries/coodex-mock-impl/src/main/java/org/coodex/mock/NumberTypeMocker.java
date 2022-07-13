@@ -24,10 +24,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import static org.coodex.mock.Mock.Number.DEFAULT_DIGITS;
 import static org.coodex.mock.Mock.Number.DEFAULT_RANGE;
+import static org.coodex.util.Common.RANDOM;
 import static org.coodex.util.Common.cast;
 
 /**
@@ -298,7 +298,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
         @Override
         public T mock() {
-            int random = weight > 1 ? new Random().nextInt(weight) : 0;
+            int random = weight > 1 ? RANDOM.nextInt(weight) : 0;
             for (Alternative<T> alternative : alternatives) {
                 random -= alternative.weight();
                 if (random < 0) {
@@ -547,10 +547,10 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
         private Double random() {
             double x = this.max - this.min;
-            double random = Math.random();
+            double random = Math.random();// NOSONAR
             if (Double.isInfinite(x)) {
                 double over = random * Double.MAX_VALUE;
-                if (Math.random() < 0.5) {
+                if (Math.random() < 0.5) {// NOSONAR
                     over = over * -1.0d;
                 }
                 if (over > this.max) {
@@ -592,10 +592,10 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
 
         private Float random() {
             float x = this.max - this.min;
-            float random = (float) Math.random();
+            float random = (float) Math.random();// NOSONAR
             if (Float.isInfinite(x)) {
                 float over = random * Float.MAX_VALUE;
-                if (Math.random() < 0.5) {
+                if (Math.random() < 0.5) {// NOSONAR
                     over = over * -1f;
                 }
                 if (over > this.max) {
@@ -738,7 +738,7 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
             if (longMin == longMax) return longMin;
 
             long x = longMax - longMin + 1;
-            long random = new Random().nextLong();
+            long random = RANDOM.nextLong();
 
             // 越界
             if (x <= 0) {

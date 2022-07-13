@@ -62,9 +62,9 @@ public class ConfigurationBaseSpringPropertySources extends AbstractConfiguratio
                     // list type
                     StringJoiner joiner = new StringJoiner(",");
                     for (int i = 0; springEnvironment.containsProperty(prefix + key + "[" + i + "]"); i++) {
-                        String str = springEnvironment.getProperty(prefix + key + "[" + i + "]");
+                        String str = springEnvironment.getProperty(prefix + key + "[" + i + "]");// NOSONAR
                         if (!Common.isBlank(str)) {
-                            joiner.add(str.trim());
+                            joiner.add(str.trim());// NOSONAR
                         }
                     }
                     String v = joiner.toString();

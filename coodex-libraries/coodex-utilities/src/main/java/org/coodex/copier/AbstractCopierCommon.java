@@ -50,7 +50,7 @@ public abstract class AbstractCopierCommon {
 
     protected Object newObject(Index index) {
         try {
-            return getClass(index).newInstance();
+            return getClass(index).getDeclaredConstructor().newInstance();
         } catch (Throwable th) {
             throw Common.rte(th);
         }
@@ -75,7 +75,7 @@ public abstract class AbstractCopierCommon {
         } else {
             try {
                 collection = tClass.getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {// NOSONAR
             }
         }
         if (collection == null)

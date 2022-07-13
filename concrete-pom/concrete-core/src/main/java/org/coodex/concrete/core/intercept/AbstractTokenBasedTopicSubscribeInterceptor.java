@@ -44,9 +44,9 @@ import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 public abstract class AbstractTokenBasedTopicSubscribeInterceptor<M extends Serializable> extends AbstractInterceptor {
 
 
-    private Token token = TokenWrapper.getInstance();
+    private final Token token = TokenWrapper.getInstance();
 
-    private Singleton<TokenBasedTopic<M>> tokenBasedTopicSingleton = Singleton.with(this::buildTopic);
+    private final Singleton<TokenBasedTopic<M>> tokenBasedTopicSingleton = Singleton.with(this::buildTopic);
 
     private TokenBasedTopic<M> buildTopic() {
         MessageConsumer messageConsumer = getClass().getAnnotation(MessageConsumer.class);
@@ -80,9 +80,9 @@ public abstract class AbstractTokenBasedTopicSubscribeInterceptor<M extends Seri
 
     protected abstract MessageFilter<M> subscribe();
 
-    private boolean checkAccountCredible() {
-        return true;
-    }
+//    private boolean checkAccountCredible() {
+//        return true;
+//    }
 
     protected abstract boolean check();
 
@@ -92,11 +92,11 @@ public abstract class AbstractTokenBasedTopicSubscribeInterceptor<M extends Seri
 
     private boolean check_() {
 
-        if (checkAccountCredible()) {
+//        if (checkAccountCredible()) {
             return token.isAccountCredible() && check();
-        } else {
-            return check();
-        }
+//        } else {
+//            return check();
+//        }
     }
 
     @Override

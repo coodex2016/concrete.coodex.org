@@ -36,7 +36,7 @@ public class BoxedCounter implements SegmentedCounter<Pojo> {
 
     private static final int boxCount = 15;
     private static final int boxSize = 100;
-    private int[] boxes = new int[boxCount + 1];
+    private final int[] boxes = new int[boxCount + 1];
 
     public BoxedCounter() {
         Arrays.fill(boxes, 0);
@@ -46,7 +46,7 @@ public class BoxedCounter implements SegmentedCounter<Pojo> {
     @Override
     public void count(Pojo value) {
         int boxNo = value.getValue() / boxSize;
-        boxes[boxNo >= boxCount ? boxCount : boxNo]++;
+        boxes[Math.min(boxNo, boxCount)]++;
         log.debug("boxes: {}", boxes);
     }
 
@@ -60,7 +60,7 @@ public class BoxedCounter implements SegmentedCounter<Pojo> {
     }
 
     @Override
-    public void slice() {
+    public synchronized void slice() {
         log.info("slice ...");
         Arrays.fill(boxes, 0);
     }

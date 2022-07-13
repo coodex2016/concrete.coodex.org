@@ -225,7 +225,7 @@ public class ResourceScanner {
 
         try (ZipInputStream zipInputStream = new ZipInputStream(zip.openStream())) {
             ZipEntry zipEntry;
-            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {// NOSONAR
                 String entryName = zipEntry.getName();
                 if (zipEntry.isDirectory() || !entryName.startsWith(context)) continue;
                 String resourceName = entryName.substring(context.length());

@@ -27,7 +27,7 @@ public class FixedHoursSlicerProfile implements SlicerProfile {
      */
     public FixedHoursSlicerProfile(int fixedHours) {
         if (fixedHours <= 0) {
-            throw new RuntimeException("fixed hours must greater then zero");
+            throw new IllegalArgumentException("fixed hours must greater then zero");
         }
         this.fixedHours = fixedHours;
     }

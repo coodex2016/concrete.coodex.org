@@ -65,7 +65,7 @@ public abstract class AbstractBeanProvider implements BeanProvider {
         try {
             return (ConflictSolution) Class.forName(
                     Config.get(ConflictSolution.class.getCanonicalName(), getAppSet())
-            ).newInstance();
+            ).getDeclaredConstructor().newInstance();
         } catch (Throwable ignored) {
         }
 

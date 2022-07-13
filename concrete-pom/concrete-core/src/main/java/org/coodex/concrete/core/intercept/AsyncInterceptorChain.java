@@ -166,7 +166,7 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
             this.sign = sign;
         }
 
-        public int $compare(ConcreteInterceptor o1, ConcreteInterceptor o2) {
+        public int compare$(ConcreteInterceptor o1, ConcreteInterceptor o2) {
             if (o1 == o2) {
                 return 0;
             }
@@ -181,7 +181,7 @@ public class AsyncInterceptorChain extends AbstractInterceptor implements Set<Co
 
         @Override
         public int compare(ConcreteInterceptor o1, ConcreteInterceptor o2) {
-            return $compare(o1, o2) * sign;
+            return compare$(o1, o2) * sign;
         }
     }
 

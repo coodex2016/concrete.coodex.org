@@ -29,17 +29,15 @@ import java.util.Set;
 
 public class ApacheDubboApplication extends AbstractDubboApplication {
 
-    private static Singleton<RegistryConfig> simpleRegistry = Singleton.with(() -> {
-        // SimpleRegistryService
-        ServiceConfig<RegistryService> config = new ServiceConfig<>();
-        config.setApplication(DubboConfigCaching.getApplicationConfig("simple-registry"));
-        ProtocolConfig protocolConfig = new ProtocolConfig();
-        protocolConfig.setPort(9090);
-        config.setProtocol(protocolConfig);
-//            config.setRef(new SimpleRegistryService());
-        // SimpleRegistry
-        return DubboConfigCaching.getSimpleRegistry();
-    });
+    // SimpleRegistryService
+    //        ServiceConfig<RegistryService> config = new ServiceConfig<>();
+    //        config.setApplication(DubboConfigCaching.getApplicationConfig("simple-registry"));
+    //        ProtocolConfig protocolConfig = new ProtocolConfig();
+    //        protocolConfig.setPort(9090);
+    //        config.setProtocol(protocolConfig);
+    //            config.setRef(new SimpleRegistryService());
+    // SimpleRegistry
+    private static final Singleton<RegistryConfig> simpleRegistry = Singleton.with(DubboConfigCaching::getSimpleRegistry);
 
 
     private final List<RegistryConfig> registryConfigs;

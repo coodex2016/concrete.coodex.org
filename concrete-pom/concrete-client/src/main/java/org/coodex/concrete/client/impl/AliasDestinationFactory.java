@@ -32,32 +32,38 @@ public class AliasDestinationFactory extends AbstractDestinationFactory<Destinat
     @Override
     public Destination build(String module) {
         Stack<String> stack = stackThreadLocal.get();
-        if (stack == null) {
+        boolean topLevel = stack == null;
+        if (topLevel) {
             stack = new Stack<>();
             stackThreadLocal.set(stack);
         }
-        if (stack.contains(module)) {
-            StringBuilder builder = new StringBuilder();
-            builder.append("client alias cycle reference: ")
-                    .append(module).append(" -> ");
-            for (int i = stack.size() - 1; i >= 0; i--) {
-                String ref = stack.get(i);
-                builder.append(ref);
-
-                if (Objects.equals(ref, module)) break;
-
-                builder.append(" -> ");
-            }
-            builder.append(".");
-
-            throw new RuntimeException(builder.toString());
-        }
-        stack.push(module);
         try {
-            return ClientHelper.getDestination(
-                    getLocation(module).substring(ALIAS_PROTOCOLS.length()).trim());
+            if (stack.contains(module)) {
+                StringBuilder builder = new StringBuilder();
+                builder.append("client alias cycle reference: ")
+                        .append(module).append(" -> ");
+                for (int i = stack.size() - 1; i >= 0; i--) {
+                    String ref = stack.get(i);
+                    builder.append(ref);
+
+                    if (Objects.equals(ref, module)) break;
+
+                    builder.append(" -> ");
+                }
+                builder.append(".");
+
+                throw new RuntimeException(builder.toString());
+            }
+            stack.push(module);
+            try {
+                return ClientHelper.getDestination(
+                        getLocation(module).substring(ALIAS_PROTOCOLS.length()).trim());
+            } finally {
+                stack.pop();
+            }
         } finally {
-            stack.pop();
+            if (topLevel)
+                stackThreadLocal.remove();
         }
     }
 

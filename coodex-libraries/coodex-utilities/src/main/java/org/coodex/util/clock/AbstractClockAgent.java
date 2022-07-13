@@ -83,7 +83,7 @@ public abstract class AbstractClockAgent implements ClockAgent {
     public void objWait(Object obj, long millis) throws InterruptedException {
         if (millis <= 0) return;
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (obj) {
+        synchronized (obj) { // NOSONAR
             obj.wait((long) Math.max(millis / magnification, 1));
         }
     }

@@ -57,7 +57,7 @@ public abstract class OwnServiceProvider implements Application {
         if (subjoin != null && !Common.isBlank(subjoin.get("locale"))) {
             try {
                 return LanguageTag.valueOf(subjoin.get("locale")).getAsLocale();
-            } catch (IllegalArgumentException ignored) {
+            } catch (IllegalArgumentException ignored) {// NOSONAR
 
             }
         }

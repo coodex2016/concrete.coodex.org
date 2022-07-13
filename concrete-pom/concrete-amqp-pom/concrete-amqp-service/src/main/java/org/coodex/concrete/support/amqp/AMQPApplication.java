@@ -169,13 +169,13 @@ public class AMQPApplication extends OwnServiceProvider {
         }
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        if (channel != null && channel.isOpen()) {
-            channel.close();
-            channel = null;
-        }
-    }
+//    @Override
+//    protected void finalize() throws Throwable {
+//        if (channel != null && channel.isOpen()) {
+//            channel.close();
+//            channel = null;
+//        }
+//    }
 
     @Override
     public String getNamespace() {

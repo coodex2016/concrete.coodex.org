@@ -24,7 +24,7 @@ import java.io.Serializable;
 
 public abstract class DefaultTokenBasedTopicSubscribeInterceptor<M extends Serializable> extends AbstractTokenBasedTopicSubscribeInterceptor<M> {
 
-    private String key = String.format("tbm_%s", getClass().getName());
+    private final String key = String.format("tbm_%s", getClass().getName());
     @Inject
     private Token token;
 

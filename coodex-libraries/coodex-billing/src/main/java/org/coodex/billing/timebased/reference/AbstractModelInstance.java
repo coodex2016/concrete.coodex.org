@@ -19,6 +19,7 @@ package org.coodex.billing.timebased.reference;
 import org.coodex.billing.timebased.BillingModel;
 import org.coodex.billing.timebased.Period;
 import org.coodex.billing.timebased.TimeBasedChargeable;
+import org.coodex.exception.NoneInstanceException;
 import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.slf4j.Logger;
@@ -35,17 +36,15 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
 
     private static final Comparator<BillingModel.Fragment<?>> FRAGMENT_COMPARATOR = Comparator.comparing(o -> o.getPeriod().getStart());
 
-    private final LazySelectableServiceLoader<AlgorithmProfile, AlgorithmFactory<C, AlgorithmProfile>>
-            algorithmFactorySelectableServiceLoader = new LazySelectableServiceLoader<AlgorithmProfile, AlgorithmFactory<C, AlgorithmProfile>>() {
+    private final LazySelectableServiceLoader<AlgorithmProfile, AlgorithmFactory<C, AlgorithmProfile>> algorithmFactorySelectableServiceLoader = new LazySelectableServiceLoader<AlgorithmProfile, AlgorithmFactory<C, AlgorithmProfile>>() {
     };
 
-    private final LazySelectableServiceLoader<SlicerProfile, SlicerFactory<C, SlicerProfile>>
-            slicerFactorySelectableServiceLoader = new LazySelectableServiceLoader<SlicerProfile, SlicerFactory<C, SlicerProfile>>() {
+    private final LazySelectableServiceLoader<SlicerProfile, SlicerFactory<C, SlicerProfile>> slicerFactorySelectableServiceLoader = new LazySelectableServiceLoader<SlicerProfile, SlicerFactory<C, SlicerProfile>>() {
     };
 
     private final ModelProfile modelProfile;
 
-    public AbstractModelInstance(ModelProfile modelProfile) {
+    protected AbstractModelInstance(ModelProfile modelProfile) {
         this.modelProfile = modelProfile;
     }
 
@@ -75,10 +74,7 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
         if (periods.size() > 0) {
             StringBuilder builder = new StringBuilder(label);
             for (Period p : periods) {
-                builder.append("\n\tfrom ")
-                        .append(Common.calendarToStr(p.getStart()))
-                        .append(" to ")
-                        .append(Common.calendarToStr(p.getEnd()));
+                builder.append("\n\tfrom ").append(Common.calendarToStr(p.getStart())).append(" to ").append(Common.calendarToStr(p.getEnd()));
             }
             throw new RuntimeException(builder.toString());
         }
@@ -90,7 +86,7 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
         for (FragmentProfile profile : modelProfile.getFragmentProfiles()) {
             FragmentSlicer<C> slicer = getSlicer(profile.getSlicerProfile());
             if (slicer == null) {
-                throw new RuntimeException("FragmentSlicer NOT found: " + profile.getSlicerProfile());
+                throw new NoneInstanceException("FragmentSlicer NOT found: " + profile.getSlicerProfile());
             }
             List<Period> periods = slicer.slice(period, chargeable);
             if (periods != null && periods.size() > 0) {
@@ -121,9 +117,9 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
             List<Period> missing = Period.sub(Collections.singletonList(period), test, Period.BUILDER);
             if (missing.size() > 0) {
                 for (Period p : missing) {
-                    log.warn("from {} to {} is missing.",
-                            Common.calendarToStr(p.getStart()),
-                            Common.calendarToStr(p.getEnd()));
+                    if (log.isWarnEnabled()) {
+                        log.warn("from {} to {} is missing.", Common.calendarToStr(p.getStart()), Common.calendarToStr(p.getEnd()));
+                    }
                     fragments.add(new BillingModel.Fragment<>(null, p));
                 }
                 fragments.sort(FRAGMENT_COMPARATOR);

@@ -106,7 +106,7 @@ public class ApacheDubboClientInvoker extends AbstractSyncInvoker {
                         .append(entry.getValue());
             }
 
-            log.info("{}: {}", label, builder.toString());
+            log.info("{}: {}", label, builder);
         }
     }
 

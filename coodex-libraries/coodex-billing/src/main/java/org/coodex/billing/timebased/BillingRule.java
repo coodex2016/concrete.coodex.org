@@ -21,7 +21,7 @@ import org.coodex.util.Common;
 import java.util.Calendar;
 
 public class BillingRule implements Comparable<BillingRule> {
-    private static final Calendar DEFAULT_CALENDAR = Common.longToCalendar(0);
+    private final Calendar DEFAULT_CALENDAR = Common.longToCalendar(0);
 
     private Calendar start;
     private String model;

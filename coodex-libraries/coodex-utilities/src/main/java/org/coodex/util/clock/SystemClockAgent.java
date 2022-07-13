@@ -38,7 +38,7 @@ public class SystemClockAgent implements ClockAgent {
 
     @Override
     public void objWait(Object obj, long millis) throws InterruptedException {
-        obj.wait(millis);
+        obj.wait(millis);// NOSONAR
     }
 
     @Override

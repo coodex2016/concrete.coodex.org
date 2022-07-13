@@ -71,7 +71,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         clientBuilder = clientBuilder.register(ClientLogger.class)
                 .register(GZIPReaderInterceptor.class);
         client = destination.isSsl() ?
-                clientBuilder.hostnameVerifier((s, sslSession) -> true).sslContext(getSSLContext(destination.getSsl())).build() :
+                clientBuilder.hostnameVerifier((s, sslSession) -> true).sslContext(getSSLContext(destination.getSsl())).build() : // NOSONAR
                 clientBuilder.build();
     }
 
@@ -104,8 +104,7 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
             // 找需要提交的对象
             Object toSubmit = JaxRSClientCommon.getSubmitObject(unit, args);
 
-            try {
-                Response response = request(path, unit.getInvokeType(), toSubmit);
+            try (Response response = request(path, unit.getInvokeType(), toSubmit)) {
 
                 String tokenId = response.getHeaderString(Token.CONCRETE_TOKEN_ID_KEY);
                 ClientTokenManagement.setTokenId(getDestination(), tokenId);

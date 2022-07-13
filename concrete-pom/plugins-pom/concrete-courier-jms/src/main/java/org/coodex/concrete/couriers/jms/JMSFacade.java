@@ -165,23 +165,23 @@ class JMSFacade {
         if (connection != null) {
             try {
                 producer.close();
-            } catch (JMSException ignored) {
+            } catch (JMSException ignored) {// NOSONAR
             }
             try {
                 consumer.close();
-            } catch (JMSException ignored) {
+            } catch (JMSException ignored) {// NOSONAR
             }
             try {
                 session.close();
-            } catch (JMSException ignored) {
+            } catch (JMSException ignored) {// NOSONAR
             }
             try {
                 connection.stop();
-            } catch (JMSException ignored) {
+            } catch (JMSException ignored) {// NOSONAR
             }
             try {
                 connection.close();
-            } catch (JMSException ignored) {
+            } catch (JMSException ignored) {// NOSONAR
             }
             producer = null;
             consumer = null;

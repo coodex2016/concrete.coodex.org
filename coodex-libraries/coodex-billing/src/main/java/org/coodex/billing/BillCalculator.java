@@ -16,6 +16,7 @@
 
 package org.coodex.billing;
 
+import org.coodex.exception.NoneInstanceException;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SelectableServiceLoader;
 
@@ -23,6 +24,8 @@ import static org.coodex.util.Common.cast;
 
 public class BillCalculator {
 
+    private BillCalculator() {
+    }
 
     private static final SelectableServiceLoader<Chargeable, Calculator<Chargeable>> CALCULATOR_LOADER =
             new LazySelectableServiceLoader<Chargeable, Calculator<Chargeable>>() {
@@ -32,7 +35,7 @@ public class BillCalculator {
         if (chargeable == null) throw new NullPointerException("chargeable is null.");
         Calculator<Chargeable> calculator = CALCULATOR_LOADER.select(chargeable);
         if (calculator == null) {
-            throw new RuntimeException("no Calculator instance found for " + chargeable.getClass() + ". " + chargeable.toString());
+            throw new NoneInstanceException("no Calculator instance found for " + chargeable.getClass() + ". " + chargeable.toString());
         }
         return cast(calculator.calc(chargeable));
     }

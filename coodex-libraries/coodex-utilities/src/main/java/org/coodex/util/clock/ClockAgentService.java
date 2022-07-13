@@ -39,7 +39,7 @@ public class ClockAgentService extends Thread {
     private final int port;
     private final String host;
     private final DefaultClockAgent defaultClockAgent = new DefaultClockAgent();
-    private boolean listening = false;
+    private volatile boolean listening = false;
 
     public ClockAgentService() {
         this("0.0.0.0", PORT);

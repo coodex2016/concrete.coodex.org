@@ -116,7 +116,7 @@ public class PojoInfo {
                     "set" + method.getName().substring(method.getName().startsWith("is") ? 2 : 3),
                     method.getReturnType());
             return false;
-        } catch (NoSuchMethodException ignored) {
+        } catch (NoSuchMethodException ignored) {// NOSONAR
         }
         return true;
     }

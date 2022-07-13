@@ -23,7 +23,7 @@ import redis.clients.jedis.Jedis;
  */
 public class Adaptor4Jedis implements JedisAdaptor {
 
-    private Jedis jedis;
+    private final Jedis jedis;
 
     public Adaptor4Jedis(Jedis jedis) {
         this.jedis = jedis;

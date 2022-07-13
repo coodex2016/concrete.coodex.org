@@ -50,7 +50,7 @@ public @interface IdCard {
 
         public int getSize() {
             if (size == -1) {
-                return Math.random() < 0.5 ? 15 : 18;
+                return Math.random() < 0.5 ? 15 : 18;// NOSONAR
             } else
                 return size;
         }
@@ -67,7 +67,7 @@ public @interface IdCard {
 
         public int getSex() {
             if (sex == -1) {
-                return Math.random() < 0.5 ? 0 : 1;
+                return Math.random() < 0.5 ? 0 : 1;// NOSONAR
             }
             return sex;
         }

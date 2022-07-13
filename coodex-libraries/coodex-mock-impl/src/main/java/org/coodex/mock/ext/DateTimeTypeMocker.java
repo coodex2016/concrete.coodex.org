@@ -63,7 +63,7 @@ public class DateTimeTypeMocker extends AbstractTypeMocker<DateTime> {
             if (mockAnnotation.max().length() > 0) {
                 max = format.parse(mockAnnotation.max()).getTime();
             }
-            long dateTime = (min == max) ? min : (long) (Math.random() * (Math.max(max, min) - Math.min(max, min))) + Math.min(max, min);
+            long dateTime = (min == max) ? min : (long) (Math.random() * (Math.max(max, min) - Math.min(max, min))) + Math.min(max, min);// NOSONAR
 
             if (long.class.equals(clazz) || Long.class.equals(clazz)) {
                 return dateTime;

@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public class JavaTextMessageFormatRenderService implements RenderService {
 
-    private static final Pattern PATTERN = Pattern.compile("\\{[0-9]+(,\\s*\\w+\\s*(,\\s*[^}]+)?)?\\s*}");
+    private static final Pattern PATTERN = Pattern.compile("\\{[0-9]+(,\\s*\\w+\\s*(,\\s*[^}]+)?)?\\s*}");// NOSONAR
 
     @Override
     public String render(String template, Object... objects) {

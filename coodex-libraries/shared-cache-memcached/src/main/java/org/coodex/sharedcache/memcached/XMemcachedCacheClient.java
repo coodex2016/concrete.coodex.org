@@ -20,6 +20,7 @@ import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 import org.coodex.sharedcache.SharedCacheClient;
+import org.coodex.util.Common;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -58,8 +59,11 @@ public class XMemcachedCacheClient implements SharedCacheClient {
                 if (client != null)
                     client.shutdown();
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
         } catch (Throwable e) {
-            throw new RuntimeException(e.getLocalizedMessage(), e);
+            throw Common.rte(e);
         }
     }
 
@@ -72,7 +76,7 @@ public class XMemcachedCacheClient implements SharedCacheClient {
     public void put(String key, Serializable value, long max_cached_time) {
         assertKey(key);
         int idleTime = (int) (max_cached_time / 1000);
-        if (idleTime <= 0) throw new RuntimeException("idleTime must be larger then one second.");
+        if (idleTime <= 0) throw new IllegalArgumentException("idleTime must be larger then one second.");
         try {
             MemcachedClient client = getClient();
             try {
@@ -81,8 +85,10 @@ public class XMemcachedCacheClient implements SharedCacheClient {
                 if (client != null)
                     client.shutdown();
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (Throwable e) {
-            throw new RuntimeException(e.getLocalizedMessage(), e);
+            throw Common.rte(e);
         }
     }
 
@@ -97,8 +103,10 @@ public class XMemcachedCacheClient implements SharedCacheClient {
                 if (client != null)
                     client.shutdown();
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (Throwable e) {
-            throw new RuntimeException(e.getLocalizedMessage(), e);
+            throw Common.rte(e);
         }
     }
 }

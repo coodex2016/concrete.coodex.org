@@ -131,7 +131,7 @@ public abstract class ConcreteJaxrsApplication
 
     private Object newInstance(Class<?> clz) {
         try {
-            return clz.newInstance();
+            return clz.getDeclaredConstructor().newInstance();
         } catch (RuntimeException e) {
             throw e;
         } catch (Throwable th) {

@@ -63,7 +63,7 @@ public enum Level {
             Method method = Logger.class.getMethod(this.name().toLowerCase(), String.class);
             method.setAccessible(true);
             method.invoke(log, str);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignore) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignore) {// NOSONAR
         }
     }
 }

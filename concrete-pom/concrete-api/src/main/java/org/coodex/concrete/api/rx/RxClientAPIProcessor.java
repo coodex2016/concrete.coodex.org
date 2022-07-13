@@ -34,6 +34,7 @@ import javax.tools.JavaFileObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -72,8 +73,9 @@ public class RxClientAPIProcessor extends AbstractProcessor {
             .function(key -> {
                 try {
                     Class<?> clazz = Class.forName(key);
-                    return (RxCodeBuilder) clazz.newInstance();
-                } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                    return (RxCodeBuilder) clazz.getDeclaredConstructor().newInstance();
+                } catch (InstantiationException | IllegalAccessException | ClassNotFoundException |
+                         NoSuchMethodException | InvocationTargetException e) {
                     return null;
                 }
             }).build();
@@ -146,7 +148,7 @@ public class RxClientAPIProcessor extends AbstractProcessor {
                 }
             }
         } catch (Throwable th) {
-            th.printStackTrace();
+            th.printStackTrace(); // NOSONAR
         }
 
         return result;

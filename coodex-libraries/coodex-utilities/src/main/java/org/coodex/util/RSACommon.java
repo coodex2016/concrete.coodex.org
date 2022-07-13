@@ -123,7 +123,7 @@ public class RSACommon {
     public static byte[] encrypt(byte[] publicKey, byte[] content) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, IOException {
         RSAPublicKey rsaKey = getRSAPublicKey(publicKey);
 
-        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding"); // NOSONAR
         cipher.init(Cipher.ENCRYPT_MODE, rsaKey);
 
         // 待加密数据长度 <= 模长-11(PKCS1Padding算法填充位)，超过大小进行分块加密
@@ -136,8 +136,8 @@ public class RSACommon {
     }
 
     /**
-     * @param privateKey rivateKey
-     * @param content    ontent
+     * @param privateKey privateKey
+     * @param content    content
      * @return 使用RSA私钥解密
      * @throws NoSuchPaddingException    NoSuchPaddingException
      * @throws NoSuchAlgorithmException  NoSuchAlgorithmException
@@ -150,7 +150,7 @@ public class RSACommon {
     public static byte[] decrypt(byte[] privateKey, byte[] content) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, IOException {
         RSAPrivateKey rsaKey = getRSAPrivateKey(privateKey);
 
-        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");// NOSONAR
         cipher.init(Cipher.DECRYPT_MODE, rsaKey);
         // 分块脱密
         return rsaCrypt(content, cipher, rsaKey.getModulus().bitLength() / 8);

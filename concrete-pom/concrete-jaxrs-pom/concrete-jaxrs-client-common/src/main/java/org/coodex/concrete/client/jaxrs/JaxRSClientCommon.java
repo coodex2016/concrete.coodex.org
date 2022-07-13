@@ -103,6 +103,8 @@ public class JaxRSClientCommon {
     }
 
     public static String encode(String s, String charset) throws UnsupportedEncodingException {
+        if (s == null) return "";
+        charset = Common.isBlank(charset) ? "utf-8" : charset;
         StringBuilder builder = new StringBuilder();
         for (char c : s.toCharArray()) {
             if (c == ' ') {

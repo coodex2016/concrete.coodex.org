@@ -43,7 +43,7 @@ public class BooleanTypeMocker extends AbstractTypeMocker<Mock.Boolean> {
     public Object mock(Mock.Boolean mockAnnotation, Type targetType) {
         double probabilityOfTrue = mockAnnotation == null ? 0.5d : mockAnnotation.probabilityOfTrue();
         return toType(
-                Math.random() < probabilityOfTrue,
+                Math.random() < probabilityOfTrue,// NOSONAR
                 new BooleanMockConfig(mockAnnotation),
                 targetType);
     }
