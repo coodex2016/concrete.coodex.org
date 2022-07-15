@@ -17,37 +17,33 @@
 package org.coodex.util;
 
 import org.coodex.concurrent.ExecutorsHelper;
+import org.junit.Test;
 
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 
-public class CirclicBarrierExample {
+public class CircleBarrierExample {
     static ExecutorService executorService = ExecutorsHelper.newFixedThreadPool(2, "CirclicBarrier");
 
     private static void execute(Runnable runnable) {
         executorService.execute(runnable);
     }
 
-    public static void main(String[] args) {
+    @Test
+    public void test() {
         final CyclicBarrier barrier = new CyclicBarrier(5);
-
 
         for (int i = 0; i < 5; i++) {
             final int finalI = i;
-            execute(new Thread() {
-                @Override
-                public void run() {
-                    for (int j = 0; j < 4; j++) {
-                        try {
-                            Thread.sleep(Common.random(200, 1000));
-                            barrier.await();
-                            System.out.println(String.format("id: %d stage %d ok.", finalI, j));
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (BrokenBarrierException e) {
-                            e.printStackTrace();
-                        }
+            execute(() -> {
+                for (int j = 0; j < 4; j++) {
+                    try {
+                        Thread.sleep(Common.random(200, 1000));
+                        barrier.await();
+                        System.out.printf("id: %d stage %d ok.%n", finalI, j);
+                    } catch (InterruptedException | BrokenBarrierException e) {
+                        e.printStackTrace();
                     }
                 }
             });

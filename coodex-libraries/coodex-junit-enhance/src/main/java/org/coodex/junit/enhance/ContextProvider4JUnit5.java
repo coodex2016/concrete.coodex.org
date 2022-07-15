@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2022 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package org.coodex.spring;
+package org.coodex.junit.enhance;
 
-import org.coodex.util.ActiveProfilesProvider;
-import org.coodex.util.SPI;
-import org.springframework.core.env.Environment;
+import org.coodex.util.SelectableService;
+import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 
-import java.util.Optional;
+import java.lang.reflect.Method;
+import java.util.Map;
 
-@SPI.Ordered(0)
-public class SpringActiveProfileProvider implements ActiveProfilesProvider {
-    @Override
-    public String[] getActiveProfiles() {
-        return Optional.ofNullable(SpringEnvironmentAware.getSpringEnvironment())
-                .map(Environment::getActiveProfiles)
-                .orElse(new String[0]);
-    }
-
-
+public interface ContextProvider4JUnit5 extends SelectableService<ReflectiveInvocationContext<Method>> {
+    Map<String, Object> createContext(ReflectiveInvocationContext<Method> method);
 }

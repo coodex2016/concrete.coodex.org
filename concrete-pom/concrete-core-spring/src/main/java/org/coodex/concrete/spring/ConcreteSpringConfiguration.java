@@ -38,7 +38,10 @@ import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
 @SuppressWarnings({"SpringComponentScan"})
 @Configuration
-@ComponentScan({"org.coodex.spring", "org.coodex.concrete.spring.components", "org.coodex.concrete.**.injectable"})
+@ComponentScan({
+        "org.coodex.spring",
+        "org.coodex.concrete.spring.components",
+        "org.coodex.concrete.**.injectable"})
 public class ConcreteSpringConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(ConcreteSpringConfiguration.class);
@@ -96,7 +99,6 @@ public class ConcreteSpringConfiguration {
 
                     @Override
                     public void before(DefinitionContext context, MethodInvocation joinPoint) {
-
                     }
 
                     @Override

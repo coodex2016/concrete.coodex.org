@@ -57,10 +57,6 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
             };
 
     private final SelectableServiceLoader<String, BillingModel<C>> billingModels = new LazySelectableServiceLoader<String, BillingModel<C>>() {
-        @Override
-        protected Object getGenericTypeSearchContextObject() {
-            return AbstractTimeBasedCalculator.this;
-        }
     };
     private final SelectableServiceLoader<C, BillingRuleRepository<C>> ruleRepos = new LazySelectableServiceLoader<C, BillingRuleRepository<C>>(
             new BillingRuleRepository<C>() {
@@ -75,10 +71,10 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
                 }
             }
     ) {
-        @Override
-        protected Object getGenericTypeSearchContextObject() {
-            return AbstractTimeBasedCalculator.this;
-        }
+//        @Override
+//        protected Type getParameterType() {
+//            return GenericTypeHelper.solveFromInstance(SelectableServiceLoader.class.getTypeParameters()[0], AbstractTimeBasedCalculator.this);
+//        }
     };
 
     protected abstract TimeUnit getTimeUnit();
@@ -237,9 +233,9 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
         private final C chargeable;
         private final BillingModel<C> billingModel;
 
-        private List<WholeTimeRevision> wholeTimeRevisions = new ArrayList<>();
-        private List<FragmentRevision> fragmentRevisions = new ArrayList<>();
-        private List<Adjustment<C>> adjustments = new ArrayList<>();
+        private final List<WholeTimeRevision> wholeTimeRevisions = new ArrayList<>();
+        private final List<FragmentRevision> fragmentRevisions = new ArrayList<>();
+        private final List<Adjustment<C>> adjustments = new ArrayList<>();
 
         private BillCalc(C chargeable, BillingModel<C> billingModel) {
             this.chargeable = chargeable;

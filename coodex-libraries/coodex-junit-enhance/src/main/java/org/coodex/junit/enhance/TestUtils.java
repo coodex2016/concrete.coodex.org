@@ -16,9 +16,10 @@
 
 package org.coodex.junit.enhance;
 
-import org.coodex.util.*;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.coodex.util.Clock;
+import org.coodex.util.Common;
+import org.coodex.util.LazyServiceLoader;
+import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,31 +35,17 @@ public class TestUtils {
     public static final Time TIME = new TimeImpl();
     static final ThreadLocal<Map<String, Object>> CONTEXT = new ThreadLocal<>();
     private final static Logger log = LoggerFactory.getLogger(TestUtils.class);
-    private static final String KEY_TIMESTAMP = getUUIDString();
-    private static final String KEY_NAME = getUUIDString();
+    static final String KEY_TIMESTAMP = getUUIDString();
+    static final String KEY_NAME = getUUIDString();
     private static final ServiceLoader<LoggerProvider> LOGGER_PROVIDER_LOADER = new LazyServiceLoader<LoggerProvider>(Slf4jLoggerProvider::new) {
     };
-    public static final Logger logger = (Logger) Proxy.newProxyInstance(Logger.class.getClassLoader(), new Class<?>[]{Logger.class},
-            (proxy, method, args) -> {
-                if (args.length > 0) {
-                    return method.invoke(_getLogger(), args);
-                } else {
-                    return method.invoke(_getLogger());
-                }
-            });
-    private static final LazySelectableServiceLoader<Description, ContextProvider> CONTEXT_PROVIDER_LOADER =
-            new LazySelectableServiceLoader<Description, ContextProvider>(new ContextProvider() {
-                @Override
-                public Map<String, Object> createContext(Description description) {
-                    return new HashMap<>();
-                }
-
-                @Override
-                public boolean accept(Description param) {
-                    return true;
-                }
-            }) {
-            };
+    public static final Logger logger = (Logger) Proxy.newProxyInstance(Logger.class.getClassLoader(), new Class<?>[]{Logger.class}, (proxy, method, args) -> {
+        if (args.length > 0) {
+            return method.invoke(_getLogger(), args);
+        } else {
+            return method.invoke(_getLogger());
+        }
+    });
 
 
     private TestUtils() {
@@ -86,44 +73,45 @@ public class TestUtils {
         return result;
     }
 
-    private static Map<String, Object> buildContext(Description description) {
-        Map<String, Object> map = new HashMap<>();
-        CONTEXT_PROVIDER_LOADER.getAll().values().forEach(contextProvider -> {
-            if (contextProvider.accept(description)) {
-                map.putAll(contextProvider.createContext(description));
-            }
-        });
-        Context.Data contextData = Context.Data.from(description.getAnnotation(Context.class));
-        map.put(KEY_NAME, Common.isBlank(contextData.name) ? description.getMethodName() : contextData.name);
-        try {
-            map.put(KEY_TIMESTAMP,
-                    Common.isBlank(contextData.timestamp) ?
-                            Clock.getCalendar() :
-                            Common.strToCalendar(contextData.timestamp, Common.DEFAULT_DATETIME_FORMAT));
-        } catch (Throwable th) {
-            System.err.println("invalid timestamp: " + contextData.timestamp);
-            map.put(KEY_TIMESTAMP, Clock.getCalendar());
-        }
-        return map;
-    }
+//    private static Map<String, Object> buildContext(Description description) {
+//        Map<String, Object> map = new HashMap<>();
+//        CONTEXT_PROVIDER_LOADER.getAll().values().forEach(contextProvider -> {
+//            if (contextProvider.accept(description)) {
+//                map.putAll(contextProvider.createContext(description));
+//            }
+//        });
+//        Context.Data contextData = Context.Data.from(description.getAnnotation(Context.class));
+//        map.put(KEY_NAME, Common.isBlank(contextData.name) ? description.getMethodName() : contextData.name);
+//        try {
+//            map.put(KEY_TIMESTAMP,
+//                    Common.isBlank(contextData.timestamp) ?
+//                            Clock.getCalendar() :
+//                            Common.strToCalendar(contextData.timestamp, Common.DEFAULT_DATETIME_FORMAT));
+//        } catch (Throwable th) {
+//            System.err.println("invalid timestamp: " + contextData.timestamp);
+//            map.put(KEY_TIMESTAMP, Clock.getCalendar());
+//        }
+//        return map;
+//    }
 
-    static Statement wrap(Statement statement, Description description) {
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                if (CONTEXT.get() != null) {
-                    statement.evaluate();
-                } else {
-                    CONTEXT.set(buildContext(description));
-                    try {
-                        statement.evaluate();
-                    } finally {
-                        CONTEXT.remove();
-                    }
-                }
-            }
-        };
-    }
+//    @Deprecated
+//    static Statement wrap(Statement statement, Description description) {
+//        return new Statement() {
+//            @Override
+//            public void evaluate() throws Throwable {
+//                if (CONTEXT.get() != null) {
+//                    statement.evaluate();
+//                } else {
+//                    CONTEXT.set(buildContext(description));
+//                    try {
+//                        statement.evaluate();
+//                    } finally {
+//                        CONTEXT.remove();
+//                    }
+//                }
+//            }
+//        };
+//    }
 
     public static void asyncRun(Runnable runnable) {
         Map<String, Object> objectMap = CONTEXT.get();
@@ -272,18 +260,12 @@ public class TestUtils {
         @Override
         public Time go(int years, int months, int days, int hours, int minutes, int seconds) {
             Calendar calendar = timestamp();
-            if (years > 0)
-                calendar.add(Calendar.YEAR, years);
-            if (months > 0)
-                calendar.add(Calendar.MONTH, months);
-            if (days > 0)
-                calendar.add(Calendar.DATE, days);
-            if (hours > 0)
-                calendar.add(Calendar.HOUR, hours);
-            if (minutes > 0)
-                calendar.add(Calendar.MINUTE, minutes);
-            if (seconds > 0)
-                calendar.add(Calendar.SECOND, seconds);
+            if (years > 0) calendar.add(Calendar.YEAR, years);
+            if (months > 0) calendar.add(Calendar.MONTH, months);
+            if (days > 0) calendar.add(Calendar.DATE, days);
+            if (hours > 0) calendar.add(Calendar.HOUR, hours);
+            if (minutes > 0) calendar.add(Calendar.MINUTE, minutes);
+            if (seconds > 0) calendar.add(Calendar.SECOND, seconds);
             return this;
         }
 

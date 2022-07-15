@@ -18,6 +18,7 @@ package test.org.coodex.util;
 
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.util.SingletonMap;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +47,8 @@ public class SingletonTest {
             .scheduledExecutorService(ExecutorsHelper.newSingleThreadScheduledExecutor("test"))
             .build();
 
-    public static void main(String[] args) {
-        //nullKey
+    @Test
+    public void test1(){
         log.info(SINGLETON_MAP.get(null));
 
         //1秒后失效
@@ -60,6 +61,5 @@ public class SingletonTest {
 
         // 使用非默认的deathListener
         log.info(SINGLETON_MAP.get(3, 500, (i, s) -> System.out.println("key: " + i + ", value: " + s)));
-
     }
 }

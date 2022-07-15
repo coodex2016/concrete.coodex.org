@@ -21,6 +21,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.coodex.mock.Mock;
 import org.coodex.mock.Mocker;
 import org.coodex.mock.ext.*;
+import org.junit.Test;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,8 +34,8 @@ import java.util.Set;
 
 public class MockerTest {
 
-    public static void main(String[] args) {
-
+    @Test
+    public void test() {
 
         System.out.println(JSON.toJSONString(Mocker.mock(Pojo3rd.class)));
         System.out.println(

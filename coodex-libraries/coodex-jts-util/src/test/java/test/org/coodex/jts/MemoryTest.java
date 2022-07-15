@@ -22,9 +22,11 @@ import org.coodex.jts.JTSUtil;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import org.slf4j.Logger;
@@ -39,6 +41,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import static org.coodex.util.Common.forEachBlock;
 import static org.coodex.util.Common.slice;
 import static test.org.coodex.jts.CoordinatesLoader.randomCoordinates;
 
@@ -134,24 +137,24 @@ public class MemoryTest {
     }
 
     private static Geometry simplify(Geometry geometry) {
-//        double init = 25;
-//        double rateLimit = 0.002d;
-//        Geometry simplified = null;
-//        double areaOfGeo = geometry.getArea();
-//        for (; ; ) {
-////         simplified = VWSimplifier.simplify(geometry,init);
-//            simplified = DouglasPeuckerSimplifier.simplify(geometry, init);
-//            double rate = simplified.getArea() / areaOfGeo;
-//            if (rate > 1 - rateLimit && rate < 1 + rateLimit) {
-//                break;
-//            } else {
-//                System.out.println("half " + init);
-//                init = init / 2;
-//            }
-//
-//        }
-//        return JTSUtil.get2DGeometry(simplified);
-        return geometry;
+        double init = 25;
+        double rateLimit = 0.002d;
+        Geometry simplified = null;
+        double areaOfGeo = geometry.getArea();
+        for (; ; ) {
+//         simplified = VWSimplifier.simplify(geometry,init);
+            simplified = DouglasPeuckerSimplifier.simplify(geometry, init);
+            double rate = simplified.getArea() / areaOfGeo;
+            if (rate > 1 - rateLimit && rate < 1 + rateLimit) {
+                break;
+            } else {
+                System.out.println("half " + init);
+                init = init / 2;
+            }
+
+        }
+        return JTSUtil.get2DGeometry(simplified);
+//        return geometry;
     }
 
     private static void testCase(int dots, int times) {
@@ -188,27 +191,28 @@ public class MemoryTest {
         return Integer.parseInt(runtimeMXBean.getName().split("@")[0]);
     }
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    @Test
+    public void test() throws InterruptedException, IOException {
 //        forEachBlock(CoordinatesLoader.loader(), 1000, true, 0.1f, (i, l) -> {
 //            log.info(String.format("[%d, %d]", i, i + l - 1));
 //        });
-        System.out.println(getProcessId());
+//        System.out.println(getProcessId());
 //
-//        System.out.println("waiting for start.....");
-//        Thread.sleep(3000);
-////        int[] dots = new int[]{
-////                30,50,70,90,110,130,150,170,190,210,
-////                230,250,270,290,310,330,350
-////        };
-////
-////        Arrays.stream(dots).forEach(dot -> testCase(dot, 15));
-//        //预热
-////        for(int i = 0; i < 10; i ++){
-////            testCase(50,15);
-////        }
-////        for (int i = 100; i < 600; i += 25) {
-////        testCase(1000, 5);
-////        }
+        System.out.println("waiting for start.....");
+        Thread.sleep(3000);
+        int[] dots = new int[]{
+                30, 50, 70, 90, 110, 130, 150, 170, 190, 210,
+                230, 250, 270, 290, 310, 330, 350
+        };
+
+        Arrays.stream(dots).forEach(dot -> testCase(dot, 15));
+//        预热
+        for (int i = 0; i < 10; i++) {
+            testCase(50, 15);
+        }
+        for (int i = 100; i < 600; i += 25) {
+            testCase(1000, 5);
+        }
         ExecutorService executorService = ExecutorsHelper.newFixedThreadPool(8, "build");
         Analyzer analyzer = new Analyzer();
         int count = 40;
@@ -239,53 +243,53 @@ public class MemoryTest {
         }
         analyzer.trace();
 
-//        Geometry geometry = JTSUtil.GEOMETRY_FACTORY.createMultiPolygon(
-//                new Polygon[]{
-//                        JTSUtil.GEOMETRY_FACTORY.createPolygon(new Coordinate[]{
-//                                new Coordinate(0, 0),
-//                                new Coordinate(10, 0),
-//                                new Coordinate(10, 10),
-//                                new Coordinate(0, 10),
-//                                new Coordinate(0, 0)
-//                        }),
-//                        JTSUtil.GEOMETRY_FACTORY.createPolygon(new Coordinate[]{
-//                                new Coordinate(1, 1),
-//                                new Coordinate(9, 1),
-//                                new Coordinate(9, 9),
-//                                new Coordinate(1, 9),
-//                                new Coordinate(1, 1)
-//                        })
-//                }
-//        );
-//
-////        geometry.intersects()
-//        System.out.println(geometry.getArea());
+        Geometry geometry = JTSUtil.GEOMETRY_FACTORY.createMultiPolygon(
+                new Polygon[]{
+                        JTSUtil.GEOMETRY_FACTORY.createPolygon(new Coordinate[]{
+                                new Coordinate(0, 0),
+                                new Coordinate(10, 0),
+                                new Coordinate(10, 10),
+                                new Coordinate(0, 10),
+                                new Coordinate(0, 0)
+                        }),
+                        JTSUtil.GEOMETRY_FACTORY.createPolygon(new Coordinate[]{
+                                new Coordinate(1, 1),
+                                new Coordinate(9, 1),
+                                new Coordinate(9, 9),
+                                new Coordinate(1, 9),
+                                new Coordinate(1, 1)
+                        })
+                }
+        );
 
-//        List<Coordinate> coordinateList = new ArrayList<>();
-//        for (int i = 0; i < 100; i++) {
-//            coordinateList.add(new Coordinate(
-//                            Common.random(Integer.MAX_VALUE - 200),
-//                            Common.random(Integer.MAX_VALUE - 200)
-////                    i, i
-//                    )
-//            );
-//        }
-//        Coordinate[] coordinates = coordinateList.toArray(new Coordinate[0]);
-//        System.out.println("start");
-//        long timestamp = Clock.currentTimeMillis();
-//        LineString lineString = JTSUtil.GEOMETRY_FACTORY.createLineString(
-//                coordinates
-//        );
-////        Geometry geometry = buffer(coordinates, 14,3, BufferParameters.CAP_FLAT);
-////        Geometry geometry = lineString.buffer(14,3,BufferParameters.CAP_FLAT);
-//        long end = Clock.currentTimeMillis();
-//        System.out.printf("solution 1: used: %dms\n", end - timestamp);
-//
-//        timestamp = Clock.currentTimeMillis();
-//        Geometry geometry = lineString.buffer(14,3,BufferParameters.CAP_FLAT);
-//        end = Clock.currentTimeMillis();
-//        System.out.printf("solution 2: used: %dms", end - timestamp);
-////        System.out.println(geometry);
+//        geometry.intersects()
+        System.out.println(geometry.getArea());
+
+        List<Coordinate> coordinateList = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            coordinateList.add(new Coordinate(
+                            Common.random(Integer.MAX_VALUE - 200),
+                            Common.random(Integer.MAX_VALUE - 200)
+//                    i, i
+                    )
+            );
+        }
+        Coordinate[] coordinates = coordinateList.toArray(new Coordinate[0]);
+        System.out.println("start");
+        long timestamp = Clock.currentTimeMillis();
+        LineString lineString = JTSUtil.GEOMETRY_FACTORY.createLineString(
+                coordinates
+        );
+        geometry = buffer(coordinates, 14, 3, BufferParameters.CAP_FLAT);
+        geometry = lineString.buffer(14, 3, BufferParameters.CAP_FLAT);
+        long end = Clock.currentTimeMillis();
+        System.out.printf("solution 1: used: %dms\n", end - timestamp);
+
+        timestamp = Clock.currentTimeMillis();
+        geometry = lineString.buffer(14, 3, BufferParameters.CAP_FLAT);
+        end = Clock.currentTimeMillis();
+        System.out.printf("solution 2: used: %dms", end - timestamp);
+        System.out.println(geometry);
 
     }
 

@@ -18,7 +18,7 @@ package org.coodex.util;
 
 public class YmlProfileTest {
     public static void main(String[] args) {
-        System.setProperty("Profile.reloadInterval", String.valueOf(10));
+//        System.setProperty("Profile.reloadInterval", String.valueOf(10));
         Profile profile = Profile.get("a", "log4j");
         System.out.println(profile.getString("a"));
         System.out.println(profile.getString("log4j.rootLogger"));

@@ -65,6 +65,7 @@
         <archetype.encoding>${encoding}</archetype.encoding>
 
         <junit.version>4.13.1</junit.version>
+        <junit5.version>5.8.2</junit5.version>
         <jedis.version>3.2.0</jedis.version>
         <xmemcached.version>2.4.7</xmemcached.version>
         <lombok.version>1.18.20</lombok.version>
@@ -264,6 +265,34 @@
                 <version>3.9.1.2184</version>
             </plugin>
 
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.8</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
         </plugins>
     </build>
 
@@ -333,6 +362,12 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit5.version}</version>
             </dependency>
 
             <dependency>

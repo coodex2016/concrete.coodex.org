@@ -39,10 +39,10 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 public abstract class LazySelectableServiceLoader<Param_Type, T extends SelectableService<Param_Type>>
         implements SelectableServiceLoader<Param_Type, T>, ServiceLoader<T> {
 
-    public static final Function<Method, RuntimeException> EXCEPTION_FUNCTION =
-            method -> new RuntimeException("no instance found."
-                    + method.getDeclaringClass().getName()
-                    + "." + method.getName());
+//    public static final Function<Method, RuntimeException> EXCEPTION_FUNCTION =
+//            method -> new RuntimeException("no instance found."
+//                    + method.getDeclaringClass().getName()
+//                    + "." + method.getName());
     private static final Logger log = LoggerFactory.getLogger(LazySelectableServiceLoader.class);
     private final Singleton<List<T>> sortedServices = Singleton.with(this::sorted);
     private ServiceLoader<T> serviceLoaderFacade;
@@ -73,12 +73,12 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
         this.exceptionFunction = exceptionFunction;
     }
 
-    protected Type getParameterType() {
-        return solveFromInstance(
-                SelectableServiceLoader.class.getTypeParameters()[0],
-                getGenericTypeSearchContextObject()
-        );
-    }
+//    protected Type getParameterType() {
+//        return solveFromInstance(
+//                SelectableServiceLoader.class.getTypeParameters()[0],
+//                getGenericTypeSearchContextObject()
+//        );
+//    }
 
     protected Object getGenericTypeSearchContextObject() {
         return this;

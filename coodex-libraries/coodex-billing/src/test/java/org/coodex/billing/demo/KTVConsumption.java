@@ -28,6 +28,7 @@ import org.coodex.billing.timebased.TimeBasedDetail;
 import org.coodex.billing.timebased.reference.box.DurationRevision;
 import org.coodex.billing.timebased.reference.box.TimeBasedOffAdjustment;
 import org.coodex.util.Common;
+import org.junit.Test;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -36,8 +37,8 @@ import java.util.List;
 import static org.coodex.billing.demo.Constants.MODEL_01;
 
 public class KTVConsumption implements TimeBasedChargeable {
-
-    public static void main(String[] args) {
+    @Test
+    public void test() {
         KTVConsumption ktvConsumption = new KTVConsumption();
         Bill<KTVConsumption> bill = BillCalculator.calc(ktvConsumption);
         StringBuilder builder = new StringBuilder("`月月鸟`在`KTV`的消费总金额 ")
@@ -57,7 +58,7 @@ public class KTVConsumption implements TimeBasedChargeable {
                 builder.append(" ").append(detail.usedRevision().getName());
             }
         }
-        System.out.println(builder.toString());
+        System.out.println(builder);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.coodex.concurrent;
 
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -32,8 +33,8 @@ public class Debounce implements FrequencyReducer {
 
     @Override
     public void submit(Runnable runnable) {
-        if (runnable == null) throw new NullPointerException("runnable instance is null.");
-
+//        if (runnable == null) throw new NullPointerException("runnable instance is null.");
+        Objects.requireNonNull(runnable,"runnable instance is null.");
         lock.lock();
         try {
             if (prevFuture != null) {

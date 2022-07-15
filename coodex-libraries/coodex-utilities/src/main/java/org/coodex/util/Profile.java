@@ -15,7 +15,6 @@
  */
 package org.coodex.util;
 
-import org.coodex.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +51,7 @@ import static org.coodex.util.Common.*;
  * 2016-09-05
  * 1、废弃命名空间的支持
  * 2、修改监测机制
- * Profile.reloadInterval 用以制定重新加载的间隔时间，单位为秒
+ * <S>Profile.reloadInterval 用以制定重新加载的间隔时间，单位为秒</S>
  *
  * @author davidoff
  * @version v1.0 2014-03-18
@@ -82,11 +81,11 @@ public abstract class Profile {
     private static final SingletonMap<String, Profile> WRAPPER_PROFILES = SingletonMap.<String, Profile>builder()
             .function(ProfileWrapper::new).build();
 
-    private static final Singleton<Long> RELOAD_INTERVAL_SINGLETON = Singleton.with(
-            () -> Config.BASE_SYSTEM_PROPERTIES.getValue(Profile.class.getName() + ".reloadInterval",
-                    () -> toLong(System.getProperty("Profile.reloadInterval"), 0L)
-            ) * 1000L
-    );
+    //    private static final Singleton<Long> RELOAD_INTERVAL_SINGLETON = Singleton.with(
+//            () -> Config.BASE_SYSTEM_PROPERTIES.getValue(Profile.class.getName() + ".reloadInterval",
+//                    () -> toLong(System.getProperty("Profile.reloadInterval"), 0L)
+//            ) * 1000L
+//    );
     // 单一资源到URL的映射
     private static final SingletonMap<String, URL> PROFILE_URLS = SingletonMap.<String, URL>builder()
             .function(new Function<String, URL>() {
@@ -116,7 +115,7 @@ public abstract class Profile {
                     return DEFAULT_URL;
                 }
             })
-            .maxAge(RELOAD_INTERVAL_SINGLETON.get())
+//            .maxAge(RELOAD_INTERVAL_SINGLETON.get())
             .build();
 
     // 单一URL到Profile的映射
@@ -135,7 +134,7 @@ public abstract class Profile {
                     }
                 }
             })
-            .maxAge(RELOAD_INTERVAL_SINGLETON.get())
+//            .maxAge(RELOAD_INTERVAL_SINGLETON.get())
             .build();
     private static final ServiceLoader<ActiveProfilesProvider> ACTIVE_PROFILES_PROVIDER_SERVICE_LOADER =
             new LazyServiceLoader<ActiveProfilesProvider>() {
@@ -143,7 +142,7 @@ public abstract class Profile {
 
     static final SingletonMap<String, Profile> PATH_PROFILE_MAP = SingletonMap.<String, Profile>builder()
             .function(Profile::getByPath)
-            .maxAge(RELOAD_INTERVAL_SINGLETON.get())
+//            .maxAge(RELOAD_INTERVAL_SINGLETON.get())
             .build();
 
     static {

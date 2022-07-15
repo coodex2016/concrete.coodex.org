@@ -21,7 +21,7 @@ import org.junit.runner.Description;
 
 import java.util.Map;
 
-public interface ContextProvider extends SelectableService<Description> {
+public interface ContextProvider4JUnit4 extends SelectableService<Description> {
 
     Map<String, Object> createContext(Description description);
 }
