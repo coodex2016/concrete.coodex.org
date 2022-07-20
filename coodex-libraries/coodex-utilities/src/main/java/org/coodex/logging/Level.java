@@ -40,18 +40,18 @@ public enum Level {
     }
 
     public boolean isEnabled(Logger log) {
-        switch (this.name().toLowerCase()) {
-            case "none":
+        switch (this) {
+            case NONE:
                 return false;
-            case "trace":
+            case TRACE:
                 return log.isTraceEnabled();
-            case "debug":
+            case DEBUG:
                 return log.isDebugEnabled();
-            case "info":
+            case INFO:
                 return log.isInfoEnabled();
-            case "warn":
+            case WARN:
                 return log.isWarnEnabled();
-            case "error":
+            case ERROR:
                 return log.isErrorEnabled();
         }
         return false;

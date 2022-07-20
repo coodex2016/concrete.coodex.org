@@ -33,7 +33,7 @@ public class GZIPReaderInterceptor implements ReaderInterceptor {
     public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
         if (context.getHeaders().entrySet().stream().anyMatch(e ->
                 "Content-Encoding".equalsIgnoreCase(e.getKey()) &&
-                        (!Common.isEmpty(e.getValue()) && "gzip".equalsIgnoreCase(e.getValue().get(0))))) {
+                        (Common.notEmpty(e.getValue()) && "gzip".equalsIgnoreCase(e.getValue().get(0))))) {
             final InputStream originalInputStream = context.getInputStream();
             context.setInputStream(new GZIPInputStream(originalInputStream));
         }

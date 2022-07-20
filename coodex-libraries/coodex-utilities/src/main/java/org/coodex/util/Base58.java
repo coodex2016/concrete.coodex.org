@@ -109,7 +109,7 @@ public class Base58 {
 
         int startAt = zeroCount;
         while (startAt < input58.length) {
-            byte mod = divmod256(input58, startAt);
+            byte mod = divMod256(input58, startAt);
             if (input58[startAt] == 0) {
                 ++startAt;
             }
@@ -148,7 +148,7 @@ public class Base58 {
     //
     // number -> number / 256, returns number % 256
     //
-    private static byte divmod256(byte[] number58, int startAt) {
+    private static byte divMod256(byte[] number58, int startAt) {
         int remainder = 0;
         for (int i = startAt; i < number58.length; i++) {
             int digit58 = (int) number58[i] & 0xFF;

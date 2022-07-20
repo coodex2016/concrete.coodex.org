@@ -19,6 +19,7 @@ package org.coodex.billing.timebased;
 import org.coodex.billing.*;
 import org.coodex.exception.NoneInstanceException;
 import org.coodex.exception.NoneSupportedException;
+import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.Section;
 import org.coodex.util.SelectableServiceLoader;
@@ -170,14 +171,12 @@ public abstract class AbstractTimeBasedCalculator<C extends TimeBasedChargeable>
     }
 
     /**
-     * TODO 使用Provider方式聚合
-     *
      * @param bill        需要调整的账单
      * @param adjustments 调整项目
      * @return 调整后账单
      */
     protected Bill<C> adjustBill(Bill<C> bill, List<? extends Adjustment<C>> adjustments) {
-        if (adjustments == null || adjustments.size() == 0)
+        if (Common.isEmpty(adjustments))
             return bill;
 
         for (Adjustment<C> adjustment : adjustments) {

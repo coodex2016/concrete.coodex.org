@@ -54,7 +54,7 @@ public abstract class AbstractJSR339Resource<T> extends AbstractJAXRSResource<T>
             try {
                 if (method.getDeclaringClass().equals(Polling.class)) {
                     asyncResponse.resume(TBMContainer.getInstance().getMessages(
-                            tokenId, ((Integer) params[0]).intValue() * 1000L));
+                            tokenId, (Integer) params[0] * 1000L));
                 } else {
                     asyncResponse.resume(invokeByTokenId(tokenId, method, params));
                 }

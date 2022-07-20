@@ -22,6 +22,7 @@ import org.coodex.concrete.api.Overlay;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * Created by davidoff shen on 2016-09-01.
@@ -60,10 +61,14 @@ public class DefinitionContextImpl implements DefinitionContext {
 
     @Override
     public String getModuleName() {
-        if (declaringClass == null) return null;
-        ConcreteService concreteService = declaringClass.getAnnotation(ConcreteService.class);
-        if (concreteService == null) return null;
-        return concreteService.value();
+        return Optional.ofNullable(declaringClass)
+                .map(c -> c.getAnnotation(ConcreteService.class))
+                .map(ConcreteService::value)
+                .orElse(null);
+//        if (declaringClass == null) return null;
+//        ConcreteService concreteService = declaringClass.getAnnotation(ConcreteService.class);
+//        if (concreteService == null) return null;
+//        return concreteService.value();
 //        return ConcreteHelper.getServiceName(getDeclaringClass());
     }
 

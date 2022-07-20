@@ -22,6 +22,7 @@ import org.coodex.billing.timebased.TimeBasedChargeable;
 import org.coodex.exception.NoneInstanceException;
 import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
+import org.coodex.util.Section;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public abstract class AbstractModelInstance<C extends TimeBasedChargeable> implements BillingModel.Instance<C> {
-    private final static Logger log = LoggerFactory.getLogger(AbstractModelInstance.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractModelInstance.class);
 
 
     private static final Comparator<BillingModel.Fragment<?>> FRAGMENT_COMPARATOR = Comparator.comparing(o -> o.getPeriod().getStart());
@@ -71,12 +72,12 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
     }
 
     private void throwExceptionIfNotBlank(List<Period> periods, String label) {
-        if (periods.size() > 0) {
+        if (Common.notEmpty(periods)) {
             StringBuilder builder = new StringBuilder(label);
             for (Period p : periods) {
                 builder.append("\n\tfrom ").append(Common.calendarToStr(p.getStart())).append(" to ").append(Common.calendarToStr(p.getEnd()));
             }
-            throw new RuntimeException(builder.toString());
+            throw new IllegalArgumentException(builder.toString());
         }
     }
 
@@ -89,15 +90,15 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
                 throw new NoneInstanceException("FragmentSlicer NOT found: " + profile.getSlicerProfile());
             }
             List<Period> periods = slicer.slice(period, chargeable);
-            if (periods != null && periods.size() > 0) {
-                throwExceptionIfNotBlank(Period.sub(periods, Collections.singletonList(period), Period.BUILDER), "out of range:");
+            if (Common.notEmpty(periods)) {
+                throwExceptionIfNotBlank(Section.sub(periods, Collections.singletonList(period), Period.BUILDER), "out of range:");
 
                 for (Period p : periods) {
                     fragments.add(new BillingModel.Fragment<>(getAlgorithm(profile.getAlgorithmProfile()), p));
                 }
             }
         }
-        if (fragments.size() > 0) {
+        if (Common.notEmpty(fragments)) {
             fragments.sort(FRAGMENT_COMPARATOR);
             // 从前向后找，如果后一个开始时间大于前一个的结束时间，则说明有重复的时间段，抛错
             List<Period> test = new ArrayList<>();
@@ -115,7 +116,7 @@ public abstract class AbstractModelInstance<C extends TimeBasedChargeable> imple
 
             // 原始时间段减去全部切分段不为空，则表示有未匹配的时间段，补充上，并通过log进行警告提示
             List<Period> missing = Period.sub(Collections.singletonList(period), test, Period.BUILDER);
-            if (missing.size() > 0) {
+            if (Common.notEmpty(missing)) {
                 for (Period p : missing) {
                     if (log.isWarnEnabled()) {
                         log.warn("from {} to {} is missing.", Common.calendarToStr(p.getStart()), Common.calendarToStr(p.getEnd()));

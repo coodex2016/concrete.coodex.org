@@ -26,7 +26,7 @@ import org.coodex.billing.timebased.reference.AlgorithmFactory;
 
 public class FreeAlgorithmFactory implements AlgorithmFactory<TimeBasedChargeable, FreeAlgorithmProfile> {
 
-    private final static BillingModel.Algorithm<TimeBasedChargeable> ALGORITHM =
+    private static final BillingModel.Algorithm<TimeBasedChargeable> ALGORITHM =
             new AbstractAlgorithm<TimeBasedChargeable>() {
                 @Override
                 protected Bill.Detail calc(Period period, long duration, TimeBasedChargeable chargeable) {

@@ -42,7 +42,7 @@ public class Period extends Section<Calendar> {
     @SuppressWarnings("WeakerAccess")
     public static long durationOf(List<Period> periods, TimeUnit unit) {
         long duration = 0L;
-        if (periods != null && periods.size() != 0) {
+        if (Common.notEmpty(periods)) {
             for (Period period : periods) {
                 duration += period.duration(unit);
             }

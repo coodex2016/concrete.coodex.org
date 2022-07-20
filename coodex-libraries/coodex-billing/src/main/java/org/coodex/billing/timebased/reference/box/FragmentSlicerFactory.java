@@ -21,6 +21,7 @@ import org.coodex.billing.timebased.TimeBasedChargeable;
 import org.coodex.billing.timebased.reference.FragmentSlicer;
 import org.coodex.billing.timebased.reference.SlicerFactory;
 import org.coodex.exception.ParseRuntimeException;
+import org.coodex.util.Common;
 import org.coodex.util.Section;
 
 import java.text.ParseException;
@@ -68,7 +69,7 @@ public class FragmentSlicerFactory<C extends TimeBasedChargeable> implements Sli
                             wholeTime,
                             Collections.singletonList(Period.BUILDER.create(fStart, fEnd)),
                             Period.BUILDER);
-                    if (intersection.size() > 0) {
+                    if (Common.notEmpty(intersection)) {
                         result.addAll(intersection);
                     }
                     fStart.add(Calendar.DATE, 1);
