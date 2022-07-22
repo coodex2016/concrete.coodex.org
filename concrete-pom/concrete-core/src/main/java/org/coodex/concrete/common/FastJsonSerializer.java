@@ -26,7 +26,7 @@ import java.lang.reflect.Type;
 /**
  * Created by davidoff shen on 2016-12-07.
  */
-public class FastJsonSerializer extends AbstractJsonSerializer {
+public class FastJsonSerializer implements JSONSerializer {
 
     private Class<?> jsonClass = null;
 
@@ -73,7 +73,7 @@ public class FastJsonSerializer extends AbstractJsonSerializer {
     @Override
     public <T> T parse(String json, Type t) {
         try {
-            return String.class.equals(t) ? Common.cast(json) : Common.cast($parse(json, t));
+            return /*String.class.equals(t) ? Common.cast(json) :*/ Common.cast($parse(json, t));
             //JSON.parseObject(json, t, Feature.IgnoreNotMatch);
         } catch (Throwable th) {
             throw th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th);
@@ -90,4 +90,5 @@ public class FastJsonSerializer extends AbstractJsonSerializer {
             throw new RuntimeException(e);
         }
     }
+
 }

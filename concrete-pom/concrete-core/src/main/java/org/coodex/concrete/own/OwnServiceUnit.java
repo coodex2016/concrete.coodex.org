@@ -25,20 +25,32 @@ import org.coodex.util.Common;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.StringJoiner;
 
 //@SuppressWarnings("rawtypes")
 public abstract class OwnServiceUnit/*<M extends OwnServiceModule>*/
         extends AbstractUnit<AbstractParam> {
-    private String key;
+
+    public static String getUnitKey(AbstractUnit<?> unit) {
+        return Common.sha1(
+                unit.getDeclaringModule().getInterfaceClass().getName() + "." +
+                        unit.getMethod().getName() + "(" + getParameterTypesStr(unit.getMethod()) + ")"
+        );
+    }
+
+    private final String key;
 
     public OwnServiceUnit(Method method, AbstractModule<?> module) {
         super(method, module);
-        key = Common.sha1(String.format("%s:%s(%d)", // TODO "%s:%s(%s)",
-                getDeclaringModule().getInterfaceClass().getName(),
-                getName(),
-                getParameters().length
-                // TODO builder.toString()
-        ));
+        key = getUnitKey(this);
+    }
+
+    private static String getParameterTypesStr(Method method) {
+        StringJoiner joiner = new StringJoiner(", ");
+        for (Class<?> c : method.getParameterTypes()) {
+            joiner.add(c.getName());
+        }
+        return joiner.toString();
     }
 
     @Override

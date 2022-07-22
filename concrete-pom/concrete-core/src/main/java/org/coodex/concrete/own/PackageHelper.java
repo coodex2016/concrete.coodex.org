@@ -82,15 +82,14 @@ public class PackageHelper {
                 objects.add(json == null ? null :
                         serializer.parse(json, paramType(abstractParams[0])));
             } else {
-                Map<String, String> map = serializer.parse(
+                Map<String, Object> map = serializer.parse(
                         json,
-                        new GenericTypeHelper.GenericType<Map<String, String>>() {
+                        new GenericTypeHelper.GenericType<Map<String, Object>>() {
                         }.getType());
 
                 for (AbstractParam param : abstractParams) {
-                    String value = map.get(param.getName());
-                    objects.add(value == null ? null :
-                            serializer.parse(value, paramType(param))
+                    Object value = map.get(param.getName());
+                    objects.add(value == null ? null : serializer.parse(value, paramType(param))
                     );
                 }
             }

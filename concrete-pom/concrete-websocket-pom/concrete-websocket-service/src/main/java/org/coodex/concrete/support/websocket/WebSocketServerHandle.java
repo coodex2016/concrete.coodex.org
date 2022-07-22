@@ -252,14 +252,10 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
     private void invokeService(final RequestPackage<Object> requestPackage, final Session session) {
 
         final Caller caller = (Caller) session.getUserProperties().get(WEB_SOCKET_CALLER_INFO);
-        final OwnServiceProvider.ResponseVisitor responseVisitor = new OwnServiceProvider.DefaultResponseVisitor() {
-            @Override
-            public void visit(String json) {
-                sendText(json, session);
-            }
-        };
 
-        final OwnServiceProvider.ErrorVisitor errorVisitor = (msgId, th) -> sendError(msgId, th, session);
+        final OwnServiceProvider.JSONResponseVisitor responseVisitor = json -> sendText(json, session);
+
+//        final OwnServiceProvider.ErrorVisitor errorVisitor = (msgId, th) -> sendError(msgId, th, session);
 
         final OwnServiceProvider.ServerSideMessageVisitor serverSideMessageVisitor = WebSocketServerHandle::sendMessage;
 
@@ -267,7 +263,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
             peers.put(session, tokenId);//???
         };
 
-        invokeService(requestPackage, caller, responseVisitor, errorVisitor, serverSideMessageVisitor, newTokenVisitor);
+        invokeService(requestPackage, caller, responseVisitor,/* errorVisitor, */serverSideMessageVisitor, newTokenVisitor);
     }
 
     @Override

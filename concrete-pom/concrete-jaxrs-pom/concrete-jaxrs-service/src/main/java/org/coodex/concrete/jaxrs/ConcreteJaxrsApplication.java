@@ -42,7 +42,7 @@ public abstract class ConcreteJaxrsApplication
         org.coodex.concrete.api.Application {
 
     private static final JaxRSModuleMaker moduleMaker = new JaxRSModuleMaker();
-    private final static Logger log = LoggerFactory.getLogger(ConcreteJaxrsApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(ConcreteJaxrsApplication.class);
     private final Set<Class<?>> servicesClasses = new HashSet<>();
     private final Set<Class<?>> jaxrsClasses = new HashSet<>();
     private final Set<Object> singletonInstances = new HashSet<>();
@@ -149,7 +149,7 @@ public abstract class ConcreteJaxrsApplication
         }
     }
 
-    private void registerConcreteService(Class<?> concreteServiceClass) {
+    protected void registerConcreteService(Class<?> concreteServiceClass) {
         if (!servicesClasses.contains(concreteServiceClass)) {
             notifyToAll(concreteServiceClass);
             servicesClasses.add(concreteServiceClass);
@@ -173,7 +173,7 @@ public abstract class ConcreteJaxrsApplication
                         }
                         builder.append(");");
                     }
-                    log.debug("class info:{}", builder.toString());
+                    log.debug("class info:{}", builder);
                 }
                 jaxrsClasses.add(jaxrs);
             }

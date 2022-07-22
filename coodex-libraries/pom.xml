@@ -46,10 +46,14 @@
         <developer>
             <id>shenhainan</id>
             <name>Shen Hainan</name>
+            <timezone>+8</timezone>
             <url>https://coodex.org</url>
             <email>jujus.shen@126.com</email>
             <organization>coodex.org</organization>
             <organizationUrl>https://coodex.org</organizationUrl>
+            <roles>
+                <role>owner</role>
+            </roles>
         </developer>
     </developers>
 
@@ -276,12 +280,12 @@
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-                    <execution>
-                        <id>check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
+<!--                    <execution>-->
+<!--                        <id>check</id>-->
+<!--                        <goals>-->
+<!--                            <goal>check</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
                     <execution>
                         <id>report</id>
                         <phase>prepare-package</phase>

@@ -23,7 +23,6 @@ import org.coodex.concrete.amqp.AMQPModule;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.own.OwnServiceProvider;
 import org.coodex.concrete.own.RequestPackage;
-import org.coodex.concrete.own.ResponsePackage;
 import org.coodex.config.Config;
 import org.coodex.logging.Level;
 import org.coodex.util.Common;
@@ -46,7 +45,7 @@ public class AMQPApplication extends OwnServiceProvider {
     private final static Logger log = LoggerFactory.getLogger(AMQPApplication.class);
 
 
-    private static OwnModuleBuilder AMQP_MODULE_BUILDER = AMQPModule::new;
+    //    private static final OwnModuleBuilder AMQP_MODULE_BUILDER = ;
     private final String exchangeName;
     private Channel channel;
     private final Level level;
@@ -70,7 +69,7 @@ public class AMQPApplication extends OwnServiceProvider {
 
     @Override
     protected OwnModuleBuilder getModuleBuilder() {
-        return AMQP_MODULE_BUILDER;
+        return AMQPModule::new;
     }
 
 //    @Override
@@ -79,8 +78,7 @@ public class AMQPApplication extends OwnServiceProvider {
 //    }
 
     @Override
-    protected ServerSideContext getServerSideContext(RequestPackage<Object> requestPackage,
-                                                     String tokenId, Caller caller) {
+    protected ServerSideContext getServerSideContext(RequestPackage<Object> requestPackage, String tokenId, Caller caller) {
         Subjoin subjoin = getSubjoin(requestPackage);
         return new AMQPServiceContext(caller, subjoin, getLocale(subjoin), tokenId);
     }
@@ -121,10 +119,7 @@ public class AMQPApplication extends OwnServiceProvider {
                     if (level.isEnabled(log)) {
                         level.log(log, "send to " + clientId + ": " + json);
                     }
-                    channel.basicPublish(exchangeName,
-                            ROUTE_KEY_RESPONSE + clientId,
-                            null,
-                            json.getBytes(StandardCharsets.UTF_8));
+                    channel.basicPublish(exchangeName, ROUTE_KEY_RESPONSE + clientId, null, json.getBytes(StandardCharsets.UTF_8));
                 }
 
 
@@ -135,21 +130,16 @@ public class AMQPApplication extends OwnServiceProvider {
                     if (level.isEnabled(log)) {
                         level.log(log, "message received: " + bodyStr);
                     }
-                    final RequestPackage<Object> requestPackage = serializer.parse(bodyStr,
-                            new GenericTypeHelper.GenericType<RequestPackage<Object>>() {
-                            }.getType());
+                    final RequestPackage<Object> requestPackage = serializer.parse(bodyStr, new GenericTypeHelper.GenericType<RequestPackage<Object>>() {
+                    }.getType());
 
-                    invokeService(requestPackage, new AMQPCaller(getSubjoin(requestPackage)),
-                            new DefaultResponseVisitor() {
-                                @Override
-                                public void visit(String json) {
-                                    try {
-                                        send(json, clientId);
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                }
-                            }, (msgId, th) -> {
+                    invokeService(requestPackage, new AMQPCaller(getSubjoin(requestPackage)), (JSONResponseVisitor) json -> {
+                        try {
+                            send(json, clientId);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, /*(msgId, th) -> {
                                 ResponsePackage<ErrorInfo> responsePackage = new ResponsePackage<>();
                                 responsePackage.setOk(false);
                                 responsePackage.setMsgId(msgId);
@@ -160,8 +150,8 @@ public class AMQPApplication extends OwnServiceProvider {
                                     throw new RuntimeException(e);
                                 }
                             }, (serverSideMessage, tokenId) -> {
-                                // TODO
-                            }, null);
+                        // TODO
+                    }, */ null, null);
                 }
             });
         } catch (Throwable th) {

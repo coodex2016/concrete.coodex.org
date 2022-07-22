@@ -23,6 +23,7 @@ import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
+import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.util.Common;
 
 import java.io.IOException;
@@ -78,6 +79,7 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
                 if (method == null) {
                     method = new HashMap<>();
                     method.put("name", methodName);
+                    method.put("serviceId", OwnServiceUnit.getUnitKey(unit));
                     methods.put(methodName, method);
                 }
 
@@ -94,6 +96,7 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
                 for (JaxrsParam p : unit.getParameters()) {
                     params.add(p.getName());
                 }
+//                overload.put("methodParamCount", unit.getMethod().getParameterCount());
                 overload.put("paramCount", unit.getParameters().length);
                 overload.put("params", params);
                 overload.put("body", JaxrsRenderHelper.getBody(unit));
@@ -101,7 +104,9 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
                 overload.put("resultType", String.class.equals(unit.getReturnType()) ? "text" : "json");
                 overload.put("httpMethod", unit.getInvokeType());
 
-
+                if (overloads.size() > 1) {
+                    param.put("overloadUsed", true);
+                }
             }
             param.put("methods", methods.values());
 

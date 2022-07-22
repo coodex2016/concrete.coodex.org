@@ -19,12 +19,12 @@ package org.coodex.concrete.serializer.jackson2;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import org.coodex.concrete.common.AbstractJsonSerializer;
+import org.coodex.concrete.common.JSONSerializer;
 import org.coodex.util.Common;
 
 import java.lang.reflect.Type;
 
-public class Jackson2Serializer extends AbstractJsonSerializer {
+public class Jackson2Serializer implements JSONSerializer {
 
 //    private final static Logger log = LoggerFactory.getLogger(Jackson2Serializer.class);
 
@@ -39,14 +39,15 @@ public class Jackson2Serializer extends AbstractJsonSerializer {
 
     @Override
     public <T> T parse(String json, Type t) {
+        if (json == null) return null;
         try {
             if (t instanceof Class) {
-                if (String.class.equals(t)) {
-                    return Common.cast(json);
-                } else {
-                    Class<T> c = Common.cast(t);
-                    return getMapper().readValue(json, c);
-                }
+//                if (String.class.equals(t)) {
+//                    return Common.cast(json);
+//                } else {
+                Class<T> c = Common.cast(t);
+                return getMapper().readValue(json, c);
+//                }
             } else {
                 return getMapper().readValue(json, TypeFactory.defaultInstance().constructType(t));
             }
@@ -63,4 +64,5 @@ public class Jackson2Serializer extends AbstractJsonSerializer {
             throw new RuntimeException(e);
         }
     }
+
 }

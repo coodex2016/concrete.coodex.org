@@ -36,7 +36,7 @@ import static org.coodex.concrete.common.ConcreteHelper.getScheduler;
 
 public class TBMContainer {
 
-    private final static Logger log = LoggerFactory.getLogger(TBMContainer.class);
+    private static final Logger log = LoggerFactory.getLogger(TBMContainer.class);
 
 
     //    private static Singleton<ScheduledExecutorService> scheduledExecutor = new Singleton<ScheduledExecutorService>(
@@ -47,8 +47,8 @@ public class TBMContainer {
 //                }
 //            }
 //    );
-    private static TBMContainer tbmContainer = new TBMContainer();
-    private static SingletonMap<String, TBMQueue> queues = SingletonMap.<String, TBMQueue>builder().function(key -> new TBMQueue()).build();
+    private static final TBMContainer tbmContainer = new TBMContainer();
+    private static final SingletonMap<String, TBMQueue> queues = SingletonMap.<String, TBMQueue>builder().function(key -> new TBMQueue()).build();
 
 
     private TBMContainer() {

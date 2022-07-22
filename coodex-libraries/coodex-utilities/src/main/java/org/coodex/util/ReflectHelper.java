@@ -43,6 +43,15 @@ public class ReflectHelper {
     private ReflectHelper() {
     }
 
+    public static boolean classExists(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
     public static <T extends Annotation> T getAnnotation(Class<T> annotationClass, AnnotatedElement element, Set<AnnotatedElement> checked) {
         if (checked.contains(element)) {
             return null;

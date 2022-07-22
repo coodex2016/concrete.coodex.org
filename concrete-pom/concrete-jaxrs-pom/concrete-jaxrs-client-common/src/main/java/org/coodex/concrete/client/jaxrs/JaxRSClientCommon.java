@@ -60,9 +60,10 @@ public class JaxRSClientCommon {
         if (code >= 200 && code < 300) {
             return (code == 204 || void.class.equals(unit.getReturnType())) ?
                     null :
-                    getJSONSerializer().parse(body,
-                            toReference(unit.getGenericReturnType(),
-                                    unit.getDeclaringModule().getInterfaceClass()));
+                    String.class.equals(unit.getReturnType()) ? body :
+                            getJSONSerializer().parse(body,
+                                    toReference(unit.getGenericReturnType(),
+                                            unit.getDeclaringModule().getInterfaceClass()));
         } else {
             throw throwException(errorOccurred, code, body, unit, url);
         }

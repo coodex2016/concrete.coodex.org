@@ -18,12 +18,13 @@ package org.coodex.concrete.common;
 
 import java.lang.reflect.Type;
 
+@Deprecated
 public abstract class AbstractJsonSerializer implements JSONSerializer {
 
     @Override
     public final <T> T parse(Object jsonObject, Type t) {
-        return jsonObject instanceof String ?
-                parse((String) jsonObject, t) :
+        return /*jsonObject instanceof String ?
+                parse((String) jsonObject, t) :*/
                 parse(toJson(jsonObject), t);
     }
 }

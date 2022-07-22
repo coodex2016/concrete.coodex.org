@@ -40,7 +40,7 @@ public class JaxrsRenderHelper {
         for (JaxrsParam pojoParam : pojoParams) {
 //                    if (i > 0) builder.append(", ");
 //                    builder.append(pojoParams[i].getName())/*.append(": ").append(pojoParams[i].getName())*/;
-            joiner.add(pojoParam.getName() + ": " + pojoParam.getName());
+            joiner.add(pojoParam.getName());
         }
 //                builder.append(" }");
 //                return builder.toString();

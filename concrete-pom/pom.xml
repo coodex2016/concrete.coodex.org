@@ -45,10 +45,14 @@
         <developer>
             <id>shenhainan</id>
             <name>Shen Hainan</name>
+            <timezone>+8</timezone>
             <url>https://coodex.org</url>
             <email>jujus.shen@126.com</email>
             <organization>coodex.org</organization>
             <organizationUrl>https://coodex.org</organizationUrl>
+            <roles>
+                <role>owner</role>
+            </roles>
         </developer>
     </developers>
 
@@ -100,6 +104,8 @@
         <jsr-339.version>1.0.0.Final</jsr-339.version>
 
         <apache.dubbo.version>2.7.16</apache.dubbo.version>
+
+        <protobuf.version>3.21.2</protobuf.version>
 
         <!--        <slf4j.version>1.7.30</slf4j.version>-->
         <!--        <log4j2.version>2.13.0</log4j2.version>-->
@@ -417,6 +423,7 @@
                 <artifactId>druid</artifactId>
                 <version>${druid.version}</version>
             </dependency>
+
 
             <!-- https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305 -->
             <dependency>

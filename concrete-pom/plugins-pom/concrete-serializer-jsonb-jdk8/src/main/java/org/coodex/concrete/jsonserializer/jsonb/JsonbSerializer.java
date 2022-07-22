@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.jsonserializer.jsonb;
 
-import org.coodex.concrete.common.AbstractJsonSerializer;
+import org.coodex.concrete.common.JSONSerializer;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
@@ -27,7 +27,7 @@ import java.lang.reflect.Type;
 
 import static org.coodex.concrete.common.ConcreteHelper.getAppSet;
 
-public class JsonbSerializer extends AbstractJsonSerializer {
+public class JsonbSerializer implements JSONSerializer /*extends AbstractJsonSerializer */ {
 
     private final Singleton<Jsonb> jsonbSingleton = Singleton.with(() -> {
         String providerName = Config.get("jsonb.provider", getAppSet());
@@ -40,8 +40,9 @@ public class JsonbSerializer extends AbstractJsonSerializer {
 
     @Override
     public <T> T parse(String json, Type t) {
+        if (json == null) return null;
         try {
-            return String.class.equals(t) ? Common.cast(json) : getInstance().fromJson(json, t);
+            return /*String.class.equals(t) ? Common.cast(json) : */getInstance().fromJson(json, t);
         } catch (Throwable th) {
             throw Common.rte(th);
         }

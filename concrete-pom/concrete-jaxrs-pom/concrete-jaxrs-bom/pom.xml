@@ -57,6 +57,12 @@
 
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
+                <artifactId>concrete-jaxrs-grable</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
                 <artifactId>concrete-jaxrs-service-jsr339</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>

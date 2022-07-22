@@ -30,10 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static org.coodex.concrete.common.ConcreteContext.runServiceWithContext;
 import static org.coodex.concrete.common.ConcreteHelper.*;
@@ -44,6 +41,7 @@ public abstract class OwnServiceProvider implements Application {
 
     private final static Logger log = LoggerFactory.getLogger(OwnServiceProvider.class);
     private final Map<String, AbstractUnit<?>> unitMap = new HashMap<>();
+    private final Set<Class<?>> registered = new HashSet<>();
 
     public OwnServiceProvider() {
         registerPackage(ErrorCodeConstants.class.getPackage().getName());
@@ -92,6 +90,8 @@ public abstract class OwnServiceProvider implements Application {
 
     public final void registerClasses(Class<?>... classes) {
         for (final Class<?> clz : classes) {
+            if (registered.contains(clz)) continue;
+            registered.add(clz);
             if (ErrorMessageFacade.register(clz)) return;
             if (ConcreteHelper.isConcreteService(clz)) {
                 appendUnits(getModuleBuilder().build(clz));
@@ -115,7 +115,7 @@ public abstract class OwnServiceProvider implements Application {
     protected void invokeService(final RequestPackage<Object> requestPackage,
                                  final Caller caller,
                                  final OwnServiceProvider.ResponseVisitor responseVisitor,
-                                 final OwnServiceProvider.ErrorVisitor errorVisitor,
+//                                 final OwnServiceProvider.ErrorVisitor errorVisitor,
                                  final OwnServiceProvider.ServerSideMessageVisitor serverSideMessageVisitor,
                                  final OwnServiceProvider.TBMNewTokenVisitor newTokenVisitor) {
         IF.isNull(responseVisitor, ErrorCodes.OWN_PROVIDER_NO_RESPONSE_VISITOR, getModuleName());
@@ -164,6 +164,7 @@ public abstract class OwnServiceProvider implements Application {
 
                     ResponsePackage<?> responsePackage = new ResponsePackage<>();
                     final String tokenIdAfterInvoke = context.getTokenId();
+                    // todo 迁移至TokenListener
                     if (!Objects.equals(tokenId, tokenIdAfterInvoke)
                             && !Common.isBlank(tokenIdAfterInvoke)) {
 
@@ -175,19 +176,21 @@ public abstract class OwnServiceProvider implements Application {
                             }
                             TBMContainer.getInstance().clear(tokenId);
                         }
-                        TBMContainer.getInstance().listen(tokenIdAfterInvoke, new TBMContainer.TBMListener() {
-                            @Override
-                            public String getTokenId() {
-                                return tokenIdAfterInvoke;
-                            }
+                        //
+                        if (serverSideMessageVisitor != null) {
+                            TBMContainer.getInstance().listen(tokenIdAfterInvoke, new TBMContainer.TBMListener() {
+                                @Override
+                                public String getTokenId() {
+                                    return tokenIdAfterInvoke;
+                                }
 
-                            @Override
-                            public void onMessage(ServerSideMessage<?> serverSideMessage) {
-                                serverSideMessageVisitor.visit(serverSideMessage, tokenIdAfterInvoke);
+                                @Override
+                                public void onMessage(ServerSideMessage<?> serverSideMessage) {
+                                    serverSideMessageVisitor.visit(serverSideMessage, tokenIdAfterInvoke);
 //                                sendMessage(serverSideMessage, tokenIdAfterInvoke);
-                            }
-                        });
-
+                                }
+                            });
+                        }
                     }
                     responsePackage.setSubjoin(updatedMap(context.getSubjoin()));
                     responsePackage.setMsgId(requestPackage.getMsgId());
@@ -196,11 +199,16 @@ public abstract class OwnServiceProvider implements Application {
                     responseVisitor.visit(responsePackage);
                 } catch (final Throwable th) {
                     trace.error(th);
-                    if (errorVisitor != null) {
-                        errorVisitor.visit(requestPackage.getMsgId(), th);
-                    } else {
-                        log.warn("no error visitor: {}", getModuleName());
-                    }
+                    ResponsePackage<ErrorInfo> responsePackage = new ResponsePackage<>();
+                    responsePackage.setOk(false);
+                    responsePackage.setMsgId(requestPackage.getMsgId());
+                    responsePackage.setContent(ThrowableMapperFacade.toErrorInfo(th));
+                    responseVisitor.visit(responsePackage);
+//                    if (errorVisitor != null) {
+//                        errorVisitor.visit(requestPackage.getMsgId(), th);
+//                    } else {
+//                        log.warn("no error visitor: {}", getModuleName());
+//                    }
 
                 } finally {
                     trace.finish();
@@ -215,12 +223,21 @@ public abstract class OwnServiceProvider implements Application {
     public interface ResponseVisitor {
         void visit(ResponsePackage<?> responsePackage);
 
+    }
+
+    public interface JSONResponseVisitor extends ResponseVisitor {
+
+        @Override
+        default void visit(ResponsePackage<?> responsePackage) {
+            visit(JSONSerializerFactory.getInstance().toJson(responsePackage));
+        }
+
         void visit(String json);
     }
 
-    public interface ErrorVisitor {
-        void visit(String msgId, Throwable th);
-    }
+//    public interface ErrorVisitor {
+//        void visit(String msgId, Throwable th);
+//    }
 
     public interface ServerSideMessageVisitor {
         void visit(ServerSideMessage<?> serverSideMessage, String tokenId);
@@ -386,10 +403,10 @@ public abstract class OwnServiceProvider implements Application {
         }
     }
 
-    public abstract static class DefaultResponseVisitor implements ResponseVisitor {
-        @Override
-        public void visit(ResponsePackage<?> responsePackage) {
-            visit(JSONSerializerFactory.getInstance().toJson(responsePackage));
-        }
-    }
+//    public abstract static class DefaultResponseVisitor implements ResponseVisitor {
+//        @Override
+//        public void visit(ResponsePackage<?> responsePackage) {
+//
+//        }
+//    }
 }

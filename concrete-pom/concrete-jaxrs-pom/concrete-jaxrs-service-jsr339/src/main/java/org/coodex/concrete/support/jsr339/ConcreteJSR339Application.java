@@ -16,24 +16,71 @@
 
 package org.coodex.concrete.support.jsr339;
 
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.ClassGenerator;
 import org.coodex.concrete.jaxrs.ConcreteJaxrsApplication;
+import org.coodex.concrete.protobuf.ProtobufServiceApplication;
 import org.coodex.concrete.support.jsr339.javassist.JSR339ClassGenerator;
+import org.coodex.util.ReflectHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Application;
 import java.util.Map;
 
 public class ConcreteJSR339Application extends ConcreteJaxrsApplication {
 
-    public ConcreteJSR339Application() {
-        super();
+    private static final Logger log = LoggerFactory.getLogger(ConcreteJSR339Application.class);
+
+    public static final String GRABLE_SERVICE_CLASS_NAME = "org.coodex.concrete.jaxrs.garble.GrableService";
+    public static final boolean JAXRS_GRABLE_SERVICE_EXISTS = ReflectHelper.classExists(
+            GRABLE_SERVICE_CLASS_NAME
+    );
+    private final boolean grableEnabled;
+
+    private void checkGrableServiceStatus() {
+        if (grableEnabled && !JAXRS_GRABLE_SERVICE_EXISTS) {
+            log.warn("class {} not found. grable service could not start, add org.coodex.concrete.jaxrs:concrete-jaxrs-grable:{} to use it.",
+                    GRABLE_SERVICE_CLASS_NAME, ConcreteHelper.VERSION);
+        }
     }
+
+
+    public ConcreteJSR339Application() {
+        this(JAXRS_GRABLE_SERVICE_EXISTS);
+    }
+
+    public ConcreteJSR339Application(boolean grableEnabled) {
+        super();
+        this.grableEnabled = grableEnabled;
+        checkGrableServiceStatus();
+    }
+
 
     public ConcreteJSR339Application(Application application) {
-        super(application);
+        this(application, JAXRS_GRABLE_SERVICE_EXISTS);
     }
 
-    private static JSR339ClassGenerator classGenerator = new JSR339ClassGenerator();
+
+    public ConcreteJSR339Application(Application application, boolean grableEnabled) {
+        super(application);
+        this.grableEnabled = grableEnabled;
+        checkGrableServiceStatus();
+    }
+
+    private static final JSR339ClassGenerator classGenerator = new JSR339ClassGenerator();
+
+    protected boolean isGrableEnabled() {
+        return JAXRS_GRABLE_SERVICE_EXISTS && grableEnabled;
+    }
+
+    @Override
+    protected void registerConcreteService(Class<?> concreteServiceClass) {
+        if (isGrableEnabled()) {
+            ProtobufServiceApplication.getInstance("jaxrs").register(concreteServiceClass);
+        }
+        super.registerConcreteService(concreteServiceClass);
+    }
 
     @Override
     protected ClassGenerator getClassGenerator() {

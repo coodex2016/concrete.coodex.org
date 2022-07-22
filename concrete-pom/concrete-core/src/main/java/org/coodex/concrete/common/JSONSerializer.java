@@ -25,7 +25,9 @@ public interface JSONSerializer {
 
     <T> T parse(String json, Type t);
 
-    <T> T parse(Object jsonObject, Type t);
+    default <T> T parse(Object jsonObject, Type t) {
+        return jsonObject == null ? null : parse(toJson(jsonObject), t);
+    }
 
     String toJson(Object t);
 }
