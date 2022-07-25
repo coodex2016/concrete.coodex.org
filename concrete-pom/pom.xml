@@ -24,7 +24,7 @@
     <url>https://concrete.coodex.org</url>
     <groupId>org.coodex.concrete</groupId>
     <artifactId>concrete-pom</artifactId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.5.1-RC5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -105,7 +105,7 @@
 
         <apache.dubbo.version>2.7.16</apache.dubbo.version>
 
-        <protobuf.version>3.21.2</protobuf.version>
+        <protobuf.version>3.21.3</protobuf.version>
 
         <!--        <slf4j.version>1.7.30</slf4j.version>-->
         <!--        <log4j2.version>2.13.0</log4j2.version>-->
@@ -381,6 +381,12 @@
                 <version>${apache.dubbo.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
             </dependency>
 
 

@@ -42,7 +42,7 @@ import static org.coodex.util.ReflectHelper.foreachClass;
  */
 public class ConcreteHelper {
 
-    public static final String VERSION = "0.5.1-SNAPSHOT";
+    public static final String VERSION = "0.5.1-RC5-SNAPSHOT";
 
     public static final String TAG_CLIENT = "client";
     public static final String KEY_DESTINATION = "destination";
@@ -199,12 +199,12 @@ public class ConcreteHelper {
     }
 
     public static void foreachClassInPackages(Consumer<Class<?>> processor, String... packages) {
-        String[] packageParrterns = packages;
-        if (packageParrterns == null || packageParrterns.length == 0) {
-            packageParrterns = getApiPackages();
+        String[] packagePatterns = packages;
+        if (packagePatterns == null || packagePatterns.length == 0) {
+            packagePatterns = getApiPackages();
         }
-        if (packageParrterns == null) {
-            packageParrterns = new String[0];
+        if (packagePatterns == null) {
+            packagePatterns = new String[0];
         }
 
         // 注册
@@ -216,7 +216,7 @@ public class ConcreteHelper {
 
                 }, (ConcreteClassFilter) clazz -> ConcreteHelper.isConcreteService(clazz) ||
                         clazz.getAnnotation(ErrorCode.class) != null,
-                packageParrterns);
+                packagePatterns);
     }
 
     private static final SingletonMap<String, ExecutorService> executorServiceMap

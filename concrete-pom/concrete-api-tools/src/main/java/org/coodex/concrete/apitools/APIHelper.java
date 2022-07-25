@@ -117,19 +117,10 @@ public class APIHelper {
         private final Map<Class<?>, MODULE> moduleMap = new HashMap<>();
         private final Consumer<Class<?>> classConsumer = (serviceClass) -> {
             if (isConcreteService(serviceClass)) {
-                MODULE module = getMaker().make(serviceClass);
-
-                Class<?> key = module.getInterfaceClass();//.getName();
-                MODULE exists = moduleMap.get(key);
-
-                if (exists != null) {
-                    throw new RuntimeException(
-                            String.format("Module %s duplicated. %s & %s",
-                                    key,
-                                    exists.getInterfaceClass().getName(),
-                                    module.getInterfaceClass().getName()));
+                if (moduleMap.containsKey(serviceClass)) {
+                    throw new DuplicatedModuleException(String.format("Module %s duplicated.", serviceClass));
                 }
-                moduleMap.put(key, module);
+                moduleMap.put(serviceClass, getMaker().make(serviceClass));
             } else {
                 ErrorMessageFacade.register(serviceClass);
             }
