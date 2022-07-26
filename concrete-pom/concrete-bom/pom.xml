@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.coodex.concrete</groupId>
         <artifactId>concrete-pom</artifactId>
-        <version>0.5.1-RC5-SNAPSHOT</version>
+        <version>0.5.1-RC5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

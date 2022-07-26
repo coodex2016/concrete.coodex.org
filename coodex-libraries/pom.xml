@@ -22,7 +22,7 @@
 
     <groupId>org.coodex</groupId>
     <artifactId>coodex-libraries</artifactId>
-    <version>0.5.1-RC5-SNAPSHOT</version>
+    <version>0.5.1-RC5</version>
     <packaging>pom</packaging>
     <name>coodex-libraries</name>
     <description>coodex-libraries</description>
@@ -142,7 +142,7 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.7</version>
+                        <version>1.6.13</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>oss</serverId>
