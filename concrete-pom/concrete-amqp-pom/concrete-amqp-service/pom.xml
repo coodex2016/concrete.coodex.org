@@ -21,7 +21,7 @@
     <parent>
         <artifactId>concrete-amqp-pom</artifactId>
         <groupId>org.coodex.concrete.amqp</groupId>
-        <version>0.5.1-RC5</version>
+        <version>0.5.1-RC6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

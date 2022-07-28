@@ -40,7 +40,7 @@ public class JsonbSerializer implements JSONSerializer /*extends AbstractJsonSer
 
     @Override
     public <T> T parse(String json, Type t) {
-        if (json == null) return null;
+        if (Common.isBlank(json)) return null;
         try {
             return /*String.class.equals(t) ? Common.cast(json) : */getInstance().fromJson(json, t);
         } catch (Throwable th) {

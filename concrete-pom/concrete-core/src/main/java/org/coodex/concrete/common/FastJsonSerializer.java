@@ -72,6 +72,7 @@ public class FastJsonSerializer implements JSONSerializer {
 
     @Override
     public <T> T parse(String json, Type t) {
+        if(Common.isBlank(json)) return null;
         try {
             return /*String.class.equals(t) ? Common.cast(json) :*/ Common.cast($parse(json, t));
             //JSON.parseObject(json, t, Feature.IgnoreNotMatch);

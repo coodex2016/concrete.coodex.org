@@ -51,6 +51,8 @@ public class JSONSerializerTestCase {
     public static void test(JSONSerializer jsonSerializer) {
         String nullStr = jsonSerializer.toJson(null);
         Assertions.assertEquals(nullStr, "null");
+        Assertions.assertNull(jsonSerializer.parse(null,Object.class));
+        Assertions.assertNull(jsonSerializer.parse("",Object.class));
         Object o = jsonSerializer.parse(nullStr, Object.class);
         Assertions.assertNull(o);
 

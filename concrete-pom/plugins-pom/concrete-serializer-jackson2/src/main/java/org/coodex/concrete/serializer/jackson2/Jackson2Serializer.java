@@ -39,7 +39,7 @@ public class Jackson2Serializer implements JSONSerializer {
 
     @Override
     public <T> T parse(String json, Type t) {
-        if (json == null) return null;
+        if (Common.isBlank(json)) return null;
         try {
             if (t instanceof Class) {
 //                if (String.class.equals(t)) {
