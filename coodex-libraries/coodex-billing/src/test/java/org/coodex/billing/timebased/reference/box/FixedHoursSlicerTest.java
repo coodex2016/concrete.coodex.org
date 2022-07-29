@@ -34,7 +34,7 @@ public class FixedHoursSlicerTest {
                     .append(", ").append(Common.calendarToStr(period.getEnd()))
                     .append("]\n");
         }
-        System.out.println(builder.toString());
+        System.out.println(builder);
     }
 
     public static Period initPeriod() {

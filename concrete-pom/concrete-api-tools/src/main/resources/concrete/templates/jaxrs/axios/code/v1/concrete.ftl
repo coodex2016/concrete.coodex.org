@@ -76,7 +76,7 @@ export default concrete
  * @returns
  */
 function cancellableProxy(promise, cancelAction, state) {
-    if (promise instanceof Promise) {
+    <#--  if (promise instanceof Promise) {
         let _stat = state || { cancelled: false }
         let _resolve, _reject
 
@@ -121,7 +121,8 @@ function cancellableProxy(promise, cancelAction, state) {
         }
 
         return promise
-    }
+    }  -->
+    return promise; // 代理功能待测试
 }
 
 function getConfigItem(moduleName, key) {
@@ -307,6 +308,10 @@ export function grableExecute(moduleName, serviceId, payload) {
     }
 
     const controller = new AbortController()
+    let path = getConfigItem(moduleName, 'root')
+    if (path && path.charAt(path.length - 1) != '/') {
+        path += '/'
+    }
     return cancellableProxy(
         axios
             .create({
@@ -316,10 +321,7 @@ export function grableExecute(moduleName, serviceId, payload) {
                     'Content-Type': 'application/x-concrete-bin',
                 },
             })
-            .post(
-                getConfigItem(moduleName, 'root'),
-                new Blob([xor(RequestPackage.encode(RequestPackage.create(req)).finish())])
-            )
+            .post(path, new Blob([xor(RequestPackage.encode(RequestPackage.create(req)).finish())]))
             .then(res => {
                 if (res.status === 200) {
                     let d = ResponsePackage.decode(xor(new Uint8Array(res.data))).toJSON()
