@@ -16,9 +16,9 @@
 
 package org.coodex.concrete.jaxrs;
 
-import org.coodex.concrete.common.ConcreteException;
-import org.coodex.concrete.common.ErrorCodes;
+import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.ErrorInfo;
+import org.coodex.concrete.common.ErrorMessageFacade;
 import org.coodex.concrete.common.ThrowableMapperFacade;
 import org.coodex.config.Config;
 import org.coodex.util.LazyServiceLoader;
@@ -31,7 +31,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import java.lang.reflect.InvocationTargetException;
 
 import static org.coodex.concrete.jaxrs.JaxRSHelper.HEADER_ERROR_OCCURRED;
 
@@ -72,6 +71,12 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
 //        }
 
         ErrorInfo errorInfo = ThrowableMapperFacade.toErrorInfo(exception);
+
+        if (ErrorMessageFacade.isTraceable(errorInfo.getCode())) {
+            Throwable th = ConcreteHelper.actualCause(exception);
+            log.warn("error occurred: {}", th.getLocalizedMessage(), th);
+        }
+
         Response.Status /*status = null;
         if (exception instanceof WebApplicationException) {
             try {
@@ -82,24 +87,27 @@ public class ConcreteExceptionMapper implements ExceptionMapper<Throwable> {
         }
         if (status == null)*/ status = getStatus(errorInfo.getCode());
 
-        if (warnOnServerError.get() && status.getFamily() == Response.Status.Family.SERVER_ERROR) {
-            Throwable th = exception;
-            if (exception instanceof ConcreteException) {
-                if (((ConcreteException) exception).getCode() != ErrorCodes.UNKNOWN_ERROR) {
-                    th = null;
-                } else {
-                    th = exception.getCause();
-                    if (th instanceof InvocationTargetException) {
-                        th = th.getCause();
-                    }
-                }
-            }
-            if (th != null) {
-                log.warn("exception occurred: {}", th.getLocalizedMessage(), th);
-            } else if (exception != null) {
-                log.warn("exception occurred: {}", exception.getLocalizedMessage(), exception);
-            }
-        }
+
+//        if (warnOnServerError.get() && status.getFamily() == Response.Status.Family.SERVER_ERROR) {
+//            Throwable th = ConcreteHelper.actualCause(exception);
+
+//            Throwable th = exception;
+//            if (exception instanceof ConcreteException) {
+//                if (((ConcreteException) exception).getCode() != ErrorCodes.UNKNOWN_ERROR) {
+//                    th = null;
+//                } else {
+//                    th = exception.getCause();
+//                    if (th instanceof InvocationTargetException) {
+//                        th = th.getCause();
+//                    }
+//                }
+//            }
+//            if (th != null) {
+//                log.warn("exception occurred: {}", th.getLocalizedMessage(), th);
+//            } else if (exception != null) {
+//                log.warn("exception occurred: {}", exception.getLocalizedMessage(), exception);
+//            }
+//        }
 
 
         return Response.status(status)

@@ -29,30 +29,11 @@ public class JSONSerializerTestCase {
 
     private static final Logger log = LoggerFactory.getLogger(JSONSerializerTestCase.class);
 
-    public static class ObjTest {
-        public int a = 1;
-        public String b = "null";
-        public String c = "{}";
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ObjTest objTest = (ObjTest) o;
-            return a == objTest.a && Objects.equals(b, objTest.b) && Objects.equals(c, objTest.c);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(a, b, c);
-        }
-    }
-
     public static void test(JSONSerializer jsonSerializer) {
         String nullStr = jsonSerializer.toJson(null);
         Assertions.assertEquals(nullStr, "null");
-        Assertions.assertNull(jsonSerializer.parse(null,Object.class));
-        Assertions.assertNull(jsonSerializer.parse("",Object.class));
+        Assertions.assertNull(jsonSerializer.parse(null, Object.class));
+        Assertions.assertNull(jsonSerializer.parse("", Object.class));
         Object o = jsonSerializer.parse(nullStr, Object.class);
         Assertions.assertNull(o);
 
@@ -73,13 +54,20 @@ public class JSONSerializerTestCase {
         Object obj = new ObjTest();
         map.put("object", obj);
         map.put("objectArray", new Object[]{obj, obj});
+        map.put("enumArray", new TestEnum[]{TestEnum.T1,TestEnum.T2});
 
         String mapJson = jsonSerializer.toJson(map);
+
+        log.info("serialized: {}", mapJson );
 
         Map<String, Object> stringObjectMap = jsonSerializer.parse(mapJson,
                 new GenericTypeHelper.GenericType<Map<String, Object>>() {
                 }.getType());
 
+        Assertions.assertArrayEquals(
+                new TestEnum[]{TestEnum.T1,TestEnum.T2},
+                jsonSerializer.parse(stringObjectMap.get("enumArray"), TestEnum[].class)
+        );
         Float number = jsonSerializer.parse(stringObjectMap.get("number"), Float.class);
         Assertions.assertEquals(number, 1.0f);
         Assertions.assertArrayEquals(
@@ -123,5 +111,28 @@ public class JSONSerializerTestCase {
                 str,
                 jsonSerializer.toJson(o)
         );
+    }
+
+    public enum TestEnum {
+        T1, T2;
+    }
+
+    public static class ObjTest {
+        public int a = 1;
+        public String b = "null";
+        public String c = "{}";
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ObjTest objTest = (ObjTest) o;
+            return a == objTest.a && Objects.equals(b, objTest.b) && Objects.equals(c, objTest.c);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(a, b, c);
+        }
     }
 }

@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-package test.org.coodex.concrete.common;
+package test.org.coodex.util;
 
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import org.coodex.concrete.common.FastJsonSerializer;
-import org.coodex.concrete.common.JSONSerializerTestCase;
-import org.junit.jupiter.api.Test;
-
-public class FastJsonSerializerTest {
-
-    @Test
-    public void test() {
-        JSONSerializerTestCase.test(new FastJsonSerializer());
-    }
+public interface ServiceA {
 }

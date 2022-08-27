@@ -43,6 +43,10 @@ public abstract class OwnServiceProvider implements Application {
     private final Map<String, AbstractUnit<?>> unitMap = new HashMap<>();
     private final Set<Class<?>> registered = new HashSet<>();
 
+//    private final static Singleton<Boolean> warnOnServerError = Singleton.with(
+//            () -> Config.getValue("jaxrs.serverError.trace", true)
+//    );
+
     public OwnServiceProvider() {
         registerPackage(ErrorCodeConstants.class.getPackage().getName());
     }
@@ -202,8 +206,14 @@ public abstract class OwnServiceProvider implements Application {
                     ResponsePackage<ErrorInfo> responsePackage = new ResponsePackage<>();
                     responsePackage.setOk(false);
                     responsePackage.setMsgId(requestPackage.getMsgId());
-                    responsePackage.setContent(ThrowableMapperFacade.toErrorInfo(th));
+                    ErrorInfo errorInfo = ThrowableMapperFacade.toErrorInfo(th);
+                    responsePackage.setContent(errorInfo);
                     responseVisitor.visit(responsePackage);
+
+                    if (ErrorMessageFacade.isTraceable(errorInfo.getCode())) {
+                        Throwable throwable = ConcreteHelper.actualCause(th);
+                        log.warn("error occurred: {}", throwable.getLocalizedMessage(), throwable);
+                    }
 //                    if (errorVisitor != null) {
 //                        errorVisitor.visit(requestPackage.getMsgId(), th);
 //                    } else {

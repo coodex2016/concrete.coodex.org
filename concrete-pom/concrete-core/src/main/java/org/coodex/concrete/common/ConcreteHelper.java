@@ -24,6 +24,7 @@ import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.config.Config;
 import org.coodex.util.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +43,7 @@ import static org.coodex.util.ReflectHelper.foreachClass;
  */
 public class ConcreteHelper {
 
-    public static final String VERSION = "0.5.1-RC6";
+    public static final String VERSION = "0.5.1-RC7-SNAPSHOT";
 
     public static final String TAG_CLIENT = "client";
     public static final String KEY_DESTINATION = "destination";
@@ -424,6 +425,21 @@ public class ConcreteHelper {
 
     public static boolean isDevModel(String module) {
         return System.getProperty(devModelKey(module)) != null || System.getProperty(devModelKey(null)) != null;
+    }
+
+    public static Throwable actualCause(Throwable exception){
+        Throwable th = exception;
+        if (exception instanceof ConcreteException) {
+            if (((ConcreteException) exception).getCode() != ErrorCodes.UNKNOWN_ERROR) {
+                th = null;
+            } else {
+                th = exception.getCause();
+                if (th instanceof InvocationTargetException) {
+                    th = th.getCause();
+                }
+            }
+        }
+        return th != null ? th : exception;
     }
 
 

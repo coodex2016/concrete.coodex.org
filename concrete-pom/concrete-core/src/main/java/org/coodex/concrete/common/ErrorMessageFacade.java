@@ -103,6 +103,13 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
         return errorCodes.keySet();
     }
 
+    public static boolean isTraceable(int code) {
+        return Optional.ofNullable(errorCodes.get(code))
+                .map(f -> f.getAnnotation(ErrorCodes.RequestError.class))
+                .map(ErrorCodes.RequestError::trace)
+                .orElse(true);
+    }
+
     public static String getMessageTemplate(int code) {
         return getMessageOrPattern(false, code);
     }
@@ -174,6 +181,9 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
 
     public static String getTemplate(int code) {
         Field f = errorCodes.get(code);
+        if (f == null) {
+            log.warn("error code {} not registered.", code);
+        }
         String template = getTemplateStr(f);
         if (template == null) {
             return I18N.translate(getKey(code), LOCALE_CONTEXT.get());

@@ -21,7 +21,7 @@
     <parent>
         <artifactId>concrete-apache-dubbo-pom</artifactId>
         <groupId>org.coodex.concrete.dubbo</groupId>
-        <version>0.5.1-RC6</version>
+        <version>0.5.1-RC7-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

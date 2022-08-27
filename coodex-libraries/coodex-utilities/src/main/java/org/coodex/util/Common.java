@@ -21,10 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,9 +52,8 @@ public class Common {
     public static final String DEFAULT_DATETIME_FORMAT = DEFAULT_DATE_FORMAT + " " + DEFAULT_TIME_FORMAT;
     public static final Long SYSTEM_START_TIME;// = ManagementFactory.getRuntimeMXBean().getStartTime();
     public static final int PROCESSOR_COUNT = Runtime.getRuntime().availableProcessors();
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
     public static final Random RANDOM = new Random();// NOSONAR
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     private static final Logger log = LoggerFactory.getLogger(Common.class);
     private static final int TO_LOWER = 'a' - 'A';
     private static final String DEFAULT_DELIM = ".-_ /\\";
@@ -62,7 +64,8 @@ public class Common {
     };
     private static final char[] BASE16_CHAR = "0123456789abcdef".toCharArray();
 
-    private static final Singleton<Boolean> COODEX_DEBUG_FLAG = Singleton.with(() -> toBool(System.getProperty("coodex.debug"), false));
+    private static final Singleton<Boolean> COODEX_DEBUG_FLAG = Singleton.with(() -> toBool(System.getProperty(
+            "coodex.debug"), false));
 
     private static final Singleton<Boolean> IS_JAVA_9_AND_LAST = Singleton.with(
             () -> {
@@ -501,7 +504,8 @@ public class Common {
      * @param split       列于列之间的分隔字符传串，行首行尾不加
      * @return 编码后的字符串
      */
-    public static String base16Encode(byte[] b, int offset, int length, Function<Integer, Integer> colFunction, String split) {
+    public static String base16Encode(byte[] b, int offset, int length, Function<Integer, Integer> colFunction,
+                                      String split) {
         StringBuilder builder = new StringBuilder();
         boolean blankSplit = split == null || "".equals(split);
         int line = 0;
@@ -1207,7 +1211,7 @@ public class Common {
                 (byte) ((data >> 16) & 0xff),
                 (byte) ((data >> 8) & 0xff),
                 (byte) ((data) & 0xff),
-        };
+                };
     }
 
     public static String longToDateStr(long l) {
@@ -1272,7 +1276,8 @@ public class Common {
         return buildCalendar(year, month, date, hour, minute, second, millisecond);
     }
 
-    private static Calendar buildCalendar(int year, int month, int date, int hour, int minute, int second, int millisecond) {
+    private static Calendar buildCalendar(int year, int month, int date, int hour, int minute, int second,
+                                          int millisecond) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);
@@ -1401,6 +1406,63 @@ public class Common {
     public static boolean isJava9AndLast() {
         return IS_JAVA_9_AND_LAST.get();
     }
+
+    public static long scale(double d) {
+        return scale(d, RoundingMode.HALF_UP);
+    }
+
+    public static long scale(double d, RoundingMode roundingMode) {
+        return _scale(d, 0, roundingMode).longValue();
+    }
+
+    public static int scale2I(double d) {
+        return scale2I(d, RoundingMode.HALF_UP);
+    }
+
+    public static int scale2I(double d, RoundingMode roundingMode) {
+        return _scale(d, 0, roundingMode).intValue();
+    }
+
+    private static BigDecimal _scale(double d, int scale, RoundingMode roundingMode) {
+        return BigDecimal.valueOf(d).setScale(scale, roundingMode);
+    }
+
+    public static float scale2F(double d, int scale) {
+        return scale2F(d, scale, RoundingMode.HALF_UP);
+    }
+
+    public static float scale2F(double d, int scale, RoundingMode roundingMode) {
+        return _scale(d, scale, roundingMode).floatValue();
+    }
+
+    public static double scale(double d, int scale) {
+        return scale(d, scale, RoundingMode.HALF_UP);
+    }
+
+    public static double scale(double d, int scale, RoundingMode roundingMode) {
+        return _scale(d, scale, roundingMode).doubleValue();
+    }
+
+//    public static List<String> readAllLines(String path) throws IOException {
+//        URL url = Common.getResource(path);
+//        if(url != null){
+//            try(InputStream inputStream = url.openStream()){
+//                return readAllLines(inputStream);
+//            }
+//        } else {
+//            return Files.readAllLines(File.);
+//        }
+//    }
+//
+//    public static List<String> readAllLines(InputStream inputStream) throws IOException {
+//        List<String> result = new ArrayList<>();
+//        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream)))
+//        String line;
+//        while ((line = reader.readLine()) != null) {
+//            result.add(line);
+//        }
+//        return result;
+//    }
 
     //    public static void checkNull(Object o, Supplier<String> supplier) {
 //        if (o == null) throw new NullPointerException(supplier == null ? null : supplier.get());
