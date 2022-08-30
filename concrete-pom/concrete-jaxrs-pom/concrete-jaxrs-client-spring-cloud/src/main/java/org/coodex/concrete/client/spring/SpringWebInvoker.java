@@ -29,6 +29,7 @@ import org.coodex.concrete.spring.components.SpringWebClientConfiguration;
 import org.coodex.config.Config;
 import org.coodex.mock.Mocker;
 import org.coodex.util.Common;
+import org.coodex.util.JSONSerializer;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +37,12 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.ws.rs.core.MultivaluedHashMap;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.GZIPInputStream;
@@ -82,7 +81,7 @@ public class SpringWebInvoker extends AbstractSyncInvoker {
 
     private final boolean microService;
 
-    SpringWebInvoker(Destination destination) {
+    public SpringWebInvoker(Destination destination) {
         super(destination);
         if (destination instanceof SpringJaxRSDestination) {
             microService = ((SpringJaxRSDestination) destination).isMicroService();
@@ -112,8 +111,9 @@ public class SpringWebInvoker extends AbstractSyncInvoker {
             RestTemplate restTemplate = REST_TEMPLATES.get(microService);
             String path = JaxRSClientCommon.getPath(unit, args, destination);
             Object body = JaxRSClientCommon.getSubmitObject(unit, args);
-            HttpEntity<?> entity = body == null ? new HttpEntity<>(getHttpHeaders()) :
-                    new HttpEntity<>(body, getHttpHeaders());
+            HttpEntity<?> entity = body == null ? new HttpEntity<>(getHttpHeaders(false)) :
+                    // todo 采用MessageConverter方案
+                    new HttpEntity<>(JSONSerializer.getInstance().toJson(body), getHttpHeaders(true));
             ResponseEntity<byte[]> responseEntity = restTemplate.exchange(
                     path, getHttpMethod(unit.getInvokeType()), entity, byte[].class
             );
@@ -136,7 +136,8 @@ public class SpringWebInvoker extends AbstractSyncInvoker {
     private String bodyToString(ResponseEntity<byte[]> resp) throws IOException {
         if (resp.getHeaders().entrySet().stream().anyMatch(e -> HttpHeaders.CONTENT_ENCODING.equalsIgnoreCase(e.getKey()) && !Common.isEmpty(e.getValue())
                 && "gzip".equalsIgnoreCase(e.getValue().get(0)))) {
-            try (GZIPInputStream inputStream = new GZIPInputStream(new ByteArrayInputStream(Objects.requireNonNull(resp.getBody())))) {
+            try (GZIPInputStream inputStream =
+                         new GZIPInputStream(new ByteArrayInputStream(Objects.requireNonNull(resp.getBody())))) {
                 try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
                     Common.copyStream(inputStream, outputStream);
                     return new String(outputStream.toByteArray(), getCharset(resp));
@@ -149,11 +150,14 @@ public class SpringWebInvoker extends AbstractSyncInvoker {
     }
 
 
-    private HttpHeaders getHttpHeaders() {
+    private HttpHeaders getHttpHeaders(boolean withMediaType) {
         HttpHeaders headers = new HttpHeaders();
         JaxRSClientContext context = JaxRSClientCommon.getContext();
         headers.add(HttpHeaders.ACCEPT_LANGUAGE, context.getLocale().toLanguageTag());
         headers.add(HttpHeaders.ACCEPT_ENCODING, "gzip");
+        if (withMediaType) {
+            headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        }
         Subjoin subjoin = context.getSubjoin();
         String tokenId = ClientTokenManagement.getTokenId(getDestination(), context.getTokenId());
         if (subjoin != null || !Common.isBlank(tokenId)) {

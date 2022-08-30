@@ -17,6 +17,7 @@
 package org.coodex.concrete.apitools.jaxrs.axios;
 
 import org.coodex.concrete.apitools.AbstractRenderer;
+import org.coodex.concrete.apitools.jaxrs.EnumElementInfo;
 import org.coodex.concrete.apitools.jaxrs.JaxrsRenderHelper;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
@@ -25,13 +26,16 @@ import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.util.Common;
+import org.coodex.util.PojoInfo;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.*;
 
+import static org.coodex.concrete.common.ConcreteHelper.isPrimitive;
 import static org.coodex.util.Common.cast;
 
 public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
@@ -56,6 +60,63 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
 //        render(moduleList);
 //    }
 
+    private void processEnum(JaxrsUnit unit, Set<Type> processed) {
+        // 1.返回值
+        processEnum(unit.getGenericReturnType(), processed);
+
+        for (JaxrsParam param : unit.getParameters()) {
+            processEnum(param.getGenericType(), processed);
+        }
+    }
+
+    private void processEnum(Type t, Set<Type> processed) {
+        if (processed.contains(t)) return;
+        processed.add(t);
+
+        if (t instanceof ParameterizedType) {
+
+            ParameterizedType pt = (ParameterizedType) t;
+            processEnum(pt.getRawType(), processed);
+            for (Type type : pt.getActualTypeArguments()) {
+                processEnum(type, processed);
+            }
+
+        } else if (t instanceof TypeVariable) {
+
+        } else if (t instanceof GenericArrayType) {
+            processEnum(((GenericArrayType) t).getGenericComponentType(), processed);
+        } else if (t instanceof Class) {
+            Class<?> c = (Class<?>) t;
+            if (c.isArray()) {
+                processEnum(c.getComponentType(), processed);
+            } else if (c.isEnum()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("elements", EnumElementInfo.of(Common.cast(c)));
+                try {
+                    writeTo(
+                            "jaxrs/constants/" + c.getName() + ".js",
+                            "enumerable.ftl",
+                            map
+
+                    );
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else if (!isPrimitive(c) && !c.getPackage().getName().startsWith("java")) {
+                PojoInfo pojoInfo = new PojoInfo(c);
+                pojoInfo.getProperties().forEach(pojoProperty -> {
+                    processEnum(pojoProperty.getType(), processed);
+                });
+            }
+        }
+    }
+
+    private void processEnum(JaxrsModule module, Set<Type> processed) {
+        for (JaxrsUnit unit : module.getUnits()) {
+            processEnum(unit, processed);
+        }
+    }
+
     @Override
     public void render(List<JaxrsModule> modules) throws IOException {
         String moduleName = getRenderDesc().substring(RENDER_NAME.length());
@@ -66,7 +127,9 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
 //        versionAndStyle.put("style", JaxRSHelper.used024Behavior());
 
         writeTo("jaxrs/concrete.js", "concrete.ftl", versionAndStyle);
+        Set<Type> processed = new HashSet<>();
         for (JaxrsModule module : modules) {
+            processEnum(module, processed);
             Map<String, Object> param = new HashMap<>();
             param.put("moduleName", moduleName);
             param.put("serviceName", module.getInterfaceClass().getSimpleName());
@@ -75,6 +138,7 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
 
             for (JaxrsUnit unit : module.getUnits()) {
                 String methodName = unit.getMethod().getName();
+
                 Map<String, Object> method = methods.get(methodName);
                 if (method == null) {
                     method = new HashMap<>();

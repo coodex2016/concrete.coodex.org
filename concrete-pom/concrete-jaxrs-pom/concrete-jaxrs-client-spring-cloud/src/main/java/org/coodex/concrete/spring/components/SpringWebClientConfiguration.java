@@ -41,6 +41,7 @@ public class SpringWebClientConfiguration {
 //        simpleClientHttpRequestFactory.setReadTimeout(Config.getValue("client.defaultReadTimeout", 300));
         RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(simpleClientHttpRequestFactory));
         restTemplate.setInterceptors(Collections.singletonList(LOGGING_INTERCEPTOR_SINGLETON.get()));
+//        restTemplate.getMessageConverters().add(new ConcreteMessageConverter());
         return restTemplate;
     }
 

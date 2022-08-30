@@ -24,6 +24,7 @@ import org.coodex.util.Common;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,7 +77,8 @@ public abstract class AbstractRenderer<M extends AbstractModule<?>> implements C
 
     public void writeTo(String filePath, String content) throws IOException {
         File target = Common.newFile(rootToWrite + FS + filePath);
-        try (OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)) {
+        try (OutputStreamWriter outputStream = new OutputStreamWriter(Files.newOutputStream(target.toPath()),
+                StandardCharsets.UTF_8)) {
             outputStream.write(content);
         }
     }
@@ -110,7 +112,8 @@ public abstract class AbstractRenderer<M extends AbstractModule<?>> implements C
     public void writeTo(String filePath, String templateName, Map<String, Object> map) throws IOException {
         Template template = getTemplate(templateName);
         File target = Common.newFile(rootToWrite + FS + filePath);
-        try (OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)) {
+        try (OutputStreamWriter outputStream = new OutputStreamWriter(Files.newOutputStream(target.toPath()),
+                StandardCharsets.UTF_8)) {
             template.process(merge(map), outputStream);
         } catch (TemplateException e) {
             throw new IOException(e.getLocalizedMessage(), e);
@@ -130,7 +133,7 @@ public abstract class AbstractRenderer<M extends AbstractModule<?>> implements C
         }
         try {
             File target = Common.newFile(rootToWrite + FS + path);
-            try (OutputStream targetStream = new FileOutputStream(target)) {
+            try (OutputStream targetStream = Files.newOutputStream(target.toPath())) {
                 Common.copyStream(inputStream, targetStream);
             }
         } finally {

@@ -17,10 +17,10 @@
 package org.coodex.concrete.accounts;
 
 import org.coodex.concrete.Client;
-import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.config.Config;
+import org.coodex.util.JSONSerializer;
 
 import java.io.Serializable;
 
@@ -86,6 +86,6 @@ public class TenantRPCServiceClientImpl implements TenantRPCServiceClient {
 
     @Override
     public <T extends Serializable> void sendMessage(String msgName, T msgBody) {
-        getRPCService().sendMessage(getTenant(), msgName, JSONSerializerFactory.getInstance().toJson(msgBody));
+        getRPCService().sendMessage(getTenant(), msgName, JSONSerializer.getInstance().toJson(msgBody));
     }
 }

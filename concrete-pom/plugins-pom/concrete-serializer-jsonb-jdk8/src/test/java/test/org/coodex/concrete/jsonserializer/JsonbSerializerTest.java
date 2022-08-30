@@ -16,16 +16,16 @@
 
 package test.org.coodex.concrete.jsonserializer;
 
-import org.coodex.concrete.common.JSONSerializerTestCase;
-import org.coodex.concrete.jsonserializer.jsonb.JsonbSerializer;
+import org.coodex.util.JSONSerializerTestCase;
 import org.junit.jupiter.api.Test;
 
+@Deprecated
 public class JsonbSerializerTest {
 
 
     @Test
     public void test() {
-        JSONSerializerTestCase.test(new JsonbSerializer());
+        JSONSerializerTestCase.test(new org.coodex.concrete.jsonserializer.jsonb.JsonbSerializer());
 
     }
 }

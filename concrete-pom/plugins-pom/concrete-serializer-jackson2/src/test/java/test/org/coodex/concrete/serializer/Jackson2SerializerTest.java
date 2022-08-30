@@ -16,13 +16,13 @@
 
 package test.org.coodex.concrete.serializer;
 
-import org.coodex.concrete.common.JSONSerializerTestCase;
-import org.coodex.concrete.serializer.jackson2.Jackson2Serializer;
+import org.coodex.util.JSONSerializerTestCase;
 import org.junit.jupiter.api.Test;
 
+@Deprecated
 public class Jackson2SerializerTest {
     @Test
     public void test() {
-        JSONSerializerTestCase.test(new Jackson2Serializer());
+        JSONSerializerTestCase.test(new org.coodex.concrete.serializer.jackson2.Jackson2Serializer());
     }
 }

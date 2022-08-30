@@ -16,13 +16,12 @@
 
 package org.coodex.concrete.message.serializers;
 
-import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.message.Serializer;
-import org.coodex.util.Common;
+import org.coodex.util.JSONSerializer;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 public class JSonSerializer implements Serializer {
 
@@ -30,21 +29,12 @@ public class JSonSerializer implements Serializer {
 
     @Override
     public byte[] serialize(Serializable o) {
-        try {
-            return JSONSerializerFactory.getInstance().toJson(o).getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw Common.rte(e);
-        }
+        return JSONSerializer.getInstance().toJson(o).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
     public <T extends Serializable> T deserialize(byte[] bytes, Type type) {
-
-        try {
-            return JSONSerializerFactory.getInstance().parse(new String(bytes, "UTF-8"), type);
-        } catch (UnsupportedEncodingException e) {
-            throw Common.rte(e);
-        }
+        return JSONSerializer.getInstance().parse(new String(bytes, StandardCharsets.UTF_8), type);
     }
 
     @Override

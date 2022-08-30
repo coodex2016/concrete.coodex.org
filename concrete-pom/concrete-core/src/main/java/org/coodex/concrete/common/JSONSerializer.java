@@ -16,18 +16,18 @@
 
 package org.coodex.concrete.common;
 
-import java.lang.reflect.Type;
-
 /**
  * Created by davidoff shen on 2016-12-07.
  */
-public interface JSONSerializer {
+@Deprecated
 
-    <T> T parse(String json, Type t);
+public interface JSONSerializer extends org.coodex.util.JSONSerializer {
 
-    default <T> T parse(Object jsonObject, Type t) {
-        return jsonObject == null ? null : parse(toJson(jsonObject), t);
-    }
-
-    String toJson(Object t);
+//    <T> T parse(String json, Type t);
+//
+//    default <T> T parse(Object jsonObject, Type t) {
+//        return jsonObject == null ? null : parse(toJson(jsonObject), t);
+//    }
+//
+//    String toJson(Object t);
 }

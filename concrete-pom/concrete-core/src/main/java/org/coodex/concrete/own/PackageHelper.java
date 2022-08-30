@@ -16,12 +16,11 @@
 
 package org.coodex.concrete.own;
 
-import org.coodex.concrete.common.JSONSerializer;
-import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.common.modules.AbstractParam;
 import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
+import org.coodex.util.JSONSerializer;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -75,7 +74,7 @@ public class PackageHelper {
 //        Class<?> context = unit.getDeclaringModule().getInterfaceClass();
         context.set(unit.getDeclaringModule().getInterfaceClass());
         try {
-            JSONSerializer serializer = JSONSerializerFactory.getInstance();
+            JSONSerializer serializer = JSONSerializer.getInstance();
 
             List<Object> objects = new ArrayList<>();
             if (abstractParams.length == 1) {

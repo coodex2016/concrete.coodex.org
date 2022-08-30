@@ -27,7 +27,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -331,6 +330,16 @@ public class Common {
 
     public static boolean isBlank(String s) {
         return s == null || s.trim().length() == 0;
+    }
+
+    @SafeVarargs
+    public static <T> T firstValuable(T... s) {
+        if (s == null || s.length == 0) return null;
+        if (s.length == 1) return s[0];
+        for (T x : s) {
+            if (x != null) return x;
+        }
+        return null;
     }
 
     public static boolean isEmpty(Collection<?> collection) {
@@ -971,7 +980,7 @@ public class Common {
     }
 
     /**
-     * https://zh.wikipedia.org/wiki/GB_2312
+     * <a href="https://zh.wikipedia.org/wiki/GB_2312">参考地址</a>
      *
      * @return 一个随机的中文字符(GB2312的一级文字)
      */
@@ -1107,7 +1116,7 @@ public class Common {
     }
 
     /**
-     * http://www.cnblogs.com/yujunyong/articles/2004724.html
+     * <a href="http://www.cnblogs.com/yujunyong/articles/2004724.html">算法来源</a>
      *
      * @param strA strA
      * @param strB strB
@@ -1329,8 +1338,9 @@ public class Common {
         return SYSTEM_START_TIME;
     }
 
-    @SuppressWarnings("unchecked")
+
     public static <T> T cast(Object obj) {
+        //noinspection unchecked
         return (T) obj;
     }
 

@@ -16,11 +16,11 @@
 
 package org.coodex.concrete.apitools.jaxrs.service;
 
-import com.alibaba.fastjson.JSON;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
 import org.coodex.concrete.common.ErrorMessageFacade;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
+import org.coodex.util.JSONSerializer;
 
 import java.io.IOException;
 import java.util.List;
@@ -94,13 +94,13 @@ public class VuePressDocRenderer extends AbstractServiceDocRenderer {
 
         writeErrorInfo(ErrorMessageFacade.getAllErrorInfo(), "docs");
 
-        writeTo("docs/.vuepress/modules.json", JSON.toJSONString(
+        writeTo("docs/.vuepress/modules.json", JSONSerializer.getInstance().toJson(
                 modules.stream()
                         .map(m -> "/modules/" + m.getInterfaceClass().getName())
                         .collect(Collectors.toList())
         ));
 
-        writeTo("docs/.vuepress/pojos.json", JSON.toJSONString(
+        writeTo("docs/.vuepress/pojos.json", JSONSerializer.getInstance().toJson(
                 toolkit.getPojos().stream().sorted().map(s -> "/pojos/" + s).collect(Collectors.toList())
         ));
 

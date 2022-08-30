@@ -17,16 +17,14 @@
 package test.org.coodex.concrete.common;
 
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import org.coodex.concrete.common.FastJsonSerializer;
-import org.coodex.concrete.common.JSONSerializerTestCase;
+import org.coodex.util.JSONSerializerTestCase;
 import org.junit.jupiter.api.Test;
 
+@Deprecated
 public class FastJsonSerializerTest {
 
     @Test
     public void test() {
-        JSONSerializerTestCase.test(new FastJsonSerializer());
+        JSONSerializerTestCase.test(new org.coodex.concrete.common.FastJsonSerializer());
     }
 }

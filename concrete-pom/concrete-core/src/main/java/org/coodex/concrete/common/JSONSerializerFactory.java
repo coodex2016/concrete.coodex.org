@@ -19,6 +19,7 @@ package org.coodex.concrete.common;
 import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
 
+@Deprecated
 public class JSONSerializerFactory {
 
     private static final ServiceLoader<JSONSerializer> jsonSerializerConcreteServiceLoader

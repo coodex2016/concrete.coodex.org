@@ -19,10 +19,9 @@ package org.coodex.concrete.client.websocket;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.OwnRXMessageListener;
 import org.coodex.concrete.common.ConcreteHelper;
-import org.coodex.concrete.common.JSONSerializer;
-import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.util.Clock;
+import org.coodex.util.JSONSerializer;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,15 +40,17 @@ public class WSClientHandle {
 
     private final static Logger log = LoggerFactory.getLogger(WSClientHandle.class);
     private final Map<Destination, Session> sessionMap = new HashMap<>();
-    private final JSONSerializer serializer = JSONSerializerFactory.getInstance();
-    private final SingletonMap<WebsocketDestination, Object> locks = SingletonMap.<WebsocketDestination, Object>builder()
-            .function(key -> new Object()).build();
+    private final JSONSerializer serializer = JSONSerializer.getInstance();
+    private final SingletonMap<WebsocketDestination, Object> locks =
+            SingletonMap.<WebsocketDestination, Object>builder()
+                    .function(key -> new Object()).build();
 
 
     WSClientHandle() {
     }
 
-    private Session getSession(WebsocketDestination destination) throws URISyntaxException, IOException, DeploymentException, InterruptedException {
+    private Session getSession(WebsocketDestination destination) throws URISyntaxException, IOException,
+            DeploymentException, InterruptedException {
 
         Session session = sessionMap.get(destination);
         if (session == null || !session.isOpen()) {

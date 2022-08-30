@@ -17,16 +17,15 @@
 package org.coodex.concrete.spring.boot;
 
 import org.coodex.concrete.support.jsr339.ConcreteJSR339Application;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Jsr339Application extends ConcreteJSR339Application {
 
-    private final static Logger log = LoggerFactory.getLogger(Jsr339Application.class);
+//    private final static Logger log = LoggerFactory.getLogger(Jsr339Application.class);
 
     public Jsr339Application() {
-        register(JacksonFeature.class);
+//        register(JacksonFeature.class);
+//        register(ConcreteMessageWriter.class);
+        register(ConcreteJacksonFeature.class);
         register(ConcreteJAXRSBeanDefinitionRegistrar.getClasses());
         registerPackage(ConcreteJAXRSBeanDefinitionRegistrar.getApiPackages());
     }

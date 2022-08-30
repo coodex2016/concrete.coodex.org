@@ -16,10 +16,10 @@
 
 package org.coodex.concrete.message;
 
-import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
+import org.coodex.util.JSONSerializer;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,8 @@ public class TBMContainer {
     private static final Logger log = LoggerFactory.getLogger(TBMContainer.class);
 
 
-    //    private static Singleton<ScheduledExecutorService> scheduledExecutor = new Singleton<ScheduledExecutorService>(
+    //    private static Singleton<ScheduledExecutorService> scheduledExecutor = new
+    //    Singleton<ScheduledExecutorService>(
 //            new Singleton.Builder<ScheduledExecutorService>() {
 //                @Override
 //                public ScheduledExecutorService build() {
@@ -48,7 +49,8 @@ public class TBMContainer {
 //            }
 //    );
     private static final TBMContainer tbmContainer = new TBMContainer();
-    private static final SingletonMap<String, TBMQueue> queues = SingletonMap.<String, TBMQueue>builder().function(key -> new TBMQueue()).build();
+    private static final SingletonMap<String, TBMQueue> queues =
+            SingletonMap.<String, TBMQueue>builder().function(key -> new TBMQueue()).build();
 
 
     private TBMContainer() {
@@ -63,11 +65,12 @@ public class TBMContainer {
         queues.get(tokenId).remove(message);
         if (log.isDebugEnabled()) {
             log.debug("removed from token {}\n{}", tokenId,
-                    JSONSerializerFactory.getInstance().toJson(message.message));
+                    JSONSerializer.getInstance().toJson(message.message));
         }
     }
 
-    void push(TokenBasedTopicPrototype.TokenConfirm<?> tokenConfirm, Topic<TokenBasedTopicPrototype.ConsumedNotify> consumedNotifyTopic) {
+    void push(TokenBasedTopicPrototype.TokenConfirm<?> tokenConfirm,
+              Topic<TokenBasedTopicPrototype.ConsumedNotify> consumedNotifyTopic) {
         if (Common.isBlank(tokenConfirm.getTokenId())) return;
         queues.get(tokenConfirm.getTokenId()).put(new TBMMessage(tokenConfirm, consumedNotifyTopic));
     }
@@ -181,7 +184,8 @@ public class TBMContainer {
         private Topic<TokenBasedTopicPrototype.ConsumedNotify> consumedNotifyTopic;
 
 
-        public TBMMessage(final TokenBasedTopicPrototype.TokenConfirm<?> tokenConfirm, Topic<TokenBasedTopicPrototype.ConsumedNotify> consumedNotifyTopic) {
+        public TBMMessage(final TokenBasedTopicPrototype.TokenConfirm<?> tokenConfirm,
+                          Topic<TokenBasedTopicPrototype.ConsumedNotify> consumedNotifyTopic) {
             this.consumedNotifyTopic = consumedNotifyTopic;
             this.id = tokenConfirm.getId();
             this.message = tokenConfirm.getMessage();

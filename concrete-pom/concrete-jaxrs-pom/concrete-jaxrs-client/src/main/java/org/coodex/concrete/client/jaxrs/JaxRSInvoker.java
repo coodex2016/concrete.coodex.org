@@ -21,10 +21,12 @@ import org.coodex.concrete.client.ClientTokenManagement;
 import org.coodex.concrete.client.ExceptionMapper;
 import org.coodex.concrete.client.impl.AbstractSyncInvoker;
 import org.coodex.concrete.common.*;
+import org.coodex.concrete.jaxrs.ConcreteMessageWriter;
 import org.coodex.concrete.jaxrs.logging.ClientLogger;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.mock.Mocker;
 import org.coodex.util.*;
+import org.coodex.util.JSONSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,13 +71,15 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
             clientBuilder = clientBuilder.connectTimeout(destination.getConnectTimeout(), TimeUnit.MILLISECONDS);
         }
         clientBuilder = clientBuilder.register(ClientLogger.class)
+                .register(ConcreteMessageWriter.class)
                 .register(GZIPReaderInterceptor.class);
         client = destination.isSsl() ?
                 clientBuilder.hostnameVerifier((s, sslSession) -> true).sslContext(getSSLContext(destination.getSsl())).build() : // NOSONAR
                 clientBuilder.build();
     }
 
-    private Invocation.Builder buildHeaders(Invocation.Builder builder/*, StringBuilder str*/, Subjoin subjoin, String tokenId) {
+    private Invocation.Builder buildHeaders(Invocation.Builder builder/*, StringBuilder str*/, Subjoin subjoin,
+                                            String tokenId) {
         JaxRSClientContext context = JaxRSClientCommon.getContext();
         builder = builder.acceptEncoding("gzip")
                 .acceptLanguage(context.getLocale());
@@ -104,6 +108,8 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
             // 找需要提交的对象
             Object toSubmit = JaxRSClientCommon.getSubmitObject(unit, args);
 
+//            toSubmit =(toSubmit == null || toSubmit instanceof String) ? toSubmit : JSONSerializer.getInstance().toJson(toSubmit);
+
             try (Response response = request(path, unit.getInvokeType(), toSubmit)) {
 
                 String tokenId = response.getHeaderString(Token.CONCRETE_TOKEN_ID_KEY);
@@ -123,7 +129,8 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                         throw clientException;
                     }
                 }
-                JaxRSClientException ce = new JaxRSClientException(-1, th.getLocalizedMessage(), path, unit.getInvokeType());
+                JaxRSClientException ce = new JaxRSClientException(-1, th.getLocalizedMessage(), path,
+                        unit.getInvokeType());
                 ce.initCause(th);
                 throw ce;
             }
@@ -132,7 +139,6 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
 
     private Response request(String url, String method, Object body) {
         Invocation.Builder builder = getInvokerBuilder(url);
-
         return body == null ?
                 builder.build(method).invoke() :
                 builder.build(method, Entity.entity(body,

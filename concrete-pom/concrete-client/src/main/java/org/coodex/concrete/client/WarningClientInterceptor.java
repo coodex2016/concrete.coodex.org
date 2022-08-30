@@ -20,10 +20,8 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.core.intercept.AbstractSyncInterceptor;
 import org.coodex.concrete.core.intercept.annotations.ClientSide;
-import org.coodex.util.Common;
-import org.coodex.util.GenericTypeHelper;
-import org.coodex.util.LazyServiceLoader;
-import org.coodex.util.ServiceLoader;
+import org.coodex.util.JSONSerializer;
+import org.coodex.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +38,8 @@ public class WarningClientInterceptor extends AbstractSyncInterceptor {
     private static final ServiceLoader<WarningHandle> WARNING_HANDLES
             = new LazyServiceLoader<WarningHandle>() {
     };
-    //    private static Singleton<Collection<WarningHandle>> WARNING_HANDLES = new Singleton<>(new Singleton.Builder<Collection<WarningHandle>>() {
+    //    private static Singleton<Collection<WarningHandle>> WARNING_HANDLES = new Singleton<>(new Singleton
+    //    .Builder<Collection<WarningHandle>>() {
 //        @Override
 //        public Collection<WarningHandle> build() {
 //            return new ServiceLoaderImpl<WarningHandle>() {
@@ -52,11 +51,7 @@ public class WarningClientInterceptor extends AbstractSyncInterceptor {
 //    }.getAll().values());
     private static Type type = new GenericTypeHelper.GenericType<List<WarningData>>() {
     }.getType();
-
-    @Override
-    protected boolean accept_(DefinitionContext context) {
-        return true;
-    }
+    private boolean noneHandlersWarning = false;
 //    private static Singleton<ConcreteServiceLoader<WarningHandle>> WARNING_HANDLES = new Singleton<>(
 //            new Singleton.Builder<ConcreteServiceLoader<WarningHandle>>() {
 //                @Override
@@ -68,11 +63,14 @@ public class WarningClientInterceptor extends AbstractSyncInterceptor {
 //    );
 
     @Override
+    protected boolean accept_(DefinitionContext context) {
+        return true;
+    }
+
+    @Override
     public int getOrder() {
         return OTHER;
     }
-
-    private boolean noneHandlersWarning = false;
 
     private void warningOnce() {
         if (!noneHandlersWarning) {
@@ -92,7 +90,7 @@ public class WarningClientInterceptor extends AbstractSyncInterceptor {
             ClientSideContext clientSideContext = (ClientSideContext) serviceContext;
             String warnings = SubjoinWrapper.getInstance().get(Subjoin.KEY_WARNINGS);
             if (!Common.isBlank(warnings)) {
-                List<Warning> warningList = JSONSerializerFactory.getInstance()
+                List<Warning> warningList = JSONSerializer.getInstance()
                         .parse(warnings, type);
                 if (warningList.size() > 0) {
                     Collection<WarningHandle> handlers = WARNING_HANDLES.getAll().values();

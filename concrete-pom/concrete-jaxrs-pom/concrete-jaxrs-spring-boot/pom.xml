@@ -28,6 +28,10 @@
     <artifactId>concrete-jaxrs-spring-boot</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>org.coodex</groupId>
+            <artifactId>coodex-jsonserializer-jackson2</artifactId>
+        </dependency>
         <!-- 使用jsr339/jaxrs 2.0 发布concrete服务-->
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
@@ -53,7 +57,7 @@
             </exclusions>
         </dependency>
 
-        
+
     </dependencies>
 
 

@@ -16,53 +16,62 @@
 
 package org.coodex.concrete.serializer.jackson2;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import org.coodex.concrete.common.JSONSerializer;
-import org.coodex.util.Common;
+import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.util.json.Jackson2JSONSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Type;
+@Deprecated
+public class Jackson2Serializer extends Jackson2JSONSerializer implements org.coodex.concrete.common.JSONSerializer {
+    private final static Logger log = LoggerFactory.getLogger(Jackson2Serializer.class);
 
-public class Jackson2Serializer implements JSONSerializer {
-
-//    private final static Logger log = LoggerFactory.getLogger(Jackson2Serializer.class);
-
-    private ObjectMapper mapper;
-
-    private synchronized ObjectMapper getMapper() {
-        if (mapper == null) {
-            mapper = new ObjectMapper();
-        }
-        return mapper;
+    static {
+        log.warn("use org.coodex:coodex-jsonserializer-jackson2:{} instead.", ConcreteHelper.VERSION);
     }
 
-    @Override
-    public <T> T parse(String json, Type t) {
-        if (Common.isBlank(json)) return null;
-        try {
-            if (t instanceof Class) {
-//                if (String.class.equals(t)) {
-//                    return Common.cast(json);
-//                } else {
-                Class<T> c = Common.cast(t);
-                return getMapper().readValue(json, c);
-//                }
-            } else {
-                return getMapper().readValue(json, TypeFactory.defaultInstance().constructType(t));
-            }
-        } catch (Throwable th) {
-            throw th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th);
-        }
-    }
 
-    @Override
-    public String toJson(Object t) {
-        try {
-            return getMapper().writeValueAsString(t);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    //    private ObjectMapper mapper;
+//    private final Singleton<ObjectMapper> mapperSingleton = Singleton.with(() -> {
+//        ObjectMapper mapper = new ObjectMapper();
+//        AtomicInteger atomicInteger = new AtomicInteger(0);
+//        SimpleModule simpleModule = new SimpleModule();
+//        // todo register serializer and deserializer
+//        if (atomicInteger.get() > 0) {
+//            mapper.registerModule(simpleModule);
+//        }
+//        return mapper;
+//    });
+//
+//    private ObjectMapper getMapper() {
+//        return mapperSingleton.get();
+//    }
+//
+//    @Override
+//    public <T> T parse(String json, Type t) {
+//        if (Common.isBlank(json)) return null;
+//        try {
+//            if (t instanceof Class) {
+////                if (String.class.equals(t)) {
+////                    return Common.cast(json);
+////                } else {
+//                Class<T> c = Common.cast(t);
+//                return getMapper().readValue(json, c);
+////                }
+//            } else {
+//                return getMapper().readValue(json, TypeFactory.defaultInstance().constructType(t));
+//            }
+//        } catch (Throwable th) {
+//            throw th instanceof RuntimeException ? (RuntimeException) th : new RuntimeException(th);
+//        }
+//    }
+//
+//    @Override
+//    public String toJson(Object t) {
+//        try {
+//            return getMapper().writeValueAsString(t);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 }

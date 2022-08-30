@@ -16,14 +16,13 @@
 
 package org.coodex.concrete.apitools;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.config.Config;
 import org.coodex.exception.NoneInstanceException;
 import org.coodex.exception.NoneSupportedException;
 import org.coodex.util.Common;
+import org.coodex.util.JSONSerializer;
 import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
 
@@ -37,11 +36,14 @@ import java.util.stream.Collectors;
  */
 public class API {
 
+    private static final ServiceLoader<ConcreteAPIRenderer<?>> RENDERS =
+            new LazyServiceLoader<ConcreteAPIRenderer<?>>() {
+            };
+    private static final String TAG_API_GENERATOR = "api_gen";
     private final Set<String> packages = new HashSet<>();
     private final Set<Class<?>> classSet = new HashSet<>();
     private final String desc;
     private final String path;
-
     //    private boolean clean;
     private final Map<String, Object> ext = new HashMap<>();
 
@@ -54,127 +56,9 @@ public class API {
         this.ext.putAll(builder.ext);
     }
 
-    public void generate() throws IOException {
-        if (RENDERS.getAll().size() == 0)
-            throw new NoneInstanceException("NONE render found.");
-//        if (clean) {
-//            cleanDir();
-//        }
-        for (ConcreteAPIRenderer<?> render : RENDERS.getAll().values()) {
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (render) {
-                if (render.isAccept(desc)) {
-                    render.setRoot(path);
-                    render.setExt(ext);
-                    render.render(Common.cast(getModules()));
-//                    render.writeTo(packages);
-                    return;
-                }
-            }
-        }
-        throw new NoneSupportedException("NONE render for " + desc + " found.");
-    }
-
-    private void deleteFiles(File file) {
-        if (!file.exists()) return;
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            if (files != null && files.length > 0) {
-                for (File f : files) {
-                    deleteFiles(f);
-                }
-            }
-        }
-        //noinspection ResultOfMethodCallIgnored
-        file.delete();
-    }
-
-    private void cleanDir() {
-        deleteFiles(new File(path));
-    }
-
-    private List<AbstractModule<?>> getModules() {
-        List<AbstractModule<?>> result;
-        if (Common.isEmpty(packages)) {
-            result = APIHelper.loadModules(desc, ConcreteHelper.getApiPackages());
-        } else {
-            result = APIHelper.loadModules(desc, packages.toArray(new String[0]));
-        }
-        Set<Class<?>> loaded = result.stream().map(AbstractModule::getInterfaceClass).collect(Collectors.toSet());
-        Set<Class<?>> noneLoaded = Common.difference(classSet, loaded);
-        if (!Common.isEmpty(noneLoaded)) {
-            result.addAll(APIHelper.loadModules(desc, noneLoaded.toArray(new Class[0])));
-        }
-        return result;
-    }
-
-    public static class Builder {
-        private final Set<String> packages = new HashSet<>();
-        private final Set<Class<?>> classSet = new HashSet<>();
-        private String desc;
-        private String path;
-
-        //        private boolean clean = true;
-        private final Map<String, Object> ext = new HashMap<>();
-
-        public Builder addPackages(String... packages) {
-            if (packages != null && packages.length > 0) {
-                this.packages.addAll(Arrays.asList(packages));
-            }
-            return this;
-        }
-
-        public Builder addPackages(Package... packages) {
-            if (packages != null && packages.length > 0) {
-                this.packages.addAll(Arrays.stream(packages).map(Package::getName).collect(Collectors.toSet()));
-            }
-            return this;
-        }
-
-        public Builder addClasses(Class<?>... classes) {
-            if (classes != null && classes.length > 0) {
-                this.classSet.addAll(Arrays.asList(classes));
-            }
-            return this;
-        }
-
-        public Builder desc(String desc) {
-            this.desc = desc;
-            return this;
-        }
-
-        public Builder path(String path) {
-            this.path = path;
-            return this;
-        }
-
-        public Builder ext(Map<String, Object> map) {
-            if (map != null && !map.isEmpty()) {
-                this.ext.putAll(map);
-            }
-            return this;
-        }
-
-        public Builder module(String module) {
-            return this.desc(Config.get("desc", TAG_API_GENERATOR, module))
-                    .path(Config.get("path", TAG_API_GENERATOR, module))
-                    .ext(toMap(Config.get("ext", TAG_API_GENERATOR, module)));
-        }
-
-
-        public API build() {
-            return new API(this);
-        }
-    }
-
     public static Builder newBuilder() {
         return new Builder();
     }
-
-    private static final ServiceLoader<ConcreteAPIRenderer<?>> RENDERS =
-            new LazyServiceLoader<ConcreteAPIRenderer<?>>() {
-            };
-    private static final String TAG_API_GENERATOR = "api_gen";
 
     @Deprecated
     public static void generate(String desc, String path, String... packages) throws IOException {
@@ -260,7 +144,6 @@ public class API {
                 desc, path, packages);
     }
 
-
     @Deprecated
     public static void generateFor(String module, Class<?>... classes) throws IOException {
         String desc = Config.get("desc", TAG_API_GENERATOR, module);
@@ -274,8 +157,119 @@ public class API {
         if (json == null) {
             return new HashMap<>();
         } else {
-            return JSON.parseObject(json, new TypeReference<Map<String, Object>>() {
-            });
+            return JSONSerializer.getInstance().parse(json, Map.class);
+        }
+    }
+
+    public void generate() throws IOException {
+        if (RENDERS.getAll().size() == 0)
+            throw new NoneInstanceException("NONE render found.");
+//        if (clean) {
+//            cleanDir();
+//        }
+        for (ConcreteAPIRenderer<?> render : RENDERS.getAll().values()) {
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
+            synchronized (render) {
+                if (render.isAccept(desc)) {
+                    render.setRoot(path);
+                    render.setExt(ext);
+                    render.render(Common.cast(getModules()));
+//                    render.writeTo(packages);
+                    return;
+                }
+            }
+        }
+        throw new NoneSupportedException("NONE render for " + desc + " found.");
+    }
+
+    private void deleteFiles(File file) {
+        if (!file.exists()) return;
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null && files.length > 0) {
+                for (File f : files) {
+                    deleteFiles(f);
+                }
+            }
+        }
+        //noinspection ResultOfMethodCallIgnored
+        file.delete();
+    }
+
+    private void cleanDir() {
+        deleteFiles(new File(path));
+    }
+
+    private List<AbstractModule<?>> getModules() {
+        List<AbstractModule<?>> result;
+        if (Common.isEmpty(packages)) {
+            result = APIHelper.loadModules(desc, ConcreteHelper.getApiPackages());
+        } else {
+            result = APIHelper.loadModules(desc, packages.toArray(new String[0]));
+        }
+        Set<Class<?>> loaded = result.stream().map(AbstractModule::getInterfaceClass).collect(Collectors.toSet());
+        Set<Class<?>> noneLoaded = Common.difference(classSet, loaded);
+        if (!Common.isEmpty(noneLoaded)) {
+            result.addAll(APIHelper.loadModules(desc, noneLoaded.toArray(new Class[0])));
+        }
+        return result;
+    }
+
+    public static class Builder {
+        private final Set<String> packages = new HashSet<>();
+        private final Set<Class<?>> classSet = new HashSet<>();
+        //        private boolean clean = true;
+        private final Map<String, Object> ext = new HashMap<>();
+        private String desc;
+        private String path;
+
+        public Builder addPackages(String... packages) {
+            if (packages != null && packages.length > 0) {
+                this.packages.addAll(Arrays.asList(packages));
+            }
+            return this;
+        }
+
+        public Builder addPackages(Package... packages) {
+            if (packages != null && packages.length > 0) {
+                this.packages.addAll(Arrays.stream(packages).map(Package::getName).collect(Collectors.toSet()));
+            }
+            return this;
+        }
+
+        public Builder addClasses(Class<?>... classes) {
+            if (classes != null && classes.length > 0) {
+                this.classSet.addAll(Arrays.asList(classes));
+            }
+            return this;
+        }
+
+        public Builder desc(String desc) {
+            this.desc = desc;
+            return this;
+        }
+
+        public Builder path(String path) {
+            this.path = path;
+            return this;
+        }
+
+        public Builder ext(Map<String, Object> map) {
+            if (map != null && !map.isEmpty()) {
+                this.ext.putAll(map);
+            }
+            return this;
+        }
+
+        public Builder module(String module) {
+            return this.desc(Config.get("desc", TAG_API_GENERATOR, module))
+                    .path(Config.get("path", TAG_API_GENERATOR, module))
+                    .ext(toMap(Config.get("ext", TAG_API_GENERATOR, module)));
+        }
+
+
+        public API build() {
+            return new API(this);
         }
     }
 

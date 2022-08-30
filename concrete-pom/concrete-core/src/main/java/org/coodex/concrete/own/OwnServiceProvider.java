@@ -25,6 +25,7 @@ import org.coodex.concrete.message.ServerSideMessage;
 import org.coodex.concrete.message.TBMContainer;
 import org.coodex.concurrent.components.PriorityRunnable;
 import org.coodex.util.Common;
+import org.coodex.util.JSONSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,7 +130,7 @@ public abstract class OwnServiceProvider implements Application {
 
         //2 解析数据
         final Object[] objects = analysisParameters(
-                JSONSerializerFactory.getInstance().toJson(requestPackage.getContent()), unit);
+                JSONSerializer.getInstance().toJson(requestPackage.getContent()), unit);
 
         //3 调用并返回结果
         final String tokenId = requestPackage.getConcreteTokenId();
@@ -145,7 +146,8 @@ public abstract class OwnServiceProvider implements Application {
                 Trace trace = APM.build(context.getSubjoin())
                         .tag("remote", context.getCaller().getAddress())
                         .tag("agent", context.getCaller().getClientProvider())
-                        .start(String.format("%s: %s.%s", getModuleName(), method.getDeclaringClass().getName(), method.getName()));
+                        .start(String.format("%s: %s.%s", getModuleName(), method.getDeclaringClass().getName(),
+                                method.getName()));
                 try {
 
                     Object result = runServiceWithContext(
@@ -239,7 +241,7 @@ public abstract class OwnServiceProvider implements Application {
 
         @Override
         default void visit(ResponsePackage<?> responsePackage) {
-            visit(JSONSerializerFactory.getInstance().toJson(responsePackage));
+            visit(JSONSerializer.getInstance().toJson(responsePackage));
         }
 
         void visit(String json);
@@ -338,7 +340,8 @@ public abstract class OwnServiceProvider implements Application {
         }
 
         /**
-         * Validate input tag (header value) according to HTTP 1.1 spec + allow region code (numeric) instead of country code.
+         * Validate input tag (header value) according to HTTP 1.1 spec + allow region code (numeric) instead of
+         * country code.
          *
          * @param tag accept-language header value.
          * @return {@code true} if the given value is valid language tag, {@code false} instead.

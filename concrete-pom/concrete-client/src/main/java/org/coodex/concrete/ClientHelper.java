@@ -22,8 +22,6 @@ import org.coodex.concrete.client.*;
 import org.coodex.concrete.client.impl.JavaProxyInstanceBuilder;
 import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.common.IF;
-import org.coodex.concrete.common.JSONSerializer;
-import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.core.intercept.AsyncInterceptorChain;
 import org.coodex.concrete.core.intercept.ConcreteInterceptor;
 import org.coodex.concrete.core.intercept.InterceptorChain;
@@ -96,7 +94,7 @@ public class ClientHelper {
     }
 
     public static JSONSerializer getJSONSerializer() {
-        return JSONSerializerFactory.getInstance();
+        return JSONSerializer.getInstance();
     }
 
     public static InstanceBuilder getInstanceBuilder() {
@@ -136,7 +134,8 @@ public class ClientHelper {
         return destinationFactorySelectableServiceLoader.build(module);
     }
 
-//    private static SelectableServiceLoaderImpl<String, SSLContextFactory> getSSLContextFactoryAcceptableServiceLoader() {
+//    private static SelectableServiceLoaderImpl<String, SSLContextFactory>
+//    getSSLContextFactoryAcceptableServiceLoader() {
 //        return sslContextFactoryAcceptableServiceLoader.get();
 //    }
 

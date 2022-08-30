@@ -17,12 +17,12 @@
 package org.coodex.concrete.protobuf;
 
 import org.coodex.concrete.common.Caller;
-import org.coodex.concrete.common.JSONSerializerFactory;
 import org.coodex.concrete.common.ServerSideContext;
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.own.OwnServiceProvider;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;
+import org.coodex.util.JSONSerializer;
 import org.coodex.util.SingletonMap;
 
 import java.util.Optional;
@@ -36,19 +36,34 @@ public class ProtobufServiceApplication extends OwnServiceProvider {
             .<String, ProtobufServiceApplication>builder()
             .function(ProtobufServiceApplication::new)
             .build();
+    private final String overProtocol;
+    private OwnModuleBuilder ownModuleBuilder;
+
+
+    private ProtobufServiceApplication(String overProtocol) {
+        this.overProtocol = overProtocol;
+    }
 
     public static ProtobufServiceApplication getInstance(String protocol) {
         return APPLICATIONS.get(protocol);
     }
 
+    private static Concrete.ResponsePackage toResp(ResponsePackage<?> resp) {
+        return Concrete.ResponsePackage.newBuilder()
+                .putAllSubjoin(resp.getSubjoin())
+                .setContent(JSONSerializer.getInstance().toJson(resp.getContent()))
+                .setConcreteTokenId(Optional.ofNullable(resp.getConcreteTokenId()).orElse(""))
+                .setOk(resp.isOk())
+                .build();
+    }
 
-    private final String overProtocol;
-
-
-    private OwnModuleBuilder ownModuleBuilder;
-
-    private ProtobufServiceApplication(String overProtocol) {
-        this.overProtocol = overProtocol;
+    private static RequestPackage<Object> toReq(Concrete.RequestPackage req) {
+        RequestPackage<Object> requestPackage = new RequestPackage<>();
+        requestPackage.setServiceId(req.getServiceId());
+        requestPackage.setContent(JSONSerializer.getInstance().parse(req.getContent(), Object.class));
+        requestPackage.setConcreteTokenId(req.getConcreteTokenId());
+        requestPackage.setSubjoin(req.getSubjoinMap());
+        return requestPackage;
     }
 
     @Override
@@ -65,7 +80,8 @@ public class ProtobufServiceApplication extends OwnServiceProvider {
     }
 
     @Override
-    protected ServerSideContext getServerSideContext(RequestPackage<Object> requestPackage, String tokenId, Caller caller) {
+    protected ServerSideContext getServerSideContext(RequestPackage<Object> requestPackage, String tokenId,
+                                                     Caller caller) {
         Subjoin subjoin = getSubjoin(requestPackage.getSubjoin());
         return new ProtobufContext(
                 caller,
@@ -95,23 +111,5 @@ public class ProtobufServiceApplication extends OwnServiceProvider {
                     }
                 }, responsePackage -> responsePackageConsumer.accept(toResp(responsePackage)),
                 null, null);
-    }
-
-    private static Concrete.ResponsePackage toResp(ResponsePackage<?> resp) {
-        return Concrete.ResponsePackage.newBuilder()
-                .putAllSubjoin(resp.getSubjoin())
-                .setContent(JSONSerializerFactory.getInstance().toJson(resp.getContent()))
-                .setConcreteTokenId(Optional.ofNullable(resp.getConcreteTokenId()).orElse(""))
-                .setOk(resp.isOk())
-                .build();
-    }
-
-    private static RequestPackage<Object> toReq(Concrete.RequestPackage req) {
-        RequestPackage<Object> requestPackage = new RequestPackage<>();
-        requestPackage.setServiceId(req.getServiceId());
-        requestPackage.setContent(JSONSerializerFactory.getInstance().parse(req.getContent(), Object.class));
-        requestPackage.setConcreteTokenId(req.getConcreteTokenId());
-        requestPackage.setSubjoin(req.getSubjoinMap());
-        return requestPackage;
     }
 }

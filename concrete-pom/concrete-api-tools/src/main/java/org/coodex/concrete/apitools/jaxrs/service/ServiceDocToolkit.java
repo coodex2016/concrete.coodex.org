@@ -16,14 +16,14 @@
 
 package org.coodex.concrete.apitools.jaxrs.service;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.apitools.jaxrs.DocToolkit;
+import org.coodex.concrete.apitools.jaxrs.EnumElementInfo;
 import org.coodex.concrete.apitools.jaxrs.POJOPropertyInfo;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.mock.Mocker;
 import org.coodex.util.Common;
+import org.coodex.util.JSONSerializer;
 import org.coodex.util.PojoInfo;
 import org.coodex.util.PojoProperty;
 
@@ -69,22 +69,31 @@ public class ServiceDocToolkit extends DocToolkit {
         String name = canonicalName(clz.getName());
         if (!pojoTypes.contains(name)) {
             pojoTypes.add(name);
+            if (clz.isEnum()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("type", clz.getName());
+                map.put("tool", this);
+                map.put("elements", EnumElementInfo.of(Common.cast(clz)));
+                getRender().writeTo(
+                        (Common.isBlank(this.writeToPath) ? "" : (writeToPath + Common.FILE_SEPARATOR))
+                                + "pojos/" + canonicalName(clz.getName()) + ".md", "enumerable.md", map);
+            } else {
+                List<POJOPropertyInfo> pojoPropertyInfos = new ArrayList<>();
+                PojoInfo pojoInfo = new PojoInfo(clz);
 
-            List<POJOPropertyInfo> pojoPropertyInfos = new ArrayList<>();
-            PojoInfo pojoInfo = new PojoInfo(clz);
+                for (PojoProperty pojoProperty : pojoInfo.getProperties()) {
+                    pojoPropertyInfos.add(new POJOPropertyInfo(pojoProperty));
+                }
 
-            for (PojoProperty pojoProperty : pojoInfo.getProperties()) {
-                pojoPropertyInfos.add(new POJOPropertyInfo(pojoProperty));
+                Map<String, Object> map = new HashMap<>();
+                map.put("properties", pojoPropertyInfos);
+                map.put("type", clz.getName());
+                map.put("tool", this);
+
+                getRender().writeTo(
+                        (Common.isBlank(this.writeToPath) ? "" : (writeToPath + Common.FILE_SEPARATOR))
+                                + "pojos/" + canonicalName(clz.getName()) + ".md", "pojo.md", map);
             }
-
-            Map<String, Object> map = new HashMap<>();
-            map.put("properties", pojoPropertyInfos);
-            map.put("type", clz.getName());
-            map.put("tool", this);
-
-            getRender().writeTo(
-                    (Common.isBlank(this.writeToPath) ? "" : (writeToPath + Common.FILE_SEPARATOR))
-                            + "pojos/" + canonicalName(clz.getName()) + ".md", "pojo.md", map);
         }
     }
 
@@ -108,7 +117,8 @@ public class ServiceDocToolkit extends DocToolkit {
                     "\n```\n\n";
         } else {
             result = prevOfMock() + "\n```json\n" +
-                    JSON.toJSONString(Mocker.mockMethod(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass()), SerializerFeature.PrettyFormat) +
+                    JSONSerializer.getInstance().toJson(Mocker.mockMethod(unit.getMethod(),
+                            unit.getDeclaringModule().getInterfaceClass())) +
                     "\n```\n\n";
         }
         return result;

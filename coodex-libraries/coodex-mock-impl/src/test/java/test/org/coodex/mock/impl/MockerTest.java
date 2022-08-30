@@ -16,11 +16,10 @@
 
 package test.org.coodex.mock.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.coodex.mock.Mock;
 import org.coodex.mock.Mocker;
 import org.coodex.mock.ext.*;
+import org.coodex.util.JSONSerializer;
 import org.junit.Test;
 
 import java.lang.annotation.ElementType;
@@ -37,19 +36,18 @@ public class MockerTest {
     @Test
     public void test() {
 
-        System.out.println(JSON.toJSONString(Mocker.mock(Pojo3rd.class)));
+        System.out.println(JSONSerializer.getInstance().toJson(Mocker.mock(Pojo3rd.class)));
         System.out.println(
-                JSON.toJSONString(
-                        Mocker.mock(Pojo.class), // <--放到上下文
-                        SerializerFeature.PrettyFormat
+                JSONSerializer.getInstance().toJson(
+                        Mocker.mock(Pojo.class)
                 )
         );
 
         A a = Mocker.mock(A.class);
 //        a.setName("hello");
-        System.out.println(JSON.toJSONString(a));
+        System.out.println(JSONSerializer.getInstance().toJson(a));
 
-        System.out.println(JSON.toJSONString(Mocker.mock(Pojo3rd.class)));
+        System.out.println(JSONSerializer.getInstance().toJson(Mocker.mock(Pojo3rd.class)));
     }
 
     @Retention(RetentionPolicy.RUNTIME)

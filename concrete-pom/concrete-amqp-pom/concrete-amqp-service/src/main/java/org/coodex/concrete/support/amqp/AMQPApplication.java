@@ -20,13 +20,17 @@ import com.rabbitmq.client.*;
 import org.coodex.concrete.amqp.AMQPConnectionConfig;
 import org.coodex.concrete.amqp.AMQPConnectionFacade;
 import org.coodex.concrete.amqp.AMQPModule;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.Caller;
+import org.coodex.concrete.common.ConcreteHelper;
+import org.coodex.concrete.common.ServerSideContext;
+import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.own.OwnServiceProvider;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.config.Config;
 import org.coodex.logging.Level;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
+import org.coodex.util.JSONSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +51,8 @@ public class AMQPApplication extends OwnServiceProvider {
 
     //    private static final OwnModuleBuilder AMQP_MODULE_BUILDER = ;
     private final String exchangeName;
-    private Channel channel;
     private final Level level;
+    private Channel channel;
 
 
     public AMQPApplication(AMQPConnectionConfig config) {
@@ -78,7 +82,8 @@ public class AMQPApplication extends OwnServiceProvider {
 //    }
 
     @Override
-    protected ServerSideContext getServerSideContext(RequestPackage<Object> requestPackage, String tokenId, Caller caller) {
+    protected ServerSideContext getServerSideContext(RequestPackage<Object> requestPackage, String tokenId,
+                                                     Caller caller) {
         Subjoin subjoin = getSubjoin(requestPackage);
         return new AMQPServiceContext(caller, subjoin, getLocale(subjoin), tokenId);
     }
@@ -100,7 +105,7 @@ public class AMQPApplication extends OwnServiceProvider {
 
     private void connect(AMQPConnectionConfig config, String queueName, Long ttl) {
         try {
-            final JSONSerializer serializer = JSONSerializerFactory.getInstance();
+            final JSONSerializer serializer = JSONSerializer.getInstance();
             if (serializer == null) throw new RuntimeException("none json serializer found.");
 
             Connection connection = AMQPConnectionFacade.getConnection(config);
@@ -119,27 +124,31 @@ public class AMQPApplication extends OwnServiceProvider {
                     if (level.isEnabled(log)) {
                         level.log(log, "send to " + clientId + ": " + json);
                     }
-                    channel.basicPublish(exchangeName, ROUTE_KEY_RESPONSE + clientId, null, json.getBytes(StandardCharsets.UTF_8));
+                    channel.basicPublish(exchangeName, ROUTE_KEY_RESPONSE + clientId, null,
+                            json.getBytes(StandardCharsets.UTF_8));
                 }
 
 
                 @Override
-                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
+                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
+                                           byte[] body) {
                     final String clientId = envelope.getRoutingKey().substring(ROUTE_KEY_REQUEST.length());
                     String bodyStr = new String(body, StandardCharsets.UTF_8);
                     if (level.isEnabled(log)) {
                         level.log(log, "message received: " + bodyStr);
                     }
-                    final RequestPackage<Object> requestPackage = serializer.parse(bodyStr, new GenericTypeHelper.GenericType<RequestPackage<Object>>() {
-                    }.getType());
+                    final RequestPackage<Object> requestPackage = serializer.parse(bodyStr,
+                            new GenericTypeHelper.GenericType<RequestPackage<Object>>() {
+                            }.getType());
 
-                    invokeService(requestPackage, new AMQPCaller(getSubjoin(requestPackage)), (JSONResponseVisitor) json -> {
-                        try {
-                            send(json, clientId);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }, /*(msgId, th) -> {
+                    invokeService(requestPackage, new AMQPCaller(getSubjoin(requestPackage)),
+                            (JSONResponseVisitor) json -> {
+                                try {
+                                    send(json, clientId);
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }, /*(msgId, th) -> {
                                 ResponsePackage<ErrorInfo> responsePackage = new ResponsePackage<>();
                                 responsePackage.setOk(false);
                                 responsePackage.setMsgId(msgId);

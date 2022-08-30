@@ -30,7 +30,7 @@ import static org.coodex.util.GenericTypeHelper.solveFromType;
  */
 public class POJOTypeInfo {
 
-    private static final Class<?> ARRAY_CLASS = (new Object[0]).getClass();
+    private static final Class<?> ARRAY_CLASS = Object[].class;
     private static final POJOTypeInfo OBJECT_POJO_INFO = new POJOTypeInfo(Object.class, Object.class);
 
     private final Class<?> contextType;
@@ -38,9 +38,8 @@ public class POJOTypeInfo {
     private final Type genericType;
 
     private final Class<?> type;
-
+    private final List<POJOTypeInfo> genericParameters = new ArrayList<>();
     private POJOTypeInfo arrayElement = OBJECT_POJO_INFO;
-    private List<POJOTypeInfo> genericParameters = new ArrayList<POJOTypeInfo>();
 
     public POJOTypeInfo(Class<?> contextType, Type genericType) {
         this.contextType = contextType;
@@ -67,13 +66,13 @@ public class POJOTypeInfo {
             }
             return clz;
         } else if (genericType instanceof Class) {
-            if (((Class) genericType).isArray()) {
-                arrayElement = new POJOTypeInfo(contextType, ((Class) genericType).getComponentType());
+            if (((Class<?>) genericType).isArray()) {
+                arrayElement = new POJOTypeInfo(contextType, ((Class<?>) genericType).getComponentType());
                 return ARRAY_CLASS;
             }
             return (Class<?>) genericType;
         } else if (genericType instanceof TypeVariable) {
-            return $loadClass(solveFromType((TypeVariable) genericType, contextType));
+            return $loadClass(solveFromType((TypeVariable<?>) genericType, contextType));
         }
         throw new RuntimeException("unknown Type: " + genericType + ". genericType: " + this.genericType
                 + ": instanceClass:" + contextType);

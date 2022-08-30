@@ -16,13 +16,13 @@
 
 package org.coodex.concrete.apitools.jaxrs.jquery;
 
-import com.alibaba.fastjson.JSON;
 import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.apitools.jaxrs.service.ServiceDocToolkit;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.mock.Mocker;
 import org.coodex.util.Common;
+import org.coodex.util.JSONSerializer;
 
 /**
  * Created by davidoff shen on 2016-12-05.
@@ -45,12 +45,12 @@ public class JQueryDocToolkit extends ServiceDocToolkit {
             }
             try {
                 builder.append(
-                        JSON.toJSONString(
+                        JSONSerializer.getInstance().toJson(
                                 Mocker.mock(
                                         unit.getParameters()[i].getGenericType(),
                                         module.getInterfaceClass(),
                                         unit.getMethod().getParameterAnnotations()[i]
-                                ), true));
+                                )));
             } catch (Throwable e) {
                 builder.append("{}");
             }

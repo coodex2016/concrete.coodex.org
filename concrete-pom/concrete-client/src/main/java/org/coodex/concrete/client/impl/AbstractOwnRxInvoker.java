@@ -21,7 +21,9 @@ import org.coodex.concrete.ClientHelper;
 import org.coodex.concrete.client.ClientSideContext;
 import org.coodex.concrete.client.ClientTokenManagement;
 import org.coodex.concrete.client.Destination;
-import org.coodex.concrete.common.*;
+import org.coodex.concrete.common.DefinitionContext;
+import org.coodex.concrete.common.ErrorInfo;
+import org.coodex.concrete.common.ServiceContext;
 import org.coodex.concrete.own.MapSubjoin;
 import org.coodex.concrete.own.OwnServiceUnit;
 import org.coodex.concrete.own.RequestPackage;
@@ -30,6 +32,7 @@ import org.coodex.id.IDGenerator;
 import org.coodex.logging.Level;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
+import org.coodex.util.JSONSerializer;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,13 +57,13 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
         super(destination);
     }
 
-    protected static JSONSerializer getSerializer() {
-        return JSONSerializerFactory.getInstance();
-    }
+//    protected static JSONSerializer getSerializer() {
+//        return JSONSerializer.getInstance();
+//    }
 
     private static ResponsePackage<Object> parse(String responseMessage) {
         try {
-            return getSerializer().parse(responseMessage,
+            return JSONSerializer.getInstance().parse(responseMessage,
                     new GenericTypeHelper.GenericType<ResponsePackage<Object>>() {
                     }.getType());
         } catch (Throwable throwable) {
@@ -95,14 +98,15 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
             );
 
             try {
-                ClientTokenManagement.setTokenId(completableFutureCallBack.getDestination(), responsePackage.getConcreteTokenId());
+                ClientTokenManagement.setTokenId(completableFutureCallBack.getDestination(),
+                        responsePackage.getConcreteTokenId());
                 if (responsePackage.getContent() == null ||
                         void.class.equals(completableFutureCallBack.getContext().getDeclaringMethod().getReturnType())) {
                     completableFutureCallBack.getCompletableFuture().complete(null);
 //                    completed = true;
                 } else {
                     Object result =
-                            getSerializer().parse(responsePackage.getContent(),
+                            JSONSerializer.getInstance().parse(responsePackage.getContent(),
                                     GenericTypeHelper.toReference(
                                             completableFutureCallBack.getContext().getDeclaringMethod().getGenericReturnType(),
                                             completableFutureCallBack.getContext().getDeclaringClass()));
@@ -118,7 +122,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
             }
         } else {
             try {
-                throwable = new ClientException(getSerializer().parse(
+                throwable = new ClientException(JSONSerializer.getInstance().parse(
                         responsePackage.getContent(),
                         ErrorInfo.class
                 ));
@@ -145,11 +149,13 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
     protected abstract Level getLoggingLevel();
 
     @Override
-    protected CompletableFuture<?> futureInvoke(DefinitionContext runtimeContext, ServiceContext serviceContext, Object[] args) {
+    protected CompletableFuture<?> futureInvoke(DefinitionContext runtimeContext, ServiceContext serviceContext,
+                                                Object[] args) {
 
         CompletableFuture<?> completableFuture = new CompletableFuture<>();
         if (!(serviceContext instanceof ClientSideContext)) {
-            completableFuture.completeExceptionally(new IllegalStateException("service context is not ClientSideContext:" + serviceContext));
+            completableFuture.completeExceptionally(new IllegalStateException("service context is not " +
+                    "ClientSideContext:" + serviceContext));
             return completableFuture;
         }
         ClientSideContext clientSideContext = (ClientSideContext) serviceContext;
@@ -204,7 +210,8 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
         private final Destination destination;
         private final ClientSideContext clientSideContext;
 
-        private BaseCallBack(DefinitionContext context, Logger logger, Level loggingLevel, Destination destination, ClientSideContext clientSideContext) {
+        private BaseCallBack(DefinitionContext context, Logger logger, Level loggingLevel, Destination destination,
+                             ClientSideContext clientSideContext) {
             this.context = context;
             this.logger = logger;
             this.loggingLevel = loggingLevel;
@@ -260,7 +267,8 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 //        private final ObservableEmitter emitter;
 //
 //
-//        private ObservableCallBack(ObservableEmitter emitter, DefinitionContext context, Logger logger, Level loggingLevel, Destination destination, ClientSideContext clientSideContext) {
+//        private ObservableCallBack(ObservableEmitter emitter, DefinitionContext context, Logger logger, Level
+//        loggingLevel, Destination destination, ClientSideContext clientSideContext) {
 //            super(context, logger, loggingLevel, destination, clientSideContext);
 //            this.emitter = emitter;
 //        }

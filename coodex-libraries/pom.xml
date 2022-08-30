@@ -81,6 +81,7 @@
         <snakeyaml.version>1.29</snakeyaml.version>
         <cglib.version>3.3.0</cglib.version>
         <freemarker.version>2.3.31</freemarker.version>
+        <jackson2.version>2.13.3</jackson2.version>
 
         <spring.framework.version>5.3.21</spring.framework.version>
     </properties>
@@ -280,12 +281,12 @@
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-<!--                    <execution>-->
-<!--                        <id>check</id>-->
-<!--                        <goals>-->
-<!--                            <goal>check</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
+                    <!--                    <execution>-->
+                    <!--                        <id>check</id>-->
+                    <!--                        <goals>-->
+                    <!--                            <goal>check</goal>-->
+                    <!--                        </goals>-->
+                    <!--                    </execution>-->
                     <execution>
                         <id>report</id>
                         <phase>prepare-package</phase>
@@ -295,8 +296,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-
         </plugins>
     </build>
 
@@ -333,6 +332,12 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-reload4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
 
@@ -429,6 +434,8 @@
         <module>coodex-metadata</module>
         <module>coodex-renderer-freemarker</module>
         <module>coodex-jaxrs-util</module>
+        <module>coodex-jsonserializer-jackson2</module>
+        <module>coodex-jsonserializer-jsonb-v1</module>
 
     </modules>
 

@@ -196,7 +196,7 @@ public class JaxrsUnit extends AbstractUnit<JaxrsParam/*, JaxrsModule*/> {
     @Override
     protected void afterInit() {
         if (getPojoCount() > 0) {
-            if (getPojoCount() == 1 && !isPrimitive(getPojo()[0].getType())) {
+            if (getPojoCount() == 1 && !isPrimitive(getPojo()[0].getType()) && !getPojo()[0].getType().isEnum()) {
                 return;
             }
             for (JaxrsParam param : getPojo()) {

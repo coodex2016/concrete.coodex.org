@@ -28,6 +28,7 @@ import org.coodex.concrete.websocket.WebSocketModule;
 import org.coodex.config.Config;
 import org.coodex.id.IDGenerator;
 import org.coodex.util.GenericTypeHelper;
+import org.coodex.util.JSONSerializer;
 import org.coodex.util.UUIDHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,8 @@ import static org.coodex.concrete.websocket.Constants.*;
 
 class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSocketEndPoint {
 
-//    private final static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newScheduledThreadPool(1);
+//    private final static ScheduledExecutorService scheduledExecutorService = ExecutorsHelper.newScheduledThreadPool
+//    (1);
 
     private final static Logger log = LoggerFactory.getLogger(WebSocketServerHandle.class);
 
@@ -94,7 +96,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
     private static <T> void sendMessage(ServerSideMessage<T> message, String tokenId) {
         for (Session session : peers.keySet()) {
             if (tokenId.equals(peers.get(session))) {
-                $sendText(JSONSerializerFactory.getInstance().toJson(buildPackage(message)),
+                $sendText(JSONSerializer.getInstance().toJson(buildPackage(message)),
                         session, null);
                 break;
             }
@@ -132,7 +134,8 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 //        String sessionId =
         peers.remove(peer);
 //        if (sessionId != null) {
-//            BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class).getToken(sessionId, true).invalidate();
+//            BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class).getToken(sessionId, true)
+//            .invalidate();
 //            log.debug("token [{}] invalidate.", sessionId);
 //        }
         log.debug("session closed: {}, total sessions: {}", peer, peers.size());
@@ -191,7 +194,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
         responsePackage.setOk(false);
         responsePackage.setMsgId(msgId);
         responsePackage.setContent(ThrowableMapperFacade.toErrorInfo(exception));
-        sendText(JSONSerializerFactory.getInstance().toJson(responsePackage), session);
+        sendText(JSONSerializer.getInstance().toJson(responsePackage), session);
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -220,7 +223,8 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 
 //    @Override
 //    public Token getToken(Session session) {
-//        return BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session), true);
+//        return BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session),
+//        true);
 //    }
 
     @OnMessage
@@ -241,7 +245,8 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 
 //    private synchronized Token getToken(Session session, RequestPackage requestPackage) {
 //
-//        Token token = BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class).getToken(peers.get(session));
+//        Token token = BeanServiceLoaderProvider.getBeanProvider().getBean(TokenManager.class).getToken(peers.get
+//        (session));
 //        peers.put(session, token == null ? null : token.getTokenId());
 //        return token;
 //    }
@@ -263,7 +268,8 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
             peers.put(session, tokenId);//???
         };
 
-        invokeService(requestPackage, caller, responseVisitor,/* errorVisitor, */serverSideMessageVisitor, newTokenVisitor);
+        invokeService(requestPackage, caller, responseVisitor,/* errorVisitor, */serverSideMessageVisitor,
+                newTokenVisitor);
     }
 
     @Override
@@ -288,12 +294,12 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 
     private RequestPackage<Object> analysisRequest(String message, Session session) {
         try {
-            return JSONSerializerFactory.getInstance()
+            return JSONSerializer.getInstance()
                     .parse(message, new GenericTypeHelper.GenericType<RequestPackage<Object>>() {
                     }.getType());
 
         } catch (Throwable throwable) {
-            broadcastText(JSONSerializerFactory.getInstance().toJson(
+            broadcastText(JSONSerializer.getInstance().toJson(
                     buildPackage(Subjects.INVALID_REQUEST,
                             new InvalidRequest(ConcreteHelper.getException(throwable), message),
                             null)

@@ -27,6 +27,7 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.StringJoiner;
 import java.util.StringTokenizer;
 
 import static org.coodex.util.GenericTypeHelper.solveFromType;
@@ -64,19 +65,22 @@ public abstract class DocToolkit {
     }
 
     public String canonicalName(String name, String delim) {
-        StringBuilder builder = new StringBuilder();
+//        StringBuilder builder = new StringBuilder();
+        StringJoiner joiner = new StringJoiner("_");
         StringTokenizer stringTokenizer = new StringTokenizer(name, delim);
         while (stringTokenizer.hasMoreTokens()) {
             String s = stringTokenizer.nextToken();
-            if (Common.isBlank(s)) {
-                continue;
+            if (!Common.isBlank(s)) {
+                joiner.add(s);
+//                continue;
             }
-            if (builder.length() > 0) {
-                builder.append("_");
-            }
-            builder.append(s);
+//            if (builder.length() > 0) {
+//                builder.append("_");
+//            }
+//            builder.append(s);
+
         }
-        return builder.toString();
+        return joiner.toString();// builder.toString();
     }
 
     public String formatTypeStr(Type t) throws IOException {

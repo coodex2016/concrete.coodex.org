@@ -26,6 +26,7 @@ import java.io.IOException;
 /**
  * Created by davidoff shen on 2017-05-02.
  */
+@Deprecated
 public class APITools {
 
     public static void main(String[] args) throws IOException {
@@ -33,7 +34,8 @@ public class APITools {
         API.generate(ServiceDocRenderer.RENDER_NAME, "/concrete/accounts/restful.doc",
                 PersonService.class.getPackage().getName());
 
-        API.generate(AngularCodeRenderer.RENDER_NAME + ".accounts/organization", "D:\\Projects\\front_ends\\ng2-admin\\src",
+        API.generate(AngularCodeRenderer.RENDER_NAME + ".accounts/organization", "D:\\Projects\\front_ends\\ng2-admin" +
+                        "\\src",
                 PersonService.class.getPackage().getName());
     }
 }
