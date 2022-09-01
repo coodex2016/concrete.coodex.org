@@ -25,6 +25,7 @@ import org.coodex.concrete.apm.APM;
 import org.coodex.concrete.apm.Trace;
 import org.coodex.concrete.common.*;
 import org.coodex.concrete.dubbo.ApacheDubboSubjoin;
+import org.coodex.concrete.dubbo.DubboHelper;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 import org.slf4j.Logger;
@@ -103,7 +104,7 @@ public abstract class AbstractDubboApplication implements Application {
                 Proxy.newProxyInstance(clz.getClassLoader(), new Class<?>[]{clz}, (proxy, method, args) -> {
                     RpcContext context = RpcContext.getContext();
                     // 使用rpc上下文的attachments构建subjoin
-                    Subjoin subjoin = new ApacheDubboSubjoin(context.getAttachments()).wrap();
+                    Subjoin subjoin = new ApacheDubboSubjoin(DubboHelper.getAttachmentFrom(context)).wrap();
                     // caller,使用上下文中提供的远端地址及attachments中的locale
                     ApacheDubboCaller caller = new ApacheDubboCaller(context);
                     String tokenId = subjoin.get(TOKEN_KEY);

@@ -16,24 +16,30 @@
 
 package org.coodex.concrete.apitools.jaxrs;
 
+import org.coodex.concrete.api.Description;
+import org.coodex.util.Common;
 import org.coodex.util.Described;
 import org.coodex.util.JSONSerializer;
 import org.coodex.util.Valuable;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EnumElementInfo {
     private final String label;
+    private final String desc;
     private final String key;
     private final String value;
     private final boolean str;
 
-
     public EnumElementInfo(Enum<?> enumElement) {
         this.key = enumElement.name();
-        this.label = Described.getDesc(enumElement);
+        Optional<Description> description = getAnnotation(enumElement, Description.class);
+        this.label = getLabelFromEnum(enumElement, description);
+        this.desc = description.map(Description::description).orElse("--");
         if (enumElement instanceof Valuable) {
             Valuable<?> v = (Valuable<?>) enumElement;
             Object value = v.getValue();
@@ -43,6 +49,26 @@ public class EnumElementInfo {
             this.str = true;
             this.value = enumElement.name();
         }
+    }
+
+    private static <A extends Annotation> Optional<A> getAnnotation(
+            Enum<?> enumElement,
+            @SuppressWarnings("SameParameterValue") Class<A> annotationClass) {
+        try {
+            return Optional.ofNullable(enumElement.getClass().getField(enumElement.name()).getAnnotation(annotationClass));
+        } catch (NoSuchFieldException e) {
+            return Optional.empty();
+        }
+    }
+
+    private static String getLabelFromEnum(
+            Enum<?> enumElement,
+            @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Description> annotationOptional) {
+        return Common.firstValuable(
+                annotationOptional.map(Description::name).orElse(null),
+                Described.getDesc(enumElement),
+                enumElement.name()
+        );
     }
 
     public static List<EnumElementInfo> of(Class<Enum<?>> enumClass) {
@@ -69,5 +95,9 @@ public class EnumElementInfo {
 
     public boolean isStr() {
         return str;
+    }
+
+    public String getDesc() {
+        return desc;
     }
 }

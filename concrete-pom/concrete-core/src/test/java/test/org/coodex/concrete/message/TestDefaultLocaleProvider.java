@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2022 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,31 +14,22 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common;
+package test.org.coodex.concrete.message;
 
 import org.coodex.util.DefaultLocaleProvider;
 
 import java.util.Locale;
 import java.util.Optional;
 
-import static org.coodex.concrete.common.ConcreteContext.getServiceContext;
+public class TestDefaultLocaleProvider implements DefaultLocaleProvider {
+    private static Locale locale;
 
-public class ConcreteLocaleProvider implements DefaultLocaleProvider {
-
-    private static Locale locale = Locale.getDefault();
-
-    public static void setDefaultLocale(Locale locale) {
-        ConcreteLocaleProvider.locale = locale;
-    }
-
-    public static Locale getLocalDefault() {
-        return Optional.ofNullable(getServiceContext())
-                .map(ServiceContext::getLocale)
-                .orElse(Optional.ofNullable(locale).orElseGet(Locale::getDefault));
+    public static void setLocale(Locale locale) {
+        TestDefaultLocaleProvider.locale = locale;
     }
 
     @Override
     public Locale getDefault() {
-        return getLocalDefault();
+        return Optional.ofNullable(locale).orElse(Locale.getDefault());
     }
 }

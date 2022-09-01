@@ -284,7 +284,8 @@ public @interface Mock {
      * </pre>
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
+    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE,
+             ElementType.PARAMETER})
     @Mock
     @interface Nullable {
         /**
@@ -303,7 +304,8 @@ public @interface Mock {
      * </pre>
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
+    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE,
+             ElementType.PARAMETER})
     @Mock
     @interface Boolean {
         /**
@@ -329,7 +331,8 @@ public @interface Mock {
      * 数据单值模拟器，支持类型：byte, short, int, long, float, double及其包装类
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
+    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE,
+             ElementType.PARAMETER})
     @Mock
     @interface Number {
         int MAX_WEIGHT = 1000;
@@ -389,7 +392,8 @@ public @interface Mock {
      * </pre>
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
+    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE,
+             ElementType.PARAMETER})
     @Mock
     @interface Char {
         java.lang.String DEFAULT_CHAR_RANGE = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -419,7 +423,8 @@ public @interface Mock {
      * </pre>
      */
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
+    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE,
+             ElementType.PARAMETER})
     @Mock
     @interface String {
         int DEFAULT_MIN_LENGTH = 5;

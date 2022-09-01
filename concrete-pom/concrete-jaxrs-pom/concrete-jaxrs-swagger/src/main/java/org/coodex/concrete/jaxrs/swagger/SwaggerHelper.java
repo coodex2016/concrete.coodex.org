@@ -16,7 +16,6 @@
 
 package org.coodex.concrete.jaxrs.swagger;
 
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.examples.Example;
@@ -36,6 +35,7 @@ import org.coodex.concrete.jaxrs.struct.JaxrsParam;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.config.Config;
 import org.coodex.mock.Mocker;
+import org.coodex.util.JSONSerializer;
 import org.coodex.util.PojoInfo;
 import org.coodex.util.PojoProperty;
 
@@ -66,7 +66,8 @@ public class SwaggerHelper {
                         .version(Config.getValue("swagger.version", "1.0.0", "concrete", "swagger"))
                         .contact(new Contact()
                                 .name(Config.getValue("swagger.contacts.name", "concrete", "concrete", "swagger"))
-                                .url(Config.getValue("swagger.contacts.url", "https://concrete.coodex.org", "concrete", "swagger"))
+                                .url(Config.getValue("swagger.contacts.url", "https://concrete.coodex.org", "concrete"
+                                        , "swagger"))
                         )
                 )
                 .addServersItem(new Server()
@@ -128,9 +129,11 @@ public class SwaggerHelper {
                         .description(param.getDescription())
                         .required(true)
                         .allowEmptyValue(false)
-                        .schema(schema(toReference(param.getGenericType(), unit.getDeclaringModule().getInterfaceClass())))
+                        .schema(schema(toReference(param.getGenericType(),
+                                unit.getDeclaringModule().getInterfaceClass())))
                         .addExample("default",
-                                new Example().value(Mocker.mockParameter(unit.getMethod(), param.getIndex(), unit.getDeclaringModule().getInterfaceClass()))
+                                new Example().value(Mocker.mockParameter(unit.getMethod(), param.getIndex(),
+                                        unit.getDeclaringModule().getInterfaceClass()))
                         );
                 operation.addParametersItem(parameter);
             }
@@ -143,11 +146,13 @@ public class SwaggerHelper {
             if (!unit.isAssembledPojo() && unit.getPojoCount() > 0) {
                 JaxrsParam param = unit.getPojo()[0];
                 mediaType.schema(
-                                schema(toReference(param.getGenericType(), unit.getDeclaringModule().getInterfaceClass()))
+                                schema(toReference(param.getGenericType(),
+                                        unit.getDeclaringModule().getInterfaceClass()))
                                         .title(param.getLabel()).description(param.getDescription())
                         )
                         .addExamples("default", new Example().value(
-                                Mocker.mockParameter(unit.getMethod(), param.getIndex(), unit.getDeclaringModule().getInterfaceClass())
+                                Mocker.mockParameter(unit.getMethod(), param.getIndex(),
+                                        unit.getDeclaringModule().getInterfaceClass())
                         ));
             } else {
                 Map<String, Object> mocked = new HashMap<>();
@@ -158,7 +163,8 @@ public class SwaggerHelper {
                             schema(toReference(param.getGenericType(), unit.getDeclaringModule().getInterfaceClass()))
                                     .title(param.getLabel()).description(param.getDescription())
                     );
-                    mocked.put(param.getName(), Mocker.mockParameter(unit.getMethod(), param.getIndex(), unit.getDeclaringModule().getInterfaceClass()));
+                    mocked.put(param.getName(), Mocker.mockParameter(unit.getMethod(), param.getIndex(),
+                            unit.getDeclaringModule().getInterfaceClass()));
                 }
                 objectSchema.example(mocked);
                 mediaType.schema(objectSchema).addExamples("default",
@@ -174,9 +180,11 @@ public class SwaggerHelper {
                         new ApiResponse().content(
                                 new Content().addMediaType("application/json",
                                         new MediaType().schema(
-                                                schema(toReference(unit.getGenericReturnType(), unit.getDeclaringModule().getInterfaceClass()))
+                                                schema(toReference(unit.getGenericReturnType(),
+                                                        unit.getDeclaringModule().getInterfaceClass()))
                                         ).example(
-                                                Mocker.mockMethod(unit.getMethod(), unit.getDeclaringModule().getInterfaceClass())
+                                                Mocker.mockMethod(unit.getMethod(),
+                                                        unit.getDeclaringModule().getInterfaceClass())
                                         )))).addApiResponse("204", new ApiResponse())
                 .addApiResponse("default", new ApiResponse()
                         .content(new Content().addMediaType("application/json", new MediaType()
@@ -293,7 +301,7 @@ public class SwaggerHelper {
 
 
     public static String toJson(String url, List<Class<?>> classes) {
-        return Json.pretty(toOpenAPI(url, classes));
+        return JSONSerializer.getInstance().toJson(toOpenAPI(url, classes));
     }
 
     public static String toYaml(String url, List<Class<?>> classes) {

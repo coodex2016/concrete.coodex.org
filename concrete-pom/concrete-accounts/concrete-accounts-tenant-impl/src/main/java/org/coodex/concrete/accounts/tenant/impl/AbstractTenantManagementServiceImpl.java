@@ -28,7 +28,6 @@ import org.coodex.concrete.api.pojo.PageRequest;
 import org.coodex.concrete.api.pojo.PageResult;
 import org.coodex.concrete.api.pojo.StrID;
 import org.coodex.concrete.common.AccountsErrorCodes;
-import org.coodex.concrete.common.ConcreteException;
 import org.coodex.concrete.common.IF;
 import org.coodex.copier.TwoWayCopier;
 import org.coodex.util.Clock;
@@ -129,13 +128,13 @@ public abstract class AbstractTenantManagementServiceImpl<T extends Tenant, E ex
     @Override
     public void delete(String tenant) {
         E tenantEntity = getTenantEntity(tenant);
-        ConcreteException cannotDelete = new ConcreteException(AccountsErrorCodes.TENANT_CANNOT_DELETE);
-        IF.not(tenantEntity.isUsing(), cannotDelete);
+//        ConcreteException cannotDelete = new ConcreteException();
+        IF.not(tenantEntity.isUsing(), AccountsErrorCodes.TENANT_IN_USING);
         Calendar validation = tenantEntity.getValidation();
         if (validation != null) {
             // TODO 配置化
             validation = getValidation(validation, 2, 3);// 两年
-            IF.is(Clock.currentTimeMillis() < validation.getTimeInMillis(), cannotDelete);
+            IF.is(Clock.currentTimeMillis() < validation.getTimeInMillis(), AccountsErrorCodes.TENANT_CANNOT_DELETE);
         }
 
         tenantRepo.delete(tenantEntity);

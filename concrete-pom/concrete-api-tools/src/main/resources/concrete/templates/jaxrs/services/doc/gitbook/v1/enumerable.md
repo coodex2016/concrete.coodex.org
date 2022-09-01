@@ -3,9 +3,9 @@
 
 **package**: ${tool.getPojoPackage(type)}
 
-| key                                  | value    | label      |
-|--------------------------------------|----------|------------|
- <#list elements as p>| ${p.key} | ${p.value} | ${p.label} | 
+| key                                  | value    | label      | desc |
+|--------------------------------------|----------|------------|--- |
+ <#list elements as p>| ${p.key} | ${p.value} | ${p.label} | ${p.desc} |
 </#list>
 
 </#escape>

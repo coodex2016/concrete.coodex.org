@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2022 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common;
+package org.coodex.concrete.dubbo;
 
-/**
- * Created by davidoff shen on 2017-05-17.
- */
-public class RelationPolicies {
+import org.apache.dubbo.rpc.AttachmentsAdapter;
+import org.apache.dubbo.rpc.RpcContext;
 
-    public static final String ID_CARD_TO_BIRTHDAY = "ID_CARD_TO_BIRTHDAY";
-    public static final String ID_CARD_TO_SEX = "ID_CARD_TO_SEX";
+import java.util.Map;
+
+public class DubboHelper {
+    private DubboHelper() {}
+
+    public static Map<String, String> getAttachmentFrom(RpcContext context) {
+        return new AttachmentsAdapter.ObjectToStringMap(context.getObjectAttachments());
+    }
 }

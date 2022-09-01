@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2022 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package org.coodex.concrete.common;
+package org.coodex.concrete.api;
 
-/**
- * Created by davidoff shen on 2017-05-17.
- */
-public class RelationPolicies {
+import org.coodex.util.JavaUtilServiceLoaderProvider;
 
-    public static final String ID_CARD_TO_BIRTHDAY = "ID_CARD_TO_BIRTHDAY";
-    public static final String ID_CARD_TO_SEX = "ID_CARD_TO_SEX";
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+public interface ErrorCodeDef {
+    static Collection<Class<?>> allDefinitions() {
+        return new JavaUtilServiceLoaderProvider().load(ErrorCodeDef.class)
+                .values().stream().map(Object::getClass).collect(Collectors.toSet());
+    }
 }

@@ -17,6 +17,7 @@
 package org.coodex.concrete.common;
 
 import org.coodex.concrete.api.ErrorCode;
+import org.coodex.concrete.api.ErrorCodeDef;
 import org.coodex.util.Common;
 import org.coodex.util.I18N;
 import org.coodex.util.Renderer;
@@ -44,6 +45,19 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
 
     private final static Map<Integer, Field> errorCodes = new HashMap<>();
 
+    static {
+        StringJoiner joiner = new StringJoiner(", ");
+        if (ErrorCodeDef.allDefinitions().stream().map(c -> {
+            if (registerClass(c)) {
+                joiner.add(c.getName());
+                return true;
+            } else {
+                return false;
+            }
+        }).mapToInt(b -> b ? 1 : 0).sum() > 0) {
+            log.info("register ErrorCodes : [{}]", joiner);
+        }
+    }
 
     private ErrorMessageFacade() {
     }
@@ -105,8 +119,8 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
 
     public static boolean isTraceable(int code) {
         return Optional.ofNullable(errorCodes.get(code))
-                .map(f -> f.getAnnotation(ErrorCodes.RequestError.class))
-                .map(ErrorCodes.RequestError::trace)
+                .map(f -> f.getAnnotation(ErrorCode.RequestError.class))
+                .map(ErrorCode.RequestError::trace)
                 .orElse(true);
     }
 
@@ -127,7 +141,8 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
 //            return ErrorCode.DEFAULT_NAMESPACE;
 //        }
 //        ErrorCode errorCode = field.getDeclaringClass().getAnnotation(ErrorCode.class);
-//        return errorCode == null || Common.isBlank(errorCode.value()) ? ErrorCode.DEFAULT_NAMESPACE : errorCode.value();
+//        return errorCode == null || Common.isBlank(errorCode.value()) ? ErrorCode.DEFAULT_NAMESPACE : errorCode
+//        .value();
     }
 
     private static String getKey(Field field, String namespace, int code) {
@@ -182,7 +197,7 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
     public static String getTemplate(int code) {
         Field f = errorCodes.get(code);
         if (f == null) {
-            log.warn("error code {} not registered.", code);
+            log.debug("error code {} not registered.", code);
         }
         String template = getTemplateStr(f);
         if (template == null) {
@@ -192,7 +207,6 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
                     .map(key -> I18N.translate(key, LOCALE_CONTEXT.get()))
                     .orElse(template);
         }
-
     }
 
     private static String getMessageOrPattern(boolean format, int code, Object... objects) {
@@ -219,7 +233,8 @@ public class ErrorMessageFacade /*extends AbstractMessageFacade */ {
 //                        f.getDeclaringClass().getAnnotation(AbstractErrorCodes.Namespace.class);
 //
 //        String errorMessageNamespace = namespace == null ? "message" : namespace.value();
-//        errorMessageNamespace = Common.isBlank(errorMessageNamespace) && f != null ? f.getDeclaringClass().getName() : errorMessageNamespace;
+//        errorMessageNamespace = Common.isBlank(errorMessageNamespace) && f != null ? f.getDeclaringClass().getName
+//        () : errorMessageNamespace;
 //
 //        String msgTemp = (formatterValue == null || Common.isBlank(formatterValue.value().trim())) ?
 //                errorMessageNamespace + "." + code :

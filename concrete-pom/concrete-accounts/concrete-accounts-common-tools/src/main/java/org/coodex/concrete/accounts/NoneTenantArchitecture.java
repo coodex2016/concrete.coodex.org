@@ -27,7 +27,6 @@ import java.io.Serializable;
  */
 public class NoneTenantArchitecture implements TenantRPCServiceClient {
 
-    private ConcreteException noneTenantArchitecture = new ConcreteException(AccountsErrorCodes.NONE_TENANT_ARCHITECTURE);
 
     @Override
     public void checkTenant(String tenantAccountName) {
@@ -36,32 +35,32 @@ public class NoneTenantArchitecture implements TenantRPCServiceClient {
 
     @Override
     public TenantAccount getTenantAccountById(String id) {
-        throw noneTenantArchitecture;
+        throw new ConcreteException(AccountsErrorCodes.NONE_TENANT_ARCHITECTURE);
     }
 
     @Override
     public TenantAccount getTenantAccount(String tenantAccountName) {
-        throw noneTenantArchitecture;
+        throw new ConcreteException(AccountsErrorCodes.NONE_TENANT_ARCHITECTURE);
     }
 
     @Override
     public void login(String tenantAccountName, String password, String authCode) {
-        throw noneTenantArchitecture;
+        throw new ConcreteException(AccountsErrorCodes.NONE_TENANT_ARCHITECTURE);
     }
 
     @Override
     public void updatePassword(String password, String authCode) {
-        throw noneTenantArchitecture;
+        throw new ConcreteException(AccountsErrorCodes.NONE_TENANT_ARCHITECTURE);
     }
 
     @Override
     public String authenticatorDesc(String authCode) {
-        throw noneTenantArchitecture;
+        throw new ConcreteException(AccountsErrorCodes.NONE_TENANT_ARCHITECTURE);
     }
 
     @Override
     public void bindAuthKey(String authCode) {
-        throw noneTenantArchitecture;
+        throw new ConcreteException(AccountsErrorCodes.NONE_TENANT_ARCHITECTURE);
     }
 
     @Override

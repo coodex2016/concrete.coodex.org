@@ -72,18 +72,17 @@
         <junit5.version>5.8.2</junit5.version>
         <jedis.version>3.2.0</jedis.version>
         <xmemcached.version>2.4.7</xmemcached.version>
-        <lombok.version>1.18.20</lombok.version>
-        <jts.version>1.18.2</jts.version>
+        <lombok.version>1.18.24</lombok.version>
+        <jts.version>1.19.0</jts.version>
         <fastjson.version>1.2.83</fastjson.version>
         <slf4j.version>1.7.36</slf4j.version>
         <log4j2.version>2.17.2</log4j2.version>
         <reload4j.version>1.2.21</reload4j.version>
-        <snakeyaml.version>1.29</snakeyaml.version>
+        <snakeyaml.version>1.30</snakeyaml.version>
         <cglib.version>3.3.0</cglib.version>
         <freemarker.version>2.3.31</freemarker.version>
         <jackson2.version>2.13.3</jackson2.version>
-
-        <spring.framework.version>5.3.21</spring.framework.version>
+        <spring.framework.version>5.3.22</spring.framework.version>
     </properties>
 
     <profiles>

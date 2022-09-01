@@ -27,6 +27,7 @@ import org.coodex.concrete.common.DefinitionContext;
 import org.coodex.concrete.common.ServiceContext;
 import org.coodex.concrete.common.Subjoin;
 import org.coodex.concrete.dubbo.ApacheDubboSubjoin;
+import org.coodex.concrete.dubbo.DubboHelper;
 import org.coodex.util.Common;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
@@ -90,7 +91,7 @@ public class ApacheDubboClientInvoker extends AbstractSyncInvoker {
                 method.invoke(ref) :
                 method.invoke(ref, args);
         traceContext("after invoke:", rpcContext);
-        context.responseSubjoin(new ApacheDubboSubjoin(rpcContext.getAttachments()));
+        context.responseSubjoin(new ApacheDubboSubjoin(DubboHelper.getAttachmentFrom(rpcContext)));
         ClientTokenManagement.setTokenId(dubboDestination, rpcContext.getAttachment(TOKEN_KEY));
         return result;
     }
@@ -98,7 +99,7 @@ public class ApacheDubboClientInvoker extends AbstractSyncInvoker {
     private void traceContext(String label, RpcContext context) {
         if (log.isInfoEnabled()) {
             StringBuilder builder = new StringBuilder();
-            Map<String, String> map = context.getAttachments();
+            Map<String, String> map = DubboHelper.getAttachmentFrom(context);
 
             builder.append(map.size()).append(" context attachments");
             for (Map.Entry<String, String> entry : map.entrySet()) {

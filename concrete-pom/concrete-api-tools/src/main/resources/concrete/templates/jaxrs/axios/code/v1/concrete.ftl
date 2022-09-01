@@ -14,6 +14,7 @@ let defaultConfiguration = {
     pollingTimeout: 10,
     globalTokenKey: 'concrete-token-id',
     grable: false,
+    headers: {},
     storage: sessionStorage,
     onBroadcast: function (msgId, host, subject, data) {
         console.log(['msgId: ', msgId, '; host: ', host, '; subject: ', subject, '; data: ', data].join(''))
@@ -195,11 +196,12 @@ export function argumentsError(moduleName) {
 }
 
 function executeJaxrs(moduleName, url, responseType, method, body) {
-    let headers = {
+    let customHeaders = getConfigItem(moduleName, 'headers')
+    let headers = Object.assign({}, customHeaders, {
         'Cache-Control': 'no-cache, no-store',
         'content-type': 'application/json',
         'X-CLIENT-PROVIDER': CONCRETE_CLIENT_PROVIDER,
-    }
+    })
     let tokenId = getTokenId(moduleName)
     if (tokenId) {
         headers['CONCRETE-TOKEN-ID'] = tokenId

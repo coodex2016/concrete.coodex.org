@@ -19,7 +19,7 @@ package org.coodex.concrete.accounts.mocker.relationpolicies;
 import org.coodex.mock.AbstractRelationStrategy;
 import org.coodex.util.Parameter;
 
-import static org.coodex.concrete.common.RelationPolicies.ID_CARD_TO_BIRTHAY;
+import static org.coodex.concrete.common.RelationPolicies.ID_CARD_TO_BIRTHDAY;
 import static org.coodex.concrete.common.RelationPolicies.ID_CARD_TO_SEX;
 
 /**
@@ -41,7 +41,7 @@ public class IdCardRelation extends AbstractRelationStrategy {
         return null;
     }
 
-    @Strategy(ID_CARD_TO_BIRTHAY)
+    @Strategy(ID_CARD_TO_BIRTHDAY)
     public String toBirthday(@Parameter("idCardNo") String idCardNo) {
         if (idCardNo != null) {
             switch (idCardNo.length()) {

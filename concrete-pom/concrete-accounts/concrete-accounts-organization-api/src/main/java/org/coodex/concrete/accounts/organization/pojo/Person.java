@@ -29,7 +29,7 @@ public class Person extends AbstractPojo {
     @Description(name = "人员生日",
             description = "格式：yyyy-MM-dd; 如果身份证号已设置则已身份证号的信息为准")
     @DateTime(format = "yyyy-MM-dd")
-    @Mock.Relation(dependencies = "idCardNo", strategy = RelationPolicies.ID_CARD_TO_BIRTHAY)
+    @Mock.Relation(dependencies = "idCardNo", strategy = RelationPolicies.ID_CARD_TO_BIRTHDAY)
     private String birthDay;
 
     @Mock.Number("[0,2],5,6,9")
