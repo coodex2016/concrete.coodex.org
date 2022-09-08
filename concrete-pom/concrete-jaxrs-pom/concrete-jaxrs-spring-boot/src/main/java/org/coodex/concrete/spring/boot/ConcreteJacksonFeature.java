@@ -16,15 +16,20 @@
 
 package org.coodex.concrete.spring.boot;
 
-import org.glassfish.jersey.jackson.JacksonFeature;
+import org.coodex.util.json.Jackson2JSONSerializer;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvider;
 
+import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 
-public class ConcreteJacksonFeature extends JacksonFeature {
+@Deprecated
+public class ConcreteJacksonFeature /* extends JacksonFeature */ implements Feature {
 
     @Override
     public boolean configure(FeatureContext context) {
-        context.register(ConcreteJacksonJsonProvider.class);
-        return super.configure(context);
+//        context.register(ConcreteJacksonJsonProvider.class);
+//        return super.configure(context);
+        context.register(new JacksonJsonProvider(Jackson2JSONSerializer.getMapper()), Integer.MAX_VALUE);
+        return true;
     }
 }

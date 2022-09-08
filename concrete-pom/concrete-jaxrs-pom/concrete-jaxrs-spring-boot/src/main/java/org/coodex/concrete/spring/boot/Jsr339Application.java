@@ -25,7 +25,8 @@ public class Jsr339Application extends ConcreteJSR339Application {
     public Jsr339Application() {
 //        register(JacksonFeature.class);
 //        register(ConcreteMessageWriter.class);
-        register(ConcreteJacksonFeature.class);
+//        register(ConcreteJacksonFeature.class);
+        register(ConcreteJacksonJsonProvider.class);
         register(ConcreteJAXRSBeanDefinitionRegistrar.getClasses());
         registerPackage(ConcreteJAXRSBeanDefinitionRegistrar.getApiPackages());
     }

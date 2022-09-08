@@ -19,14 +19,16 @@ package org.coodex.concrete.spring.boot;
 import org.coodex.util.json.Jackson2JSONSerializer;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
+import javax.annotation.Priority;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-@Consumes({MediaType.WILDCARD})
-@Produces({MediaType.WILDCARD})
+@Consumes(MediaType.WILDCARD)
+@Produces(MediaType.WILDCARD)
+@Priority(1)
 public class ConcreteJacksonJsonProvider extends JacksonJaxbJsonProvider {
 
     public ConcreteJacksonJsonProvider() {
