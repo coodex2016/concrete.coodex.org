@@ -1,3 +1,4 @@
+import { valueOf, toArray } from './constUtil'
 export default {
 <#list elements as e>
     /**
@@ -7,4 +8,12 @@ export default {
      */
     ${e.key}: ${e.codeValue},
 </#list>
+    _lableOf(v) {
+        const o = valueOf(this, v)
+        if (o) return o.key
+        throw 'not found: ' + v
+    },
+    _toArray(values) {
+        return toArray(this, values)
+    },
 }

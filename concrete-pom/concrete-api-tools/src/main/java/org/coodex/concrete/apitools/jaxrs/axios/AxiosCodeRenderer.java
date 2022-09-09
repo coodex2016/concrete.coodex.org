@@ -43,6 +43,7 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
     public static final String RENDER_NAME =
             JaxRSModuleMaker.JAX_RS_PREV + ".code.axios.js.v1";
     private static final String RESOURCE_PACKAGE = "concrete/templates/jaxrs/axios/code/v1/";
+    private boolean constUtilExist = false;
 
     @Override
     protected String getTemplatePath() {
@@ -111,7 +112,41 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
         }
     }
 
-    private void processEnum(JaxrsModule module, Set<Type> processed) {
+    private void processEnum(JaxrsModule module, Set<Type> processed) throws IOException {
+        if(!constUtilExist){
+            writeTo("jaxrs/constants/constUtil.js","const allValues = c => {\n" +
+                    "    var a = []\n" +
+                    "    for (var k in c) {\n" +
+                    "        if (typeof c[k] === 'function') continue\n" +
+                    "        a.push(c[k])\n" +
+                    "    }\n" +
+                    "    return a\n" +
+                    "}\n" +
+                    "\n" +
+                    "export function valueOf(c, value) {\n" +
+                    "    for (var k in c) {\n" +
+                    "        if (typeof c[k] === 'function') continue\n" +
+                    "        if (c[k] === value) {\n" +
+                    "            return {\n" +
+                    "                key: k,\n" +
+                    "                value: c[k],\n" +
+                    "            }\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "    return null\n" +
+                    "}\n" +
+                    "\n" +
+                    "export function toArray(c, values) {\n" +
+                    "    var result = []\n" +
+                    "    if (!values) values = allValues(c)\n" +
+                    "    for (var i = 0, l = values.length; i < l; i++) {\n" +
+                    "        var v = valueOf(c, values[i])\n" +
+                    "        if (v) result.push(v)\n" +
+                    "    }\n" +
+                    "    return result\n" +
+                    "}");
+            constUtilExist = true;
+        }
         for (JaxrsUnit unit : module.getUnits()) {
             processEnum(unit, processed);
         }
@@ -119,6 +154,7 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
 
     @Override
     public void render(List<JaxrsModule> modules) throws IOException {
+        constUtilExist = false;
         String moduleName = getRenderDesc().substring(RENDER_NAME.length());
         moduleName = Common.isBlank(moduleName) ? "concrete" : moduleName.substring(1);
 
@@ -177,5 +213,6 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
             writeTo("jaxrs/" + moduleName + "/" + module.getInterfaceClass().getName() + ".js",
                     "service.ftl", param);
         }
+
     }
 }
