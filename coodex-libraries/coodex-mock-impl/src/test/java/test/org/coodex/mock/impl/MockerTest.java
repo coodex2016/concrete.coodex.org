@@ -111,6 +111,19 @@ public class MockerTest {
     @Mock.Depth(1)
     @Pojo3rdCase2()
     static class Pojo {
+        @Mock.ID
+        public String id1;
+        @Mock.ID
+        public String id6;
+        @Mock.ID(group = "11")
+        public int id2;
+        @Mock.ID(group = "22")
+        public Integer id3;
+        @Mock.ID(group = "11")
+        public long id4;
+        @Mock.ID(group = "22")
+        public Long id5;
+
         public A a;
         @Mock.Dimension(size = 20, ordered = true)
         @Mock.Sequence(name = "timestamp", factory = TimestampSequenceFactory.class)

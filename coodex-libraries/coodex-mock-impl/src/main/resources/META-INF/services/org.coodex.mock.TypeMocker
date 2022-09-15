@@ -18,6 +18,7 @@ org.coodex.mock.StringTypeMocker
 org.coodex.mock.CharTypeMocker
 org.coodex.mock.NumberTypeMocker
 org.coodex.mock.BooleanTypeMocker
+org.coodex.mock.IdMockerProvider
 
 org.coodex.mock.ext.FullNameTypeMocker
 org.coodex.mock.ext.EMailTypeMocker

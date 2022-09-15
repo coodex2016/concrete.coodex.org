@@ -462,5 +462,12 @@ public @interface Mock {
         java.lang.String txtResource() default "";
 
     }
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE,
+             ElementType.PARAMETER})
+    @Mock
+    @interface ID{
+        java.lang.String group() default "";
+    }
 
 }

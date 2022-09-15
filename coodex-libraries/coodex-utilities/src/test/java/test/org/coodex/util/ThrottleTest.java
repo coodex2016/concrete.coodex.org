@@ -18,17 +18,18 @@ package test.org.coodex.util;
 
 import org.coodex.concurrent.Throttle;
 import org.coodex.util.Clock;
+import org.coodex.util.Common;
 
 public class ThrottleTest {
     public static void main(String[] args) throws InterruptedException {
         Throttle throttle = Throttle.newBuilder()
-//                .asyncAlways(true)
+                .asyncAlways(true)
                 .interval(1000).build();
 
         long now = Clock.currentTimeMillis();
         int i = 0;
         while (Clock.currentTimeMillis() - now < 4500) {
-//            Common.sleep(1);
+            Common.sleep(1);
 //            TimeUnit.NANOSECONDS.sleep(1);
             i++;
             int finalI = i;
