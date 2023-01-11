@@ -192,5 +192,8 @@ public class MockerTest {
 
     }
 
+    public static void main(String[] args) {
+        System.out.println((int)0xffffdd5b);
+    }
 
 }

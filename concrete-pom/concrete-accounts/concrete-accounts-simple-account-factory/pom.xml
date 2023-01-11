@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+  ~ Copyright (c) 2016 - 2022 coodex.org (jujus.shen@126.com)
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -22,64 +22,31 @@
         <artifactId>concrete-accounts</artifactId>
         <groupId>org.coodex.concrete</groupId>
         <version>0.5.1-RC7-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>concrete-accounts-simple-impl</artifactId>
+    <artifactId>concrete-accounts-simple-account-factory</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-test</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-core-spring</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>7.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-
-
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-accounts-simple-api</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>concrete-accounts-simple-account-factory</artifactId>
+            <artifactId>concrete-accounts-common-tools</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
 
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>concrete-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
 
     </dependencies>
-
 
 </project>

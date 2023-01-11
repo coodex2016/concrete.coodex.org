@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2022 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,4 @@ public class SimpleAccountFactory extends ClassifiableAccountFactory {
         return new Integer[]{TYPE_SIMPLE};
     }
 
-//    @Override
-//    public boolean accept(ClassifiableAccountID param) {
-//        boolean isSimple = param != null && param.getCategory() == TYPE_SIMPLE;
-//
-//        return isSimple && Common.getResource("accounts/" + param.getId() + ".properties") != null;
-//    }
 }

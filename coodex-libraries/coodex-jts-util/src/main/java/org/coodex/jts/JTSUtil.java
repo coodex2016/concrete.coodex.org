@@ -19,6 +19,7 @@ package org.coodex.jts;
 import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SelectableServiceLoader;
+import org.locationtech.jts.algorithm.Area;
 import org.locationtech.jts.geom.*;
 
 import java.util.ArrayList;

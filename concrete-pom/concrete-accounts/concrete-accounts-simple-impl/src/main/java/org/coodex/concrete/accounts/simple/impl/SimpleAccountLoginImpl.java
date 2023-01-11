@@ -34,12 +34,12 @@ import static org.coodex.concrete.accounts.AccountConstants.TYPE_SIMPLE;
  */
 public class SimpleAccountLoginImpl implements Login {
 
-    private Profile profile = Profile.get("simpleAccounts");
+    private final Profile profile = Profile.get("simpleAccounts");
 
     @Inject
     private SimpleAccountFactory accountFactory;
 
-    private Token token = TokenWrapper.getInstance();
+    private final Token token = TokenWrapper.getInstance();
 
     @Override
     public String login(String account, String password, String authCode) {

@@ -42,6 +42,7 @@
         <module>concrete-accounts-tenant-data</module>
         <module>concrete-accounts-tenant-impl</module>
         <module>concrete-accounts-tenant-impl-reference</module>
+        <module>concrete-accounts-simple-account-factory</module>
 
     </modules>
 
