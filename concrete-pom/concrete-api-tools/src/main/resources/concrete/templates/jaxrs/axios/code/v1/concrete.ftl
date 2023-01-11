@@ -1,6 +1,8 @@
 /* eslint-disable */
 import * as axios from 'axios'
 
+const axiosAdaptor = axios.VERSION && axios.VERSION.startsWith('1.') ? axios.default : axios
+
 const CONCRETE_CLIENT_PROVIDER = "CONCRETE-AXIOS-${version}"
 
 let defaultConfiguration = {
@@ -220,7 +222,7 @@ function executeJaxrs(moduleName, url, responseType, method, body) {
     if (body) options.data = body
 
     return cancellableProxy(
-        axios
+        axiosAdaptor
             .create()
             .request(options)
             .then(response => {
@@ -315,7 +317,7 @@ export function grableExecute(moduleName, serviceId, payload) {
         path += '/'
     }
     return cancellableProxy(
-        axios
+        axiosAdaptor
             .create({
                 method: 'post',
                 responseType: 'arraybuffer',
