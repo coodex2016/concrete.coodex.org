@@ -35,7 +35,7 @@ public class Jackson2JSONSerializer implements JSONSerializer {
 
     //    private static final Logger log = LoggerFactory.getLogger(Jackson2JSONSerializer.class);
     private static final Singleton<ObjectMapper> mapperSingleton = Singleton.with(() -> {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         SingletonMap<Class<Enum<?>>, EnumSerializer> serializerMap = SingletonMap
                 .<Class<Enum<?>>, EnumSerializer>builder()

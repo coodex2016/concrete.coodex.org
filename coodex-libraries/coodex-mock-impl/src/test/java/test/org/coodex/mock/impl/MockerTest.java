@@ -194,6 +194,19 @@ public class MockerTest {
 
     public static void main(String[] args) {
         System.out.println((int)0xffffdd5b);
+        System.out.println(JSONSerializer.getInstance().toJson(Mocker.mock(EmptyObjectTest.class)));
     }
 
+}
+
+class EmptyObjectTest{
+    private Object data;
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
 }
