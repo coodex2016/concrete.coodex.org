@@ -25,6 +25,7 @@ import org.coodex.concrete.message.Topics;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.DigestHelper;
+import org.coodex.util.ReflectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +64,7 @@ public class RabbitMQCourierPrototype<M extends Serializable> extends CourierPro
         super(queue, destination, topicType);
         String customRoutingKey = Config.get(KEY_ROUTING_KEY, TAG_QUEUE, queue);
         routingKey = Common.isBlank(customRoutingKey) ? DigestHelper.sha1(
-                String.format("%s@%s", getTopicType().toString(), queue).getBytes(StandardCharsets.UTF_8)
+                String.format("%s@%s", ReflectHelper.typeToCodeStr(getTopicType()), queue).getBytes(StandardCharsets.UTF_8)
         ) : (customRoutingKey + "@" + queue);
 
         // build connection
