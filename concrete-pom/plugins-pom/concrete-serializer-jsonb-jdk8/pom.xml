@@ -21,7 +21,7 @@
     <parent>
         <artifactId>plugins-pom</artifactId>
         <groupId>org.coodex.concrete</groupId>
-        <version>0.5.1-RC7-SNAPSHOT</version>
+        <version>0.5.1</version>
     </parent>
     <description>deprecated. use org.coodex:coodex-jsonserializer-jsonb-v1 instead.</description>
     <modelVersion>4.0.0</modelVersion>

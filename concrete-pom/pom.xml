@@ -24,7 +24,7 @@
     <url>https://concrete.coodex.org</url>
     <groupId>org.coodex.concrete</groupId>
     <artifactId>concrete-pom</artifactId>
-    <version>0.5.1-RC7-SNAPSHOT</version>
+    <version>0.5.1</version>
     <packaging>pom</packaging>
 
     <scm>
