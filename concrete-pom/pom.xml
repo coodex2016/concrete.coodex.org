@@ -105,7 +105,7 @@
 
         <apache.dubbo.version>2.7.16</apache.dubbo.version>
 
-        <protobuf.version>3.21.4</protobuf.version>
+        <protobuf.version>3.21.7</protobuf.version>
 
         <!--        <slf4j.version>1.7.30</slf4j.version>-->
         <!--        <log4j2.version>2.13.0</log4j2.version>-->
