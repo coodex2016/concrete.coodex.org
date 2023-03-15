@@ -16,6 +16,7 @@
 
 package org.coodex.closure;
 
+import java.util.Optional;
 import java.util.Stack;
 import java.util.function.Supplier;
 
@@ -23,6 +24,9 @@ import java.util.function.Supplier;
  * Created by davidoff shen on 2016-09-04.
  */
 public class StackClosureContext<T> extends AbstractClosureContext<Stack<T>> implements ClosureContext<T> {
+    public boolean contains(T t) {
+        return Optional.ofNullable(getVariant()).map(s -> s.contains(t)).orElse(false);
+    }
 
     @Override
     public T get() {

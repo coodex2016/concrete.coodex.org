@@ -9,6 +9,9 @@ export default {
     ${e.key}: ${e.codeValue},
 </#list>
     _lableOf(v) {
+        return this._labelOf(v)
+    },
+    _labelOf(v) {
         const o = valueOf(this, v)
         if (o) return o.key
         throw 'not found: ' + v

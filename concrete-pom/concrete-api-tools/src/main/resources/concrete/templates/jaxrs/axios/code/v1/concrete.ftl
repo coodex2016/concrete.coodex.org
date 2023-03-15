@@ -369,4 +369,4 @@ export function grableExecute(moduleName, serviceId, payload) {
 execute = overload('concrete', { 5: executeJaxrs, 4: executeJaxrs, 3: grableExecute, 2: grableExecute })
 // end grable invoker
 
-</#if>export { execute }
+</#if>export { execute, concrete }

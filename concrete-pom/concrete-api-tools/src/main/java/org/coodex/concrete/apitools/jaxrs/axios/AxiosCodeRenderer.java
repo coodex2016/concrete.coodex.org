@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.apitools.jaxrs.axios;
 
+import org.coodex.concrete.api.Description;
 import org.coodex.concrete.apitools.AbstractRenderer;
 import org.coodex.concrete.apitools.jaxrs.EnumElementInfo;
 import org.coodex.concrete.apitools.jaxrs.JaxrsRenderHelper;
@@ -34,6 +35,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.*;
+import java.util.function.Function;
 
 import static org.coodex.concrete.common.ConcreteHelper.isPrimitive;
 import static org.coodex.util.Common.cast;
@@ -98,8 +100,17 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
                             "jaxrs/constants/" + c.getName() + ".js",
                             "enumerable.ftl",
                             map
-
                     );
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                // for d.ts
+                map.put("enumTypeName", c.getName());
+                map.put("valueType", TsDefineHelper.getTypeScriptValueType(Common.cast(c)));
+                try {
+                    writeTo("jaxrs/constants/" + c.getName() + ".d.ts",
+                            "enumerable.d.ts.ftl",
+                            map);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -113,8 +124,9 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
     }
 
     private void processEnum(JaxrsModule module, Set<Type> processed) throws IOException {
-        if(!constUtilExist){
-            writeTo("jaxrs/constants/constUtil.js","const allValues = c => {\n" +
+        if (!constUtilExist) {
+            copyTo("EnumBase.d.ts", "jaxrs/constants/EnumBase.d.ts");
+            writeTo("jaxrs/constants/constUtil.js", "const allValues = c => {\n" +
                     "    var a = []\n" +
                     "    for (var k in c) {\n" +
                     "        if (typeof c[k] === 'function') continue\n" +
@@ -145,6 +157,7 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
                     "    }\n" +
                     "    return result\n" +
                     "}");
+
             constUtilExist = true;
         }
         for (JaxrsUnit unit : module.getUnits()) {
@@ -155,14 +168,14 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
     @Override
     public void render(List<JaxrsModule> modules) throws IOException {
         constUtilExist = false;
-        String moduleName = getRenderDesc().substring(RENDER_NAME.length());
-        moduleName = Common.isBlank(moduleName) ? "concrete" : moduleName.substring(1);
+        String moduleName = getModuleName();
 
         Map<String, Object> versionAndStyle = new HashMap<>();
         versionAndStyle.put("version", ConcreteHelper.VERSION);
 //        versionAndStyle.put("style", JaxRSHelper.used024Behavior());
 
         writeTo("jaxrs/concrete.js", "concrete.ftl", versionAndStyle);
+        copyTo("concrete.d.ts", "jaxrs/concrete.d.ts");
         Set<Type> processed = new HashSet<>();
         for (JaxrsModule module : modules) {
             processEnum(module, processed);
@@ -209,10 +222,69 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
                 }
             }
             param.put("methods", methods.values());
-
             writeTo("jaxrs/" + moduleName + "/" + module.getInterfaceClass().getName() + ".js",
                     "service.ftl", param);
+
+            genDTS(module);
         }
+
+    }
+
+    private String getModuleName() {
+        String moduleName = getRenderDesc().substring(RENDER_NAME.length());
+        moduleName = Common.isBlank(moduleName) ? "concrete" : moduleName.substring(1);
+        return moduleName;
+    }
+
+
+    private void genDTS(JaxrsModule module) throws IOException {
+        Map<String, Object> param = new HashMap<>();
+        param.put("serviceName", module.getInterfaceClass().getSimpleName());
+
+        List<TsDefineHelper.TsType> allTypes = new ArrayList<>();
+        Class<?> contextClass = module.getInterfaceClass();
+        Function<Type, TsDefineHelper.TsType> to = t -> {
+            TsDefineHelper.TsType resultType = TsDefineHelper.javaToTs(t, contextClass);
+            allTypes.add(resultType);
+            return resultType;
+        };
+
+
+        List<Map<String, Object>> methods = new ArrayList<>();
+        for (JaxrsUnit unit : module.getUnits()) {
+            List<String> methodSign = new ArrayList<>();
+            Map<String, Object> method = new HashMap<>();
+            List<String> lines = new ArrayList<>();
+            Optional.ofNullable(unit.getDeclaredAnnotation(Description.class))
+                    .ifPresent(desc -> {
+                        lines.add(" * " + desc.name());
+                        if (Common.isBlank(desc.description())) return;
+                        lines.add(" * " + desc.description());
+                    });
+
+            for (JaxrsParam p : unit.getParameters()) {
+                lines.add(" * @param " + p.getName() + " " + p.getLabel() + " " + p.getDescription());
+                methodSign.add(p.getName() + "?: " + to.apply(p.getGenericType()).toText());
+            }
+            Optional.ofNullable(unit.getDeclaredAnnotation(Deprecated.class))
+                    .ifPresent(d -> lines.add(" * @deprecated"));
+            StringBuilder methodDTS = new StringBuilder(unit.getMethod().getName()).append("(")
+                    .append(String.join(", ", methodSign))
+                    .append("): Promise<").append(to.apply(unit.getGenericReturnType()).toText()).append(">;");
+            if (!lines.isEmpty()) {
+                lines.add(0, "/**");
+                lines.add(" */");
+            }
+            method.put("lines", lines);
+            method.put("def", methodDTS);
+
+            methods.add(method);
+        }
+        param.put("methods", methods);
+        param.put("declaredTypes", TsDefineHelper.toTypeScriptDef(allTypes));
+
+        writeTo("jaxrs/" + getModuleName() + "/" + module.getInterfaceClass().getName() + ".d.ts",
+                "service.d.ts.ftl", param);
 
     }
 }
