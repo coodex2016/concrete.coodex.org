@@ -1,3 +1,5 @@
+declare type Int = number;
+declare type Float = number;
 
 ${declaredTypes}
 

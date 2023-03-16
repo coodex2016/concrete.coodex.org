@@ -35,8 +35,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static org.coodex.concrete.apitools.jaxrs.axios.TsDefineHelper.ifEnum;
 import static org.coodex.concrete.common.ConcreteHelper.isPrimitive;
 import static org.coodex.util.Common.cast;
 
@@ -105,7 +107,7 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
                     throw new RuntimeException(e);
                 }
                 // for d.ts
-                map.put("enumTypeName", c.getName());
+                map.put("enumTypeName", c.getSimpleName());
                 map.put("valueType", TsDefineHelper.getTypeScriptValueType(Common.cast(c)));
                 try {
                     writeTo("jaxrs/constants/" + c.getName() + ".d.ts",
@@ -125,7 +127,7 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
 
     private void processEnum(JaxrsModule module, Set<Type> processed) throws IOException {
         if (!constUtilExist) {
-            copyTo("EnumBase.d.ts", "jaxrs/constants/EnumBase.d.ts");
+            copyTo("EnumBase.d.ts.ftl", "jaxrs/constants/EnumBase.d.ts");
             writeTo("jaxrs/constants/constUtil.js", "const allValues = c => {\n" +
                     "    var a = []\n" +
                     "    for (var k in c) {\n" +
@@ -175,7 +177,7 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
 //        versionAndStyle.put("style", JaxRSHelper.used024Behavior());
 
         writeTo("jaxrs/concrete.js", "concrete.ftl", versionAndStyle);
-        copyTo("concrete.d.ts", "jaxrs/concrete.d.ts");
+        copyTo("concrete.d.ts.ftl", "jaxrs/concrete.d.ts");
         Set<Type> processed = new HashSet<>();
         for (JaxrsModule module : modules) {
             processEnum(module, processed);
@@ -261,16 +263,20 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
                         if (Common.isBlank(desc.description())) return;
                         lines.add(" * " + desc.description());
                     });
-
+            Set<String> enumSee = new HashSet<>();
+            Consumer<Class<Enum<?>>> consumer = (c) -> enumSee.add(c.getCanonicalName());
+            ifEnum(unit.getGenericReturnType(), consumer);
             for (JaxrsParam p : unit.getParameters()) {
                 lines.add(" * @param " + p.getName() + " " + p.getLabel() + " " + p.getDescription());
                 methodSign.add(p.getName() + "?: " + to.apply(p.getGenericType()).toText());
+                ifEnum(p.getGenericType(), consumer);
             }
             Optional.ofNullable(unit.getDeclaredAnnotation(Deprecated.class))
                     .ifPresent(d -> lines.add(" * @deprecated"));
             StringBuilder methodDTS = new StringBuilder(unit.getMethod().getName()).append("(")
                     .append(String.join(", ", methodSign))
                     .append("): Promise<").append(to.apply(unit.getGenericReturnType()).toText()).append(">;");
+            enumSee.stream().sorted().forEach(s -> lines.add(" * @see " + s));
             if (!lines.isEmpty()) {
                 lines.add(0, "/**");
                 lines.add(" */");
@@ -287,4 +293,5 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
                 "service.d.ts.ftl", param);
 
     }
+
 }

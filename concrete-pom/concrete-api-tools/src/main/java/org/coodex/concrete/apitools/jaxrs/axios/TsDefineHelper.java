@@ -18,8 +18,6 @@ package org.coodex.concrete.apitools.jaxrs.axios;
 
 import org.coodex.closure.StackClosureContext;
 import org.coodex.concrete.api.Description;
-import org.coodex.concrete.api.pojo.PageRequest;
-import org.coodex.concrete.api.pojo.PageResult;
 import org.coodex.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +27,25 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class TsDefineHelper {
 
     private static final Logger log = LoggerFactory.getLogger(TsDefineHelper.class);
-    private static final Type[] NUMBER = {
-            int.class, float.class, double.class, byte.class, long.class, short.class,
-            Integer.class, Long.class, Byte.class, Short.class, Float.class, Double.class
+//    @Deprecated
+//    private static final Type[] NUMBER = {
+//            int.class, float.class, double.class, byte.class, long.class, short.class,
+//            Integer.class, Long.class, Byte.class, Short.class, Float.class, Double.class
+//    };
+
+    private static final Type[] INTEGER_NUMBER = {
+            int.class, Integer.class, byte.class, Byte.class,
+            short.class, Short.class, Long.class, long.class
+    };
+
+    private static final Type[] FLOAT_NUMBER = {
+            float.class, Float.class, double.class, Double.class
     };
     private static final Type[] STRING = {
             char.class, Character.class, String.class
@@ -49,14 +58,48 @@ public class TsDefineHelper {
     private final static StackClosureContext<Type> stackClosureContext = new StackClosureContext<>();
     private final static String BOOL_NAME = "boolean";
     private final static String STRING_NAME = "string";
-    private final static String NUMBER_NAME = "number";
+//    @Deprecated
+//    private final static String NUMBER_NAME = "number";
+
+    private final static String INTEGER_NAME = "Int";
+    private final static String FLOAT_NAME = "Float";
 
     private final static String ANY_NAME = "any";
     private final static String VOID_NAME = "void";
     private final static String[] TS_PRIMITIVE_TYPES = {
-            BOOL_NAME, STRING_NAME, NUMBER_NAME, ANY_NAME, VOID_NAME
+            BOOL_NAME, STRING_NAME, ANY_NAME, VOID_NAME, INTEGER_NAME, FLOAT_NAME
     };
     private static final StackClosureContext<String> dependenciesContext = new StackClosureContext<>();
+
+    private static boolean isEnum(Type t) {
+        if (t instanceof Class<?>) {
+            Class<?> c = (Class<?>) t;
+            if (c.isEnum()) return true;
+            if (c.isArray()) return isEnum(c.getComponentType());
+            return false;
+        } else if (t instanceof GenericArrayType) {
+            GenericArrayType gat = (GenericArrayType) t;
+            return isEnum(gat.getGenericComponentType());
+        } else if (t instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) t;
+            Type rowType = pt.getRawType();
+            if (rowType instanceof Class<?>) {
+                Class<?> rowClz = (Class<?>) rowType;
+                if (Collection.class.isAssignableFrom(rowClz)) {
+                    return isEnum(
+                            GenericTypeHelper.solveFromType(Collection.class.getTypeParameters()[0], t)
+                    );
+                }
+            }
+        }
+        return false;
+    }
+
+    public static void ifEnum(Type t, Consumer<Class<Enum<?>>> consumer) {
+        if (isEnum(t)) {
+            consumer.accept(Common.cast(t));
+        }
+    }
 
     public static String getTypeScriptValueType(Class<Enum<?>> enumClass) {
         if (Valuable.class.isAssignableFrom(enumClass)) {
@@ -66,8 +109,10 @@ public class TsDefineHelper {
             );
             if (Common.inArray(t, STRING)) {
                 return STRING_NAME;
-            } else if (Common.inArray(t, NUMBER)) {
-                return NUMBER_NAME;
+            } else if (Common.inArray(t, INTEGER_NUMBER)) {
+                return INTEGER_NAME;
+            } else if (Common.inArray(t, FLOAT_NUMBER)) {
+                return FLOAT_NAME;
             } else if (Common.inArray(t, BOOLEAN)) {
                 return BOOL_NAME;
             } else {
@@ -130,19 +175,6 @@ public class TsDefineHelper {
         });
 
         return builder.toString();
-    }
-
-    public static void main(String[] args) {
-//        System.out.println(javaToTs(PageRequest.class));
-//        System.out.println(javaToTs(PageRequest.class).getDependencies());
-//        System.out.println(javaToTs(Y.class));
-//        System.out.println(javaToTs(Y.class).getDependencies());
-        System.out.println(toTypeScriptDef(Arrays.asList(javaToTs(Y.class.getGenericSuperclass()), javaToTs(String.class))));
-        System.out.println("================");
-        System.out.println(toTypeScriptDef(Collections.EMPTY_LIST));
-        System.out.println("================");
-//        System.out.println(X.class.getGenericSuperclass());
-//        System.out.println(javaToTs(X.class.getGenericSuperclass()).toText());
     }
 
     public interface TsType {
@@ -290,7 +322,11 @@ public class TsDefineHelper {
 
 
         public static TsClass BOOL = new TsClass(BOOL_NAME, false, null);
-        public static TsClass NUMBER = new TsClass(NUMBER_NAME, false, null);
+        //        public static TsClass INTEGER = new TsClass()
+//        @Deprecated
+//        public static TsClass NUMBER = new TsClass(NUMBER_NAME, false, null);
+        public static TsClass FLOAT = new TsClass(FLOAT_NAME, false, null);
+        public static TsClass INT = new TsClass(INTEGER_NAME, false, null);
         public static TsClass STRING = new TsClass(STRING_NAME, false, null);
 
         public static TsClass ANY = new TsClass(ANY_NAME, false, null);
@@ -312,7 +348,9 @@ public class TsDefineHelper {
 
         public static TsType of(Class<?> c) {
             if (c.isArray()) return new TsClass("", true, of(c.getComponentType()));
-            if (Common.inArray(c, TsDefineHelper.NUMBER)) return NUMBER;
+//            if (Common.inArray(c, TsDefineHelper.NUMBER)) return NUMBER;
+            if (Common.inArray(c, TsDefineHelper.FLOAT_NUMBER)) return FLOAT;
+            if (Common.inArray(c, TsDefineHelper.INTEGER_NUMBER)) return INT;
             if (Common.inArray(c, TsDefineHelper.BOOLEAN)) return BOOL;
             if (Common.inArray(c, TsDefineHelper.STRING)) return STRING;
             if (c.isEnum())
@@ -469,6 +507,9 @@ public class TsDefineHelper {
                     });
             Optional.ofNullable(property.getAnnotation(Deprecated.class))
                     .ifPresent(deprecated -> lines.add(" * @deprecated "));
+            ifEnum(property.getType(), e -> {
+                lines.add(" * @see " + e.getCanonicalName());
+            });
             if (!lines.isEmpty()) {
                 docLines.add("/**");
                 docLines.addAll(lines);
@@ -577,17 +618,5 @@ public class TsDefineHelper {
             parameterTypes.forEach(t -> tsTypeMap.putAll(t.getDependencies()));
             return tsTypeMap;
         }
-    }
-
-    class X<T> extends PageRequest<T> {
-        public PageRequest<String> x;
-        public List<PageResult<Integer>> y;
-
-        public PageResult<Boolean>[] z;
-
-        public X<T> a;
-    }
-
-    class Y extends X<List<PageRequest<String>>> {
     }
 }

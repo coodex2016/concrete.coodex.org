@@ -1,4 +1,4 @@
-import { BaseEnum } from './EnumBase'
+import {Int, Float, BaseEnum} from './EnumBase'
 
 declare class ${enumTypeName} extends BaseEnum<${valueType}>{
 <#list elements as e>
