@@ -508,7 +508,7 @@ public class TsDefineHelper {
             Optional.ofNullable(property.getAnnotation(Deprecated.class))
                     .ifPresent(deprecated -> lines.add(" * @deprecated "));
             ifEnum(property.getType(), e -> {
-                lines.add(" * @see " + e.getCanonicalName());
+                lines.add(" * @see " + e.getName());
             });
             if (!lines.isEmpty()) {
                 docLines.add("/**");

@@ -264,7 +264,7 @@ public class AxiosCodeRenderer extends AbstractRenderer<JaxrsModule> {
                         lines.add(" * " + desc.description());
                     });
             Set<String> enumSee = new HashSet<>();
-            Consumer<Class<Enum<?>>> consumer = (c) -> enumSee.add(c.getCanonicalName());
+            Consumer<Class<Enum<?>>> consumer = (c) -> enumSee.add(c.getName());
             ifEnum(unit.getGenericReturnType(), consumer);
             for (JaxrsParam p : unit.getParameters()) {
                 lines.add(" * @param " + p.getName() + " " + p.getLabel() + " " + p.getDescription());
