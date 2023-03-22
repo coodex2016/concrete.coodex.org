@@ -13,11 +13,21 @@ export declare class BaseEnum<T> {
     _lableOf: (v: T) => string;
     /**
      * 某个枚举值的标签
+     * @deprecated
      */
     _labelOf: (v: T) => string;
     /**
      * 常量的键值列表
+     * @deprecated
      */
     _toArray: (values:T[])=>EnumItem<T>[];
+    /**
+     * 某个枚举值的标签
+     */
+    labelOf: (v: T) => string;
+    /**
+     * 常量的键值列表
+     */
+    toArray: (values:T[])=>EnumItem<T>[];
 }
 
