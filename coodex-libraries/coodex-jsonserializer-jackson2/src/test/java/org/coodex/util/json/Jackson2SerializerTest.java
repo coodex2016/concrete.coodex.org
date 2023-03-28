@@ -78,7 +78,7 @@ public class Jackson2SerializerTest {
         theMap.put("bSet", Arrays.asList(IntValuable.A, IntValuable.B));
         theMap.put("c", StringValuable.F);
         theMap.put("cSet", Arrays.asList(StringValuable.D, StringValuable.E));
-
+        theMap.put("d", StringValuable.F);
         String s = jsonSerializer.toJson(theMap);
         System.out.println(jsonSerializer.toJson(theMap));
 

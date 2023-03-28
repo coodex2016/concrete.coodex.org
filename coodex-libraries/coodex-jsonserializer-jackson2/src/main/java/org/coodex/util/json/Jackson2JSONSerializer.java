@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ser.std.EnumSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.EnumResolver;
 import com.fasterxml.jackson.databind.util.EnumValues;
+import org.coodex.config.Config;
 import org.coodex.util.*;
 
 import java.io.IOException;
@@ -36,7 +37,14 @@ public class Jackson2JSONSerializer implements JSONSerializer {
     //    private static final Logger log = LoggerFactory.getLogger(Jackson2JSONSerializer.class);
     private static final Singleton<ObjectMapper> mapperSingleton = Singleton.with(() -> {
         ObjectMapper mapper = new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        boolean failedOnUnknownProperties =  Config.getValue("jsonserializer.jackson.failedOnUnknownProperties", false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failedOnUnknownProperties);
+        if(!failedOnUnknownProperties){
+
+        }
+//
         SingletonMap<Class<Enum<?>>, EnumSerializer> serializerMap = SingletonMap
                 .<Class<Enum<?>>, EnumSerializer>builder()
                 .function(c -> new EnumSerializer(EnumValues.construct(mapper.getSerializationConfig(), c),
