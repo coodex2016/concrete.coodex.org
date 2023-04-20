@@ -19,28 +19,31 @@ package org.coodex.jts;
 import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SelectableServiceLoader;
-import org.locationtech.jts.algorithm.Area;
 import org.locationtech.jts.geom.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class JTSUtil {
-
-    private JTSUtil() {
-    }
 
     public static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
     private static final
     SelectableServiceLoader<Geometry, GeometryConvertService<Geometry>> CONVERT_SERVICE_LOADER
             = new LazySelectableServiceLoader<Geometry, GeometryConvertService<Geometry>>() {
     };
-
+    private static final
+    SelectableServiceLoader<AreaOf.CoordType, AreaOf> AREA_OF_SERVICE
+            = new LazySelectableServiceLoader<AreaOf.CoordType, AreaOf>() {
+    };
     /**
      * 地球赤道半径
      */
     private static final double EARTH_RADIUS = 6378137.0d;
+
+    private JTSUtil() {
+    }
 
     public static double[] lngLat2Mercator(double[] lngLat) {
         return lngLat2Mercator(lngLat[0], lngLat[1]);
@@ -131,11 +134,14 @@ public class JTSUtil {
         if (polygon.getNumInteriorRing() == 0) {
             return geometry;
         }
-        double outer = areaOf(polygon.getExteriorRing());
+        // todo 为什么不直接用Geometry的areaOf? 相同坐标系下，误差应该是一致的，这里也只需要比例
+//        double outer = areaOf(polygon.getExteriorRing(), coordType);
+        double outer = polygon.getExteriorRing().getArea();//areaOf(polygon.getExteriorRing(), coordType);
         List<LinearRing> holes = new ArrayList<>();
         for (int i = 0, l = polygon.getNumInteriorRing(); i < l; i++) {
             LinearRing hole = polygon.getInteriorRingN(i);
-            if (areaOf(hole) / outer > threshold) {
+//            if (areaOf(hole, coordType) / outer > threshold) {
+            if (hole.getArea() / outer > threshold) {
                 holes.add(hole);
             }
         }
@@ -174,19 +180,24 @@ public class JTSUtil {
         return get2DGeometry(g1).symDifference(get2DGeometry(g2));
     }
 
+    public static double areaOf(Geometry geometry, AreaOf.CoordType coordType) {
+        return AREA_OF_SERVICE.select(coordType).areaOf(geometry);
+    }
 
+    @Deprecated
     public static double areaOf(Geometry lngLat) {
-        if (lngLat instanceof MultiPolygon) {
-            return areaOf((MultiPolygon) lngLat);
-        } else if (lngLat instanceof Polygon) {
-            return areaOf((Polygon) lngLat);
-        } else if (lngLat instanceof LinearRing) {
-            return areaOf((LinearRing) lngLat);
-        } else if (lngLat instanceof GeometryCollection) {
-            return areaOf(get2DGeometry(lngLat));
-        } else {
-            return 0d;
-        }
+        return areaOf(lngLat, AreaOf.CoordType.COMPATIBLE);
+//        if (lngLat instanceof MultiPolygon) {
+//            return areaOf((MultiPolygon) lngLat);
+//        } else if (lngLat instanceof Polygon) {
+//            return areaOf((Polygon) lngLat);
+//        } else if (lngLat instanceof LinearRing) {
+//            return areaOf((LinearRing) lngLat);
+//        } else if (lngLat instanceof GeometryCollection) {
+//            return areaOf(get2DGeometry(lngLat));
+//        } else {
+//            return 0d;
+//        }
     }
 
     public static Geometry get2DGeometry(Geometry geometry) {
@@ -205,51 +216,51 @@ public class JTSUtil {
         return JTSUtil.GEOMETRY_FACTORY.createEmpty(2);
     }
 
-    private static double areaOf(MultiPolygon multiPolygon) {
-        double area = 0d;
-        for (int i = 0, size = multiPolygon.getNumGeometries(); i < size; i++) {
-            area += areaOf(multiPolygon.getGeometryN(i));
-        }
-        return area;
-    }
+//    private static double areaOf(MultiPolygon multiPolygon) {
+//        double area = 0d;
+//        for (int i = 0, size = multiPolygon.getNumGeometries(); i < size; i++) {
+//            area += areaOf(multiPolygon.getGeometryN(i));
+//        }
+//        return area;
+//    }
+//
+//    private static double areaOf(Polygon polygon) {
+//        double area = areaOf(polygon.getExteriorRing());
+//        for (int i = 0, holes = polygon.getNumInteriorRing(); i < holes; i++) {
+//            area -= areaOf(polygon.getInteriorRingN(i));
+//        }
+//        return Math.max(0d, area);
+//    }
 
-    private static double areaOf(Polygon polygon) {
-        double area = areaOf(polygon.getExteriorRing());
-        for (int i = 0, holes = polygon.getNumInteriorRing(); i < holes; i++) {
-            area -= areaOf(polygon.getInteriorRingN(i));
-        }
-        return Math.max(0d, area);
-    }
-
-    private static boolean isLngLat(Geometry geometry) {
+    static boolean isLngLat(Geometry geometry) {
         Coordinate c = geometry.getCoordinate();
         return c == null || isLngLat(c);
     }
 
-    private static boolean isLngLat(Coordinate coordinate) {
+    static boolean isLngLat(Coordinate coordinate) {
         return coordinate.getX() < 180d && coordinate.getX() > -180d &&
                 coordinate.getY() < 90d && coordinate.getY() > -90;
     }
 
-    private static double areaOf(LinearRing lngLatRing) {
-        if (!isLngLat(lngLatRing)) {
-            lngLatRing = mercator2LngLat(lngLatRing);
-        }
-        Coordinate[] coordinates = lngLatRing.getCoordinates();
-        // 找到最小矩阵的左下角点作为原点
-        double x = 180d, y = 180d;
-        for (Coordinate c : coordinates) {
-            x = Math.min(x, c.getX());
-            y = Math.min(y, c.getY());
-        }
-        // 令，任意点(x1,y1)，投影坐标为(d((x1,y),(x,y)), d((x,y1),(x,y)))
-        Coordinate[] newPoints = new Coordinate[coordinates.length];
-        for (int i = 0, l = coordinates.length; i < l; i++) {
-            Coordinate c = coordinates[i];
-            newPoints[i] = new Coordinate(distanceLngLat(x, y, c.getX(), y), distanceLngLat(x, y, x, c.getY()));
-        }
-        return JTSUtil.GEOMETRY_FACTORY.createPolygon(newPoints).getArea();
-    }
+//    private static double areaOf(LinearRing lngLatRing) {
+//        if (!isLngLat(lngLatRing)) {
+//            lngLatRing = mercator2LngLat(lngLatRing);
+//        }
+//        Coordinate[] coordinates = lngLatRing.getCoordinates();
+//        // 找到最小矩阵的左下角点作为原点
+//        double x = 180d, y = 180d;
+//        for (Coordinate c : coordinates) {
+//            x = Math.min(x, c.getX());
+//            y = Math.min(y, c.getY());
+//        }
+//        // 令，任意点(x1,y1)，投影坐标为(d((x1,y),(x,y)), d((x,y1),(x,y)))
+//        Coordinate[] newPoints = new Coordinate[coordinates.length];
+//        for (int i = 0, l = coordinates.length; i < l; i++) {
+//            Coordinate c = coordinates[i];
+//            newPoints[i] = new Coordinate(distanceLngLat(x, y, c.getX(), y), distanceLngLat(x, y, x, c.getY()));
+//        }
+//        return JTSUtil.GEOMETRY_FACTORY.createPolygon(newPoints).getArea();
+//    }
 
     private static double rad(double d) {
         return d * Math.PI / 180.0d;
@@ -269,4 +280,33 @@ public class JTSUtil {
         return s * EARTH_RADIUS;
     }
 
+    public static <T> double shoelaceFormula(T[] points, Function<T, Double> xGetter, Function<T, Double> yGetter) {
+        if (points.length < 3) {
+            return 0.0;
+        } else {
+            double sum = 0.0;
+            double x0 = xGetter.apply(points[0]);
+
+            for (int i = 1; i < points.length - 1; ++i) {
+                double x = xGetter.apply(points[i]) - x0;
+                double y1 = yGetter.apply(points[i + 1]);
+                double y2 = yGetter.apply(points[i - 1]);
+                sum += x * (y2 - y1);
+            }
+
+            return Math.abs(sum / 2.0);
+        }
+    }
+
+    public static double shoelaceFormula(Coordinate[] coordinates) {
+        return shoelaceFormula(coordinates, Coordinate::getX, Coordinate::getY);
+    }
+
+
+//    public static void main(String[] args) {
+//        int x = 21;
+//        for(int i = 0; i < 100; i ++){
+//            System.out.println(Math.round(i * 10.0f / x));
+//        }
+//    }
 }

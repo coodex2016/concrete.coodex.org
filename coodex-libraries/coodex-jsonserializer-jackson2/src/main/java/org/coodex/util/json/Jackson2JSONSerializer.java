@@ -31,6 +31,7 @@ import org.coodex.util.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Comparator;
 
 public class Jackson2JSONSerializer implements JSONSerializer {
 
