@@ -55,6 +55,10 @@ interface Concrete {
      */
     configure(options: ConcreteOptions): void;
     configure(moduleName: string, options: ConcreteOptions): void;
+    latestActived(): number;
+    latestActived(moduleName: string): number;
+    idleTimeInSecond(): number;
+    idleTimeInSecond(moduleName: string): number;
 }
 
 export declare const concrete: Concrete;

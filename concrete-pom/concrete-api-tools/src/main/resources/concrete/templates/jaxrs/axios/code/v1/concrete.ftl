@@ -5,6 +5,16 @@ const axiosAdaptor = axios.VERSION && axios.VERSION.startsWith('1.') ? axios.def
 
 const CONCRETE_CLIENT_PROVIDER = 'CONCRETE-AXIOS-${version}'
 
+const latestActived = {};
+
+const moduleActive = (moduleName)=>{
+    latestActived[moduleName || 'concrete'] = new Date().getTime();
+}
+
+const getLatestActived = (moduleName) =>{
+    return latestActived[moduleName || 'concrete'] || 0;
+}
+
 let defaultConfiguration = {
     root: '/jaxrs',
     onError: function (code, msg) {
@@ -192,7 +202,13 @@ export function overload(moduleName, function_map) {
         if (!func && typeof func !== 'function') {
             return argumentsError(moduleName)
         }
-        return func.apply(this, arguments)
+        let result = func.apply(this, arguments)
+        if(result instanceof Promise){
+            result = result.finally(()=>{
+                moduleActive(moduleName)
+            })
+        }
+        return result;
     }
 }
 
@@ -347,6 +363,12 @@ let concrete = {
             arguments[1]
         )
         return this
+    },
+    latestActived: function(moduleName){
+        return getLatestActived(moduleName)
+    },
+    idleTimeInSecond: function(moduleName){
+        return (new Date().getTime() - getLatestActived(moduleName)) / 1000
     },
     polling: function () {
         let moduleName = arguments.length === 0 ? 'concrete' : arguments[0]
