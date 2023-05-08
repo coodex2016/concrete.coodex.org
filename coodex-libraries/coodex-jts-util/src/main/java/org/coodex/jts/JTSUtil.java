@@ -20,6 +20,8 @@ import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SelectableServiceLoader;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -180,7 +182,23 @@ public class JTSUtil {
         return get2DGeometry(g1).symDifference(get2DGeometry(g2));
     }
 
-    public static double areaOf(Geometry geometry, AreaOf.CoordType coordType) {
+    public static double yMove(Coordinate o, double distance) {
+        return distance / EARTH_RADIUS / Math.PI * 180 + o.getY();
+    }
+
+    public static double xMove(Coordinate o, double distance) {
+        return distance / EARTH_RADIUS / Math.cos(rad(o.getY())) * 180 / Math.PI + o.getX();
+    }
+
+    public static Coordinate move(Coordinate o, double distance, double degree) {
+
+        return new Coordinate(
+                xMove(o, Math.cos(degree / 180d * Math.PI) * distance),
+                yMove(o, Math.sin(degree / 180d * Math.PI) * distance)
+        );
+    }
+
+    public static double areaOf(Geometry geometry, CoordSys.CoordType coordType) {
         return AREA_OF_SERVICE.select(coordType).areaOf(geometry);
     }
 
@@ -216,6 +234,16 @@ public class JTSUtil {
         return JTSUtil.GEOMETRY_FACTORY.createEmpty(2);
     }
 
+    static boolean isLngLat(Geometry geometry) {
+        Coordinate c = geometry.getCoordinate();
+        return c == null || isLngLat(c);
+    }
+
+    static boolean isLngLat(Coordinate coordinate) {
+        return coordinate.getX() < 180d && coordinate.getX() > -180d &&
+                coordinate.getY() < 90d && coordinate.getY() > -90;
+    }
+
 //    private static double areaOf(MultiPolygon multiPolygon) {
 //        double area = 0d;
 //        for (int i = 0, size = multiPolygon.getNumGeometries(); i < size; i++) {
@@ -232,14 +260,12 @@ public class JTSUtil {
 //        return Math.max(0d, area);
 //    }
 
-    static boolean isLngLat(Geometry geometry) {
-        Coordinate c = geometry.getCoordinate();
-        return c == null || isLngLat(c);
+    private static double rad(double angle) {
+        return angle * Math.PI / 180.0d;
     }
 
-    static boolean isLngLat(Coordinate coordinate) {
-        return coordinate.getX() < 180d && coordinate.getX() > -180d &&
-                coordinate.getY() < 90d && coordinate.getY() > -90;
+    public static double distanceLngLat(Coordinate c1, Coordinate c2) {
+        return distanceLngLat(c1.getX(), c1.getY(), c2.getX(), c2.getY());
     }
 
 //    private static double areaOf(LinearRing lngLatRing) {
@@ -261,10 +287,6 @@ public class JTSUtil {
 //        }
 //        return JTSUtil.GEOMETRY_FACTORY.createPolygon(newPoints).getArea();
 //    }
-
-    private static double rad(double d) {
-        return d * Math.PI / 180.0d;
-    }
 
     public static double distanceLngLat(double x1, double y1, double x2, double y2) {
         double radLat1 = rad(y1);
@@ -302,11 +324,28 @@ public class JTSUtil {
         return shoelaceFormula(coordinates, Coordinate::getX, Coordinate::getY);
     }
 
+    public static Geometry wktToGeometry(String wkt) {
+        WKTReader wktReader = new WKTReader(JTSUtil.GEOMETRY_FACTORY);
+        try {
+            return wktReader.read(wkt);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-//    public static void main(String[] args) {
-//        int x = 21;
-//        for(int i = 0; i < 100; i ++){
-//            System.out.println(Math.round(i * 10.0f / x));
-//        }
-//    }
+    public static MetersGeometry buildMeterGeometry(Geometry geometry, CoordSys.CoordType coordType) {
+        switch (coordType) {
+            case MERCATOR:
+                return new MetersGeometry(mercator2LngLat(geometry));
+            case LNG_LAT:
+                return new MetersGeometry(geometry);
+            case METERS:
+                return new MetersGeometry(geometry, new Coordinate(0, 0));
+            //noinspection deprecation
+            case COMPATIBLE:
+                return isLngLat(geometry) ? new MetersGeometry(geometry) : new MetersGeometry(mercator2LngLat(geometry));
+        }
+        throw new UnsupportedOperationException(coordType.toString());
+    }
+
 }

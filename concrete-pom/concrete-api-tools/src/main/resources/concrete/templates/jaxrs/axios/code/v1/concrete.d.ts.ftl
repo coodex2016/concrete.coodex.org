@@ -37,7 +37,7 @@ export interface ConcreteOptions {
     /**
      * 全局header
      */
-    headers?: {[key:string]:string};
+    headers?: { [key: string]: string | (() => string) };
     /**
      * token存在哪，默认sessionStorage
      */

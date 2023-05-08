@@ -30,6 +30,7 @@ import java.util.Optional;
 public class SpringBeanFactoryAware implements SmartInstantiationAwareBeanPostProcessor {
     private final static Logger log = LoggerFactory.getLogger(SpringBeanFactoryAware.class);
     private static ListableBeanFactory listableBeanFactory;
+    private static boolean traced = false;
 
     public SpringBeanFactoryAware(ListableBeanFactory beanFactory) {
         listableBeanFactory = beanFactory;
@@ -40,12 +41,19 @@ public class SpringBeanFactoryAware implements SmartInstantiationAwareBeanPostPr
     public static ListableBeanFactory getListableBeanFactory() {
         if (listableBeanFactory == null) {
             if (log.isDebugEnabled()) {
-                StringBuilder builder = new StringBuilder();
-                StackTraceElement[] stackTraceElements = new Exception().getStackTrace();
-                for (StackTraceElement element : stackTraceElements) {
-                    builder.append("\n\tat ").append(element);
+                if (traced) return listableBeanFactory;
+
+                synchronized (SpringBeanFactoryAware.class) {
+                    if (traced) return listableBeanFactory;
+                    StringBuilder builder = new StringBuilder();
+                    StackTraceElement[] stackTraceElements = new Exception().getStackTrace();
+                    for (StackTraceElement element : stackTraceElements) {
+                        builder.append("\n\tat ").append(element);
+                    }
+                    log.debug("spring bean factory not injected yet.{}", builder);
+                    traced = true;
                 }
-                log.debug("spring bean factory not injected yet.{}", builder);
+
             }
         }
         return listableBeanFactory;

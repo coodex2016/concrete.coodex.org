@@ -17,7 +17,6 @@
 package org.coodex.concrete.spring.components;
 
 import org.coodex.config.AbstractConfiguration;
-import org.coodex.config.Config;
 import org.coodex.spring.SpringEnvironmentAware;
 import org.coodex.util.Common;
 import org.coodex.util.SPI;
@@ -31,8 +30,10 @@ import java.util.StringJoiner;
 @SPI.Ordered(0)
 public class ConfigurationBaseSpringPropertySources extends AbstractConfiguration
         /*implements ApplicationContextAware*/ {
-    private final static Logger log = LoggerFactory.getLogger(Config.class);
+    private final static Logger log = LoggerFactory.getLogger(ConfigurationBaseSpringPropertySources.class);
 //    private Environment springEnvironment;
+    private static boolean traced = false;
+
 
 
     @Override
@@ -75,7 +76,14 @@ public class ConfigurationBaseSpringPropertySources extends AbstractConfiguratio
                 }
             }
         } else {
-            log.warn("spring environment not injected yet.");
+            if(!traced) {
+                synchronized (ConfigurationBaseSpringPropertySources.class) {
+                    if(!traced) {
+                        log.warn("spring environment not injected yet.");
+                        traced = true;
+                    }
+                }
+            }
         }
         return null;
     }

@@ -21,16 +21,9 @@ import org.locationtech.jts.geom.*;
 
 import static org.coodex.jts.JTSUtil.get2DGeometry;
 
-public interface AreaOf extends SelectableService<AreaOf.CoordType> {
-    enum CoordType {
-        LNG_LAT,// 经纬度坐标系
-        METERS, // 米单位坐标系
-        MERCATOR, // 墨卡托坐标系
-        @Deprecated
-        COMPATIBLE //兼容模式，不推荐使用
-    }
+public interface AreaOf extends CoordSys, SelectableService<CoordSys.CoordType> {
 
-    default double areaOf(Geometry geometry){
+    default double areaOf(Geometry geometry) {
         if (geometry instanceof MultiPolygon) {
             return areaOf((MultiPolygon) geometry);
         } else if (geometry instanceof Polygon) {
@@ -44,7 +37,7 @@ public interface AreaOf extends SelectableService<AreaOf.CoordType> {
         }
     }
 
-    default double areaOf(MultiPolygon multiPolygon){
+    default double areaOf(MultiPolygon multiPolygon) {
         double area = 0d;
         for (int i = 0, size = multiPolygon.getNumGeometries(); i < size; i++) {
             area += areaOf(multiPolygon.getGeometryN(i));
@@ -52,7 +45,7 @@ public interface AreaOf extends SelectableService<AreaOf.CoordType> {
         return area;
     }
 
-    default double areaOf(Polygon polygon){
+    default double areaOf(Polygon polygon) {
         double area = areaOf(polygon.getExteriorRing());
         for (int i = 0, holes = polygon.getNumInteriorRing(); i < holes; i++) {
             area -= areaOf(polygon.getInteriorRingN(i));

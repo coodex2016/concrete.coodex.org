@@ -30,6 +30,7 @@ import java.util.Optional;
 public class SpringEnvironmentAware implements SmartInstantiationAwareBeanPostProcessor {
     private final static Logger log = LoggerFactory.getLogger(SpringEnvironmentAware.class);
     private static Environment springEnvironment;
+    private static boolean traced = false;
 
     public SpringEnvironmentAware(Environment environment) {
         springEnvironment = environment;
@@ -40,12 +41,17 @@ public class SpringEnvironmentAware implements SmartInstantiationAwareBeanPostPr
     public static Environment getSpringEnvironment() {
         if (springEnvironment == null) {
             if (log.isDebugEnabled()) {
-                StringBuilder builder = new StringBuilder();
-                StackTraceElement[] stackTraceElements = new Exception().getStackTrace();
-                for (StackTraceElement element : stackTraceElements) {
-                    builder.append("\n\tat ").append(element);
+                if (traced) return springEnvironment;
+                synchronized (SpringEnvironmentAware.class) {
+                    if (traced) return springEnvironment;
+                    traced = true;
+                    StringBuilder builder = new StringBuilder();
+                    StackTraceElement[] stackTraceElements = new Exception().getStackTrace();
+                    for (StackTraceElement element : stackTraceElements) {
+                        builder.append("\n\tat ").append(element);
+                    }
+                    log.debug("spring environment not injected yet.{}", builder);
                 }
-                log.debug("spring environment not injected yet.{}", builder);
             }
         }
         return springEnvironment;
