@@ -71,34 +71,37 @@ public class TsDefineHelper {
     };
     private static final StackClosureContext<String> dependenciesContext = new StackClosureContext<>();
 
+    @Deprecated
     private static boolean isEnum(Type t) {
+        return toEnum(t) != null;
+    }
+
+    private static Class<Enum<?>> toEnum(Type t) {
         if (t instanceof Class<?>) {
             Class<?> c = (Class<?>) t;
-            if (c.isEnum()) return true;
-            if (c.isArray()) return isEnum(c.getComponentType());
-            return false;
+            if (c.isEnum()) return Common.cast(c);
+            if (c.isArray()) return toEnum(c.getComponentType());
+            return null;
         } else if (t instanceof GenericArrayType) {
             GenericArrayType gat = (GenericArrayType) t;
-            return isEnum(gat.getGenericComponentType());
+            return toEnum(gat.getGenericComponentType());
         } else if (t instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) t;
             Type rowType = pt.getRawType();
             if (rowType instanceof Class<?>) {
                 Class<?> rowClz = (Class<?>) rowType;
                 if (Collection.class.isAssignableFrom(rowClz)) {
-                    return isEnum(
+                    return toEnum(
                             GenericTypeHelper.solveFromType(Collection.class.getTypeParameters()[0], t)
                     );
                 }
             }
         }
-        return false;
+        return null;
     }
 
     public static void ifEnum(Type t, Consumer<Class<Enum<?>>> consumer) {
-        if (isEnum(t)) {
-            consumer.accept(Common.cast(t));
-        }
+        Optional.ofNullable(toEnum(t)).ifPresent(consumer);
     }
 
     public static String getTypeScriptValueType(Class<Enum<?>> enumClass) {
