@@ -111,9 +111,9 @@
         <!--        <log4j2.version>2.13.0</log4j2.version>-->
         <aspectj.version>1.9.4</aspectj.version>
 
-        <spring.cloud.version>2021.0.3</spring.cloud.version>
-        <spring.cloud.alibaba.version>2021.0.1.0</spring.cloud.alibaba.version>
-        <spring.boot.version>2.7.3</spring.boot.version>
+        <spring.cloud.version>2021.0.9</spring.cloud.version>
+        <spring.cloud.alibaba.version>2021.0.4.0</spring.cloud.alibaba.version>
+        <spring.boot.version>2.7.18</spring.boot.version>
         <!--        <spring.framework.version>5.3.4</spring.framework.version>-->
         <!--        <spring.data.version>2020.0.5</spring.data.version>-->
         <!--        <spring.data.jpa.version>2.4.5</spring.data.jpa.version>-->
@@ -143,6 +143,8 @@
         <cglib.version>3.2.12</cglib.version>
 
         <swagger-core.version>2.1.12</swagger-core.version>
+
+        <mysql8.driver.version>8.2.0</mysql8.driver.version>
 
         <!--        <coodex.utilities.version>${project.parent.version}</coodex.utilities.version>-->
         <!--        <coodex.shared.cache.version>${project.parent.version}</coodex.shared.cache.version>-->
