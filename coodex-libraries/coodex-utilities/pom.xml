@@ -36,6 +36,13 @@
         <!--            <scope>test</scope>-->
         <!--        </dependency>-->
 
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.20</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>com.alibaba</groupId>

@@ -123,7 +123,7 @@ public abstract class ConcreteJaxrsApplication
 
     @Override
     public void register(Class<?>... classes) {
-        if (classes == null || classes.length == 0) return;
+        if (classes == null) return;
         for (Class<?> clz : classes) {
             registerClass(clz);
         }

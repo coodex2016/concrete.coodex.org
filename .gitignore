@@ -29,3 +29,5 @@ node_modules/
 .temp
 .cache
 dist/
+
+coodex-libraries/coodex-utilities/src/test/resources/img/

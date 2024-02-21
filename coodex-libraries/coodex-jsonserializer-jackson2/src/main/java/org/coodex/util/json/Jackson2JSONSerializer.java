@@ -31,7 +31,6 @@ import org.coodex.util.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Comparator;
 
 public class Jackson2JSONSerializer implements JSONSerializer {
 
@@ -39,10 +38,12 @@ public class Jackson2JSONSerializer implements JSONSerializer {
     private static final Singleton<ObjectMapper> mapperSingleton = Singleton.with(() -> {
         ObjectMapper mapper = new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        boolean failedOnUnknownProperties =  Config.getValue("jsonserializer.jackson.failedOnUnknownProperties", false);
+        mapper.setSerializationInclusion(
+                JSONConfigUtil.writeNullValue() ? JsonInclude.Include.ALWAYS : JsonInclude.Include.NON_NULL
+        );
+        boolean failedOnUnknownProperties = Config.getValue("jsonserializer.jackson.failedOnUnknownProperties", false);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failedOnUnknownProperties);
-        if(!failedOnUnknownProperties){
+        if (!failedOnUnknownProperties) {
 
         }
 //
