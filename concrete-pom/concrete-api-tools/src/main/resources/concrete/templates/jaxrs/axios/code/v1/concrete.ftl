@@ -5,14 +5,14 @@ const axiosAdaptor = axios.VERSION && axios.VERSION.startsWith('1.') ? axios.def
 
 const CONCRETE_CLIENT_PROVIDER = 'CONCRETE-AXIOS-${version}'
 
-const latestActived = {};
+const latestActivated = {};
 
 const moduleActive = (moduleName)=>{
-    latestActived[moduleName || 'concrete'] = new Date().getTime();
+    latestActivated[moduleName || 'concrete'] = new Date().getTime();
 }
 
-const getLatestActived = (moduleName) =>{
-    return latestActived[moduleName || 'concrete'] || 0;
+const getLatestActivated = (moduleName) =>{
+    return latestActivated[moduleName || 'concrete'] || 0;
 }
 
 let defaultConfiguration = {
@@ -60,6 +60,17 @@ function getConfigItem(moduleName, key) {
 }
 
 let tokens = {}
+
+function getLanguage(moduleName) {
+  return getConfigItem(moduleName, 'language')
+}
+
+function setLanguage(language, moduleName) {
+    if(!moduleName) moduleName = 'concrete'
+    if(!concrete.configuration[moduleName])
+        concrete.configuration[moduleName] = {}
+    concrete.configuration[moduleName]['language'] = language
+}
 
 function getStorage(moduleName) {
     return getConfigItem(moduleName, 'storage') || sessionStorage
@@ -137,6 +148,10 @@ function executeJaxrs(moduleName, url, responseType, method, body) {
         'content-type': 'application/json',
         'X-CLIENT-PROVIDER': CONCRETE_CLIENT_PROVIDER
     })
+    let lang = getLanguage(moduleName);
+    if (lang) {
+        headers['CONCRETE-LOCALE'] = lang
+    }
     let tokenId = getTokenId(moduleName)
     if (tokenId) {
         headers['CONCRETE-TOKEN-ID'] = tokenId
@@ -177,8 +192,9 @@ function executeJaxrs(moduleName, url, responseType, method, body) {
                     let headers = error.response.headers
                     setTokenIdFromResponseHeaders(moduleName, headers)
                     if (headers['concrete-error-occurred']) {
-                        err.code = error.response.data.code
-                        err.errorMsg = error.response.data.msg
+                        let errResp = typeof(error.response.data)==='string'? JSON.parse(error.response.data): error.response.data
+                        err.code = errResp.code
+                        err.errorMsg = errResp.msg
                     } else {
                         err.code = error.response.status
                         err.errorMsg = error.response.statusText
@@ -251,10 +267,15 @@ export function grableExecute(moduleName, serviceId, payload) {
         content: JSON.stringify(payload),
         serviceId
     }
+    let lang = getLanguage(moduleName);
+    if (lang) {
+        req.subjoin['CONCRETE-LOCALE'] = lang
+    }
     let tokenId = getTokenId(moduleName)
     if (tokenId) {
         req.concreteTokenId = tokenId
     }
+
 
     const controller = new AbortController()
     let path = getConfigItem(moduleName, 'root')
@@ -364,11 +385,19 @@ let concrete = {
         )
         return this
     },
+    latestActivated: function(moduleName){
+        return getLatestActivated(moduleName)
+    },
+    // deprecated
     latestActived: function(moduleName){
-        return getLatestActived(moduleName)
+        console.warn('method latestActived deprecated, use latestActivated instead.')
+        return getLatestActivated(moduleName)
     },
     idleTimeInSecond: function(moduleName){
-        return (new Date().getTime() - getLatestActived(moduleName)) / 1000
+        return (new Date().getTime() - getLatestActivated(moduleName)) / 1000
+    },
+    setLang: function(language, moduleName){
+        return setLanguage(language, moduleName)
     },
     polling: function () {
         let moduleName = arguments.length === 0 ? 'concrete' : arguments[0]

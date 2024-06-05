@@ -55,7 +55,7 @@ public class ColorCoverage {
         try (InputStream inputStream = Common.getResource("/img/" + img).openStream()) {
             boolean[][] bitmap = Img.map(inputStream,
                     hsvlFilter(Color.hsv(24f, .1f, .65f),
-                            Color.hsv(47f, .58f, .99f)),
+                            Color.hsv(47f, .99f, .99f)),
                     0, 0, -1, -1);
             toPic(bitmap, img + "_before", Img.coverageOf(bitmap));
             Img.grow(bitmap, 4, true);
@@ -66,8 +66,13 @@ public class ColorCoverage {
 
     public static void main(String[] args) throws IOException {
 
-        String[] files = {"01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg",
-                "12.png", "13.jpg", "14.jpeg", "15.jpg", "16.jpg"};
+        String[] files = {
+//                "01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg",
+//                "12.png", "13.jpg", "14.jpeg", "15.jpg", "16.jpg","17.jpg","18.jpg",
+//                "19.jpg","20.jpg","21.jpg","22.jpg","23.jpg","24.jpg","25.jpg","26.jpg"
+//
+                "22.jpg"
+        };
         for (String file : files) {
             testCase(file);
         }

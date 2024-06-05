@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-package test.org.coodex.util;
+package org.coodex.util;
 
-//import net.coobird.thumbnailator.Thumbnailator;
-//import net.coobird.thumbnailator.Thumbnails;
-//import net.coobird.thumbnailator.filters.ImageFilter;
+public abstract class AbstractJSONSerializer implements JSONSerializer {
 
-import java.awt.image.BufferedImage;
-
-public class ThumbnailatorTest {
-    public static void main(String[] args) {
-//        Thumbnails.of("").addFilter(new ImageFilter() {
-//            @Override
-//            public BufferedImage apply(BufferedImage img) {
-//
-//                return null;
-//            }
-//        })
+    @Override
+    public final String toJson(Object t) {
+        return toJson(t, JSONConfigUtil.writeNullValue());
     }
 }

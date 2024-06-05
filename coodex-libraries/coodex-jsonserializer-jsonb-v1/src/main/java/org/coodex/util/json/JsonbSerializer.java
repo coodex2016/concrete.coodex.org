@@ -17,6 +17,7 @@
 package org.coodex.util.json;
 
 import org.coodex.config.Config;
+import org.coodex.util.AbstractJSONSerializer;
 import org.coodex.util.Common;
 import org.coodex.util.JSONSerializer;
 import org.coodex.util.Singleton;
@@ -25,7 +26,7 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import java.lang.reflect.Type;
 
-public class JsonbSerializer implements JSONSerializer {
+public class JsonbSerializer extends AbstractJSONSerializer implements JSONSerializer {
     private static final Singleton<Jsonb> jsonbSingleton = Singleton.with(() -> {
         String providerName = Config.get("jsonb.v1.provider");
         return Common.isBlank(providerName) ? JsonbBuilder.create() : JsonbBuilder.newBuilder(providerName).build();
@@ -46,7 +47,7 @@ public class JsonbSerializer implements JSONSerializer {
     }
 
     @Override
-    public String toJson(Object t) {
+    public String toJson(Object t, boolean writeNullValue) {
         return getInstance().toJson(t);
     }
 }

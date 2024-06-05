@@ -278,7 +278,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 
         return new WebSocketServiceContext(
                 tokenId, getSubjoin(requestPackage.getSubjoin()),
-                caller, null /* TODO 从subjoin或者session里获取Locale */);
+                caller);
     }
 
 

@@ -22,7 +22,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
-
 public final class Mocker {
 
     private static final String DEFAULT_PROVIDER_CLASS = Mocker.class.getPackage().getName() + ".CoodexMockerProvider";
@@ -42,7 +41,8 @@ public final class Mocker {
                         if (serviceLoader.hasNext()) {
                             mockerProviderInstance = serviceLoader.next();
                         } else {
-                            mockerProviderInstance = (MockerProvider) Class.forName(DEFAULT_PROVIDER_CLASS).getDeclaredConstructor().newInstance();
+                            mockerProviderInstance =
+                                    (MockerProvider) Class.forName(DEFAULT_PROVIDER_CLASS).getDeclaredConstructor().newInstance();
                         }
                     } catch (Throwable throwable) {
                         th = throwable;
@@ -62,12 +62,24 @@ public final class Mocker {
         return mockerProviderInstance;
     }
 
+    private static String mockPointToString(Object target, Annotation... annotations) {
+        return "mock point: " + Objects.toString(target) + ", Annotations: " + Arrays.toString(annotations);
+    }
+
     public static <T> T mock(Class<T> type, Annotation... annotations) {
-        return getMockerProvider().mock(type, annotations);
+        try {
+            return getMockerProvider().mock(type, annotations);
+        } catch (RuntimeException re) {
+            throw new MockException(mockPointToString(type, annotations), re);
+        }
     }
 
     public static Object mock(Type type, Type context, Annotation... annotations) {
-        return getMockerProvider().mock(type, context, annotations);
+        try {
+            return getMockerProvider().mock(type, context, annotations);
+        } catch (RuntimeException re) {
+            throw new MockException(mockPointToString(type, annotations), re);
+        }
     }
 
     @SuppressWarnings("unused")
@@ -76,11 +88,16 @@ public final class Mocker {
     }
 
     public static Object mockMethod(Method method, Type instanceType) {
-        return mock(
-                method.getGenericReturnType(),
-                instanceType,
-                merge(method.getAnnotations(),
-                        getTypeAnnotations(instanceType)));
+        try {
+            return mock(
+                    method.getGenericReturnType(),
+                    instanceType,
+                    merge(method.getAnnotations(),
+                            getTypeAnnotations(instanceType)));
+        } catch (RuntimeException re) {
+            throw new MockException(mockPointToString(method, merge(method.getAnnotations(),
+                    getTypeAnnotations(instanceType))), re);
+        }
     }
 
     public static Annotation[] getTypeAnnotations(Type instanceType) {
@@ -111,14 +128,21 @@ public final class Mocker {
     }
 
     public static Object mockParameter(Method method, int index, Type instanceType) {
-        return mock(
-                method.getGenericParameterTypes()[index],
-                instanceType,
-                merge(
-                        method.getParameterAnnotations()[index],
-                        method.getAnnotations(),
-                        getTypeAnnotations(instanceType))
-        );
+        try {
+            return mock(
+                    method.getGenericParameterTypes()[index],
+                    instanceType,
+                    merge(
+                            method.getParameterAnnotations()[index],
+                            method.getAnnotations(),
+                            getTypeAnnotations(instanceType))
+            );
+        } catch (RuntimeException re) {
+            throw new MockException(mockPointToString(method, merge(
+                    method.getParameterAnnotations()[index],
+                    method.getAnnotations(),
+                    getTypeAnnotations(instanceType))) + ", parameter index： " + index, re);
+        }
     }
 
 }

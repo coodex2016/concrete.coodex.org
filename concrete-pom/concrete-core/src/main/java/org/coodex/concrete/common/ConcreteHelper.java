@@ -43,7 +43,7 @@ import static org.coodex.util.ReflectHelper.foreachClass;
  */
 public class ConcreteHelper {
 
-    public static final String VERSION = "0.5.2-SNAPSHOT";
+    public static final String VERSION = "0.5.3-RC1";
 
     public static final String TAG_CLIENT = "client";
     public static final String KEY_DESTINATION = "destination";
@@ -105,7 +105,7 @@ public class ConcreteHelper {
 
     public static Map<String, String> updatedMap(Subjoin subjoin) {
         Map<String, String> map = new ConcurrentHashMap<>();
-        if (subjoin != null && subjoin.updatedKeySet().size() > 0) {
+        if (subjoin != null && !Common.isEmpty(subjoin.updatedKeySet())) {
             for (String key : subjoin.updatedKeySet()) {
                 map.put(key, subjoin.get(key));
             }
@@ -122,7 +122,19 @@ public class ConcreteHelper {
         return getExecutor("service");
     }
 
-    private static final SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
+    public static void printBanner(String originBanner, String moduleName, boolean randomColor) {
+        if (randomColor) {
+            int[] colors = new int[10];
+            for (int i = 0; i < colors.length; i++) {
+                colors[i] = (RANDOM.nextFloat() > 0.5 ? 90 : 30) + RANDOM.nextInt(8);
+                if (colors[i] == 30)
+                    colors[i] = 0;
+            }
+            printBanner(originBanner, moduleName, colors);
+        } else {
+            printBanner(originBanner, moduleName);
+        }
+    }    private static final SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
             = SingletonMap.<String, ScheduledExecutorService>builder()
             .function(new Function<String, ScheduledExecutorService>() {
                 @Override
@@ -138,19 +150,6 @@ public class ConcreteHelper {
                     }
                 }
             }).build();
-
-    public static void printBanner(String originBanner, String moduleName, boolean randomColor) {
-        if (randomColor) {
-            int[] colors = new int[10];
-            for (int i = 0; i < colors.length; i++) {
-                colors[i] = (RANDOM.nextFloat() > 0.5 ? 90 : 30) + RANDOM.nextInt(8);
-                if (colors[i] == 30) colors[i] = 0;
-            }
-            printBanner(originBanner, moduleName, colors);
-        } else {
-            printBanner(originBanner, moduleName);
-        }
-    }
 
     public static void printBanner(String originBanner, String moduleName, int... colors) {
         AtomicInteger atomicInteger = new AtomicInteger();
@@ -174,7 +173,6 @@ public class ConcreteHelper {
         System.out.println(builder);
     }
 
-
     public static ScheduledExecutorService getScheduler() {
         return getScheduler("service");
     }
@@ -188,10 +186,12 @@ public class ConcreteHelper {
     }
 
     public static String getServiceName(Class<?> clz) {
-        if (clz == null /*|| !ConcreteService.class.isAssignableFrom(clz)*/) return null;
+        if (clz == null /*|| !ConcreteService.class.isAssignableFrom(clz)*/)
+            return null;
         ConcreteService concreteService = clz.getAnnotation(ConcreteService.class);
 
-        if (concreteService == null) return null;
+        if (concreteService == null)
+            return null;
 
         //clz.getAnnotation(Abstract.class) != null
         return Common.isBlank(concreteService.value()) ?
@@ -220,7 +220,15 @@ public class ConcreteHelper {
                 packagePatterns);
     }
 
-    private static final SingletonMap<String, ExecutorService> executorServiceMap
+    public static boolean isAbstract(Class<?> clz) {
+        ConcreteService service = clz.getAnnotation(ConcreteService.class);
+        return service != null && service.nonspecific();
+    }
+
+    public static boolean isConcreteService(Method method) {
+        ConcreteService service = method.getAnnotation(ConcreteService.class);
+        return service == null || !service.notService();
+    }    private static final SingletonMap<String, ExecutorService> executorServiceMap
             = SingletonMap.<String, ExecutorService>builder()
             .function(new Function<String, ExecutorService>() {
 
@@ -240,16 +248,6 @@ public class ConcreteHelper {
                     }
                 }
             }).build();
-
-    public static boolean isAbstract(Class<?> clz) {
-        ConcreteService service = clz.getAnnotation(ConcreteService.class);
-        return service != null && service.nonspecific();
-    }
-
-    public static boolean isConcreteService(Method method) {
-        ConcreteService service = method.getAnnotation(ConcreteService.class);
-        return service == null || !service.notService();
-    }
 
     public static boolean isConcreteService(Class<?> clz) {
         return clz != null &&
@@ -276,7 +274,8 @@ public class ConcreteHelper {
     }
 
     private static boolean isRoot(Class<?> clz) {
-        if (clz == null) return true;
+        if (clz == null)
+            return true;
 
         String className = clz.getName();
         return className.startsWith("java.") || className.startsWith("javax.");
@@ -349,7 +348,8 @@ public class ConcreteHelper {
     }
 
     public static ConcreteException findException(Throwable th) {
-        if (th == null) return null;
+        if (th == null)
+            return null;
 
         Throwable t = th;
         while (t != null) {
@@ -376,7 +376,8 @@ public class ConcreteHelper {
     }
 
     public static List<Class<?>> inheritedChain(Class<?> root, Class<?> sub) {
-        if (root == null || root.getAnnotation(ConcreteService.class) == null) return null;
+        if (root == null || root.getAnnotation(ConcreteService.class) == null)
+            return null;
         if (root.equals(sub)) {
             return Collections.emptyList();
         }
@@ -427,7 +428,7 @@ public class ConcreteHelper {
         return System.getProperty(devModelKey(module)) != null || System.getProperty(devModelKey(null)) != null;
     }
 
-    public static Throwable actualCause(Throwable exception){
+    public static Throwable actualCause(Throwable exception) {
         Throwable th = exception;
         if (exception instanceof ConcreteException) {
             if (((ConcreteException) exception).getCode() != ErrorCodes.UNKNOWN_ERROR) {
@@ -441,6 +442,10 @@ public class ConcreteHelper {
         }
         return th != null ? th : exception;
     }
+
+
+
+
 
 
 }

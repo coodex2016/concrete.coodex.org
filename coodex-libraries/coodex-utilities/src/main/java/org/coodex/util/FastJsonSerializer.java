@@ -21,7 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-public class FastJsonSerializer implements JSONSerializer {
+public class FastJsonSerializer extends AbstractJSONSerializer implements JSONSerializer {
 
     private Class<?> jsonClass = null;
 
@@ -80,7 +80,7 @@ public class FastJsonSerializer implements JSONSerializer {
     }
 
     @Override
-    public String toJson(Object t) {
+    public String toJson(Object t, boolean writeNullValue) {
         try {
             return $toJson(t);
             //JSON.toJSONString(t);

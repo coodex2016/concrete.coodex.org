@@ -36,6 +36,8 @@ public class JaxRSHelper {
 
     public static final String HEADER_ERROR_OCCURRED = "CONCRETE-ERROR-OCCURRED";
     public static final String KEY_CLIENT_PROVIDER = "X-CLIENT-PROVIDER";
+
+//    public static final String KEY_LANGUAGE = "CONCRETE-LANGUAGE";
 //    private final static Logger log = LoggerFactory.getLogger(JaxRSHelper.class);
 
 

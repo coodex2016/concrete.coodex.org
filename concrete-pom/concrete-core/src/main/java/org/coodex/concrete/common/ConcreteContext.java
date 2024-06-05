@@ -38,7 +38,6 @@ import java.util.function.Supplier;
 public final class ConcreteContext {
 
     public static final String KEY_TOKEN = Token.CONCRETE_TOKEN_ID_KEY;
-    @SuppressWarnings("unused")
     public static final String KEY_LOCALE = "CONCRETE-LOCALE";
     //    @Deprecated
 //    public static final ClosureContext<Map<String, Object>> LOGGING = new StackClosureContext<>();

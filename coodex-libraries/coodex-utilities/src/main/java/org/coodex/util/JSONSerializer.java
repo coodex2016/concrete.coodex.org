@@ -35,4 +35,6 @@ public interface JSONSerializer {
     }
 
     String toJson(Object t);
+
+    String toJson(Object t, boolean writeNullValue);
 }

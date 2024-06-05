@@ -301,7 +301,7 @@ public class SwaggerHelper {
 
 
     public static String toJson(String url, List<Class<?>> classes) {
-        return JSONSerializer.getInstance().toJson(toOpenAPI(url, classes));
+        return JSONSerializer.getInstance().toJson(toOpenAPI(url, classes),false);
     }
 
     public static String toYaml(String url, List<Class<?>> classes) {

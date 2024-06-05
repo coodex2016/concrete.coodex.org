@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.coodex</groupId>
         <artifactId>coodex-libraries</artifactId>
-        <version>0.5.2-SNAPSHOT</version>
+        <version>0.5.3-RC1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -36,12 +36,12 @@
         <!--            <scope>test</scope>-->
         <!--        </dependency>-->
 
-        <dependency>
-            <groupId>net.coobird</groupId>
-            <artifactId>thumbnailator</artifactId>
-            <version>0.4.20</version>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>net.coobird</groupId>-->
+<!--            <artifactId>thumbnailator</artifactId>-->
+<!--            <version>0.4.20</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
 
         <dependency>

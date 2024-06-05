@@ -22,7 +22,7 @@
 
     <groupId>org.coodex</groupId>
     <artifactId>coodex-libraries</artifactId>
-    <version>0.5.2-SNAPSHOT</version>
+    <version>0.5.3-RC1</version>
     <packaging>pom</packaging>
     <name>coodex-libraries</name>
     <description>coodex-libraries</description>

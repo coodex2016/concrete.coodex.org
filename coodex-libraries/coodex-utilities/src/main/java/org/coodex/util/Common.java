@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,8 +44,8 @@ import static java.lang.Long.parseLong;
 @SuppressWarnings("unused")
 public class Common {
 
-    public static final String PATH_SEPARATOR = System.getProperty("path.separator");
-    public static final String FILE_SEPARATOR = System.getProperty("file.separator");
+    public static final String PATH_SEPARATOR = File.pathSeparator;
+    public static final String FILE_SEPARATOR = FileSystems.getDefault().getSeparator();
     public static final String USER_DIR = System.getProperty("user.dir");
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
     public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
@@ -52,7 +53,7 @@ public class Common {
     public static final Long SYSTEM_START_TIME;// = ManagementFactory.getRuntimeMXBean().getStartTime();
     public static final int PROCESSOR_COUNT = Runtime.getRuntime().availableProcessors();
     public static final Random RANDOM = new Random();// NOSONAR
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private static final String LINE_SEPARATOR = System.lineSeparator();
     private static final Logger log = LoggerFactory.getLogger(Common.class);
     private static final int TO_LOWER = 'a' - 'A';
     private static final String DEFAULT_DELIM = ".-_ /\\";

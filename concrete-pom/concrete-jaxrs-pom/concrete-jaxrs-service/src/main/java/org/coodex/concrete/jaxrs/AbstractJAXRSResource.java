@@ -35,8 +35,7 @@ import java.net.URLEncoder;
 import java.util.*;
 import java.util.function.Supplier;
 
-import static org.coodex.concrete.common.ConcreteContext.KEY_TOKEN;
-import static org.coodex.concrete.common.ConcreteContext.runServiceWithContext;
+import static org.coodex.concrete.common.ConcreteContext.*;
 import static org.coodex.concrete.jaxrs.JaxRSHelper.KEY_CLIENT_PROVIDER;
 import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 import static org.coodex.util.GenericTypeHelper.typeToClass;
@@ -180,13 +179,17 @@ public abstract class AbstractJAXRSResource<T> {
     }
 
     private Locale getRequestLocal() {
+        String language = httpHeaders.getHeaderString(KEY_LOCALE);
+        if (!Common.isBlank(language)) {
+            return Locale.forLanguageTag(language);
+        }
         List<Locale> locales = null;
         try {
             locales = httpHeaders.getAcceptableLanguages();
         } catch (Throwable th) {
             log.warn("getAcceptableLanguages failed.", th);
         }
-        return locales == null || locales.size() == 0 ?
+        return (locales == null || locales.isEmpty()) ?
                 null : locales.get(0);
     }
 
@@ -217,7 +220,7 @@ public abstract class AbstractJAXRSResource<T> {
             }
 
             Map<String, String> map = ConcreteHelper.updatedMap(serviceContext.getSubjoin());
-            if (map.size() > 0) {
+            if (!map.isEmpty()) {
                 for (String key : map.keySet()) {
                     builder = builder.header(key, URLEncoder.encode(map.get(key), "UTF-8"));
                 }

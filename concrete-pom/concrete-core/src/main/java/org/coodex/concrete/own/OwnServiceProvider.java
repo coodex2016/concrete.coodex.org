@@ -33,6 +33,7 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
 
+import static org.coodex.concrete.common.ConcreteContext.KEY_LOCALE;
 import static org.coodex.concrete.common.ConcreteContext.runServiceWithContext;
 import static org.coodex.concrete.common.ConcreteHelper.*;
 import static org.coodex.concrete.common.ErrorCodes.SERVICE_ID_NOT_EXISTS;
@@ -57,9 +58,9 @@ public abstract class OwnServiceProvider implements Application {
     }
 
     protected Locale getLocale(Subjoin subjoin) {
-        if (subjoin != null && !Common.isBlank(subjoin.get("locale"))) {
+        if (subjoin != null && !Common.isBlank(subjoin.get(KEY_LOCALE))) {
             try {
-                return LanguageTag.valueOf(subjoin.get("locale")).getAsLocale();
+                return LanguageTag.valueOf(subjoin.get(KEY_LOCALE)).getAsLocale();
             } catch (IllegalArgumentException ignored) {// NOSONAR
 
             }

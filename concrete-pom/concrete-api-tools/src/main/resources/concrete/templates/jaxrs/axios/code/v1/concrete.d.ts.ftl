@@ -55,8 +55,12 @@ interface Concrete {
      */
     configure(options: ConcreteOptions): void;
     configure(moduleName: string, options: ConcreteOptions): void;
+    // deprecated
     latestActived(): number;
+    // deprecated
     latestActived(moduleName: string): number;
+    latestActivated(): number;
+    latestActivated(moduleName: string): number;
     idleTimeInSecond(): number;
     idleTimeInSecond(moduleName: string): number;
 }

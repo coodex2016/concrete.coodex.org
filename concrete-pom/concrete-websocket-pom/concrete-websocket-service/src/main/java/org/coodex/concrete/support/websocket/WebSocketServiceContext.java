@@ -38,8 +38,9 @@ public class WebSocketServiceContext extends ServerSideContext {
         }
     };
 
-    public WebSocketServiceContext(String tokenId, Subjoin subjoin, Caller caller, Locale locale) {
-        super(caller == null ? CALLER : caller, subjoin, locale, tokenId);
+    public WebSocketServiceContext(String tokenId, Subjoin subjoin, Caller caller) {
+//        Locale locale = null;
+        super(caller == null ? CALLER : caller, subjoin, getLocaleFromSubjoin(subjoin), tokenId);
 
 //        this.token = token;
 //        this.subjoin = subjoin;
@@ -48,6 +49,10 @@ public class WebSocketServiceContext extends ServerSideContext {
 //        this.caller = caller == null ? CALLER : caller;
 //        this.side = SIDE_SERVER;
 //        this.courier = webSocketCourier;
+    }
+
+    private static Locale getLocaleFromSubjoin(Subjoin subjoin) {
+        return null;
     }
 
 //    public WebSocketServiceContext(Token token, Subjoin subjoin, AbstractUnit unit) {
