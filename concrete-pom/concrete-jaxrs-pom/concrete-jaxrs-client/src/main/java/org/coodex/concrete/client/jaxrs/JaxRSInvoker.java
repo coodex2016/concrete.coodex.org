@@ -26,7 +26,6 @@ import org.coodex.concrete.jaxrs.logging.ClientLogger;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.mock.Mocker;
 import org.coodex.util.*;
-import org.coodex.util.JSONSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +37,7 @@ import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.coodex.concrete.ClientHelper.getSSLContext;
@@ -104,13 +104,15 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                     unit.getMethod(),
                     unit.getDeclaringModule().getInterfaceClass());
         } else {
-            String path = JaxRSClientCommon.getPath(unit, args, (JaxRSDestination) getDestination());
+            String path = JaxRSClientCommon.getPath(unit, /*args,*/ (JaxRSDestination) getDestination());
+            Map<String, Object> pathParams = JaxRSClientCommon.pathParamMap(unit, args);
             // 找需要提交的对象
             Object toSubmit = JaxRSClientCommon.getSubmitObject(unit, args);
 
-//            toSubmit =(toSubmit == null || toSubmit instanceof String) ? toSubmit : JSONSerializer.getInstance().toJson(toSubmit);
+//            toSubmit =(toSubmit == null || toSubmit instanceof String) ? toSubmit : JSONSerializer.getInstance()
+//            .toJson(toSubmit);
 
-            try (Response response = request(path, unit.getInvokeType(), toSubmit)) {
+            try (Response response = request(path, pathParams, unit.getInvokeType(), toSubmit)) {
 
                 String tokenId = response.getHeaderString(Token.CONCRETE_TOKEN_ID_KEY);
                 ClientTokenManagement.setTokenId(getDestination(), tokenId);
@@ -137,8 +139,8 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
         }
     }
 
-    private Response request(String url, String method, Object body) {
-        Invocation.Builder builder = getInvokerBuilder(url);
+    private Response request(String url, Map<String, Object> pathParams, String method, Object body) {
+        Invocation.Builder builder = getInvokerBuilder(url, pathParams);
         return body == null ?
                 builder.build(method).invoke() :
                 builder.build(method, Entity.entity(body,
@@ -147,8 +149,9 @@ public class JaxRSInvoker extends AbstractSyncInvoker {
                         ))).invoke();
     }
 
-    private Invocation.Builder getInvokerBuilder(String url) {
-        Invocation.Builder builder = client.target(url).request();
+    private Invocation.Builder getInvokerBuilder(String url, Map<String, Object> pathParams) {
+        Invocation.Builder builder = pathParams.isEmpty() ?
+                client.target(url).request() : client.target(url).resolveTemplates(pathParams, true).request();
 
         JaxRSClientContext context = JaxRSClientCommon.getContext();
         Subjoin subjoin = context.getSubjoin();

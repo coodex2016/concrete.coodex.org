@@ -102,7 +102,7 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
     private static final Supplier<String> SERVER_SIDE_VERIFY_FAILED = () -> I18N.translate("sign.serverSideVerifyFailed");
     private static final Supplier<String> NO_SIGNATURE_FOUND = () -> I18N.translate("sign.noSignatureFound");
 
-    private static void serverSide_Verify(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
+    private void serverSide_Verify(DefinitionContext context, MethodInvocation joinPoint, SignUtil.HowToSign howToSign) {
         Map<String, Object> content = buildContent(
                 context, joinPoint.getArguments());
         String noise = IF.isNull(getKeyField(content, KEY_FIELD_NOISE, null),
@@ -118,8 +118,22 @@ public abstract class AbstractSignatureInterceptor extends AbstractInterceptor {
         getNoiseValidator(keyId).checkNoise(keyId, noise);
         IronPen ironPen = howToSign.getIronPenFactory(algorithm).getIronPen(howToSign.getPaperName());
         SignatureSerializer serializer = howToSign.getSerializer();
-        IF.not(ironPen.verify(serializer.serialize(content),
-                        Base64.getDecoder().decode(getSignature(content)),
+        String sign = getSignature(content);
+        byte[] data = serializer.serialize(content);
+
+        if (log.isDebugEnabled()) {
+            log.debug("signature for[ {} ]: \n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}\n\t{}: {}",
+                    context.getDeclaringMethod().getName(),
+                    getPropertyName(KEY_FIELD_NOISE), noise,
+                    getPropertyName(KEY_FIELD_ALGORITHM), algorithm,
+                    getPropertyName(KEY_FIELD_KEY_ID), keyId,
+                    getPropertyName(KEY_FIELD_SIGN), sign,
+                    "body", dataToString(data)
+            );
+        }
+
+        IF.not(ironPen.verify(data,
+                        Base64.getDecoder().decode(sign),
                         algorithm, keyId),
                 ErrorCodes.SIGNATURE_VERIFICATION_FAILED, SERVER_SIDE_VERIFY_FAILED);
 

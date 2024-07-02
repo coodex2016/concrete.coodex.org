@@ -47,7 +47,8 @@ public class JaxRSClientCommon {
     private static final Logger log = LoggerFactory.getLogger(JaxRSClientCommon.class);
 
 
-    public static JaxRSClientException throwException(boolean errorOccurred, int code, String body, JaxrsUnit unit, String url) {
+    public static JaxRSClientException throwException(boolean errorOccurred, int code, String body, JaxrsUnit unit,
+                                                      String url) {
         if (errorOccurred) {
             ErrorInfo errorInfo = getJSONSerializer().parse(body, ErrorInfo.class);
             return new JaxRSClientException(errorInfo.getCode(), errorInfo.getMsg(), url, unit.getInvokeType());
@@ -104,7 +105,8 @@ public class JaxRSClientCommon {
     }
 
     public static String encode(String s, String charset) throws UnsupportedEncodingException {
-        if (s == null) return "";
+        if (s == null)
+            return "";
         charset = Common.isBlank(charset) ? "utf-8" : charset;
         StringBuilder builder = new StringBuilder();
         for (char c : s.toCharArray()) {
@@ -127,7 +129,8 @@ public class JaxRSClientCommon {
         return getJSONSerializer().toJson(o);
     }
 
-    public static String getPath(JaxrsUnit unit, Object[] args, JaxRSDestination destination) throws UnsupportedEncodingException {
+
+    public static String getPath(JaxrsUnit unit, /*Object[] args, */JaxRSDestination destination) throws UnsupportedEncodingException {
         StringTokenizer stringTokenizer = new StringTokenizer(
                 unit.getDeclaringModule().getName() + "/" + unit.getName(), "/");
         StringBuilder builder = new StringBuilder();
@@ -135,22 +138,23 @@ public class JaxRSClientCommon {
         while (stringTokenizer.hasMoreElements()) {
             String node = stringTokenizer.nextToken();
 
-            if (Common.isBlank(node)) continue;
-            builder.append("/");
-            if (node.startsWith("{") && node.endsWith("}")) {
-                //参数
-                String paramName = new String(node.toCharArray(), 1, node.length() - 2);
-                JaxrsParam[] params = unit.getParameters();
-                for (int i = 0; i < params.length; i++) {
-                    JaxrsParam param = params[i];
-
-                    if (paramName.equals(param.getName())) {
-                        node = toStr(args[i]);
-                        break;
-                    }
-                }
-            }
-            builder.append(encode(node, getEncodingCharset(destination)));
+            if (Common.isBlank(node))
+                continue;
+            builder.append("/").append(node);
+//            if (node.startsWith("{") && node.endsWith("}")) {
+//                //参数
+//                String paramName = new String(node.toCharArray(), 1, node.length() - 2);
+//                JaxrsParam[] params = unit.getParameters();
+//                for (int i = 0; i < params.length; i++) {
+//                    JaxrsParam param = params[i];
+//
+//                    if (paramName.equals(param.getName())) {
+//                        node = toStr(args[i]);
+//                        break;
+//                    }
+//                }
+//            }
+//            builder.append(encode(node, getEncodingCharset(destination)));
         }
         return destination.getLocation() + builder;
     }
@@ -171,5 +175,32 @@ public class JaxRSClientCommon {
             subjoin.set(KEY_WARNINGS, Collections.singletonList(URLDecoder.decode(warnings, "UTF-8")));
         }
         getContext().responseSubjoin(subjoin);
+    }
+
+    public static Map<String, Object> pathParamMap(JaxrsUnit unit, Object[] args) {
+        Map<String, Object> paramMap = new HashMap<>();
+        StringTokenizer stringTokenizer = new StringTokenizer(
+                unit.getDeclaringModule().getName() + "/" + unit.getName(), "/");
+
+        while (stringTokenizer.hasMoreElements()) {
+            String node = stringTokenizer.nextToken();
+
+            if (Common.isBlank(node))
+                continue;
+            if (node.startsWith("{") && node.endsWith("}")) {
+                //参数
+                String paramName = new String(node.toCharArray(), 1, node.length() - 2);
+                JaxrsParam[] params = unit.getParameters();
+                for (int i = 0; i < params.length; i++) {
+                    JaxrsParam param = params[i];
+
+                    if (paramName.equals(param.getName())) {
+                        paramMap.put(paramName, toStr(args[i]));
+                        break;
+                    }
+                }
+            }
+        }
+        return paramMap;
     }
 }

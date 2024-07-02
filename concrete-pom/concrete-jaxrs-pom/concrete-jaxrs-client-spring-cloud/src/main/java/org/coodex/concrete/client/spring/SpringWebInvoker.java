@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import java.io.ByteArrayInputStream;
@@ -43,6 +44,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.GZIPInputStream;
@@ -109,13 +111,18 @@ public class SpringWebInvoker extends AbstractSyncInvoker {
         } else {
             JaxRSDestination destination = (JaxRSDestination) getDestination();
             RestTemplate restTemplate = REST_TEMPLATES.get(microService);
-            String path = JaxRSClientCommon.getPath(unit, args, destination);
+            String path = JaxRSClientCommon.getPath(unit/*, args*/, destination);
+            Map<String, Object> pathParams = JaxRSClientCommon.pathParamMap(unit, args);
             Object body = JaxRSClientCommon.getSubmitObject(unit, args);
             HttpEntity<?> entity = body == null ? new HttpEntity<>(getHttpHeaders(false)) :
                     // todo 采用MessageConverter方案
                     new HttpEntity<>(JSONSerializer.getInstance().toJson(body), getHttpHeaders(true));
+
+
             ResponseEntity<byte[]> responseEntity = restTemplate.exchange(
-                    path, getHttpMethod(unit.getInvokeType()), entity, byte[].class
+                    UriComponentsBuilder.fromUriString(path).encode().buildAndExpand(pathParams).toUriString(),
+                    getHttpMethod(unit.getInvokeType()), entity,
+                    byte[].class
             );
             JaxRSClientCommon.handleResponseHeaders(new MultivaluedHashMap<>(responseEntity.getHeaders()));
             return JaxRSClientCommon.processResult(

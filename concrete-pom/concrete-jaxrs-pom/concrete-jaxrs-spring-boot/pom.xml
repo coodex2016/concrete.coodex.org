@@ -21,7 +21,7 @@
     <parent>
         <artifactId>concrete-jaxrs-pom</artifactId>
         <groupId>org.coodex.concrete.jaxrs</groupId>
-        <version>0.5.3-RC1</version>
+        <version>0.5.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -45,6 +45,11 @@
             <version>${project.parent.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jetty</artifactId>
+        </dependency>
+
         <!-- 使用spring-boot-starter-jersey跑服务 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -53,6 +58,10 @@
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
                     <artifactId>log4j-to-slf4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
