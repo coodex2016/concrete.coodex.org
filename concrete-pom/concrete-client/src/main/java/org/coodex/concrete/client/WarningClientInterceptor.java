@@ -90,7 +90,7 @@ public class WarningClientInterceptor extends AbstractSyncInterceptor {
             ClientSideContext clientSideContext = (ClientSideContext) serviceContext;
             String warnings = SubjoinWrapper.getInstance().get(Subjoin.KEY_WARNINGS);
             if (!Common.isBlank(warnings)) {
-                List<Warning> warningList = JSONSerializer.getInstance()
+                List<Warning> warningList = JSONSerializerUtil.getInstance()
                         .parse(warnings, type);
                 if (warningList.size() > 0) {
                     Collection<WarningHandle> handlers = WARNING_HANDLES.getAll().values();

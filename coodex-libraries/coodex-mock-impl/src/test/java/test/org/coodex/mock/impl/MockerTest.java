@@ -20,6 +20,7 @@ import org.coodex.mock.Mock;
 import org.coodex.mock.Mocker;
 import org.coodex.mock.ext.*;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 import org.junit.Test;
 
 import java.lang.annotation.ElementType;
@@ -36,18 +37,18 @@ public class MockerTest {
     @Test
     public void test() {
 
-        System.out.println(JSONSerializer.getInstance().toJson(Mocker.mock(Pojo3rd.class)));
+        System.out.println(JSONSerializerUtil.getInstance().toJson(Mocker.mock(Pojo3rd.class)));
         System.out.println(
-                JSONSerializer.getInstance().toJson(
+                JSONSerializerUtil.getInstance().toJson(
                         Mocker.mock(Pojo.class)
                 )
         );
 
         A a = Mocker.mock(A.class);
 //        a.setName("hello");
-        System.out.println(JSONSerializer.getInstance().toJson(a));
+        System.out.println(JSONSerializerUtil.getInstance().toJson(a));
 
-        System.out.println(JSONSerializer.getInstance().toJson(Mocker.mock(Pojo3rd.class)));
+        System.out.println(JSONSerializerUtil.getInstance().toJson(Mocker.mock(Pojo3rd.class)));
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -194,7 +195,7 @@ public class MockerTest {
 
     public static void main(String[] args) {
         System.out.println((int)0xffffdd5b);
-        System.out.println(JSONSerializer.getInstance().toJson(Mocker.mock(EmptyObjectTest.class)));
+        System.out.println(JSONSerializerUtil.getInstance().toJson(Mocker.mock(EmptyObjectTest.class)));
     }
 
 }

@@ -16,11 +16,13 @@
 
 package org.coodex.concrete.spring.boot;
 
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.core.FeatureContext;
 import org.coodex.util.json.Jackson2JSONSerializer;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvider;
 
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
+//import javax.ws.rs.core.Feature;
+//import javax.ws.rs.core.FeatureContext;
 
 @Deprecated
 public class ConcreteJacksonFeature /* extends JacksonFeature */ implements Feature {

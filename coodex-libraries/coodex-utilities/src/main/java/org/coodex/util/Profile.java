@@ -15,18 +15,17 @@
  */
 package org.coodex.util;
 
+import org.coodex.functional.Function;
+import org.coodex.functional.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import java.util.*;
+//import java.util.function.Function;
+//import java.util.function.Supplier;
+//import java.util.stream.Collectors;
 
 import static org.coodex.util.Common.*;
 
@@ -63,23 +62,42 @@ public abstract class Profile {
             new LazySelectableServiceLoader<URL, ProfileProvider>() {
             };
     private static final Singleton<String[]> ALL_SUPPORTED_FILE_EXT = Singleton.with(
-            () -> {
+            new org.coodex.functional.Supplier<String[]>() {
+                @Override
+                public String[] get() {
 //                ProfileProvider[] profileProviders = PROFILE_PROVIDER_LOADER.getAll().values().toArray(new ProfileProvider[0]);
 //                Arrays.sort(profileProviders);
-                List<String> list = new ArrayList<>();
-                for (ProfileProvider profileProvider : PROFILE_PROVIDER_LOADER.sorted()) {
-                    if (profileProvider.isAvailable()) {
-                        list.addAll(Arrays.asList(profileProvider.getSupported()));
+                    List<String> list = new ArrayList<>();
+                    for (ProfileProvider profileProvider : PROFILE_PROVIDER_LOADER.sorted()) {
+                        if (profileProvider.isAvailable()) {
+                            list.addAll(Arrays.asList(profileProvider.getSupported()));
+                        }
                     }
+                    return list.toArray(new String[0]);
                 }
-                return list.toArray(new String[0]);
             }
+//            () -> {
+////                ProfileProvider[] profileProviders = PROFILE_PROVIDER_LOADER.getAll().values().toArray(new ProfileProvider[0]);
+////                Arrays.sort(profileProviders);
+//                List<String> list = new ArrayList<>();
+//                for (ProfileProvider profileProvider : PROFILE_PROVIDER_LOADER.sorted()) {
+//                    if (profileProvider.isAvailable()) {
+//                        list.addAll(Arrays.asList(profileProvider.getSupported()));
+//                    }
+//                }
+//                return list.toArray(new String[0]);
+//            }
     );
     private static final URL DEFAULT_URL;
 
     @SuppressWarnings("StaticInitializerReferencesSubClass")
     private static final SingletonMap<String, Profile> WRAPPER_PROFILES = SingletonMap.<String, Profile>builder()
-            .function(ProfileWrapper::new).build();
+            .function(new Function<String, Profile>() {
+                @Override
+                public Profile apply(String s) {
+                    return new ProfileWrapper(s);
+                }
+            }/*ProfileWrapper::new*/).build();
 
     //    private static final Singleton<Long> RELOAD_INTERVAL_SINGLETON = Singleton.with(
 //            () -> Config.BASE_SYSTEM_PROPERTIES.getValue(Profile.class.getName() + ".reloadInterval",
@@ -141,7 +159,12 @@ public abstract class Profile {
             };
 
     static final SingletonMap<String, Profile> PATH_PROFILE_MAP = SingletonMap.<String, Profile>builder()
-            .function(Profile::getByPath)
+            .function(new Function<String, Profile>() {
+                @Override
+                public Profile apply(String s) {
+                    return Profile.getByPath(s);
+                }
+            }/*Profile::getByPath*/)
 //            .maxAge(RELOAD_INTERVAL_SINGLETON.get())
             .build();
 
@@ -168,7 +191,7 @@ public abstract class Profile {
     }
 
     private static List<URL> getExistsUrl(List<URL> activeProfile, URL baseUrl) {
-        if (DEFAULT_URL.equals(baseUrl)) return activeProfile;
+        if (Objects.equals(DEFAULT_URL, baseUrl)) return activeProfile;
         List<URL> list = new ArrayList<>(activeProfile);
         list.add(baseUrl);
         return list;
@@ -177,28 +200,39 @@ public abstract class Profile {
 
     private static List<String> getActiveProfiles() {
         List<String> activeProfiles = new ArrayList<>();
-        ACTIVE_PROFILES_PROVIDER_SERVICE_LOADER
-                .sorted()
-                .forEach(
-                        activeProfilesProvider -> {
-                            for (String s : activeProfilesProvider.getActiveProfiles()) {
-                                if (!activeProfiles.contains(s)) {
-                                    activeProfiles.add(s);
-                                }
-                            }
-                        }
-                );
+        for (ActiveProfilesProvider activeProfilesProvider : ACTIVE_PROFILES_PROVIDER_SERVICE_LOADER.sorted()) {
+            for (String s : activeProfilesProvider.getActiveProfiles()) {
+                if (!activeProfiles.contains(s)) {
+                    activeProfiles.add(s);
+                }
+            }
+        }
+//        ACTIVE_PROFILES_PROVIDER_SERVICE_LOADER
+//                .sorted()
+//                .forEach(
+//                        activeProfilesProvider -> {
+//                            for (String s : activeProfilesProvider.getActiveProfiles()) {
+//                                if (!activeProfiles.contains(s)) {
+//                                    activeProfiles.add(s);
+//                                }
+//                            }
+//                        }
+//                );
         return Collections.unmodifiableList(activeProfiles);
     }
 
     private static Profile getByPath(String path) {
         // 根据active.profiles设置包装所有Profile
         // return get(PROFILE_URLS.get(path));
-
-        List<URL> activeProfileUrls = getActiveProfiles().stream()
-                .map(ap -> PROFILE_URLS.get(path + "-" + ap))
-                .filter(url -> !DEFAULT_URL.equals(url))
-                .collect(Collectors.toList());
+        List<URL> activeProfileUrls = new ArrayList<>();
+        for (String ap : getActiveProfiles()) {
+            URL url = PROFILE_URLS.get(path + "-" + ap);
+            if (!Objects.equals(url, DEFAULT_URL)) activeProfileUrls.add(url);
+        }
+//        List<URL> activeProfileUrls = getActiveProfiles().stream()
+//                .map(ap -> PROFILE_URLS.get(path + "-" + ap))
+//                .filter(url -> !DEFAULT_URL.equals(url))
+//                .collect(Collectors.toList());
         URL baseProfileUrl = PROFILE_URLS.get(path);
         List<URL> exists = getExistsUrl(activeProfileUrls, baseProfileUrl);
         switch (exists.size()) {
@@ -208,7 +242,10 @@ public abstract class Profile {
                 return get(exists.get(0));
             default:
                 MergedProfile mergedProfile = new MergedProfile();
-                exists.forEach(url -> mergedProfile.merge(get(url)));
+                for (URL url : exists) {
+                    mergedProfile.merge(get(url));
+                }
+//                exists.forEach(url -> mergedProfile.merge(get(url)));
                 return mergedProfile;
         }
     }

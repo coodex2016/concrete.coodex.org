@@ -23,35 +23,12 @@ import static org.coodex.jts.JTSUtil.get2DGeometry;
 
 public interface AreaOf extends CoordSys, SelectableService<CoordSys.CoordType> {
 
-    default double areaOf(Geometry geometry) {
-        if (geometry instanceof MultiPolygon) {
-            return areaOf((MultiPolygon) geometry);
-        } else if (geometry instanceof Polygon) {
-            return areaOf((Polygon) geometry);
-        } else if (geometry instanceof LinearRing) {
-            return areaOf((LinearRing) geometry);
-        } else if (geometry instanceof GeometryCollection) {
-            return areaOf(get2DGeometry(geometry));
-        } else {
-            return 0d;
-        }
-    }
+    double areaOf(Geometry geometry);
 
-    default double areaOf(MultiPolygon multiPolygon) {
-        double area = 0d;
-        for (int i = 0, size = multiPolygon.getNumGeometries(); i < size; i++) {
-            area += areaOf(multiPolygon.getGeometryN(i));
-        }
-        return area;
-    }
 
-    default double areaOf(Polygon polygon) {
-        double area = areaOf(polygon.getExteriorRing());
-        for (int i = 0, holes = polygon.getNumInteriorRing(); i < holes; i++) {
-            area -= areaOf(polygon.getInteriorRingN(i));
-        }
-        return Math.max(0d, area);
-    }
+    double areaOf(MultiPolygon multiPolygon) ;
+
+    double areaOf(Polygon polygon);
 
     double areaOf(LinearRing linearRing);
 }

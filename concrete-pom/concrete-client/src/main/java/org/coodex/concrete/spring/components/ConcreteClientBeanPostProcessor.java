@@ -28,7 +28,7 @@ import org.coodex.id.IDGenerator;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;

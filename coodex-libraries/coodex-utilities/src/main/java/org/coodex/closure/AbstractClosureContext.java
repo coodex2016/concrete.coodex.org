@@ -17,7 +17,9 @@
 package org.coodex.closure;
 
 
-import java.util.function.Supplier;
+//import java.util.function.Supplier;
+
+import org.coodex.functional.Supplier;
 
 /**
  * Created by davidoff shen on 2016-09-04.

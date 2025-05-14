@@ -16,6 +16,7 @@
 
 package test.org.coodex.util;
 
+import org.coodex.functional.Function;
 import org.coodex.util.Common;
 import org.coodex.util.cv.Color;
 import org.coodex.util.cv.Img;
@@ -26,7 +27,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.function.Function;
+//import java.util.function.Function;
 
 public class ColorCoverage {
 
@@ -105,19 +106,22 @@ public class ColorCoverage {
     private static Function<Integer, Boolean> hsvlFilter(Color.HSVL hsv1, Color.HSVL hsv2) {
 //        Color.HSVL hsvl1 = Color.rgb2hsvl(rgb1);
 //        Color.HSVL hsvl2 = Color.rgb2hsvl(rgb2);
-        float hMin = 25.75f;//Math.min(hsvl1.h, hsvl2.h);
-        float hMax = 44.25f;//Math.max(hsvl1.h, hsvl2.h);
-        float sMin = Math.min(hsv1.s, hsv2.h);
-        float sMax = Math.max(hsv1.s, hsv2.h);
-        float vMin = Math.min(hsv1.v, hsv2.v);
-        float vMax = Math.max(hsv1.v, hsv2.v);
+        final float hMin = 25.75f;//Math.min(hsvl1.h, hsvl2.h);
+        final float hMax = 44.25f;//Math.max(hsvl1.h, hsvl2.h);
+        final float sMin = Math.min(hsv1.s, hsv2.h);
+        final float sMax = Math.max(hsv1.s, hsv2.h);
+        final float vMin = Math.min(hsv1.v, hsv2.v);
+        final float vMax = Math.max(hsv1.v, hsv2.v);
 
 
-        return rgb -> {
-            Color.HSVL hsvl = Color.rgb2hsvl(rgb);
-            return hsvl.h <= hMax && hsvl.h >= hMin
-                    && hsvl.s <= sMax && hsvl.s > sMin
-                    && hsvl.v >= vMin && hsvl.v <= vMax;
+        return new Function<Integer, Boolean>() {
+            @Override
+            public Boolean apply(Integer rgb) {
+                Color.HSVL hsvl = Color.rgb2hsvl(rgb);
+                return hsvl.h <= hMax && hsvl.h >= hMin
+                        && hsvl.s <= sMax && hsvl.s > sMin
+                        && hsvl.v >= vMin && hsvl.v <= vMax;
+            }
         };
     }
 

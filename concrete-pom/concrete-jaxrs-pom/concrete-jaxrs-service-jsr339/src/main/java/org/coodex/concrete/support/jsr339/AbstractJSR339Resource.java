@@ -22,9 +22,9 @@ import org.coodex.concrete.jaxrs.Polling;
 import org.coodex.concrete.message.TBMContainer;
 import org.coodex.concurrent.components.PriorityRunnable;
 
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
 

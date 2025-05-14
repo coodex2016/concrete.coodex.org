@@ -120,18 +120,33 @@ public class Parallel {
     private Task newTask(final Runnable runnable, int i, final CountDownLatch latch/*, final Object lock*/) {
         final Task task = new Task();
         task.id = i;
-        Runnable run = () -> {
-            task.start = Clock.currentTimeMillis();
-            try {
-                runnable.run();
-            } catch (Throwable th) {
-                task.throwable = th;
-            } finally {
-                task.end = Clock.currentTimeMillis();
-                task.finished = true;
-                latch.countDown();
+        Runnable run = new Runnable() {
+            @Override
+            public void run() {
+                task.start = Clock.currentTimeMillis();
+                try {
+                    runnable.run();
+                } catch (Throwable th) {
+                    task.throwable = th;
+                } finally {
+                    task.end = Clock.currentTimeMillis();
+                    task.finished = true;
+                    latch.countDown();
+                }
             }
         };
+//                () -> {
+//            task.start = Clock.currentTimeMillis();
+//            try {
+//                runnable.run();
+//            } catch (Throwable th) {
+//                task.throwable = th;
+//            } finally {
+//                task.end = Clock.currentTimeMillis();
+//                task.finished = true;
+//                latch.countDown();
+//            }
+//        };
 
         if (executorService != null) {
             executorService.execute(run);
@@ -144,18 +159,33 @@ public class Parallel {
     private <V> CallableTask<V> newTask(final Callable<V> callable, int i, final CountDownLatch latch) {
         final CallableTask<V> task = new CallableTask<>();
         task.id = i;
-        Runnable run = () -> {
-            task.start = Clock.currentTimeMillis();
-            try {
-                task.result = callable.call();
-            } catch (Throwable th) {
-                task.throwable = th;
-            } finally {
-                task.end = Clock.currentTimeMillis();
-                task.finished = true;
-                latch.countDown();
+        Runnable run = new Runnable() {
+            @Override
+            public void run() {
+                task.start = Clock.currentTimeMillis();
+                try {
+                    task.result = callable.call();
+                } catch (Throwable th) {
+                    task.throwable = th;
+                } finally {
+                    task.end = Clock.currentTimeMillis();
+                    task.finished = true;
+                    latch.countDown();
+                }
             }
         };
+//                () -> {
+//            task.start = Clock.currentTimeMillis();
+//            try {
+//                task.result = callable.call();
+//            } catch (Throwable th) {
+//                task.throwable = th;
+//            } finally {
+//                task.end = Clock.currentTimeMillis();
+//                task.finished = true;
+//                latch.countDown();
+//            }
+//        };
 
         if (executorService != null) {
             executorService.execute(run);

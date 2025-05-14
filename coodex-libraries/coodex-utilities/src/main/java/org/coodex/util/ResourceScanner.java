@@ -16,6 +16,9 @@
 
 package org.coodex.util;
 
+import org.coodex.functional.BiConsumer;
+import org.coodex.functional.Function;
+import org.coodex.util.java8.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +28,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+//import java.util.function.BiConsumer;
+//import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -53,7 +56,12 @@ public class ResourceScanner {
             Function<String, Boolean> filter,
             boolean extraPath) {
         this.processor = processor;
-        this.filter = filter == null ? s -> true : filter;
+        this.filter = filter == null ? new Function<String, Boolean>() {
+            @Override
+            public Boolean apply(String s) {
+                return true;
+            }
+        } : filter;
         this.extraPath = extraPath;
     }
 
@@ -112,7 +120,15 @@ public class ResourceScanner {
         String[] toMerge = list.toArray(new String[0]);
         list.clear();
         // 排序
-        Arrays.sort(toMerge, Comparator.comparingInt(String::length));
+        Arrays.sort(toMerge, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                int i1 = o1 == null ? 0 : o1.length();
+                int i2 = o2 == null ? 0 : o2.length();
+//                Comparator.comparingInt(String::length)
+                return Integer.compare(i1, i2);
+            }
+        });
         for (String s : toMerge) {
             boolean exits = false;
             for (String x : list) {
@@ -133,16 +149,30 @@ public class ResourceScanner {
             // 所有的资源根patterns，用来进行初步匹配，减少匹配次数
             final Set<PathPattern> pathPatterns = toPathPatterns(paths);
 
-            Function<String, Boolean> resourceFilter = resourceName -> {
-                boolean pathOk = false;
-                for (PathPattern pathPattern : pathPatterns) {
-                    if (pathPattern.pattern.matcher(resourceName).matches()) {
-                        pathOk = true;
-                        break;
-                    }
-                }
-                return pathOk && filter.apply(resourceName);
-            };
+            Function<String, Boolean> resourceFilter =
+                    new Function<String, Boolean>() {
+                        @Override
+                        public Boolean apply(String resourceName) {
+                            boolean pathOk = false;
+                            for (PathPattern pathPattern : pathPatterns) {
+                                if (pathPattern.pattern.matcher(resourceName).matches()) {
+                                    pathOk = true;
+                                    break;
+                                }
+                            }
+                            return pathOk && filter.apply(resourceName);
+                        }
+                    };
+//                    resourceName -> {
+//                boolean pathOk = false;
+//                for (PathPattern pathPattern : pathPatterns) {
+//                    if (pathPattern.pattern.matcher(resourceName).matches()) {
+//                        pathOk = true;
+//                        break;
+//                    }
+//                }
+//                return pathOk && filter.apply(resourceName);
+//            };
             // 所有paths Pattern的共性根组，例如a/**/x、a/b/c/d会合并成a
             Collection<String> merged = merge(pathPatterns);
 
@@ -200,7 +230,7 @@ public class ResourceScanner {
                             if (lastJarNode == 0) {
                                 zipItemUrl = nodes[0].substring(url.getProtocol().length() + 1);
                             } else {
-                                StringJoiner joiner = new StringJoiner("!/");
+                                org.coodex.util.java8.StringJoiner joiner = new StringJoiner("!/");
                                 for (int i = 0; i <= lastJarNode; i++) {
                                     joiner.add(nodes[i]);
                                 }
@@ -265,10 +295,17 @@ public class ResourceScanner {
     private void scanInExtraPath(Function<String, Boolean> resourceFilter,
                                  Collection<String> merged) {
         AtomicInteger atomicInteger = new AtomicInteger(0);
-        getExtraResourcePath().forEach(root -> {
+        List<String> extraPaths = getExtraResourcePath();
+        for (String root : extraPaths) {
+
+//        }
+//        getExtraResourcePath().forEach(root -> {
             EXTRA_PATH_INDEX.set(atomicInteger.getAndIncrement());
             try {
-                merged.forEach(path -> {
+                for (String path : merged) {
+
+//                }
+//                merged.forEach(path -> {
                     try {
                         path = Common.trim(path.replace('\\', '/'), '/');
                         URL resourceRoot = new File(root).toURI().toURL();
@@ -282,11 +319,13 @@ public class ResourceScanner {
                     } catch (Throwable th) {
                         log.warn("load from {} failed: {}", root, th.getLocalizedMessage(), th);
                     }
-                });
+                }
+//                );
             } finally {
                 EXTRA_PATH_INDEX.remove();
             }
-        });
+        }
+//        );
 
     }
 

@@ -27,7 +27,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import test.org.coodex.bean.processors.a.TestIntf;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Import(ConcreteSpringConfiguration.class)

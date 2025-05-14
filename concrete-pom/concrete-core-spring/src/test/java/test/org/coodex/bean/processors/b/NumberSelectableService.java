@@ -18,7 +18,7 @@ package test.org.coodex.bean.processors.b;
 
 import org.coodex.util.SelectableService;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 public interface NumberSelectableService extends SelectableService<Integer> {
     @Named

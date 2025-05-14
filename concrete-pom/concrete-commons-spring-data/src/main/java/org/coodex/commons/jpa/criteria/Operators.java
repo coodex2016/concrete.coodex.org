@@ -16,11 +16,14 @@
 
 package org.coodex.commons.jpa.criteria;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import org.coodex.util.Common;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
+//import javax.persistence.criteria.CriteriaBuilder;
+//import javax.persistence.criteria.Path;
+//import javax.persistence.criteria.Predicate;
 
 import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 

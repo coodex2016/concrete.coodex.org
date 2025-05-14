@@ -22,6 +22,7 @@ import org.coodex.concrete.common.ConcreteHelper;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.util.Clock;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public class WSClientHandle {
 
     private final static Logger log = LoggerFactory.getLogger(WSClientHandle.class);
     private final Map<Destination, Session> sessionMap = new HashMap<>();
-    private final JSONSerializer serializer = JSONSerializer.getInstance();
+    private final JSONSerializer serializer = JSONSerializerUtil.getInstance();
     private final SingletonMap<WebsocketDestination, Object> locks =
             SingletonMap.<WebsocketDestination, Object>builder()
                     .function(key -> new Object()).build();

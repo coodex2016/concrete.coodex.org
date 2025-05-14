@@ -16,6 +16,7 @@
 
 package org.coodex.config;
 
+import org.coodex.functional.Supplier;
 import org.coodex.util.Common;
 import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
@@ -24,9 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.util.function.Supplier;
+//import java.util.function.Supplier;
 
 /**
  * @author davidoff shen
@@ -35,11 +37,31 @@ public class Config {
 
     public final static SystemPropertiesConfiguration BASE_SYSTEM_PROPERTIES = new SystemPropertiesConfiguration();
     private final static Logger log = LoggerFactory.getLogger(Config.class);
+//    private static final Singleton<WrappedConfiguration> WRAPPED_CONFIGURATION = Singleton.with(
+//            () -> new WrappedConfiguration(new LazyServiceLoader<Configuration>(
+//                    () -> new LazyServiceLoader<DefaultConfigurationProvider>(ConfigurationBaseProfile::new) {
+//                    }.get().get()) {
+//            })
+//    );
+
     private static final Singleton<WrappedConfiguration> WRAPPED_CONFIGURATION = Singleton.with(
-            () -> new WrappedConfiguration(new LazyServiceLoader<Configuration>(
-                    () -> new LazyServiceLoader<DefaultConfigurationProvider>(ConfigurationBaseProfile::new) {
-                    }.get().get()) {
-            })
+            new Supplier<WrappedConfiguration>() {
+                @Override
+                public WrappedConfiguration get() {
+                    return new WrappedConfiguration(new LazyServiceLoader<Configuration>(
+                            new Supplier<Configuration>() {
+
+                                @Override
+                                public Configuration get() {
+                                    return new ConfigurationBaseProfile();
+                                }
+                            }
+//                            () -> new LazyServiceLoader<DefaultConfigurationProvider>(ConfigurationBaseProfile::new) {
+//                            }.get().get()
+                    ) {
+                    });
+                }
+            }
     );
 
     public static Configuration getConfig() {
@@ -59,11 +81,21 @@ public class Config {
     }
 
     public static String[] getArray(String key, String... namespaces) {
-        return getArray(key, () -> null, namespaces);
+        return getArray(key, new Supplier<String[]>() {
+            @Override
+            public String[] get() {
+                return null;
+            }
+        }, namespaces);
     }
 
-    public static String[] getArray(String key, String[] defaultValue, String... namespaces) {
-        return getArray(key, () -> defaultValue, namespaces);
+    public static String[] getArray(String key, final String[] defaultValue, String... namespaces) {
+        return getArray(key, new Supplier<String[]>() {
+            @Override
+            public String[] get() {
+                return defaultValue;
+            }
+        }, namespaces);
     }
 
     public static String[] getArray(String key, Supplier<String[]> supplier, String... namespaces) {
@@ -97,17 +129,32 @@ public class Config {
     private static class WrappedConfiguration extends AbstractConfiguration {
         private final Singleton<List<Configuration>> configuration;
 
-        private WrappedConfiguration(ServiceLoader<Configuration> configurationServiceLoader) {
-            this.configuration = Singleton.with(() -> {
-                List<Configuration> configurationList = new ArrayList<>(configurationServiceLoader.sorted());
-                Configuration defaultConfiguration = configurationServiceLoader.getDefault();
-                if (defaultConfiguration != null) {
-                    configurationList.add(configurationServiceLoader.getDefault());
-                }
+        private WrappedConfiguration(final ServiceLoader<Configuration> configurationServiceLoader) {
+            this.configuration = Singleton.with(
+                    new Supplier<List<Configuration>>() {
+                        @Override
+                        public List<Configuration> get() {
+                            List<Configuration> configurationList = new ArrayList<>(configurationServiceLoader.sorted());
+                            Configuration defaultConfiguration = configurationServiceLoader.getDefault();
+                            if (defaultConfiguration != null) {
+                                configurationList.add(configurationServiceLoader.getDefault());
+                            }
 
-                configurationList.add(BASE_SYSTEM_PROPERTIES);
-                return configurationList;
-            });
+                            configurationList.add(BASE_SYSTEM_PROPERTIES);
+                            return configurationList;
+                        }
+                    }
+//            () -> {
+//                List<Configuration> configurationList = new ArrayList<>(configurationServiceLoader.sorted());
+//                Configuration defaultConfiguration = configurationServiceLoader.getDefault();
+//                if (defaultConfiguration != null) {
+//                    configurationList.add(configurationServiceLoader.getDefault());
+//                }
+//
+//                configurationList.add(BASE_SYSTEM_PROPERTIES);
+//                return configurationList;
+//            }
+            );
         }
 
         @Override

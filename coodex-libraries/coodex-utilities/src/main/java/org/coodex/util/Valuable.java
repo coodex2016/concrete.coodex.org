@@ -19,12 +19,6 @@ package org.coodex.util;
 import java.util.Objects;
 
 public interface Valuable<T> extends Described {
-    static <T, E extends Valuable<T>> E of(T o, Class<E> enumType) {
-        for (E enumElement : enumType.getEnumConstants()) {
-            if (Objects.equals(o, enumElement.getValue())) return enumElement;
-        }
-        throw new NonEnumElementException(enumType, o);
-    }
 
     T getValue();
 

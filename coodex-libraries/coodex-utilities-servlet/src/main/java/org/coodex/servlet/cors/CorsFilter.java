@@ -72,7 +72,15 @@ public class CorsFilter implements Filter {
             throws IOException, ServletException {
 
         //         @Override
-        CORSSetter.set(getCorsSetting(), response::setHeader, request.getHeader("Origin"));
+        CORSSetter.set(getCorsSetting(),
+                new HeaderSetter() {
+                    @Override
+                    public void set(String header, String value) {
+                        response.setHeader(header, value);
+                    }
+                }
+//                response::setHeader
+                , request.getHeader("Origin"));
 
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);

@@ -20,10 +20,7 @@ package org.coodex.util;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class FriendlyNumbers {
 
@@ -42,10 +39,10 @@ public class FriendlyNumbers {
     }
 
     public static void main(String[] args) {
-        Arrays.asList(599, 14599, 19999, 20001894123L, 99999999999L)
-                .forEach(l -> {
-                    System.out.println("friendly " + l + ": " + THOUSAND_BASE.format(l.longValue()));
-                });
+//        Arrays.asList(599, 14599, 19999, 20001894123L, 99999999999L)
+//                .forEach(l -> {
+//                    System.out.println("friendly " + l + ": " + THOUSAND_BASE.format(l.longValue()));
+//                });
 
     }
 
@@ -54,17 +51,35 @@ public class FriendlyNumbers {
             synchronized (this) {
                 if (items == null || param.changed) {
                     items = new ArrayList<>(param.paramItems);
-                    items.sort(ParamItem::compareTo);
+                    Collections.sort(items, new Comparator<ParamItem>() {
+                        @Override
+                        public int compare(ParamItem o1, ParamItem o2) {
+                            return o1.compareTo(o2);
+                        }
+                    });
+//                    Collections.sort(items,);
+//                    items.sort(ParamItem::compareTo);
                     param.changed = false;
                 }
             }
         }
         long v = Math.abs(value);
-        Optional<ParamItem> item = items.stream().filter(paramItem -> paramItem.maxRange > v).findFirst();
-        if (!item.isPresent()) {
+        ParamItem found = null;
+        for (ParamItem item : items) {
+            if (item.maxRange > v) {
+                found = item;
+                break;
+            }
+        }
+        if (found == null) {
             return String.valueOf(value);
         }
-        ParamItem paramItem = item.get();
+//        Optional<ParamItem> item = items.stream().filter(paramItem -> paramItem.maxRange > v).findFirst();
+//        if (!item.isPresent()) {
+//            return String.valueOf(value);
+//        }
+//        ParamItem paramItem = item.get();
+        ParamItem paramItem = found;
         if (paramItem.divisor == 1) {
             return String.valueOf(value);
         }
@@ -112,7 +127,7 @@ public class FriendlyNumbers {
     public static class Param {
         private final int scale;
         private boolean changed = true;
-        private List<ParamItem> paramItems = new ArrayList<>();
+        private final List<ParamItem> paramItems = new ArrayList<>();
 
         public Param() {
             this(1);

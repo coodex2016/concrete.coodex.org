@@ -19,8 +19,8 @@ package test.org.coodex.bean.processors.c;
 import org.coodex.util.SelectableServiceLoader;
 import org.coodex.util.ServiceLoader;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.List;
 import java.util.Map;
 

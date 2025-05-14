@@ -16,6 +16,8 @@
 
 package org.coodex.util;
 
+import org.coodex.functional.Function;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
@@ -27,23 +29,41 @@ public class FailureRate {
     public static int MAX = 7200;
     public static boolean cache = false;
     static SingletonMap<Integer, BigDecimal> max_n = SingletonMap.<Integer, BigDecimal>builder()
-            .function(i -> BigDecimal.valueOf(MAX).pow(i))
+            .function(new Function<Integer, BigDecimal>() {
+                @Override
+                public BigDecimal apply(Integer i) {
+                    return BigDecimal.valueOf(MAX).pow(i);
+                }
+            })
             .build();
     static SingletonMap<Integer, BigDecimal> max_1_n = SingletonMap.<Integer, BigDecimal>builder()
-            .function(i -> BigDecimal.valueOf(MAX - 1).pow(i))
+            .function(new Function<Integer, BigDecimal>() {
+                @Override
+                public BigDecimal apply(Integer i) {
+                    return BigDecimal.valueOf(MAX - 1).pow(i);
+                }
+            })
             .build();
     static SingletonMap<Integer, BigDecimal> f_n = SingletonMap.<Integer, BigDecimal>builder()
-            .function(n -> {
-                BigDecimal v = new BigDecimal(1);
-                if (n <= 1) return v;
-                for (int i = 2; i <= n; i++) {
-                    v = v.multiply(BigDecimal.valueOf(i));
+            .function(new Function<Integer, BigDecimal>() {
+                @Override
+                public BigDecimal apply(Integer n) {
+                    BigDecimal v = new BigDecimal(1);
+                    if (n <= 1) return v;
+                    for (int i = 2; i <= n; i++) {
+                        v = v.multiply(BigDecimal.valueOf(i));
+                    }
+                    return v;
                 }
-                return v;
             })
             .build();
     public static SingletonMap<Key, BigDecimal> map_c = SingletonMap.<Key, BigDecimal>builder()
-            .function(key -> _c(key.x, key.y)).build();
+            .function(new Function<Key, BigDecimal>() {
+                @Override
+                public BigDecimal apply(Key key) {
+                    return _c(key.x, key.y);
+                }
+            }).build();
 
 //    static BigDecimal p(int n, int i) {
 //        BigDecimal v = new BigDecimal(1);
@@ -175,7 +195,12 @@ public class FailureRate {
     }
 
     public static final SingletonMap<Key, BigDecimal> map_f = SingletonMap.<Key, BigDecimal>builder()
-            .function(key -> _f(key.x, key.y)).build();
+            .function(new Function<Key, BigDecimal>() {
+                @Override
+                public BigDecimal apply(Key key) {
+                    return _f(key.x, key.y);
+                }
+            }).build();
 
 
 }

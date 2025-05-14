@@ -18,7 +18,7 @@ package org.coodex.concrete.accounts;
 
 import org.coodex.concrete.accounts.api.TenantSelfManagementService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Created by davidoff shen on 2017-05-26.

@@ -34,8 +34,13 @@ public class SpringBeanFactoryAware implements SmartInstantiationAwareBeanPostPr
 
     public SpringBeanFactoryAware(ListableBeanFactory beanFactory) {
         listableBeanFactory = beanFactory;
-        log.info("coodex-spring: listable bean factory injected. {}",
-                Optional.ofNullable(beanFactory).map(Object::getClass).orElse(null));
+        if (log.isInfoEnabled()) {
+
+            log.info("coodex-spring: listable bean factory injected. {}",
+//                    Optional.ofNullable(beanFactory).map(Object::getClass).orElse(null)
+                    beanFactory == null ? null : beanFactory.getClass()
+            );
+        }
     }
 
     public static ListableBeanFactory getListableBeanFactory() {

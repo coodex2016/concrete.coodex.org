@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 - 2025 coodex.org (jujus.shen@126.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.coodex</groupId>
+        <artifactId>coodex-libraries</artifactId>
+        <version>0.6.0</version>
+    </parent>
+
+    <artifactId>net.sf.marineapi-java7</artifactId>
+
+    <name>Java Marine API</name>
+    <url>http://ktuukkan.github.io/marine-api/</url>
+    <description>
+        Java Marine API is an NMEA 0183 library for Java
+        (http://ktuukkan.github.io/marine-api/).
+    </description>
+
+    <licenses>
+        <license>
+            <name>LGPL 3.0 license</name>
+            <url>http://www.opensource.org/licenses/lgpl-3.0.html</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <maven.compiler.source>7</maven.compiler.source>
+        <maven.compiler.target>7</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+
+    <organization>
+        <name>Kimmo Tuukkanen</name>
+        <url>https://github.com/ktuukkan/</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>ktuukkan</id>
+            <name>Kimmo Tuukkanen</name>
+            <email>kimmo.tuukkanen at gmail.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git@github.com:ktuukkan/marine-api.git</connection>
+        <developerConnection>scm:git:git@github.com:ktuukkan/marine-api.git
+        </developerConnection>
+        <url>git@github.com:ktuukkan/marine-api.git</url>
+    </scm>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>com.neuronrobotics</groupId>
+            <artifactId>nrjavaserial</artifactId>
+            <version>3.14.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

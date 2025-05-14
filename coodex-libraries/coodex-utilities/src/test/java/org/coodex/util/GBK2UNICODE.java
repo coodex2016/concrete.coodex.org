@@ -16,12 +16,12 @@
 
 package org.coodex.util;
 
+import org.coodex.util.java8.StringJoiner;
+
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
+import java.util.*;
+//import java.util.StringJoiner;
+//import java.util.stream.Collectors;
 
 public class GBK2UNICODE {
 
@@ -39,7 +39,7 @@ public class GBK2UNICODE {
         Map<Integer, Integer> gbkUnicodeMap = new HashMap<>();
         Map<Integer, Integer> unicodeGBKMap = new HashMap<>();
         for (int i = 0x8140; i < 0xFE9F; i++) {
-            byte ch[] = {(byte) (i >> 8), (byte) (i & 0xFF)};
+            byte[] ch = {(byte) (i >> 8), (byte) (i & 0xFF)};
             int code = new String(ch, "GBK").charAt(0) & 0xFFFF;
             if (code == 65533) code = 0;
             if (code != 0) {
@@ -60,7 +60,12 @@ public class GBK2UNICODE {
 //        System.out.println((char)8212);
         System.out.println(gbkUnicodeMap.size());
 
-        List<Integer> validGBKCodes = gbkUnicodeMap.keySet().stream().sorted().collect(Collectors.toList());
+        List<Integer> validGBKCodes = new ArrayList<>();
+        for (Integer k : gbkUnicodeMap.keySet()) {
+            validGBKCodes.add(k);
+        }
+        Collections.sort(validGBKCodes);
+//                gbkUnicodeMap.keySet().stream().sorted().collect(Collectors.toList());
         StringBuilder builder = new StringBuilder();
         StringJoiner blocks = new StringJoiner(", ");
         int hold = 2;
@@ -99,7 +104,12 @@ public class GBK2UNICODE {
 //        System.out.println("GBK_CHARS all_gbk_chars[] = {" + blocks + "};");
 
 
-        List<Integer> validUnicodeCodes = unicodeGBKMap.keySet().stream().sorted().collect(Collectors.toList());
+        List<Integer> validUnicodeCodes = new ArrayList<>();
+        for (Integer k : unicodeGBKMap.keySet()) {
+            validUnicodeCodes.add(k);
+        }
+        Collections.sort(validUnicodeCodes);
+//                unicodeGBKMap.keySet().stream().sorted().collect(Collectors.toList());
         hold = 1;
         block = 0;
         start = -1;
@@ -116,7 +126,9 @@ public class GBK2UNICODE {
                 String tableName = "unicode2gbk_" + block;
                 StringJoiner jn = new StringJoiner(",");
                 for (int x = start; x <= end; x++) {
-                    jn.add(unicodeGBKMap.getOrDefault(x, 0).toString());
+                    Integer _i = unicodeGBKMap.get(x);
+                    jn.add((_i == null ? new Integer(0) : _i).toString());
+//                    jn.add(unicodeGBKMap.getOrDefault(x, 0).toString());
                 }
                 charDef.append("unsigned short ").append(tableName).append("[] = {").append(jn).append("};\n\n");
                 uni2gbk_CHARS_BLOCK.add("{" + start + ", " + end + ", " + tableName + "}");
@@ -129,7 +141,9 @@ public class GBK2UNICODE {
         String tableName = "unicode2gbk_" + block;
         StringJoiner jn = new StringJoiner(",");
         for (int x = start; x <= end; x++) {
-            jn.add(unicodeGBKMap.getOrDefault(x, 0).toString());
+            Integer _i = unicodeGBKMap.get(x);
+            jn.add((_i == null ? new Integer(0) : _i).toString());
+//            jn.add(unicodeGBKMap.getOrDefault(x, 0).toString());
         }
         charDef.append("unsigned short ").append(tableName).append("[] = {").append(jn).append("}\n\n");
         uni2gbk_CHARS_BLOCK.add("{" + start + ", " + end + ", " + tableName + "}");

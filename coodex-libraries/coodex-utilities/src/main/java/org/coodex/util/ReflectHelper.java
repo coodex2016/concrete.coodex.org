@@ -15,15 +15,17 @@
  */
 package org.coodex.util;
 
+import org.coodex.functional.BiConsumer;
+import org.coodex.functional.Consumer;
+import org.coodex.functional.Function;
+import org.coodex.functional.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.net.URL;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static org.coodex.util.Common.cast;
 
@@ -33,11 +35,26 @@ import static org.coodex.util.Common.cast;
 public class ReflectHelper {
 
 
-    public static final Function<Class<?>, Boolean> NOT_NULL = Objects::nonNull;
+    public static final Function<Class<?>, Boolean> NOT_NULL = new Function<Class<?>, Boolean>() {
+        @Override
+        public Boolean apply(Class<?> aClass) {
+            return aClass != null;
+        }
+    }/*Objects::nonNull*/;
     @SuppressWarnings("unused")
-    public static final Function<Class<?>, Boolean> ALL_OBjECT = c -> c != null && c != Object.class;
+    public static final Function<Class<?>, Boolean> ALL_OBjECT = new Function<Class<?>, Boolean>() {
+        @Override
+        public Boolean apply(Class<?> c) {
+            return c != null && c != Object.class;
+        }
+    }/*c -> c != null && c != Object.class */;
     @SuppressWarnings("unused")
-    public static final Function<Class<?>, Boolean> ALL_OBJECT_EXCEPT_JAVA_SDK = c -> c != null && !c.getName().startsWith("java");
+    public static final Function<Class<?>, Boolean> ALL_OBJECT_EXCEPT_JAVA_SDK = new Function<Class<?>, Boolean>() {
+        @Override
+        public Boolean apply(Class<?> c) {
+            return c != null && !c.getName().startsWith("java");
+        }
+    }/*c -> c != null && !c.getName().startsWith("java")*/;
     private static final Logger log = LoggerFactory.getLogger(ReflectHelper.class);
 
     private ReflectHelper() {
@@ -255,33 +272,56 @@ public class ReflectHelper {
         if (processor == null) {
             return;
         }
-        ResourceScanner.newBuilder((resource, resourceName) -> {
-                    String className = resourceToClassName(resourceName);
-                    try {
-                        processor.accept(Class.forName(className));
-                    } catch (ClassNotFoundException e) {
-                        log.warn("load class fail. {}, {}", className, e.getLocalizedMessage());
+        ResourceScanner.newBuilder(
+                        new BiConsumer<URL, String>() {
+                            @Override
+                            public void accept(URL url, String resourceName) {
+                                String className = resourceToClassName(resourceName);
+                                try {
+                                    processor.accept(Class.forName(className));
+                                } catch (ClassNotFoundException e) {
+                                    log.warn("load class fail. {}, {}", className, e.getLocalizedMessage());
+                                }
+                            }
+                        }
+//                (resource, resourceName) -> {
+//                    String className = resourceToClassName(resourceName);
+//                    try {
+//                        processor.accept(Class.forName(className));
+//                    } catch (ClassNotFoundException e) {
+//                        log.warn("load class fail. {}, {}", className, e.getLocalizedMessage());
+//                    }
+//                }
+                ).filter(new Function<String, Boolean>() {
+                    @Override
+                    public Boolean apply(String resourceName) {
+                        String className = resourceToClassName(resourceName);
+                        return className != null && filter.apply(className);
                     }
-                }).filter(resourceName -> {
-                    String className = resourceToClassName(resourceName);
-                    return className != null && filter.apply(className);
                 }).build()
-                .scan(packageToPath(packages));
+                .scan(packageToPath(packages)
+                );
     }
 
     @SuppressWarnings("unused")
     public static <T> T throwExceptionObject(Class<T> interfaceClass, final Supplier<Throwable> supplier) {
         return cast(Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[]{interfaceClass},
-                (proxy, method, args) -> {
-                    throw supplier.get();
+                new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        throw supplier.get();
+                    }
                 }));
     }
 
     @SuppressWarnings("unused")
     public static <T> T throwExceptionObject(Class<T> interfaceClass, final Function<Method, Throwable> function) {
         return cast(Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[]{interfaceClass},
-                (proxy, method, args) -> {
-                    throw function.apply(method);
+                new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        throw function.apply(method);
+                    }
                 }));
     }
 
@@ -418,12 +458,17 @@ public class ReflectHelper {
                 addInterfaceTo(x.getClass(), interfaces);
             }
         }
-        if (interfaces.size() == 0) {
+        if (interfaces.isEmpty()) {
             return o;
         }
 
         return cast(Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces.toArray(new Class<?>[0]),
-                (proxy, method, args) -> invoke(method, o, objects, args)));
+                new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        return ReflectHelper.invoke(method, o, objects, args);
+                    }
+                }));
     }
 
     public static class MethodParameter {

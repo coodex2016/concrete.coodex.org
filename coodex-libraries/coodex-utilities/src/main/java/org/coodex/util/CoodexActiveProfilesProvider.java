@@ -16,15 +16,36 @@
 
 package org.coodex.util;
 
+import org.coodex.functional.Supplier;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class CoodexActiveProfilesProvider implements ActiveProfilesProvider {
     private final Singleton<String[]> activeProfiles = Singleton.with(
-            () ->
-                    Common.toArray(System.getProperty("coodex.active.profiles", ""), ",", new ArrayList<>())
-                            .stream()
-                            .filter(s -> !Common.isBlank(s))
-                            .toArray(String[]::new)
+            new Supplier<String[]>() {
+                @Override
+                public String[] get() {
+                    List<String> profiles = Common.toArray(System.getProperty("coodex.active.profiles", ""), ",", new ArrayList<String>());
+                    List<String> result = new ArrayList<>();
+                    for (String profile : profiles) {
+                        if (!Common.isBlank(profile)) {
+                            result.add(profile);
+                        }
+                    }
+                    return result.toArray(new String[0]);
+//                    return Common.toArray(System.getProperty("coodex.active.profiles", ""), ",", new ArrayList<String>())
+//                            .stream()
+//                            .filter(s -> !Common.isBlank(s))
+//                            .toArray(String[]::new);
+//                    return new String[0];
+                }
+            }
+//            () ->
+//                    Common.toArray(System.getProperty("coodex.active.profiles", ""), ",", new ArrayList<>())
+//                            .stream()
+//                            .filter(s -> !Common.isBlank(s))
+//                            .toArray(String[]::new)
 
     );
 

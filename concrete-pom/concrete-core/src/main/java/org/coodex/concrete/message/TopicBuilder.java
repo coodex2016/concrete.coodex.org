@@ -44,7 +44,7 @@ import static org.coodex.util.Common.cast;
 import static org.coodex.util.Common.rte;
 
 @SuppressWarnings("rawtypes")
-class TopicBuilder implements Function<TopicKey, AbstractTopic> {
+class TopicBuilder implements Function<TopicKey, AbstractTopic>, org.coodex.functional.Function<TopicKey,AbstractTopic> {
 
     private final static Logger log = LoggerFactory.getLogger(TopicBuilder.class);
 

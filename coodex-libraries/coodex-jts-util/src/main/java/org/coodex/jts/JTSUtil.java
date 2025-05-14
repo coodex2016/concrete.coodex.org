@@ -16,6 +16,7 @@
 
 package org.coodex.jts;
 
+import org.coodex.functional.Function;
 import org.coodex.util.Common;
 import org.coodex.util.LazySelectableServiceLoader;
 import org.coodex.util.SelectableServiceLoader;
@@ -26,7 +27,6 @@ import org.locationtech.jts.io.WKTReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
 public class JTSUtil {
 
@@ -147,7 +147,7 @@ public class JTSUtil {
                 holes.add(hole);
             }
         }
-        return Common.cast(holes.size() == 0 ? GEOMETRY_FACTORY.createPolygon(polygon.getExteriorRing()) :
+        return Common.cast(holes.isEmpty() ? GEOMETRY_FACTORY.createPolygon(polygon.getExteriorRing()) :
                 GEOMETRY_FACTORY.createPolygon(
                         polygon.getExteriorRing(),
                         holes.toArray(new LinearRing[0])
@@ -320,8 +320,24 @@ public class JTSUtil {
         }
     }
 
+
+    private static final Function<Coordinate, Double> getX = new Function<Coordinate, Double>() {
+        @Override
+        public Double apply(Coordinate coordinate) {
+            return coordinate.getX();
+        }
+    };
+
+    private static final Function<Coordinate, Double> getY = new Function<Coordinate, Double>() {
+
+        @Override
+        public Double apply(Coordinate coordinate) {
+            return coordinate.getY();
+        }
+    };
+
     public static double shoelaceFormula(Coordinate[] coordinates) {
-        return shoelaceFormula(coordinates, Coordinate::getX, Coordinate::getY);
+        return shoelaceFormula(coordinates, getX, getY);
     }
 
     public static Geometry wktToGeometry(String wkt) {

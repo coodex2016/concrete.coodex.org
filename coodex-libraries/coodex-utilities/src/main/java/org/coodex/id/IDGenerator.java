@@ -16,13 +16,19 @@
 
 package org.coodex.id;
 
+import org.coodex.functional.Supplier;
 import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
 
 public class IDGenerator {
 
     private static final ServiceLoader<IDGeneratorService> ID_GENERATOR_SERVICE_SERVICE_LOADER
-            = new LazyServiceLoader<IDGeneratorService>(SnowflakeIdGeneratorService::new) {
+            = new LazyServiceLoader<IDGeneratorService>(new Supplier<IDGeneratorService>() {
+        @Override
+        public IDGeneratorService get() {
+            return new SnowflakeIdGeneratorService();
+        }
+    }) {
     };
 
     public static String newId() {

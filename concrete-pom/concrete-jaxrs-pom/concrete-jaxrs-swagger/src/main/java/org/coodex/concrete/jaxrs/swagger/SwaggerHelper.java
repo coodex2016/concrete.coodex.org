@@ -36,6 +36,7 @@ import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.config.Config;
 import org.coodex.mock.Mocker;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 import org.coodex.util.PojoInfo;
 import org.coodex.util.PojoProperty;
 
@@ -301,7 +302,7 @@ public class SwaggerHelper {
 
 
     public static String toJson(String url, List<Class<?>> classes) {
-        return JSONSerializer.getInstance().toJson(toOpenAPI(url, classes),false);
+        return JSONSerializerUtil.getInstance().toJson(toOpenAPI(url, classes),false);
     }
 
     public static String toYaml(String url, List<Class<?>> classes) {

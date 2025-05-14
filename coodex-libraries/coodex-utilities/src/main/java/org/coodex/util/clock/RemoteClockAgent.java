@@ -17,6 +17,7 @@
 package org.coodex.util.clock;
 
 import org.coodex.config.Config;
+import org.coodex.functional.Supplier;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
@@ -25,7 +26,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.util.function.Supplier;
+//import java.util.function.Supplier;
 
 import static org.coodex.util.clock.ClockAgentService.PORT;
 

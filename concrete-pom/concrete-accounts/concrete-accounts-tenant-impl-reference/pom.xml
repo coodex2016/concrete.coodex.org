@@ -21,7 +21,7 @@
     <parent>
         <artifactId>concrete-accounts</artifactId>
         <groupId>org.coodex.concrete</groupId>
-        <version>0.5.4-SNAPSHOT</version>
+        <version>0.6.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -61,6 +61,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate.version}</version>
             <scope>test</scope>
         </dependency>
 

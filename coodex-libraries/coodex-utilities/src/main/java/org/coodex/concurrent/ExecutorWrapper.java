@@ -19,6 +19,7 @@ package org.coodex.concurrent;
 import org.coodex.util.Common;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -79,14 +80,16 @@ final class ExecutorWrapper {
     }
 
     private static InvocationHandler getInvocationHandlerByType(final Class<? extends ExecutorService> executorClass, final Object origin, final Object impl) {
-        return (proxy, method, args) -> {
-            Object object = method.getDeclaringClass().isAssignableFrom(executorClass) ?
-                    impl : origin;
-
-            if (args == null || args.length == 0) {
-                return method.invoke(object);
-            } else {
-                return method.invoke(object, args);
+        return new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                Object object = method.getDeclaringClass().isAssignableFrom(executorClass) ?
+                        impl : origin;
+                if (args == null || args.length == 0) {
+                    return method.invoke(object);
+                } else {
+                    return method.invoke(object, args);
+                }
             }
         };
     }

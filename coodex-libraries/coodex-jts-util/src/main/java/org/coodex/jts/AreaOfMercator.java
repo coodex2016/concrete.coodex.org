@@ -20,7 +20,7 @@ import org.locationtech.jts.geom.LinearRing;
 
 import java.util.Objects;
 
-public class AreaOfMercator implements AreaOf {
+public class AreaOfMercator extends AbstractAreaOf {
     @Override
     public double areaOf(LinearRing linearRing) {
         return JTSUtil.areaOf(JTSUtil.mercator2LngLat(linearRing), CoordType.LNG_LAT);

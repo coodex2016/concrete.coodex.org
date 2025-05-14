@@ -32,9 +32,12 @@ public class ThrottleTest {
             Common.sleep(1);
 //            TimeUnit.NANOSECONDS.sleep(1);
             i++;
-            int finalI = i;
-            throttle.submit(() -> {
-                System.out.println(Clock.currentTimeMillis() + "  " + finalI + " thread: " + Thread.currentThread().getName());
+            final int finalI = i;
+            throttle.submit(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println(Clock.currentTimeMillis() + "  " + finalI + " thread: " + Thread.currentThread().getName());
+                }
             });
         }
 

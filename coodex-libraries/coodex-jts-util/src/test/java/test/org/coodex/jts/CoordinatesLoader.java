@@ -20,10 +20,11 @@ import com.alibaba.fastjson.JSON;
 import org.coodex.util.Common;
 import org.locationtech.jts.geom.Coordinate;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class CoordinatesLoader {
 
@@ -56,28 +57,33 @@ public class CoordinatesLoader {
     }
 
 
-    public static void main(String[] args) throws IOException {
-        File f = new File(COORDINATES_PATH);
-        if (!f.exists()) f.createNewFile();
-        try (OutputStream outputStream = new FileOutputStream(f)) {
-            outputStream.write(JSON.toJSONString(Arrays.stream(
-                    randomCoordinates(40000)).map(P::new).collect(Collectors.toList())).getBytes(StandardCharsets.UTF_8));
-        }
-        System.out.println(f.getAbsolutePath() + " created");
-
-        System.out.print(loader().length);
-    }
+//    public static void main(String[] args) throws IOException {
+//        File f = new File(COORDINATES_PATH);
+//        if (!f.exists()) f.createNewFile();
+//        try (OutputStream outputStream = new FileOutputStream(f)) {
+//            outputStream.write(JSON.toJSONString(Arrays.stream(
+//                    randomCoordinates(40000)).map(P::new).collect(Collectors.toList())).getBytes(StandardCharsets.UTF_8));
+//        }
+//        System.out.println(f.getAbsolutePath() + " created");
+//
+//        System.out.print(loader().length);
+//    }
 
     public static Coordinate[] loader() throws IOException {
         try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(new FileInputStream(COORDINATES_PATH))
+                new InputStreamReader(Files.newInputStream(Paths.get(COORDINATES_PATH)))
         )) {
             StringBuilder builder = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
                 builder.append(line);
             }
-            return Arrays.stream(JSON.parseObject(builder.toString(), P[].class)).map(P::toCoordinate).toArray(Coordinate[]::new);
+            P[] array = JSON.parseObject(builder.toString(), P[].class);
+            Coordinate[] coordinates = new Coordinate[array.length];
+            for (int i = 0; i < array.length; i++) {
+                coordinates[i] = array[i].toCoordinate();
+            }
+            return coordinates;//Arrays.stream(JSON.parseObject(builder.toString(), P[].class)).map(P::toCoordinate).toArray(Coordinate[]::new);
         }
     }
 

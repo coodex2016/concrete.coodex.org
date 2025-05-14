@@ -23,6 +23,7 @@ import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.mock.Mocker;
 import org.coodex.util.Common;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 
 /**
  * Created by davidoff shen on 2016-12-05.
@@ -45,7 +46,7 @@ public class JQueryDocToolkit extends ServiceDocToolkit {
             }
             try {
                 builder.append(
-                        JSONSerializer.getInstance().toJson(
+                        JSONSerializerUtil.getInstance().toJson(
                                 Mocker.mock(
                                         unit.getParameters()[i].getGenericType(),
                                         module.getInterfaceClass(),

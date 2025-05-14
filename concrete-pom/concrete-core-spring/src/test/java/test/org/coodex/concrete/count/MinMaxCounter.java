@@ -20,7 +20,7 @@ import org.coodex.count.Counter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * Created by davidoff shen on 2017-04-18.

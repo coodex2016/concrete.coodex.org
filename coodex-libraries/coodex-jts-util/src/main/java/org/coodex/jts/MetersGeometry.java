@@ -105,12 +105,18 @@ public class MetersGeometry {
 
     public Geometry toLngLat() {
         Geometry lngLat = geometry.copy();
-        Arrays.stream(lngLat.getCoordinates()).forEach(coord -> {
+        for(Coordinate coord : lngLat.getCoordinates()) {
             double x = coord.getX();
             double y = coord.getY();
             coord.setX(JTSUtil.xMove(base, x));
             coord.setY(JTSUtil.yMove(base, y));
-        });
+        };
+//        Arrays.stream(lngLat.getCoordinates()).forEach(coord -> {
+//            double x = coord.getX();
+//            double y = coord.getY();
+//            coord.setX(JTSUtil.xMove(base, x));
+//            coord.setY(JTSUtil.yMove(base, y));
+//        });
         return lngLat;
     }
 

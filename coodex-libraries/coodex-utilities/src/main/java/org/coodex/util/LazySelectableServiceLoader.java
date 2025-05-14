@@ -16,6 +16,8 @@
 
 package org.coodex.util;
 
+import org.coodex.functional.Function;
+import org.coodex.functional.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,11 +25,9 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.*;
+//import java.util.function.Function;
+//import java.util.function.Supplier;
 
 import static org.coodex.util.GenericTypeHelper.solveFromInstance;
 import static org.coodex.util.GenericTypeHelper.typeToClass;
@@ -39,16 +39,31 @@ import static org.coodex.util.GenericTypeHelper.typeToClass;
 public abstract class LazySelectableServiceLoader<Param_Type, T extends SelectableService<Param_Type>>
         implements SelectableServiceLoader<Param_Type, T>, ServiceLoader<T> {
 
-//    public static final Function<Method, RuntimeException> EXCEPTION_FUNCTION =
+    //    public static final Function<Method, RuntimeException> EXCEPTION_FUNCTION =
 //            method -> new RuntimeException("no instance found."
 //                    + method.getDeclaringClass().getName()
 //                    + "." + method.getName());
     private static final Logger log = LoggerFactory.getLogger(LazySelectableServiceLoader.class);
-    private final Singleton<List<T>> sortedServices = Singleton.with(this::sorted);
+    private final Singleton<List<T>> sortedServices = Singleton.with(
+//            this::sorted
+            new Supplier<List<T>>() {
+                @Override
+                public List<T> get() {
+                    return LazySelectableServiceLoader.this.sorted();
+                }
+            }
+    );
     private ServiceLoader<T> serviceLoaderFacade;
     private Supplier<T> defaultServiceSupplier;
-    private final Singleton<T> defaultServiceSingleton = Singleton.with(() ->
-            defaultServiceSupplier == null ? null : defaultServiceSupplier.get()
+    private final Singleton<T> defaultServiceSingleton = Singleton.with(
+            new Supplier<T>() {
+                @Override
+                public T get() {
+                    return defaultServiceSupplier == null ? null : defaultServiceSupplier.get();
+                }
+            }
+//            () ->
+//            defaultServiceSupplier == null ? null : defaultServiceSupplier.get()
     );
     private Function<Method, RuntimeException> exceptionFunction = null;
 
@@ -57,11 +72,27 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
     }
 
     public LazySelectableServiceLoader(final T defaultService) {
-        this(defaultService == null ? null : () -> defaultService);
+        this(defaultService == null ? null : new Supplier<T>() {
+            @Override
+            public T get() {
+                return defaultService;
+            }
+        });
     }
 
     public LazySelectableServiceLoader(Supplier<T> defaultServiceSupplier) {
         this.defaultServiceSupplier = defaultServiceSupplier;
+    }
+
+
+    @Override
+    public List<T> sorted() {
+        return ServiceLoaderHelper.sort(this);
+    }
+
+    @Override
+    public List<T> sorted(Comparator<? super T> comparator) {
+        return ServiceLoaderHelper.sort(this, comparator);
     }
 
     /**
@@ -123,8 +154,9 @@ public abstract class LazySelectableServiceLoader<Param_Type, T extends Selectab
                                 }
                         ));
                     }
-                    T finalDefaultService = defaultService;
+                    final T finalDefaultService = defaultService;
                     this.serviceLoaderFacade = localServiceLoader = new LazyServiceLoader<T>() {
+
                         @Override
                         protected T getDefaultInstance() {
 //                            T defaultService = defaultServiceSingleton.get();

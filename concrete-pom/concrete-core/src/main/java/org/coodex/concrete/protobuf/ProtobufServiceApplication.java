@@ -23,6 +23,7 @@ import org.coodex.concrete.own.OwnServiceProvider;
 import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 import org.coodex.util.SingletonMap;
 
 import java.util.Optional;
@@ -51,7 +52,7 @@ public class ProtobufServiceApplication extends OwnServiceProvider {
     private static Concrete.ResponsePackage toResp(ResponsePackage<?> resp) {
         return Concrete.ResponsePackage.newBuilder()
                 .putAllSubjoin(resp.getSubjoin())
-                .setContent(JSONSerializer.getInstance().toJson(resp.getContent()))
+                .setContent(JSONSerializerUtil.getInstance().toJson(resp.getContent()))
                 .setConcreteTokenId(Optional.ofNullable(resp.getConcreteTokenId()).orElse(""))
                 .setOk(resp.isOk())
                 .build();
@@ -60,7 +61,7 @@ public class ProtobufServiceApplication extends OwnServiceProvider {
     private static RequestPackage<Object> toReq(Concrete.RequestPackage req) {
         RequestPackage<Object> requestPackage = new RequestPackage<>();
         requestPackage.setServiceId(req.getServiceId());
-        requestPackage.setContent(JSONSerializer.getInstance().parse(req.getContent(), Object.class));
+        requestPackage.setContent(JSONSerializerUtil.getInstance().parse(req.getContent(), Object.class));
         requestPackage.setConcreteTokenId(req.getConcreteTokenId());
         requestPackage.setSubjoin(req.getSubjoinMap());
         return requestPackage;

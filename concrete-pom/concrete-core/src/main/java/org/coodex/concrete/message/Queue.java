@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.message;
 
-import javax.inject.Qualifier;
+import jakarta.inject.Qualifier;
 import java.lang.annotation.*;
 
 @Qualifier

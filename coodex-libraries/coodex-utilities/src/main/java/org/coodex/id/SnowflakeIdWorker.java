@@ -18,6 +18,7 @@
 package org.coodex.id;
 
 import org.coodex.config.Config;
+import org.coodex.functional.Supplier;
 import org.coodex.util.Clock;
 import org.coodex.util.Common;
 import org.coodex.util.Profile;
@@ -45,28 +46,53 @@ public class SnowflakeIdWorker {
     // ==============================Fields===========================================
     static final Singleton<SnowflakeIdWorker> snowflakeIdWorkerSingleton
             = Singleton.with(
-            () -> {
-                SnowflakeIdWorker snowflakeIdWorker;
-                int machineId = Config.getValue("snowflake.machineId", -1);
+            new Supplier<SnowflakeIdWorker>() {
+                @Override
+                public SnowflakeIdWorker get() {
+                    SnowflakeIdWorker snowflakeIdWorker;
+                    int machineId = Config.getValue("snowflake.machineId", -1);
 
-                if (machineId != -1) {
-                    snowflakeIdWorker = new SnowflakeIdWorker(machineId);
-                } else {
-                    int workerId = Config.getValue("snowflake.workerId", -1);
-                    int dataCenterId = Config.getValue("snowflake.dataCenterId", -1);
-                    if (workerId == -1 && dataCenterId == -1) {
-                        machineId = Profile.get("idWorker").getInt("machineId", -1);
-                        if (machineId == -1) {
-                            log.warn("snowflake parameters[machineId, workerId, dataCenterId] not set. use default value.");
-                            machineId = 0;
-                        }
+                    if (machineId != -1) {
                         snowflakeIdWorker = new SnowflakeIdWorker(machineId);
                     } else {
-                        snowflakeIdWorker = new SnowflakeIdWorker(workerId, dataCenterId);
+                        int workerId = Config.getValue("snowflake.workerId", -1);
+                        int dataCenterId = Config.getValue("snowflake.dataCenterId", -1);
+                        if (workerId == -1 && dataCenterId == -1) {
+                            machineId = Profile.get("idWorker").getInt("machineId", -1);
+                            if (machineId == -1) {
+                                log.warn("snowflake parameters[machineId, workerId, dataCenterId] not set. use default value.");
+                                machineId = 0;
+                            }
+                            snowflakeIdWorker = new SnowflakeIdWorker(machineId);
+                        } else {
+                            snowflakeIdWorker = new SnowflakeIdWorker(workerId, dataCenterId);
+                        }
                     }
+                    return snowflakeIdWorker;
                 }
-                return snowflakeIdWorker;
             }
+//            () -> {
+//                SnowflakeIdWorker snowflakeIdWorker;
+//                int machineId = Config.getValue("snowflake.machineId", -1);
+//
+//                if (machineId != -1) {
+//                    snowflakeIdWorker = new SnowflakeIdWorker(machineId);
+//                } else {
+//                    int workerId = Config.getValue("snowflake.workerId", -1);
+//                    int dataCenterId = Config.getValue("snowflake.dataCenterId", -1);
+//                    if (workerId == -1 && dataCenterId == -1) {
+//                        machineId = Profile.get("idWorker").getInt("machineId", -1);
+//                        if (machineId == -1) {
+//                            log.warn("snowflake parameters[machineId, workerId, dataCenterId] not set. use default value.");
+//                            machineId = 0;
+//                        }
+//                        snowflakeIdWorker = new SnowflakeIdWorker(machineId);
+//                    } else {
+//                        snowflakeIdWorker = new SnowflakeIdWorker(workerId, dataCenterId);
+//                    }
+//                }
+//                return snowflakeIdWorker;
+//            }
 //                    new SnowflakeIdWorker(
 //                    Config.getValue(
 //                            "snowflake.machineId",

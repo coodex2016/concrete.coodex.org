@@ -45,13 +45,12 @@ public class EnumElementInfo {
             Valuable<?> v = (Valuable<?>) enumElement;
             Object value = v.getValue();
             this.str = value instanceof String;
-            this.value = str ? (String) value : JSONSerializer.getInstance().toJson(value);
+            this.value = str ? (String) value : JSONSerializerUtil.getInstance().toJson(value);
         } else {
             this.str = true;
             this.value = enumElement.name();
         }
     }
-
 
 
     private static <A extends Annotation> Optional<A> getAnnotation(
@@ -69,7 +68,7 @@ public class EnumElementInfo {
             @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Description> annotationOptional) {
         return Common.firstValuable(
                 annotationOptional.map(Description::name).orElse(null),
-                Described.getDesc(enumElement),
+                DescribedUtil.getDesc(enumElement),
                 enumElement.name()
         );
     }
@@ -81,7 +80,7 @@ public class EnumElementInfo {
     }
 
     public String getCodeValue() {
-        return str ? JSONSerializer.getInstance().toJson(value) : value;
+        return str ? JSONSerializerUtil.getInstance().toJson(value) : value;
     }
 
     public String getLabel() {

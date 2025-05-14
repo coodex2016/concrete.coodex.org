@@ -163,7 +163,7 @@ public final class ConcreteContext {
 
     public static Object runWithContext(final ServiceContext context, final Supplier<?> supplier) {
         try {
-            return CONTEXT.call(context, supplier);
+            return CONTEXT.call(context, supplier::get);
         } catch (Throwable throwable) {
             throw ConcreteHelper.getException(throwable);
         }

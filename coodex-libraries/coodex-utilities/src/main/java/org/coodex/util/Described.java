@@ -17,12 +17,11 @@
 package org.coodex.util;
 
 public interface Described {
-    static String getDesc(Enum<?> e) {
-        String s = e.name();
-        return (e instanceof Described) ? Common.firstValuable(((Described) e).label(), s) : s;
-    }
 
-    default String label() {
-        return null;
-    }
+
+    //    default
+    String label();
+//    {
+//        return null;
+//    }
 }

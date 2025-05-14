@@ -32,11 +32,18 @@ enum IntValuable implements Valuable.Int {
     A(13), B(14), C(15);
     private final int value;
 
-    IntValuable(int value) {this.value = value;}
+    IntValuable(int value) {
+        this.value = value;
+    }
 
     @Override
     public Integer getValue() {
         return value;
+    }
+
+    @Override
+    public String label() {
+        return null;// ???
     }
 }
 
@@ -45,11 +52,18 @@ enum StringValuable implements Valuable<String> {
 
     private final String value;
 
-    StringValuable(String value) {this.value = value;}
+    StringValuable(String value) {
+        this.value = value;
+    }
 
     @Override
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public String label() {
+        return null;
     }
 }
 
@@ -84,9 +98,9 @@ public class Jackson2SerializerTest {
         System.out.println(jsonSerializer.toJson(theMap));
 
         POJO pojo = jsonSerializer.parse(s, POJO.class);
-        Assertions.assertEquals(TestNoneValuable.C,pojo.a);
-        Assertions.assertEquals(IntValuable.C,pojo.b);
-        Assertions.assertEquals(StringValuable.F,pojo.c);
+        Assertions.assertEquals(TestNoneValuable.C, pojo.a);
+        Assertions.assertEquals(IntValuable.C, pojo.b);
+        Assertions.assertEquals(StringValuable.F, pojo.c);
         Assertions.assertArrayEquals(
                 pojo.aSet.stream().sorted(Comparator.comparing(TestNoneValuable::name)).toArray(),
                 new TestNoneValuable[]{TestNoneValuable.A, TestNoneValuable.B}

@@ -16,6 +16,8 @@
 
 package org.coodex.jts.impl;
 
+import org.coodex.functional.BiFunction;
+import org.coodex.functional.Function;
 import org.coodex.jts.GeometryConvertService;
 import org.coodex.jts.JTSUtil;
 import org.locationtech.jts.geom.LinearRing;
@@ -23,33 +25,34 @@ import org.locationtech.jts.geom.Polygon;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static org.coodex.jts.JTSUtil.GEOMETRY_FACTORY;
 
 
 public class PolygonConverter implements GeometryConvertService<Polygon> {
     static BiFunction<Polygon, Function<LinearRing, LinearRing>, Polygon> POLYGON_CONVERTER =
-            (source, func) -> {
-                LinearRing shell = func.apply(source.getExteriorRing());
-                List<LinearRing> holes = new ArrayList<>();
-                for (int i = 0; i < source.getNumInteriorRing(); i++) {
-                    holes.add(func.apply(source.getInteriorRingN(i)));
+            new BiFunction<Polygon, Function<LinearRing, LinearRing>, Polygon>() {
+                @Override
+                public Polygon apply(Polygon source, Function<LinearRing, LinearRing> func) {
+                    LinearRing shell = func.apply(source.getExteriorRing());
+                    List<LinearRing> holes = new ArrayList<>();
+                    for (int i = 0; i < source.getNumInteriorRing(); i++) {
+                        holes.add(func.apply(source.getInteriorRingN(i)));
+                    }
+                    return !holes.isEmpty() ?
+                            GEOMETRY_FACTORY.createPolygon(shell, holes.toArray(new LinearRing[0])) :
+                            GEOMETRY_FACTORY.createPolygon(shell);
                 }
-                return holes.size() > 0 ?
-                        GEOMETRY_FACTORY.createPolygon(shell, holes.toArray(new LinearRing[0])) :
-                        GEOMETRY_FACTORY.createPolygon(shell);
             };
 
     @Override
     public Polygon toMercator(Polygon lngLat) {
-        return POLYGON_CONVERTER.apply(lngLat, JTSUtil::lngLat2Mercator);
+        return POLYGON_CONVERTER.apply(lngLat, Lambdas.lngLat2Mercator_LinearRing);
     }
 
     @Override
     public Polygon toLngLat(Polygon mercator) {
-        return POLYGON_CONVERTER.apply(mercator, JTSUtil::mercator2LngLat);
+        return POLYGON_CONVERTER.apply(mercator, Lambdas.mercator2LngLat_LinearRing);
     }
 
     @Override

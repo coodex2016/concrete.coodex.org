@@ -27,7 +27,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import test.org.coodex.concrete.entities.TestEntity;
 import test.org.coodex.concrete.repo.TestRepo;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static org.springframework.data.domain.PageRequest.of;
 

@@ -21,6 +21,7 @@ import org.coodex.concrete.common.ErrorMessageFacade;
 import org.coodex.concrete.jaxrs.JaxRSModuleMaker;
 import org.coodex.concrete.jaxrs.struct.JaxrsModule;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 
 import java.io.IOException;
 import java.util.List;
@@ -94,13 +95,13 @@ public class VuePressDocRenderer extends AbstractServiceDocRenderer {
 
         writeErrorInfo(ErrorMessageFacade.getAllErrorInfo(), "docs");
 
-        writeTo("docs/.vuepress/modules.json", JSONSerializer.getInstance().toJson(
+        writeTo("docs/.vuepress/modules.json", JSONSerializerUtil.getInstance().toJson(
                 modules.stream()
                         .map(m -> "/modules/" + m.getInterfaceClass().getName())
                         .collect(Collectors.toList())
         ));
 
-        writeTo("docs/.vuepress/pojos.json", JSONSerializer.getInstance().toJson(
+        writeTo("docs/.vuepress/pojos.json", JSONSerializerUtil.getInstance().toJson(
                 toolkit.getPojos().stream().sorted().map(s -> "/pojos/" + s).collect(Collectors.toList())
         ));
 

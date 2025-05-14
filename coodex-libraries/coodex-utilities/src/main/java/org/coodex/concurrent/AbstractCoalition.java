@@ -16,6 +16,7 @@
 
 package org.coodex.concurrent;
 
+import org.coodex.functional.Supplier;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 
@@ -28,11 +29,16 @@ import java.util.concurrent.ScheduledExecutorService;
 @Deprecated
 public abstract class AbstractCoalition<T> implements Coalition<T> {
 
-    private static final Singleton<ScheduledExecutorService> sesSingleton = Singleton.with(
-            () -> ExecutorsHelper.newScheduledThreadPool(
-                    Common.toInt(System.getProperty("coalition.executors.size"), 3),
-                    "CoalitionPool"
-            )
+    private static final Singleton<ScheduledExecutorService> sesSingleton = Singleton.with(new Supplier<ScheduledExecutorService>() {
+                @Override
+                public ScheduledExecutorService get() {
+                    return ExecutorsHelper.newScheduledThreadPool(Common.toInt(System.getProperty("coalition.executors.size"), 3), "CoalitionPool");
+                }
+            }
+//            () -> ExecutorsHelper.newScheduledThreadPool(
+//                    Common.toInt(System.getProperty("coalition.executors.size"), 3),
+//                    "CoalitionPool"
+//            )
     );
     protected final ScheduledExecutorService scheduledExecutorService;// = Executors.newScheduledThreadPool(1);
     protected final Coalition.Callback<T> callback;

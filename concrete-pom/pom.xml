@@ -24,7 +24,7 @@
     <url>https://concrete.coodex.org</url>
     <groupId>org.coodex.concrete</groupId>
     <artifactId>concrete-pom</artifactId>
-    <version>0.5.4-SNAPSHOT</version>
+    <version>0.6.0</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -113,9 +113,10 @@
 
         <spring.cloud.version>2021.0.9</spring.cloud.version>
         <spring.cloud.alibaba.version>2021.0.4.0</spring.cloud.alibaba.version>
-        <spring.boot.version>2.7.18</spring.boot.version>
+        <spring.boot.version>3.4.3</spring.boot.version>
+        <spring.boot.java.version>17</spring.boot.java.version>
         <!--        <spring.framework.version>5.3.4</spring.framework.version>-->
-        <!--        <spring.data.version>2020.0.5</spring.data.version>-->
+<!--        <spring.data.version>2024.0.1</spring.data.version>-->
         <!--        <spring.data.jpa.version>2.4.5</spring.data.jpa.version>-->
 
         <netty4.version>4.1.60.Final</netty4.version>
@@ -464,18 +465,28 @@
             <!--</dependency>-->
 
             <!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
+<!--            <dependency>-->
+<!--                <groupId>javax.ws.rs</groupId>-->
+<!--                <artifactId>javax.ws.rs-api</artifactId>-->
+<!--                <version>2.1.1</version>-->
+<!--            </dependency>-->
             <dependency>
-                <groupId>javax.ws.rs</groupId>
-                <artifactId>javax.ws.rs-api</artifactId>
-                <version>2.1.1</version>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
+                <version>3.1.0</version>
             </dependency>
 
 
             <!-- JSR 330  Dependency Injection for Java -->
+<!--            <dependency>-->
+<!--                <groupId>javax.inject</groupId>-->
+<!--                <artifactId>javax.inject</artifactId>-->
+<!--                <version>1</version>-->
+<!--            </dependency>-->
             <dependency>
-                <groupId>javax.inject</groupId>
-                <artifactId>javax.inject</artifactId>
-                <version>1</version>
+                <groupId>jakarta.inject</groupId>
+                <artifactId>jakarta.inject-api</artifactId>
+                <version>2.0.1</version>
             </dependency>
 
 
@@ -501,13 +512,13 @@
             <!--                <scope>import</scope>-->
             <!--            </dependency>-->
 
-            <!--            <dependency>-->
-            <!--                <groupId>org.springframework.data</groupId>-->
-            <!--                <artifactId>spring-data-bom</artifactId>-->
-            <!--                <version>${spring.data.version}</version>-->
-            <!--                <scope>import</scope>-->
-            <!--                <type>pom</type>-->
-            <!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.data</groupId>-->
+<!--                <artifactId>spring-data-bom</artifactId>-->
+<!--                <version>${spring.data.version}</version>-->
+<!--                <scope>import</scope>-->
+<!--                <type>pom</type>-->
+<!--            </dependency>-->
 
 
             <!-- https://mvnrepository.com/artifact/aopalliance/aopalliance -->

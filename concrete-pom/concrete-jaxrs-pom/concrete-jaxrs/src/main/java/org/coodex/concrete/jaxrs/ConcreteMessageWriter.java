@@ -17,14 +17,15 @@
 package org.coodex.concrete.jaxrs;
 
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -51,7 +52,7 @@ public class ConcreteMessageWriter implements MessageBodyWriter<Object> {
     public void writeTo(Object anEnum, Class<?> type, Type genericType, Annotation[] annotations,
                         MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
         if (anEnum != null) {
-            String json = JSONSerializer.getInstance().toJson(anEnum);
+            String json = JSONSerializerUtil.getInstance().toJson(anEnum);
             entityStream.write(json.getBytes(mediaType.getParameters().getOrDefault(MediaType.CHARSET_PARAMETER,
                     StandardCharsets.UTF_8.displayName())));
         }

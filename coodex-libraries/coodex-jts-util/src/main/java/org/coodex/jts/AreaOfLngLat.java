@@ -27,7 +27,7 @@ import static org.coodex.jts.JTSUtil.distanceLngLat;
 /**
  * 经纬度坐标系面积计算
  */
-public class AreaOfLngLat implements AreaOf {
+public class AreaOfLngLat extends AbstractAreaOf {
     @Override
     public double areaOf(LinearRing linearRing) {
         // 找到最小矩阵的左下角点作为原点，保证投影所有点都在第一象限

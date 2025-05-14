@@ -16,12 +16,13 @@
 
 package org.coodex.concrete.client.jaxrs.jersey;
 
+import jakarta.ws.rs.core.Configuration;
 import org.coodex.concrete.client.jaxrs.ConfigurationProvider;
 import org.coodex.util.Singleton;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
+//import jakarta.ws.rs.core.Configurable;
 
-import javax.ws.rs.core.Configuration;
 
 public class JerseyConfigurationProvider implements ConfigurationProvider {
     private final Singleton<Configuration> configurationSingleton = Singleton.with(() -> {

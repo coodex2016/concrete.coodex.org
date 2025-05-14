@@ -16,13 +16,16 @@
 
 package org.coodex.util;
 
+import org.coodex.functional.BiConsumer;
+import org.coodex.functional.Supplier;
+import org.coodex.util.java8.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ServiceLoader;
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+//import java.util.function.BiConsumer;
+//import java.util.function.Supplier;
 
 public class JavaUtilServiceLoaderProvider extends AbstractServiceLoaderProvider {
     private final static Logger log = LoggerFactory.getLogger(JavaUtilServiceLoaderProvider.class);
@@ -38,41 +41,90 @@ public class JavaUtilServiceLoaderProvider extends AbstractServiceLoaderProvider
     private static final SingletonMap<Class<?>, Map<String, Object>> cache = SingletonMap.<Class<?>, Map<String, Object>>builder().build();
 
     @Override
-    protected Map<String, Object> loadByRowType(Class<?> rowType) {
-        Supplier<Map<String, Object>> supplier = () -> {
-            Class<?>[] interfaces = rowType.getInterfaces();
-            if (interfaces.length == 0) {
-                return loadByInterface(rowType);
-            } else {
-                Map<String, Object> objectMap = new HashMap<>();
-                Set<Class<?>> classes = new HashSet<>();
-                BiConsumer<String, Object> biConsumer = (key, value) -> {
-                    Class<?> instanceClass = value.getClass();
-                    if (!classes.contains(instanceClass) && ReflectHelper.isMatch(instanceClass, rowType)) {
-                        classes.add(instanceClass);
-                        objectMap.put(key, value);
+    protected Map<String, Object> loadByRowType(final Class<?> rowType) {
+        Supplier<Map<String, Object>> supplier = new Supplier<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> get() {
+                Class<?>[] interfaces = rowType.getInterfaces();
+                if (interfaces.length == 0) {
+                    return loadByInterface(rowType);
+                } else {
+                    final Map<String, Object> objectMap = new HashMap<>();
+                    final Set<Class<?>> classes = new HashSet<>();
+                    BiConsumer<String, Object> biConsumer = new BiConsumer<String, Object>() {
+                        @Override
+                        public void accept(String key, Object value) {
+                            Class<?> instanceClass = value.getClass();
+                            if (!classes.contains(instanceClass) && ReflectHelper.isMatch(instanceClass, rowType)) {
+                                classes.add(instanceClass);
+                                objectMap.put(key, value);
+                            }
+                        }
+                    };
+//                            (key, value) -> {
+//                        Class<?> instanceClass = value.getClass();
+//                        if (!classes.contains(instanceClass) && ReflectHelper.isMatch(instanceClass, rowType)) {
+//                            classes.add(instanceClass);
+//                            objectMap.put(key, value);
+//                        }
+//                    };
+                    for (Class<?> interfaceClass : interfaces) {
+                        if (SINGLETON_ENABLED) {
+                            for (Map.Entry<String, Object> entry : loadByRowType(interfaceClass).entrySet()) {
+                                biConsumer.accept(entry.getKey(), entry.getValue());
+                            }
+//                            loadByRowType(interfaceClass).forEach(biConsumer);
+                        } else {
+                            objectMap.putAll(loadByRowType(interfaceClass));
+                        }
                     }
-                };
-                for (Class<?> interfaceClass : interfaces) {
-                    if (SINGLETON_ENABLED) {
-                        loadByRowType(interfaceClass).forEach(biConsumer);
-                    } else {
-                        objectMap.putAll(loadByRowType(interfaceClass));
+                    if (rowType.isInterface()) {
+                        for (Map.Entry<String, Object> entry : loadByInterface(rowType).entrySet()) {
+                            biConsumer.accept(entry.getKey(), entry.getValue());
+                        }
+//                        loadByInterface(rowType).forEach(biConsumer);
                     }
+                    return objectMap;
                 }
-                if (rowType.isInterface()) {
-                    loadByInterface(rowType).forEach(biConsumer);
-                }
-                return objectMap;
             }
         };
+//                () -> {
+//            Class<?>[] interfaces = rowType.getInterfaces();
+//            if (interfaces.length == 0) {
+//                return loadByInterface(rowType);
+//            } else {
+//                Map<String, Object> objectMap = new HashMap<>();
+//                Set<Class<?>> classes = new HashSet<>();
+//                BiConsumer<String, Object> biConsumer = (key, value) -> {
+//                    Class<?> instanceClass = value.getClass();
+//                    if (!classes.contains(instanceClass) && ReflectHelper.isMatch(instanceClass, rowType)) {
+//                        classes.add(instanceClass);
+//                        objectMap.put(key, value);
+//                    }
+//                };
+//                for (Class<?> interfaceClass : interfaces) {
+//                    if (SINGLETON_ENABLED) {
+//                        loadByRowType(interfaceClass).forEach(biConsumer);
+//                    } else {
+//                        objectMap.putAll(loadByRowType(interfaceClass));
+//                    }
+//                }
+//                if (rowType.isInterface()) {
+//                    loadByInterface(rowType).forEach(biConsumer);
+//                }
+//                return objectMap;
+//            }
+//        };
         Map<String, Object> objectMap = CACHE_ENABLED ?
                 cache.get(rowType, supplier) :
                 supplier.get();
         if (Common.isDebug() && log.isDebugEnabled()) {
-            if (objectMap.size() > 0) {
-                StringJoiner joiner = new StringJoiner("\n\t");
-                objectMap.forEach((k, v) -> joiner.add(k + ": " + v.toString()));
+            if (!objectMap.isEmpty()) {
+                org.coodex.util.java8.StringJoiner joiner = new StringJoiner("\n\t");
+                for (Map.Entry<String, Object> entry : objectMap.entrySet()) {
+                    joiner.add(entry.getKey() + ": " + entry.getValue().toString());
+                }
+//                objectMap.forEach((k, v) -> joiner.add(k + ": " + v.toString()));
                 log.debug("{} JUS instances loaded for: {} instances: \n\t{}", objectMap.size(), rowType, joiner.toString());
             } else {
                 log.debug("no JUS instance loaded for {}", rowType);

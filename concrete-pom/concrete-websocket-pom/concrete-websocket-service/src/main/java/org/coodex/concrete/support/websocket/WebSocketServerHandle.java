@@ -29,6 +29,7 @@ import org.coodex.config.Config;
 import org.coodex.id.IDGenerator;
 import org.coodex.util.GenericTypeHelper;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 import org.coodex.util.UUIDHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +97,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
     private static <T> void sendMessage(ServerSideMessage<T> message, String tokenId) {
         for (Session session : peers.keySet()) {
             if (tokenId.equals(peers.get(session))) {
-                $sendText(JSONSerializer.getInstance().toJson(buildPackage(message)),
+                $sendText(JSONSerializerUtil.getInstance().toJson(buildPackage(message)),
                         session, null);
                 break;
             }
@@ -194,7 +195,7 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
         responsePackage.setOk(false);
         responsePackage.setMsgId(msgId);
         responsePackage.setContent(ThrowableMapperFacade.toErrorInfo(exception));
-        sendText(JSONSerializer.getInstance().toJson(responsePackage), session);
+        sendText(JSONSerializerUtil.getInstance().toJson(responsePackage), session);
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -294,12 +295,12 @@ class WebSocketServerHandle extends OwnServiceProvider implements ConcreteWebSoc
 
     private RequestPackage<Object> analysisRequest(String message, Session session) {
         try {
-            return JSONSerializer.getInstance()
+            return JSONSerializerUtil.getInstance()
                     .parse(message, new GenericTypeHelper.GenericType<RequestPackage<Object>>() {
                     }.getType());
 
         } catch (Throwable throwable) {
-            broadcastText(JSONSerializer.getInstance().toJson(
+            broadcastText(JSONSerializerUtil.getInstance().toJson(
                     buildPackage(Subjects.INVALID_REQUEST,
                             new InvalidRequest(ConcreteHelper.getException(throwable), message),
                             null)

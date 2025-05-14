@@ -18,8 +18,8 @@ package org.coodex.concrete.jaxrs;
 
 import org.coodex.concrete.common.AbstractChangeableSubjoin;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;

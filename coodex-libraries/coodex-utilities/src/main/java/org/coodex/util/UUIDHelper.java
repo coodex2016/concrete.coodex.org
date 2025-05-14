@@ -16,8 +16,10 @@
 package org.coodex.util;
 
 import org.coodex.config.Config;
+import org.coodex.functional.Supplier;
+import org.coodex.util.java8.Base64;
 
-import java.util.Base64;
+//import java.util.Base64;
 import java.util.UUID;
 
 import static org.coodex.util.Common.base16Encode;
@@ -26,7 +28,15 @@ import static org.coodex.util.Common.base16Encode;
  * @author davidoff
  */
 public class UUIDHelper {
-    private static final Singleton<String> CODE = Singleton.with(() -> Config.getValue("uuid.encoder", "base16"));
+    private static final Singleton<String> CODE = Singleton.with(
+            new Supplier<String>() {
+                @Override
+                public String get() {
+                    return Config.getValue("uuid.encoder", "base16");
+                }
+            }
+//            () ->
+    );
     private static final SelectableServiceLoader<String, Encoder> ENCODER_SERVICE_LOADER
             = new LazySelectableServiceLoader<String, Encoder>(new Base16Encoder()) {
     };

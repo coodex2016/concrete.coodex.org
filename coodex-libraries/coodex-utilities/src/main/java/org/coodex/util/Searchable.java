@@ -19,57 +19,64 @@ package org.coodex.util;
 import java.util.Objects;
 
 public interface Searchable<E> {
+//    static int indexOf()
 
-    default int indexOf(int fromIndex, int toIndex, E[] elements) {
-        if (elements == null || elements.length == 0) return fromIndex;
-        if (elements.length == 1) {
-            return indexOf(fromIndex, toIndex, elements[0]);
-        }
-
-        int len = elements.length;
-        if (fromIndex + len > toIndex) return -1;
-        while (fromIndex + len <= toIndex) {
-            int first = indexOf(fromIndex, toIndex - len + 1, elements[0]);
-            if (first >= 0) {
-                boolean ok = true;
-                for (int i = 1; i < len; i++) {
-                    if (!Objects.equals(elements[i], get(first + i))) {
-                        ok = false;
-                        break;
-                    }
-                }
-                if (ok) return first;
-                fromIndex = first + 1;
-            } else {
-                break;
-            }
-        }
-        return -1;
-    }
+    //    default
+    int indexOf(int fromIndex, int toIndex, E[] elements);
+    //{
+//        if (elements == null || elements.length == 0) return fromIndex;
+//        if (elements.length == 1) {
+//            return indexOf(fromIndex, toIndex, elements[0]);
+//        }
+//
+//        int len = elements.length;
+//        if (fromIndex + len > toIndex) return -1;
+//        while (fromIndex + len <= toIndex) {
+//            int first = indexOf(fromIndex, toIndex - len + 1, elements[0]);
+//            if (first >= 0) {
+//                boolean ok = true;
+//                for (int i = 1; i < len; i++) {
+//                    if (!Objects.equals(elements[i], get(first + i))) {
+//                        ok = false;
+//                        break;
+//                    }
+//                }
+//                if (ok) return first;
+//                fromIndex = first + 1;
+//            } else {
+//                break;
+//            }
+//        }
+//        return -1;
+//    }
 
     int indexOf(int fromIndex, int toIndex, E element);
 
     E get(int index);
 
     interface Bytes extends Searchable<Byte> {
-        default int indexOf(int fromIndex, int toIndex, byte[] elements) {
-            if (elements == null || elements.length == 0) return fromIndex;
-            Byte[] bytes = new Byte[elements.length];
-            for (int i = 0, l = bytes.length; i < l; i++) {
-                bytes[i] = elements[i];
-            }
-            return indexOf(fromIndex, toIndex, bytes);
-        }
+        //        default
+        int indexOf(int fromIndex, int toIndex, byte[] elements);
+//{
+//            if (elements == null || elements.length == 0) return fromIndex;
+//            Byte[] bytes = new Byte[elements.length];
+//            for (int i = 0, l = bytes.length; i < l; i++) {
+//                bytes[i] = elements[i];
+//            }
+//            return indexOf(fromIndex, toIndex, bytes);
+//        }
     }
 
     interface Integers extends Searchable<Integer> {
-        default int indexOf(int fromIndex, int toIndex, int[] elements) {
-            if (elements == null || elements.length == 0) return fromIndex;
-            Integer[] integers = new Integer[elements.length];
-            for (int i = 0, l = integers.length; i < l; i++) {
-                integers[i] = elements[i];
-            }
-            return indexOf(fromIndex, toIndex, integers);
-        }
+        //        default
+        int indexOf(int fromIndex, int toIndex, int[] elements);
+        //{
+//            if (elements == null || elements.length == 0) return fromIndex;
+//            Integer[] integers = new Integer[elements.length];
+//            for (int i = 0, l = integers.length; i < l; i++) {
+//                integers[i] = elements[i];
+//            }
+//            return indexOf(fromIndex, toIndex, integers);
+//        }
     }
 }

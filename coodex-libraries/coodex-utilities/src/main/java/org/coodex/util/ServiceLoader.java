@@ -43,9 +43,11 @@ public interface ServiceLoader<T> {
      * @return 排序后的所有服务
      * @see SPI
      */
-    default List<T> sorted() {
-        return sorted(Comparator.comparingInt(SPI::getServiceOrder));
-    }
+//    default
+    List<T> sorted() ;
+//    {
+//        return sorted(Comparator.comparingInt(SPI::getServiceOrder));
+//    }
 
     /**
      * 对所有服务进行排序
@@ -54,12 +56,14 @@ public interface ServiceLoader<T> {
      * @return 排序后的所有服务
      * @see SPI
      */
-    default List<T> sorted(Comparator<? super T> comparator) {
-        return Optional.ofNullable(getAll())
-                .map(map ->
-                        map.values().stream().sorted(comparator).collect(Collectors.toList())
-                )
-                .orElse(new ArrayList<>(0));
-    }
+//    default
+    List<T> sorted(Comparator<? super T> comparator);
+//    {
+//        return Optional.ofNullable(getAll())
+//                .map(map ->
+//                        map.values().stream().sorted(comparator).collect(Collectors.toList())
+//                )
+//                .orElse(new ArrayList<>(0));
+//    }
 
 }

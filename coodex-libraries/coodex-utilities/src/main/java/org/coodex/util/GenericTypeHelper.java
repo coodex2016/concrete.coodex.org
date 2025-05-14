@@ -16,6 +16,9 @@
 
 package org.coodex.util;
 
+import org.coodex.functional.Function;
+import org.coodex.functional.Supplier;
+
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +31,12 @@ import static org.coodex.util.Common.cast;
 public class GenericTypeHelper {
 
     private static final SingletonMap<Type, GenericTypeInfo> typeInfos = SingletonMap.<Type, GenericTypeInfo>builder()
-            .function(GenericTypeInfo::new).build();
+            .function(new Function<Type, GenericTypeInfo>() {
+                @Override
+                public GenericTypeInfo apply(Type type) {
+                    return new GenericTypeInfo(type);
+                }
+            }).build();
 
     public static Type solveFromInstance(TypeVariable<?> t, Object instance) {
         if (instance == null) return t;
@@ -127,7 +135,7 @@ public class GenericTypeHelper {
         GenericArrayTypeImpl(GenericTypeInfo genericTypeInfo, GenericArrayType genericArrayType) {
             Type gct = genericArrayType.getGenericComponentType();
             if (gct instanceof TypeVariable) {
-                genericComponentType = genericTypeInfo.find(cast(gct));
+                genericComponentType = genericTypeInfo.find((TypeVariable<?>) gct);
             } else if (gct instanceof ParameterizedType) {
                 genericComponentType = new ParameterizedTypeImpl(genericTypeInfo, (ParameterizedType) gct);
             } else if (gct instanceof GenericArrayType) {
@@ -170,26 +178,29 @@ public class GenericTypeHelper {
         private final Type ownerType;
         private final List<Type> actualTypeArguments = new ArrayList<>();
         private final Singleton<String> stringSingleton = Singleton.with(
-                () -> {
-                    StringBuilder builder = new StringBuilder(((Class<?>) getRawType()).getName());
-                    if (actualTypeArguments.size() > 0) {
-                        builder.append("<");
+                new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        StringBuilder builder = new StringBuilder(((Class<?>) getRawType()).getName());
+                        if (actualTypeArguments.size() > 0) {
+                            builder.append("<");
 
-                        for (int i = 0; i < actualTypeArguments.size(); i++) {
-                            if (i > 0) builder.append(',');
-                            Type t = actualTypeArguments.get(i);
-                            if (t == null) {
-                                builder.append("null");
-                            } else if (t instanceof TypeVariable) {
-                                builder.append(((TypeVariable<?>) t).getName())
-                                        .append(" in ").append(((TypeVariable<?>) t).getGenericDeclaration());
-                            } else {
-                                builder.append(t.toString());
+                            for (int i = 0; i < actualTypeArguments.size(); i++) {
+                                if (i > 0) builder.append(',');
+                                Type t = actualTypeArguments.get(i);
+                                if (t == null) {
+                                    builder.append("null");
+                                } else if (t instanceof TypeVariable) {
+                                    builder.append(((TypeVariable<?>) t).getName())
+                                            .append(" in ").append(((TypeVariable<?>) t).getGenericDeclaration());
+                                } else {
+                                    builder.append(t.toString());
+                                }
                             }
+                            builder.append(">");
                         }
-                        builder.append(">");
+                        return builder.toString();
                     }
-                    return builder.toString();
                 }
         );
 

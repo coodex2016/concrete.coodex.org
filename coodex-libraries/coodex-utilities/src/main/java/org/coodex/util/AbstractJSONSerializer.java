@@ -16,10 +16,17 @@
 
 package org.coodex.util;
 
+import java.lang.reflect.Type;
+
 public abstract class AbstractJSONSerializer implements JSONSerializer {
 
     @Override
     public final String toJson(Object t) {
         return toJson(t, JSONConfigUtil.writeNullValue());
+    }
+
+    @Override
+    public <T> T parse(Object jsonObject, Type t) {
+        return JSONSerializerUtil.parse(this, jsonObject, t);
     }
 }

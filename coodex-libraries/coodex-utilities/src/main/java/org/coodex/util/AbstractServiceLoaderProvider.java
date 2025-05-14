@@ -16,8 +16,11 @@
 
 package org.coodex.util;
 
+import org.coodex.functional.Supplier;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,21 +33,47 @@ public abstract class AbstractServiceLoaderProvider implements ServiceLoaderProv
 
 
     @Override
-    public Map<String, Object> load(Type serviceType) {
-        return cache.get(serviceType, () -> {
-            if (serviceType instanceof Class) {
-                return loadByRowType((Class<?>) serviceType);
-            } else if (serviceType instanceof ParameterizedType) {
-                Map<String, Object> result = new HashMap<>();
-                loadByRowType((Class<?>) ((ParameterizedType) serviceType).getRawType()).forEach((key, object) -> {
-                    if (object != null && ReflectHelper.isMatch(object.getClass(), serviceType)) {
-                        result.put(key, object);
+    public Map<String, Object> load(final Type serviceType) {
+        return cache.get(serviceType,
+                new Supplier<Map<String, Object>>() {
+                    @Override
+                    public Map<String, Object> get() {
+                        if (serviceType instanceof Class) {
+                            return loadByRowType((Class<?>) serviceType);
+                        } else if (serviceType instanceof ParameterizedType) {
+                            Map<String, Object> result = new HashMap<>();
+                            for (Map.Entry<String, Object> entry : loadByRowType((Class<?>) ((ParameterizedType) serviceType).getRawType()).entrySet()) {
+                                String key = entry.getKey();
+                                Object object = entry.getValue();
+                                if (object != null && ReflectHelper.isMatch(object.getClass(), serviceType)) {
+                                    result.put(key, object);
+                                }
+                            }
+//                            loadByRowType((Class<?>) ((ParameterizedType) serviceType).getRawType()).forEach((key, object) -> {
+//                                if (object != null && ReflectHelper.isMatch(object.getClass(), serviceType)) {
+//                                    result.put(key, object);
+//                                }
+//                            });
+                            return result;
+                        }
+                        return new HashMap<>();
                     }
-                });
-                return result;
-            }
-            return new HashMap<>();
-        });
+                }
+//                () -> {
+//            if (serviceType instanceof Class) {
+//                return loadByRowType((Class<?>) serviceType);
+//            } else if (serviceType instanceof ParameterizedType) {
+//                Map<String, Object> result = new HashMap<>();
+//                loadByRowType((Class<?>) ((ParameterizedType) serviceType).getRawType()).forEach((key, object) -> {
+//                    if (object != null && ReflectHelper.isMatch(object.getClass(), serviceType)) {
+//                        result.put(key, object);
+//                    }
+//                });
+//                return result;
+//            }
+//            return new HashMap<>();
+//        }
+        );
     }
 
     protected abstract Map<String, Object> loadByRowType(Class<?> rowType);

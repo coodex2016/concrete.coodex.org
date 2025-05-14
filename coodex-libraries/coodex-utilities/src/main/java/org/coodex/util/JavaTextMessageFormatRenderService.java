@@ -27,6 +27,11 @@ public class JavaTextMessageFormatRenderService implements RenderService {
     private static final Pattern PATTERN = Pattern.compile("\\{[0-9]+(,\\s*\\w+\\s*(,\\s*[^}]+)?)?\\s*}");// NOSONAR
 
     @Override
+    public Object[] transfer(Object... objects) {
+        return RenderServiceHelper.transfer(objects);
+    }
+
+    @Override
     public String render(String template, Object... objects) {
         if (objects == null || objects.length == 0) {
             return template;

@@ -43,7 +43,7 @@ public class Throttle implements FrequencyReducer {
     }
 
     @Override
-    public void submit(Runnable runnable) {
+    public void submit(final Runnable runnable) {
         if (runnable == null) throw new NullPointerException("runnable instance is null.");
         lock.lock();
         if (prevTimestamp == 0) prevTimestamp = Clock.currentTimeMillis();
@@ -61,14 +61,17 @@ public class Throttle implements FrequencyReducer {
                 } else
                     runnable.run();
             } else {
-                prevFuture = scheduledExecutorService.schedule(() -> {
-                    lock.lock();
-                    try {
-                        prevTimestamp = Clock.currentTimeMillis();
-                        runnable.run();
-                    } finally {
-                        prevFuture = null;
-                        lock.unlock();
+                prevFuture = scheduledExecutorService.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        lock.lock();
+                        try {
+                            prevTimestamp = Clock.currentTimeMillis();
+                            runnable.run();
+                        } finally {
+                            prevFuture = null;
+                            lock.unlock();
+                        }
                     }
                 }, interval - n, TimeUnit.MILLISECONDS);
             }

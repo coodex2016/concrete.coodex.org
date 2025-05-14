@@ -16,7 +16,9 @@
 
 package org.coodex.util;
 
+import org.coodex.functional.*;
 import org.coodex.id.IDGenerator;
+import org.coodex.util.java8.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,13 +29,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
+//import java.nio.file.FileSystems;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.*;
-import java.util.stream.Collectors;
+//import java.util.function.BiFunction;
+//import java.util.function.*;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
@@ -45,7 +47,7 @@ import static java.lang.Long.parseLong;
 public class Common {
 
     public static final String PATH_SEPARATOR = File.pathSeparator;
-    public static final String FILE_SEPARATOR = FileSystems.getDefault().getSeparator();
+    public static final String FILE_SEPARATOR = "/";//FileSystems.getDefault().getSeparator();
     public static final String USER_DIR = System.getProperty("user.dir");
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
     public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
@@ -64,16 +66,25 @@ public class Common {
     };
     private static final char[] BASE16_CHAR = "0123456789abcdef".toCharArray();
 
-    private static final Singleton<Boolean> COODEX_DEBUG_FLAG = Singleton.with(() -> toBool(System.getProperty(
-            "coodex.debug"), false));
+    private static final Singleton<Boolean> COODEX_DEBUG_FLAG = Singleton.with(
+            new Supplier<Boolean>() {
+                @Override
+                public Boolean get() {
+                    return toBool(System.getProperty(
+                            "coodex.debug"), false);
+                }
+            });
 
     private static final Singleton<Boolean> IS_JAVA_9_AND_LAST = Singleton.with(
-            () -> {
-                try {
-                    //noinspection JavaReflectionMemberAccess,ConstantConditions
-                    return Class.class.getMethod("getModule") != null;
-                } catch (NoSuchMethodException e) {
-                    return false;
+            new Supplier<Boolean>() {
+                @Override
+                public Boolean get() {
+                    try {
+                        //noinspection JavaReflectionMemberAccess,ConstantConditions
+                        return Class.class.getMethod("getModule") != null;
+                    } catch (NoSuchMethodException e) {
+                        return false;
+                    }
                 }
             }
     );
@@ -146,7 +157,7 @@ public class Common {
         String[] userDirNodes = userDir();
         int i = 0, userDirNodesIndex = userDirNodes.length - 1;
         if (Common.isBlank(pathNodes[0])) {
-            StringJoiner joiner = new StringJoiner(FILE_SEPARATOR);
+            org.coodex.util.java8.StringJoiner joiner = new org.coodex.util.java8.StringJoiner(FILE_SEPARATOR);
             joiner.add(userDirNodes[0]);
             for (int j = 1; j < pathNodes.length; j++) {
                 joiner.add(pathNodes[j]);
@@ -166,7 +177,7 @@ public class Common {
             }
             break;
         }
-        StringJoiner joiner = new StringJoiner(FILE_SEPARATOR);
+        org.coodex.util.java8.StringJoiner joiner = new org.coodex.util.java8.StringJoiner(FILE_SEPARATOR);
         for (int x = 0; x <= userDirNodesIndex; x++) {
             joiner.add(userDirNodes[x]);
         }
@@ -177,8 +188,10 @@ public class Common {
     }
 
     public static <T> Set<T> arrayToSet(T[] array) {
-        return Arrays.stream(Objects.requireNonNull(array, "array MUST NOT null"))
-                .collect(Collectors.toSet());
+        if (array == null) throw new NullPointerException("array MUST NOT null");
+        return new HashSet<>(Arrays.asList(array));
+//        return Arrays.stream(Objects.requireNonNull(array, "array MUST NOT null"))
+//                .collect(Collectors.toSet());
     }
 
     /**
@@ -472,8 +485,15 @@ public class Common {
      * @param split 列于列之间的分隔字符传串，行首行尾不加
      * @return 编码后的字符串
      */
-    public static String base16Encode(byte[] b, int col, String split) {
-        return base16Encode(b, line -> col, split);
+    public static String base16Encode(byte[] b, final int col, String split) {
+        return base16Encode(b,
+                new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer integer) {
+                        return col;
+                    }
+                },
+                split);
     }
 
     /**
@@ -494,8 +514,13 @@ public class Common {
      * @param split  列于列之间的分隔字符传串，行首行尾不加
      * @return 编码后的字符串
      */
-    public static String base16Encode(byte[] b, int offset, int length, int col, String split) {
-        return base16Encode(b, offset, length, line -> col, split);
+    public static String base16Encode(byte[] b, int offset, int length, final int col, String split) {
+        return base16Encode(b, offset, length, new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer integer) {
+                return col;
+            }
+        }, split);
     }
 
     private static String encodeByte(byte b) {
@@ -670,8 +695,8 @@ public class Common {
     }
 
     @SafeVarargs
-    private static <T, C extends Collection<T>> C join(C instance, Collection<? extends T>... collections) {
-        if (collections != null && collections.length > 0) {
+    public static <T, C extends Collection<T>> C join(C instance, Collection<? extends T>... collections) {
+        if (collections != null) {
             for (Collection<? extends T> c : collections) {
                 if (c != null) {
                     instance.addAll(c);
@@ -681,16 +706,16 @@ public class Common {
         return instance;
     }
 
-    /**
-     * 并集
-     *
-     * @param sets sets
-     * @return 并集
-     */
-    @SafeVarargs
-    public static <T> Set<T> join(Collection<T>... sets) {
-        return join(new HashSet<>(), sets);
-    }
+//    /**
+//     * 并集
+//     *
+//     * @param sets sets
+//     * @return 并集
+//     */
+//    @SafeVarargs
+//    public static <T> Set<T> join(Collection<T>... sets) {
+//        return join(new HashSet<>(), sets);
+//    }
 
     public static String native2AscII(String str) {
         if (str == null) {
@@ -800,8 +825,11 @@ public class Common {
             case 1:
                 return list.iterator().next();
             default:
-                StringJoiner joiner = new StringJoiner(split);
-                list.forEach(joiner::add);
+                org.coodex.util.java8.StringJoiner joiner = new StringJoiner(split);
+                for (String str : list) {
+                    joiner.add(str);
+                }
+//                list.forEach(joiner::add);
                 return joiner.toString();
 //                StringBuilder builder = new StringBuilder();
 //                for (int i = 0; i < list.size(); i++) {
@@ -1194,7 +1222,15 @@ public class Common {
 
     public static DateFormat getSafetyDateFormat(String format) {
         if (threadLocal.get() == null) {
-            threadLocal.set(SingletonMap.<String, DateFormat>builder().function(SimpleDateFormat::new).build());
+            threadLocal.set(SingletonMap.<String, DateFormat>builder().function(
+                    new Function<String, DateFormat>() {
+                        @Override
+                        public DateFormat apply(String s) {
+                            return new SimpleDateFormat(s);
+                        }
+                    }
+//                    SimpleDateFormat::new
+            ).build());
         }
         return threadLocal.get().get(format);
     }
@@ -1221,7 +1257,7 @@ public class Common {
                 (byte) ((data >> 16) & 0xff),
                 (byte) ((data >> 8) & 0xff),
                 (byte) ((data) & 0xff),
-                };
+        };
     }
 
     public static String longToDateStr(long l) {
@@ -1389,13 +1425,23 @@ public class Common {
      * @param consumer      数组处理逻辑
      * @param <T>           T
      */
-    public static <T> void forEachBlock(T[] all, int blockSize, boolean continuous, float redundancy,
-                                        IntFunction<T[]> arrayProvider, Consumer<T[]> consumer) {
-        forEachBlock(all, blockSize, continuous, redundancy, (i, l) -> {
-            T[] block = arrayProvider.apply(l);
-            System.arraycopy(all, i, block, 0, l);
-            consumer.accept(block);
-        });
+    public static <T> void forEachBlock(final T[] all, int blockSize, boolean continuous, float redundancy,
+                                        final IntFunction<T[]> arrayProvider, final Consumer<T[]> consumer) {
+        forEachBlock(all, blockSize, continuous, redundancy,
+                new BiConsumer<Integer, Integer>() {
+                    @Override
+                    public void accept(Integer i, Integer l) {
+                        T[] block = arrayProvider.apply(l);
+                        System.arraycopy(all, i, block, 0, l);
+                        consumer.accept(block);
+                    }
+                }
+//                (i, l) -> {
+//            T[] block = arrayProvider.apply(l);
+//            System.arraycopy(all, i, block, 0, l);
+//            consumer.accept(block);
+//        }
+        );
     }
 
     /**
@@ -1409,8 +1455,16 @@ public class Common {
      * @return 拆分后的数组描述(从哪个下标开始 ， 长度)
      */
     public static <T> Collection<ArrayBlockRef> slice(T[] all, int blockSize, boolean continuous, float redundancy) {
-        List<ArrayBlockRef> list = new ArrayList<>();
-        forEachBlock(all, blockSize, continuous, redundancy, (i, l) -> list.add(new ArrayBlockRef(i, l)));
+        final List<ArrayBlockRef> list = new ArrayList<>();
+        forEachBlock(all, blockSize, continuous, redundancy,
+                new BiConsumer<Integer, Integer>() {
+                    @Override
+                    public void accept(Integer i, Integer l) {
+                        list.add(new ArrayBlockRef(i, l));
+                    }
+                }
+//                (i, l) -> list.add(new ArrayBlockRef(i, l))
+        );
         return list;
     }
 
@@ -1452,6 +1506,12 @@ public class Common {
 
     public static double scale(double d, int scale, RoundingMode roundingMode) {
         return _scale(d, scale, roundingMode).doubleValue();
+    }
+
+    public static <T> List<T> sort(List<T> list, Comparator<T> comparator) {
+        if (list == null || list.size() <= 1) return list;
+        Collections.sort(list, comparator);
+        return list;
     }
 
 //    public static List<String> readAllLines(String path) throws IOException {

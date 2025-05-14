@@ -16,11 +16,12 @@
 
 package org.coodex.config;
 
+import org.coodex.functional.Supplier;
 import org.coodex.util.Common;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+//import java.util.function.Supplier;
 
 public abstract class AbstractConfiguration implements Configuration {
 

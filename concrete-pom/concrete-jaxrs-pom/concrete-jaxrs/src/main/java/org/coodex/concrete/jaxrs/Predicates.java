@@ -20,7 +20,7 @@ import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
 
-import javax.ws.rs.HttpMethod;
+import jakarta.ws.rs.HttpMethod;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;

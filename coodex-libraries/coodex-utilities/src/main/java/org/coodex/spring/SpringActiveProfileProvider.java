@@ -26,9 +26,11 @@ import java.util.Optional;
 public class SpringActiveProfileProvider implements ActiveProfilesProvider {
     @Override
     public String[] getActiveProfiles() {
-        return Optional.ofNullable(SpringEnvironmentAware.getSpringEnvironment())
-                .map(Environment::getActiveProfiles)
-                .orElse(new String[0]);
+        Environment environment = SpringEnvironmentAware.getSpringEnvironment();
+        return environment == null ? new String[0] : environment.getActiveProfiles();
+//        return Optional.ofNullable(SpringEnvironmentAware.getSpringEnvironment())
+//                .map(Environment::getActiveProfiles)
+//                .orElse(new String[0]);
     }
 
 

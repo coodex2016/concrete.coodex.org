@@ -21,9 +21,7 @@ import org.coodex.concrete.common.modules.AbstractModule;
 import org.coodex.config.Config;
 import org.coodex.exception.NoneInstanceException;
 import org.coodex.exception.NoneSupportedException;
-import org.coodex.util.Common;
-import org.coodex.util.JSONSerializer;
-import org.coodex.util.LazyServiceLoader;
+import org.coodex.util.*;
 import org.coodex.util.ServiceLoader;
 
 import java.io.File;
@@ -157,7 +155,7 @@ public class API {
         if (json == null) {
             return new HashMap<>();
         } else {
-            return JSONSerializer.getInstance().parse(json, Map.class);
+            return JSONSerializerUtil.getInstance().parse(json, Map.class);
         }
     }
 

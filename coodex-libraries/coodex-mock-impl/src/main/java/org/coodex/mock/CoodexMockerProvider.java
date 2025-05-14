@@ -19,6 +19,7 @@ package org.coodex.mock;
 import net.sf.cglib.proxy.Enhancer;
 import org.coodex.closure.MapClosureContext;
 import org.coodex.closure.StackClosureContext;
+import org.coodex.functional.Supplier;
 import org.coodex.util.ServiceLoader;
 import org.coodex.util.*;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.function.Supplier;
+//import java.util.function.Supplier;
 
 import static org.coodex.mock.Mock.Depth.DEFAULT_DEPTH;
 import static org.coodex.mock.Mock.Dimension.*;

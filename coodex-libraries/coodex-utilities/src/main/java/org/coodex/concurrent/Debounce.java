@@ -32,9 +32,9 @@ public class Debounce implements FrequencyReducer {
     }
 
     @Override
-    public void submit(Runnable runnable) {
+    public void submit(final Runnable runnable) {
 //        if (runnable == null) throw new NullPointerException("runnable instance is null.");
-        Objects.requireNonNull(runnable,"runnable instance is null.");
+        Objects.requireNonNull(runnable, "runnable instance is null.");
         lock.lock();
         try {
             if (prevFuture != null) {
@@ -42,15 +42,29 @@ public class Debounce implements FrequencyReducer {
                 prevFuture.cancel(false);
             }
 
-            prevFuture = scheduledExecutorService.schedule(() -> {
-                lock.lock();
-                try {
-                    runnable.run();
-                } finally {
-                    prevFuture = null;
-                    lock.unlock();
-                }
-            }, idle, TimeUnit.MILLISECONDS);
+            prevFuture = scheduledExecutorService.schedule(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            lock.lock();
+                            try {
+                                runnable.run();
+                            } finally {
+                                prevFuture = null;
+                                lock.unlock();
+                            }
+                        }
+                    }
+//            () -> {
+//                lock.lock();
+//                try {
+//                    runnable.run();
+//                } finally {
+//                    prevFuture = null;
+//                    lock.unlock();
+//                }
+//            }
+                    , idle, TimeUnit.MILLISECONDS);
         } finally {
             lock.unlock();
         }

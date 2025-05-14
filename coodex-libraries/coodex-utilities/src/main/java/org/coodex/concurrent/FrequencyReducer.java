@@ -1,6 +1,7 @@
 package org.coodex.concurrent;
 
 import org.coodex.config.Config;
+import org.coodex.functional.Supplier;
 import org.coodex.util.Singleton;
 
 import java.util.concurrent.ScheduledExecutorService;
@@ -12,26 +13,35 @@ import java.util.concurrent.ScheduledExecutorService;
  * @see Throttle
  */
 public interface FrequencyReducer {
+//    @Deprecated
+//    default void run() {
+//        submit();
+//    }
+
 
     Singleton<ScheduledExecutorService> DEFAULT_REDUCER_EXECUTOR_SERVICE_SINGLETON = Singleton.with(
-            () -> ExecutorsHelper.newScheduledThreadPool(
-                    Config.getValue("frequency.reducer.executors.size", 3),
-                    "FrequencyReducerPool"
-            )
+            new Supplier<ScheduledExecutorService>() {
+                @Override
+                public ScheduledExecutorService get() {
+                    return ExecutorsHelper.newScheduledThreadPool(
+                            Config.getValue("frequency.reducer.executors.size", 3),
+                            "FrequencyReducerPool"
+                    );
+                }
+            }
+//            () -> ExecutorsHelper.newScheduledThreadPool(
+//                    Config.getValue("frequency.reducer.executors.size", 3),
+//                    "FrequencyReducerPool"
+//            )
     );
-
-    @Deprecated
-    default void run() {
-        submit();
-    }
 
     void submit();
 
 
-    @Deprecated
-    default void run(Runnable runnable) {
-        submit(runnable);
-    }
+//    @Deprecated
+//    default void run(Runnable runnable) {
+//        submit(runnable);
+//    }
 
     void submit(Runnable runnable);
 }

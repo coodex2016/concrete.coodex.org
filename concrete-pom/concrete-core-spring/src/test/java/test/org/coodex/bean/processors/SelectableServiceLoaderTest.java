@@ -29,7 +29,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import test.org.coodex.bean.processors.b.NumberSelectableService;
 import test.org.coodex.bean.processors.b.SelectableTest;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 //import org.coodex.util.DefaultService;
 

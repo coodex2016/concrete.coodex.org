@@ -18,13 +18,15 @@ package org.coodex.util;
 
 import org.coodex.closure.StackClosureContext;
 import org.coodex.config.Config;
+import org.coodex.functional.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.concurrent.Callable;
+//import java.util.function.Supplier;Supplier
 
 import static org.coodex.util.Common.cast;
 
@@ -35,7 +37,12 @@ public class Tracer {
 
     private static final StackClosureContext<Map<String, Object>> tracer_context = new StackClosureContext<>();
     private static final Singleton<Boolean> TRACE_ENABLED = Singleton.with(
-            () -> Config.getValue("org.coodex.util.Tracer", false)
+            new Supplier<Boolean>() {
+                @Override
+                public Boolean get() {
+                    return Config.getValue("org.coodex.util.Tracer", false);
+                }
+            }
     );
     private static final String START_TIME_KEY = UUIDHelper.getUUIDString();
     private Logger logger = log;
@@ -93,7 +100,12 @@ public class Tracer {
     }
 
     public Tracer named(final String name) {
-        nameSupplier = Common.isBlank(name) ? null : () -> name;
+        nameSupplier = Common.isBlank(name) ? null : new Supplier<String>() {
+            @Override
+            public String get() {
+                return name;
+            }
+        };
         return this;
     }
 
@@ -104,9 +116,12 @@ public class Tracer {
 
     public void trace(final Runnable runnable) {
         if (isEnabled()) {
-            trace(() -> {
-                runnable.run();
-                return null;
+            trace(new Supplier<Object>() {
+                @Override
+                public Object get() {
+                    runnable.run();
+                    return null;
+                }
             });
         } else {
             runnable.run();

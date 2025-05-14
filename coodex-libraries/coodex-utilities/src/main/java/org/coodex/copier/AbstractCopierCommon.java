@@ -67,22 +67,22 @@ public abstract class AbstractCopierCommon {
 
     protected <T extends Collection<?>> T copy(Collection<?> srcCollection, Class<T> tClass, Index srcIndex) {
         if (srcCollection == null) throw new NullPointerException("srcCollection is NULL.");
-        Collection<?> collection = null;
+        Collection<Object> collection = null;
         if (List.class.equals(tClass)) {
             collection = new ArrayList<>();
         } else if (Set.class.equals(tClass)) {
             collection = new HashSet<>();
         } else {
             try {
-                collection = tClass.getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {// NOSONAR
+                collection = Common.cast(tClass.getConstructor().newInstance());
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException ignored) {// NOSONAR
             }
         }
         if (collection == null)
             throw new IllegalArgumentException("class :" + tClass.getCanonicalName() + " not support.");
         for (Object src : srcCollection) {
-
-            collection.add(Common.cast(copy(src, srcIndex)));
+            collection.add(copy(src, srcIndex));
         }
         return Common.cast(collection);
     }

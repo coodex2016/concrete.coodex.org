@@ -23,7 +23,7 @@ import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.concrete.jaxrs.JaxRSHelper;
 import org.coodex.util.Common;
 
-import javax.ws.rs.HttpMethod;
+import jakarta.ws.rs.HttpMethod;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;

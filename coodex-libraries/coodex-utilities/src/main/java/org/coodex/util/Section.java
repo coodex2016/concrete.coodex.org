@@ -17,6 +17,7 @@
 package org.coodex.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -56,7 +57,13 @@ public abstract class Section<T extends Comparable<T>> {
     List<S> merge(List<S> sections, Builder<T, S> builder) {
         if (sections == null || sections.size() == 0) return new ArrayList<>();
         List<S> periodList = new ArrayList<>(sections);
-        periodList.sort(Comparator.comparing(Section<T>::getStart));
+        Collections.sort(periodList, new Comparator<S>() {
+            @Override
+            public int compare(S o1, S o2) {
+                return o1.getStart().compareTo(o2.getStart());
+            }
+        });
+//        periodList.sort(Comparator.comparing(Section<T>::getStart));
         List<S> resultList = new ArrayList<>();
         int index = 0;
         S section;

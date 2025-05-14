@@ -42,11 +42,22 @@ public class Debouncer<T> extends AbstractCoalition<T> {
         if (prevFuture != null)
             prevFuture.cancel(true);
 
-        prevFuture = scheduledExecutorService.schedule(() -> {
-            synchronized (Debouncer.this) {
-                callback.call(key);
-                prevFuture = null;
-            }
-        }, interval, TimeUnit.MILLISECONDS);
+        prevFuture = scheduledExecutorService.schedule(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (Debouncer.this) {
+                            callback.call(key);
+                            prevFuture = null;
+                        }
+                    }
+                }
+//                () -> {
+//            synchronized (Debouncer.this) {
+//                callback.call(key);
+//                prevFuture = null;
+//            }
+//        }
+                , interval, TimeUnit.MILLISECONDS);
     }
 }

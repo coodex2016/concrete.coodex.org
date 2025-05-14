@@ -4,7 +4,8 @@
 
 [concrete.coodex.org](https://concrete.coodex.org)
 
-> [![](jetbrains.svg)](https://www.jetbrains.com)感谢[JetBrains](https://www.jetbrains.com/?from=Concrete)提供IDE工具开源授权。
+[//]: # ()
+[//]: # (> [![]&#40;jetbrains.svg&#41;]&#40;https://www.jetbrains.com&#41;感谢[JetBrains]&#40;https://www.jetbrains.com/?from=Concrete&#41;提供IDE工具开源授权。)
 
 ## 什么鬼？
 

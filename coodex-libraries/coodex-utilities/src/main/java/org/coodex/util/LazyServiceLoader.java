@@ -16,15 +16,13 @@
 
 package org.coodex.util;
 
+import org.coodex.functional.Supplier;
+import org.coodex.util.java8.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.function.Supplier;
+import java.util.*;
 
 import static org.coodex.util.Common.cast;
 import static org.coodex.util.GenericTypeHelper.solveFromInstance;
@@ -42,52 +40,82 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
 
     private final static Logger log = LoggerFactory.getLogger(LazyServiceLoader.class);
     private final Singleton<Instances> instances = Singleton.with(
-            () -> {
-                Instances instances = new Instances();
-                instances.instancesMap = new HashMap<>();
-                java.util.ServiceLoader<ServiceLoaderProvider> serviceLoaderProviders =
-                        java.util.ServiceLoader.load(ServiceLoaderProvider.class);
+            new Supplier<Instances>() {
 
-                for (ServiceLoaderProvider provider : serviceLoaderProviders) {
-                    instances.instancesMap.putAll(provider.load(getServiceType()));
-                }
-                if (Common.isDebug() && log.isDebugEnabled()) {
-                    if (instances.instancesMap.size() == 0) {
-                        log.debug("no ServiceProvider found for [{}], using default provider.", getServiceType().getTypeName());
+                @Override
+                public Instances get() {
+                    Instances instances = new Instances();
+                    instances.instancesMap = new HashMap<>();
+                    java.util.ServiceLoader<ServiceLoaderProvider> serviceLoaderProviders =
+                            java.util.ServiceLoader.load(ServiceLoaderProvider.class);
 
-                    } else {
-                        StringJoiner joiner = new StringJoiner("\n\t");
-                        instances.instancesMap.forEach((k, v) -> joiner.add(k + "(" + SPI.getServiceOrder(v) + "): " + v.toString()));
-                        log.debug("{} SPI instances loaded for: {} instances: \n\t{}",
-                                instances.instancesMap.size(), getServiceType(), joiner.toString());
+                    for (ServiceLoaderProvider provider : serviceLoaderProviders) {
+                        instances.instancesMap.putAll(provider.load(getServiceType()));
                     }
+                    if (Common.isDebug() && log.isDebugEnabled()) {
+                        if (instances.instancesMap.isEmpty()) {
+                            log.debug("no ServiceProvider found for [{}], using default provider.", getServiceType());
+
+                        } else {
+                            StringJoiner joiner = new StringJoiner("\n\t");
+                            for (Map.Entry<String, Object> entry : instances.instancesMap.entrySet()) {
+                                String k = entry.getKey();
+                                Object v = entry.getValue();
+                                joiner.add(k + "(" + SPI.getServiceOrder(v) + "): " + v.toString());
+                            }
+//                        instances.instancesMap.forEach((k, v) -> );
+                            log.debug("{} SPI instances loaded for: {} instances: \n\t{}",
+                                    instances.instancesMap.size(), getServiceType(), joiner.toString());
+                        }
+                    }
+                    instances.unmodifiedMap = Collections.unmodifiableMap(instances.instancesMap);
+                    return instances;
                 }
-                instances.unmodifiedMap = Collections.unmodifiableMap(instances.instancesMap);
-                return instances;
             }
     );
-    private final Singleton<Map<String, T>> allInstanceSingleton = Singleton.with(() -> {
-        Map<String, T> map = new HashMap<>();
-        for (Map.Entry<String, Object> entry : instances.get().unmodifiedMap.entrySet()) {
-            map.put(entry.getKey(), cast(entry.getValue()));
-        }
-        return map;
-    });
+    private final Singleton<Map<String, T>> allInstanceSingleton = Singleton.with(
+            new Supplier<Map<String, T>>() {
+
+                @SuppressWarnings("unchecked")
+                @Override
+                public Map<String, T> get() {
+                    Map<String, T> map = new HashMap<>();
+                    for (Map.Entry<String, Object> entry : instances.get().unmodifiedMap.entrySet()) {
+                        map.put(entry.getKey(), (T) (entry.getValue()));
+                    }
+                    return map;
+                }
+            });
 
     private Supplier<T> defaultProviderSupplier;
-    private final Singleton<T> defaultProviderSingleton = Singleton.with(() -> {
-        if (defaultProviderSupplier == null) {
-            defaultProviderSupplier = this::getDefaultInstance;
-        }
-        return defaultProviderSupplier.get();
-    });
+    private final Singleton<T> defaultProviderSingleton = Singleton.with(
+            new Supplier<T>() {
+                @Override
+                public T get() {
+                    if (defaultProviderSupplier == null) {
+//            defaultProviderSupplier = this::getDefaultInstance;
+                        defaultProviderSupplier = new Supplier<T>() {
+                            @Override
+                            public T get() {
+                                return LazyServiceLoader.this.defaultProviderSupplier.get();
+                            }
+                        };
+                    }
+                    return defaultProviderSupplier.get();
+                }
+            });
 
     public LazyServiceLoader() {
         this((T) null);
     }
 
-    public LazyServiceLoader(T defaultProvider) {
-        this(defaultProvider == null ? null : () -> defaultProvider);
+    public LazyServiceLoader(final T defaultProvider) {
+        this(defaultProvider == null ? null : new Supplier<T>() {
+            @Override
+            public T get() {
+                return defaultProvider;
+            }
+        });
     }
 
     public LazyServiceLoader(Supplier<T> defaultProviderSupplier) {
@@ -112,7 +140,7 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
 
     protected T getDefaultInstance() {
 //        if (getDefault() == null) {
-        throw new RuntimeException("no provider found for: " + getServiceType().getTypeName());
+        throw new RuntimeException("no provider found for: " + getServiceType().toString());
 //        } else {
 //            return getDefault();
 //        }
@@ -152,7 +180,7 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
             return t;
         }
 
-        StringBuilder buffer = new StringBuilder(getServiceType().getTypeName());
+        StringBuilder buffer = new StringBuilder(getServiceType().toString());
         buffer.append("[providerClass: ").append(providerClass.getName()).append("]");
         buffer.append(" has ").append(map.size()).append(" services:[");
         for (Object service : map.values()) {
@@ -169,7 +197,7 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
     }
 
     protected T conflict() {
-        StringBuilder buffer = new StringBuilder(getServiceType().getTypeName());
+        StringBuilder buffer = new StringBuilder(getServiceType().toString());
         buffer.append(" has ").append(instances.get().instancesMap.size()).append(" services:[");
         for (Object service : instances.get().instancesMap.values()) {
             buffer.append("\n\t").append(service.getClass().getName());
@@ -180,7 +208,7 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
 
     @Override
     public T get() {
-        if (instances.get().instancesMap.size() == 0) {
+        if (instances.get().instancesMap.isEmpty()) {
             return defaultProviderSingleton.get();
         } else if (instances.get().instancesMap.size() == 1) {
             return cast(instances.get().instancesMap.values().toArray()[0]);
@@ -194,5 +222,13 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
         Map<String, Object> unmodifiedMap = null;
     }
 
+    @Override
+    public List<T> sorted() {
+        return ServiceLoaderHelper.sort(this);
+    }
 
+    @Override
+    public List<T> sorted(Comparator<? super T> comparator) {
+        return ServiceLoaderHelper.sort(this, comparator);
+    }
 }

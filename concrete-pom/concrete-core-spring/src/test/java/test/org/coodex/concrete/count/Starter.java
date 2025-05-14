@@ -21,7 +21,7 @@ import org.coodex.count.CounterFacade;
 import org.coodex.util.Common;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Created by davidoff shen on 2017-04-18.

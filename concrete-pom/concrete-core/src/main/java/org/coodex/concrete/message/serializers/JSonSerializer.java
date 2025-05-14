@@ -18,6 +18,7 @@ package org.coodex.concrete.message.serializers;
 
 import org.coodex.concrete.message.Serializer;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -29,12 +30,12 @@ public class JSonSerializer implements Serializer {
 
     @Override
     public byte[] serialize(Serializable o) {
-        return JSONSerializer.getInstance().toJson(o).getBytes(StandardCharsets.UTF_8);
+        return JSONSerializerUtil.getInstance().toJson(o).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
     public <T extends Serializable> T deserialize(byte[] bytes, Type type) {
-        return JSONSerializer.getInstance().parse(new String(bytes, StandardCharsets.UTF_8), type);
+        return JSONSerializerUtil.getInstance().parse(new String(bytes, StandardCharsets.UTF_8), type);
     }
 
     @Override

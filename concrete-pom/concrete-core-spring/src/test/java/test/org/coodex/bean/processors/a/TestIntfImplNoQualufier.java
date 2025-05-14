@@ -18,7 +18,7 @@ package test.org.coodex.bean.processors.a;
 
 import org.springframework.context.annotation.Primary;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 @Named
 @Primary

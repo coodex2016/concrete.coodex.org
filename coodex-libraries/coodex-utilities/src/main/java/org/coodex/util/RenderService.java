@@ -23,20 +23,22 @@ import java.util.function.Supplier;
  */
 public interface RenderService extends SelectableService<String> {
 
-    default Object[] transfer(Object... objects) {
-        if (objects == null) {
-            return null;
-        }
-        if (objects.length == 0) {
-            return objects;
-        }
-        Object[] result = new Object[objects.length];
-        for (int i = 0; i < objects.length; i++) {
-            Object o = objects[i];
-            result[i] = o instanceof Supplier ? ((Supplier<?>) o).get() : o;
-        }
-        return result;
-    }
+    //    default
+    Object[] transfer(Object... objects);
+//    {
+//        if (objects == null) {
+//            return null;
+//        }
+//        if (objects.length == 0) {
+//            return objects;
+//        }
+//        Object[] result = new Object[objects.length];
+//        for (int i = 0; i < objects.length; i++) {
+//            Object o = objects[i];
+//            result[i] = o instanceof Supplier ? ((Supplier<?>) o).get() : o;
+//        }
+//        return result;
+//    }
 
     String render(String template, Object... objects);
 }

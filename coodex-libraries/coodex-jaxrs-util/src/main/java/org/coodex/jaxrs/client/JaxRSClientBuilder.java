@@ -19,7 +19,7 @@ package org.coodex.jaxrs.client;
 import org.coodex.util.LazyServiceLoader;
 import org.coodex.util.ServiceLoader;
 
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import java.lang.reflect.Array;
 
 public class JaxRSClientBuilder {

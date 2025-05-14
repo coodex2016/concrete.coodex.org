@@ -16,8 +16,9 @@
 
 package org.coodex.util;
 
+import org.coodex.functional.Supplier;
+
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Supplier;
 
 public class Singleton<T> {
 

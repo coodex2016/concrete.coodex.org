@@ -21,7 +21,7 @@ import org.locationtech.jts.geom.LinearRing;
 import java.util.Objects;
 
 @Deprecated
-public class AreaOfCompatible implements AreaOf {
+public class AreaOfCompatible extends AbstractAreaOf {
     @Override
     public double areaOf(LinearRing linearRing) {
         return JTSUtil.areaOf(linearRing, JTSUtil.isLngLat(linearRing) ? CoordType.LNG_LAT : CoordType.MERCATOR);

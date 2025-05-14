@@ -30,10 +30,7 @@ import org.coodex.concrete.own.RequestPackage;
 import org.coodex.concrete.own.ResponsePackage;
 import org.coodex.id.IDGenerator;
 import org.coodex.logging.Level;
-import org.coodex.util.Common;
-import org.coodex.util.GenericTypeHelper;
-import org.coodex.util.JSONSerializer;
-import org.coodex.util.SingletonMap;
+import org.coodex.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +60,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 
     private static ResponsePackage<Object> parse(String responseMessage) {
         try {
-            return JSONSerializer.getInstance().parse(responseMessage,
+            return JSONSerializerUtil.getInstance().parse(responseMessage,
                     new GenericTypeHelper.GenericType<ResponsePackage<Object>>() {
                     }.getType());
         } catch (Throwable throwable) {
@@ -106,7 +103,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
 //                    completed = true;
                 } else {
                     Object result =
-                            JSONSerializer.getInstance().parse(responsePackage.getContent(),
+                            JSONSerializerUtil.getInstance().parse(responsePackage.getContent(),
                                     GenericTypeHelper.toReference(
                                             completableFutureCallBack.getContext().getDeclaringMethod().getGenericReturnType(),
                                             completableFutureCallBack.getContext().getDeclaringClass()));
@@ -122,7 +119,7 @@ public abstract class AbstractOwnRxInvoker extends AbstractRxInvoker {
             }
         } else {
             try {
-                throwable = new ClientException(JSONSerializer.getInstance().parse(
+                throwable = new ClientException(JSONSerializerUtil.getInstance().parse(
                         responsePackage.getContent(),
                         ErrorInfo.class
                 ));

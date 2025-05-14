@@ -16,10 +16,10 @@
 
 package org.coodex.concrete.core.intercept;
 
+import jakarta.inject.Inject;
 import org.coodex.concrete.common.Token;
 import org.coodex.concrete.message.MessageFilter;
 
-import javax.inject.Inject;
 import java.io.Serializable;
 
 public abstract class DefaultTokenBasedTopicSubscribeInterceptor<M extends Serializable> extends AbstractTokenBasedTopicSubscribeInterceptor<M> {

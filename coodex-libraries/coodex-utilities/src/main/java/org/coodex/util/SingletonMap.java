@@ -18,22 +18,33 @@ package org.coodex.util;
 
 import org.coodex.concurrent.Debounce;
 import org.coodex.concurrent.ExecutorsHelper;
+//import org.coodex.functional.Function;
+//import org.coodex.functional.Supplier;
+import org.coodex.functional.BiConsumer;
+import org.coodex.functional.Function;
+import org.coodex.functional.Supplier;
 import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
+//import java.util.function.BiConsumer;
+//import java.util.function.Function;
+//import java.util.function.Supplier;
+//import java.util.stream.Collectors;
 
 public class SingletonMap<K, V> {
 
     private static final AtomicLong VERSION = new AtomicLong(Long.MIN_VALUE);
     private static final Singleton<ScheduledExecutorService> DEFAULT_SCHEDULED_EXECUTOR_SERVICE
-            = Singleton.with(() -> ExecutorsHelper.newSingleThreadScheduledExecutor("singletonMap-DEFAULT"));
+            = Singleton.with(
+            new Supplier<ScheduledExecutorService>() {
+                @Override
+                public ScheduledExecutorService get() {
+                    return ExecutorsHelper.newSingleThreadScheduledExecutor("singletonMap-DEFAULT");
+                }
+            });
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(SingletonMap.class);
     private final Map<K, Value<V>> map;
     private final Function<K, V> function;
@@ -53,7 +64,7 @@ public class SingletonMap<K, V> {
         this.function = function;
         this.nullKey = nullKey;
         this.maxAge = Math.max(0, maxAge);
-        this.map = mapSupplier == null ? new ConcurrentHashMap<>() : mapSupplier.get();
+        this.map = mapSupplier == null ? new ConcurrentHashMap<K, Value<V>>() : mapSupplier.get();
         this.deathListener = deathListener;
         this.activeOnGet = activeOnGet;
         this.scheduledExecutorService = scheduledExecutorService;
@@ -91,8 +102,20 @@ public class SingletonMap<K, V> {
         return get(key, supplier, maxAge, deathListener);
     }
 
-    public V get(K key, Supplier<V> supplier, long maxAge, BiConsumer<K, V> deathListener) {
-        return get(key, (k) -> Objects.requireNonNull(supplier, "supplier is null").get(), maxAge, deathListener);
+    public V get(K key, final Supplier<V> supplier, long maxAge, BiConsumer<K, V> deathListener) {
+        return get(key,
+                new Function<K, V>() {
+                    @Override
+                    public V apply(K k) {
+                        if (supplier == null) {
+                            throw new NullPointerException("supplier is null");
+                        }
+                        return supplier.get();
+                    }
+                }
+//        (k) -> Objects.requireNonNull(supplier, "supplier is null").get()
+
+                , maxAge, deathListener);
     }
 
     public V get(final K key) {
@@ -123,11 +146,16 @@ public class SingletonMap<K, V> {
         return get(key, function, maxAge, deathListener);
     }
 
-    public V get(final K key, Function<K, V> function, long maxAge, BiConsumer<K, V> deathListener) {
-        return getValue(key, () -> function, maxAge, deathListener);
+    public V get(final K key, final Function<K, V> function, long maxAge, BiConsumer<K, V> deathListener) {
+        return getValue(key, new Supplier<Function<K, V>>() {
+            @Override
+            public Function<K, V> get() {
+                return function;
+            }
+        }, maxAge, deathListener);
     }
 
-    private V getValue(final K key, Supplier<Function<K, V>> functionSupplier, long maxAge, BiConsumer<K, V> deathListener) {
+    private V getValue(final K key, Supplier<Function<K, V>> functionSupplier, long maxAge, final BiConsumer<K, V> deathListener) {
         if (functionSupplier == null) {
             throw new NullPointerException("functionSupplier is null.");
         }
@@ -150,16 +178,19 @@ public class SingletonMap<K, V> {
                         value.debounce = Debounce.newBuilder()
                                 .idle(maxAge)
                                 .scheduledExecutorService(getScheduledExecutorService())
-                                .runnable(() -> {
-                                    Value<V> v = map.remove(finalKey);
-                                    if (v != null) {
-                                        log.debug("{} die.", finalKey);
-                                        BiConsumer<K, V> listener = deathListener == null ? this.deathListener : deathListener;
-                                        if (listener != null) {
-                                            try {
-                                                listener.accept(finalKey, v.value);
-                                            } catch (Throwable th) {
-                                                log.warn("listener process failed: {}", listener, th);
+                                .runnable(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Value<V> v = map.remove(finalKey);
+                                        if (v != null) {
+                                            log.debug("{} die.", finalKey);
+                                            BiConsumer<K, V> listener = deathListener == null ? SingletonMap.this.deathListener : deathListener;
+                                            if (listener != null) {
+                                                try {
+                                                    listener.accept(finalKey, v.value);
+                                                } catch (Throwable th) {
+                                                    log.warn("listener process failed: {}", listener, th);
+                                                }
                                             }
                                         }
                                     }
@@ -184,30 +215,51 @@ public class SingletonMap<K, V> {
     }
 
     public Set<Map.Entry<K, V>> entrySet() {
-        return map.entrySet().stream().map(entry -> new Map.Entry<K, V>() {
+        Set<Map.Entry<K, V>> result = new HashSet<>();
+        for (final Map.Entry<K, Value<V>> entry : map.entrySet()) {
+            result.add(new Map.Entry<K, V>() {
+                @Override
+                public K getKey() {
+                    return entry.getKey();
+                }
 
-            @Override
-            public K getKey() {
-                return entry.getKey();
-            }
+                @Override
+                public V getValue() {
+                    return entry.getValue().value;
+                }
 
-            @Override
-            public V getValue() {
-                return entry.getValue().value;
-            }
+                @Override
+                public V setValue(V value) {
+                    return null;
+                }
+            });
+        }
 
-            @Override
-            public V setValue(V value) {
-                return null;
-            }
-        }).collect(Collectors.toSet());
+//        return map.entrySet().stream().map(entry -> new Map.Entry<K, V>() {
+//
+//            @Override
+//            public K getKey() {
+//                return entry.getKey();
+//            }
+//
+//            @Override
+//            public V getValue() {
+//                return entry.getValue().value;
+//            }
+//
+//            @Override
+//            public V setValue(V value) {
+//                return null;
+//            }
+//        }).collect(Collectors.toSet());
+        return result;
     }
 
     public <C extends Collection<V>> C fill(C collection, Collection<K> keys) {
         if (collection == null) {
             throw new NullPointerException("collection is null.");
         }
-        if (keys != null && keys.size() > 0) {
+        if (keys != null && !keys.isEmpty()) {
             for (K key : new LinkedHashSet<>(keys)) {
                 collection.add(get(key));
             }
@@ -237,17 +289,29 @@ public class SingletonMap<K, V> {
     }
 
     public Collection<V> values() {
-        return map.values().stream().map(value -> value.value).collect(Collectors.toList());
+        Collection<V> result = new ArrayList<>();
+        for (final Map.Entry<K, Value<V>> entry : map.entrySet()) {
+            result.add(entry.getValue().value);
+        }
+        return result;
+//        return map.values().stream().map(value -> value.value).collect(Collectors.toList());
     }
 
     public void clear() {
         synchronized (map) {
-            if (map.size() > 0) {
-                map.forEach((key, v) -> {
+            if (!map.isEmpty()) {
+                for (Map.Entry<K, Value<V>> entry : map.entrySet()) {
+                    Value<V> v = entry.getValue();
+                    ;
                     if (v != null && v.debounce != null) {
                         v.debounce.cancel();
                     }
-                });
+                }
+//                map.forEach((key, v) -> {
+//                    if (v != null && v.debounce != null) {
+//                        v.debounce.cancel();
+//                    }
+//                });
                 map.clear();
             }
         }

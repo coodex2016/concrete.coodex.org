@@ -16,13 +16,15 @@
 
 package org.coodex.util.cv;
 
+import org.coodex.functional.Function;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.function.Function;
+//import java.util.function.Function;
 
 public class Img {
 

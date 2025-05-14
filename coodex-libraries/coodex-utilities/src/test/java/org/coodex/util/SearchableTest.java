@@ -64,6 +64,11 @@ public class SearchableTest {
         }
 
         @Override
+        public int indexOf(int fromIndex, int toIndex, Byte[] elements) {
+            return SearchableHelper.indexOf(this, fromIndex, toIndex, elements);
+        }
+
+        @Override
         public int indexOf(int fromIndex, int toIndex, Byte element) {
             for (int i = fromIndex; i < toIndex; i++) {
                 if (element == bytes[i]) return i;
@@ -75,6 +80,11 @@ public class SearchableTest {
         public Byte get(int index) {
             return bytes[index];
         }
+
+        @Override
+        public int indexOf(int fromIndex, int toIndex, byte[] elements) {
+            return SearchableHelper.indexOf_byte(this, fromIndex, toIndex, elements);
+        }
     }
 
     static class IntArraySearchable implements Searchable.Integers {
@@ -82,6 +92,11 @@ public class SearchableTest {
 
         IntArraySearchable(int[] bytes) {
             this.bytes = bytes;
+        }
+
+        @Override
+        public int indexOf(int fromIndex, int toIndex, Integer[] elements) {
+            return SearchableHelper.indexOf(this, fromIndex, toIndex, elements);
         }
 
         @Override
@@ -95,6 +110,11 @@ public class SearchableTest {
         @Override
         public Integer get(int index) {
             return bytes[index];
+        }
+
+        @Override
+        public int indexOf(int fromIndex, int toIndex, int[] elements) {
+            return SearchableHelper.indexOf_int(this, fromIndex, toIndex, elements);
         }
     }
 }

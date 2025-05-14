@@ -18,6 +18,7 @@ package org.coodex.concrete.common;
 
 import org.coodex.util.Common;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -120,11 +121,11 @@ public abstract class AbstractSubjoin implements Subjoin {
 
     private void warningsUpdate() {
         // TODO serialize
-        if (this.warnings.size() == 0) {
+        if (this.warnings.isEmpty()) {
             set(KEY_WARNINGS, null);
         } else {
             set(KEY_WARNINGS, Collections.singletonList(
-                    JSONSerializer.getInstance().toJson(this.warnings)
+                    JSONSerializerUtil.getInstance().toJson(this.warnings)
             ));
         }
     }

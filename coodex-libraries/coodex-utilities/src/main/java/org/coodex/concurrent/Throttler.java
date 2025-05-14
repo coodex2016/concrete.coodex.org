@@ -64,11 +64,14 @@ public class Throttler<T> extends AbstractCoalition<T> {
 
             long next = getNextThrottle();
 
-            Runnable runnable = () -> {
-                synchronized (Throttler.this) {
-                    prevTime = Clock.currentTimeMillis();
-                    prevFuture = null;
-                    callback.call(key);
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (Throttler.this) {
+                        prevTime = Clock.currentTimeMillis();
+                        prevFuture = null;
+                        callback.call(key);
+                    }
                 }
             };
 

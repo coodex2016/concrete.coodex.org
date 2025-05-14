@@ -20,7 +20,7 @@ import org.coodex.concrete.jaxrs.ClassGenerator;
 import org.coodex.concrete.jaxrs.ConcreteJaxrsApplication;
 import org.coodex.concrete.support.jsr311.javassist.JSR311ClassGenerator;
 
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.core.Application;
 
 public class ConcreteJSR311Application extends ConcreteJaxrsApplication {
 

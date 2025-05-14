@@ -17,6 +17,7 @@
 package org.coodex.concrete.client;
 
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +56,7 @@ public class MessageSubscriber {
 
             try {
                 listener.onMessage(
-                        JSONSerializer.getInstance().parse(jsonMessage, toReference(
+                        JSONSerializerUtil.getInstance().parse(jsonMessage, toReference(
                                 MessageListener.class.getTypeParameters()[0],
                                 listener.getClass()
                         ))

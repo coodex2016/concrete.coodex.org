@@ -31,6 +31,7 @@ import org.coodex.logging.Level;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +106,7 @@ public class AMQPApplication extends OwnServiceProvider {
 
     private void connect(AMQPConnectionConfig config, String queueName, Long ttl) {
         try {
-            final JSONSerializer serializer = JSONSerializer.getInstance();
+            final JSONSerializer serializer = JSONSerializerUtil.getInstance();
             if (serializer == null) throw new RuntimeException("none json serializer found.");
 
             Connection connection = AMQPConnectionFacade.getConnection(config);

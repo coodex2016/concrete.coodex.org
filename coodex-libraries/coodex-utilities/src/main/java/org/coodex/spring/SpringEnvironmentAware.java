@@ -35,7 +35,9 @@ public class SpringEnvironmentAware implements SmartInstantiationAwareBeanPostPr
     public SpringEnvironmentAware(Environment environment) {
         springEnvironment = environment;
         log.info("coodex-spring: spring environment injected. {}",
-                Optional.ofNullable(environment).map(Object::getClass).orElse(null));
+                environment == null ? null : environment.getClass()
+//                Optional.ofNullable(environment).map(Object::getClass).orElse(null)
+        );
     }
 
     public static Environment getSpringEnvironment() {

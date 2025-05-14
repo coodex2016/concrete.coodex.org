@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.lang.reflect.Type;
 
 @Named

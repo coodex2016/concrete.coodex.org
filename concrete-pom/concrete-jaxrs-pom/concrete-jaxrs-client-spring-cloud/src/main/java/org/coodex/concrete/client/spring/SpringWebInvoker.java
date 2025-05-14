@@ -16,6 +16,7 @@
 
 package org.coodex.concrete.client.spring;
 
+import jakarta.ws.rs.core.MultivaluedHashMap;
 import org.coodex.concrete.client.ClientTokenManagement;
 import org.coodex.concrete.client.Destination;
 import org.coodex.concrete.client.impl.AbstractSyncInvoker;
@@ -30,6 +31,7 @@ import org.coodex.config.Config;
 import org.coodex.mock.Mocker;
 import org.coodex.util.Common;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +39,6 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.ws.rs.core.MultivaluedHashMap;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -98,7 +99,7 @@ public class SpringWebInvoker extends AbstractSyncInvoker {
     }
 
     private HttpMethod getHttpMethod(String invokerType) {
-        return HttpMethod.resolve(invokerType.toUpperCase());
+        return HttpMethod.valueOf(invokerType.toUpperCase());
     }
 
     @Override
@@ -116,7 +117,7 @@ public class SpringWebInvoker extends AbstractSyncInvoker {
             Object body = JaxRSClientCommon.getSubmitObject(unit, args);
             HttpEntity<?> entity = body == null ? new HttpEntity<>(getHttpHeaders(false)) :
                     // todo 采用MessageConverter方案
-                    new HttpEntity<>(JSONSerializer.getInstance().toJson(body), getHttpHeaders(true));
+                    new HttpEntity<>(JSONSerializerUtil.getInstance().toJson(body), getHttpHeaders(true));
 
 
             ResponseEntity<byte[]> responseEntity = restTemplate.exchange(

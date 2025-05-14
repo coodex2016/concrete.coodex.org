@@ -33,6 +33,7 @@ import org.coodex.config.Config;
 import org.coodex.id.IDGenerator;
 import org.coodex.logging.Level;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,10 +123,10 @@ public class AMQPInvoker extends AbstractOwnRxInvoker {
                 "concrete-amqp-client-" + ConcreteHelper.VERSION);
         // 2 send
         if (getLoggingLevel().isEnabled(getLogger())) {
-            getLoggingLevel().log(getLogger(), "message send: " + JSONSerializer.getInstance().toJson(requestPackage));
+            getLoggingLevel().log(getLogger(), "message send: " + JSONSerializerUtil.getInstance().toJson(requestPackage));
         }
         facadeSingletonMap.get((AMQPDestination) getDestination())
-                .send(JSONSerializer.getInstance().toJson(requestPackage));
+                .send(JSONSerializerUtil.getInstance().toJson(requestPackage));
     }
 
     @Override

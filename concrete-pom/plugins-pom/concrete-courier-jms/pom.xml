@@ -21,7 +21,7 @@
     <parent>
         <artifactId>plugins-pom</artifactId>
         <groupId>org.coodex.concrete</groupId>
-        <version>0.5.4-SNAPSHOT</version>
+        <version>0.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -35,9 +35,8 @@
         </dependency>
 
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>7.0</version>
+            <groupId>jakarta.jms</groupId>
+            <artifactId>jakarta.jms-api</artifactId>
             <scope>provided</scope>
         </dependency>
 

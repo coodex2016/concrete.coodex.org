@@ -20,7 +20,7 @@ package org.coodex.concrete.jaxrs;
 import org.coodex.concrete.common.ErrorInfo;
 import org.coodex.concrete.common.ThrowableMapper;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 
 public class JaxrsExceptionMapper implements ThrowableMapper {
 

@@ -50,7 +50,7 @@ import static org.coodex.util.GenericTypeHelper.solveFromType;
  */
 //@SuppressWarnings("rawtypes")
 class CourierBuilder
-        implements Function<TopicKey, Courier<?>> {
+        implements Function<TopicKey, Courier<?>>, org.coodex.functional.Function<TopicKey,Courier<?>> {
 
 
     private final static Logger log = LoggerFactory.getLogger(CourierBuilder.class);

@@ -49,7 +49,7 @@ public abstract class AbstractOrganizationAccountFactory
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     protected AbstractPersonAccountRepo<P> accountRepo;
-    private Copier<P, OrganizationAccount> accountCopier = new AbstractCopier<P, OrganizationAccount>() {
+    private final Copier<P, OrganizationAccount> accountCopier = new AbstractCopier<P, OrganizationAccount>() {
         @Override
         public OrganizationAccount copy(P p, OrganizationAccount organizationAccount) {
 
@@ -61,14 +61,20 @@ public abstract class AbstractOrganizationAccountFactory
         }
     };
 
-    private SingletonMap<String, OrganizationAccount> accountSingletonMap = SingletonMap.<String, OrganizationAccount>builder()
-            .function(new Function<String, OrganizationAccount>() {
-                @Override
-                public OrganizationAccount apply(String key) {
-                    P person = accountRepo.findById(key).orElse(null);
-                    return person == null ? null : accountCopier.copy(person);
-                }
-            })
+    private final SingletonMap<String, OrganizationAccount> accountSingletonMap = SingletonMap.<String, OrganizationAccount>builder()
+            .function(
+                    key -> {
+                        P person = accountRepo.findById(key).orElse(null);
+                        return person == null ? null : accountCopier.copy(person);
+                    }
+//                    new Function<String, OrganizationAccount>() {
+//                @Override
+//                public OrganizationAccount apply(String key) {
+//                    P person = accountRepo.findById(key).orElse(null);
+//                    return person == null ? null : accountCopier.copy(person);
+//                }
+//            }
+            )
             .maxAge(Config.getValue("cache.object.life", 10L,
                     AbstractOrganizationAccountFactory.class.getPackage().getName()
             ) * 60L * 1000L)

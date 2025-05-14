@@ -21,12 +21,17 @@
     <parent>
         <artifactId>concrete-pom</artifactId>
         <groupId>org.coodex.concrete</groupId>
-        <version>0.5.4-SNAPSHOT</version>
+        <version>0.6.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>concrete-core-spring</artifactId>
+    <properties>
+        <maven.compiler.source>${spring.boot.java.version}</maven.compiler.source>
+        <maven.compiler.target>${spring.boot.java.version}</maven.compiler.target>
+    </properties>
+
     <packaging>jar</packaging>
 
     <dependencies>
@@ -37,10 +42,17 @@
             <version>3.0.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate.validator.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -86,9 +98,14 @@
             <scope>test</scope>
         </dependency>
 
+        <!--        <dependency>-->
+        <!--            <groupId>javax.inject</groupId>-->
+        <!--            <artifactId>javax.inject</artifactId>-->
+        <!--            <scope>provided</scope>-->
+        <!--        </dependency>-->
         <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
             <scope>provided</scope>
         </dependency>
 

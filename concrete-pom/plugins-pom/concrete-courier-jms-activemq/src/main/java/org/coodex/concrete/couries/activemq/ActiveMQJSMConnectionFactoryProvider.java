@@ -19,7 +19,7 @@ package org.coodex.concrete.couries.activemq;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.coodex.concrete.couriers.jms.ConnectionFactoryProvider;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 
 public class ActiveMQJSMConnectionFactoryProvider implements ConnectionFactoryProvider {
 

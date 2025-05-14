@@ -22,10 +22,7 @@ import org.coodex.concrete.apitools.jaxrs.EnumElementInfo;
 import org.coodex.concrete.apitools.jaxrs.POJOPropertyInfo;
 import org.coodex.concrete.jaxrs.struct.JaxrsUnit;
 import org.coodex.mock.Mocker;
-import org.coodex.util.Common;
-import org.coodex.util.JSONSerializer;
-import org.coodex.util.PojoInfo;
-import org.coodex.util.PojoProperty;
+import org.coodex.util.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -117,7 +114,7 @@ public class ServiceDocToolkit extends DocToolkit {
                     "\n```\n\n";
         } else {
             result = prevOfMock() + "\n```json\n" +
-                    JSONSerializer.getInstance().toJson(Mocker.mockMethod(unit.getMethod(),
+                    JSONSerializerUtil.getInstance().toJson(Mocker.mockMethod(unit.getMethod(),
                             unit.getDeclaringModule().getInterfaceClass())) +
                     "\n```\n\n";
         }

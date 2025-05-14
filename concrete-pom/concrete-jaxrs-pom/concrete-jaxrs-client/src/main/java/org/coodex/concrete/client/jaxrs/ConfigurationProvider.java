@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.client.jaxrs;
 
-import javax.ws.rs.core.Configuration;
+import jakarta.ws.rs.core.Configuration;
 
 public interface ConfigurationProvider {
 

@@ -16,31 +16,36 @@
 
 package org.coodex.jts.impl;
 
+import org.coodex.functional.BiFunction;
+import org.coodex.functional.Function;
 import org.coodex.jts.GeometryConvertService;
-import org.coodex.jts.JTSUtil;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
-
 import static org.coodex.jts.JTSUtil.GEOMETRY_FACTORY;
 
 public class LineStringConverter implements GeometryConvertService<LineString> {
-    static final BiFunction<LineString, Function<Coordinate[], Coordinate[]>, LineString> LINESTRING_CONVERTER_FUNCTION =
-            (source, func) -> source instanceof LinearRing ?
+    static final BiFunction<LineString, Function<Coordinate[], Coordinate[]>, LineString> LINESTRING_CONVERTER_FUNCTION
+            = new BiFunction<LineString, Function<Coordinate[], Coordinate[]>, LineString>() {
+
+        @Override
+        public LineString apply(LineString source, Function<Coordinate[], Coordinate[]> func) {
+            return source instanceof LinearRing ?
                     GEOMETRY_FACTORY.createLinearRing(func.apply(source.getCoordinates())) :
                     GEOMETRY_FACTORY.createLineString(func.apply(source.getCoordinates()));
+        }
+    };
+
 
     @Override
     public LineString toMercator(LineString lngLat) {
-        return LINESTRING_CONVERTER_FUNCTION.apply(lngLat, JTSUtil::lngLat2Mercator);
+        return LINESTRING_CONVERTER_FUNCTION.apply(lngLat, Lambdas.lnglat2Mercator_Coords);
     }
 
     @Override
     public LineString toLngLat(LineString mercator) {
-        return LINESTRING_CONVERTER_FUNCTION.apply(mercator, JTSUtil::mercator2LngLat);
+        return LINESTRING_CONVERTER_FUNCTION.apply(mercator, Lambdas.mercator2LanLat_Coords);
     }
 
     @Override

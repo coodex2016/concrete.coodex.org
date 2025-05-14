@@ -20,6 +20,7 @@ import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.SneakyThrows;
+import org.coodex.functional.Function;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -36,7 +37,15 @@ public class FreeMarkerRenderService implements RenderService {
 
     private static final SingletonMap<String, Template> TEMPLATE_SINGLETON_MAP
             = SingletonMap.<String, Template>builder()
-            .function(FreeMarkerRenderService::getTemplate)
+            .function(
+                    new Function<String, Template>() {
+                        @Override
+                        public Template apply(String s) {
+                            return FreeMarkerRenderService.getTemplate(s);
+                        }
+                    }
+//                    FreeMarkerRenderService::getTemplate
+            )
             .build();
 
     static {
@@ -77,6 +86,11 @@ public class FreeMarkerRenderService implements RenderService {
 //        System.out.println(Renderer.render("测试：${o1.test}", map));
 //        System.out.println(Renderer.render("测试：${o2!\"xxx\"}", map));
 //    }
+
+    @Override
+    public Object[] transfer(Object... objects) {
+        return RenderServiceHelper.transfer(objects);
+    }
 
     @Override
     public String render(String template, Object... objects) {

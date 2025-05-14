@@ -22,6 +22,8 @@ import org.coodex.concrete.api.Priority;
 import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.config.Config;
+//import org.coodex.functional.Consumer;
+//import org.coodex.functional.Function;
 import org.coodex.util.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -43,7 +45,7 @@ import static org.coodex.util.ReflectHelper.foreachClass;
  */
 public class ConcreteHelper {
 
-    public static final String VERSION = "0.5.4-SNAPSHOT";
+    public static final String VERSION = "0.6.0-SNAPSHOT";
 
     public static final String TAG_CLIENT = "client";
     public static final String KEY_DESTINATION = "destination";
@@ -134,9 +136,11 @@ public class ConcreteHelper {
         } else {
             printBanner(originBanner, moduleName);
         }
-    }    private static final SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
+    }
+
+    private static final SingletonMap<String, ScheduledExecutorService> scheduledExecutorMap
             = SingletonMap.<String, ScheduledExecutorService>builder()
-            .function(new Function<String, ScheduledExecutorService>() {
+            .function(new org.coodex.functional.Function<String, ScheduledExecutorService>() {
                 @Override
                 public ScheduledExecutorService apply(String key) {
                     String aliasTo = Config.get("scheduler", key, getAppSet());
@@ -209,14 +213,13 @@ public class ConcreteHelper {
         }
 
         // 注册
-        foreachClass((clazz) -> {
-//            if (AbstractErrorCodes.class.isAssignableFrom(clazz)) {
+        ReflectHelper.foreachClass(clazz -> {
+                    //            if (AbstractErrorCodes.class.isAssignableFrom(clazz)) {
                     ErrorMessageFacade.register(clazz);
 //            }
                     processor.accept(clazz);
-
-                }, (ConcreteClassFilter) clazz -> ConcreteHelper.isConcreteService(clazz) ||
-                        clazz.getAnnotation(ErrorCode.class) != null,
+                }, (ConcreteClassFilter) (clazz -> ConcreteHelper.isConcreteService(clazz) ||
+                        clazz.getAnnotation(ErrorCode.class) != null),
                 packagePatterns);
     }
 
@@ -228,9 +231,11 @@ public class ConcreteHelper {
     public static boolean isConcreteService(Method method) {
         ConcreteService service = method.getAnnotation(ConcreteService.class);
         return service == null || !service.notService();
-    }    private static final SingletonMap<String, ExecutorService> executorServiceMap
+    }
+
+    private static final SingletonMap<String, ExecutorService> executorServiceMap
             = SingletonMap.<String, ExecutorService>builder()
-            .function(new Function<String, ExecutorService>() {
+            .function(new org.coodex.functional.Function<String, ExecutorService>() {
 
                 @Override
                 public ExecutorService apply(String key) {
@@ -360,7 +365,7 @@ public class ConcreteHelper {
         return null;
     }
 
-    ///////////////////////////////////////////////////////
+    /// ////////////////////////////////////////////////////
     public static ConcreteException getException(Throwable th) {
         ConcreteException concreteException = findException(th);
         if (concreteException == null) {
@@ -442,10 +447,6 @@ public class ConcreteHelper {
         }
         return th != null ? th : exception;
     }
-
-
-
-
 
 
 }

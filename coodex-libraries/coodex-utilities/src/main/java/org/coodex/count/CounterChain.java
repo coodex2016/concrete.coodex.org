@@ -48,14 +48,17 @@ public abstract class CounterChain<T extends Countable> implements Counter<T> {
 
     @Override
     public void count(final T value) {
-        if (value != null && counters.size() > 0) {
+        if (value != null && !counters.isEmpty()) {
             for (final Counter<T> counter : counters) {
-                Runnable runnable = () -> {
-                    synchronized (counter) {
-                        try {
-                            counter.count(value);
-                        } catch (Throwable th) {
-                            log.warn("count failed. {}, {}", counter.getClass().getName(), th.getLocalizedMessage(), th);
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (counter) {
+                            try {
+                                counter.count(value);
+                            } catch (Throwable th) {
+                                log.warn("count failed. {}, {}", counter.getClass().getName(), th.getLocalizedMessage(), th);
+                            }
                         }
                     }
                 };

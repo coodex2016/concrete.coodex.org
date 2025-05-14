@@ -90,4 +90,8 @@ public class FastJsonSerializer extends AbstractJSONSerializer implements JSONSe
         }
     }
 
+    @Override
+    public <T> T parse(Object jsonObject, Type t) {
+        return JSONSerializerUtil.parse(this, jsonObject, t);
+    }
 }

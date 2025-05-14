@@ -17,15 +17,15 @@
 package org.coodex.concrete.couriers.jms;
 
 import org.coodex.concrete.message.CourierPrototype;
+import org.coodex.functional.Supplier;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
-import java.util.function.Supplier;
 
 import static org.coodex.concrete.couriers.jms.JMSCourierPrototypeProvider.JMS_PREFIX;
 

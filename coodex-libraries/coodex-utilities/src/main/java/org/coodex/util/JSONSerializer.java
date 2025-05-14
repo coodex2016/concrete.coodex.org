@@ -20,19 +20,15 @@ import java.lang.reflect.Type;
 
 public interface JSONSerializer {
 
-    ServiceLoader<JSONSerializer> JSON_SERIALIZER_LOADER
-            = new LazyServiceLoader<JSONSerializer>() {
-    };
 
-    static JSONSerializer getInstance() {
-        return JSON_SERIALIZER_LOADER.get();
-    }
 
     <T> T parse(String json, Type t);
 
-    default <T> T parse(Object jsonObject, Type t) {
-        return jsonObject == null ? null : parse(toJson(jsonObject), t);
-    }
+//    default
+    <T> T parse(Object jsonObject, Type t);
+//    {
+//        return jsonObject == null ? null : parse(toJson(jsonObject), t);
+//    }
 
     String toJson(Object t);
 

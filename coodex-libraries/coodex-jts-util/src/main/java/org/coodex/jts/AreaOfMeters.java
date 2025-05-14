@@ -21,7 +21,7 @@ import org.locationtech.jts.geom.LinearRing;
 
 import java.util.Objects;
 
-public class AreaOfMeters implements AreaOf {
+public class AreaOfMeters extends AbstractAreaOf {
     @Override
     public double areaOf(LinearRing linearRing) {
         return Area.ofRing(linearRing.getCoordinates());

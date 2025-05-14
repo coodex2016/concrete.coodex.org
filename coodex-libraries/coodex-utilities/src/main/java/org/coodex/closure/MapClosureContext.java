@@ -16,9 +16,11 @@
 
 package org.coodex.closure;
 
+import org.coodex.functional.Supplier;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
+//import java.util.function.Supplier;
 
 /**
  * Created by davidoff shen on 2016-09-04.
@@ -56,10 +58,10 @@ public class MapClosureContext<K, V> extends StackClosureContext<Map<K, V>> {
     public Object call(Map<K, V> map, Supplier<?> supplier) {
         Map<K, V> current = get();
         Map<K, V> context = new HashMap<>();
-        if (current != null && current.size() > 0) {
+        if (current != null && !current.isEmpty()) {
             context.putAll(current);
         }
-        if (map != null && map.size() > 0) {
+        if (map != null && !map.isEmpty()) {
             context.putAll(map);
         }
         return super.call(context, supplier);

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 class ExecutorServiceImpl implements ExecutorService {
 
@@ -50,25 +49,49 @@ class ExecutorServiceImpl implements ExecutorService {
         return list;
     }
 
-    protected Runnable wrapRunnable(Runnable runnable) {
-        return runnable == null ? null : () -> {
-            try {
-                runnable.run();
-            } catch (Throwable th) {
-                log.warn("Runnable run failed: {}", th.getLocalizedMessage(), th);
-            }
-        };
+    protected Runnable wrapRunnable(final Runnable runnable) {
+        return runnable == null ? null :
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            runnable.run();
+                        } catch (Throwable th) {
+                            log.warn("Runnable run failed: {}", th.getLocalizedMessage(), th);
+                        }
+                    }
+                }
+//                () -> {
+//            try {
+//                runnable.run();
+//            } catch (Throwable th) {
+//                log.warn("Runnable run failed: {}", th.getLocalizedMessage(), th);
+//            }
+//        }
+                ;
     }
 
-    protected <V> Callable<V> wrapCallable(Callable<V> callable) {
-        return callable == null ? null : () -> {
-            try {
-                return callable.call();
-            } catch (Throwable th) {
-                log.warn("Callable call failed: {}", th.getLocalizedMessage(), th);
-                throw th;
+    protected <V> Callable<V> wrapCallable(final Callable<V> callable) {
+        return callable == null ? null : new Callable<V>() {
+            @Override
+            public V call() throws Exception {
+                try {
+                    return callable.call();
+                } catch (Throwable th) {
+                    log.warn("Callable call failed: {}", th.getLocalizedMessage(), th);
+                    throw th;
+                }
             }
-        };
+        }
+//                () -> {
+//            try {
+//                return callable.call();
+//            } catch (Throwable th) {
+//                log.warn("Callable call failed: {}", th.getLocalizedMessage(), th);
+//                throw th;
+//            }
+//        }
+                ;
 
     }
 
@@ -113,24 +136,32 @@ class ExecutorServiceImpl implements ExecutorService {
         return executorService.submit(wrapper.wrap(wrapRunnable(task)));
     }
 
+    private <T> Collection<? extends Callable<T>> streamMapTo(Collection<? extends Callable<T>> tasks) {
+        List<Callable<T>> list = new ArrayList<>(tasks.size());
+        for (Callable<T> task : tasks) {
+            list.add(wrapCallable(task));
+        }
+        return list;
+    }
+
     @Override
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
-        return executorService.invokeAll(wrap(tasks.stream().map(this::wrapCallable).collect(Collectors.toList())));
+        return executorService.invokeAll(wrap(streamMapTo(tasks)));
     }
 
     @Override
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
-        return executorService.invokeAll(wrap(tasks.stream().map(this::wrapCallable).collect(Collectors.toList())), timeout, unit);
+        return executorService.invokeAll(wrap(streamMapTo(tasks)), timeout, unit);
     }
 
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
-        return executorService.invokeAny(wrap(tasks.stream().map(this::wrapCallable).collect(Collectors.toList())));
+        return executorService.invokeAny(wrap(streamMapTo(tasks)));
     }
 
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        return executorService.invokeAny(wrap(tasks.stream().map(this::wrapCallable).collect(Collectors.toList())), timeout, unit);
+        return executorService.invokeAny(wrap(streamMapTo(tasks)), timeout, unit);
     }
 
     @Override

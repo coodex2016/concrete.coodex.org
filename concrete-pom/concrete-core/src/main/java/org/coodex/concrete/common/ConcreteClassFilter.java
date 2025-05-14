@@ -21,7 +21,7 @@ import java.util.function.Function;
 /**
  * Created by davidoff shen on 2017-05-13.
  */
-public interface ConcreteClassFilter extends Function<String, Boolean> {
+public interface ConcreteClassFilter extends Function<String, Boolean>, org.coodex.functional.Function<String, Boolean> {
 
     @Override
     default Boolean apply(String className) {

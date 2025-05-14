@@ -18,6 +18,8 @@ package org.coodex.spring;
 
 import org.coodex.util.AbstractServiceLoaderProvider;
 import org.coodex.util.SPI;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,11 +32,19 @@ public class SpringServiceLoaderProvider extends AbstractServiceLoaderProvider
 
     @Override
     protected Map<String, Object> loadByRowType(Class<?> rowType) {
-        return Optional.ofNullable(SpringBeanFactoryAware.getListableBeanFactory())
-                .map(beanFactory -> new HashMap<String, Object>(
-                        beanFactory.getBeansOfType(rowType)
-                ))
-                .orElse(new HashMap<>());
+        ListableBeanFactory listableBeanFactory = SpringBeanFactoryAware.getListableBeanFactory();
+        if (listableBeanFactory == null)
+            return new HashMap<>();
+        else
+            return new HashMap<>(listableBeanFactory.getBeansOfType(rowType));
+//        for(BeanFactory beanFactory: listableBeanFactory)
+
+//        return beanFactory == null ? new HashMap<String, Object>()
+//        return Optional.ofNullable(SpringBeanFactoryAware.getListableBeanFactory())
+//                .map(beanFactory -> new HashMap<String, Object>(
+//                        beanFactory.getBeansOfType(rowType)
+//                ))
+//                .orElse(new HashMap<>());
     }
 
 //    @Override

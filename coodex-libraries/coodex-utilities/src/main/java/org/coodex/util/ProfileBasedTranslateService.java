@@ -16,6 +16,8 @@
 
 package org.coodex.util;
 
+import org.coodex.functional.BiConsumer;
+import org.coodex.functional.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,23 +32,47 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
     private final List<ResourcesMapper> mappers = new LinkedList<>();
 
     private final SingletonMap<CacheKey, String> translateCache = SingletonMap.<CacheKey, String>builder()
-            .function(key -> ProfileBasedTranslateService.this.get(key.key, key.locale)).build();
-
-    ProfileBasedTranslateService() {
-        ResourceScanner.newBuilder((resource, resourceName) -> mappers.add(
-                        new ResourcesMapper(
-                                resourceName,
-                                resource,
-                                Integer.MAX_VALUE - (ResourceScanner.isExtraPath() ? ResourceScanner.getExtraPathIndex() : 0))))
-                .filter(resourceName -> {
-                    String[] allSupported = Profile.allSupportedFileExt();
-                    for (String ext : allSupported) {
-                        if (resourceName.endsWith(ext)) {
-                            return true;
+            .function(
+                    new Function<CacheKey, String>() {
+                        @Override
+                        public String apply(CacheKey key) {
+                            return ProfileBasedTranslateService.this.get(key.key, key.locale);
                         }
                     }
-                    return false;
-                })
+//                    key -> ProfileBasedTranslateService.this.get(key.key, key.locale)
+            ).build();
+
+    ProfileBasedTranslateService() {
+        ResourceScanner.newBuilder(
+                        new BiConsumer<URL, String>() {
+                            @Override
+                            public void accept(URL resource, String resourceName) {
+                                mappers.add(
+                                        new ResourcesMapper(
+                                                resourceName,
+                                                resource,
+                                                Integer.MAX_VALUE - (ResourceScanner.isExtraPath() ? ResourceScanner.getExtraPathIndex() : 0)));
+                            }
+                        }
+//                (resource, resourceName) -> mappers.add(
+//                        new ResourcesMapper(
+//                                resourceName,
+//                                resource,
+//                                Integer.MAX_VALUE - (ResourceScanner.isExtraPath() ? ResourceScanner.getExtraPathIndex() : 0)))
+                )
+                .filter(new Function<String, Boolean>() {
+                            @Override
+                            public Boolean apply(String resourceName) {
+                                String[] allSupported = Profile.allSupportedFileExt();
+                                for (String ext : allSupported) {
+                                    if (resourceName.endsWith(ext)) {
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        }
+                )
                 .extraPath(true)
                 .build()
                 .scan("i18n");
@@ -92,7 +118,7 @@ public class ProfileBasedTranslateService extends AbstractTranslateService {
                 list.add(mapper);
             }
         }
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             ResourcesMapper[] mapperArray = list.toArray(new ResourcesMapper[0]);
             Arrays.sort(mapperArray);
             for (ResourcesMapper mapper : mapperArray) {

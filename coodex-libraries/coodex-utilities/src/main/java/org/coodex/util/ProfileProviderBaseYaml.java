@@ -16,6 +16,7 @@
 
 package org.coodex.util;
 
+import org.coodex.functional.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,13 +31,16 @@ public class ProfileProviderBaseYaml /*extends AbstractProfileProvider */ implem
 
     private static final String YAML_CLASS = "org.yaml.snakeyaml.Yaml";
 
-    private static final Singleton<Boolean> YAML_SUPPORTED = Singleton.with(() -> {
-        try {
-            Class.forName(YAML_CLASS);
-            return true;
-        } catch (ClassNotFoundException e) {
-            log.info("{} not found. TODO: support other yaml reader", YAML_CLASS);
-            return false;
+    private static final Singleton<Boolean> YAML_SUPPORTED = Singleton.with(new Supplier<Boolean>() {
+        @Override
+        public Boolean get() {
+            try {
+                Class.forName(YAML_CLASS);
+                return true;
+            } catch (ClassNotFoundException e) {
+                log.info("{} not found. TODO: support other yaml reader", YAML_CLASS);
+                return false;
+            }
         }
     });
 

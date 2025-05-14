@@ -17,6 +17,7 @@
 package org.coodex.concurrent.locks;
 
 import org.coodex.concurrent.ExecutorsHelper;
+import org.coodex.functional.Supplier;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 import org.slf4j.Logger;
@@ -38,18 +39,31 @@ public abstract class AbstractResourceLockProvider implements ResourceLockProvid
 
     private static final AbstractResourceLock[] toArraysParam = new AbstractResourceLock[0];
 
-    private static final Comparator<AbstractResourceLock> comparator = (o1, o2) -> (int) (o1.getLastActive() - o2.getLastActive());
+    private static final Comparator<AbstractResourceLock> comparator = new Comparator<AbstractResourceLock>() {
+        @Override
+        public int compare(AbstractResourceLock o1, AbstractResourceLock o2) {
+            return (int) (o1.getLastActive() - o2.getLastActive());
+        }
+    };
 
     private static final Singleton<ScheduledExecutorService> scheduledExecutorServiceSingleton = Singleton.with(
-            () -> ExecutorsHelper.newSingleThreadScheduledExecutor("cleanDeathResource")
+            new Supplier<ScheduledExecutorService>() {
+                @Override
+                public ScheduledExecutorService get() {
+                    return ExecutorsHelper.newSingleThreadScheduledExecutor("cleanDeathResource");
+                }
+            }
     );
     protected final Map<ResourceId, AbstractResourceLock> locksMap = new HashMap<>(8);
 
-    private final Runnable cleanRunner = () -> {
-        try {
-            cleanDeathResource();
-        } finally {
-            poll();
+    private final Runnable cleanRunner = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                cleanDeathResource();
+            } finally {
+                poll();
+            }
         }
     };
 

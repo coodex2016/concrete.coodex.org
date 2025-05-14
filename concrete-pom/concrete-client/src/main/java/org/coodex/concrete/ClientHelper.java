@@ -94,7 +94,7 @@ public class ClientHelper {
     }
 
     public static JSONSerializer getJSONSerializer() {
-        return JSONSerializer.getInstance();
+        return JSONSerializerUtil.getInstance();
     }
 
     public static InstanceBuilder getInstanceBuilder() {

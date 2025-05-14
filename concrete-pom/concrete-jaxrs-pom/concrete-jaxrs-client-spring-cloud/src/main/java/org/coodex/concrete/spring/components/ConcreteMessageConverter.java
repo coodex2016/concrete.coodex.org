@@ -16,7 +16,7 @@
 
 package org.coodex.concrete.spring.components;
 
-import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -55,7 +55,7 @@ public class ConcreteMessageConverter implements HttpMessageConverter<Object> {
     @Override
     public void write(Object o, MediaType contentType, HttpOutputMessage outputMessage) throws IOException,
             HttpMessageNotWritableException {
-        outputMessage.getBody().write(JSONSerializer.getInstance().toJson(o).getBytes(Optional.ofNullable(contentType)
+        outputMessage.getBody().write(JSONSerializerUtil.getInstance().toJson(o).getBytes(Optional.ofNullable(contentType)
                 .map(MediaType::getCharset).orElse(StandardCharsets.UTF_8)));
     }
 }

@@ -63,6 +63,7 @@ public class ProfileBaseYaml extends Profile {
 //        init(Common.getResource(path), path);
 //    }
 
+    @SuppressWarnings("unchecked")
     private void map(String prefix, Map<Object, Object> map) {
         if (map == null) return;
         for (Map.Entry<Object, Object> entry : map.entrySet()) {
@@ -72,7 +73,9 @@ public class ProfileBaseYaml extends Profile {
                 valuesMap.put(key, null);
             }
             if (value instanceof Map) {
-                map(key, Common.cast(value));
+                map(key, (Map<Object, Object>) value
+//                        Common.cast(value)
+                );
             } else {
                 valuesMap.put(key, value);
             }

@@ -21,7 +21,8 @@ import org.coodex.util.Singleton;
 
 import java.util.*;
 
-import static org.coodex.util.Common.join;
+import org.coodex.util.Common;
+//import static org.coodex.util.Common.join;
 
 public abstract class AbstractChangeableSubjoin extends AbstractSubjoin {
 
@@ -66,7 +67,7 @@ public abstract class AbstractChangeableSubjoin extends AbstractSubjoin {
         }
 
         public Set<String> keySet() {
-            return join(subjoin.keySet(), super.keySet());
+            return Common.join(subjoin.keySet(), super.keySet());
         }
 
 //        @Override

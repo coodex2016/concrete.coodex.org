@@ -26,6 +26,7 @@ import org.coodex.concrete.message.TBMContainer;
 import org.coodex.concurrent.components.PriorityRunnable;
 import org.coodex.util.Common;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,7 +132,7 @@ public abstract class OwnServiceProvider implements Application {
 
         //2 解析数据
         final Object[] objects = analysisParameters(
-                JSONSerializer.getInstance().toJson(requestPackage.getContent()), unit);
+                JSONSerializerUtil.getInstance().toJson(requestPackage.getContent()), unit);
 
         //3 调用并返回结果
         final String tokenId = requestPackage.getConcreteTokenId();
@@ -242,7 +243,7 @@ public abstract class OwnServiceProvider implements Application {
 
         @Override
         default void visit(ResponsePackage<?> responsePackage) {
-            visit(JSONSerializer.getInstance().toJson(responsePackage));
+            visit(JSONSerializerUtil.getInstance().toJson(responsePackage));
         }
 
         void visit(String json);

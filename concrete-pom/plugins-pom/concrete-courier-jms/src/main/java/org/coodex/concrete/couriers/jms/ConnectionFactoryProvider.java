@@ -16,9 +16,8 @@
 
 package org.coodex.concrete.couriers.jms;
 
+import jakarta.jms.ConnectionFactory;
 import org.coodex.util.SelectableService;
-
-import javax.jms.ConnectionFactory;
 
 public interface ConnectionFactoryProvider extends SelectableService<String> {
 

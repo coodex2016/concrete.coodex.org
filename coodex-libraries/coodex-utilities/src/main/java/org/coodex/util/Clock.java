@@ -17,11 +17,15 @@
 package org.coodex.util;
 
 import org.coodex.config.Config;
+import org.coodex.functional.Supplier;
 import org.coodex.util.clock.ClockAgent;
 import org.coodex.util.clock.DefaultClockAgent;
 import org.coodex.util.clock.SystemClockAgent;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,21 +40,52 @@ import java.util.concurrent.TimeUnit;
 public final class Clock {
 
     public static final String KEY_MAGNIFICATION = Clock.class.getName() + ".magnification";
-    private static final Singleton<ClockAgent> agentSingleton = Singleton.with(() -> {
-        if (getMagnification() == 1.0f) {
-            return new SystemClockAgent();
-        } else {
-            return new LazyServiceLoader<ClockAgent>() {
+    private static final Singleton<ClockAgent> agentSingleton = Singleton.with(
+            new Supplier<ClockAgent>() {
+
                 @Override
-                protected ClockAgent getDefaultInstance() {
-                    return new DefaultClockAgent();
+                public ClockAgent get() {
+                    if (getMagnification() == 1.0f) {
+                        return new SystemClockAgent();
+                    } else {
+                        return new LazyServiceLoader<ClockAgent>() {
+//                            @Override
+//                            public List<ClockAgent> sorted() {
+//                                return Collections.emptyList();
+//                            }
+//
+//                            @Override
+//                            public List<ClockAgent> sorted(Comparator<? super ClockAgent> comparator) {
+//                                return Collections.emptyList();
+//                            }
+
+                            @Override
+                            protected ClockAgent getDefaultInstance() {
+                                return new DefaultClockAgent();
+                            }
+                        }.get();
+                    }
                 }
-            }.get();
-        }
-    });
+//            () -> {
+//        if (getMagnification() == 1.0f) {
+//            return new SystemClockAgent();
+//        } else {
+//            return new LazyServiceLoader<ClockAgent>() {
+//                @Override
+//                protected ClockAgent getDefaultInstance() {
+//                    return new DefaultClockAgent();
+//                }
+//            }.get();
+//        }
+            });
 
     private static final ServiceLoader<TimestampProvider> TIMESTAMP_PROVIDER_LOADER
-            = new LazyServiceLoader<TimestampProvider>(Clock::getCalendar) {
+            = new LazyServiceLoader<TimestampProvider>(new TimestampProvider() {
+        @Override
+        public Calendar now() {
+            return Clock.getCalendar();
+        }
+    }) {
     };
 
 

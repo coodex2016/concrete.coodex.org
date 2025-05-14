@@ -21,6 +21,7 @@ import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.util.Common;
 import org.coodex.util.GenericTypeHelper;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class PackageHelper {
 //        Class<?> context = unit.getDeclaringModule().getInterfaceClass();
         context.set(unit.getDeclaringModule().getInterfaceClass());
         try {
-            JSONSerializer serializer = JSONSerializer.getInstance();
+            JSONSerializer serializer = JSONSerializerUtil.getInstance();
 
             List<Object> objects = new ArrayList<>();
             if (abstractParams.length == 1) {

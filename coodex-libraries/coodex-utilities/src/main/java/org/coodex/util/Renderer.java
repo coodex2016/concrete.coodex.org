@@ -52,6 +52,11 @@ public class Renderer {
      */
     static class DefaultRenderer implements RenderService {
         @Override
+        public Object[] transfer(Object... objects) {
+            return RenderServiceHelper.transfer(objects);
+        }
+
+        @Override
         public String render(String template, Object... objects) {
             return template;
         }

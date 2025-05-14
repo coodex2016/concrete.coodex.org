@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.coodex</groupId>
         <artifactId>coodex-libraries</artifactId>
-        <version>0.5.4-SNAPSHOT</version>
+        <version>0.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -177,6 +177,12 @@
             <dependency>
                 <groupId>${project.parent.groupId}</groupId>
                 <artifactId>coodex-metadata</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.parent.groupId}</groupId>
+                <artifactId>net.sf.marineapi-java7</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
         </dependencies>

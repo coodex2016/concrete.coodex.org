@@ -31,10 +31,15 @@ public final class SPI {
      * @return 服务顺序
      */
     public static int getServiceOrder(Object o) {
-        return Optional.ofNullable(o)
-                .map(service -> service.getClass().getAnnotation(Ordered.class))
-                .map(Ordered::value)
-                .orElse(o instanceof Sequential ? ((Sequential) o).order() : Integer.MAX_VALUE);
+        if(o == null){
+            return Integer.MAX_VALUE;
+        }
+        Ordered ordered = o.getClass().getAnnotation(Ordered.class);
+        return ordered != null ? ordered.value() : (o instanceof Sequential ? ((Sequential) o).order() : Integer.MAX_VALUE);
+//        return Optional.ofNullable(o)
+//                .map(service -> service.getClass().getAnnotation(Ordered.class))
+//                .map(Ordered::value)
+//                .orElse(o instanceof Sequential ? ((Sequential) o).order() : Integer.MAX_VALUE);
 
     }
 

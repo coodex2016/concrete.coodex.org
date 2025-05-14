@@ -70,10 +70,13 @@ public class TimeLimitedMap<K, V> {
         synchronized (tasks) {
             Task<V> task = new Task<>();
             task.value = value;
-            task.future = scheduledExecutorService.schedule(() -> {
-                V v = getAndRemove(key);
-                if (v != null && callback != null)
-                    callback.run();
+            task.future = scheduledExecutorService.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    V v = getAndRemove(key);
+                    if (v != null && callback != null)
+                        callback.run();
+                }
             }, getTimeOut(timeOut), TimeUnit.MILLISECONDS);
             tasks.put(key, task);
         }
@@ -104,10 +107,10 @@ public class TimeLimitedMap<K, V> {
     public interface TimeoutCallback extends Runnable {
         void timeout();
 
-        @Override
-        default void run() {
-            timeout();
-        }
+//        @Override
+//        default void run() {
+//            timeout();
+//        }
     }
 
     private static class Task<V> {

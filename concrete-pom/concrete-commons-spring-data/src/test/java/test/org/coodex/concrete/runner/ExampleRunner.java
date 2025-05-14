@@ -19,7 +19,7 @@ package test.org.coodex.concrete.runner;
 import org.coodex.util.TransactionalRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.util.function.Supplier;
 
 @Named

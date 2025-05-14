@@ -20,6 +20,7 @@ import org.coodex.concrete.core.token.TokenWrapper;
 import org.coodex.config.Config;
 import org.coodex.util.Common;
 import org.coodex.util.JSONSerializer;
+import org.coodex.util.JSONSerializerUtil;
 import org.coodex.util.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +66,7 @@ public class TBMContainer {
         queues.get(tokenId).remove(message);
         if (log.isDebugEnabled()) {
             log.debug("removed from token {}\n{}", tokenId,
-                    JSONSerializer.getInstance().toJson(message.message));
+                    JSONSerializerUtil.getInstance().toJson(message.message));
         }
     }
 

@@ -21,7 +21,7 @@
     <parent>
         <artifactId>plugins-pom</artifactId>
         <groupId>org.coodex.concrete</groupId>
-        <version>0.5.4-SNAPSHOT</version>
+        <version>0.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -31,6 +31,7 @@
         <dependency>
             <groupId>io.reactivex.rxjava2</groupId>
             <artifactId>rxjava</artifactId>
+            <version>${rxjava.vesion}</version>
             <scope>provided</scope>
         </dependency>
 

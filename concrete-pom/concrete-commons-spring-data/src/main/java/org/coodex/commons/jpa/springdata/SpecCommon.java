@@ -16,10 +16,11 @@
 
 package org.coodex.commons.jpa.springdata;
 
+import jakarta.persistence.criteria.*;
 import org.coodex.commons.jpa.criteria.Operators;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.*;
+//import javax.persistence.criteria.*;
 import java.util.Arrays;
 import java.util.Collection;
 

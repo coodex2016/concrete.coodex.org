@@ -16,7 +16,7 @@
 
 package test.org.coodex.bean.processors.a;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 @Named
 //@TestQualifier(Throwable.class)
