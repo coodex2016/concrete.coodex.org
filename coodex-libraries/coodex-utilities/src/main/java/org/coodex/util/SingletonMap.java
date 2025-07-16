@@ -18,8 +18,6 @@ package org.coodex.util;
 
 import org.coodex.concurrent.Debounce;
 import org.coodex.concurrent.ExecutorsHelper;
-//import org.coodex.functional.Function;
-//import org.coodex.functional.Supplier;
 import org.coodex.functional.BiConsumer;
 import org.coodex.functional.Function;
 import org.coodex.functional.Supplier;
@@ -316,6 +314,14 @@ public class SingletonMap<K, V> {
             }
         }
     }
+
+    public void reset(String key) {
+        map.remove(key);
+    }
+
+//    public void update(String key, V value) {
+//        map.put(key, value);
+//    }
 
     public void reset() {
         clear();

@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.coodex</groupId>
         <artifactId>coodex-libraries</artifactId>
-        <version>0.6.0</version>
+        <version>0.6.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -45,7 +45,6 @@
 <!--            <version>0.4.20</version>-->
 <!--            <scope>test</scope>-->
 <!--        </dependency>-->
-
 
         <dependency>
             <groupId>com.alibaba</groupId>

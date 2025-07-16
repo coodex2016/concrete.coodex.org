@@ -97,7 +97,7 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
                         defaultProviderSupplier = new Supplier<T>() {
                             @Override
                             public T get() {
-                                return LazyServiceLoader.this.defaultProviderSupplier.get();
+                                return LazyServiceLoader.this.getDefaultInstance();
                             }
                         };
                     }
