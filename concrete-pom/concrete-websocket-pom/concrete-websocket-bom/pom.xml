@@ -21,11 +21,12 @@
     <parent>
         <artifactId>concrete-websocket-pom</artifactId>
         <groupId>org.coodex.concrete.websocket</groupId>
-        <version>0.6.0</version>
+        <version>0.6.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>concrete-websocket-bom</artifactId>
+    <name>${project.artifactId}</name>
     <packaging>pom</packaging>
 
     <dependencyManagement>

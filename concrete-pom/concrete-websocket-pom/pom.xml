@@ -20,12 +20,13 @@
     <parent>
         <artifactId>concrete-pom</artifactId>
         <groupId>org.coodex.concrete</groupId>
-        <version>0.6.0</version>
+        <version>0.6.1</version>
         <!--        <relativePath>../pom.xml</relativePath>-->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>concrete-websocket-pom</artifactId>
+    <name>${project.artifactId}</name>
     <groupId>org.coodex.concrete.websocket</groupId>
     <packaging>pom</packaging>
 

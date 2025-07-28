@@ -22,10 +22,11 @@
     <parent>
         <groupId>org.coodex</groupId>
         <artifactId>coodex-libraries</artifactId>
-        <version>0.6.1-SNAPSHOT</version>
+        <version>0.6.1</version>
     </parent>
 
     <artifactId>net.sf.marineapi-java7</artifactId>
+<!--    <name>${project.artifactId}</name>-->
 
     <name>Java Marine API</name>
     <url>http://ktuukkan.github.io/marine-api/</url>

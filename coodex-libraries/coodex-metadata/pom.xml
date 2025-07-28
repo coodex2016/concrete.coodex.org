@@ -21,7 +21,7 @@
     <parent>
         <artifactId>coodex-libraries</artifactId>
         <groupId>org.coodex</groupId>
-        <version>0.6.1-SNAPSHOT</version>
+        <version>0.6.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -31,6 +31,7 @@
     </properties>
 
     <artifactId>coodex-metadata</artifactId>
+    <name>${project.artifactId}</name>
 
     <dependencies>
         <dependency>

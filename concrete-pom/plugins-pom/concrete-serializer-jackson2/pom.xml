@@ -21,12 +21,12 @@
     <parent>
         <artifactId>plugins-pom</artifactId>
         <groupId>org.coodex.concrete</groupId>
-        <version>0.6.0</version>
+        <version>0.6.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <description>deprecated. use org.coodex:coodex-jsonserializer-jackson2 instead.</description>
     <artifactId>concrete-serializer-jackson2</artifactId>
-
+    <name>${project.artifactId}</name>
     <dependencies>
 
         <dependency>

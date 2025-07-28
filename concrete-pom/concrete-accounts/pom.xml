@@ -21,9 +21,10 @@
     <parent>
         <artifactId>concrete-pom</artifactId>
         <groupId>org.coodex.concrete</groupId>
-        <version>0.6.0</version>
+        <version>0.6.1</version>
     </parent>
     <artifactId>concrete-accounts</artifactId>
+    <name>${project.artifactId}</name>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>

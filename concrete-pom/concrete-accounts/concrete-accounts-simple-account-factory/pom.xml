@@ -21,12 +21,12 @@
     <parent>
         <artifactId>concrete-accounts</artifactId>
         <groupId>org.coodex.concrete</groupId>
-        <version>0.6.0</version>
+        <version>0.6.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>concrete-accounts-simple-account-factory</artifactId>
-
+    <name>${project.artifactId}</name>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>

@@ -24,7 +24,7 @@
     <url>https://concrete.coodex.org</url>
     <groupId>org.coodex.concrete</groupId>
     <artifactId>concrete-pom</artifactId>
-    <version>0.6.0</version>
+    <version>0.6.1</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -116,7 +116,7 @@
         <spring.boot.version>3.4.3</spring.boot.version>
         <spring.boot.java.version>17</spring.boot.java.version>
         <!--        <spring.framework.version>5.3.4</spring.framework.version>-->
-<!--        <spring.data.version>2024.0.1</spring.data.version>-->
+        <!--        <spring.data.version>2024.0.1</spring.data.version>-->
         <!--        <spring.data.jpa.version>2.4.5</spring.data.jpa.version>-->
 
         <netty4.version>4.1.60.Final</netty4.version>
@@ -166,22 +166,40 @@
             <id>oss.distribution</id>
             <build>
                 <plugins>
+                    <!-- 源码 jar -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.4.0</version>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.1</version>
                         <executions>
                             <execution>
-                                <phase>package</phase>
+                                <id>attach-sources</id>
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+
+                    <!-- javadoc jar -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.4.1</version>
                         <configuration>
-                            <additionalOptions>-html5</additionalOptions>
-                            <additionalOptions>-Xdoclint:none</additionalOptions>
+                            <failOnError>false</failOnError>
+                            <additionalJOptions>
+                                <additionalJOption>-Xdoclint:none</additionalJOption>
+                            </additionalJOptions>
                         </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
 
                     <plugin>
@@ -206,31 +224,20 @@
                     </plugin>
 
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.13</version>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.8.0</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>oss</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
 
-            <distributionManagement>
-                <!-- oss -->
-                <snapshotRepository>
-                    <id>oss</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-                <repository>
-                    <id>oss</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-            </distributionManagement>
         </profile>
+
 
         <profile>
             <id>local.release</id>
@@ -465,11 +472,11 @@
             <!--</dependency>-->
 
             <!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
-<!--            <dependency>-->
-<!--                <groupId>javax.ws.rs</groupId>-->
-<!--                <artifactId>javax.ws.rs-api</artifactId>-->
-<!--                <version>2.1.1</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>javax.ws.rs</groupId>-->
+            <!--                <artifactId>javax.ws.rs-api</artifactId>-->
+            <!--                <version>2.1.1</version>-->
+            <!--            </dependency>-->
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>
                 <artifactId>jakarta.ws.rs-api</artifactId>
@@ -478,11 +485,11 @@
 
 
             <!-- JSR 330  Dependency Injection for Java -->
-<!--            <dependency>-->
-<!--                <groupId>javax.inject</groupId>-->
-<!--                <artifactId>javax.inject</artifactId>-->
-<!--                <version>1</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>javax.inject</groupId>-->
+            <!--                <artifactId>javax.inject</artifactId>-->
+            <!--                <version>1</version>-->
+            <!--            </dependency>-->
             <dependency>
                 <groupId>jakarta.inject</groupId>
                 <artifactId>jakarta.inject-api</artifactId>
@@ -512,13 +519,13 @@
             <!--                <scope>import</scope>-->
             <!--            </dependency>-->
 
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.data</groupId>-->
-<!--                <artifactId>spring-data-bom</artifactId>-->
-<!--                <version>${spring.data.version}</version>-->
-<!--                <scope>import</scope>-->
-<!--                <type>pom</type>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>org.springframework.data</groupId>-->
+            <!--                <artifactId>spring-data-bom</artifactId>-->
+            <!--                <version>${spring.data.version}</version>-->
+            <!--                <scope>import</scope>-->
+            <!--                <type>pom</type>-->
+            <!--            </dependency>-->
 
 
             <!-- https://mvnrepository.com/artifact/aopalliance/aopalliance -->

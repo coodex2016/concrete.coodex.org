@@ -21,11 +21,12 @@
     <parent>
         <artifactId>concrete-amqp-pom</artifactId>
         <groupId>org.coodex.concrete.amqp</groupId>
-        <version>0.6.0</version>
+        <version>0.6.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>concrete-amqp</artifactId>
+    <name>${project.artifactId}</name>
 
     <dependencies>
 

@@ -22,8 +22,6 @@ import org.coodex.concrete.api.Priority;
 import org.coodex.concrete.common.modules.AbstractUnit;
 import org.coodex.concurrent.ExecutorsHelper;
 import org.coodex.config.Config;
-//import org.coodex.functional.Consumer;
-//import org.coodex.functional.Function;
 import org.coodex.util.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -34,18 +32,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static org.coodex.concrete.common.Token.CONCRETE_TOKEN_ID_KEY;
 import static org.coodex.util.Common.RANDOM;
-import static org.coodex.util.ReflectHelper.foreachClass;
 
 /**
  * Created by davidoff shen on 2016-09-02.
  */
 public class ConcreteHelper {
 
-    public static final String VERSION = "0.6.0-SNAPSHOT";
+    public static final String VERSION = "0.6.1";
 
     public static final String TAG_CLIENT = "client";
     public static final String KEY_DESTINATION = "destination";
