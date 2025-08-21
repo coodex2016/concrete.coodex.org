@@ -1,5 +1,6 @@
 package org.coodex.mock;
 
+import org.coodex.functional.Supplier;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 
@@ -16,7 +17,12 @@ public class BooleanTypeMocker extends AbstractTypeMocker<Mock.Boolean> {
             String.class//12
     };
 
-    private static final Singleton<BooleanTypeMocker> instance = Singleton.with(BooleanTypeMocker::new);
+    private static final Singleton<BooleanTypeMocker> instance = Singleton.with(new Supplier<BooleanTypeMocker>() {
+        @Override
+        public BooleanTypeMocker get() {
+            return new BooleanTypeMocker();
+        }
+    });
 
 //    public BooleanTypeMocker() {
 //        instance = this;

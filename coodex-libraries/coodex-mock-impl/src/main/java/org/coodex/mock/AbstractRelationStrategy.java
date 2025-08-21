@@ -16,6 +16,7 @@
 
 package org.coodex.mock;
 
+import org.coodex.functional.Supplier;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 
@@ -26,16 +27,19 @@ import java.util.List;
 public abstract class AbstractRelationStrategy implements RelationStrategy {
 
     //    private String[] strategies = Singleton<;
-    private final Singleton<String[]> strategies = Singleton.with(() -> {
-        Class<?> c = AbstractRelationStrategy.this.getClass();
-        List<String> list = new ArrayList<>();
-        for (Method method : c.getMethods()) {
-            Strategy strategy = method.getAnnotation(Strategy.class);
-            if (strategy != null) {
-                list.add(strategy.value());
+    private final Singleton<String[]> strategies = Singleton.with(new Supplier<String[]>() {
+        @Override
+        public String[] get() {
+            Class<?> c = AbstractRelationStrategy.this.getClass();
+            List<String> list = new ArrayList<>();
+            for (Method method : c.getMethods()) {
+                Strategy strategy = method.getAnnotation(Strategy.class);
+                if (strategy != null) {
+                    list.add(strategy.value());
+                }
             }
+            return list.toArray(new String[0]);
         }
-        return list.toArray(new String[0]);
     });
 
     @Override

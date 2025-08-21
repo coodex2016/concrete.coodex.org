@@ -19,16 +19,17 @@ package org.coodex.mock;
 import net.sf.cglib.proxy.Enhancer;
 import org.coodex.closure.MapClosureContext;
 import org.coodex.closure.StackClosureContext;
+import org.coodex.functional.Consumer;
+import org.coodex.functional.Function;
 import org.coodex.functional.Supplier;
-import org.coodex.util.ServiceLoader;
 import org.coodex.util.*;
+import org.coodex.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
-//import java.util.function.Supplier;
 
 import static org.coodex.mock.Mock.Depth.DEFAULT_DEPTH;
 import static org.coodex.mock.Mock.Dimension.*;
@@ -53,21 +54,21 @@ public class CoodexMockerProvider implements MockerProvider {
      */
     private static final MapClosureContext<String, List<Annotation>> MOCKER_DEFINITION_CONTEXT =
             new MapClosureContext<String, List<Annotation>>() {
-        @Override
-        public Object call(Map<String, List<Annotation>> map, Supplier<?> supplier) {
-            Map<String, List<Annotation>> contextMap = super.get();
-            Map<String, List<Annotation>> copy = new HashMap<>(map);
-            if (contextMap != null) {
-                for (Map.Entry<String, List<Annotation>> entry : map.entrySet()) {
-                    if (contextMap.containsKey(entry.getKey())) {
-                        entry.getValue().addAll(contextMap.get(entry.getKey()));
+                @Override
+                public Object call(Map<String, List<Annotation>> map, Supplier<?> supplier) {
+                    Map<String, List<Annotation>> contextMap = super.get();
+                    Map<String, List<Annotation>> copy = new HashMap<>(map);
+                    if (contextMap != null) {
+                        for (Map.Entry<String, List<Annotation>> entry : map.entrySet()) {
+                            if (contextMap.containsKey(entry.getKey())) {
+                                entry.getValue().addAll(contextMap.get(entry.getKey()));
+                            }
+                        }
                     }
+                    return super.call(copy, supplier);
                 }
-            }
-            return super.call(copy, supplier);
-        }
 
-    };
+            };
     /**
      * 序列模拟器定义上下文
      */
@@ -96,7 +97,7 @@ public class CoodexMockerProvider implements MockerProvider {
      */
     private static final ServiceLoader<SequenceMockerFactory<?>> SEQUENCE_MOCKER_FACTORIES =
             new LazyServiceLoader<SequenceMockerFactory<?>>() {
-    };
+            };
 
     private static final Object INJECT_UNENFORCED = new Object();
     private static final Object STRATEGY_UNENFORCED = new Object();
@@ -106,29 +107,45 @@ public class CoodexMockerProvider implements MockerProvider {
      * 所有的TypeMocker实例，使用单例缓存
      */
     private static final Singleton<Collection<TypeMocker<Annotation>>> TYPE_MOCKERS = Singleton.with(
-            () -> new LazyServiceLoader<TypeMocker<Annotation>>() {
-            }.getAll().values()
+            new Supplier<Collection<TypeMocker<Annotation>>>() {
+                @Override
+                public Collection<TypeMocker<Annotation>> get() {
+                    return new LazyServiceLoader<TypeMocker<Annotation>>() {
+                    }.getAll().values();
+                }
+            }
     );
     private static final Object NOT_COLLECTION = new Object();
     private static final ServiceLoader<RelationStrategy> RELATION_STRATEGIES =
             new LazyServiceLoader<RelationStrategy>() {
-    };
+            };
 
-    private static final Singleton<Map<Class<?>, TypeAssignation>> GLOBAL_ASSIGNATION_SINGLETON = Singleton.with(() -> {
-        Map<Class<?>, TypeAssignation> map = new HashMap<>();
-        ReflectHelper.foreachClass(serviceClass -> map.put(
-                serviceClass.getAnnotation(Mock.Assignation.class).value(),
-                new TypeAssignation(new PojoInfo(serviceClass))
-        ), className -> {
-            try {
-                Class<?> c = Class.forName(className);
-                return c.getAnnotation(Mock.Assignation.class) != null;
-            } catch (Throwable throwable) {
-                log.debug("class {} load failed. {}", className, throwable.getLocalizedMessage());
-            }
-            return false;
-        }, ASSIGNATIONS_PACKAGE);
-        return map;
+    private static final Singleton<Map<Class<?>, TypeAssignation>> GLOBAL_ASSIGNATION_SINGLETON = Singleton.with(new Supplier<Map<Class<?>, TypeAssignation>>() {
+        @Override
+        public Map<Class<?>, TypeAssignation> get() {
+            final Map<Class<?>, TypeAssignation> map = new HashMap<>();
+            ReflectHelper.foreachClass(new Consumer<Class<?>>() {
+                @Override
+                public void accept(Class<?> serviceClass) {
+                    map.put(
+                            serviceClass.getAnnotation(Mock.Assignation.class).value(),
+                            new TypeAssignation(new PojoInfo(serviceClass))
+                    );
+                }
+            }, new Function<String, Boolean>() {
+                @Override
+                public Boolean apply(String className) {
+                    try {
+                        Class<?> c = Class.forName(className);
+                        return c.getAnnotation(Mock.Assignation.class) != null;
+                    } catch (Throwable throwable) {
+                        log.debug("class {} load failed. {}", className, throwable.getLocalizedMessage());
+                    }
+                    return false;
+                }
+            }, ASSIGNATIONS_PACKAGE);
+            return map;
+        }
     });
 
     /**
@@ -315,14 +332,14 @@ public class CoodexMockerProvider implements MockerProvider {
             if (t instanceof TypeVariable) {
                 throw new MockException("Cannot mock collection: " + collectionsContext);
             }
-            result = mockCollection(cast(c), t, 0, annotations);
+            result = mockCollection((Class<? extends Collection<?>>) c, t, 0, annotations);
         } else if (Map.class.isAssignableFrom(c)) {
             Type key = solveFromType(Map.class.getTypeParameters()[0], collectionsContext);
             Type value = solveFromType(Map.class.getTypeParameters()[1], collectionsContext);
             if (key instanceof TypeVariable || value instanceof TypeVariable) {
                 throw new MockException("Cannot mock map: " + collectionsContext);
             }
-            result = mockMap(cast(c), 0, key, value, annotations);
+            result = mockMap((Class<? extends Map<?, ?>>) c, 0, key, value, annotations);
         } else {
             result = NOT_COLLECTION;
         }
@@ -352,7 +369,7 @@ public class CoodexMockerProvider implements MockerProvider {
                         final Map<String, Object> mocked = new HashMap<>();
                         List<PojoProperty> properties = getPojoPropertiesAndSort(pojoInfo);
 
-                        while (properties.size() > 0) {
+                        while (!properties.isEmpty()) {
                             List<PojoProperty> temp = new ArrayList<>();
                             for (PojoProperty property : properties) {
                                 Annotation[] mockAnnotations = typeAssignation.get(property.getName());
@@ -392,7 +409,7 @@ public class CoodexMockerProvider implements MockerProvider {
                                 }
                             }
 
-                            if (temp.size() == 0) {
+                            if (temp.isEmpty()) {
                                 StringBuilder builder = new StringBuilder();
                                 builder.append("invalid dependency. ");
                                 for (PojoProperty property : properties) {
@@ -516,11 +533,11 @@ public class CoodexMockerProvider implements MockerProvider {
         };
 
         Map<Class<?>, TypeAssignation> assignations = (POJO_ASSIGNATION_CONTEXT.get() == null) ?
-                new HashMap<>(GLOBAL_ASSIGNATION_SINGLETON.get()) : new HashMap<>();
+                new HashMap<Class<?>, TypeAssignation>(GLOBAL_ASSIGNATION_SINGLETON.get()) : new HashMap<Class<?>, TypeAssignation>();
 
         assignations.putAll(getTypeAssignationsFromAnnotations(annotations));
 
-        if (assignations.size() > 0)
+        if (!assignations.isEmpty())
             return POJO_ASSIGNATION_CONTEXT.call(assignations, closure);
         else
             return runSupplier(closure);
@@ -574,12 +591,27 @@ public class CoodexMockerProvider implements MockerProvider {
 
 
     @Override
+    public <T> T mock(Class<T> type, Annotation... annotations) {
+        Object o = mock(type, type, annotations);
+        if (o == null || type.isAssignableFrom(o.getClass())) {
+            return (T) o;
+        } else {
+            throw new ClassCastException();
+        }
+    }
+
+    @Override
     public Object mock(final Type type, final Type context, Annotation... annotations) {
         if (annotations == null) {
             annotations = new Annotation[0];
         }
         final Annotation[] finalAnnotations = annotations;
-        return TYPE_CONTEXT.call(context, () -> innerMock(toReference(type, context), finalAnnotations));
+        return TYPE_CONTEXT.call(context, new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return innerMock(toReference(type, context), finalAnnotations);
+            }
+        });
     }
 
     /**
@@ -602,7 +634,7 @@ public class CoodexMockerProvider implements MockerProvider {
         return null;
     }
 
-    private Map<?, ?> buildMapInstance(Class<? extends Map<?, ?>> mapClass, int d, Annotation... annotations) {
+    private Map<Object, Object> buildMapInstance(Class<? extends Map<?, ?>> mapClass, int d, Annotation... annotations) {
         if (Map.class.equals(mapClass)) {
             return DIMENSIONS_CONTEXT.get().ordered(d) ? new LinkedHashMap<>() : new HashMap<>();
         }
@@ -617,7 +649,7 @@ public class CoodexMockerProvider implements MockerProvider {
             } else {
                 Constructor<?> constructor = mapClass.getConstructor();
                 constructor.setAccessible(true);
-                return (Map<?, ?>) constructor.newInstance();
+                return (Map<Object, Object>) constructor.newInstance();
             }
         } catch (Throwable throwable) {
             throw new MockException("map class " + mapClass.getName() + " not support yet.", throwable);
@@ -625,20 +657,20 @@ public class CoodexMockerProvider implements MockerProvider {
 
     }
 
-    private Collection<?> buildCollectionInstance(Class<? extends Collection<?>> collectionClass, int d,
-                                                  Annotation... annotations) {
-        Collection<?> x = getJavaUtilCollection(collectionClass, d);
+    private Collection<Object> buildCollectionInstance(Class<? extends Collection<?>> collectionClass, int d,
+                                                       Annotation... annotations) {
+        Collection<Object> x = getJavaUtilCollection(collectionClass, d);
         if (x != null) return x;
 
         // todo 根据定义指定实例
 
         try {
             if (collectionClass.isInterface()) {
-                return (Collection<?>) getProxyObject(getJavaUtilCollection(Collection.class, d), collectionClass);
+                return (Collection<Object>) getProxyObject(getJavaUtilCollection(Collection.class, d), collectionClass);
             } else {
                 Constructor<?> constructor = collectionClass.getConstructor();
                 constructor.setAccessible(true);
-                return (Collection<?>) constructor.newInstance();
+                return (Collection<Object>) constructor.newInstance();
             }
         } catch (Throwable throwable) {
             throw new MockException("collection class " + collectionClass.getName() + " not support yet. ", throwable);
@@ -646,7 +678,7 @@ public class CoodexMockerProvider implements MockerProvider {
 
     }
 
-    private Collection<?> getJavaUtilCollection(Class<?> collectionClass, int d) {
+    private Collection<Object> getJavaUtilCollection(Class<?> collectionClass, int d) {
         if (List.class.equals(collectionClass)) {
             return new ArrayList<>();
         } else if (Set.class.equals(collectionClass)) {
@@ -659,11 +691,16 @@ public class CoodexMockerProvider implements MockerProvider {
 
     private Object getProxyObject(final Object instance, Class<?> interfaceClass) {
         return Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[]{interfaceClass},
-                (proxy, method, args) -> {
-                    Method targetMethod = instance.getClass().getMethod(method.getName(), method.getParameterTypes());
-                    targetMethod.setAccessible(true);
-                    return targetMethod.invoke(instance, args);
-                });
+//                (proxy, method, args) ->
+                new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        Method targetMethod = instance.getClass().getMethod(method.getName(), method.getParameterTypes());
+                        targetMethod.setAccessible(true);
+                        return targetMethod.invoke(instance, args);
+                    }
+                }
+        );
     }
 
     private <C extends Collection<?>> C mockCollection(
@@ -695,11 +732,11 @@ public class CoodexMockerProvider implements MockerProvider {
                     ParameterizedType parameterizedType = (ParameterizedType) componentType;
                     Class<?> c = typeToClass((parameterizedType).getRawType());
                     if (Collection.class.isAssignableFrom(c)) {
-                        return mockCollection(cast(c),
+                        return mockCollection((Class<C>) c,
                                 solveFromType(Collection.class.getTypeParameters()[0], parameterizedType),
                                 d + 1, annotations);
                     } else if (Map.class.isAssignableFrom(c)) {
-                        return mockMap(cast(c), d + 1,
+                        return mockMap((Class<? extends Map<?, ?>>) c, d + 1,
                                 solveFromType(Map.class.getTypeParameters()[0], componentType),
                                 solveFromType(Map.class.getTypeParameters()[1], componentType),
                                 annotations);
@@ -712,10 +749,10 @@ public class CoodexMockerProvider implements MockerProvider {
             public Object get() {
                 if (DIMENSIONS_CONTEXT.get().nullable(d))
                     return null;
-                Collection<?> collection = buildCollectionInstance(collectionClass, d, annotations);
+                Collection<Object> collection = buildCollectionInstance(collectionClass, d, annotations);
                 CollectionDimensions dimensions = DIMENSIONS_CONTEXT.get();
                 for (int i = 0, size = dimensions.getSize(d); i < size; i++) {
-                    collection.add(cast(mockElementOfCollection()));
+                    collection.add(mockElementOfCollection());
                 }
                 return collection;
             }
@@ -729,7 +766,12 @@ public class CoodexMockerProvider implements MockerProvider {
     }
 
     private Supplier<?> getCollectionSequenceSupplier(final Supplier<?> supplier) {
-        return () -> COLLECTION_CONTEXT.call(new HashMap<>(), supplier);
+        return new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return COLLECTION_CONTEXT.call(new HashMap<String, SequenceMocker<?>>(), supplier);
+            }
+        };
     }
 
     private Supplier<?> getDimensionsSupplier(int d, Supplier<?> supplier, Annotation[] annotations) {
@@ -749,7 +791,12 @@ public class CoodexMockerProvider implements MockerProvider {
                         SAME_DEFAULT
                 );
             }
-            supplier = () -> DIMENSIONS_CONTEXT.call(collectionDimensions, innerSupplier);
+            supplier = new Supplier<Object>() {
+                @Override
+                public Object get() {
+                    return DIMENSIONS_CONTEXT.call(collectionDimensions, innerSupplier);
+                }
+            };
         }
         return supplier;
     }
@@ -782,11 +829,11 @@ public class CoodexMockerProvider implements MockerProvider {
             @Override
             public Object get() {
                 if (DIMENSIONS_CONTEXT.get().nullable(d)) return null;
-                Map<?, ?> instance = buildMapInstance(mapClass, d, annotations);
+                Map<Object, Object> instance = buildMapInstance(mapClass, d, annotations);
                 int size = DIMENSIONS_CONTEXT.get().getSize(d);
                 int retry = size * 3;
                 while (instance.size() < size && retry-- > 0) {
-                    instance.put(cast(mockKey()), cast(mockValue()));
+                    instance.put(mockKey(), cast(mockValue()));
                 }
                 return instance;
             }
@@ -810,30 +857,33 @@ public class CoodexMockerProvider implements MockerProvider {
             // todo 使用资源文件模拟
         }
 
-        Supplier<?> supplier = () -> {
-            Type toMock = type;
-            if (toMock instanceof TypeVariable) {
-                toMock = solveFromType((TypeVariable<?>) toMock, TYPE_CONTEXT.get());
-            }
+        Supplier<?> supplier = new Supplier<Object>() {
+            @Override
+            public Object get() {
+                Type toMock = type;
+                if (toMock instanceof TypeVariable) {
+                    toMock = solveFromType((TypeVariable<?>) toMock, TYPE_CONTEXT.get());
+                }
 
-            if (toMock instanceof TypeVariable) {
-                throw new MockException("TypeVariable " + toMock + " not supported.");
-            } else if (toMock instanceof Class) {
-                try {
-                    return mockClass((Class<?>) toMock, annotations);
-                } catch (InvocationTargetException | IllegalAccessException e) {
-                    throw new MockException(e.getLocalizedMessage(), e);
+                if (toMock instanceof TypeVariable) {
+                    throw new MockException("TypeVariable " + toMock + " not supported.");
+                } else if (toMock instanceof Class) {
+                    try {
+                        return mockClass((Class<?>) toMock, annotations);
+                    } catch (InvocationTargetException | IllegalAccessException e) {
+                        throw new MockException(e.getLocalizedMessage(), e);
+                    }
+                } else if (toMock instanceof ParameterizedType) {
+                    try {
+                        return mockParameterizedType((ParameterizedType) toMock, annotations);
+                    } catch (InvocationTargetException | IllegalAccessException e) {
+                        throw new MockException(e.getLocalizedMessage(), e);
+                    }
+                } else if (toMock instanceof GenericArrayType) {
+                    return mockArray(((GenericArrayType) toMock).getGenericComponentType(), 0, annotations);
+                } else {
+                    throw new MockException("unsupported type : " + toMock);
                 }
-            } else if (toMock instanceof ParameterizedType) {
-                try {
-                    return mockParameterizedType((ParameterizedType) toMock, annotations);
-                } catch (InvocationTargetException | IllegalAccessException e) {
-                    throw new MockException(e.getLocalizedMessage(), e);
-                }
-            } else if (toMock instanceof GenericArrayType) {
-                return mockArray(((GenericArrayType) toMock).getGenericComponentType(), 0, annotations);
-            } else {
-                throw new MockException("unsupported type : " + toMock);
             }
         };
         supplier = getDefinitionSupplier(supplier, annotations);
@@ -863,7 +913,12 @@ public class CoodexMockerProvider implements MockerProvider {
         }
         if (sequenceMockerMap.size() > 0) {
             final Supplier<?> innerSupplier = supplier;
-            supplier = () -> SEQUENCE_MOCKER_CONTEXT.call(sequenceMockerMap, innerSupplier);
+            supplier = new Supplier<Object>() {
+                @Override
+                public Object get() {
+                    return SEQUENCE_MOCKER_CONTEXT.call(sequenceMockerMap, innerSupplier);
+                }
+            };
         }
         return supplier;
     }
@@ -911,7 +966,7 @@ public class CoodexMockerProvider implements MockerProvider {
                         throw new MockException("Load @Mock.Declaration failed. " + method.getDeclaringClass() + "." + method.getName(), e);
                     }
                 }
-                if (mock.size() > 0) {
+                if (!mock.isEmpty()) {
                     List<Annotation> annotationList = declarationMap.get(key);
                     if (annotationList != null) {
                         annotationList.addAll(mock);
@@ -923,9 +978,14 @@ public class CoodexMockerProvider implements MockerProvider {
             }
         }
 
-        if (declarationMap.size() > 0) {
+        if (!declarationMap.isEmpty()) {
             final Supplier<?> innerSupplier = supplier;
-            supplier = () -> MOCKER_DEFINITION_CONTEXT.call(declarationMap, innerSupplier);
+            supplier = new Supplier<Object>() {
+                @Override
+                public Object get() {
+                    return MOCKER_DEFINITION_CONTEXT.call(declarationMap, innerSupplier);
+                }
+            };
         }
         return supplier;
     }

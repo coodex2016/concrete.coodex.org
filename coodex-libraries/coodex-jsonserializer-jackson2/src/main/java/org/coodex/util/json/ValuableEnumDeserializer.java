@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.EnumDeserializer;
+import org.coodex.functional.Function;
 import org.coodex.util.*;
 
 import java.io.IOException;
@@ -35,7 +36,12 @@ public class ValuableEnumDeserializer extends JsonDeserializer<Enum<?>> implemen
 
     private final SingletonMap<Class<?>, Deserializer> actualDeserializers = SingletonMap
             .<Class<?>, Deserializer>builder()
-            .function(Deserializer::new)
+            .function(new Function<Class<?>, Deserializer>() {
+                @Override
+                public Deserializer apply(Class<?> aClass) {
+                    return new Deserializer(aClass);
+                }
+            })
             .build();
     private final SingletonMap<Class<?>, EnumDeserializer> deserializers;
 
@@ -60,11 +66,13 @@ public class ValuableEnumDeserializer extends JsonDeserializer<Enum<?>> implemen
     static class Deserializer extends JsonDeserializer<Object> {
         private final Class<Valuable<?>> enumClass;
 
-        Deserializer(Class<?> enumClass) {this.enumClass = Common.cast(enumClass);}
+        Deserializer(Class<?> enumClass) {
+            this.enumClass = Common.cast(enumClass);
+        }
 
         @Override
         public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
-            Type pt = GenericTypeHelper.solveFromType(Valuable.class.getTypeParameters()[0], enumClass);
+            final Type pt = GenericTypeHelper.solveFromType(Valuable.class.getTypeParameters()[0], enumClass);
             Object o = p.readValueAs(new TypeReference<Valuable<?>>() {
                 @Override
                 public Type getType() {

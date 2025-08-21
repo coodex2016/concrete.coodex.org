@@ -20,10 +20,9 @@ import org.coodex.functional.Function;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 //import java.util.function.Function;
 
 public class Img {
@@ -47,7 +46,8 @@ public class Img {
 //            for (int j = t; j <= b; j++)
 //                bitmap[j - t][i - l] = mapper.apply(image.getRGB(i, j));
 //        return bitmap;
-        try (InputStream inputStream = Files.newInputStream(new File(url).toPath())) {
+        //noinspection IOStreamConstructor
+        try (InputStream inputStream = new FileInputStream(url)) {
             return map(inputStream, mapper, l, t, r, b);
         }
     }

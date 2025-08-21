@@ -20,7 +20,6 @@ import org.coodex.util.Common;
 
 import javax.net.ssl.*;
 import java.io.*;
-import java.nio.file.Files;
 import java.security.KeyManagementException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -75,7 +74,7 @@ public final class GetCert {
         String line = reader.readLine().trim();
         int k;
         try {
-            k = (line.length() == 0) ? 0 : Integer.parseInt(line) - 1;
+            k = (line.isEmpty()) ? 0 : Integer.parseInt(line) - 1;
         } catch (NumberFormatException e) {
             return;
         }
@@ -91,7 +90,8 @@ public final class GetCert {
             name = host + "." + port + "-" + ++index;
         }
         File x = Common.newFile(storePath + File.separatorChar + name + ".cer");
-        try (OutputStream os = Files.newOutputStream(x.toPath())) {
+        //noinspection IOStreamConstructor
+        try (OutputStream os = new FileOutputStream(x)) {
             os.write(cert.getEncoded());
             os.flush();
         }

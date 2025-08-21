@@ -16,6 +16,7 @@
 
 package org.coodex.mock;
 
+import org.coodex.functional.Function;
 import org.coodex.id.IDGenerator;
 import org.coodex.util.SingletonMap;
 
@@ -29,7 +30,12 @@ public class IdMockerProvider extends AbstractTypeMocker<Mock.ID> {
     };
 
     private static final SingletonMap<String, AtomicLong> ID_SEQ_MAP = SingletonMap.<String, AtomicLong>builder()
-            .function(key -> new AtomicLong(0))
+            .function(new Function<String, AtomicLong>() {
+                @Override
+                public AtomicLong apply(String s) {
+                    return new AtomicLong(0);
+                }
+            })
             .build();
 
     @Override

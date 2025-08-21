@@ -32,14 +32,16 @@ public interface MockerProvider {
      * @return 模拟值
      */
     @SuppressWarnings("unchecked")
-    default <T> T mock(Class<T> type, Annotation... annotations) {
-        Object o = mock(type, type, annotations);
-        if (o == null || type.isAssignableFrom(o.getClass())) {
-            return (T) o;
-        } else {
-            throw new ClassCastException();
-        }
-    }
+//    default
+    <T> T mock(Class<T> type, Annotation... annotations);
+//    {
+//        Object o = mock(type, type, annotations);
+//        if (o == null || type.isAssignableFrom(o.getClass())) {
+//            return (T) o;
+//        } else {
+//            throw new ClassCastException();
+//        }
+//    }
 
     /**
      * @param type        要模拟类型的type，需要是具体的，不能有{@link java.lang.reflect.TypeVariable}

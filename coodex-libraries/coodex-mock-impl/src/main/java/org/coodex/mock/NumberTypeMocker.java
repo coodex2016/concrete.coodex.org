@@ -16,6 +16,7 @@
 
 package org.coodex.mock;
 
+import org.coodex.functional.Supplier;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 
@@ -43,7 +44,12 @@ public class NumberTypeMocker extends AbstractTypeMocker<Mock.Number> {
     private static final char[] DELIMITER = ",".toCharArray();
     private static final char[] LEFT_BRACKETS_INCLUDE = "[".toCharArray();
     private static final char[] RIGHT_BRACKETS_INCLUDE = "]".toCharArray();
-    private static final Singleton<NumberTypeMocker> instance = Singleton.with(NumberTypeMocker::new);
+    private static final Singleton<NumberTypeMocker> instance = Singleton.with(new Supplier<NumberTypeMocker>() {
+        @Override
+        public NumberTypeMocker get() {
+            return new NumberTypeMocker();
+        }
+    });
     static Class<?>[] SUPPORTED = new Class<?>[]{
             byte.class, Byte.class,
             short.class, Short.class,

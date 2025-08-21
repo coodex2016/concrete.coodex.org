@@ -16,18 +16,17 @@
 
 package org.coodex.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.coodex.util.java8.StringJoiner;
+
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.StringJoiner;
+//import java.util.StringJoiner;
 
 public class ResourceUpdate {
 
     private static String item_code(File f) {
-        try (InputStream fileInputStream = Files.newInputStream(f.toPath())) {
+        //noinspection IOStreamConstructor
+        try (InputStream fileInputStream = new FileInputStream(f)) {
             byte[] buf = DigestHelper.digestBuff(fileInputStream, "md5");
             StringJoiner joiner = new StringJoiner(",");
             for (byte b : buf) {
@@ -86,18 +85,19 @@ public class ResourceUpdate {
         String target_path = args[1];
         String code = "#include \"resources.h\"\n" +
                 "#ifndef SIMPLE_PD\n" +
-                "ResourceItem res_font[]  = {"+ item_list(base_path + "/fonts/") +"};\n" +
-                "ResourceItem res_image[] = {"+ item_list(base_path + "/resources/") + "};\n" +
+                "ResourceItem res_font[]  = {" + item_list(base_path + "/fonts/") + "};\n" +
+                "ResourceItem res_image[] = {" + item_list(base_path + "/resources/") + "};\n" +
                 "#endif\n" +
-                "ResourceItem res_voice[] = {"+ item_list(base_path + "/voice/female") + "};\n" +
+                "ResourceItem res_voice[] = {" + item_list(base_path + "/voice/female") + "};\n" +
                 "\n" +
                 "IMPL_RESOURCE_FUNC(font)\n" +
                 "IMPL_RESOURCE_FUNC(image)\n" +
                 "IMPL_RESOURCE_FUNC(voice)\n";
-                
+
         System.out.println(code);
         // write file
-        try (OutputStream os = Files.newOutputStream(new File(target_path).toPath())) {
+        //noinspection IOStreamConstructor
+        try (OutputStream os = new FileOutputStream(target_path)) {
             os.write(code.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);

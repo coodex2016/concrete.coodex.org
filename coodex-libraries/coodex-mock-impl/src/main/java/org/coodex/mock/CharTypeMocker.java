@@ -16,6 +16,7 @@
 
 package org.coodex.mock;
 
+import org.coodex.functional.Supplier;
 import org.coodex.util.Common;
 import org.coodex.util.Singleton;
 
@@ -33,7 +34,14 @@ public class CharTypeMocker extends AbstractTypeMocker<Mock.Char> {
             String.class
     };
 
-    private static final Singleton<CharTypeMocker> instance = Singleton.with(CharTypeMocker::new);
+    private static final Singleton<CharTypeMocker> instance = Singleton.with(
+            new Supplier<CharTypeMocker>() {
+                @Override
+                public CharTypeMocker get() {
+                    return new CharTypeMocker();
+                }
+            }
+    );
 
 //    public CharTypeMocker() {
 //        instance = this;

@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.EnumResolver;
 import com.fasterxml.jackson.databind.util.EnumValues;
 import org.coodex.config.Config;
+import org.coodex.functional.Function;
 import org.coodex.util.*;
 
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class Jackson2JSONSerializer extends AbstractJSONSerializer implements JS
 //        if (!failedOnUnknownProperties) {
 //
 //        }
-////
+    /// /
 //        SingletonMap<Class<Enum<?>>, EnumSerializer> serializerMap = SingletonMap
 //                .<Class<Enum<?>>, EnumSerializer>builder()
 //                .function(c -> new EnumSerializer(EnumValues.construct(mapper.getSerializationConfig(), c),
@@ -85,53 +86,64 @@ public class Jackson2JSONSerializer extends AbstractJSONSerializer implements JS
 //    });
 
     private static final SingletonMap<Boolean, ObjectMapper> mapperSingletonMap = SingletonMap.<Boolean, ObjectMapper>builder()
-            .function(key -> {
-                ObjectMapper mapper = new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+            .function(new Function<Boolean, ObjectMapper>() {
+                @Override
+                public ObjectMapper apply(Boolean key) {
+                    final ObjectMapper mapper = new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
-                mapper.setSerializationInclusion(
-                        key ? JsonInclude.Include.ALWAYS : JsonInclude.Include.NON_NULL
-                );
-                boolean failedOnUnknownProperties = Config.getValue("jsonserializer.jackson.failedOnUnknownProperties", false);
-                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failedOnUnknownProperties);
-                if (!failedOnUnknownProperties) {
+                    mapper.setSerializationInclusion(
+                            key ? JsonInclude.Include.ALWAYS : JsonInclude.Include.NON_NULL
+                    );
+                    boolean failedOnUnknownProperties = Config.getValue("jsonserializer.jackson.failedOnUnknownProperties", false);
+                    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failedOnUnknownProperties);
+                    if (!failedOnUnknownProperties) {
 
-                }
-//
-                SingletonMap<Class<Enum<?>>, EnumSerializer> serializerMap = SingletonMap
-                        .<Class<Enum<?>>, EnumSerializer>builder()
-                        .function(c -> new EnumSerializer(EnumValues.construct(mapper.getSerializationConfig(), c),
-                                mapper.isEnabled(SerializationFeature.WRITE_ENUMS_USING_INDEX)))
-                        .build();
-
-                SingletonMap<Class<?>, EnumDeserializer> deserializerMap = SingletonMap
-                        .<Class<?>, EnumDeserializer>builder()
-                        .function(c -> {
-                            EnumResolver enumResolver = EnumResolver
-                                    .constructUsingToString(mapper.getDeserializationConfig(), c);
-                            return new EnumDeserializer(enumResolver, mapper.getDeserializationConfig()
-                                    .isEnabled(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS));
-                        })
-                        .build();
-
-
-                SimpleModule simpleModule = new SimpleModule();
-
-                //noinspection rawtypes
-                simpleModule.addSerializer(Enum.class, new JsonSerializer<Enum>() {
-                    @Override
-                    public void serialize(Enum value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-                        if (value == null) {
-                            gen.writeNull();
-                        } else if (value instanceof Valuable) {
-                            gen.writeObject(((Valuable<?>) value).getValue());
-                        } else {
-                            serializerMap.get(Common.cast(value.getClass())).serialize(value, gen, serializers);
-                        }
                     }
-                }).addDeserializer(Enum.class, new ValuableEnumDeserializer(deserializerMap));
+//
+                    final SingletonMap<Class<Enum<?>>, EnumSerializer> serializerMap = SingletonMap
+                            .<Class<Enum<?>>, EnumSerializer>builder()
+                            .function(new Function<Class<Enum<?>>, EnumSerializer>() {
+                                @Override
+                                public EnumSerializer apply(Class<Enum<?>> c) {
+                                    return new EnumSerializer(EnumValues.construct(mapper.getSerializationConfig(), c),
+                                            mapper.isEnabled(SerializationFeature.WRITE_ENUMS_USING_INDEX));
+                                }
+                            })
+                            .build();
 
-                mapper.registerModule(simpleModule);
-                return mapper;
+                    final SingletonMap<Class<?>, EnumDeserializer> deserializerMap = SingletonMap
+                            .<Class<?>, EnumDeserializer>builder()
+                            .function(new Function<Class<?>, EnumDeserializer>() {
+                                @Override
+                                public EnumDeserializer apply(Class<?> c) {
+                                    EnumResolver enumResolver = EnumResolver
+                                            .constructUsingToString(mapper.getDeserializationConfig(), c);
+                                    return new EnumDeserializer(enumResolver, mapper.getDeserializationConfig()
+                                            .isEnabled(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS));
+                                }
+                            })
+                            .build();
+
+
+                    final SimpleModule simpleModule = new SimpleModule();
+
+                    //noinspection rawtypes
+                    simpleModule.addSerializer(Enum.class, new JsonSerializer<Enum>() {
+                        @Override
+                        public void serialize(Enum value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+                            if (value == null) {
+                                gen.writeNull();
+                            } else if (value instanceof Valuable) {
+                                gen.writeObject(((Valuable<?>) value).getValue());
+                            } else {
+                                serializerMap.get((Class<Enum<?>>) value.getClass()).serialize(value, gen, serializers);
+                            }
+                        }
+                    }).addDeserializer(Enum.class, new ValuableEnumDeserializer(deserializerMap));
+
+                    mapper.registerModule(simpleModule);
+                    return mapper;
+                }
             })
             .build();
 
