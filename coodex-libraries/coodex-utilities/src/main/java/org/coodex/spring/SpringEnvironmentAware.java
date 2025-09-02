@@ -23,7 +23,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 
 import javax.inject.Named;
-import java.util.Optional;
 
 @Named
 @Order(Integer.MIN_VALUE)

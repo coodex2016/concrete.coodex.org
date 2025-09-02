@@ -16,9 +16,6 @@
 
 package org.coodex.functional;
 
-import java.util.Objects;
-import java.util.function.Function;
-
 public interface BiFunction<T, U, R> {
 
     /**

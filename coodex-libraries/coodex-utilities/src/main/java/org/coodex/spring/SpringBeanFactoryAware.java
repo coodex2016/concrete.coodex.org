@@ -23,7 +23,6 @@ import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostP
 import org.springframework.core.annotation.Order;
 
 import javax.inject.Named;
-import java.util.Optional;
 
 @Named
 @Order(Integer.MIN_VALUE)

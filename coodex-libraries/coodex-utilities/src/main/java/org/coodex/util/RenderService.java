@@ -16,8 +16,6 @@
 
 package org.coodex.util;
 
-import java.util.function.Supplier;
-
 /**
  * 字符串渲染器，根据模板进行选择
  */

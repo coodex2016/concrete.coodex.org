@@ -38,6 +38,16 @@ import static org.coodex.util.GenericTypeHelper.solveFromInstance;
  */
 public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
 
+    private final Singleton<Iterable<ServiceLoaderProvider>> serviceLoaderProviderInstances = Singleton.with(new Supplier<Iterable<ServiceLoaderProvider>>() {
+        @Override
+        public Iterable<ServiceLoaderProvider> get() {
+            return java.util.ServiceLoader.load(
+                    ServiceLoaderProvider.class,
+                    JavaUtilServiceLoaderProvider.defaultLoader(ServiceLoader.class)
+            );
+        }
+    });
+
     private final static Logger log = LoggerFactory.getLogger(LazyServiceLoader.class);
     private final Singleton<Instances> instances = Singleton.with(
             new Supplier<Instances>() {
@@ -46,10 +56,9 @@ public abstract class LazyServiceLoader<T> implements ServiceLoader<T> {
                 public Instances get() {
                     Instances instances = new Instances();
                     instances.instancesMap = new HashMap<>();
-                    java.util.ServiceLoader<ServiceLoaderProvider> serviceLoaderProviders =
-                            java.util.ServiceLoader.load(ServiceLoaderProvider.class);
 
-                    for (ServiceLoaderProvider provider : serviceLoaderProviders) {
+
+                    for (ServiceLoaderProvider provider : serviceLoaderProviderInstances.get()) {
                         instances.instancesMap.putAll(provider.load(getServiceType()));
                     }
                     if (Common.isDebug() && log.isDebugEnabled()) {

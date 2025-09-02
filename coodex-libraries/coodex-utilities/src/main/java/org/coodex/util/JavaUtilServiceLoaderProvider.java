@@ -16,29 +16,44 @@
 
 package org.coodex.util;
 
+import org.coodex.annotatoin.Remark;
 import org.coodex.functional.BiConsumer;
+import org.coodex.functional.Function;
 import org.coodex.functional.Supplier;
 import org.coodex.util.java8.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ServiceLoader;
 import java.util.*;
 //import java.util.function.BiConsumer;
 //import java.util.function.Supplier;
 
 public class JavaUtilServiceLoaderProvider extends AbstractServiceLoaderProvider {
     private final static Logger log = LoggerFactory.getLogger(JavaUtilServiceLoaderProvider.class);
+    private static ClassLoader defaultClassLoader;
 
-    private static final boolean SINGLETON_ENABLED = Common.toBool(System.getProperty(ServiceLoader.class.getName() + ".singleton.enable"), true);
-    private static final boolean CACHE_ENABLED = Common.toBool(System.getProperty(ServiceLoader.class.getName() + ".cache.enable"), true);
+    @Remark("对外暴露设置默认的classLoader，主要为了适配Android低版本或者不完善的驱动造成无法使用SPI时无法找到服务实例的情况")
+    public static void register(ClassLoader defaultClassLoader) {
+        JavaUtilServiceLoaderProvider.defaultClassLoader = defaultClassLoader;
+    }
+
+    private static final boolean SINGLETON_ENABLED = true;//Common.toBool(System.getProperty(ServiceLoader.class.getName() + ".singleton.enable"), true);
+    private static final boolean CACHE_ENABLED = true;//Common.toBool(System.getProperty(ServiceLoader.class.getName() + ".cache.enable"), true);
     //    private static final Singleton<Boolean> SINGLETON_ENABLED = new Singleton<>(() ->
 //            Config.getValue(ServiceLoader.class.getName() + ".singleton.enable", true)
 //    );
 //    private static final Singleton<Boolean> CACHE_ENABLED = new Singleton<>(() ->
 //            Config.getValue(ServiceLoader.class.getName() + ".cache.enable", true)
 //    );
-    private static final SingletonMap<Class<?>, Map<String, Object>> cache = SingletonMap.<Class<?>, Map<String, Object>>builder().build();
+    private static final SingletonMap<Class<?>, Map<String, Object>> cache = SingletonMap
+            .<Class<?>, Map<String, Object>>builder()
+            .function(new Function<Class<?>, Map<String, Object>>() {
+                @Override
+                public Map<String, Object> apply(Class<?> aClass) {
+                    return Collections.emptyMap();
+                }
+            })
+            .build();
 
     @Override
     protected Map<String, Object> loadByRowType(final Class<?> rowType) {
@@ -61,19 +76,12 @@ public class JavaUtilServiceLoaderProvider extends AbstractServiceLoaderProvider
                             }
                         }
                     };
-//                            (key, value) -> {
-//                        Class<?> instanceClass = value.getClass();
-//                        if (!classes.contains(instanceClass) && ReflectHelper.isMatch(instanceClass, rowType)) {
-//                            classes.add(instanceClass);
-//                            objectMap.put(key, value);
-//                        }
-//                    };
+
                     for (Class<?> interfaceClass : interfaces) {
                         if (SINGLETON_ENABLED) {
                             for (Map.Entry<String, Object> entry : loadByRowType(interfaceClass).entrySet()) {
                                 biConsumer.accept(entry.getKey(), entry.getValue());
                             }
-//                            loadByRowType(interfaceClass).forEach(biConsumer);
                         } else {
                             objectMap.putAll(loadByRowType(interfaceClass));
                         }
@@ -88,33 +96,7 @@ public class JavaUtilServiceLoaderProvider extends AbstractServiceLoaderProvider
                 }
             }
         };
-//                () -> {
-//            Class<?>[] interfaces = rowType.getInterfaces();
-//            if (interfaces.length == 0) {
-//                return loadByInterface(rowType);
-//            } else {
-//                Map<String, Object> objectMap = new HashMap<>();
-//                Set<Class<?>> classes = new HashSet<>();
-//                BiConsumer<String, Object> biConsumer = (key, value) -> {
-//                    Class<?> instanceClass = value.getClass();
-//                    if (!classes.contains(instanceClass) && ReflectHelper.isMatch(instanceClass, rowType)) {
-//                        classes.add(instanceClass);
-//                        objectMap.put(key, value);
-//                    }
-//                };
-//                for (Class<?> interfaceClass : interfaces) {
-//                    if (SINGLETON_ENABLED) {
-//                        loadByRowType(interfaceClass).forEach(biConsumer);
-//                    } else {
-//                        objectMap.putAll(loadByRowType(interfaceClass));
-//                    }
-//                }
-//                if (rowType.isInterface()) {
-//                    loadByInterface(rowType).forEach(biConsumer);
-//                }
-//                return objectMap;
-//            }
-//        };
+
         Map<String, Object> objectMap = CACHE_ENABLED ?
                 cache.get(rowType, supplier) :
                 supplier.get();
@@ -133,11 +115,21 @@ public class JavaUtilServiceLoaderProvider extends AbstractServiceLoaderProvider
         return objectMap;
     }
 
+    public static ClassLoader defaultLoader(Class<?> service) {
+        ClassLoader cl = defaultClassLoader;
+        if (cl == null) cl = Thread.currentThread().getContextClassLoader();
+        if (cl == null) cl = service.getClassLoader();
+        if (cl == null) cl = JavaUtilServiceLoaderProvider.class.getClassLoader();
+        if (cl == null) cl = ClassLoader.getSystemClassLoader(); // 兜底
+        return cl;
+    }
+
     private Map<String, Object> loadByInterface(Class<?> interfaceClass) {
         Map<String, Object> map = new HashMap<>();
-        for (Object service : java.util.ServiceLoader.load(interfaceClass)) {
+        for (Object service : java.util.ServiceLoader.load(interfaceClass, defaultLoader(interfaceClass))) {
             map.put(service.getClass().getName(), service);
         }
+        log.info("[SPI-java.util]load {} Service instances: {}, {}", map.size(), interfaceClass, defaultLoader(interfaceClass));
         return map;
     }
 }

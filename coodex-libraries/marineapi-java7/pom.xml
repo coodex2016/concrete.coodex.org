@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.coodex</groupId>
         <artifactId>coodex-libraries</artifactId>
-        <version>0.6.2-SNAPSHOT</version>
+        <version>0.6.3</version>
     </parent>
 
     <artifactId>net.sf.marineapi-java7</artifactId>
@@ -84,5 +84,22 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <fork>true</fork>
+                    <compilerArgs>
+                        <arg>-bootclasspath</arg>
+                        <arg>${java7-runtime}</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

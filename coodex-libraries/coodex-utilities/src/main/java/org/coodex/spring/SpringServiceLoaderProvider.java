@@ -18,12 +18,10 @@ package org.coodex.spring;
 
 import org.coodex.util.AbstractServiceLoaderProvider;
 import org.coodex.util.SPI;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @SPI.Ordered(0)
 public class SpringServiceLoaderProvider extends AbstractServiceLoaderProvider

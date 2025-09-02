@@ -20,7 +20,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Optional;
 
 public final class SPI {
 
@@ -31,7 +30,7 @@ public final class SPI {
      * @return 服务顺序
      */
     public static int getServiceOrder(Object o) {
-        if(o == null){
+        if (o == null) {
             return Integer.MAX_VALUE;
         }
         Ordered ordered = o.getClass().getAnnotation(Ordered.class);

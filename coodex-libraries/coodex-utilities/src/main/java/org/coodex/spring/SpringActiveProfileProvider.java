@@ -20,8 +20,6 @@ import org.coodex.util.ActiveProfilesProvider;
 import org.coodex.util.SPI;
 import org.springframework.core.env.Environment;
 
-import java.util.Optional;
-
 @SPI.Ordered(0)
 public class SpringActiveProfileProvider implements ActiveProfilesProvider {
     @Override

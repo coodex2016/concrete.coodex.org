@@ -16,8 +16,9 @@
 
 package org.coodex.util;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by davidoff shen on 2017-04-26.
@@ -44,7 +45,7 @@ public interface ServiceLoader<T> {
      * @see SPI
      */
 //    default
-    List<T> sorted() ;
+    List<T> sorted();
 //    {
 //        return sorted(Comparator.comparingInt(SPI::getServiceOrder));
 //    }

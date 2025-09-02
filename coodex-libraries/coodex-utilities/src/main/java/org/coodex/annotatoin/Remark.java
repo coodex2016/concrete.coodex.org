@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 coodex.org (jujus.shen@126.com)
+ * Copyright (c) 2016 - 2025 coodex.org (jujus.shen@126.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package org.coodex.util;
+package org.coodex.annotatoin;
 
-//import java.util.function.Supplier;
 
-import org.coodex.functional.Supplier;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * 在一次事务中运行
+ * 用于关键API的说明
  */
-public interface TransactionalRunner {
-
-    <TR> TR apply(Supplier<TR> supplier);
-
-    void run(Runnable runnable);
+@Retention(RetentionPolicy.CLASS) // 保留到字节码，但运行时不一定加载
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
+public @interface Remark {
+    String value();           // 备注说明
 }

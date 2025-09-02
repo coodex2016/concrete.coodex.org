@@ -499,7 +499,7 @@ public class CoodexMockerProvider implements MockerProvider {
                     private List<PojoProperty> getPojoPropertiesAndSort(PojoInfo pojoInfo) {
                         List<PojoProperty> properties = new ArrayList<>(pojoInfo.getProperties());
                         // 排序，有引用的在后
-                        properties.sort(new Comparator<PojoProperty>() {
+                        Collections.sort(properties, new Comparator<PojoProperty>() {
                             final int[] range = {0, -1, 1, 0};
 
                             @Override
